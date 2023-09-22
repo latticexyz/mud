@@ -81,7 +81,7 @@
     "file": "test/FieldLayout.t.sol",
     "test": "testGetNumDynamicFields",
     "name": "get number of dynamic fields from field layout",
-    "gasUsed": 389
+    "gasUsed": 390
   },
   {
     "file": "test/FieldLayout.t.sol",
@@ -93,7 +93,7 @@
     "file": "test/FieldLayout.t.sol",
     "test": "testGetNumStaticFields",
     "name": "get number of static fields from field layout",
-    "gasUsed": 311
+    "gasUsed": 312
   },
   {
     "file": "test/FieldLayout.t.sol",
@@ -117,7 +117,7 @@
     "file": "test/FieldLayout.t.sol",
     "test": "testValidate",
     "name": "validate field layout",
-    "gasUsed": 3993
+    "gasUsed": 3995
   },
   {
     "file": "test/Gas.t.sol",
@@ -441,7 +441,7 @@
     "file": "test/Schema.t.sol",
     "test": "testGetNumDynamicFields",
     "name": "get number of dynamic fields from schema",
-    "gasUsed": 389
+    "gasUsed": 390
   },
   {
     "file": "test/Schema.t.sol",
@@ -453,7 +453,7 @@
     "file": "test/Schema.t.sol",
     "test": "testGetNumStaticFields",
     "name": "get number of static fields from schema",
-    "gasUsed": 311
+    "gasUsed": 312
   },
   {
     "file": "test/Schema.t.sol",
@@ -477,7 +477,7 @@
     "file": "test/Schema.t.sol",
     "test": "testValidate",
     "name": "validate schema",
-    "gasUsed": 11497
+    "gasUsed": 11499
   },
   {
     "file": "test/Slice.t.sol",

@@ -45,6 +45,6 @@ contract StandardDelegationsModule is Module {
   }
 
   function install(bytes memory) public pure {
-    revert NonRootInstallNotSupported();
+    revert Module_NonRootInstallNotSupported();
   }
 }
