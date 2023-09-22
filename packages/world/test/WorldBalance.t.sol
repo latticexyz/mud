@@ -194,7 +194,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(Balances.get(world, ResourceId.unwrap(ROOT_NAMESPACE_ID)), value);
 
     // Expect revert when attempting to transfer more than the balance
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.InsufficientBalance.selector, value, value + 1));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InsufficientBalance.selector, value, value + 1));
     world.transferBalanceToNamespace(ROOT_NAMESPACE_ID, namespaceId, value + 1);
 
     // Expect the root namespace to have the value as balance
@@ -223,7 +223,9 @@ contract WorldBalanceTest is Test, GasReporter {
 
     // Expect revert when attempting to transfer from a namespace without access
     vm.prank(caller);
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.AccessDenied.selector, ROOT_NAMESPACE_ID.toString(), caller));
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, ROOT_NAMESPACE_ID.toString(), caller)
+    );
     world.transferBalanceToNamespace(ROOT_NAMESPACE_ID, namespaceId, value);
 
     // Expect the root namespace to have the value as balance
@@ -254,7 +256,7 @@ contract WorldBalanceTest is Test, GasReporter {
     vm.prank(caller);
     vm.expectRevert(
       abi.encodeWithSelector(
-        IWorldErrors.InvalidResourceType.selector,
+        IWorldErrors.World_InvalidResourceType.selector,
         RESOURCE_NAMESPACE,
         invalidNamespace,
         invalidNamespace.toString()
@@ -322,7 +324,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(receiver.balance, 0);
 
     // Expect revert when attempting to transfer more than the balance
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.InsufficientBalance.selector, value, value + 1));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InsufficientBalance.selector, value, value + 1));
     world.transferBalanceToAddress(ROOT_NAMESPACE_ID, receiver, value + 1);
 
     // Expect the root namespace to have value as balance
@@ -357,7 +359,7 @@ contract WorldBalanceTest is Test, GasReporter {
     vm.prank(caller);
     vm.expectRevert(
       abi.encodeWithSelector(
-        IWorldErrors.AccessDenied.selector,
+        IWorldErrors.World_AccessDenied.selector,
         WorldResourceIdLib.encodeNamespace(ROOT_NAMESPACE).toString(),
         caller
       )

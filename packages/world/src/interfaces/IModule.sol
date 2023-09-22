@@ -10,8 +10,8 @@ bytes4 constant MODULE_INTERFACE_ID = IModule.getName.selector ^
   ERC165_INTERFACE_ID;
 
 interface IModule is IERC165 {
-  error RootInstallModeNotSupported();
-  error NonRootInstallNotSupported();
+  error Module_RootInstallNotSupported();
+  error Module_NonRootInstallNotSupported();
 
   /**
    * Return the module name as a bytes16.
