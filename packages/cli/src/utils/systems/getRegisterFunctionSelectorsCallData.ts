@@ -46,7 +46,7 @@ function getRegisterFunctionSelectorCallData(input: {
     const functionSelector = toFunctionSelector(systemFunctionSignature);
     return {
       func: "registerRootFunctionSelector",
-      args: [resourceIdToHex({ type: "system", namespace, name }), functionSelector, functionSelector],
+      args: [resourceIdToHex({ type: "system", namespace, name }), systemFunctionSignature, functionSelector],
     };
   } else {
     return {

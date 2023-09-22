@@ -98,6 +98,16 @@ export default mudConfig({
       },
       dataStruct: false,
     },
+    FunctionSignatures: {
+      directory: "modules/core/tables",
+      keySchema: {
+        functionSelector: "bytes4",
+      },
+      valueSchema: {
+        functionSignature: "string",
+      },
+      offchainOnly: true,
+    },
     KeysWithValue: {
       directory: "modules/keyswithvalue/tables",
       keySchema: {

@@ -23,8 +23,6 @@ import { SystemRegistry } from "../tables/SystemRegistry.sol";
 import { Systems } from "../tables/Systems.sol";
 import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
 
-import { CORE_SYSTEM_ID } from "../constants.sol";
-
 import { WorldRegistrationSystem } from "./WorldRegistrationSystem.sol";
 
 /**

@@ -36,8 +36,11 @@ import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOw
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { CoreSystem } from "../src/modules/core/CoreSystem.sol";
+import { CORE_SYSTEM_ID } from "../src/modules/core/constants.sol";
 import { Systems } from "../src/modules/core/tables/Systems.sol";
 import { SystemRegistry } from "../src/modules/core/tables/SystemRegistry.sol";
+import { FunctionSelectors } from "../src/modules/core/tables/FunctionSelectors.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
@@ -218,6 +221,41 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the creator to be able to initialize the World
     newWorld.initialize(coreModule);
+
+    // Should have registered the core system function selectors
+    CoreSystem coreSystem = CoreSystem(Systems.getSystem(world, ResourceId.unwrap(CORE_SYSTEM_ID)));
+    bytes4[17] memory coreFunctionSignatures = [
+      // --- AccessManagementSystem ---
+      coreSystem.grantAccess.selector,
+      coreSystem.revokeAccess.selector,
+      coreSystem.transferOwnership.selector,
+      // --- BalanceTransferSystem ---
+      coreSystem.transferBalanceToNamespace.selector,
+      coreSystem.transferBalanceToAddress.selector,
+      // --- CallBatchSystem ---
+      coreSystem.callBatch.selector,
+      // --- ModuleInstallationSystem ---
+      coreSystem.installModule.selector,
+      // --- StoreRegistrationSystem ---
+      coreSystem.registerTable.selector,
+      coreSystem.registerStoreHook.selector,
+      coreSystem.unregisterStoreHook.selector,
+      // --- WorldRegistrationSystem ---
+      coreSystem.registerNamespace.selector,
+      coreSystem.registerSystemHook.selector,
+      coreSystem.unregisterSystemHook.selector,
+      coreSystem.registerSystem.selector,
+      coreSystem.registerFunctionSelector.selector,
+      coreSystem.registerRootFunctionSelector.selector,
+      coreSystem.registerDelegation.selector
+    ];
+
+    for (uint256 i; i < coreFunctionSignatures.length; i++) {
+      assertEq(
+        FunctionSelectors.getSystemFunctionSelector(world, coreFunctionSignatures[i]),
+        coreFunctionSignatures[i]
+      );
+    }
 
     // Should have registered the table data table (fka schema table)
     assertEq(
@@ -1392,7 +1430,7 @@ contract WorldTest is Test, GasReporter {
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(systemId, system, true);
 
-    bytes4 worldFunc = bytes4(abi.encodeWithSignature("testSelector()"));
+    string memory worldFunc = "testSelector()";
     bytes4 sysFunc = WorldTestSystem.msgSender.selector;
 
     // Expect an error when trying to register a root function selector from an account without access
@@ -1413,20 +1451,16 @@ contract WorldTest is Test, GasReporter {
     bytes4 functionSelector = world.registerRootFunctionSelector(systemId, worldFunc, sysFunc);
     endGasReport();
 
-    assertEq(functionSelector, worldFunc, "wrong function selector returned");
+    assertEq(functionSelector, bytes4(keccak256(bytes(worldFunc))), "wrong function selector returned");
 
     // Call the system via the World with the registered function selector
-    (bool success, bytes memory data) = address(world).call(abi.encodePacked(worldFunc));
+    (bool success, bytes memory data) = address(world).call(abi.encodeWithSignature(worldFunc));
 
     assertTrue(success, "call failed");
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
 
     // Register a function selector to the error function
-    functionSelector = world.registerRootFunctionSelector(
-      systemId,
-      WorldTestSystem.err.selector,
-      WorldTestSystem.err.selector
-    );
+    functionSelector = world.registerRootFunctionSelector(systemId, "err(string)", WorldTestSystem.err.selector);
 
     // Expect errors to be passed through
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
@@ -1462,11 +1496,7 @@ contract WorldTest is Test, GasReporter {
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
 
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(
-      systemId,
-      WorldTestSystem.receiveEther.selector,
-      WorldTestSystem.receiveEther.selector
-    );
+    world.registerRootFunctionSelector(systemId, "receiveEther()", WorldTestSystem.receiveEther.selector);
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1492,11 +1522,7 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(
-      systemId,
-      WorldTestSystem.msgSender.selector,
-      WorldTestSystem.msgSender.selector
-    );
+    world.registerRootFunctionSelector(systemId, "msgSender()", WorldTestSystem.msgSender.selector);
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1523,7 +1549,7 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(systemId, bytes4(abi.encodeWithSignature("systemFallback()")), bytes4(""));
+    world.registerRootFunctionSelector(systemId, "systemFallback()", bytes4(""));
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1549,7 +1575,7 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(systemId, bytes4(abi.encodeWithSignature("systemFallback()")), bytes4(""));
+    world.registerRootFunctionSelector(systemId, "systemFallback()", bytes4(""));
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1575,11 +1601,7 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(
-      systemId,
-      WorldTestSystem.receiveEther.selector,
-      WorldTestSystem.receiveEther.selector
-    );
+    world.registerRootFunctionSelector(systemId, "receiveEther()", WorldTestSystem.receiveEther.selector);
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
