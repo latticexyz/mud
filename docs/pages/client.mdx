@@ -1,0 +1,7 @@
+# Clients
+
+MUD is client agnostic: any client -- a browser, a game engine, or an iOS app -- can implement the synchronization protocol and a client-side cache to replicate [Store](/store) tables, along with the necessary infrastructure to send transactions to the World.
+
+However, currently we **only** officially support the browser and Node,
+with libraries for [TypeScript](https://www.typescriptlang.org/).
+We provide tooling for representing the onchain state and replicate it from an RPC or [the Indexer](/indexer) via a network stack.
