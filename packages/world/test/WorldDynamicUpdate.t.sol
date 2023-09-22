@@ -76,7 +76,7 @@ contract UpdateInFieldTest is Test, GasReporter {
   }
 
   // Expect an error when trying to write from an address that doesn't have access
-  function _expectWorld_AccessDenied(address _caller, ResourceId _tableId) internal {
+  function _expectWorldAccessDenied(address _caller, ResourceId _tableId) internal {
     vm.prank(_caller);
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, _tableId.toString(), _caller));
   }
@@ -128,7 +128,7 @@ contract UpdateInFieldTest is Test, GasReporter {
     }
 
     // Expect an error when trying to write from an address that doesn't have access
-    _expectWorld_AccessDenied(address(0x01), tableId);
+    _expectWorldAccessDenied(address(0x01), tableId);
     world.popFromField(tableId, keyTuple, 0, 20, fieldLayout);
 
     // Expect the World to not have access
@@ -167,7 +167,7 @@ contract UpdateInFieldTest is Test, GasReporter {
     assertEq(AddressArray.get(world, tableId, key), initData);
 
     // Expect an error when trying to write from an address that doesn't have access
-    _expectWorld_AccessDenied(address(0x01), tableId);
+    _expectWorldAccessDenied(address(0x01), tableId);
     world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate), fieldLayout);
 
     // Expect the World to not have access

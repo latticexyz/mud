@@ -184,7 +184,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   // Expect an error when trying to write from an address that doesn't have access
-  function _expectWorld_AccessDenied(address caller, bytes14 namespace, bytes16 name, bytes2 resourceType) internal {
+  function _expectWorldAccessDenied(address caller, bytes14 namespace, bytes16 name, bytes2 resourceType) internal {
     vm.prank(caller);
     vm.expectRevert(
       abi.encodeWithSelector(
@@ -396,7 +396,7 @@ contract WorldTest is Test, GasReporter {
     );
 
     // Expect revert if caller is not the owner
-    _expectWorld_AccessDenied(address(this), namespace, 0, RESOURCE_NAMESPACE);
+    _expectWorldAccessDenied(address(this), namespace, 0, RESOURCE_NAMESPACE);
     world.transferOwnership(namespaceId, address(1));
   }
 
@@ -450,7 +450,7 @@ contract WorldTest is Test, GasReporter {
       namespace: namespace,
       name: "otherTable"
     });
-    _expectWorld_AccessDenied(address(0x01), namespace, "", RESOURCE_NAMESPACE);
+    _expectWorldAccessDenied(address(0x01), namespace, "", RESOURCE_NAMESPACE);
     world.registerTable(otherTableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
     // Expect the World to not be allowed to call registerTable via an external call
@@ -545,7 +545,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when registering a system in a namespace that is not owned by the caller
     System yetAnotherSystem = new System();
-    _expectWorld_AccessDenied(address(0x01), "", "", RESOURCE_NAMESPACE);
+    _expectWorldAccessDenied(address(0x01), "", "", RESOURCE_NAMESPACE);
     world.registerSystem(
       WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "rootSystem" }),
       yetAnotherSystem,
@@ -752,7 +752,7 @@ contract WorldTest is Test, GasReporter {
     assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to write from an address that doesn't have access
-    _expectWorld_AccessDenied(address(0x01), "testSetField", "testTable", RESOURCE_TABLE);
+    _expectWorldAccessDenied(address(0x01), "testSetField", "testTable", RESOURCE_TABLE);
     world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
 
     // Expect the World to not have access
@@ -795,7 +795,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Expect an error when trying to write from an address that doesn't have access
-    _expectWorld_AccessDenied(address(0x01), namespace, name, RESOURCE_TABLE);
+    _expectWorldAccessDenied(address(0x01), namespace, name, RESOURCE_TABLE);
     world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
 
     // Expect the World to not have access
@@ -845,7 +845,7 @@ contract WorldTest is Test, GasReporter {
     assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to delete from an address that doesn't have access
-    _expectWorld_AccessDenied(address(0x02), namespace, name, RESOURCE_TABLE);
+    _expectWorldAccessDenied(address(0x02), namespace, name, RESOURCE_TABLE);
     world.deleteRecord(tableId, singletonKey, fieldLayout);
 
     // Expect the World to not have access
@@ -886,7 +886,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(returnStruct.input, bytes32(uint256(0x123)));
 
     // Expect an error when trying to call a private system from an address that doesn't have access
-    _expectWorld_AccessDenied(address(0x01), "namespace", "testSystem", RESOURCE_SYSTEM);
+    _expectWorldAccessDenied(address(0x01), "namespace", "testSystem", RESOURCE_SYSTEM);
     world.call(systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Expect the World to have not access
@@ -1394,13 +1394,16 @@ contract WorldTest is Test, GasReporter {
     bytes4 sysFunc = WorldTestSystem.msgSender.selector;
 
     // Expect an error when trying to register a root function selector from an account without access
-    _expectWorld_AccessDenied(address(0x01), "", "", RESOURCE_NAMESPACE);
+    _expectWorldAccessDenied(address(0x01), "", "", RESOURCE_NAMESPACE);
     world.registerRootFunctionSelector(systemId, worldFunc, sysFunc);
 
     // Expect the World to not be able to register a root function selector when calling the function externally
     vm.prank(address(world));
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.registerRootFunctionSelector.selector)
+      abi.encodeWithSelector(
+        IWorldErrors.World_CallbackNotAllowed.selector,
+        world.registerRootFunctionSelector.selector
+      )
     );
     world.registerRootFunctionSelector(systemId, "smth", "smth");
 
