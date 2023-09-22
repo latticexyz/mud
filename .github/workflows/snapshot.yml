@@ -11,7 +11,7 @@ on:
 jobs:
   release-snapshot:
     name: Publish snapshot release to npm
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
     if: github.event_name != 'workflow_dispatch'
     steps:
       - name: Checkout
