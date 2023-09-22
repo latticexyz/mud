@@ -138,14 +138,17 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
       await storageAdapter.registerTables({ blockNumber, tables });
 
+      // If Match ID is provided, ignore all keys that are
+      // in the Position table and do not have the correct z-coordinate
+      const keysToIgnore = tables
+        .flatMap((table) =>
+          table.records.filter((record) => matchId && table.name === "Position" && record.value.z !== matchId)
+        )
+        .map((record) => record.key);
+
       const operations: SetRecordOperation<TConfig>[] = tables.flatMap((table) =>
         table.records
-          .filter(
-            (record) =>
-              // If match ID has been provided, filter out entities that
-              // are in the Position table and don't have the required z-coordinate
-              !matchId || table.name !== "Position" || record.value.z === matchId
-          )
+          .filter((record) => !keysToIgnore.some((key) => JSON.stringify(key) === JSON.stringify(record.key)))
           .map((record) => ({
             type: "SetRecord",
             address: table.address,
