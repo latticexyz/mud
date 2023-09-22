@@ -52,8 +52,8 @@ export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", an
           .where(
             and(
               eq(sqliteTable.__isDeleted, false),
-              (entities.length && table.name === "MoveDifficulty") ||
-                table.name === "TerrainType" /* || table.name === "ArmorModifier"*/
+              entities.length &&
+                (table.name === "MoveDifficulty" || table.name === "TerrainType") /* || table.name === "ArmorModifier"*/
                 ? inArray(sqliteTable.__key, entities)
                 : undefined
             )
@@ -76,17 +76,19 @@ export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", an
         tables: tablesWithRecords,
       };
 
-      const counts = tablesWithRecords.map(({ namespace, name, records }) => ({
-        namespace,
-        name,
-        count: records.length,
-      }));
-      counts.sort((a, b) => b.count - a.count);
-      console.log("counts", counts);
-
       const count = tablesWithRecords.reduce((sum, table) => sum + table.records.length, 0);
 
-      debug("findAll", chainId, address, count);
+      debug(
+        "findAll",
+        "chainId:",
+        chainId,
+        "address:",
+        address,
+        "tables:",
+        tablesWithRecords.length,
+        "records:",
+        count
+      );
 
       return result;
     },
