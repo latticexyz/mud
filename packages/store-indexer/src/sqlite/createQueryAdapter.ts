@@ -1,9 +1,9 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray, and } from "drizzle-orm";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { createSqliteTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
 import { QueryAdapter } from "@latticexyz/store-sync/trpc-indexer";
 import { debug } from "../debug";
-import { getAddress } from "viem";
+import { Hex, getAddress } from "viem";
 
 /**
  * Creates a storage adapter for the tRPC server/client to query data from SQLite.
@@ -16,11 +16,49 @@ export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", an
     async findAll({ chainId, address, tableIds }) {
       const tables = getTables(database)
         .filter((table) => address != null && getAddress(address) === getAddress(table.address))
-        .filter((table) => tableIds != null && tableIds.includes(table.tableId));
+        .filter((table) =>
+          // we don't need KeysWithValue tables
+          address === "0xB41e747bC9d07c85F020618A3A07d50F96703A78" ? table.namespace !== "keyswval" : true
+        )
+        .filter((table) => tableIds == null || tableIds.includes(table.tableId));
+
+      const entities = ((): Hex[] => {
+        if (address !== "0xB41e747bC9d07c85F020618A3A07d50F96703A78") return [];
+        try {
+          const Position = createSqliteTable({
+            address: "0xB41e747bC9d07c85F020618A3A07d50F96703A78",
+            namespace: "",
+            name: "Position",
+            keySchema: { key: "bytes32" },
+            valueSchema: {
+              x: "int32",
+              y: "int32",
+              z: "int32",
+            },
+          });
+          // TODO: configurable match ID
+          const positions = database.select().from(Position).where(eq(Position.z, 137)).all();
+          return positions.map((pos) => pos.key);
+        } catch (error: unknown) {
+          return [];
+        }
+      })();
 
       const tablesWithRecords = tables.map((table) => {
         const sqliteTable = createSqliteTable(table);
-        const records = database.select().from(sqliteTable).where(eq(sqliteTable.__isDeleted, false)).all();
+        const records = database
+          .select()
+          .from(sqliteTable)
+          .where(
+            and(
+              eq(sqliteTable.__isDeleted, false),
+              (entities.length && table.name === "MoveDifficulty") ||
+                table.name === "TerrainType" /* || table.name === "ArmorModifier"*/
+                ? inArray(sqliteTable.__key, entities)
+                : undefined
+            )
+          )
+          .all();
         return {
           ...table,
           records: records.map((record) => ({
@@ -38,7 +76,17 @@ export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", an
         tables: tablesWithRecords,
       };
 
-      debug("findAll", chainId, address, result);
+      const counts = tablesWithRecords.map(({ namespace, name, records }) => ({
+        namespace,
+        name,
+        count: records.length,
+      }));
+      counts.sort((a, b) => b.count - a.count);
+      console.log("counts", counts);
+
+      const count = tablesWithRecords.reduce((sum, table) => sum + table.records.length, 0);
+
+      debug("findAll", chainId, address, count);
 
       return result;
     },
