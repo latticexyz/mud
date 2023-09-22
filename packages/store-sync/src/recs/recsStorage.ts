@@ -80,7 +80,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
 
       const entity = hexKeyTupleToEntity(log.args.keyTuple);
 
-      if (log.eventName === "StoreSetRecord") {
+      if (log.eventName === "Store_SetRecord") {
         const value = decodeValueArgs(table.valueSchema, log.args);
         debug("setting component", {
           namespace: table.namespace,
@@ -94,7 +94,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
           __encodedLengths: log.args.encodedLengths,
           __dynamicData: log.args.dynamicData,
         });
-      } else if (log.eventName === "StoreSpliceStaticData") {
+      } else if (log.eventName === "Store_SpliceStaticData") {
         // TODO: add tests that this works when no record had been set before
         const previousValue = getComponentValue(component, entity);
         const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
@@ -117,7 +117,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
           ...newValue,
           __staticData: newStaticData,
         });
-      } else if (log.eventName === "StoreSpliceDynamicData") {
+      } else if (log.eventName === "Store_SpliceDynamicData") {
         // TODO: add tests that this works when no record had been set before
         const previousValue = getComponentValue(component, entity);
         const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
@@ -142,7 +142,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
           __encodedLengths: log.args.encodedLengths,
           __dynamicData: newDynamicData,
         });
-      } else if (log.eventName === "StoreDeleteRecord") {
+      } else if (log.eventName === "Store_DeleteRecord") {
         debug("deleting component", {
           namespace: table.namespace,
           name: table.name,

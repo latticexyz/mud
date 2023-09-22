@@ -95,7 +95,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicData(
+    emit Store_SpliceDynamicData(
       _tableId,
       _keyTuple,
       uint48(secondDataBytes.length - byteLengthToPop),
@@ -141,7 +141,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted after pop
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicData(
+    emit Store_SpliceDynamicData(
       _tableId,
       _keyTuple,
       uint48(secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),

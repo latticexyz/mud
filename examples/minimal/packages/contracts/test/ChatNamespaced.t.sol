@@ -15,7 +15,7 @@ contract ChatNamespacedTest is MudTest {
     bytes32[] memory keyTuple;
     string memory value = "test";
     vm.expectEmit(true, true, true, true);
-    emit StoreCore.StoreSetRecord(
+    emit StoreCore.Store_SetRecord(
       MessageTableTableId,
       keyTuple,
       new bytes(0),

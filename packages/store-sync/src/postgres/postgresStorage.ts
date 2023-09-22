@@ -96,7 +96,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
         debug(log.eventName, log);
 
-        if (log.eventName === "StoreSetRecord") {
+        if (log.eventName === "Store_SetRecord") {
           const value = decodeValueArgs(table.valueSchema, log.args);
           debug("upserting record", {
             namespace: table.namespace,
@@ -128,7 +128,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
               },
             })
             .execute();
-        } else if (log.eventName === "StoreSpliceStaticData") {
+        } else if (log.eventName === "Store_SpliceStaticData") {
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
           const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
           const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
@@ -167,7 +167,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
               },
             })
             .execute();
-        } else if (log.eventName === "StoreSpliceDynamicData") {
+        } else if (log.eventName === "Store_SpliceDynamicData") {
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
           const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
           const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
@@ -211,7 +211,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
               },
             })
             .execute();
-        } else if (log.eventName === "StoreDeleteRecord") {
+        } else if (log.eventName === "Store_DeleteRecord") {
           // TODO: should we upsert so we at least have a DB record of when a thing was created/deleted within the same block?
           debug("deleting record", {
             namespace: table.namespace,
