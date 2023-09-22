@@ -188,7 +188,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerRootFunctionSelector(
     ResourceId systemId,
-    string calldata worldFunctionSignature,
+    string memory worldFunctionSignature,
     bytes4 systemFunctionSelector
   ) public returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the root namespace
