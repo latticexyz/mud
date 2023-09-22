@@ -15,13 +15,12 @@ export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", an
   const adapter: QueryAdapter = {
     async findAll({ chainId, address, tableIds }) {
       const tables = getTables(database)
-        .filter((table) => address != null && getAddress(address) === getAddress(table.address))
+        .filter((table) => address == null || getAddress(address) === getAddress(table.address))
+        .filter((table) => tableIds == null || tableIds.includes(table.tableId))
         .filter((table) =>
           // we don't need KeysWithValue tables
           address === "0xB41e747bC9d07c85F020618A3A07d50F96703A78" ? table.namespace !== "keyswval" : true
-        )
-        .filter((table) => tableIds == null || tableIds.includes(table.tableId));
-
+        );
       const entities = ((): Hex[] => {
         if (address !== "0xB41e747bC9d07c85F020618A3A07d50F96703A78") return [];
         try {
