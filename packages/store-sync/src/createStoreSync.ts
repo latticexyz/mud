@@ -31,6 +31,7 @@ const debug = parentDebug.extend("createStoreSync");
 
 type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   storageAdapter: StorageAdapter<TConfig>;
+  matchId?: number;
   onProgress?: (opts: {
     step: SyncStep;
     percentage: number;
@@ -52,6 +53,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   tableIds,
   initialState,
   indexerUrl,
+  matchId,
 }: CreateStoreSyncOptions<TConfig>): Promise<CreateStoreSyncResult<TConfig>> {
   const initialState$ = defer(
     async (): Promise<
@@ -137,14 +139,21 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       await storageAdapter.registerTables({ blockNumber, tables });
 
       const operations: SetRecordOperation<TConfig>[] = tables.flatMap((table) =>
-        table.records.map((record) => ({
-          type: "SetRecord",
-          address: table.address,
-          namespace: table.namespace,
-          name: table.name,
-          key: record.key as ConfigToKeyPrimitives<TConfig, typeof table.name>,
-          value: record.value as ConfigToValuePrimitives<TConfig, typeof table.name>,
-        }))
+        table.records
+          .filter(
+            (record) =>
+              // If match ID has been provided, filter out entities that
+              // are in the Position table and don't have the required z-coordinate
+              !matchId || table.name !== "Position" || record.value.z === matchId
+          )
+          .map((record) => ({
+            type: "SetRecord",
+            address: table.address,
+            namespace: table.namespace,
+            name: table.name,
+            key: record.key as ConfigToKeyPrimitives<TConfig, typeof table.name>,
+            value: record.value as ConfigToValuePrimitives<TConfig, typeof table.name>,
+          }))
       );
 
       // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
