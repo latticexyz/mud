@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import path from "path";
 import { ethers } from "ethers";
-import { getOutDirectory, cast, getSrcDirectory } from "@latticexyz/common/foundry";
+import { getOutDirectory, cast, getSrcDirectory, getRemappings } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import { deployWorldContract } from "./world";
@@ -50,6 +50,7 @@ export async function deploy(
     deployConfig;
   const resolvedConfig = resolveWorldConfig(mudConfig, existingContractNames);
   const forgeOutDirectory = await getOutDirectory(profile);
+  const remappings = await getRemappings(profile);
   const outputBaseDirectory = path.join(await getSrcDirectory(profile), mudConfig.codegenDirectory);
 
   // Set up signer for deployment
@@ -158,7 +159,7 @@ export async function deploy(
   const tableIds = getTableIds(mudConfig);
 
   const registerTableCalls = Object.values(mudConfig.tables).map((table) =>
-    getRegisterTableCallData(table, mudConfig, outputBaseDirectory)
+    getRegisterTableCallData(table, mudConfig, outputBaseDirectory, remappings)
   );
 
   console.log(chalk.blue("Registering tables"));

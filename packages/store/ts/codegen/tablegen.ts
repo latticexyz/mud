@@ -7,8 +7,8 @@ import { renderTableIndex } from "./renderTableIndex";
 import { rmSync } from "fs";
 import { StoreConfig } from "../config";
 
-export async function tablegen(config: StoreConfig, outputBaseDirectory: string) {
-  const solidityUserTypes = loadAndExtractUserTypes(config.userTypes, outputBaseDirectory);
+export async function tablegen(config: StoreConfig, outputBaseDirectory: string, remappings: [string, string][]) {
+  const solidityUserTypes = loadAndExtractUserTypes(config.userTypes, outputBaseDirectory, remappings);
   const allTableOptions = getTableOptions(config, solidityUserTypes);
 
   const uniqueTableDirectories = new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath)));

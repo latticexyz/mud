@@ -10,12 +10,13 @@ import { loadAndExtractUserTypes } from "@latticexyz/common/codegen";
 export function getRegisterTableCallData(
   table: Table,
   storeConfig: StoreConfig,
-  outputBaseDirectory: string
+  outputBaseDirectory: string,
+  remappings: [string, string][]
 ): CallData {
   const { name, valueSchema, keySchema } = table;
   if (!name) throw Error("Table missing name");
 
-  const solidityUserTypes = loadAndExtractUserTypes(storeConfig.userTypes, outputBaseDirectory);
+  const solidityUserTypes = loadAndExtractUserTypes(storeConfig.userTypes, outputBaseDirectory, remappings);
 
   const schemaTypes = Object.values(valueSchema).map((abiOrUserType) => {
     const { schemaType } = resolveAbiOrUserType(abiOrUserType, storeConfig, solidityUserTypes);

@@ -136,17 +136,18 @@ export function getUserTypeInfo(
       throw new Error(`User type "${userType}" not found in MUD config`);
     }
     const solidityUserType = solidityUserTypes[userType];
+    const typeId = solidityUserType.typeId;
     const schemaType = AbiTypeToSchemaType[solidityUserType.internalTypeId];
     return {
       schemaType,
       renderType: {
-        typeId: solidityUserType.typeId,
-        typeWithLocation: solidityUserType.typeId,
+        typeId,
+        typeWithLocation: typeId,
         enumName: SchemaType[schemaType],
         staticByteLength: getStaticByteLength(schemaType),
         isDynamic: false,
-        typeWrap: `${userType}.wrap`,
-        typeUnwrap: `${userType}.unwrap`,
+        typeWrap: `${typeId}.wrap`,
+        typeUnwrap: `${typeId}.unwrap`,
         internalTypeId: `${solidityUserType.internalTypeId}`,
       },
     };
