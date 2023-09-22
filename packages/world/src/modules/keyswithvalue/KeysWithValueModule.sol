@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
-
-import { console } from "forge-std/console.sol";
-
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { Module } from "../../Module.sol";
