@@ -26,7 +26,7 @@ contract BalanceTransferSystem is System, IWorldErrors {
   ) public virtual {
     // Require the target ID to be a namespace ID
     if (toNamespaceId.getType() != RESOURCE_NAMESPACE) {
-      revert InvalidResourceType(RESOURCE_NAMESPACE, toNamespaceId, toNamespaceId.toString());
+      revert World_InvalidResourceType(RESOURCE_NAMESPACE, toNamespaceId, toNamespaceId.toString());
     }
 
     // Require caller to have access to the namespace
@@ -36,7 +36,7 @@ contract BalanceTransferSystem is System, IWorldErrors {
     uint256 balance = Balances._get(ResourceId.unwrap(fromNamespaceId));
 
     // Require the balance balance to be greater or equal to the amount to transfer
-    if (amount > balance) revert InsufficientBalance(balance, amount);
+    if (amount > balance) revert World_InsufficientBalance(balance, amount);
 
     // Update the balances
     Balances._set(ResourceId.unwrap(fromNamespaceId), balance - amount);
@@ -54,7 +54,7 @@ contract BalanceTransferSystem is System, IWorldErrors {
     uint256 balance = Balances._get(ResourceId.unwrap(fromNamespaceId));
 
     // Require the balance balance to be greater or equal to the amount to transfer
-    if (amount > balance) revert InsufficientBalance(balance, amount);
+    if (amount > balance) revert World_InsufficientBalance(balance, amount);
 
     // Update the balances
     Balances._set(ResourceId.unwrap(fromNamespaceId), balance - amount);

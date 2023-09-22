@@ -188,7 +188,7 @@ contract WorldTest is Test, GasReporter {
     vm.prank(caller);
     vm.expectRevert(
       abi.encodeWithSelector(
-        IWorldErrors.AccessDenied.selector,
+        IWorldErrors.World_AccessDenied.selector,
         WorldResourceIdLib.encode({ typeId: resourceType, namespace: namespace, name: name }).toString(),
         caller
       )
@@ -209,7 +209,7 @@ contract WorldTest is Test, GasReporter {
     vm.prank(address(0x4242));
     vm.expectRevert(
       abi.encodeWithSelector(
-        IWorldErrors.AccessDenied.selector,
+        IWorldErrors.World_AccessDenied.selector,
         WorldResourceIdLib.encodeNamespace(ROOT_NAMESPACE).toString(),
         address(0x4242)
       )
@@ -248,7 +248,7 @@ contract WorldTest is Test, GasReporter {
     );
 
     // Expect it to not be possible to initialize the World again
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldAlreadyInitialized.selector));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AlreadyInitialized.selector));
     newWorld.initialize(coreModule);
   }
 
@@ -256,7 +256,7 @@ contract WorldTest is Test, GasReporter {
     // Expect an error when trying to register a module that doesn't implement the IModule interface
     vm.expectRevert(
       abi.encodeWithSelector(
-        IWorldErrors.InterfaceNotSupported.selector,
+        IWorldErrors.World_InterfaceNotSupported.selector,
         Module(address(world)), // The World contract does not implement the IModule interface
         MODULE_INTERFACE_ID
       )
@@ -266,7 +266,7 @@ contract WorldTest is Test, GasReporter {
     // Expect an error when trying to register a root module that doesn't implement the IModule interface
     vm.expectRevert(
       abi.encodeWithSelector(
-        IWorldErrors.InterfaceNotSupported.selector,
+        IWorldErrors.World_InterfaceNotSupported.selector,
         Module(address(world)), // The World contract does not implement the IModule interface
         MODULE_INTERFACE_ID
       )
@@ -323,7 +323,9 @@ contract WorldTest is Test, GasReporter {
     assertTrue(ResourceIds.getExists(world, ResourceId.unwrap(namespaceId)));
 
     // Expect an error when registering an existing namespace
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, namespaceId, namespaceId.toString()));
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_ResourceAlreadyExists.selector, namespaceId, namespaceId.toString())
+    );
     world.registerNamespace(namespaceId);
   }
 
@@ -337,7 +339,7 @@ contract WorldTest is Test, GasReporter {
     // Expect an error when trying to register a namespace with an invalid type
     vm.expectRevert(
       abi.encodeWithSelector(
-        IWorldErrors.InvalidResourceType.selector,
+        IWorldErrors.World_InvalidResourceType.selector,
         RESOURCE_NAMESPACE,
         invalidNamespaceId,
         invalidNamespaceId.toString()
@@ -435,7 +437,7 @@ contract WorldTest is Test, GasReporter {
     // Expect an error when registering an existing table
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.StoreCore_TableAlreadyExists.selector,
+        IStoreErrors.Store_TableAlreadyExists.selector,
         tableId,
         string(bytes.concat(ResourceId.unwrap(tableId)))
       )
@@ -454,7 +456,7 @@ contract WorldTest is Test, GasReporter {
     // Expect the World to not be allowed to call registerTable via an external call
     vm.prank(address(world));
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.registerTable.selector)
+      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.registerTable.selector)
     );
     world.registerTable(otherTableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
   }
@@ -510,7 +512,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(NamespaceOwner.get(world, ResourceId.unwrap(newNamespaceId)), address(this));
 
     // Expect an error when registering an existing system at a new system ID
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.SystemExists.selector, address(system)));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_SystemAlreadyExists.selector, address(system)));
     world.registerSystem(
       WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "newSystem" }),
       system,
@@ -532,7 +534,12 @@ contract WorldTest is Test, GasReporter {
       new string[](1)
     );
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.InvalidResourceType.selector, RESOURCE_SYSTEM, tableId, tableId.toString())
+      abi.encodeWithSelector(
+        IWorldErrors.World_InvalidResourceType.selector,
+        RESOURCE_SYSTEM,
+        tableId,
+        tableId.toString()
+      )
     );
     world.registerSystem(tableId, newSystem, true);
 
@@ -548,7 +555,7 @@ contract WorldTest is Test, GasReporter {
     // Expect the registration to fail when coming from the World
     vm.prank(address(world));
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.registerSystem.selector)
+      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.registerSystem.selector)
     );
     world.registerSystem(
       WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "rootSystem" }),
@@ -559,7 +566,7 @@ contract WorldTest is Test, GasReporter {
     // Expect the registration to fail if the provided address does not implement the WorldContextConsumer interface
     vm.expectRevert(
       abi.encodeWithSelector(
-        IWorldErrors.InterfaceNotSupported.selector,
+        IWorldErrors.World_InterfaceNotSupported.selector,
         address(world),
         WORLD_CONTEXT_CONSUMER_INTERFACE_ID
       )
@@ -635,7 +642,12 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to register a system at the same ID
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.InvalidResourceType.selector, RESOURCE_SYSTEM, tableId, tableId.toString())
+      abi.encodeWithSelector(
+        IWorldErrors.World_InvalidResourceType.selector,
+        RESOURCE_SYSTEM,
+        tableId,
+        tableId.toString()
+      )
     );
     world.registerSystem(tableId, system, false);
 
@@ -646,7 +658,7 @@ contract WorldTest is Test, GasReporter {
     // Expect an error when trying to register a table at the same ID
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.StoreCore_InvalidResourceType.selector,
+        IStoreErrors.Store_InvalidResourceType.selector,
         RESOURCE_TABLE,
         systemId,
         string(abi.encodePacked(systemId))
@@ -664,7 +676,7 @@ contract WorldTest is Test, GasReporter {
     // Expect an error when trying to register a new table at an existing table ID
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.StoreCore_TableAlreadyExists.selector,
+        IStoreErrors.Store_TableAlreadyExists.selector,
         ResourceId.unwrap(tableId),
         string(bytes.concat(ResourceId.unwrap(tableId)))
       )
@@ -718,7 +730,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.setRecord.selector));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.setRecord.selector));
     TwoFields.set(world, tableId, true, true);
   }
 
@@ -745,7 +757,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.setField.selector));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.setField.selector));
     world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
   }
 
@@ -788,7 +800,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.pushToField.selector));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.pushToField.selector));
     world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
   }
 
@@ -838,7 +850,9 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.deleteRecord.selector));
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.deleteRecord.selector)
+    );
     world.deleteRecord(tableId, singletonKey, fieldLayout);
   }
 
@@ -879,7 +893,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the World to have not access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.call.selector));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.call.selector));
     world.call(systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Expect errors from the system to be forwarded
@@ -983,7 +997,7 @@ contract WorldTest is Test, GasReporter {
     // Expect a revert when attempting to perform a call on behalf of an address that doesn't have a delegation
     vm.expectRevert(
       abi.encodeWithSelector(
-        IWorldErrors.DelegationNotFound.selector,
+        IWorldErrors.World_DelegationNotFound.selector,
         address(2), // Delegator
         address(1) // Delegatee
       )
@@ -1073,7 +1087,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to register an address that doesn't implement the IStoreHook interface
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.InterfaceNotSupported.selector, address(world), STORE_HOOK_INTERFACE_ID)
+      abi.encodeWithSelector(IWorldErrors.World_InterfaceNotSupported.selector, address(world), STORE_HOOK_INTERFACE_ID)
     );
     world.registerStoreHook(
       tableId,
@@ -1176,7 +1190,11 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the registration to fail if the contract does not implement the system hook interface
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.InterfaceNotSupported.selector, address(world), SYSTEM_HOOK_INTERFACE_ID)
+      abi.encodeWithSelector(
+        IWorldErrors.World_InterfaceNotSupported.selector,
+        address(world),
+        SYSTEM_HOOK_INTERFACE_ID
+      )
     );
     world.registerSystemHook(
       systemId,
@@ -1384,7 +1402,10 @@ contract WorldTest is Test, GasReporter {
     // Expect the World to not be able to register a root function selector when calling the function externally
     vm.prank(address(world));
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.registerRootFunctionSelector.selector)
+      abi.encodeWithSelector(
+        IWorldErrors.World_CallbackNotAllowed.selector,
+        world.registerRootFunctionSelector.selector
+      )
     );
     world.registerRootFunctionSelector(systemId, "smth", "smth");
 

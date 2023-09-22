@@ -36,7 +36,7 @@ library SystemCall {
     (address systemAddress, bool publicAccess) = Systems._get(ResourceId.unwrap(systemId));
 
     // Check if the system exists
-    if (systemAddress == address(0)) revert IWorldErrors.ResourceNotFound(systemId, systemId.toString());
+    if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
 
     // Allow access if the system is public or the caller has access to the namespace or name
     if (!publicAccess) AccessControl.requireAccess(systemId, caller);

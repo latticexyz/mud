@@ -78,7 +78,7 @@ contract UpdateInFieldTest is Test, GasReporter {
   // Expect an error when trying to write from an address that doesn't have access
   function _expectAccessDenied(address _caller, ResourceId _tableId) internal {
     vm.prank(_caller);
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.AccessDenied.selector, _tableId.toString(), _caller));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, _tableId.toString(), _caller));
   }
 
   function testPopFromField() public {
@@ -133,7 +133,9 @@ contract UpdateInFieldTest is Test, GasReporter {
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.popFromField.selector));
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.popFromField.selector)
+    );
     world.popFromField(tableId, keyTuple, 0, 20, fieldLayout);
   }
 
@@ -173,7 +175,7 @@ contract UpdateInFieldTest is Test, GasReporter {
     // Expect the World to not have access
     vm.prank(address(world));
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.updateInField.selector)
+      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.updateInField.selector)
     );
     world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate), fieldLayout);
   }
