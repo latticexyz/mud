@@ -6,7 +6,7 @@ describe("logToTable", () => {
     expect(
       logToTable({
         address: "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
-        eventName: "StoreSetRecord",
+        eventName: "Store_SetRecord",
         args: {
           tableId: "0x74626d756473746f72650000000000005461626c657300000000000000000000",
           keyTuple: ["0x74626d756473746f72650000000000005461626c657300000000000000000000"],

@@ -85,21 +85,21 @@ interface IStoreRead {
 }
 
 interface IStoreWrite {
-  event StoreSetRecord(
+  event Store_SetRecord(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
     bytes32 encodedLengths,
     bytes dynamicData
   );
-  event StoreSpliceStaticData(
+  event Store_SpliceStaticData(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     uint48 start,
     uint40 deleteCount,
     bytes data
   );
-  event StoreSpliceDynamicData(
+  event Store_SpliceDynamicData(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     uint48 start,
@@ -107,7 +107,7 @@ interface IStoreWrite {
     bytes data,
     bytes32 encodedLengths
   );
-  event StoreDeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
+  event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
   // Set full record (including full dynamic data)
   function setRecord(

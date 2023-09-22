@@ -27,21 +27,21 @@ library StoreCore {
   using ResourceIdInstance for ResourceId;
 
   event HelloStore(bytes32 indexed version);
-  event StoreSetRecord(
+  event Store_SetRecord(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
     bytes32 encodedLengths,
     bytes dynamicData
   );
-  event StoreSpliceStaticData(
+  event Store_SpliceStaticData(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     uint48 start,
     uint40 deleteCount,
     bytes data
   );
-  event StoreSpliceDynamicData(
+  event Store_SpliceDynamicData(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     uint48 start,
@@ -49,7 +49,7 @@ library StoreCore {
     bytes data,
     bytes32 encodedLengths
   );
-  event StoreDeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
+  event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
   /**
    * Intialize the store address to use in StoreSwitch.
@@ -219,7 +219,7 @@ library StoreCore {
     StoreCoreInternal._validateDataLength(fieldLayout, staticData, encodedLengths, dynamicData);
 
     // Emit event to notify indexers
-    emit StoreSetRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
+    emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
 
     // Early return if the table is an offchain table
     if (tableId.getType() != RESOURCE_TABLE) {
@@ -306,7 +306,7 @@ library StoreCore {
     uint256 location = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
 
     // Emit event to notify offchain indexers
-    emit StoreCore.StoreSpliceStaticData({
+    emit StoreCore.Store_SpliceStaticData({
       tableId: tableId,
       keyTuple: keyTuple,
       start: start,
@@ -430,7 +430,7 @@ library StoreCore {
    */
   function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
     // Emit event to notify indexers
-    emit StoreDeleteRecord(tableId, keyTuple);
+    emit Store_DeleteRecord(tableId, keyTuple);
 
     // Early return if the table is an offchain table
     if (tableId.getType() != RESOURCE_TABLE) {
@@ -712,7 +712,7 @@ library StoreCoreInternal {
     PackedCounter updatedEncodedLengths = previousEncodedLengths.setAtIndex(dynamicFieldIndex, updatedFieldLength);
 
     // Emit event to notify offchain indexers
-    emit StoreCore.StoreSpliceDynamicData({
+    emit StoreCore.Store_SpliceDynamicData({
       tableId: tableId,
       keyTuple: keyTuple,
       start: uint48(start),

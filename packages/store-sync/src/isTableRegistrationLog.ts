@@ -2,6 +2,6 @@ import { StorageAdapterLog, schemasTableId } from "./common";
 
 export function isTableRegistrationLog(
   log: StorageAdapterLog
-): log is StorageAdapterLog & { eventName: "StoreSetRecord" } {
-  return log.eventName === "StoreSetRecord" && log.args.tableId === schemasTableId;
+): log is StorageAdapterLog & { eventName: "Store_SetRecord" } {
+  return log.eventName === "Store_SetRecord" && log.args.tableId === schemasTableId;
 }
