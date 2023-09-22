@@ -39,7 +39,7 @@ contract UniqueEntityModule is Module {
 
     // Register system's functions
     (success, data) = address(world).delegatecall(
-      abi.encodeCall(world.registerFunctionSelector, (SYSTEM_ID, "getUniqueEntity", "()"))
+      abi.encodeCall(world.registerFunctionSelector, (SYSTEM_ID, "getUniqueEntity()"))
     );
     if (!success) revertWithBytes(data);
   }
