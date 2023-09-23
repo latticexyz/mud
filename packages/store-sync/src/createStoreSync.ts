@@ -122,7 +122,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     // indexer is being silly.
     map(({ blockNumber, tables }) => ({
       blockNumber,
-      tables: tables.filter((table) => tableIds != null && tableIds.includes(table.tableId)),
+      tables: tables.filter((table) => tableIds == null || tableIds.includes(table.tableId)),
     })),
     concatMap(async ({ blockNumber, tables }) => {
       debug("hydrating from initial state to block", blockNumber);
@@ -204,7 +204,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock))),
     map(({ blockNumber, logs }) => ({
       blockNumber,
-      logs: logs.filter((log) => tableIds != null && tableIds.includes(log.args.table)),
+      logs: logs.filter((log) => tableIds == null || tableIds.includes(log.args.table)),
     })),
     share()
   );
