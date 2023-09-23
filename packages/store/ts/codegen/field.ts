@@ -55,21 +55,22 @@ export function renderFieldMethods(options: RenderTableOptions) {
     }
 
     result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-      renderWithStore(
-        storeArgument,
-        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+      renderWithStore(storeArgument, (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => {
+        const externalArguments = renderArguments([_typedStore, _typedTableId, _typedKeyArgs, _typedFieldName]);
+        const setFieldMethod = field.isDynamic ? "setDynamicField" : "setStaticField";
+        const encodeFieldSingle = renderEncodeFieldSingle(field);
+        const internalArguments = field.isDynamic
+          ? `_tableId, _keyTuple, ${schemaIndex - options.staticFields.length}, ${encodeFieldSingle}`
+          : `_tableId, _keyTuple, ${schemaIndex}, ${encodeFieldSingle}, _fieldLayout`;
+
+        return `
           /** Set ${field.name}${_commentSuffix} */
-          function ${_methodNamePrefix}set${_methodNameSuffix}(${renderArguments([
-          _typedStore,
-          _typedTableId,
-          _typedKeyArgs,
-          _typedFieldName,
-        ])}) internal {
+          function ${_methodNamePrefix}set${_methodNameSuffix}(${externalArguments}) internal {
             ${_keyTupleDefinition}
-            ${_store}.setField(_tableId, _keyTuple, ${schemaIndex}, ${renderEncodeFieldSingle(field)}, _fieldLayout);
+            ${_store}.${setFieldMethod}(${internalArguments});
           }
-        `
-      )
+        `;
+      })
     );
 
     if (field.isDynamic) {

@@ -126,7 +126,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)), _fieldLayout);
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)));
   }
 
   /** Set keys0 */
@@ -134,7 +134,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreCore.setField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)), _fieldLayout);
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)));
   }
 
   /** Set keys0 (using the specified store) */
@@ -142,7 +142,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)), _fieldLayout);
+    _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)));
   }
 
   /** Get the length of keys0 */
@@ -339,7 +339,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)), _fieldLayout);
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)));
   }
 
   /** Set keys1 */
@@ -347,7 +347,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreCore.setField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)), _fieldLayout);
+    StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)));
   }
 
   /** Set keys1 (using the specified store) */
@@ -355,7 +355,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    _store.setField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)), _fieldLayout);
+    _store.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)));
   }
 
   /** Get the length of keys1 */
@@ -552,7 +552,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)), _fieldLayout);
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)));
   }
 
   /** Set keys2 */
@@ -560,7 +560,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreCore.setField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)), _fieldLayout);
+    StoreCore.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)));
   }
 
   /** Set keys2 (using the specified store) */
@@ -568,7 +568,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    _store.setField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)), _fieldLayout);
+    _store.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)));
   }
 
   /** Get the length of keys2 */
@@ -765,7 +765,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)), _fieldLayout);
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)));
   }
 
   /** Set keys3 */
@@ -773,7 +773,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreCore.setField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)), _fieldLayout);
+    StoreCore.setDynamicField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)));
   }
 
   /** Set keys3 (using the specified store) */
@@ -781,7 +781,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    _store.setField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)), _fieldLayout);
+    _store.setDynamicField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)));
   }
 
   /** Get the length of keys3 */
@@ -978,7 +978,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)), _fieldLayout);
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)));
   }
 
   /** Set keys4 */
@@ -986,7 +986,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreCore.setField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)), _fieldLayout);
+    StoreCore.setDynamicField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)));
   }
 
   /** Set keys4 (using the specified store) */
@@ -994,7 +994,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    _store.setField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)), _fieldLayout);
+    _store.setDynamicField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)));
   }
 
   /** Get the length of keys4 */

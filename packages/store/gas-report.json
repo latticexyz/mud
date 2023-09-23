@@ -351,7 +351,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 719562
+    "gasUsed": 719171
   },
   {
     "file": "test/Mixed.t.sol",
@@ -789,7 +789,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: register table",
-    "gasUsed": 641436
+    "gasUsed": 641045
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -975,7 +975,7 @@
     "file": "test/tables/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "Callbacks: set field",
-    "gasUsed": 57063
+    "gasUsed": 56289
   },
   {
     "file": "test/tables/Callbacks.t.sol",
@@ -993,13 +993,13 @@
     "file": "test/tables/StoreHooks.t.sol",
     "test": "testOneSlot",
     "name": "StoreHooks: set field with one elements (cold)",
-    "gasUsed": 59069
+    "gasUsed": 58295
   },
   {
     "file": "test/tables/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: set field (cold)",
-    "gasUsed": 59069
+    "gasUsed": 58295
   },
   {
     "file": "test/tables/StoreHooks.t.sol",
@@ -1041,19 +1041,19 @@
     "file": "test/tables/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: set field (warm)",
-    "gasUsed": 31214
+    "gasUsed": 30440
   },
   {
     "file": "test/tables/StoreHooks.t.sol",
     "test": "testThreeSlots",
     "name": "StoreHooks: set field with three elements (cold)",
-    "gasUsed": 81757
+    "gasUsed": 80983
   },
   {
     "file": "test/tables/StoreHooks.t.sol",
     "test": "testTwoSlots",
     "name": "StoreHooks: set field with two elements (cold)",
-    "gasUsed": 81669
+    "gasUsed": 80895
   },
   {
     "file": "test/tables/StoreHooksColdLoad.t.sol",
@@ -1143,7 +1143,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 442925
+    "gasUsed": 442534
   },
   {
     "file": "test/Vector2.t.sol",

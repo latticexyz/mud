@@ -170,7 +170,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
   }
 
   /** Set v1 */
@@ -183,7 +183,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
   }
 
   /** Set v1 (using the specified store) */
@@ -196,7 +196,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
   }
 
   /** Get v2 */
@@ -259,7 +259,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), _fieldLayout);
   }
 
   /** Set v2 */
@@ -272,7 +272,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreCore.setField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), _fieldLayout);
   }
 
   /** Set v2 (using the specified store) */
@@ -285,7 +285,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), _fieldLayout);
   }
 
   /** Get v3 */
@@ -348,7 +348,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), _fieldLayout);
   }
 
   /** Set v3 */
@@ -361,7 +361,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreCore.setField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), _fieldLayout);
   }
 
   /** Set v3 (using the specified store) */
@@ -374,7 +374,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), _fieldLayout);
   }
 
   /** Get v4 */
@@ -437,7 +437,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), _fieldLayout);
   }
 
   /** Set v4 */
@@ -450,7 +450,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreCore.setField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), _fieldLayout);
   }
 
   /** Set v4 (using the specified store) */
@@ -463,7 +463,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    _store.setField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), _fieldLayout);
   }
 
   /** Get v5 */
@@ -526,7 +526,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), _fieldLayout);
   }
 
   /** Set v5 */
@@ -539,7 +539,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreCore.setField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), _fieldLayout);
   }
 
   /** Set v5 (using the specified store) */
@@ -552,7 +552,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    _store.setField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), _fieldLayout);
   }
 
   /** Get v6 */
@@ -615,7 +615,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), _fieldLayout);
   }
 
   /** Set v6 */
@@ -628,7 +628,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreCore.setField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), _fieldLayout);
   }
 
   /** Set v6 (using the specified store) */
@@ -641,7 +641,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    _store.setField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), _fieldLayout);
   }
 
   /** Get the full data */

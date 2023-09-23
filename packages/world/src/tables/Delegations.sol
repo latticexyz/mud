@@ -160,7 +160,7 @@ library Delegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
   }
 
   /** Set delegationControlId */
@@ -169,7 +169,7 @@ library Delegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
   }
 
   /** Set delegationControlId (using the specified store) */
@@ -183,7 +183,7 @@ library Delegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
   }
 
   /** Set delegationControlId */
@@ -192,7 +192,7 @@ library Delegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
   }
 
   /** Set delegationControlId */
@@ -201,7 +201,7 @@ library Delegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
   }
 
   /** Set delegationControlId (using the specified store) */
@@ -210,7 +210,7 @@ library Delegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
   }
 
   /** Delete all data for given keys */

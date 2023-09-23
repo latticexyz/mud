@@ -120,7 +120,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((u64)), _fieldLayout);
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((u64)));
   }
 
   /** Set u64 */
@@ -128,7 +128,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.setField(_tableId, _keyTuple, 0, EncodeArray.encode((u64)), _fieldLayout);
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((u64)));
   }
 
   /** Set u64 (using the specified store) */
@@ -136,7 +136,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((u64)), _fieldLayout);
+    _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((u64)));
   }
 
   /** Get the length of u64 */
@@ -333,7 +333,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, bytes((str)), _fieldLayout);
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, bytes((str)));
   }
 
   /** Set str */
@@ -341,7 +341,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.setField(_tableId, _keyTuple, 1, bytes((str)), _fieldLayout);
+    StoreCore.setDynamicField(_tableId, _keyTuple, 1, bytes((str)));
   }
 
   /** Set str (using the specified store) */
@@ -349,7 +349,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setField(_tableId, _keyTuple, 1, bytes((str)), _fieldLayout);
+    _store.setDynamicField(_tableId, _keyTuple, 1, bytes((str)));
   }
 
   /** Get the length of str */
@@ -546,7 +546,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, bytes((b)), _fieldLayout);
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 2, bytes((b)));
   }
 
   /** Set b */
@@ -554,7 +554,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.setField(_tableId, _keyTuple, 2, bytes((b)), _fieldLayout);
+    StoreCore.setDynamicField(_tableId, _keyTuple, 2, bytes((b)));
   }
 
   /** Set b (using the specified store) */
@@ -562,7 +562,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setField(_tableId, _keyTuple, 2, bytes((b)), _fieldLayout);
+    _store.setDynamicField(_tableId, _keyTuple, 2, bytes((b)));
   }
 
   /** Get the length of b */

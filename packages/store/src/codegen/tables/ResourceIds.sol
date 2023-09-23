@@ -137,7 +137,7 @@ library ResourceIds {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
   }
 
   /** Set exists */
@@ -145,7 +145,7 @@ library ResourceIds {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceId;
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
   }
 
   /** Set exists (using the specified store) */
@@ -153,7 +153,7 @@ library ResourceIds {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceId;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
   }
 
   /** Set exists */
@@ -161,7 +161,7 @@ library ResourceIds {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
   }
 
   /** Set exists */
@@ -169,7 +169,7 @@ library ResourceIds {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceId;
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
   }
 
   /** Set exists (using the specified store) */
@@ -177,7 +177,7 @@ library ResourceIds {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceId;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
   }
 
   /** Delete all data for given keys */

@@ -146,7 +146,7 @@ library ResourceAccess {
     _keyTuple[0] = resourceId;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Set access */
@@ -155,7 +155,7 @@ library ResourceAccess {
     _keyTuple[0] = resourceId;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Set access (using the specified store) */
@@ -164,7 +164,7 @@ library ResourceAccess {
     _keyTuple[0] = resourceId;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Set access */
@@ -173,7 +173,7 @@ library ResourceAccess {
     _keyTuple[0] = resourceId;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Set access */
@@ -182,7 +182,7 @@ library ResourceAccess {
     _keyTuple[0] = resourceId;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Set access (using the specified store) */
@@ -191,7 +191,7 @@ library ResourceAccess {
     _keyTuple[0] = resourceId;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Delete all data for given keys */

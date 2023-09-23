@@ -106,21 +106,21 @@ library TwoFields {
   function setValue1(ResourceId _tableId, bool value1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
   }
 
   /** Set value1 */
   function _setValue1(ResourceId _tableId, bool value1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
   }
 
   /** Set value1 (using the specified store) */
   function setValue1(IStore _store, ResourceId _tableId, bool value1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
   }
 
   /** Get value2 */
@@ -151,21 +151,21 @@ library TwoFields {
   function setValue2(ResourceId _tableId, bool value2) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
   }
 
   /** Set value2 */
   function _setValue2(ResourceId _tableId, bool value2) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
   }
 
   /** Set value2 (using the specified store) */
   function setValue2(IStore _store, ResourceId _tableId, bool value2) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
   }
 
   /** Get the full data */
