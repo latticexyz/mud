@@ -210,14 +210,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        1,
-        _fieldLayout,
-        _index * 4,
-        (_index + 1) * 4
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -230,7 +223,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 1, _fieldLayout, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -243,7 +236,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, _fieldLayout, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -252,42 +245,42 @@ library Singleton {
   function pushV2(uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)), _fieldLayout);
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to v2 */
   function _pushV2(uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)), _fieldLayout);
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to v2 (using the specified store) */
   function pushV2(IStore _store, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)), _fieldLayout);
+    _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Pop an element from v2 */
   function popV2() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 1, 4, _fieldLayout);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 4);
   }
 
   /** Pop an element from v2 */
   function _popV2() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.popFromField(_tableId, _keyTuple, 1, 4, _fieldLayout);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 4);
   }
 
   /** Pop an element from v2 (using the specified store) */
   function popV2(IStore _store) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.popFromField(_tableId, _keyTuple, 1, 4, _fieldLayout);
+    _store.popFromDynamicField(_tableId, _keyTuple, 0, 4);
   }
 
   /**
@@ -298,7 +291,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
     }
   }
 
@@ -310,7 +303,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      StoreCore.updateInDynamicField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
     }
   }
 
@@ -322,7 +315,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      _store.updateInDynamicField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
     }
   }
 
@@ -409,14 +402,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        2,
-        _fieldLayout,
-        _index * 4,
-        (_index + 1) * 4
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -429,7 +415,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 2, _fieldLayout, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -442,7 +428,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, _fieldLayout, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -451,42 +437,42 @@ library Singleton {
   function pushV3(uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), _fieldLayout);
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
   /** Push an element to v3 */
   function _pushV3(uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), _fieldLayout);
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
   /** Push an element to v3 (using the specified store) */
   function pushV3(IStore _store, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), _fieldLayout);
+    _store.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
   /** Pop an element from v3 */
   function popV3() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 2, 4, _fieldLayout);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 4);
   }
 
   /** Pop an element from v3 */
   function _popV3() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.popFromField(_tableId, _keyTuple, 2, 4, _fieldLayout);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 4);
   }
 
   /** Pop an element from v3 (using the specified store) */
   function popV3(IStore _store) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.popFromField(_tableId, _keyTuple, 2, 4, _fieldLayout);
+    _store.popFromDynamicField(_tableId, _keyTuple, 1, 4);
   }
 
   /**
@@ -497,7 +483,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
     }
   }
 
@@ -509,7 +495,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      StoreCore.updateInDynamicField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
     }
   }
 
@@ -521,7 +507,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      _store.updateInDynamicField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
     }
   }
 
@@ -608,14 +594,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        3,
-        _fieldLayout,
-        _index * 4,
-        (_index + 1) * 4
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -628,7 +607,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 3, _fieldLayout, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -641,7 +620,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, _fieldLayout, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -650,42 +629,42 @@ library Singleton {
   function pushV4(uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)), _fieldLayout);
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
   /** Push an element to v4 */
   function _pushV4(uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)), _fieldLayout);
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
   /** Push an element to v4 (using the specified store) */
   function pushV4(IStore _store, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)), _fieldLayout);
+    _store.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
   /** Pop an element from v4 */
   function popV4() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 3, 4, _fieldLayout);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 2, 4);
   }
 
   /** Pop an element from v4 */
   function _popV4() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.popFromField(_tableId, _keyTuple, 3, 4, _fieldLayout);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 2, 4);
   }
 
   /** Pop an element from v4 (using the specified store) */
   function popV4(IStore _store) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.popFromField(_tableId, _keyTuple, 3, 4, _fieldLayout);
+    _store.popFromDynamicField(_tableId, _keyTuple, 2, 4);
   }
 
   /**
@@ -696,7 +675,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
     }
   }
 
@@ -708,7 +687,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 3, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      StoreCore.updateInDynamicField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
     }
   }
 
@@ -720,7 +699,7 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 3, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      _store.updateInDynamicField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
     }
   }
 

@@ -193,14 +193,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        0,
-        _fieldLayout,
-        _index * 32,
-        (_index + 1) * 32
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
       return (bytes32(_blob));
     }
   }
@@ -214,14 +207,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        0,
-        _fieldLayout,
-        _index * 32,
-        (_index + 1) * 32
-      );
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
       return (bytes32(_blob));
     }
   }
@@ -235,7 +221,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, _fieldLayout, _index * 32, (_index + 1) * 32);
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
       return (bytes32(_blob));
     }
   }
@@ -245,7 +231,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), _fieldLayout);
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to staticB32 */
@@ -253,7 +239,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), _fieldLayout);
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to staticB32 (using the specified store) */
@@ -261,7 +247,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), _fieldLayout);
+    _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Pop an element from staticB32 */
@@ -269,7 +255,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 0, 32, _fieldLayout);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 32);
   }
 
   /** Pop an element from staticB32 */
@@ -277,7 +263,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.popFromField(_tableId, _keyTuple, 0, 32, _fieldLayout);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 32);
   }
 
   /** Pop an element from staticB32 (using the specified store) */
@@ -285,7 +271,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.popFromField(_tableId, _keyTuple, 0, 32, _fieldLayout);
+    _store.popFromDynamicField(_tableId, _keyTuple, 0, 32);
   }
 
   /**
@@ -297,7 +283,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)), _fieldLayout);
+      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
     }
   }
 
@@ -310,7 +296,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)), _fieldLayout);
+      StoreCore.updateInDynamicField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
     }
   }
 
@@ -323,7 +309,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)), _fieldLayout);
+      _store.updateInDynamicField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
     }
   }
 
@@ -420,14 +406,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        1,
-        _fieldLayout,
-        _index * 4,
-        (_index + 1) * 4
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
       return (int32(uint32(bytes4(_blob))));
     }
   }
@@ -441,7 +420,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 1, _fieldLayout, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
       return (int32(uint32(bytes4(_blob))));
     }
   }
@@ -455,7 +434,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, _fieldLayout, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
       return (int32(uint32(bytes4(_blob))));
     }
   }
@@ -465,7 +444,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)), _fieldLayout);
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
   /** Push an element to staticI32 */
@@ -473,7 +452,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)), _fieldLayout);
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
   /** Push an element to staticI32 (using the specified store) */
@@ -481,7 +460,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)), _fieldLayout);
+    _store.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
   /** Pop an element from staticI32 */
@@ -489,7 +468,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 1, 4, _fieldLayout);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 4);
   }
 
   /** Pop an element from staticI32 */
@@ -497,7 +476,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.popFromField(_tableId, _keyTuple, 1, 4, _fieldLayout);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 4);
   }
 
   /** Pop an element from staticI32 (using the specified store) */
@@ -505,7 +484,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.popFromField(_tableId, _keyTuple, 1, 4, _fieldLayout);
+    _store.popFromDynamicField(_tableId, _keyTuple, 1, 4);
   }
 
   /**
@@ -517,7 +496,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
     }
   }
 
@@ -530,7 +509,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      StoreCore.updateInDynamicField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
     }
   }
 
@@ -543,7 +522,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      _store.updateInDynamicField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
     }
   }
 
@@ -646,14 +625,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        2,
-        _fieldLayout,
-        _index * 16,
-        (_index + 1) * 16
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 16, (_index + 1) * 16);
       return (uint128(bytes16(_blob)));
     }
   }
@@ -667,14 +639,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        2,
-        _fieldLayout,
-        _index * 16,
-        (_index + 1) * 16
-      );
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 16, (_index + 1) * 16);
       return (uint128(bytes16(_blob)));
     }
   }
@@ -688,7 +653,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, _fieldLayout, _index * 16, (_index + 1) * 16);
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 16, (_index + 1) * 16);
       return (uint128(bytes16(_blob)));
     }
   }
@@ -698,7 +663,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), _fieldLayout);
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
   /** Push an element to staticU128 */
@@ -706,7 +671,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), _fieldLayout);
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
   /** Push an element to staticU128 (using the specified store) */
@@ -714,7 +679,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), _fieldLayout);
+    _store.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
   /** Pop an element from staticU128 */
@@ -722,7 +687,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 2, 16, _fieldLayout);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 2, 16);
   }
 
   /** Pop an element from staticU128 */
@@ -730,7 +695,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.popFromField(_tableId, _keyTuple, 2, 16, _fieldLayout);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 2, 16);
   }
 
   /** Pop an element from staticU128 (using the specified store) */
@@ -738,7 +703,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.popFromField(_tableId, _keyTuple, 2, 16, _fieldLayout);
+    _store.popFromDynamicField(_tableId, _keyTuple, 2, 16);
   }
 
   /**
@@ -750,7 +715,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 16, abi.encodePacked((_element)), _fieldLayout);
+      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 2, _index * 16, abi.encodePacked((_element)));
     }
   }
 
@@ -763,7 +728,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 2, _index * 16, abi.encodePacked((_element)), _fieldLayout);
+      StoreCore.updateInDynamicField(_tableId, _keyTuple, 2, _index * 16, abi.encodePacked((_element)));
     }
   }
 
@@ -776,7 +741,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 2, _index * 16, abi.encodePacked((_element)), _fieldLayout);
+      _store.updateInDynamicField(_tableId, _keyTuple, 2, _index * 16, abi.encodePacked((_element)));
     }
   }
 
@@ -885,14 +850,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        3,
-        _fieldLayout,
-        _index * 20,
-        (_index + 1) * 20
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 3, _index * 20, (_index + 1) * 20);
       return (address(bytes20(_blob)));
     }
   }
@@ -906,14 +864,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        3,
-        _fieldLayout,
-        _index * 20,
-        (_index + 1) * 20
-      );
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 3, _index * 20, (_index + 1) * 20);
       return (address(bytes20(_blob)));
     }
   }
@@ -927,7 +878,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, _fieldLayout, _index * 20, (_index + 1) * 20);
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 3, _index * 20, (_index + 1) * 20);
       return (address(bytes20(_blob)));
     }
   }
@@ -937,7 +888,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)), _fieldLayout);
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
   }
 
   /** Push an element to staticAddrs */
@@ -945,7 +896,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)), _fieldLayout);
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
   }
 
   /** Push an element to staticAddrs (using the specified store) */
@@ -953,7 +904,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)), _fieldLayout);
+    _store.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
   }
 
   /** Pop an element from staticAddrs */
@@ -961,7 +912,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 3, 20, _fieldLayout);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 3, 20);
   }
 
   /** Pop an element from staticAddrs */
@@ -969,7 +920,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.popFromField(_tableId, _keyTuple, 3, 20, _fieldLayout);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 3, 20);
   }
 
   /** Pop an element from staticAddrs (using the specified store) */
@@ -977,7 +928,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.popFromField(_tableId, _keyTuple, 3, 20, _fieldLayout);
+    _store.popFromDynamicField(_tableId, _keyTuple, 3, 20);
   }
 
   /**
@@ -989,7 +940,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 20, abi.encodePacked((_element)), _fieldLayout);
+      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 3, _index * 20, abi.encodePacked((_element)));
     }
   }
 
@@ -1002,7 +953,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 3, _index * 20, abi.encodePacked((_element)), _fieldLayout);
+      StoreCore.updateInDynamicField(_tableId, _keyTuple, 3, _index * 20, abi.encodePacked((_element)));
     }
   }
 
@@ -1015,7 +966,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 3, _index * 20, abi.encodePacked((_element)), _fieldLayout);
+      _store.updateInDynamicField(_tableId, _keyTuple, 3, _index * 20, abi.encodePacked((_element)));
     }
   }
 
@@ -1112,14 +1063,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        4,
-        _fieldLayout,
-        _index * 1,
-        (_index + 1) * 1
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 4, _index * 1, (_index + 1) * 1);
       return (_toBool(uint8(bytes1(_blob))));
     }
   }
@@ -1133,7 +1077,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 4, _fieldLayout, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 4, _index * 1, (_index + 1) * 1);
       return (_toBool(uint8(bytes1(_blob))));
     }
   }
@@ -1147,7 +1091,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 4, _fieldLayout, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 4, _index * 1, (_index + 1) * 1);
       return (_toBool(uint8(bytes1(_blob))));
     }
   }
@@ -1157,7 +1101,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 4, abi.encodePacked((_element)), _fieldLayout);
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
   }
 
   /** Push an element to staticBools */
@@ -1165,7 +1109,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.pushToField(_tableId, _keyTuple, 4, abi.encodePacked((_element)), _fieldLayout);
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
   }
 
   /** Push an element to staticBools (using the specified store) */
@@ -1173,7 +1117,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.pushToField(_tableId, _keyTuple, 4, abi.encodePacked((_element)), _fieldLayout);
+    _store.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
   }
 
   /** Pop an element from staticBools */
@@ -1181,7 +1125,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 4, 1, _fieldLayout);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 4, 1);
   }
 
   /** Pop an element from staticBools */
@@ -1189,7 +1133,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.popFromField(_tableId, _keyTuple, 4, 1, _fieldLayout);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 4, 1);
   }
 
   /** Pop an element from staticBools (using the specified store) */
@@ -1197,7 +1141,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.popFromField(_tableId, _keyTuple, 4, 1, _fieldLayout);
+    _store.popFromDynamicField(_tableId, _keyTuple, 4, 1);
   }
 
   /**
@@ -1209,7 +1153,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 4, _index * 1, abi.encodePacked((_element)), _fieldLayout);
+      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 4, _index * 1, abi.encodePacked((_element)));
     }
   }
 
@@ -1222,7 +1166,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 4, _index * 1, abi.encodePacked((_element)), _fieldLayout);
+      StoreCore.updateInDynamicField(_tableId, _keyTuple, 4, _index * 1, abi.encodePacked((_element)));
     }
   }
 
@@ -1235,7 +1179,7 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 4, _index * 1, abi.encodePacked((_element)), _fieldLayout);
+      _store.updateInDynamicField(_tableId, _keyTuple, 4, _index * 1, abi.encodePacked((_element)));
     }
   }
 

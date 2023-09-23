@@ -173,6 +173,41 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   }
 
   /**
+   * Write a static field in the table at the given tableId.
+   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   */
+  function setStaticField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
+    bytes calldata data,
+    FieldLayout fieldLayout
+  ) public virtual requireNoCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Set the field
+    StoreCore.setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
+  }
+
+  /**
+   * Write a dynamic field in the table at the given tableId.
+   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   */
+  function setDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes calldata data
+  ) public virtual requireNoCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Set the field
+    StoreCore.setDynamicField(tableId, keyTuple, dynamicFieldIndex, data);
+  }
+
+  /**
    * Push data to the end of a field in the table at the given tableId.
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */

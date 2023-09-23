@@ -172,6 +172,35 @@ library StoreSwitch {
     }
   }
 
+  function setStaticField(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex,
+    bytes memory data,
+    FieldLayout fieldLayout
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
+    } else {
+      IStore(_storeAddress).setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
+    }
+  }
+
+  function setDynamicField(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes memory data
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.setDynamicField(tableId, keyTuple, dynamicFieldIndex, data);
+    } else {
+      IStore(_storeAddress).setDynamicField(tableId, keyTuple, dynamicFieldIndex, data);
+    }
+  }
+
   function pushToDynamicField(
     ResourceId tableId,
     bytes32[] memory keyTuple,

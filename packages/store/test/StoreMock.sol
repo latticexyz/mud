@@ -62,6 +62,27 @@ contract StoreMock is IStore, StoreRead {
     StoreCore.setField(tableId, keyTuple, fieldIndex, data, fieldLayout);
   }
 
+  // Set partial data at field index
+  function setStaticField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
+    bytes calldata data,
+    FieldLayout fieldLayout
+  ) public virtual {
+    StoreCore.setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
+  }
+
+  // Set partial data at dynamic field index
+  function setDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes calldata data
+  ) public virtual {
+    StoreCore.setDynamicField(tableId, keyTuple, dynamicFieldIndex, data);
+  }
+
   // Push encoded items to the dynamic field at field index
   function pushToDynamicField(
     ResourceId tableId,

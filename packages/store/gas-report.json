@@ -741,7 +741,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 19864
+    "gasUsed": 19907
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -765,7 +765,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 24504
+    "gasUsed": 24482
   },
   {
     "file": "test/StoreCoreGas.t.sol",

@@ -138,6 +138,21 @@ interface IStoreWrite {
     FieldLayout fieldLayout
   ) external;
 
+  function setStaticField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
+    bytes calldata data,
+    FieldLayout fieldLayout
+  ) external;
+
+  function setDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes calldata data
+  ) external;
+
   // Push encoded items to the dynamic field at field index
   function pushToDynamicField(
     ResourceId tableId,

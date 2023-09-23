@@ -380,7 +380,7 @@ library StoreCore {
     FieldLayout fieldLayout
   ) internal {
     if (fieldIndex < fieldLayout.numStaticFields()) {
-      setStaticField(tableId, keyTuple, fieldLayout, fieldIndex, data);
+      setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
     } else {
       setDynamicField(tableId, keyTuple, fieldIndex - uint8(fieldLayout.numStaticFields()), data);
     }
@@ -389,9 +389,9 @@ library StoreCore {
   function setStaticField(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    FieldLayout fieldLayout,
     uint8 fieldIndex,
-    bytes memory data
+    bytes memory data,
+    FieldLayout fieldLayout
   ) internal {
     spliceStaticData({
       tableId: tableId,
