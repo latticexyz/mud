@@ -456,10 +456,20 @@ library StoreCore {
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
     Storage.store({ storagePointer: staticDataLocation, offset: 0, data: new bytes(fieldLayout.staticDataLength()) });
 
-    // If there are dynamic fields, delete the dynamic data length
-    if (fieldLayout.numDynamicFields() > 0) {
+    // If there are dynamic fields, delete the dynamic data
+    uint256 numDynamicFields = fieldLayout.numDynamicFields();
+    if (numDynamicFields > 0) {
       uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, keyTuple);
-      Storage.store({ storagePointer: dynamicDataLengthLocation, data: bytes32(0) });
+      PackedCounter dynamicDataLength = PackedCounter.wrap(Storage.load({ storagePointer: dynamicDataLengthLocation }));
+
+      // Delete dynamic data
+      for (uint256 i; i < numDynamicFields; i++) {
+        uint256 dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, uint8(i));
+        Storage.zero({ storagePointer: dynamicDataLocation, length: dynamicDataLength.atIndex(uint8(i)) });
+      }
+
+      // Set the dynamic data length to 0
+      Storage.zero({ storagePointer: dynamicDataLengthLocation, length: 32 });
     }
 
     // Call onAfterDeleteRecord hooks
