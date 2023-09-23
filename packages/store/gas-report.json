@@ -363,13 +363,13 @@
     "file": "test/Mixed.t.sol",
     "test": "testDeleteExternalCold",
     "name": "delete record from Mixed (external, cold)",
-    "gasUsed": 36350
+    "gasUsed": 112205
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testDeleteInternalCold",
     "name": "delete record from Mixed (internal, cold)",
-    "gasUsed": 31146
+    "gasUsed": 107001
   },
   {
     "file": "test/Mixed.t.sol",
