@@ -157,6 +157,15 @@ library StoreSwitch {
     }
   }
 
+  function setField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, bytes memory data) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.setField(tableId, keyTuple, fieldIndex, data);
+    } else {
+      IStore(_storeAddress).setField(tableId, keyTuple, fieldIndex, data);
+    }
+  }
+
   function setField(
     ResourceId tableId,
     bytes32[] memory keyTuple,
@@ -255,6 +264,18 @@ library StoreSwitch {
 
   function getRecord(
     ResourceId tableId,
+    bytes32[] memory keyTuple
+  ) internal view returns (bytes memory, PackedCounter, bytes memory) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getRecord(tableId, keyTuple);
+    } else {
+      return IStore(_storeAddress).getRecord(tableId, keyTuple);
+    }
+  }
+
+  function getRecord(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout
   ) internal view returns (bytes memory, PackedCounter, bytes memory) {
@@ -263,6 +284,19 @@ library StoreSwitch {
       return StoreCore.getRecord(tableId, keyTuple, fieldLayout);
     } else {
       return IStore(_storeAddress).getRecord(tableId, keyTuple, fieldLayout);
+    }
+  }
+
+  function getField(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex
+  ) internal view returns (bytes memory) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getField(tableId, keyTuple, fieldIndex);
+    } else {
+      return IStore(_storeAddress).getField(tableId, keyTuple, fieldIndex);
     }
   }
 
@@ -310,6 +344,19 @@ library StoreSwitch {
   function getFieldLength(
     ResourceId tableId,
     bytes32[] memory keyTuple,
+    uint8 fieldIndex
+  ) internal view returns (uint256) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex);
+    } else {
+      return IStore(_storeAddress).getFieldLength(tableId, keyTuple, fieldIndex);
+    }
+  }
+
+  function getFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
   ) internal view returns (uint256) {
@@ -318,6 +365,19 @@ library StoreSwitch {
       return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex, fieldLayout);
     } else {
       return IStore(_storeAddress).getFieldLength(tableId, keyTuple, fieldIndex, fieldLayout);
+    }
+  }
+
+  function getDynamicFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex
+  ) internal view returns (uint256) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getDynamicFieldLength(tableId, keyTuple, dynamicFieldIndex);
+    } else {
+      return IStore(_storeAddress).getDynamicFieldLength(tableId, keyTuple, dynamicFieldIndex);
     }
   }
 

@@ -1077,7 +1077,7 @@
     "file": "test/tables/StoreHooksColdLoad.t.sol",
     "test": "testLength",
     "name": "StoreHooks: get length (cold)",
-    "gasUsed": 5906
+    "gasUsed": 5394
   },
   {
     "file": "test/tables/StoreHooksColdLoad.t.sol",

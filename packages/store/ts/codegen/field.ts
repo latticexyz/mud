@@ -89,7 +89,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
               _typedKeyArgs,
             ])}) internal view returns (uint256) {
                 ${_keyTupleDefinition}
-                uint256 _byteLength = ${_store}.getFieldLength(_tableId, _keyTuple, ${schemaIndex}, _fieldLayout);
+                uint256 _byteLength = ${_store}.getDynamicFieldLength(_tableId, _keyTuple, ${dynamicSchemaIndex});
                 unchecked {
                   return _byteLength / ${portionData.elementLength};
                 }
