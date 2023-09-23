@@ -236,12 +236,6 @@ library StoreCore {
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) internal {
-    // verify the value has the correct length for the tableId (based on the tableId's field layout)
-    // to prevent invalid data from being stored
-
-    // Verify static data length + dynamic data length matches the given data
-    StoreCoreInternal._validateDataLength(fieldLayout, staticData, encodedLengths, dynamicData);
-
     // Emit event to notify indexers
     emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
 
@@ -915,24 +909,6 @@ library StoreCoreInternal {
    *    HELPER FUNCTIONS
    *
    ************************************************************************/
-
-  /**
-   * Verify static data length + dynamic data length matches the given data
-   * Returns the static and dynamic lengths
-   */
-  function _validateDataLength(
-    FieldLayout fieldLayout,
-    bytes memory staticData,
-    PackedCounter encodedLengths,
-    bytes memory dynamicData
-  ) internal pure {
-    if (fieldLayout.staticDataLength() != staticData.length) {
-      revert IStoreErrors.Store_InvalidStaticDataLength(fieldLayout.staticDataLength(), staticData.length);
-    }
-    if (encodedLengths.total() != dynamicData.length) {
-      revert IStoreErrors.Store_InvalidDynamicDataLength(encodedLengths.total(), dynamicData.length);
-    }
-  }
 
   /////////////////////////////////////////////////////////////////////////
   //    STATIC DATA

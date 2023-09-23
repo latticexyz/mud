@@ -311,30 +311,6 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(_dynamicData, "");
   }
 
-  function testRevertSetAndGetStaticData() public {
-    ResourceId tableId = _tableId;
-
-    // Register table
-    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
-    Schema valueSchema = SchemaEncodeHelper.encode(
-      SchemaType.UINT8,
-      SchemaType.UINT16,
-      SchemaType.UINT8,
-      SchemaType.UINT16
-    );
-    IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
-
-    // Set data
-    bytes memory staticData = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
-
-    bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = "some key";
-
-    // This should fail because the data is not 6 bytes long
-    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_InvalidStaticDataLength.selector, 6, 4));
-    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
-  }
-
   function testSetAndGetStaticDataSpanningWords() public {
     ResourceId tableId = _tableId;
 
