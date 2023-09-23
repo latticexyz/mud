@@ -10,6 +10,9 @@ export interface ForgeConfig {
   libs: string[];
   eth_rpc_url: string | null;
 
+  // compiler
+  remappings: string[];
+
   // all unspecified keys (this interface is far from comprehensive)
   [key: string]: unknown;
 }
@@ -65,6 +68,15 @@ export async function getOutDirectory(profile?: string): Promise<string> {
  */
 export async function getRpcUrl(profile?: string): Promise<string> {
   return (await getForgeConfig(profile)).eth_rpc_url || "http://127.0.0.1:8545";
+}
+
+/**
+ * Get the value of "remappings" from forge config
+ * @param profile The foundry profile to use
+ * @returns The array of remapping tuples `[from, to]`
+ */
+export async function getRemappings(profile?: string): Promise<[string, string][]> {
+  return (await getForgeConfig(profile)).remappings.map((line) => line.trim().split("=")) as [string, string][];
 }
 
 /**

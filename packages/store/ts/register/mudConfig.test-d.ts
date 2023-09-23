@@ -33,6 +33,7 @@ describe("mudConfig", () => {
       Enum1: ["E1"];
       Enum2: ["E1"];
     };
+    userTypes: Record<string, never>;
     tables: {
       Table1: {
         keySchema: {

@@ -5,13 +5,21 @@ import { resourceIdToHex } from "@latticexyz/common";
 import { Table } from "./types";
 import { fieldLayoutToHex } from "@latticexyz/protocol-parser";
 import { CallData } from "../utils/types";
+import { loadAndExtractUserTypes } from "@latticexyz/common/codegen";
 
-export function getRegisterTableCallData(table: Table, storeConfig: StoreConfig): CallData {
+export function getRegisterTableCallData(
+  table: Table,
+  storeConfig: StoreConfig,
+  outputBaseDirectory: string,
+  remappings: [string, string][]
+): CallData {
   const { name, valueSchema, keySchema } = table;
   if (!name) throw Error("Table missing name");
 
+  const solidityUserTypes = loadAndExtractUserTypes(storeConfig.userTypes, outputBaseDirectory, remappings);
+
   const schemaTypes = Object.values(valueSchema).map((abiOrUserType) => {
-    const { schemaType } = resolveAbiOrUserType(abiOrUserType, storeConfig);
+    const { schemaType } = resolveAbiOrUserType(abiOrUserType, storeConfig, solidityUserTypes);
     return schemaType;
   });
 
@@ -22,7 +30,7 @@ export function getRegisterTableCallData(table: Table, storeConfig: StoreConfig)
   };
 
   const keyTypes = Object.values(keySchema).map((abiOrUserType) => {
-    const { schemaType } = resolveAbiOrUserType(abiOrUserType, storeConfig);
+    const { schemaType } = resolveAbiOrUserType(abiOrUserType, storeConfig, solidityUserTypes);
     return schemaType;
   });
 
