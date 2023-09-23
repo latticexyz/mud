@@ -529,36 +529,6 @@ library StoreCore {
     });
   }
 
-  /**
-   * Update data in a field in a table with the given tableId, key tuple and value field layout
-   */
-  function updateInDynamicField(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint256 startByteIndex,
-    bytes memory dataToSet
-  ) internal {
-    // Verify that the index is in bounds of the dynamic field
-    PackedCounter previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
-    if (startByteIndex + dataToSet.length > previousEncodedLengths.atIndex(dynamicFieldIndex)) {
-      revert IStoreErrors.Store_IndexOutOfBounds(
-        previousEncodedLengths.atIndex(dynamicFieldIndex),
-        startByteIndex + dataToSet.length - 1
-      );
-    }
-
-    StoreCoreInternal._spliceDynamicData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      dynamicFieldIndex: dynamicFieldIndex,
-      startWithinField: uint40(startByteIndex),
-      data: dataToSet,
-      deleteCount: uint40(dataToSet.length),
-      previousEncodedLengths: previousEncodedLengths
-    });
-  }
-
   /************************************************************************
    *
    *    GET DATA
@@ -775,6 +745,11 @@ library StoreCoreInternal {
     // Otherwise offchain indexers would shift the data after inserted data, while onchain the data is truncated at the end.
     if (previousFieldLength != updatedFieldLength && startWithinField + deleteCount != previousFieldLength) {
       revert IStoreErrors.Store_InvalidSplice(startWithinField, deleteCount, uint40(previousFieldLength));
+    }
+
+    // The start index can't be larger than the previous length of the field
+    if (startWithinField > previousFieldLength) {
+      revert IStoreErrors.Store_IndexOutOfBounds(previousFieldLength, startWithinField);
     }
 
     // Compute start index for the splice

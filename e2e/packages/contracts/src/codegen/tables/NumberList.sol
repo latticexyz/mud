@@ -396,7 +396,8 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -408,7 +409,8 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      StoreCore.updateInDynamicField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -420,7 +422,8 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      _store.updateInDynamicField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -432,7 +435,8 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -444,7 +448,8 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      StoreCore.updateInDynamicField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -456,7 +461,8 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      _store.updateInDynamicField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 

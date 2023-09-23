@@ -556,7 +556,14 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Update index 1 in second field (4 = byte length of uint32)
     startGasReport("update in field (1 slot, 1 uint32 item)");
-    StoreCore.updateInDynamicField(tableId, keyTuple, 0, 4 * 1, data.secondDataForUpdate);
+    StoreCore.spliceDynamicData(
+      tableId,
+      keyTuple,
+      0,
+      uint40(4 * 1),
+      uint40(data.secondDataForUpdate.length),
+      data.secondDataForUpdate
+    );
     endGasReport();
 
     // Create data for update
@@ -580,7 +587,14 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)
     startGasReport("push to field (2 slots, 6 uint64 items)");
-    StoreCore.updateInDynamicField(tableId, keyTuple, 1, 8 * 1, data.thirdDataForUpdate);
+    StoreCore.spliceDynamicData(
+      tableId,
+      keyTuple,
+      1,
+      uint40(8 * 1),
+      uint40(data.thirdDataForUpdate.length),
+      data.thirdDataForUpdate
+    );
     endGasReport();
   }
 

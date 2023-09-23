@@ -113,17 +113,6 @@ contract StoreMock is IStore, StoreRead {
     StoreCore.popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
   }
 
-  // Change encoded items within the dynamic field at field index
-  function updateInDynamicField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 dynamicFieldIndex,
-    uint256 startByteIndex,
-    bytes calldata dataToSet
-  ) public virtual {
-    StoreCore.updateInDynamicField(tableId, keyTuple, dynamicFieldIndex, startByteIndex, dataToSet);
-  }
-
   // Set full record (including full dynamic data)
   function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) public virtual {
     StoreCore.deleteRecord(tableId, keyTuple);

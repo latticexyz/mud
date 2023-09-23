@@ -259,24 +259,6 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   }
 
   /**
-   * Update data at `startByteIndex` of a field in the table at the given tableId.
-   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
-   */
-  function updateInDynamicField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 dynamicFieldIndex,
-    uint256 startByteIndex,
-    bytes calldata dataToSet
-  ) public virtual requireNoCallback {
-    // Require access to namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
-
-    // Update data in the field
-    StoreCore.updateInDynamicField(tableId, keyTuple, dynamicFieldIndex, startByteIndex, dataToSet);
-  }
-
-  /**
    * Delete a record in the table at the given tableId.
    * Requires the caller to have access to the namespace or name.
    */

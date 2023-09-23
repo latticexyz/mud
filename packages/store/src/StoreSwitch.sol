@@ -238,21 +238,6 @@ library StoreSwitch {
     }
   }
 
-  function updateInDynamicField(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint256 startByteIndex,
-    bytes memory dataToSet
-  ) internal {
-    address _storeAddress = getStoreAddress();
-    if (_storeAddress == address(this)) {
-      StoreCore.updateInDynamicField(tableId, keyTuple, dynamicFieldIndex, startByteIndex, dataToSet);
-    } else {
-      IStore(_storeAddress).updateInDynamicField(tableId, keyTuple, dynamicFieldIndex, startByteIndex, dataToSet);
-    }
-  }
-
   function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {

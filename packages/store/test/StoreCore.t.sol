@@ -874,7 +874,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(IStore(this).getField(data.tableId, data.keyTuple, 1, fieldLayout), data.newSecondDataBytes, "10");
   }
 
-  struct TestUpdateInDynamicFieldData {
+  struct TestSpliceDynamicDataData {
     ResourceId tableId;
     bytes32[] keyTuple;
     bytes32 firstDataBytes;
@@ -889,10 +889,10 @@ contract StoreCoreTest is Test, StoreMock {
     bytes loadedData;
   }
 
-  function testUpdateInDynamicField() public {
+  function testSpliceDynamicData() public {
     ResourceId tableId = _tableId;
 
-    TestUpdateInDynamicFieldData memory data = TestUpdateInDynamicFieldData(
+    TestSpliceDynamicDataData memory data = TestSpliceDynamicDataData(
       tableId,
       new bytes32[](0),
       0,
@@ -969,7 +969,14 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Update index 1 in second field (4 = byte length of uint32)
-    IStore(this).updateInDynamicField(data.tableId, data.keyTuple, 0, 4 * 1, data.secondDataForUpdate);
+    IStore(this).spliceDynamicData(
+      data.tableId,
+      data.keyTuple,
+      0,
+      uint40(4 * 1),
+      uint40(data.secondDataForUpdate.length),
+      data.secondDataForUpdate
+    );
 
     // Get second field
     data.loadedData = IStore(this).getField(data.tableId, data.keyTuple, 1, fieldLayout);
@@ -1014,7 +1021,14 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)
-    IStore(this).updateInDynamicField(data.tableId, data.keyTuple, 1, 8 * 1, data.thirdDataForUpdate);
+    IStore(this).spliceDynamicData(
+      data.tableId,
+      data.keyTuple,
+      1,
+      uint40(8 * 1),
+      uint40(data.thirdDataForUpdate.length),
+      data.thirdDataForUpdate
+    );
 
     // Get third field
     data.loadedData = IStore(this).getField(data.tableId, data.keyTuple, 2, fieldLayout);
@@ -1033,10 +1047,17 @@ contract StoreCoreTest is Test, StoreMock {
       abi.encodeWithSelector(
         IStoreErrors.Store_IndexOutOfBounds.selector,
         data.newThirdDataBytes.length,
-        type(uint56).max + data.thirdDataForUpdate.length - 1
+        uint40(type(uint56).max)
       )
     );
-    IStore(this).updateInDynamicField(data.tableId, data.keyTuple, 1, type(uint56).max, data.thirdDataForUpdate);
+    IStore(this).spliceDynamicData(
+      data.tableId,
+      data.keyTuple,
+      1,
+      uint40(type(uint56).max),
+      uint40(data.thirdDataForUpdate.length),
+      data.thirdDataForUpdate
+    );
   }
 
   function testAccessEmptyData() public {

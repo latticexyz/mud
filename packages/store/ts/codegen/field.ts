@@ -165,33 +165,38 @@ export function renderFieldMethods(options: RenderTableOptions) {
       );
 
       result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-        renderWithStore(
-          storeArgument,
-          (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-            /**
-             * Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\`
-             * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
-             */
-            function ${_methodNamePrefix}update${_methodNameSuffix}(${renderArguments([
+        renderWithStore(storeArgument, (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => {
+          const externalArguments = renderArguments([
             _typedStore,
             _typedTableId,
             _typedKeyArgs,
             "uint256 _index",
             `${portionData.typeWithLocation} ${portionData.name}`,
-          ])}) internal {
+          ]);
+
+          const internalArguments = `
+            _tableId,
+            _keyTuple,
+            ${dynamicSchemaIndex},
+            uint40(_index * ${portionData.elementLength}),
+            uint40(_encoded.length),
+            _encoded 
+          `;
+
+          return `
+            /**
+             * Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\`
+             * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+             */
+            function ${_methodNamePrefix}update${_methodNameSuffix}(${externalArguments}) internal {
               ${_keyTupleDefinition}
               unchecked {
-                ${_store}.updateInDynamicField(
-                  _tableId,
-                  _keyTuple,
-                  ${dynamicSchemaIndex},
-                  _index * ${portionData.elementLength},
-                  ${portionData.encoded}
-                );
+                bytes memory _encoded = ${portionData.encoded};
+                ${_store}.spliceDynamicData(${internalArguments});
               }
             }
-          `
-        )
+          `;
+        })
       );
     }
   }

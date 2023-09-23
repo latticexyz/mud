@@ -271,7 +271,8 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 0, _index * 8, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 8), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -284,7 +285,8 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreCore.updateInDynamicField(_tableId, _keyTuple, 0, _index * 8, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 8), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -297,7 +299,8 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInDynamicField(_tableId, _keyTuple, 0, _index * 8, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 8), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -484,7 +487,8 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -497,7 +501,8 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreCore.updateInDynamicField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -510,7 +515,8 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInDynamicField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
+      bytes memory _encoded = bytes((_slice));
+      _store.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -697,7 +703,8 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 2, _index * 1, bytes((_slice)));
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -710,7 +717,8 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreCore.updateInDynamicField(_tableId, _keyTuple, 2, _index * 1, bytes((_slice)));
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -723,7 +731,8 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInDynamicField(_tableId, _keyTuple, 2, _index * 1, bytes((_slice)));
+      bytes memory _encoded = bytes((_slice));
+      _store.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
 

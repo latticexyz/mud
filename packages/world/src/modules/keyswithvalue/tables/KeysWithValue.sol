@@ -467,7 +467,8 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     unchecked {
-      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 32), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -480,7 +481,8 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     unchecked {
-      StoreCore.updateInDynamicField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 32), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -499,7 +501,8 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     unchecked {
-      _store.updateInDynamicField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 32), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -512,7 +515,8 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     unchecked {
-      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 32), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -525,7 +529,8 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     unchecked {
-      StoreCore.updateInDynamicField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 32), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -538,7 +543,8 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     unchecked {
-      _store.updateInDynamicField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+      bytes memory _encoded = abi.encodePacked((_element));
+      _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 32), uint40(_encoded.length), _encoded);
     }
   }
 
