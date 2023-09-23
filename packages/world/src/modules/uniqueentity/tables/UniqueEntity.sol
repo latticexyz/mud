@@ -172,7 +172,7 @@ library UniqueEntity {
   function _deleteRecord(ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.deleteRecord(_tableId, _keyTuple);
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */

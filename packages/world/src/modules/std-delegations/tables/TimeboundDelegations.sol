@@ -213,7 +213,7 @@ library TimeboundDelegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreCore.deleteRecord(_tableId, _keyTuple);
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */

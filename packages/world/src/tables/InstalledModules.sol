@@ -213,7 +213,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    StoreCore.deleteRecord(_tableId, _keyTuple);
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */

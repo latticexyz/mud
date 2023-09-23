@@ -39,41 +39,55 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
   result += renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-      /** Set the full data using individual values${_commentSuffix} */
-      function ${_methodNamePrefix}set(${renderArguments([
-      _typedStore,
-      _typedTableId,
-      _typedKeyArgs,
-      renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
-    ])}) internal {
-        ${renderRecordData(options)}
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+      const externalArguments = renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+        renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
+      ]);
 
-        ${_keyTupleDefinition}
+      const internalArguments =
+        "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" + (_internal ? ", _fieldLayout" : "");
 
-        ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
-      }
-    `
+      return `
+        /** Set the full data using individual values${_commentSuffix} */
+        function ${_methodNamePrefix}set(${externalArguments}) internal {
+          ${renderRecordData(options)}
+
+          ${_keyTupleDefinition}
+
+          ${_store}.setRecord(${internalArguments});
+        }
+    `;
+    }
   );
 
   if (structName !== undefined) {
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-        /** Set the full data using the data struct${_commentSuffix} */
-        function ${_methodNamePrefix}set(${renderArguments([
-        _typedStore,
-        _typedTableId,
-        _typedKeyArgs,
-        `${structName} memory _table`,
-      ])}) internal {
-          ${renderRecordData(options, "_table.")}
+      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+        const externalArguments = renderArguments([
+          _typedStore,
+          _typedTableId,
+          _typedKeyArgs,
+          `${structName} memory _table`,
+        ]);
 
-          ${_keyTupleDefinition}
+        const internalArguments =
+          "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" + (_internal ? ", _fieldLayout" : "");
 
-          ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
-        }
-      `
+        return `
+          /** Set the full data using the data struct${_commentSuffix} */
+          function ${_methodNamePrefix}set(${externalArguments}) internal {
+            ${renderRecordData(options, "_table.")}
+
+            ${_keyTupleDefinition}
+
+            ${_store}.setRecord(${internalArguments});
+          }
+      `;
+      }
     );
   }
 
@@ -119,17 +133,18 @@ export function renderDeleteRecordMethods(options: RenderTableOptions) {
 
   return renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+      const externalArguments = renderArguments([_typedStore, _typedTableId, _typedKeyArgs]);
+      const internalArguments = "_tableId, _keyTuple" + (_internal ? ", _fieldLayout" : "");
+
+      return `
       /** Delete all data for given keys${_commentSuffix} */
-      function ${_methodNamePrefix}deleteRecord(${renderArguments([
-      _typedStore,
-      _typedTableId,
-      _typedKeyArgs,
-    ])}) internal {
+      function ${_methodNamePrefix}deleteRecord(${externalArguments}) internal {
         ${_keyTupleDefinition}
-        ${_store}.deleteRecord(_tableId, _keyTuple);
+        ${_store}.deleteRecord(${internalArguments});
       }
-    `
+    `;
+    }
   );
 }
 

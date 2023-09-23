@@ -132,12 +132,13 @@ export function renderWithStore(
     _store: string,
     _commentSuffix: string,
     _untypedStore: string | undefined,
-    _methodPrefix: string
+    _methodPrefix: string,
+    _internal?: boolean
   ) => string
 ): string {
   let result = "";
   result += callback(undefined, "StoreSwitch", "", undefined, "");
-  result += callback(undefined, "StoreCore", "", undefined, "_");
+  result += callback(undefined, "StoreCore", "", undefined, "_", true);
 
   if (storeArgument) {
     result += "\n" + callback("IStore _store", "_store", " (using the specified store)", "_store", "");

@@ -779,7 +779,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -847,7 +847,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct (using the specified store) */
@@ -932,7 +932,7 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreCore.deleteRecord(_tableId, _keyTuple);
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */

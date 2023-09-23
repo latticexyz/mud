@@ -338,7 +338,7 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreCore.deleteRecord(_tableId, _keyTuple);
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */

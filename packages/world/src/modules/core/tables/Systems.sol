@@ -244,7 +244,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -295,7 +295,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    StoreCore.deleteRecord(_tableId, _keyTuple);
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */

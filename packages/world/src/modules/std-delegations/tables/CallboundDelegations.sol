@@ -311,7 +311,7 @@ library CallboundDelegations {
     _keyTuple[2] = systemId;
     _keyTuple[3] = callDataHash;
 
-    StoreCore.deleteRecord(_tableId, _keyTuple);
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */

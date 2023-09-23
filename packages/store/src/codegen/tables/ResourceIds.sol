@@ -193,7 +193,7 @@ library ResourceIds {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceId;
 
-    StoreCore.deleteRecord(_tableId, _keyTuple);
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */

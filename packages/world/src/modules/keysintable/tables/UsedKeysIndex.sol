@@ -263,7 +263,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -317,7 +317,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreCore.deleteRecord(_tableId, _keyTuple);
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */
