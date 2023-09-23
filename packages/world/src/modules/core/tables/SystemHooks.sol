@@ -255,14 +255,7 @@ library SystemHooks {
     _keyTuple[0] = systemId;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        0,
-        _fieldLayout,
-        _index * 21,
-        (_index + 1) * 21
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 21, (_index + 1) * 21);
       return (bytes21(_blob));
     }
   }
@@ -276,14 +269,7 @@ library SystemHooks {
     _keyTuple[0] = systemId;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        0,
-        _fieldLayout,
-        _index * 21,
-        (_index + 1) * 21
-      );
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 21, (_index + 1) * 21);
       return (bytes21(_blob));
     }
   }
@@ -311,14 +297,7 @@ library SystemHooks {
     _keyTuple[0] = systemId;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        0,
-        _fieldLayout,
-        _index * 21,
-        (_index + 1) * 21
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 21, (_index + 1) * 21);
       return (bytes21(_blob));
     }
   }
@@ -332,14 +311,7 @@ library SystemHooks {
     _keyTuple[0] = systemId;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        0,
-        _fieldLayout,
-        _index * 21,
-        (_index + 1) * 21
-      );
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 21, (_index + 1) * 21);
       return (bytes21(_blob));
     }
   }
@@ -363,7 +335,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, dynamicFieldIndex, abi.encodePacked((_element)));
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to value */
@@ -371,7 +343,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, dynamicFieldIndex, abi.encodePacked((_element)));
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to value (using the specified store) */
@@ -379,7 +351,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    _store.pushToDynamicField(_tableId, _keyTuple, dynamicFieldIndex, abi.encodePacked((_element)));
+    _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to value */
@@ -387,7 +359,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, dynamicFieldIndex, abi.encodePacked((_element)));
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to value */
@@ -395,7 +367,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, dynamicFieldIndex, abi.encodePacked((_element)));
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to value (using the specified store) */
@@ -403,7 +375,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    _store.pushToDynamicField(_tableId, _keyTuple, dynamicFieldIndex, abi.encodePacked((_element)));
+    _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Pop an element from value */
@@ -411,7 +383,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, dynamicFieldIndex, 21);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
 
   /** Pop an element from value */
@@ -419,7 +391,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, dynamicFieldIndex, 21);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
 
   /** Pop an element from value (using the specified store) */
@@ -427,7 +399,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    _store.popFromDynamicField(_tableId, _keyTuple, dynamicFieldIndex, 21);
+    _store.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
 
   /** Pop an element from value */
@@ -435,7 +407,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, dynamicFieldIndex, 21);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
 
   /** Pop an element from value */
@@ -443,7 +415,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, dynamicFieldIndex, 21);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
 
   /** Pop an element from value (using the specified store) */
@@ -451,7 +423,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
-    _store.popFromDynamicField(_tableId, _keyTuple, dynamicFieldIndex, 21);
+    _store.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
 
   /**
@@ -463,13 +435,7 @@ library SystemHooks {
     _keyTuple[0] = systemId;
 
     unchecked {
-      StoreSwitch.updateInDynamicField(
-        _tableId,
-        _keyTuple,
-        dynamicFieldIndex,
-        _index * 21,
-        abi.encodePacked((_element))
-      );
+      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 0, _index * 21, abi.encodePacked((_element)));
     }
   }
 
@@ -482,7 +448,7 @@ library SystemHooks {
     _keyTuple[0] = systemId;
 
     unchecked {
-      StoreCore.updateInDynamicField(_tableId, _keyTuple, dynamicFieldIndex, _index * 21, abi.encodePacked((_element)));
+      StoreCore.updateInDynamicField(_tableId, _keyTuple, 0, _index * 21, abi.encodePacked((_element)));
     }
   }
 
@@ -495,7 +461,7 @@ library SystemHooks {
     _keyTuple[0] = systemId;
 
     unchecked {
-      _store.updateInDynamicField(_tableId, _keyTuple, dynamicFieldIndex, _index * 21, abi.encodePacked((_element)));
+      _store.updateInDynamicField(_tableId, _keyTuple, 0, _index * 21, abi.encodePacked((_element)));
     }
   }
 
@@ -508,13 +474,7 @@ library SystemHooks {
     _keyTuple[0] = systemId;
 
     unchecked {
-      StoreSwitch.updateInDynamicField(
-        _tableId,
-        _keyTuple,
-        dynamicFieldIndex,
-        _index * 21,
-        abi.encodePacked((_element))
-      );
+      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 0, _index * 21, abi.encodePacked((_element)));
     }
   }
 
@@ -527,7 +487,7 @@ library SystemHooks {
     _keyTuple[0] = systemId;
 
     unchecked {
-      StoreCore.updateInDynamicField(_tableId, _keyTuple, dynamicFieldIndex, _index * 21, abi.encodePacked((_element)));
+      StoreCore.updateInDynamicField(_tableId, _keyTuple, 0, _index * 21, abi.encodePacked((_element)));
     }
   }
 
@@ -540,7 +500,7 @@ library SystemHooks {
     _keyTuple[0] = systemId;
 
     unchecked {
-      _store.updateInDynamicField(_tableId, _keyTuple, dynamicFieldIndex, _index * 21, abi.encodePacked((_element)));
+      _store.updateInDynamicField(_tableId, _keyTuple, 0, _index * 21, abi.encodePacked((_element)));
     }
   }
 

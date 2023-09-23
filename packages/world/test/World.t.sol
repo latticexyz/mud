@@ -791,7 +791,7 @@ contract WorldTest is Test, GasReporter {
     world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
   }
 
-  function testPushToField() public {
+  function testPushToDynamicField() public {
     bytes14 namespace = "testPushField";
     bytes16 name = "testTable";
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
@@ -809,7 +809,7 @@ contract WorldTest is Test, GasReporter {
     bytes memory encodedData = EncodeArray.encode(dataToPush);
 
     startGasReport("Push data to the table");
-    world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
+    world.pushToDynamicField(tableId, keyTuple, 0, encodedData);
     endGasReport();
 
     // Expect the data to be written
@@ -819,19 +819,21 @@ contract WorldTest is Test, GasReporter {
     world.deleteRecord(tableId, keyTuple);
 
     // Push data to the table via direct access
-    world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
+    world.pushToDynamicField(tableId, keyTuple, 0, encodedData);
 
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), namespace, name, RESOURCE_TABLE);
-    world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
+    world.pushToDynamicField(tableId, keyTuple, 0, encodedData);
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.pushToField.selector));
-    world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.pushToDynamicField.selector)
+    );
+    world.pushToDynamicField(tableId, keyTuple, 0, encodedData);
   }
 
   function testDeleteRecord() public {

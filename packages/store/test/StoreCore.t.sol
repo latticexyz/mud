@@ -724,7 +724,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(loadedDynamicData, "");
   }
 
-  struct TestPushToFieldData {
+  struct TestPushToDynamicFieldData {
     ResourceId tableId;
     bytes32[] keyTuple;
     bytes32 firstDataBytes;
@@ -737,10 +737,21 @@ contract StoreCoreTest is Test, StoreMock {
     bytes newThirdDataBytes;
   }
 
-  function testPushToField() public {
+  function testPushToDynamicField() public {
     ResourceId tableId = _tableId;
 
-    TestPushToFieldData memory data = TestPushToFieldData(tableId, new bytes32[](0), 0, "", "", "", "", "", "", "");
+    TestPushToDynamicFieldData memory data = TestPushToDynamicFieldData(
+      tableId,
+      new bytes32[](0),
+      0,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    );
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
@@ -783,7 +794,7 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).setField(data.tableId, data.keyTuple, 0, abi.encodePacked(data.firstDataBytes), fieldLayout);
     IStore(this).setField(data.tableId, data.keyTuple, 1, data.secondDataBytes, fieldLayout);
     // Initialize a field with push
-    IStore(this).pushToField(data.tableId, data.keyTuple, 2, data.thirdDataBytes, fieldLayout);
+    IStore(this).pushToDynamicField(data.tableId, data.keyTuple, 1, data.thirdDataBytes);
 
     // Create data to push
     {
@@ -805,7 +816,7 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Push to second field
-    IStore(this).pushToField(data.tableId, data.keyTuple, 1, data.secondDataToPush, fieldLayout);
+    IStore(this).pushToDynamicField(data.tableId, data.keyTuple, 0, data.secondDataToPush);
 
     // Get second field
     data.loadedData = IStore(this).getField(data.tableId, data.keyTuple, 1, fieldLayout);
@@ -848,7 +859,7 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Push to third field
-    IStore(this).pushToField(data.tableId, data.keyTuple, 2, data.thirdDataToPush, fieldLayout);
+    IStore(this).pushToDynamicField(data.tableId, data.keyTuple, 1, data.thirdDataToPush);
 
     // Get third field
     data.loadedData = IStore(this).getField(data.tableId, data.keyTuple, 2, fieldLayout);
@@ -863,7 +874,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(IStore(this).getField(data.tableId, data.keyTuple, 1, fieldLayout), data.newSecondDataBytes, "10");
   }
 
-  struct TestUpdateInFieldData {
+  struct TestUpdateInDynamicFieldData {
     ResourceId tableId;
     bytes32[] keyTuple;
     bytes32 firstDataBytes;
@@ -878,10 +889,10 @@ contract StoreCoreTest is Test, StoreMock {
     bytes loadedData;
   }
 
-  function testUpdateInField() public {
+  function testUpdateInDynamicField() public {
     ResourceId tableId = _tableId;
 
-    TestUpdateInFieldData memory data = TestUpdateInFieldData(
+    TestUpdateInDynamicFieldData memory data = TestUpdateInDynamicFieldData(
       tableId,
       new bytes32[](0),
       0,
@@ -958,7 +969,7 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Update index 1 in second field (4 = byte length of uint32)
-    IStore(this).updateInField(data.tableId, data.keyTuple, 1, 4 * 1, data.secondDataForUpdate, fieldLayout);
+    IStore(this).updateInDynamicField(data.tableId, data.keyTuple, 0, 4 * 1, data.secondDataForUpdate);
 
     // Get second field
     data.loadedData = IStore(this).getField(data.tableId, data.keyTuple, 1, fieldLayout);
@@ -1003,7 +1014,7 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)
-    IStore(this).updateInField(data.tableId, data.keyTuple, 2, 8 * 1, data.thirdDataForUpdate, fieldLayout);
+    IStore(this).updateInDynamicField(data.tableId, data.keyTuple, 1, 8 * 1, data.thirdDataForUpdate);
 
     // Get third field
     data.loadedData = IStore(this).getField(data.tableId, data.keyTuple, 2, fieldLayout);
@@ -1025,7 +1036,7 @@ contract StoreCoreTest is Test, StoreMock {
         type(uint56).max + data.thirdDataForUpdate.length - 1
       )
     );
-    IStore(this).updateInField(data.tableId, data.keyTuple, 2, type(uint56).max, data.thirdDataForUpdate, fieldLayout);
+    IStore(this).updateInDynamicField(data.tableId, data.keyTuple, 1, type(uint56).max, data.thirdDataForUpdate);
   }
 
   function testAccessEmptyData() public {
@@ -1053,7 +1064,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(data3Length, 0);
 
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 0));
-    bytes memory data3Slice = IStore(this).getFieldSlice(tableId, keyTuple, 1, fieldLayout, 0, 0);
+    bytes memory data3Slice = IStore(this).getDynamicFieldSlice(tableId, keyTuple, 0, 0, 0);
     assertEq(data3Slice.length, 0);
   }
 

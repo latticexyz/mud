@@ -504,8 +504,7 @@ library StoreCore {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,
-    uint256 byteLengthToPop,
-    FieldLayout fieldLayout
+    uint256 byteLengthToPop
   ) internal {
     // Load the previous length of the field to set from storage to compute where to start to push
     PackedCounter previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
@@ -536,7 +535,7 @@ library StoreCore {
     // Verify that the index is in bounds of the dynamic field
     PackedCounter previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     if (startByteIndex + dataToSet.length > previousEncodedLengths.atIndex(dynamicFieldIndex)) {
-      IStoreErrors.Store_IndexOutOfBounds(
+      revert IStoreErrors.Store_IndexOutOfBounds(
         previousEncodedLengths.atIndex(dynamicFieldIndex),
         startByteIndex + dataToSet.length - 1
       );
@@ -545,9 +544,10 @@ library StoreCore {
     StoreCoreInternal._spliceDynamicData({
       tableId: tableId,
       keyTuple: keyTuple,
+      dynamicFieldIndex: dynamicFieldIndex,
       startWithinField: uint40(startByteIndex),
-      deleteCount: uint40(dataToSet.length),
       data: dataToSet,
+      deleteCount: uint40(dataToSet.length),
       previousEncodedLengths: previousEncodedLengths
     });
   }

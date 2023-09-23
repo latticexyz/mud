@@ -186,7 +186,7 @@ library StoreSwitch {
     }
   }
 
-  function popFromField(
+  function popFromDynamicField(
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,
@@ -200,7 +200,7 @@ library StoreSwitch {
     }
   }
 
-  function updateInField(
+  function updateInDynamicField(
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,

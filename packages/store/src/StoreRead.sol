@@ -69,11 +69,10 @@ contract StoreRead is IStoreRead {
     return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex, fieldLayout);
   }
 
-  function getFieldSlice(
+  function getDynamicFieldSlice(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    FieldLayout fieldLayout,
+    uint8 dynamicFieldIndex,
     uint256 start,
     uint256 end
   ) public view virtual returns (bytes memory) {
