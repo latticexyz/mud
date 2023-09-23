@@ -117,8 +117,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
+    bytes calldata dynamicData
   ) public virtual requireNoCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
@@ -233,11 +232,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Delete a record in the table at the given tableId.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    FieldLayout fieldLayout
-  ) public virtual requireNoCallback {
+  function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
