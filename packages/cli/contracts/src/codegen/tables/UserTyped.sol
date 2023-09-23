@@ -180,7 +180,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
   }
 
   /** Set v1 */
@@ -199,7 +199,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
   }
 
   /** Set v1 (using the specified store) */
@@ -219,7 +219,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
   }
 
   /** Get v2 */
@@ -296,7 +296,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
   }
 
   /** Set v2 */
@@ -315,7 +315,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreCore.setField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
   }
 
   /** Set v2 (using the specified store) */
@@ -335,7 +335,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
   }
 
   /** Get v3 */
@@ -412,7 +412,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreSwitch.setField(
+    StoreSwitch.setStaticField(
       _tableId,
       _keyTuple,
       2,
@@ -437,7 +437,13 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreCore.setField(_tableId, _keyTuple, 2, abi.encodePacked(TestTypeLibrary.TestTypeBool.unwrap(v3)), _fieldLayout);
+    StoreCore.setStaticField(
+      _tableId,
+      _keyTuple,
+      2,
+      abi.encodePacked(TestTypeLibrary.TestTypeBool.unwrap(v3)),
+      _fieldLayout
+    );
   }
 
   /** Set v3 (using the specified store) */
@@ -457,7 +463,13 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    _store.setField(_tableId, _keyTuple, 2, abi.encodePacked(TestTypeLibrary.TestTypeBool.unwrap(v3)), _fieldLayout);
+    _store.setStaticField(
+      _tableId,
+      _keyTuple,
+      2,
+      abi.encodePacked(TestTypeLibrary.TestTypeBool.unwrap(v3)),
+      _fieldLayout
+    );
   }
 
   /** Get v4 */
@@ -534,7 +546,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreSwitch.setField(
+    StoreSwitch.setStaticField(
       _tableId,
       _keyTuple,
       3,
@@ -559,7 +571,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreCore.setField(
+    StoreCore.setStaticField(
       _tableId,
       _keyTuple,
       3,
@@ -585,7 +597,13 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    _store.setField(_tableId, _keyTuple, 3, abi.encodePacked(TestTypeLibrary.TestTypeUint128.unwrap(v4)), _fieldLayout);
+    _store.setStaticField(
+      _tableId,
+      _keyTuple,
+      3,
+      abi.encodePacked(TestTypeLibrary.TestTypeUint128.unwrap(v4)),
+      _fieldLayout
+    );
   }
 
   /** Get v5 */
@@ -662,7 +680,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
   }
 
   /** Set v5 */
@@ -681,7 +699,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreCore.setField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
   }
 
   /** Set v5 (using the specified store) */
@@ -701,7 +719,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    _store.setField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
   }
 
   /** Get the full data */
@@ -799,7 +817,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
@@ -856,7 +874,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using the data struct */
@@ -880,7 +898,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using the data struct */
@@ -929,7 +947,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /**
@@ -987,7 +1005,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
@@ -1024,7 +1042,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack static data using this table's schema */
