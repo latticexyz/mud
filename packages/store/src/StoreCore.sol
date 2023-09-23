@@ -35,13 +35,7 @@ library StoreCore {
     bytes32 encodedLengths,
     bytes dynamicData
   );
-  event Store_SpliceStaticData(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    uint48 start,
-    uint40 deleteCount,
-    bytes data
-  );
+  event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
   event Store_SpliceDynamicData(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
@@ -314,23 +308,11 @@ library StoreCore {
     }
   }
 
-  function spliceStaticData(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint48 start,
-    uint40 deleteCount,
-    bytes memory data
-  ) internal {
+  function spliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 start, bytes memory data) internal {
     uint256 location = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
 
     // Emit event to notify offchain indexers
-    emit StoreCore.Store_SpliceStaticData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      start: start,
-      deleteCount: deleteCount,
-      data: data
-    });
+    emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
 
     // Early return if the table is an offchain table
     if (tableId.getType() != RESOURCE_TABLE) {
@@ -346,7 +328,6 @@ library StoreCore {
           tableId: tableId,
           keyTuple: keyTuple,
           start: start,
-          deleteCount: deleteCount,
           data: data
         });
       }
@@ -363,7 +344,6 @@ library StoreCore {
           tableId: tableId,
           keyTuple: keyTuple,
           start: start,
-          deleteCount: deleteCount,
           data: data
         });
       }
@@ -417,7 +397,6 @@ library StoreCore {
       tableId: tableId,
       keyTuple: keyTuple,
       start: uint48(StoreCoreInternal._getStaticDataOffset(fieldLayout, fieldIndex)),
-      deleteCount: uint40(fieldLayout.atIndex(fieldIndex)),
       data: data
     });
   }

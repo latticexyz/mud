@@ -39,20 +39,18 @@ contract EchoSubscriber is StoreHook {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes memory data
   ) public override {
-    emit HookCalled(abi.encodeCall(this.onBeforeSpliceStaticData, (tableId, keyTuple, start, deleteCount, data)));
+    emit HookCalled(abi.encodeCall(this.onBeforeSpliceStaticData, (tableId, keyTuple, start, data)));
   }
 
   function onAfterSpliceStaticData(
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes memory data
   ) public override {
-    emit HookCalled(abi.encodeCall(this.onAfterSpliceStaticData, (tableId, keyTuple, start, deleteCount, data)));
+    emit HookCalled(abi.encodeCall(this.onAfterSpliceStaticData, (tableId, keyTuple, start, data)));
   }
 
   function onBeforeSpliceDynamicData(

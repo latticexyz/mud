@@ -130,14 +130,13 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes calldata data
   ) public virtual requireNoCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Splice the static data
-    StoreCore.spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+    StoreCore.spliceStaticData(tableId, keyTuple, start, data);
   }
 
   function spliceDynamicData(

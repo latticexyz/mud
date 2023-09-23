@@ -125,18 +125,12 @@ library StoreSwitch {
     }
   }
 
-  function spliceStaticData(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint48 start,
-    uint40 deleteCount,
-    bytes memory data
-  ) internal {
+  function spliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 start, bytes memory data) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+      StoreCore.spliceStaticData(tableId, keyTuple, start, data);
     } else {
-      IStore(_storeAddress).spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+      IStore(_storeAddress).spliceStaticData(tableId, keyTuple, start, data);
     }
   }
 

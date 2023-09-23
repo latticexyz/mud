@@ -42,7 +42,6 @@ interface IStoreHook is IERC165 {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes memory data
   ) external;
 
@@ -50,7 +49,6 @@ interface IStoreHook is IERC165 {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes memory data
   ) external;
 

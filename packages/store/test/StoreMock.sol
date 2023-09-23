@@ -34,10 +34,9 @@ contract StoreMock is IStore, StoreRead {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes calldata data
   ) public virtual {
-    StoreCore.spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+    StoreCore.spliceStaticData(tableId, keyTuple, start, data);
   }
 
   // Splice data in the dynamic part of the record

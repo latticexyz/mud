@@ -45,27 +45,13 @@ contract MirrorSubscriber is StoreHook {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes memory data
   ) public override {
     if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
-    StoreSwitch.spliceStaticData(indexerTableId, keyTuple, start, deleteCount, data);
+    StoreSwitch.spliceStaticData(indexerTableId, keyTuple, start, data);
   }
 
   function onBeforeSpliceDynamicData(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint40 startWithinField,
-    uint40 deleteCount,
-    bytes memory data,
-    PackedCounter
-  ) public override {
-    if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
-    StoreSwitch.spliceDynamicData(indexerTableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
-  }
-
-  function onAfterSpliceDynamicData(
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,

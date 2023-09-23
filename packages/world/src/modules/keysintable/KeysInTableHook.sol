@@ -57,7 +57,6 @@ contract KeysInTableHook is StoreHook {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48,
-    uint40,
     bytes memory
   ) public override {
     handleSet(tableId, keyTuple);

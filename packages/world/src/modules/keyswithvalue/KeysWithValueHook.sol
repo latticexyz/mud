@@ -61,7 +61,6 @@ contract KeysWithValueHook is StoreHook {
     ResourceId sourceTableId,
     bytes32[] memory keyTuple,
     uint48,
-    uint40,
     bytes memory
   ) public override {
     // Remove the key from the list of keys with the previous value
@@ -75,7 +74,6 @@ contract KeysWithValueHook is StoreHook {
     ResourceId sourceTableId,
     bytes32[] memory keyTuple,
     uint48,
-    uint40,
     bytes memory
   ) public override {
     // Add the key to the list of keys with the new value

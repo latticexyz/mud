@@ -1075,20 +1075,10 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(
-      abi.encodeCall(
-        IStoreHook.onBeforeSpliceStaticData,
-        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
-      )
-    );
+    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeSpliceStaticData, (tableId, singletonKey, 0, staticData)));
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(
-      abi.encodeCall(
-        IStoreHook.onAfterSpliceStaticData,
-        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
-      )
-    );
+    emit HookCalled(abi.encodeCall(IStoreHook.onAfterSpliceStaticData, (tableId, singletonKey, 0, staticData)));
 
     world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 
@@ -1166,20 +1156,10 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(
-      abi.encodeCall(
-        IStoreHook.onBeforeSpliceStaticData,
-        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
-      )
-    );
+    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeSpliceStaticData, (tableId, singletonKey, 0, staticData)));
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(
-      abi.encodeCall(
-        IStoreHook.onAfterSpliceStaticData,
-        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
-      )
-    );
+    emit HookCalled(abi.encodeCall(IStoreHook.onAfterSpliceStaticData, (tableId, singletonKey, 0, staticData)));
 
     world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 

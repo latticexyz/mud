@@ -92,13 +92,7 @@ interface IStoreWrite {
     bytes32 encodedLengths,
     bytes dynamicData
   );
-  event Store_SpliceStaticData(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    uint48 start,
-    uint40 deleteCount,
-    bytes data
-  );
+  event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
   event Store_SpliceDynamicData(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
@@ -123,7 +117,6 @@ interface IStoreWrite {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes calldata data
   ) external;
 
