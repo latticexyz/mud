@@ -656,7 +656,7 @@ library StoreCore {
     uint256 end
   ) internal view returns (bytes memory) {
     uint8 numStaticFields = uint8(fieldLayout.numStaticFields());
-    if (fieldIndex < fieldLayout.numStaticFields()) {
+    if (fieldIndex < numStaticFields) {
       revert IStoreErrors.Store_NotDynamicField();
     }
 
