@@ -22,7 +22,7 @@ contract NumberListSystem is System {
     }
 
     bytes32[] memory emptyKey;
-    StoreSwitch.pushToField(NumberListTableId, emptyKey, 0, EncodeArray.encode(list), NumberList.getFieldLayout());
+    StoreSwitch.pushToDynamicField(NumberListTableId, emptyKey, 0, EncodeArray.encode(list));
   }
 
   function pop() public {
