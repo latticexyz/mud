@@ -77,6 +77,6 @@ contract StoreRead is IStoreRead {
     uint256 start,
     uint256 end
   ) public view virtual returns (bytes memory) {
-    return StoreCore.getFieldSlice(tableId, keyTuple, fieldIndex, fieldLayout, start, end);
+    return StoreCore.getDynamicFieldSlice(tableId, keyTuple, dynamicFieldIndex, start, end);
   }
 }

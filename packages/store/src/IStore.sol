@@ -74,11 +74,10 @@ interface IStoreRead {
    * Get a byte slice (including start, excluding end) of a single dynamic field from the given tableId and key tuple, with the given value field layout.
    * The slice is unchecked and will return invalid data if `start`:`end` overflow.
    */
-  function getFieldSlice(
+  function getDynamicFieldSlice(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    FieldLayout fieldLayout,
+    uint8 dynamicFieldIndex,
     uint256 start,
     uint256 end
   ) external view returns (bytes memory data);
@@ -140,31 +139,28 @@ interface IStoreWrite {
   ) external;
 
   // Push encoded items to the dynamic field at field index
-  function pushToField(
+  function pushToDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    bytes calldata dataToPush,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    bytes calldata dataToPush
   ) external;
 
   // Pop byte length from the dynamic field at field index
-  function popFromField(
+  function popFromDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    uint256 byteLengthToPop,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    uint256 byteLengthToPop
   ) external;
 
   // Change encoded items within the dynamic field at field index
-  function updateInField(
+  function updateInDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
+    uint8 dynamicFieldIndex,
     uint256 startByteIndex,
-    bytes calldata dataToSet,
-    FieldLayout fieldLayout
+    bytes calldata dataToSet
   ) external;
 
   // Set full record (including full dynamic data)

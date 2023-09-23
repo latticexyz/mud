@@ -63,37 +63,34 @@ contract StoreMock is IStore, StoreRead {
   }
 
   // Push encoded items to the dynamic field at field index
-  function pushToField(
+  function pushToDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    bytes calldata dataToPush,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    bytes calldata dataToPush
   ) public virtual {
-    StoreCore.pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
+    StoreCore.pushToDynamicField(tableId, keyTuple, dynamicFieldIndex, dataToPush);
   }
 
   // Pop byte length from the dynamic field at field index
-  function popFromField(
+  function popFromDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    uint256 byteLengthToPop,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    uint256 byteLengthToPop
   ) public virtual {
-    StoreCore.popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
+    StoreCore.popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
   }
 
   // Change encoded items within the dynamic field at field index
-  function updateInField(
+  function updateInDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
+    uint8 dynamicFieldIndex,
     uint256 startByteIndex,
-    bytes calldata dataToSet,
-    FieldLayout fieldLayout
+    bytes calldata dataToSet
   ) public virtual {
-    StoreCore.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+    StoreCore.updateInDynamicField(tableId, keyTuple, dynamicFieldIndex, startByteIndex, dataToSet);
   }
 
   // Set full record (including full dynamic data)

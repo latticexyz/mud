@@ -176,55 +176,52 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Push data to the end of a field in the table at the given tableId.
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
-  function pushToField(
+  function pushToDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    bytes calldata dataToPush,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    bytes calldata dataToPush
   ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
+    StoreCore.pushToDynamicField(tableId, keyTuple, dynamicFieldIndex, dataToPush);
   }
 
   /**
    * Pop data from the end of a field in the table at the given tableId.
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
-  function popFromField(
+  function popFromDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    uint256 byteLengthToPop,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    uint256 byteLengthToPop
   ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
+    StoreCore.popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
   }
 
   /**
    * Update data at `startByteIndex` of a field in the table at the given tableId.
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
-  function updateInField(
+  function updateInDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
+    uint8 dynamicFieldIndex,
     uint256 startByteIndex,
-    bytes calldata dataToSet,
-    FieldLayout fieldLayout
+    bytes calldata dataToSet
   ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Update data in the field
-    StoreCore.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+    StoreCore.updateInDynamicField(tableId, keyTuple, dynamicFieldIndex, startByteIndex, dataToSet);
   }
 
   /**

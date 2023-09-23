@@ -172,49 +172,46 @@ library StoreSwitch {
     }
   }
 
-  function pushToField(
+  function pushToDynamicField(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory dataToPush,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    bytes memory dataToPush
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
+      StoreCore.pushToDynamicField(tableId, keyTuple, dynamicFieldIndex, dataToPush);
     } else {
-      IStore(_storeAddress).pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
+      IStore(_storeAddress).pushToDynamicField(tableId, keyTuple, dynamicFieldIndex, dataToPush);
     }
   }
 
   function popFromField(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    uint256 byteLengthToPop,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    uint256 byteLengthToPop
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
+      StoreCore.popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
     } else {
-      IStore(_storeAddress).popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
+      IStore(_storeAddress).popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
     }
   }
 
   function updateInField(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
+    uint8 dynamicFieldIndex,
     uint256 startByteIndex,
-    bytes memory dataToSet,
-    FieldLayout fieldLayout
+    bytes memory dataToSet
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+      StoreCore.updateInDynamicField(tableId, keyTuple, dynamicFieldIndex, startByteIndex, dataToSet);
     } else {
-      IStore(_storeAddress).updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+      IStore(_storeAddress).updateInDynamicField(tableId, keyTuple, dynamicFieldIndex, startByteIndex, dataToSet);
     }
   }
 
@@ -295,19 +292,18 @@ library StoreSwitch {
     }
   }
 
-  function getFieldSlice(
+  function getDynamicFieldSlice(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    FieldLayout fieldLayout,
+    uint8 dynamicFieldIndex,
     uint256 start,
     uint256 end
   ) internal view returns (bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      return StoreCore.getFieldSlice(tableId, keyTuple, fieldIndex, fieldLayout, start, end);
+      return StoreCore.getDynamicFieldSlice(tableId, keyTuple, dynamicFieldIndex, start, end);
     } else {
-      return IStore(_storeAddress).getFieldSlice(tableId, keyTuple, fieldIndex, fieldLayout, start, end);
+      return IStore(_storeAddress).getDynamicFieldSlice(tableId, keyTuple, dynamicFieldIndex, start, end);
     }
   }
 }
