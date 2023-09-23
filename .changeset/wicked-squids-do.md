@@ -59,7 +59,7 @@
 
 - The `updateInField` method has been removed from `IStore`, as it's almost identical to the more general `spliceDynamicData`.
   If you're manually calling `updateInField`, here is how to upgrade to `spliceDynamicData`:
-  
+
   ```diff
   - store.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
   + uint8 dynamicFieldIndex = fieldIndex - fieldLayout.numStaticFields();
@@ -108,7 +108,7 @@
   ```
 
 - `IStore` has a new `getDynamicFieldLength` length method, which returns the byte length of the given dynamic field and doesn't require the `FieldLayout`.
-  
+
   ```diff
   IStore {
   + function getDynamicFieldLength(
@@ -118,11 +118,11 @@
   + ) external view returns (uint256);
   }
 
+  ```
+
 - `IStore` now has additional overloads for `getRecord`, `getField`, `getFieldLength` and `setField` that don't require a `FieldLength` to be passed, but instead load it from storage.
 
 - `IStore` now exposes `setStaticField` and `setDynamicField` to save gas by avoiding the dynamic inference of whether the field is static or dynamic.
 
 - The `getDynamicFieldSlice` method no longer accepts reading outside the bounds of the dynamic field.
   This is to avoid returning invalid data, as the data of a dynamic field is not deleted when the record is deleted, but only its length is set to zero.
-
-  
