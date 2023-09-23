@@ -351,7 +351,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 720481
+    "gasUsed": 720521
   },
   {
     "file": "test/Mixed.t.sol",
@@ -363,13 +363,13 @@
     "file": "test/Mixed.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Mixed table",
-    "gasUsed": 582351
+    "gasUsed": 582391
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetAndGet",
     "name": "set record in Mixed",
-    "gasUsed": 104908
+    "gasUsed": 104948
   },
   {
     "file": "test/Mixed.t.sol",
@@ -573,7 +573,7 @@
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetFieldSlice",
     "name": "get field slice (cold, 1 slot)",
-    "gasUsed": 8315
+    "gasUsed": 8311
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
@@ -591,7 +591,7 @@
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetFieldSlice",
     "name": "get field slice (warm, 2 slots)",
-    "gasUsed": 4612
+    "gasUsed": 4608
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
@@ -675,7 +675,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testDeleteData",
     "name": "delete record (complex data, 3 slots)",
-    "gasUsed": 7707
+    "gasUsed": 7733
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -711,7 +711,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 73020
+    "gasUsed": 73100
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -723,7 +723,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 18639
+    "gasUsed": 18691
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -735,7 +735,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 166175
+    "gasUsed": 166255
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -747,7 +747,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 19625
+    "gasUsed": 19677
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -765,7 +765,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: register table",
-    "gasUsed": 642355
+    "gasUsed": 642395
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -789,7 +789,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetDynamicData",
     "name": "set complex record with dynamic data (4 slots)",
-    "gasUsed": 102863
+    "gasUsed": 102903
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -879,7 +879,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetStaticData",
     "name": "set static record (1 slot)",
-    "gasUsed": 33107
+    "gasUsed": 33147
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -891,7 +891,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetStaticDataSpanningWords",
     "name": "set static record (2 slots)",
-    "gasUsed": 55611
+    "gasUsed": 55651
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -957,7 +957,7 @@
     "file": "test/tables/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "Callbacks: get field (warm)",
-    "gasUsed": 2920
+    "gasUsed": 2916
   },
   {
     "file": "test/tables/Callbacks.t.sol",
@@ -1011,7 +1011,7 @@
     "file": "test/tables/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: delete record (warm)",
-    "gasUsed": 10132
+    "gasUsed": 10158
   },
   {
     "file": "test/tables/StoreHooks.t.sol",
@@ -1035,7 +1035,7 @@
     "file": "test/tables/StoreHooksColdLoad.t.sol",
     "test": "testDelete",
     "name": "StoreHooks: delete record (cold)",
-    "gasUsed": 18990
+    "gasUsed": 19016
   },
   {
     "file": "test/tables/StoreHooksColdLoad.t.sol",
@@ -1119,18 +1119,18 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 443844
+    "gasUsed": 443884
   },
   {
     "file": "test/Vector2.t.sol",
     "test": "testSetAndGet",
     "name": "set Vector2 record",
-    "gasUsed": 34024
+    "gasUsed": 34064
   },
   {
     "file": "test/Vector2.t.sol",
     "test": "testSetAndGet",
     "name": "get Vector2 record",
-    "gasUsed": 2539
+    "gasUsed": 2535
   }
 ]

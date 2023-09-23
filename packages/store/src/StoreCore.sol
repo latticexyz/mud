@@ -211,7 +211,8 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Set full data record for the given table ID and key tuple and field layout
+   * Set full data record for the given table ID and key tuple and field layout.
+   * This overload loads the field layout from storage and is exposed externally on `IStore`.
    */
   function setRecord(
     ResourceId tableId,
@@ -220,8 +221,21 @@ library StoreCore {
     PackedCounter encodedLengths,
     bytes memory dynamicData
   ) internal {
-    FieldLayout fieldLayout = getFieldLayout(tableId);
+    setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, getFieldLayout(tableId));
+  }
 
+  /**
+   * Set full data record for the given table ID and key tuple and field layout.
+   * This overload allows passing in a FieldLayout and is not exposed externally on `IStore`.
+   */
+  function setRecord(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
+    FieldLayout fieldLayout
+  ) internal {
     // verify the value has the correct length for the tableId (based on the tableId's field layout)
     // to prevent invalid data from being stored
 
@@ -436,11 +450,18 @@ library StoreCore {
   }
 
   /**
-   * Delete a record for the given tableId, key tuple and value field layout
+   * Delete a record for the given tableId, key tuple and value field layout.
+   * This overload loads the field layout from storage and is exposed externally on `IStore`.
    */
   function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) internal {
-    FieldLayout fieldLayout = getFieldLayout(tableId);
+    deleteRecord(tableId, keyTuple, getFieldLayout(tableId));
+  }
 
+  /**
+   * Delete a record for the given tableId, key tuple and value field layout.
+   * This overload allows passing in a FieldLayout and is not exposed externally on `IStore`.
+   */
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
     // Emit event to notify indexers
     emit Store_DeleteRecord(tableId, keyTuple);
 
