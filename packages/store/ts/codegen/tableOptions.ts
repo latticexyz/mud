@@ -1,11 +1,12 @@
 import path from "path";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type/deprecated";
 import {
-  RelativeImportDatum,
+  ImportDatum,
   RenderDynamicField,
   RenderField,
   RenderKeyTuple,
   RenderStaticField,
+  SolidityUserDefinedType,
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
 import { StoreConfig } from "../config";
@@ -17,7 +18,10 @@ export interface TableOptions {
   renderOptions: RenderTableOptions;
 }
 
-export function getTableOptions(config: StoreConfig): TableOptions[] {
+export function getTableOptions(
+  config: StoreConfig,
+  solidityUserTypes: Record<string, SolidityUserDefinedType>
+): TableOptions[] {
   const storeImportPath = config.storeImportPath;
 
   const options = [];
@@ -31,13 +35,13 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     // field methods can include simply get/set if there's only 1 field and no record methods
     const withSuffixlessFieldMethods = !withRecordMethods && Object.keys(tableData.valueSchema).length === 1;
     // list of any symbols that need to be imported
-    const imports: RelativeImportDatum[] = [];
+    const imports: ImportDatum[] = [];
 
     const keyTuple = Object.keys(tableData.keySchema).map((name) => {
       const abiOrUserType = tableData.keySchema[name];
-      const { renderType } = resolveAbiOrUserType(abiOrUserType, config);
+      const { renderType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
 
-      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
+      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config, solidityUserTypes);
       if (importDatum) imports.push(importDatum);
 
       if (renderType.isDynamic) throw new Error(`Parsing error: found dynamic key ${name} in table ${tableName}`);
@@ -52,9 +56,9 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
 
     const fields = Object.keys(tableData.valueSchema).map((name) => {
       const abiOrUserType = tableData.valueSchema[name];
-      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, config);
+      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
 
-      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
+      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config, solidityUserTypes);
       if (importDatum) imports.push(importDatum);
 
       const elementType = SchemaTypeArrayToElement[schemaType];

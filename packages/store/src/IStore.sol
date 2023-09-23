@@ -20,7 +20,15 @@ interface IStoreRead {
   function getKeySchema(ResourceId tableId) external view returns (Schema keySchema);
 
   /**
-   * Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given value field layout
+   * Get full record (all fields, static and dynamic data) for the given tableId and key tuple, loading the field layout from storage
+   */
+  function getRecord(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple
+  ) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+
+  /**
+   * Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given field layout
    */
   function getRecord(
     ResourceId tableId,
@@ -29,7 +37,16 @@ interface IStoreRead {
   ) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 
   /**
-   * Get a single field from the given tableId and key tuple, with the given value field layout
+   * Get a single field from the given tableId and key tuple, loading the field layout from storage
+   */
+  function getField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex
+  ) external view returns (bytes memory data);
+
+  /**
+   * Get a single field from the given tableId and key tuple, with the given field layout
    */
   function getField(
     ResourceId tableId,
@@ -61,6 +78,15 @@ interface IStoreRead {
   ) external view returns (bytes memory);
 
   /**
+   * Get the byte length of a single field from the given tableId and key tuple, loading the field layout from storage
+   */
+  function getFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex
+  ) external view returns (uint256);
+
+  /**
    * Get the byte length of a single field from the given tableId and key tuple, with the given value field layout
    */
   function getFieldLength(
@@ -71,35 +97,37 @@ interface IStoreRead {
   ) external view returns (uint256);
 
   /**
+   * Get the byte length of a single dynamic field from the given tableId and key tuple
+   */
+  function getDynamicFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex
+  ) external view returns (uint256);
+
+  /**
    * Get a byte slice (including start, excluding end) of a single dynamic field from the given tableId and key tuple, with the given value field layout.
    * The slice is unchecked and will return invalid data if `start`:`end` overflow.
    */
-  function getFieldSlice(
+  function getDynamicFieldSlice(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    FieldLayout fieldLayout,
+    uint8 dynamicFieldIndex,
     uint256 start,
     uint256 end
   ) external view returns (bytes memory data);
 }
 
 interface IStoreWrite {
-  event StoreSetRecord(
+  event Store_SetRecord(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
     bytes32 encodedLengths,
     bytes dynamicData
   );
-  event StoreSpliceStaticData(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    uint48 start,
-    uint40 deleteCount,
-    bytes data
-  );
-  event StoreSpliceDynamicData(
+  event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
+  event Store_SpliceDynamicData(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     uint48 start,
@@ -107,7 +135,7 @@ interface IStoreWrite {
     bytes data,
     bytes32 encodedLengths
   );
-  event StoreDeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
+  event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
   // Set full record (including full dynamic data)
   function setRecord(
@@ -115,8 +143,7 @@ interface IStoreWrite {
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
+    bytes calldata dynamicData
   ) external;
 
   // Splice data in the static part of the record
@@ -124,7 +151,6 @@ interface IStoreWrite {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes calldata data
   ) external;
 
@@ -139,6 +165,9 @@ interface IStoreWrite {
   ) external;
 
   // Set partial data at field index
+  function setField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex, bytes calldata data) external;
+
+  // Set partial data at field index
   function setField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
@@ -147,36 +176,39 @@ interface IStoreWrite {
     FieldLayout fieldLayout
   ) external;
 
-  // Push encoded items to the dynamic field at field index
-  function pushToField(
+  function setStaticField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
-    bytes calldata dataToPush,
+    bytes calldata data,
     FieldLayout fieldLayout
+  ) external;
+
+  function setDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes calldata data
+  ) external;
+
+  // Push encoded items to the dynamic field at field index
+  function pushToDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes calldata dataToPush
   ) external;
 
   // Pop byte length from the dynamic field at field index
-  function popFromField(
+  function popFromDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    uint256 byteLengthToPop,
-    FieldLayout fieldLayout
-  ) external;
-
-  // Change encoded items within the dynamic field at field index
-  function updateInField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    uint256 startByteIndex,
-    bytes calldata dataToSet,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    uint256 byteLengthToPop
   ) external;
 
   // Set full record (including full dynamic data)
-  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) external;
 }
 
 /**

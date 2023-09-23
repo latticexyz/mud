@@ -24,6 +24,7 @@ import { SystemHooks, SystemHooksTableId } from "../tables/SystemHooks.sol";
 import { SystemRegistry } from "../tables/SystemRegistry.sol";
 import { Systems } from "../tables/Systems.sol";
 import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
+import { FunctionSignatures } from "../tables/FunctionSignatures.sol";
 
 /**
  * Functions related to registering resources other than tables in the World.
@@ -148,15 +149,10 @@ contract WorldRegistrationSystem is System, IWorldErrors {
 
   /**
    * Register a World function selector for the given namespace, name and system function.
-   * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
-   * which would save one sload per call, but add some complexity to upgrading systems. TBD.
-   * (see https://github.com/latticexyz/mud/issues/444)
-   * TODO: replace separate systemFunctionName and systemFunctionArguments with a signature argument
    */
   function registerFunctionSelector(
     ResourceId systemId,
-    string memory systemFunctionName,
-    string memory systemFunctionArguments
+    string memory systemFunctionSignature
   ) public returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the namespace
     AccessControl.requireOwner(systemId, _msgSender());
@@ -164,9 +160,14 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Compute global function selector
     string memory namespaceString = WorldResourceIdLib.toTrimmedString(systemId.getNamespace());
     string memory nameString = WorldResourceIdLib.toTrimmedString(systemId.getName());
-    worldFunctionSelector = bytes4(
-      keccak256(abi.encodePacked(namespaceString, "_", nameString, "_", systemFunctionName, systemFunctionArguments))
+    bytes memory worldFunctionSignature = abi.encodePacked(
+      namespaceString,
+      "_",
+      nameString,
+      "_",
+      systemFunctionSignature
     );
+    worldFunctionSelector = bytes4(keccak256(worldFunctionSignature));
 
     // Require the function selector to be globally unique
     bytes32 existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
@@ -174,27 +175,27 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     if (existingSystemId != 0) revert World_FunctionSelectorAlreadyExists(worldFunctionSelector);
 
     // Register the function selector
-    bytes memory systemFunctionSignature = abi.encodePacked(systemFunctionName, systemFunctionArguments);
-    bytes4 systemFunctionSelector = systemFunctionSignature.length == 0
-      ? bytes4(0) // Save gas by storing 0x0 for empty function signatures (= fallback function)
-      : bytes4(keccak256(systemFunctionSignature));
+    bytes4 systemFunctionSelector = bytes4(keccak256(bytes(systemFunctionSignature)));
     FunctionSelectors._set(worldFunctionSelector, ResourceId.unwrap(systemId), systemFunctionSelector);
+
+    // Register the function signature for offchain use
+    FunctionSignatures._set(worldFunctionSelector, string(worldFunctionSignature));
   }
 
   /**
    * Register a root World function selector (without namespace / name prefix).
    * Requires the caller to own the root namespace.
-   * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
-   * which would save one sload per call, but add some complexity to upgrading systems. TBD.
-   * (see https://github.com/latticexyz/mud/issues/444)
    */
   function registerRootFunctionSelector(
     ResourceId systemId,
-    bytes4 worldFunctionSelector,
+    string memory worldFunctionSignature,
     bytes4 systemFunctionSelector
-  ) public returns (bytes4) {
+  ) public returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the root namespace
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, _msgSender());
+
+    // Compute the function selector from the provided signature
+    worldFunctionSelector = bytes4(keccak256(bytes(worldFunctionSignature)));
 
     // Require the function selector to be globally unique
     bytes32 existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
@@ -204,7 +205,8 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Register the function selector
     FunctionSelectors._set(worldFunctionSelector, ResourceId.unwrap(systemId), systemFunctionSelector);
 
-    return worldFunctionSelector;
+    // Register the function signature for offchain use
+    FunctionSignatures._set(worldFunctionSelector, worldFunctionSignature);
   }
 
   /**

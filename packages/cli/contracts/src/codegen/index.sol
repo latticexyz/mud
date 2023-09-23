@@ -8,3 +8,4 @@ import { Dynamics1, Dynamics1Data, Dynamics1TableId } from "./tables/Dynamics1.s
 import { Dynamics2, Dynamics2Data, Dynamics2TableId } from "./tables/Dynamics2.sol";
 import { Singleton, SingletonTableId } from "./tables/Singleton.sol";
 import { Offchain, OffchainTableId } from "./tables/Offchain.sol";
+import { UserTyped, UserTypedData, UserTypedTableId } from "./tables/UserTyped.sol";

@@ -4,29 +4,28 @@ import { loadFunctionSignatures, toFunctionSelector } from "./utils";
 import { CallData } from "../utils/types";
 
 export function getRegisterFunctionSelectorsCallData(input: {
-  systemName: string;
+  systemContractName: string;
   system: System;
   namespace: string;
   forgeOutDirectory: string;
 }): CallData[] {
   // Register system at route
   const callData: CallData[] = [];
-  const { systemName, namespace, forgeOutDirectory, system } = input;
+  const { systemContractName, namespace, forgeOutDirectory, system } = input;
 
   if (system.registerFunctionSelectors) {
-    const baseSystemFunctionNames = loadFunctionSignatures("System", forgeOutDirectory).map((sig) => sig.functionName);
-    const functionSignatures = loadFunctionSignatures(systemName, forgeOutDirectory).filter(
-      (sig) => systemName === "System" || !baseSystemFunctionNames.includes(sig.functionName)
+    const baseSystemFunctionSignatures = loadFunctionSignatures("System", forgeOutDirectory);
+    const systemFunctionSignatures = loadFunctionSignatures(systemContractName, forgeOutDirectory).filter(
+      (functionSignature) =>
+        systemContractName === "System" || !baseSystemFunctionSignatures.includes(functionSignature)
     );
     const isRoot = namespace === "";
-    for (const { functionName, functionArgs } of functionSignatures) {
+    for (const systemFunctionSignature of systemFunctionSignatures) {
       callData.push(
         getRegisterFunctionSelectorCallData({
           namespace,
           name: system.name,
-          systemName,
-          functionName,
-          functionArgs,
+          systemFunctionSignature,
           isRoot,
         })
       );
@@ -38,31 +37,21 @@ export function getRegisterFunctionSelectorsCallData(input: {
 function getRegisterFunctionSelectorCallData(input: {
   namespace: string;
   name: string;
-  systemName: string;
-  functionName: string;
-  functionArgs: string;
+  systemFunctionSignature: string;
   isRoot: boolean;
 }): CallData {
-  const { namespace, name, systemName, functionName, functionArgs, isRoot } = input;
-  const functionSignature = isRoot
-    ? functionName + functionArgs
-    : `${namespace}_${name}_${functionName}${functionArgs}`;
+  const { namespace, name, systemFunctionSignature, isRoot } = input;
 
   if (isRoot) {
-    const worldFunctionSelector = toFunctionSelector(
-      functionSignature === ""
-        ? { functionName: systemName, functionArgs } // Register the system's fallback function as `<systemName>(<args>)`
-        : { functionName, functionArgs }
-    );
-    const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
+    const functionSelector = toFunctionSelector(systemFunctionSignature);
     return {
       func: "registerRootFunctionSelector",
-      args: [resourceIdToHex({ type: "system", namespace, name }), worldFunctionSelector, systemFunctionSelector],
+      args: [resourceIdToHex({ type: "system", namespace, name }), systemFunctionSignature, functionSelector],
     };
   } else {
     return {
-      func: "registerRootFunctionSelector",
-      args: [resourceIdToHex({ type: "system", namespace, name }), functionName, functionArgs],
+      func: "registerFunctionSelector",
+      args: [resourceIdToHex({ type: "system", namespace, name }), systemFunctionSignature],
     };
   }
 }

@@ -12,6 +12,7 @@ import { Systems, SystemsTableId } from "./modules/core/tables/Systems.sol";
 import { SystemRegistry, SystemRegistryTableId } from "./modules/core/tables/SystemRegistry.sol";
 import { SystemHooks, SystemHooksTableId } from "./modules/core/tables/SystemHooks.sol";
 import { FunctionSelectors, FunctionSelectorsTableId } from "./modules/core/tables/FunctionSelectors.sol";
+import { FunctionSignatures, FunctionSignaturesTableId } from "./modules/core/tables/FunctionSignatures.sol";
 import { KeysWithValue } from "./modules/keyswithvalue/tables/KeysWithValue.sol";
 import { KeysInTable, KeysInTableData, KeysInTableTableId } from "./modules/keysintable/tables/KeysInTable.sol";
 import { UsedKeysIndex, UsedKeysIndexTableId } from "./modules/keysintable/tables/UsedKeysIndex.sol";

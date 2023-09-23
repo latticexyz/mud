@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { TYPE_BYTES } from "@latticexyz/store/src/ResourceId.sol";
-import { ResourceId, WorldResourceIdInstance, NAME_BYTES } from "../../WorldResourceId.sol";
+import { TYPE_BITS } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceId, WorldResourceIdInstance, NAME_BITS } from "../../WorldResourceId.sol";
 import { RESOURCE_TABLE } from "../../worldResourceTypes.sol";
 
-uint256 constant MODULE_NAMESPACE_BYTES = 7;
-uint256 constant TABLE_NAMESPACE_BYTES = 7;
-uint256 constant TABLE_NAME_BYTES = 16;
-uint256 constant BYTES_TO_BITS = 8;
+uint256 constant MODULE_NAMESPACE_BITS = 7 * 8;
+uint256 constant TABLE_NAMESPACE_BITS = 7 * 8;
+uint256 constant TABLE_NAME_BITS = 16 * 8;
 
 /**
  * Get a deterministic selector for the reverse mapping table for the given source table.
@@ -26,8 +25,8 @@ function getTargetTableId(bytes7 moduleNamespace, ResourceId sourceTableId) pure
   return
     ResourceId.wrap(
       bytes32(RESOURCE_TABLE) |
-        (bytes32(moduleNamespace) >> (TYPE_BYTES * BYTES_TO_BITS)) |
-        (bytes32(sourceTableNamespace) >> ((TYPE_BYTES + MODULE_NAMESPACE_BYTES) * BYTES_TO_BITS)) |
-        (bytes32(tableName) >> ((TYPE_BYTES + MODULE_NAMESPACE_BYTES + TABLE_NAMESPACE_BYTES) * BYTES_TO_BITS))
+        (bytes32(moduleNamespace) >> TYPE_BITS) |
+        (bytes32(sourceTableNamespace) >> (TYPE_BITS + MODULE_NAMESPACE_BITS)) |
+        (bytes32(tableName) >> (TYPE_BITS + MODULE_NAMESPACE_BITS + TABLE_NAMESPACE_BITS))
     );
 }

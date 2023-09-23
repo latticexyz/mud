@@ -202,7 +202,7 @@ library CallboundDelegations {
     _keyTuple[2] = systemId;
     _keyTuple[3] = callDataHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
   /** Set availableCalls */
@@ -219,7 +219,7 @@ library CallboundDelegations {
     _keyTuple[2] = systemId;
     _keyTuple[3] = callDataHash;
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
   /** Set availableCalls (using the specified store) */
@@ -237,7 +237,7 @@ library CallboundDelegations {
     _keyTuple[2] = systemId;
     _keyTuple[3] = callDataHash;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
   /** Set availableCalls */
@@ -254,7 +254,7 @@ library CallboundDelegations {
     _keyTuple[2] = systemId;
     _keyTuple[3] = callDataHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
   /** Set availableCalls */
@@ -271,7 +271,7 @@ library CallboundDelegations {
     _keyTuple[2] = systemId;
     _keyTuple[3] = callDataHash;
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
   /** Set availableCalls (using the specified store) */
@@ -289,7 +289,7 @@ library CallboundDelegations {
     _keyTuple[2] = systemId;
     _keyTuple[3] = callDataHash;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
   /** Delete all data for given keys */
@@ -300,7 +300,7 @@ library CallboundDelegations {
     _keyTuple[2] = systemId;
     _keyTuple[3] = callDataHash;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
@@ -328,7 +328,7 @@ library CallboundDelegations {
     _keyTuple[2] = systemId;
     _keyTuple[3] = callDataHash;
 
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack static data using this table's schema */

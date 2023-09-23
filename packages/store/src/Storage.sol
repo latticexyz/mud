@@ -99,6 +99,18 @@ library Storage {
     }
   }
 
+  function zero(uint256 storagePointer, uint256 length) internal {
+    // Ceil division to round up to the nearest word
+    uint256 limit = storagePointer + (length + 31) / 32;
+    while (storagePointer < limit) {
+      /// @solidity memory-safe-assembly
+      assembly {
+        sstore(storagePointer, 0)
+        storagePointer := add(storagePointer, 1)
+      }
+    }
+  }
+
   function load(uint256 storagePointer) internal view returns (bytes32 word) {
     assembly {
       word := sload(storagePointer)

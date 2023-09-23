@@ -7,9 +7,10 @@ import { Aside } from "../../components/Aside";
 When a record or a single field is edited, or when a record is deleted, Store emits a standard event with enough information for off-chain actors to reconstruct the new version of the Store with event-sourcing.
 
 ```solidity
-event StoreSetRecord(uint256 tableId, bytes32[] keyTuple, bytes data);
-event StoreSetField(uint256 tableId, bytes32[] keyTuple, uint8 schemaIndex, bytes data);
-event StoreDeleteRecord(uint256 tableId, bytes32[] keyTuple);
+event Store_SetRecord(bytes32 indexed tableId, bytes32[] keyTuple, bytes staticData, bytes32 encodedLengths, bytes dynamicData),
+event Store_SpliceStaticData(bytes32 indexed tableId, bytes32[] keyTuple, uint48 start, bytes data),
+event Store_SpliceDynamicData(bytes32 indexed tableId, bytes32[] keyTuple, uint48 start, uint40 deleteCount, bytes data, bytes32 encodedLengths),
+event Store_DeleteRecord(bytes32 indexed tableId, bytes32[] keyTuple),
 ```
 
 Each event includes the table ID and each key encoded as `bytes32`.
@@ -22,7 +23,7 @@ MUD comes with many libraries and services in order to reconstruct the state of 
 ### Data encoding
 
 `bytes data` uses custom encoding, which MUD networking stack decodes.
-Each event carries only data. To get a table's schema (information on how to decode it), use `IStore.getSchema(tableId)` or listen to `StoreSetRecord` updates of the schema table.
+Each event carries only data. To get a table's schema (information on how to decode it), use `IStore.getSchema(tableId)` or listen to `Store_SetRecord` updates of the schema table.
 
 Schema is a way to dynamically store solidity types.
 Use the [schema-type package](https://github.com/latticexyz/mud/tree/main/packages/schema-type) to work with it directly.

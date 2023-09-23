@@ -137,7 +137,7 @@ library Balances {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = namespaceId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Set balance */
@@ -145,7 +145,7 @@ library Balances {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = namespaceId;
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Set balance (using the specified store) */
@@ -153,7 +153,7 @@ library Balances {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = namespaceId;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Set balance */
@@ -161,7 +161,7 @@ library Balances {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = namespaceId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Set balance */
@@ -169,7 +169,7 @@ library Balances {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = namespaceId;
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Set balance (using the specified store) */
@@ -177,7 +177,7 @@ library Balances {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = namespaceId;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Delete all data for given keys */
@@ -185,7 +185,7 @@ library Balances {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = namespaceId;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
@@ -201,7 +201,7 @@ library Balances {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = namespaceId;
 
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack static data using this table's schema */

@@ -3,7 +3,7 @@ import {
   renderArguments,
   renderCommonData,
   renderList,
-  renderRelativeImports,
+  renderImports,
   renderTableId,
   renderTypeHelpers,
   renderWithStore,
@@ -56,7 +56,7 @@ export function renderTable(options: RenderTableOptions) {
       imports.length > 0
         ? `
           // Import user types
-          ${renderRelativeImports(imports)}
+          ${renderImports(imports)}
           `
         : ""
     }
