@@ -349,13 +349,13 @@
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
-    "test": "testPopFromDyanmicField",
+    "test": "testPopFromDynamicField",
     "name": "pop 1 address (cold)",
     "gasUsed": 23679
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
-    "test": "testPopFromDyanmicField",
+    "test": "testPopFromDynamicField",
     "name": "pop 1 address (warm)",
     "gasUsed": 12825
   },
