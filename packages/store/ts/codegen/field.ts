@@ -74,6 +74,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
     if (field.isDynamic) {
       const portionData = fieldPortionData(field);
+      const dynamicSchemaIndex = schemaIndex - options.staticFields.length;
 
       if (options.withGetters) {
         result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
@@ -112,11 +113,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
             ])}) internal view returns (${portionData.typeWithLocation}) {
               ${_keyTupleDefinition}
               unchecked {
-                bytes memory _blob = ${_store}.getFieldSlice(
+                bytes memory _blob = ${_store}.getDynamicFieldSlice(
                   _tableId,
                   _keyTuple,
-                  ${schemaIndex},
-                  _fieldLayout,
+                  ${dynamicSchemaIndex},
                   _index * ${portionData.elementLength},
                   (_index + 1) * ${portionData.elementLength}
                   );
@@ -140,7 +140,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
             `${portionData.typeWithLocation} ${portionData.name}`,
           ])}) internal {
               ${_keyTupleDefinition}
-              ${_store}.pushToField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.encoded}, _fieldLayout);
+              ${_store}.pushToDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.encoded});
             }
             `
         )
@@ -157,7 +157,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
             _typedKeyArgs,
           ])}) internal {
               ${_keyTupleDefinition}
-              ${_store}.popFromField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.elementLength}, _fieldLayout);
+              ${_store}.popFromDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.elementLength});
             }
           `
         )
@@ -180,13 +180,12 @@ export function renderFieldMethods(options: RenderTableOptions) {
           ])}) internal {
               ${_keyTupleDefinition}
               unchecked {
-                ${_store}.updateInField(
+                ${_store}.updateInDynamicField(
                   _tableId,
                   _keyTuple,
-                  ${schemaIndex},
+                  ${dynamicSchemaIndex},
                   _index * ${portionData.elementLength},
-                  ${portionData.encoded},
-                  _fieldLayout
+                  ${portionData.encoded}
                 );
               }
             }

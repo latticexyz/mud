@@ -1019,7 +1019,11 @@ contract StoreCoreTest is Test, StoreMock {
 
     // startByteIndex must not overflow
     vm.expectRevert(
-      abi.encodeWithSelector(IStoreErrors.Store_DataIndexOverflow.selector, type(uint40).max, type(uint56).max)
+      abi.encodeWithSelector(
+        IStoreErrors.Store_IndexOutOfBounds.selector,
+        data.newThirdDataBytes.length,
+        type(uint56).max + data.thirdDataForUpdate.length - 1
+      )
     );
     IStore(this).updateInField(data.tableId, data.keyTuple, 2, type(uint56).max, data.thirdDataForUpdate, fieldLayout);
   }

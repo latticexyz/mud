@@ -603,25 +603,25 @@
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetFieldSlice",
     "name": "get field slice (cold, 1 slot)",
-    "gasUsed": 10692
+    "gasUsed": 10695
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetFieldSlice",
     "name": "get field slice (warm, 1 slot)",
-    "gasUsed": 2760
+    "gasUsed": 2763
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetFieldSlice",
     "name": "get field slice (semi-cold, 1 slot)",
-    "gasUsed": 4765
+    "gasUsed": 4768
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetFieldSlice",
     "name": "get field slice (warm, 2 slots)",
-    "gasUsed": 4991
+    "gasUsed": 4994
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
@@ -694,12 +694,6 @@
     "test": "testAccessEmptyData",
     "name": "access length of dynamic field of non-existing record",
     "gasUsed": 1118
-  },
-  {
-    "file": "test/StoreCoreGas.t.sol",
-    "test": "testAccessEmptyData",
-    "name": "access slice of dynamic field of non-existing record",
-    "gasUsed": 1897
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -795,7 +789,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: register table",
-    "gasUsed": 641436
+    "gasUsed": 641486
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -1077,7 +1071,7 @@
     "file": "test/tables/StoreHooksColdLoad.t.sol",
     "test": "testGetItem",
     "name": "StoreHooks: get 1 element (cold)",
-    "gasUsed": 8952
+    "gasUsed": 8955
   },
   {
     "file": "test/tables/StoreHooksColdLoad.t.sol",

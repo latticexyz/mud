@@ -9,12 +9,10 @@ interface IStoreErrors {
   error Store_TableNotFound(ResourceId tableId, string tableIdString);
   error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
 
-  error Store_NotDynamicField();
   error Store_InvalidDynamicDataLength(uint256 expected, uint256 received);
   error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
   error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
   error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
   error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
-  error Store_DataIndexOverflow(uint256 length, uint256 received);
   error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
 }

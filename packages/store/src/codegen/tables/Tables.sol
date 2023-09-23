@@ -343,14 +343,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        3,
-        _fieldLayout,
-        _index * 1,
-        (_index + 1) * 1
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -364,7 +357,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 3, _fieldLayout, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -382,7 +375,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, _fieldLayout, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -392,7 +385,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), _fieldLayout);
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
 
   /** Push a slice to abiEncodedKeyNames */
@@ -400,7 +393,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), _fieldLayout);
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
 
   /** Push a slice to abiEncodedKeyNames (using the specified store) */
@@ -408,7 +401,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), _fieldLayout);
+    _store.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
 
   /** Pop a slice from abiEncodedKeyNames */
@@ -416,7 +409,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 3, 1, _fieldLayout);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
 
   /** Pop a slice from abiEncodedKeyNames */
@@ -424,7 +417,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.popFromField(_tableId, _keyTuple, 3, 1, _fieldLayout);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
 
   /** Pop a slice from abiEncodedKeyNames (using the specified store) */
@@ -432,7 +425,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.popFromField(_tableId, _keyTuple, 3, 1, _fieldLayout);
+    _store.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
 
   /**
@@ -444,7 +437,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), _fieldLayout);
+      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)));
     }
   }
 
@@ -457,7 +450,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), _fieldLayout);
+      StoreCore.updateInDynamicField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)));
     }
   }
 
@@ -470,7 +463,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), _fieldLayout);
+      _store.updateInDynamicField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)));
     }
   }
 
@@ -570,14 +563,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        4,
-        _fieldLayout,
-        _index * 1,
-        (_index + 1) * 1
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -591,7 +577,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 4, _fieldLayout, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -609,7 +595,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 4, _fieldLayout, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -619,7 +605,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 4, bytes((_slice)), _fieldLayout);
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
   }
 
   /** Push a slice to abiEncodedFieldNames */
@@ -627,7 +613,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.pushToField(_tableId, _keyTuple, 4, bytes((_slice)), _fieldLayout);
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
   }
 
   /** Push a slice to abiEncodedFieldNames (using the specified store) */
@@ -635,7 +621,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.pushToField(_tableId, _keyTuple, 4, bytes((_slice)), _fieldLayout);
+    _store.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
   }
 
   /** Pop a slice from abiEncodedFieldNames */
@@ -643,7 +629,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 4, 1, _fieldLayout);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 1);
   }
 
   /** Pop a slice from abiEncodedFieldNames */
@@ -651,7 +637,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.popFromField(_tableId, _keyTuple, 4, 1, _fieldLayout);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 1);
   }
 
   /** Pop a slice from abiEncodedFieldNames (using the specified store) */
@@ -659,7 +645,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.popFromField(_tableId, _keyTuple, 4, 1, _fieldLayout);
+    _store.popFromDynamicField(_tableId, _keyTuple, 1, 1);
   }
 
   /**
@@ -671,7 +657,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 4, _index * 1, bytes((_slice)), _fieldLayout);
+      StoreSwitch.updateInDynamicField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
     }
   }
 
@@ -684,7 +670,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 4, _index * 1, bytes((_slice)), _fieldLayout);
+      StoreCore.updateInDynamicField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
     }
   }
 
@@ -697,7 +683,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 4, _index * 1, bytes((_slice)), _fieldLayout);
+      _store.updateInDynamicField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
     }
   }
 

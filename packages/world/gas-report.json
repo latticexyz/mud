@@ -75,7 +75,7 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "delete a composite record on a table with keysInTableModule installed",
-    "gasUsed": 161700
+    "gasUsed": 161709
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -93,7 +93,7 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "delete a record on a table with keysInTableModule installed",
-    "gasUsed": 86664
+    "gasUsed": 86667
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -165,31 +165,31 @@
     "file": "test/query.t.sol",
     "test": "testCombinedHasHasValueNotQuery",
     "name": "CombinedHasHasValueNotQuery",
-    "gasUsed": 106556
+    "gasUsed": 106583
   },
   {
     "file": "test/query.t.sol",
     "test": "testCombinedHasHasValueQuery",
     "name": "CombinedHasHasValueQuery",
-    "gasUsed": 54016
+    "gasUsed": 54025
   },
   {
     "file": "test/query.t.sol",
     "test": "testCombinedHasNotQuery",
     "name": "CombinedHasNotQuery",
-    "gasUsed": 134405
+    "gasUsed": 134453
   },
   {
     "file": "test/query.t.sol",
     "test": "testCombinedHasQuery",
     "name": "CombinedHasQuery",
-    "gasUsed": 84973
+    "gasUsed": 85000
   },
   {
     "file": "test/query.t.sol",
     "test": "testCombinedHasValueNotQuery",
     "name": "CombinedHasValueNotQuery",
-    "gasUsed": 86607
+    "gasUsed": 86634
   },
   {
     "file": "test/query.t.sol",
@@ -201,19 +201,19 @@
     "file": "test/query.t.sol",
     "test": "testHasQuery",
     "name": "HasQuery",
-    "gasUsed": 18876
+    "gasUsed": 18882
   },
   {
     "file": "test/query.t.sol",
     "test": "testHasQuery1000Keys",
     "name": "HasQuery with 1000 keys",
-    "gasUsed": 6315621
+    "gasUsed": 6318621
   },
   {
     "file": "test/query.t.sol",
     "test": "testHasQuery100Keys",
     "name": "HasQuery with 100 keys",
-    "gasUsed": 591715
+    "gasUsed": 592015
   },
   {
     "file": "test/query.t.sol",
@@ -225,7 +225,7 @@
     "file": "test/query.t.sol",
     "test": "testNotValueQuery",
     "name": "NotValueQuery",
-    "gasUsed": 47612
+    "gasUsed": 47621
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",

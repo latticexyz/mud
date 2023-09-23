@@ -353,7 +353,7 @@ library StoreCore {
   function spliceDynamicData(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex, // need this to compute the dynamic data location
+    uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
     bytes memory data
@@ -473,61 +473,83 @@ library StoreCore {
   }
 
   /**
-   * Push data to a field in a table with the given tableId, keyTuple tuple and value field layout
+   * Push data to a field at the dynamic field index in a table with the given table ID and keyTuple tuple
    */
-  function pushToField(
+  function pushToDynamicField(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory dataToPush,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    bytes memory dataToPush
   ) internal {
-    if (fieldIndex < fieldLayout.numStaticFields()) {
-      revert IStoreErrors.Store_NotDynamicField();
-    }
+    // Load the previous length of the field to set from storage to compute where to start to push
+    PackedCounter previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    uint40 previousFieldLength = uint40(previousEncodedLengths.atIndex(dynamicFieldIndex));
 
-    StoreCoreInternal._pushToDynamicField(tableId, keyTuple, fieldLayout, fieldIndex, dataToPush);
+    // Splice the dynamic data
+    StoreCoreInternal._spliceDynamicData({
+      tableId: tableId,
+      keyTuple: keyTuple,
+      dynamicFieldIndex: dynamicFieldIndex,
+      startWithinField: uint40(previousFieldLength),
+      deleteCount: 0,
+      data: dataToPush,
+      previousEncodedLengths: previousEncodedLengths
+    });
   }
 
   /**
-   * Pop data from a field in a table with the given tableId, key tuple and value field layout
+   * Pop data from a field at the dynamic field index in a table with the given table ID and key tuple
    */
-  function popFromField(
+  function popFromDynamicField(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
+    uint8 dynamicFieldIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
   ) internal {
-    if (fieldIndex < fieldLayout.numStaticFields()) {
-      revert IStoreErrors.Store_NotDynamicField();
-    }
+    // Load the previous length of the field to set from storage to compute where to start to push
+    PackedCounter previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    uint40 previousFieldLength = uint40(previousEncodedLengths.atIndex(dynamicFieldIndex));
 
-    StoreCoreInternal._popFromDynamicField(tableId, keyTuple, fieldLayout, fieldIndex, byteLengthToPop);
+    // Splice the dynamic data
+    StoreCoreInternal._spliceDynamicData({
+      tableId: tableId,
+      keyTuple: keyTuple,
+      dynamicFieldIndex: dynamicFieldIndex,
+      startWithinField: uint40(previousFieldLength - byteLengthToPop),
+      deleteCount: uint40(byteLengthToPop),
+      data: new bytes(0),
+      previousEncodedLengths: previousEncodedLengths
+    });
   }
 
   /**
    * Update data in a field in a table with the given tableId, key tuple and value field layout
    */
-  function updateInField(
+  function updateInDynamicField(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
+    uint8 dynamicFieldIndex,
     uint256 startByteIndex,
-    bytes memory dataToSet,
-    FieldLayout fieldLayout
+    bytes memory dataToSet
   ) internal {
-    if (fieldIndex < fieldLayout.numStaticFields()) {
-      revert IStoreErrors.Store_NotDynamicField();
+    // Verify that the index is in bounds of the dynamic field
+    PackedCounter previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    if (startByteIndex + dataToSet.length > previousEncodedLengths.atIndex(dynamicFieldIndex)) {
+      IStoreErrors.Store_IndexOutOfBounds(
+        previousEncodedLengths.atIndex(dynamicFieldIndex),
+        startByteIndex + dataToSet.length - 1
+      );
     }
 
-    // index must be checked because it could be arbitrarily large
-    // (but dataToSet.length can be unchecked - it won't overflow into another slot due to gas costs and hashed slots)
-    if (startByteIndex > type(uint40).max) {
-      revert IStoreErrors.Store_DataIndexOverflow(type(uint40).max, startByteIndex);
-    }
-
-    StoreCoreInternal._setDynamicFieldItem(tableId, keyTuple, fieldLayout, fieldIndex, startByteIndex, dataToSet);
+    StoreCoreInternal._spliceDynamicData({
+      tableId: tableId,
+      keyTuple: keyTuple,
+      startWithinField: uint40(startByteIndex),
+      deleteCount: uint40(dataToSet.length),
+      data: dataToSet,
+      previousEncodedLengths: previousEncodedLengths
+    });
   }
 
   /************************************************************************
@@ -647,20 +669,13 @@ library StoreCore {
   /**
    * Get a byte slice (including start, excluding end) of a single dynamic field from the given table ID and key tuple, with the given value field layout.
    */
-  function getFieldSlice(
+  function getDynamicFieldSlice(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    FieldLayout fieldLayout,
+    uint8 dynamicFieldIndex,
     uint256 start,
     uint256 end
   ) internal view returns (bytes memory) {
-    uint8 numStaticFields = uint8(fieldLayout.numStaticFields());
-    if (fieldIndex < numStaticFields) {
-      revert IStoreErrors.Store_NotDynamicField();
-    }
-    uint8 dynamicFieldIndex = fieldIndex - numStaticFields;
-
     // Verify the accessed data is within the bounds of the dynamic field.
     // This is necessary because we don't delete the dynamic data when a record is deleted,
     // but only decrease its length.
@@ -782,75 +797,6 @@ library StoreCoreInternal {
     }
   }
 
-  function _pushToDynamicField(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    FieldLayout fieldLayout,
-    uint8 fieldIndex,
-    bytes memory dataToPush
-  ) internal {
-    uint8 dynamicFieldIndex = fieldIndex - uint8(fieldLayout.numStaticFields());
-
-    // Load the previous length of the field to set from storage to compute where to start to push
-    PackedCounter previousEncodedLengths = _loadEncodedDynamicDataLength(tableId, keyTuple);
-    uint40 previousFieldLength = uint40(previousEncodedLengths.atIndex(dynamicFieldIndex));
-
-    // Splice the dynamic data
-    _spliceDynamicData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      dynamicFieldIndex: dynamicFieldIndex,
-      startWithinField: uint40(previousFieldLength),
-      deleteCount: 0,
-      data: dataToPush,
-      previousEncodedLengths: previousEncodedLengths
-    });
-  }
-
-  function _popFromDynamicField(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    FieldLayout fieldLayout,
-    uint8 fieldIndex,
-    uint256 byteLengthToPop
-  ) internal {
-    uint8 dynamicFieldIndex = fieldIndex - uint8(fieldLayout.numStaticFields());
-
-    // Load the previous length of the field to set from storage to compute where to start to push
-    PackedCounter previousEncodedLengths = _loadEncodedDynamicDataLength(tableId, keyTuple);
-    uint40 previousFieldLength = uint40(previousEncodedLengths.atIndex(dynamicFieldIndex));
-
-    // Splice the dynamic data
-    _spliceDynamicData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      dynamicFieldIndex: dynamicFieldIndex,
-      startWithinField: uint40(previousFieldLength - byteLengthToPop),
-      deleteCount: uint40(byteLengthToPop),
-      data: new bytes(0),
-      previousEncodedLengths: previousEncodedLengths
-    });
-  }
-
-  function _setDynamicFieldItem(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    FieldLayout fieldLayout,
-    uint8 fieldIndex,
-    uint256 startByteIndex,
-    bytes memory dataToSet
-  ) internal {
-    _spliceDynamicData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      dynamicFieldIndex: fieldIndex - uint8(fieldLayout.numStaticFields()),
-      startWithinField: uint40(startByteIndex),
-      deleteCount: uint40(dataToSet.length),
-      data: dataToSet,
-      previousEncodedLengths: _loadEncodedDynamicDataLength(tableId, keyTuple)
-    });
-  }
-
   /************************************************************************
    *
    *    GET DATA
@@ -937,9 +883,9 @@ library StoreCoreInternal {
   function _getDynamicDataLocation(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex
+    uint8 dynamicFieldIndex
   ) internal pure returns (uint256) {
-    return uint256(DYNMAIC_DATA_SLOT ^ bytes1(fieldIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
+    return uint256(DYNMAIC_DATA_SLOT ^ bytes1(dynamicFieldIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
   }
 
   /**
