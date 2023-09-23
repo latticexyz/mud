@@ -1048,6 +1048,7 @@ contract StoreCoreTest is Test, StoreMock {
     uint256 data3Length = IStore(this).getFieldLength(tableId, keyTuple, 1, fieldLayout);
     assertEq(data3Length, 0);
 
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 0));
     bytes memory data3Slice = IStore(this).getFieldSlice(tableId, keyTuple, 1, fieldLayout, 0, 0);
     assertEq(data3Slice.length, 0);
   }

@@ -612,9 +612,8 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.getFieldLength(tableId, keyTuple, 1, fieldLayout);
     endGasReport();
 
-    startGasReport("access slice of dynamic field of non-existing record");
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 0));
     StoreCore.getFieldSlice(tableId, keyTuple, 1, fieldLayout, 0, 0);
-    endGasReport();
   }
 
   function testHooks() public {

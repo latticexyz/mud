@@ -666,8 +666,8 @@ library StoreCore {
     // but only decrease its length.
     PackedCounter encodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     uint256 fieldLength = encodedLengths.atIndex(dynamicFieldIndex);
-    if (start > fieldLength || end > fieldLength) {
-      revert IStoreErrors.Store_OutOfBounds(fieldLength, start > end ? start : end);
+    if (start >= fieldLength || end > fieldLength) {
+      revert IStoreErrors.Store_IndexOutOfBounds(fieldLength, start >= fieldLength ? start : end - 1);
     }
 
     // Get the length and storage location of the dynamic field

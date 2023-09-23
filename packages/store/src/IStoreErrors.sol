@@ -11,7 +11,7 @@ interface IStoreErrors {
 
   error Store_NotDynamicField();
   error Store_InvalidDynamicDataLength(uint256 expected, uint256 received);
-  error Store_OutOfBounds(uint256 length, uint256 accessedIndex);
+  error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
   error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
   error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
   error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
