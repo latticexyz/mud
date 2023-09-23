@@ -361,45 +361,51 @@
   },
   {
     "file": "test/Mixed.t.sol",
-    "test": "testRegisterAndGetFieldLayout",
-    "name": "register Mixed table",
-    "gasUsed": 581438
+    "test": "testDeleteExternalCold",
+    "name": "delete record from Mixed (external, cold)",
+    "gasUsed": 36350
+  },
+  {
+    "file": "test/Mixed.t.sol",
+    "test": "testDeleteInternalCold",
+    "name": "delete record from Mixed (internal, cold)",
+    "gasUsed": 31146
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteExternal",
-    "name": "set record in Mixed (external)",
-    "gasUsed": 104622
+    "name": "set record in Mixed (external, cold)",
+    "gasUsed": 108604
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteExternal",
-    "name": "get record from Mixed (external)",
-    "gasUsed": 7089
+    "name": "get record from Mixed (external, warm)",
+    "gasUsed": 7078
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteExternal",
-    "name": "delete record from Mixed (external)",
-    "gasUsed": 10987
+    "name": "delete record from Mixed (external, warm)",
+    "gasUsed": 10970
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteInternal",
-    "name": "set record in Mixed (internal)",
-    "gasUsed": 103373
+    "name": "set record in Mixed (internal, cold)",
+    "gasUsed": 103358
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteInternal",
-    "name": "get record from Mixed (internal)",
-    "gasUsed": 6776
+    "name": "get record from Mixed (internal, warm)",
+    "gasUsed": 6764
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteInternal",
-    "name": "delete record from Mixed (internal)",
-    "gasUsed": 9775
+    "name": "delete record from Mixed (internal, warm)",
+    "gasUsed": 9762
   },
   {
     "file": "test/PackedCounter.t.sol",

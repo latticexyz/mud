@@ -13,11 +13,18 @@ import { PackedCounter } from "../src/PackedCounter.sol";
 contract MixedTest is Test, GasReporter, StoreMock {
   MixedData private testMixed;
 
-  function testRegisterAndGetFieldLayout() public {
-    startGasReport("register Mixed table");
-    Mixed.register();
-    endGasReport();
+  function setUp() public {
+    Mixed._register();
 
+    bytes32 key = keccak256("defaultkey");
+    uint32[] memory a32 = new uint32[](2);
+    a32[0] = 3;
+    a32[1] = 4;
+    string memory s = "some string";
+    Mixed.set({ key: key, u32: 1, u128: 2, a32: a32, s: s });
+  }
+
+  function testRegisterAndGetFieldLayout() public {
     FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(MixedTableId);
     FieldLayout declaredFieldLayout = Mixed.getFieldLayout();
 
@@ -25,8 +32,6 @@ contract MixedTest is Test, GasReporter, StoreMock {
   }
 
   function testRegisterAndGetSchema() public {
-    Mixed.register();
-
     Schema registeredSchema = StoreCore.getValueSchema(MixedTableId);
     Schema declaredSchema = Mixed.getValueSchema();
 
@@ -34,7 +39,6 @@ contract MixedTest is Test, GasReporter, StoreMock {
   }
 
   function testSetGetDeleteExternal() public {
-    Mixed.register();
     bytes32 key = keccak256("somekey");
 
     uint32[] memory a32 = new uint32[](2);
@@ -42,11 +46,11 @@ contract MixedTest is Test, GasReporter, StoreMock {
     a32[1] = 4;
     string memory s = "some string";
 
-    startGasReport("set record in Mixed (external)");
+    startGasReport("set record in Mixed (external, cold)");
     Mixed.set({ key: key, u32: 1, u128: 2, a32: a32, s: s });
     endGasReport();
 
-    startGasReport("get record from Mixed (external)");
+    startGasReport("get record from Mixed (external, warm)");
     MixedData memory mixed = Mixed.get(key);
     endGasReport();
 
@@ -56,13 +60,12 @@ contract MixedTest is Test, GasReporter, StoreMock {
     assertEq(mixed.a32[1], 4);
     assertEq(mixed.s, s);
 
-    startGasReport("delete record from Mixed (external)");
+    startGasReport("delete record from Mixed (external, warm)");
     Mixed.deleteRecord(key);
     endGasReport();
   }
 
   function testSetGetDeleteInternal() public {
-    Mixed._register();
     bytes32 key = keccak256("somekey");
 
     uint32[] memory a32 = new uint32[](2);
@@ -70,11 +73,11 @@ contract MixedTest is Test, GasReporter, StoreMock {
     a32[1] = 4;
     string memory s = "some string";
 
-    startGasReport("set record in Mixed (internal)");
+    startGasReport("set record in Mixed (internal, cold)");
     Mixed._set({ key: key, u32: 1, u128: 2, a32: a32, s: s });
     endGasReport();
 
-    startGasReport("get record from Mixed (internal)");
+    startGasReport("get record from Mixed (internal, warm)");
     MixedData memory mixed = Mixed._get(key);
     endGasReport();
 
@@ -84,7 +87,23 @@ contract MixedTest is Test, GasReporter, StoreMock {
     assertEq(mixed.a32[1], 4);
     assertEq(mixed.s, s);
 
-    startGasReport("delete record from Mixed (internal)");
+    startGasReport("delete record from Mixed (internal, warm)");
+    Mixed._deleteRecord(key);
+    endGasReport();
+  }
+
+  function testDeleteExternalCold() public {
+    bytes32 key = keccak256("defaultkey");
+
+    startGasReport("delete record from Mixed (external, cold)");
+    Mixed.deleteRecord(key);
+    endGasReport();
+  }
+
+  function testDeleteInternalCold() public {
+    bytes32 key = keccak256("defaultkey");
+
+    startGasReport("delete record from Mixed (internal, cold)");
     Mixed._deleteRecord(key);
     endGasReport();
   }
