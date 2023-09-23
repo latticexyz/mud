@@ -55,11 +55,19 @@
       bytes calldata data
     ) external;
   }
-
   ```
 
-- All methods that are only valid for dynamic fields (`pushToField`, `popFromField`, `updateInField`, `getFieldSlice`)
-  have been renamed to make this more explicit (`pushToDynamicField`, `popFromDynamicField`, `updateInDynamicField`, `getDynamicFieldSlice`).
+- The `updateInField` method has been removed from `IStore`, as it's almost identical to the more general `spliceDynamicData`.
+  If you're manually calling `updateInField`, here is how to upgrade to `spliceDynamicData`:
+  
+  ```diff
+  - store.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+  + uint8 dynamicFieldIndex = fieldIndex - fieldLayout.numStaticFields();
+  + store.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, uint40(startByteIndex), uint40(dataToSet.length), dataToSet);
+  ```
+
+- All other methods that are only valid for dynamic fields (`pushToField`, `popFromField`, `getFieldSlice`)
+  have been renamed to make this more explicit (`pushToDynamicField`, `popFromDynamicField`, `getDynamicFieldSlice`).
 
   Their `fieldIndex` parameter has been replaced by a `dynamicFieldIndex` parameter, which is the index relative to the first dynamic field (i.e. `dynamicFieldIndex` = `fieldIndex` - `numStaticFields`).
   The `FieldLayout` parameter has been removed, as it was only used to calculate the `dynamicFieldIndex` in the method.
@@ -83,17 +91,6 @@
   -   uint8 fieldIndex,
   +   uint8 dynamicFieldIndex,
       uint256 byteLengthToPop,
-  -   FieldLayout fieldLayout
-    ) external;
-
-  - function updateInField(
-  + function updateInDynamicField(
-      ResourceId tableId,
-      bytes32[] calldata keyTuple,
-  -   uint8 fieldIndex,
-  +   uint8 dynamicFieldIndex,
-      uint256 startByteIndex,
-      bytes calldata dataToSet,
   -   FieldLayout fieldLayout
     ) external;
 
