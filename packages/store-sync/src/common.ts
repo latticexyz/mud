@@ -114,6 +114,8 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
     blockNumber: bigint | null;
     tables: TableWithRecords[];
   };
+  /** Sky Strife-specific option to filter data by match ID */
+  matchId?: number;
 };
 
 export type SyncResult<TConfig extends StoreConfig = StoreConfig> = {

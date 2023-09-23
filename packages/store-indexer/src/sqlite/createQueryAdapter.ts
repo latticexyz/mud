@@ -13,19 +13,20 @@ import { Hex, getAddress } from "viem";
  */
 export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", any>): Promise<QueryAdapter> {
   const adapter: QueryAdapter = {
-    async findAll({ chainId, address, tableIds }) {
+    async findAll({ chainId, address, tableIds, matchId }) {
       const tables = getTables(database)
         .filter((table) => address == null || getAddress(address) === getAddress(table.address))
         .filter((table) => tableIds == null || tableIds.includes(table.tableId))
         .filter((table) =>
           // we don't need KeysWithValue tables
-          address === "0xB41e747bC9d07c85F020618A3A07d50F96703A78" ? table.namespace !== "keyswval" : true
+          matchId != null ? table.namespace !== "keyswval" : true
         );
+
       const entities = ((): Hex[] => {
-        if (address !== "0xB41e747bC9d07c85F020618A3A07d50F96703A78") return [];
+        if (!address || !matchId) return [];
         try {
           const Position = createSqliteTable({
-            address: "0xB41e747bC9d07c85F020618A3A07d50F96703A78",
+            address,
             namespace: "",
             name: "Position",
             keySchema: { key: "bytes32" },
@@ -35,8 +36,7 @@ export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", an
               z: "int32",
             },
           });
-          // TODO: configurable match ID
-          const positions = database.select().from(Position).where(eq(Position.z, 137)).all();
+          const positions = database.select().from(Position).where(eq(Position.z, matchId)).all();
           return positions.map((pos) => pos.key);
         } catch (error: unknown) {
           return [];

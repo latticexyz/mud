@@ -27,6 +27,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   initialState,
   indexerUrl,
   startSync = true,
+  matchId,
 }: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
   const { storageAdapter, components } = recsStorage({ world, config });
 
@@ -39,6 +40,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     maxBlockRange,
     indexerUrl,
     initialState,
+    matchId,
     onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed, message }) => {
       if (getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE) {
         setComponent(components.SyncProgress, singletonEntity, {
