@@ -456,19 +456,10 @@ library StoreCore {
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
     Storage.store({ storagePointer: staticDataLocation, offset: 0, data: new bytes(fieldLayout.staticDataLength()) });
 
-    // If there are dynamic fields, delete the dynamic data
-    uint256 numDynamicFields = fieldLayout.numDynamicFields();
-    if (numDynamicFields > 0) {
+    // If there are dynamic fields, set the dynamic data length to 0.
+    // We don't need to delete the dynamic data because it will be overwritten when a new record is set.
+    if (fieldLayout.numDynamicFields() > 0) {
       uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, keyTuple);
-      PackedCounter dynamicDataLength = PackedCounter.wrap(Storage.load({ storagePointer: dynamicDataLengthLocation }));
-
-      // Delete dynamic data
-      for (uint256 i; i < numDynamicFields; i++) {
-        uint256 dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, uint8(i));
-        Storage.zero({ storagePointer: dynamicDataLocation, length: dynamicDataLength.atIndex(uint8(i)) });
-      }
-
-      // Set the dynamic data length to 0
       Storage.zero({ storagePointer: dynamicDataLengthLocation, length: 32 });
     }
 
@@ -655,7 +646,6 @@ library StoreCore {
 
   /**
    * Get a byte slice (including start, excluding end) of a single dynamic field from the given table ID and key tuple, with the given value field layout.
-   * The slice is unchecked and will return invalid data if `start`:`end` overflow.
    */
   function getFieldSlice(
     ResourceId tableId,
@@ -669,9 +659,18 @@ library StoreCore {
     if (fieldIndex < numStaticFields) {
       revert IStoreErrors.Store_NotDynamicField();
     }
+    uint8 dynamicFieldIndex = fieldIndex - numStaticFields;
+
+    // Verify the accessed data is within the bounds of the dynamic field.
+    // This is necessary because we don't delete the dynamic data when a record is deleted,
+    // but only decrease its length.
+    PackedCounter encodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    uint256 fieldLength = encodedLengths.atIndex(dynamicFieldIndex);
+    if (start > fieldLength || end > fieldLength) {
+      revert IStoreErrors.Store_OutOfBounds(fieldLength, start > end ? start : end);
+    }
 
     // Get the length and storage location of the dynamic field
-    uint8 dynamicFieldIndex = fieldIndex - numStaticFields;
     uint256 location = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
 
     return Storage.load({ storagePointer: location, length: end - start, offset: start });

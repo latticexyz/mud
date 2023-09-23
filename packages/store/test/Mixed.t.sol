@@ -20,8 +20,7 @@ contract MixedTest is Test, GasReporter, StoreMock {
     uint32[] memory a32 = new uint32[](2);
     a32[0] = 3;
     a32[1] = 4;
-    string
-      memory s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas dapibus velit a ante porta pulvinar. Integer semper quam erat, nec pellentesque nunc feugiat sed. Pellentesque aliquam quam sapien, rutrum egestas sapien vestibulum quis. Suspendisse nisi leo, tincidunt at mauris tincidunt, dapibus luctus dui. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec eget finibus odio. Maecenas velit diam, fermentum et consectetur at, posuere vitae magna.";
+    string memory s = "Lorem ipsum dolor sit amet";
     Mixed.set({ key: key, u32: 1, u128: 2, a32: a32, s: s });
   }
 

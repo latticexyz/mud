@@ -363,13 +363,13 @@
     "file": "test/Mixed.t.sol",
     "test": "testDeleteExternalCold",
     "name": "delete record from Mixed (external, cold)",
-    "gasUsed": 112205
+    "gasUsed": 24434
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testDeleteInternalCold",
     "name": "delete record from Mixed (internal, cold)",
-    "gasUsed": 107001
+    "gasUsed": 19230
   },
   {
     "file": "test/Mixed.t.sol",
@@ -387,7 +387,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteExternal",
     "name": "delete record from Mixed (external, warm)",
-    "gasUsed": 10970
+    "gasUsed": 8750
   },
   {
     "file": "test/Mixed.t.sol",
@@ -405,7 +405,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteInternal",
     "name": "delete record from Mixed (internal, warm)",
-    "gasUsed": 9762
+    "gasUsed": 7543
   },
   {
     "file": "test/PackedCounter.t.sol",
@@ -603,25 +603,25 @@
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetFieldSlice",
     "name": "get field slice (cold, 1 slot)",
-    "gasUsed": 8022
+    "gasUsed": 10692
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetFieldSlice",
     "name": "get field slice (warm, 1 slot)",
-    "gasUsed": 2090
+    "gasUsed": 2760
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetFieldSlice",
     "name": "get field slice (semi-cold, 1 slot)",
-    "gasUsed": 4093
+    "gasUsed": 4765
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetFieldSlice",
     "name": "get field slice (warm, 2 slots)",
-    "gasUsed": 4319
+    "gasUsed": 4991
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
@@ -699,13 +699,13 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testAccessEmptyData",
     "name": "access slice of dynamic field of non-existing record",
-    "gasUsed": 1224
+    "gasUsed": 1897
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testDeleteData",
     "name": "delete record (complex data, 3 slots)",
-    "gasUsed": 10293
+    "gasUsed": 8073
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -753,7 +753,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 18747
+    "gasUsed": 18733
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -777,7 +777,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 22772
+    "gasUsed": 20399
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -1041,13 +1041,13 @@
     "file": "test/tables/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: delete record (warm)",
-    "gasUsed": 11840
+    "gasUsed": 10487
   },
   {
     "file": "test/tables/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: set field (warm)",
-    "gasUsed": 51121
+    "gasUsed": 31220
   },
   {
     "file": "test/tables/StoreHooks.t.sol",
@@ -1065,7 +1065,7 @@
     "file": "test/tables/StoreHooksColdLoad.t.sol",
     "test": "testDelete",
     "name": "StoreHooks: delete record (cold)",
-    "gasUsed": 25337
+    "gasUsed": 19345
   },
   {
     "file": "test/tables/StoreHooksColdLoad.t.sol",
@@ -1077,7 +1077,7 @@
     "file": "test/tables/StoreHooksColdLoad.t.sol",
     "test": "testGetItem",
     "name": "StoreHooks: get 1 element (cold)",
-    "gasUsed": 6282
+    "gasUsed": 8952
   },
   {
     "file": "test/tables/StoreHooksColdLoad.t.sol",
