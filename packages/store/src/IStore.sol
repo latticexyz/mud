@@ -20,7 +20,15 @@ interface IStoreRead {
   function getKeySchema(ResourceId tableId) external view returns (Schema keySchema);
 
   /**
-   * Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given value field layout
+   * Get full record (all fields, static and dynamic data) for the given tableId and key tuple, loading the field layout from storage
+   */
+  function getRecord(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple
+  ) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+
+  /**
+   * Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given field layout
    */
   function getRecord(
     ResourceId tableId,
@@ -29,7 +37,16 @@ interface IStoreRead {
   ) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 
   /**
-   * Get a single field from the given tableId and key tuple, with the given value field layout
+   * Get a single field from the given tableId and key tuple, loading the field layout from storage
+   */
+  function getField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex
+  ) external view returns (bytes memory data);
+
+  /**
+   * Get a single field from the given tableId and key tuple, with the given field layout
    */
   function getField(
     ResourceId tableId,
@@ -61,6 +78,15 @@ interface IStoreRead {
   ) external view returns (bytes memory);
 
   /**
+   * Get the byte length of a single field from the given tableId and key tuple, loading the field layout from storage
+   */
+  function getFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex
+  ) external view returns (uint256);
+
+  /**
    * Get the byte length of a single field from the given tableId and key tuple, with the given value field layout
    */
   function getFieldLength(
@@ -68,6 +94,15 @@ interface IStoreRead {
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
+  ) external view returns (uint256);
+
+  /**
+   * Get the byte length of a single dynamic field from the given tableId and key tuple
+   */
+  function getDynamicFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex
   ) external view returns (uint256);
 
   /**
@@ -128,6 +163,9 @@ interface IStoreWrite {
     uint40 deleteCount,
     bytes calldata data
   ) external;
+
+  // Set partial data at field index
+  function setField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex, bytes calldata data) external;
 
   // Set partial data at field index
   function setField(

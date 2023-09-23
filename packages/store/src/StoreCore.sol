@@ -370,7 +370,14 @@ library StoreCore {
   }
 
   /**
-   * Set data for a field in a table with the given tableId, key tuple and value field layout
+   * Set data for a field at the given index in a table with the given tableId, key tuple, loading the field layout from storage
+   */
+  function setField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, bytes memory data) internal {
+    setField(tableId, keyTuple, fieldIndex, data, getFieldLayout(tableId));
+  }
+
+  /**
+   * Set data for a field at the given index in a table with the given tableId, key tuple and value field layout
    */
   function setField(
     ResourceId tableId,
@@ -559,7 +566,17 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Get full record (all fields, static and dynamic data) for the given table ID and key tuple, with the given value field layout
+   * Get full record (all fields, static and dynamic data) for the given table ID and key tuple, loading the field layout from storage
+   */
+  function getRecord(
+    ResourceId tableId,
+    bytes32[] memory keyTuple
+  ) internal view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
+    return getRecord(tableId, keyTuple, getFieldLayout(tableId));
+  }
+
+  /**
+   * Get full record (all fields, static and dynamic data) for the given table ID and key tuple, with the given field layout
    */
   function getRecord(
     ResourceId tableId,
@@ -590,6 +607,17 @@ library StoreCore {
         memoryPointer += length;
       }
     }
+  }
+
+  /**
+   * Get a single field from the given table ID and key tuple, loading the field layout from storage
+   */
+  function getField(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex
+  ) internal view returns (bytes memory) {
+    return getField(tableId, keyTuple, fieldIndex, getFieldLayout(tableId));
   }
 
   /**
@@ -648,6 +676,17 @@ library StoreCore {
   }
 
   /**
+   * Get the byte length of a single field from the given table ID and key tuple
+   */
+  function getFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex
+  ) internal view returns (uint256) {
+    return getFieldLength(tableId, keyTuple, fieldIndex, getFieldLayout(tableId));
+  }
+
+  /**
    * Get the byte length of a single field from the given table ID and key tuple, with the given value field layout
    */
   function getFieldLength(
@@ -660,10 +699,19 @@ library StoreCore {
     if (fieldIndex < numStaticFields) {
       return fieldLayout.atIndex(fieldIndex);
     } else {
-      // Get the length and storage location of the dynamic field
-      uint8 dynamicFieldLayoutIndex = fieldIndex - numStaticFields;
-      return StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple).atIndex(dynamicFieldLayoutIndex);
+      return getDynamicFieldLength(tableId, keyTuple, fieldIndex - numStaticFields);
     }
+  }
+
+  /**
+   * Get the byte length of a single dynamic field from the given table ID and key tuple
+   */
+  function getDynamicFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex
+  ) internal view returns (uint256) {
+    return StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple).atIndex(dynamicFieldIndex);
   }
 
   /**

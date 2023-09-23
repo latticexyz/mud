@@ -787,8 +787,10 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.setField.selector));
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.setStaticField.selector)
+    );
+    world.setStaticField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
   }
 
   function testPushToDynamicField() public {

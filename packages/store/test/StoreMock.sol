@@ -56,6 +56,16 @@ contract StoreMock is IStore, StoreRead {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
+    bytes calldata data
+  ) public virtual {
+    StoreCore.setField(tableId, keyTuple, fieldIndex, data);
+  }
+
+  // Set partial data at field index
+  function setField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
   ) public virtual {
