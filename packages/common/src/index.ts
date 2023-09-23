@@ -9,4 +9,3 @@ export * from "./resourceIdToHex";
 export * from "./resourceTypes";
 export * from "./spliceHex";
 export * from "./transportObserver";
-export * from "./getByteLength";

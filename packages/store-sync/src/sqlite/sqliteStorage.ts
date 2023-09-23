@@ -1,4 +1,4 @@
-import { Hex, PublicClient, concatHex, getAddress } from "viem";
+import { Hex, PublicClient, concatHex, getAddress, size } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
@@ -12,7 +12,7 @@ import { schemaVersion } from "./schemaVersion";
 import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { getByteLength, hexToResourceId, spliceHex } from "@latticexyz/common";
+import { hexToResourceId, spliceHex } from "@latticexyz/common";
 import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
@@ -131,12 +131,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
           const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
           const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
-          const newStaticData = spliceHex(
-            previousStaticData,
-            log.args.start,
-            getByteLength(log.args.data),
-            log.args.data
-          );
+          const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
           const newValue = decodeValueArgs(table.valueSchema, {
             staticData: newStaticData,
             encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
