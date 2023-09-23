@@ -98,22 +98,14 @@ contract WorldTestSystem is System {
     FieldLayout fieldLayout = StoreSwitch.getFieldLayout(tableId);
 
     if (StoreSwitch.getStoreAddress() == address(this)) {
-      StoreCore.setRecord(
-        tableId,
-        keyTuple,
-        abi.encodePacked(data),
-        PackedCounter.wrap(bytes32(0)),
-        new bytes(0),
-        fieldLayout
-      );
+      StoreCore.setRecord(tableId, keyTuple, abi.encodePacked(data), PackedCounter.wrap(bytes32(0)), new bytes(0));
     } else {
       IBaseWorld(msg.sender).setRecord(
         tableId,
         keyTuple,
         abi.encodePacked(data),
         PackedCounter.wrap(bytes32(0)),
-        new bytes(0),
-        fieldLayout
+        new bytes(0)
       );
     }
   }
@@ -795,11 +787,13 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.setField.selector));
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.setStaticField.selector)
+    );
+    world.setStaticField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
   }
 
-  function testPushToField() public {
+  function testPushToDynamicField() public {
     bytes14 namespace = "testPushField";
     bytes16 name = "testTable";
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
@@ -817,29 +811,31 @@ contract WorldTest is Test, GasReporter {
     bytes memory encodedData = EncodeArray.encode(dataToPush);
 
     startGasReport("Push data to the table");
-    world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
+    world.pushToDynamicField(tableId, keyTuple, 0, encodedData);
     endGasReport();
 
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Delete the data
-    world.deleteRecord(tableId, keyTuple, fieldLayout);
+    world.deleteRecord(tableId, keyTuple);
 
     // Push data to the table via direct access
-    world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
+    world.pushToDynamicField(tableId, keyTuple, 0, encodedData);
 
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), namespace, name, RESOURCE_TABLE);
-    world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
+    world.pushToDynamicField(tableId, keyTuple, 0, encodedData);
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.pushToField.selector));
-    world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.pushToDynamicField.selector)
+    );
+    world.pushToDynamicField(tableId, keyTuple, 0, encodedData);
   }
 
   function testDeleteRecord() public {
@@ -853,45 +849,31 @@ contract WorldTest is Test, GasReporter {
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
     // Write data to the table and expect it to be written
-    world.setRecord(
-      tableId,
-      singletonKey,
-      abi.encodePacked(true),
-      PackedCounter.wrap(bytes32(0)),
-      new bytes(0),
-      fieldLayout
-    );
+    world.setRecord(tableId, singletonKey, abi.encodePacked(true), PackedCounter.wrap(bytes32(0)), new bytes(0));
     assertTrue(Bool.get(world, tableId));
 
     startGasReport("Delete record");
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
+    world.deleteRecord(tableId, singletonKey);
     endGasReport();
 
     // expect it to be deleted
     assertFalse(Bool.get(world, tableId));
 
     // Write data to the table and expect it to be written
-    world.setRecord(
-      tableId,
-      singletonKey,
-      abi.encodePacked(true),
-      PackedCounter.wrap(bytes32(0)),
-      new bytes(0),
-      fieldLayout
-    );
+    world.setRecord(tableId, singletonKey, abi.encodePacked(true), PackedCounter.wrap(bytes32(0)), new bytes(0));
     assertTrue(Bool.get(world, tableId));
     assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to delete from an address that doesn't have access
     _expectAccessDenied(address(0x02), namespace, name, RESOURCE_TABLE);
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
+    world.deleteRecord(tableId, singletonKey);
 
     // Expect the World to not have access
     vm.prank(address(world));
     vm.expectRevert(
       abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.deleteRecord.selector)
     );
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
+    world.deleteRecord(tableId, singletonKey);
   }
 
   function testCall() public {
@@ -1093,24 +1075,14 @@ contract WorldTest is Test, GasReporter {
       )
     );
 
-    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(
-      abi.encodeCall(
-        IStoreHook.onBeforeSpliceStaticData,
-        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
-      )
-    );
+    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeSpliceStaticData, (tableId, singletonKey, 0, staticData)));
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(
-      abi.encodeCall(
-        IStoreHook.onAfterSpliceStaticData,
-        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
-      )
-    );
+    emit HookCalled(abi.encodeCall(IStoreHook.onAfterSpliceStaticData, (tableId, singletonKey, 0, staticData)));
 
     world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 
@@ -1121,7 +1093,7 @@ contract WorldTest is Test, GasReporter {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(abi.encodeCall(IStoreHook.onAfterDeleteRecord, (tableId, singletonKey, fieldLayout)));
 
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
+    world.deleteRecord(tableId, singletonKey);
 
     // Expect an error when trying to register an address that doesn't implement the IStoreHook interface
     vm.expectRevert(
@@ -1154,7 +1126,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
     vm.expectRevert(bytes("onBeforeSetRecord"));
-    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Expect a revert when the RevertSubscriber's onBeforeSpliceStaticData hook is called
     vm.expectRevert(bytes("onBeforeSpliceStaticData"));
@@ -1162,7 +1134,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect a revert when the RevertSubscriber's onBeforeDeleteRecord hook is called
     vm.expectRevert(bytes("onBeforeDeleteRecord"));
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
+    world.deleteRecord(tableId, singletonKey);
 
     // Unregister the RevertSubscriber
     world.unregisterStoreHook(tableId, revertSubscriber);
@@ -1184,24 +1156,14 @@ contract WorldTest is Test, GasReporter {
       )
     );
 
-    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(
-      abi.encodeCall(
-        IStoreHook.onBeforeSpliceStaticData,
-        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
-      )
-    );
+    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeSpliceStaticData, (tableId, singletonKey, 0, staticData)));
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(
-      abi.encodeCall(
-        IStoreHook.onAfterSpliceStaticData,
-        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
-      )
-    );
+    emit HookCalled(abi.encodeCall(IStoreHook.onAfterSpliceStaticData, (tableId, singletonKey, 0, staticData)));
 
     world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 
@@ -1212,7 +1174,7 @@ contract WorldTest is Test, GasReporter {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(abi.encodeCall(IStoreHook.onAfterDeleteRecord, (tableId, singletonKey, fieldLayout)));
 
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
+    world.deleteRecord(tableId, singletonKey);
   }
 
   function testRegisterSystemHook() public {

@@ -19,7 +19,6 @@ export async function setContractData(page: Page, data: Data) {
         record.staticData,
         record.encodedLengths,
         record.dynamicData,
-        record.fieldLayout,
       ]);
 
       // Wait for transactions to be confirmed

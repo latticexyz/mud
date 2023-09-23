@@ -1,4 +1,4 @@
-import { Hex, PublicClient, concatHex } from "viem";
+import { Hex, PublicClient, concatHex, size } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { eq, inArray } from "drizzle-orm";
 import { buildTable } from "./buildTable";
@@ -132,7 +132,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
           const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
           const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
-          const newStaticData = spliceHex(previousStaticData, log.args.start, log.args.deleteCount, log.args.data);
+          const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
           const newValue = decodeValueArgs(table.valueSchema, {
             staticData: newStaticData,
             encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",

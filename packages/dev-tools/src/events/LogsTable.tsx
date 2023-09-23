@@ -52,7 +52,7 @@ export function LogsTable({ logs }: Props) {
                     })
                   : null}
                 {log.eventName === "Store_SpliceStaticData"
-                  ? JSON.stringify({ start: log.args.start, deleteCount: log.args.deleteCount, data: log.args.data })
+                  ? JSON.stringify({ start: log.args.start, data: log.args.data })
                   : null}
                 {log.eventName === "Store_SpliceDynamicData"
                   ? JSON.stringify({

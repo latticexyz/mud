@@ -123,7 +123,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((u32)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((u32)), _fieldLayout);
   }
 
   /** Set u32 */
@@ -131,7 +131,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((u32)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((u32)), _fieldLayout);
   }
 
   /** Set u32 (using the specified store) */
@@ -139,7 +139,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((u32)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((u32)), _fieldLayout);
   }
 
   /** Get u128 */
@@ -174,7 +174,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((u128)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((u128)), _fieldLayout);
   }
 
   /** Set u128 */
@@ -182,7 +182,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.setField(_tableId, _keyTuple, 1, abi.encodePacked((u128)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((u128)), _fieldLayout);
   }
 
   /** Set u128 (using the specified store) */
@@ -190,7 +190,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((u128)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((u128)), _fieldLayout);
   }
 
   /** Get a32 */
@@ -225,7 +225,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode((a32)), _fieldLayout);
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((a32)));
   }
 
   /** Set a32 */
@@ -233,7 +233,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.setField(_tableId, _keyTuple, 2, EncodeArray.encode((a32)), _fieldLayout);
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((a32)));
   }
 
   /** Set a32 (using the specified store) */
@@ -241,7 +241,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setField(_tableId, _keyTuple, 2, EncodeArray.encode((a32)), _fieldLayout);
+    _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((a32)));
   }
 
   /** Get the length of a32 */
@@ -249,7 +249,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, _fieldLayout);
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 4;
     }
@@ -260,7 +260,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 2, _fieldLayout);
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 4;
     }
@@ -271,7 +271,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, _fieldLayout);
+    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 4;
     }
@@ -286,14 +286,7 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        2,
-        _fieldLayout,
-        _index * 4,
-        (_index + 1) * 4
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -307,7 +300,7 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 2, _fieldLayout, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -321,7 +314,7 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, _fieldLayout, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -331,7 +324,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), _fieldLayout);
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to a32 */
@@ -339,7 +332,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), _fieldLayout);
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to a32 (using the specified store) */
@@ -347,7 +340,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), _fieldLayout);
+    _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Pop an element from a32 */
@@ -355,7 +348,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 2, 4, _fieldLayout);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 4);
   }
 
   /** Pop an element from a32 */
@@ -363,7 +356,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.popFromField(_tableId, _keyTuple, 2, 4, _fieldLayout);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 4);
   }
 
   /** Pop an element from a32 (using the specified store) */
@@ -371,7 +364,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.popFromField(_tableId, _keyTuple, 2, 4, _fieldLayout);
+    _store.popFromDynamicField(_tableId, _keyTuple, 0, 4);
   }
 
   /**
@@ -383,7 +376,8 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -396,7 +390,8 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -409,7 +404,8 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+      bytes memory _encoded = abi.encodePacked((_element));
+      _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -445,7 +441,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 3, bytes((s)), _fieldLayout);
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, bytes((s)));
   }
 
   /** Set s */
@@ -453,7 +449,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.setField(_tableId, _keyTuple, 3, bytes((s)), _fieldLayout);
+    StoreCore.setDynamicField(_tableId, _keyTuple, 1, bytes((s)));
   }
 
   /** Set s (using the specified store) */
@@ -461,7 +457,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setField(_tableId, _keyTuple, 3, bytes((s)), _fieldLayout);
+    _store.setDynamicField(_tableId, _keyTuple, 1, bytes((s)));
   }
 
   /** Get the length of s */
@@ -469,7 +465,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, _fieldLayout);
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 1);
     unchecked {
       return _byteLength / 1;
     }
@@ -480,7 +476,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 3, _fieldLayout);
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
     unchecked {
       return _byteLength / 1;
     }
@@ -491,7 +487,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, _fieldLayout);
+    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 1);
     unchecked {
       return _byteLength / 1;
     }
@@ -506,14 +502,7 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        3,
-        _fieldLayout,
-        _index * 1,
-        (_index + 1) * 1
-      );
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
       return (string(_blob));
     }
   }
@@ -527,7 +516,7 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 3, _fieldLayout, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
       return (string(_blob));
     }
   }
@@ -541,7 +530,7 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, _fieldLayout, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
       return (string(_blob));
     }
   }
@@ -551,7 +540,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), _fieldLayout);
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
   }
 
   /** Push a slice to s */
@@ -559,7 +548,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), _fieldLayout);
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
   }
 
   /** Push a slice to s (using the specified store) */
@@ -567,7 +556,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), _fieldLayout);
+    _store.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
   }
 
   /** Pop a slice from s */
@@ -575,7 +564,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 3, 1, _fieldLayout);
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 1);
   }
 
   /** Pop a slice from s */
@@ -583,7 +572,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreCore.popFromField(_tableId, _keyTuple, 3, 1, _fieldLayout);
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 1);
   }
 
   /** Pop a slice from s (using the specified store) */
@@ -591,7 +580,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.popFromField(_tableId, _keyTuple, 3, 1, _fieldLayout);
+    _store.popFromDynamicField(_tableId, _keyTuple, 1, 1);
   }
 
   /**
@@ -603,7 +592,8 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), _fieldLayout);
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -616,7 +606,8 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), _fieldLayout);
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -629,7 +620,8 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), _fieldLayout);
+      bytes memory _encoded = bytes((_slice));
+      _store.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -682,7 +674,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
@@ -708,7 +700,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using the data struct */
@@ -721,7 +713,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using the data struct */
@@ -747,7 +739,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /**
@@ -801,7 +793,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
@@ -817,7 +809,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack static data using this table's schema */

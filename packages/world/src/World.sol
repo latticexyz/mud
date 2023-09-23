@@ -117,28 +117,26 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
+    bytes calldata dynamicData
   ) public virtual requireNoCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
   }
 
   function spliceStaticData(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes calldata data
   ) public virtual requireNoCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Splice the static data
-    StoreCore.spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+    StoreCore.spliceStaticData(tableId, keyTuple, start, data);
   }
 
   function spliceDynamicData(
@@ -164,6 +162,23 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
+    bytes calldata data
+  ) public virtual requireNoCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Set the field
+    StoreCore.setField(tableId, keyTuple, fieldIndex, data);
+  }
+
+  /**
+   * Write a field in the table at the given tableId.
+   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   */
+  function setField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
   ) public virtual requireNoCallback {
@@ -175,74 +190,84 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   }
 
   /**
-   * Push data to the end of a field in the table at the given tableId.
+   * Write a static field in the table at the given tableId.
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
-  function pushToField(
+  function setStaticField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
-    bytes calldata dataToPush,
+    bytes calldata data,
     FieldLayout fieldLayout
   ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
+    // Set the field
+    StoreCore.setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
+  }
+
+  /**
+   * Write a dynamic field in the table at the given tableId.
+   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   */
+  function setDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes calldata data
+  ) public virtual requireNoCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Set the field
+    StoreCore.setDynamicField(tableId, keyTuple, dynamicFieldIndex, data);
+  }
+
+  /**
+   * Push data to the end of a field in the table at the given tableId.
+   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   */
+  function pushToDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes calldata dataToPush
+  ) public virtual requireNoCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
     // Push to the field
-    StoreCore.pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
+    StoreCore.pushToDynamicField(tableId, keyTuple, dynamicFieldIndex, dataToPush);
   }
 
   /**
    * Pop data from the end of a field in the table at the given tableId.
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
-  function popFromField(
+  function popFromDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    uint256 byteLengthToPop,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    uint256 byteLengthToPop
   ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
-  }
-
-  /**
-   * Update data at `startByteIndex` of a field in the table at the given tableId.
-   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
-   */
-  function updateInField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    uint256 startByteIndex,
-    bytes calldata dataToSet,
-    FieldLayout fieldLayout
-  ) public virtual requireNoCallback {
-    // Require access to namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
-
-    // Update data in the field
-    StoreCore.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+    StoreCore.popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
   }
 
   /**
    * Delete a record in the table at the given tableId.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    FieldLayout fieldLayout
-  ) public virtual requireNoCallback {
+  function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Delete the record
-    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
+    StoreCore.deleteRecord(tableId, keyTuple);
   }
 
   /************************************************************************

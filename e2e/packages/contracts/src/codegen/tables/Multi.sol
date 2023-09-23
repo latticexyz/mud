@@ -135,7 +135,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((num)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((num)), _fieldLayout);
   }
 
   /** Set num */
@@ -146,7 +146,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((num)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((num)), _fieldLayout);
   }
 
   /** Set num (using the specified store) */
@@ -157,7 +157,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((num)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((num)), _fieldLayout);
   }
 
   /** Get value */
@@ -204,7 +204,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((value)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value)), _fieldLayout);
   }
 
   /** Set value */
@@ -215,7 +215,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreCore.setField(_tableId, _keyTuple, 1, abi.encodePacked((value)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value)), _fieldLayout);
   }
 
   /** Set value (using the specified store) */
@@ -226,7 +226,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((value)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value)), _fieldLayout);
   }
 
   /** Get the full data */
@@ -290,7 +290,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
@@ -322,7 +322,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using the data struct */
@@ -338,7 +338,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using the data struct */
@@ -370,7 +370,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /**
@@ -403,7 +403,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
@@ -425,7 +425,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack static data using this table's schema */

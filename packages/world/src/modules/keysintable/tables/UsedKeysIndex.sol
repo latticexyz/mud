@@ -118,7 +118,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
   }
 
   /** Set has */
@@ -127,7 +127,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
   }
 
   /** Set has (using the specified store) */
@@ -136,7 +136,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
   }
 
   /** Get index */
@@ -175,7 +175,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
   }
 
   /** Set index */
@@ -184,7 +184,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreCore.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
   }
 
   /** Set index (using the specified store) */
@@ -193,7 +193,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
   }
 
   /** Get the full data */
@@ -249,7 +249,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
@@ -277,7 +277,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /**
@@ -308,7 +308,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
@@ -326,7 +326,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack static data using this table's schema */

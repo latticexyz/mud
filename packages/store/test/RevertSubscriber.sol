@@ -29,11 +29,11 @@ contract RevertSubscriber is StoreHook {
     revert("onAfterSetRecord");
   }
 
-  function onBeforeSpliceStaticData(ResourceId, bytes32[] memory, uint48, uint40, bytes memory) public pure override {
+  function onBeforeSpliceStaticData(ResourceId, bytes32[] memory, uint48, bytes memory) public pure override {
     revert("onBeforeSpliceStaticData");
   }
 
-  function onAfterSpliceStaticData(ResourceId, bytes32[] memory, uint48, uint40, bytes memory) public pure override {
+  function onAfterSpliceStaticData(ResourceId, bytes32[] memory, uint48, bytes memory) public pure override {
     revert("onAfterSpliceStaticData");
   }
 

@@ -5,7 +5,7 @@ import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
 import { hexToResourceId, spliceHex } from "@latticexyz/common";
 import { decodeValueArgs } from "@latticexyz/protocol-parser";
-import { Hex } from "viem";
+import { Hex, size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
@@ -98,7 +98,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
         // TODO: add tests that this works when no record had been set before
         const previousValue = getComponentValue(component, entity);
         const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
-        const newStaticData = spliceHex(previousStaticData, log.args.start, log.args.deleteCount, log.args.data);
+        const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
         const newValue = decodeValueArgs(table.valueSchema, {
           staticData: newStaticData,
           encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",

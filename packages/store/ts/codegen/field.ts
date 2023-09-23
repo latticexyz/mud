@@ -55,25 +55,27 @@ export function renderFieldMethods(options: RenderTableOptions) {
     }
 
     result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-      renderWithStore(
-        storeArgument,
-        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+      renderWithStore(storeArgument, (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => {
+        const externalArguments = renderArguments([_typedStore, _typedTableId, _typedKeyArgs, _typedFieldName]);
+        const setFieldMethod = field.isDynamic ? "setDynamicField" : "setStaticField";
+        const encodeFieldSingle = renderEncodeFieldSingle(field);
+        const internalArguments = field.isDynamic
+          ? `_tableId, _keyTuple, ${schemaIndex - options.staticFields.length}, ${encodeFieldSingle}`
+          : `_tableId, _keyTuple, ${schemaIndex}, ${encodeFieldSingle}, _fieldLayout`;
+
+        return `
           /** Set ${field.name}${_commentSuffix} */
-          function ${_methodNamePrefix}set${_methodNameSuffix}(${renderArguments([
-          _typedStore,
-          _typedTableId,
-          _typedKeyArgs,
-          _typedFieldName,
-        ])}) internal {
+          function ${_methodNamePrefix}set${_methodNameSuffix}(${externalArguments}) internal {
             ${_keyTupleDefinition}
-            ${_store}.setField(_tableId, _keyTuple, ${schemaIndex}, ${renderEncodeFieldSingle(field)}, _fieldLayout);
+            ${_store}.${setFieldMethod}(${internalArguments});
           }
-        `
-      )
+        `;
+      })
     );
 
     if (field.isDynamic) {
       const portionData = fieldPortionData(field);
+      const dynamicSchemaIndex = schemaIndex - options.staticFields.length;
 
       if (options.withGetters) {
         result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
@@ -87,7 +89,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
               _typedKeyArgs,
             ])}) internal view returns (uint256) {
                 ${_keyTupleDefinition}
-                uint256 _byteLength = ${_store}.getFieldLength(_tableId, _keyTuple, ${schemaIndex}, _fieldLayout);
+                uint256 _byteLength = ${_store}.getDynamicFieldLength(_tableId, _keyTuple, ${dynamicSchemaIndex});
                 unchecked {
                   return _byteLength / ${portionData.elementLength};
                 }
@@ -112,11 +114,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
             ])}) internal view returns (${portionData.typeWithLocation}) {
               ${_keyTupleDefinition}
               unchecked {
-                bytes memory _blob = ${_store}.getFieldSlice(
+                bytes memory _blob = ${_store}.getDynamicFieldSlice(
                   _tableId,
                   _keyTuple,
-                  ${schemaIndex},
-                  _fieldLayout,
+                  ${dynamicSchemaIndex},
                   _index * ${portionData.elementLength},
                   (_index + 1) * ${portionData.elementLength}
                   );
@@ -140,7 +141,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
             `${portionData.typeWithLocation} ${portionData.name}`,
           ])}) internal {
               ${_keyTupleDefinition}
-              ${_store}.pushToField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.encoded}, _fieldLayout);
+              ${_store}.pushToDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.encoded});
             }
             `
         )
@@ -157,41 +158,45 @@ export function renderFieldMethods(options: RenderTableOptions) {
             _typedKeyArgs,
           ])}) internal {
               ${_keyTupleDefinition}
-              ${_store}.popFromField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.elementLength}, _fieldLayout);
+              ${_store}.popFromDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.elementLength});
             }
           `
         )
       );
 
       result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-        renderWithStore(
-          storeArgument,
-          (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-            /**
-             * Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\`
-             * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
-             */
-            function ${_methodNamePrefix}update${_methodNameSuffix}(${renderArguments([
+        renderWithStore(storeArgument, (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => {
+          const externalArguments = renderArguments([
             _typedStore,
             _typedTableId,
             _typedKeyArgs,
             "uint256 _index",
             `${portionData.typeWithLocation} ${portionData.name}`,
-          ])}) internal {
+          ]);
+
+          const internalArguments = `
+            _tableId,
+            _keyTuple,
+            ${dynamicSchemaIndex},
+            uint40(_index * ${portionData.elementLength}),
+            uint40(_encoded.length),
+            _encoded 
+          `;
+
+          return `
+            /**
+             * Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\`
+             * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+             */
+            function ${_methodNamePrefix}update${_methodNameSuffix}(${externalArguments}) internal {
               ${_keyTupleDefinition}
               unchecked {
-                ${_store}.updateInField(
-                  _tableId,
-                  _keyTuple,
-                  ${schemaIndex},
-                  _index * ${portionData.elementLength},
-                  ${portionData.encoded},
-                  _fieldLayout
-                );
+                bytes memory _encoded = ${portionData.encoded};
+                ${_store}.spliceDynamicData(${internalArguments});
               }
             }
-          `
-        )
+          `;
+        })
       );
     }
   }
