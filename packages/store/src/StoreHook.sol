@@ -35,11 +35,11 @@ abstract contract StoreHook is IStoreHook {
     revert StoreHook_NotImplemented();
   }
 
-  function onBeforeSpliceStaticData(ResourceId, bytes32[] memory, uint48, uint40, bytes memory) public virtual {
+  function onBeforeSpliceStaticData(ResourceId, bytes32[] memory, uint48, bytes memory) public virtual {
     revert StoreHook_NotImplemented();
   }
 
-  function onAfterSpliceStaticData(ResourceId, bytes32[] memory, uint48, uint40, bytes memory) public virtual {
+  function onAfterSpliceStaticData(ResourceId, bytes32[] memory, uint48, bytes memory) public virtual {
     revert StoreHook_NotImplemented();
   }
 

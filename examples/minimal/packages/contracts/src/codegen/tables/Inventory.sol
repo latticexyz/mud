@@ -160,7 +160,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
   }
 
   /** Set amount */
@@ -170,7 +170,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
   }
 
   /** Set amount (using the specified store) */
@@ -180,7 +180,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
   }
 
   /** Set amount */
@@ -190,7 +190,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
   }
 
   /** Set amount */
@@ -200,7 +200,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
   }
 
   /** Set amount (using the specified store) */
@@ -210,7 +210,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
   }
 
   /** Delete all data for given keys */
@@ -220,7 +220,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
@@ -240,7 +240,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack static data using this table's schema */

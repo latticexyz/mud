@@ -89,14 +89,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     uint256 value = 1;
 
     startGasReport("set a record on a table with KeysWithValueModule installed");
-    world.setRecord(
-      sourceTableId,
-      keyTuple1,
-      abi.encodePacked(value),
-      PackedCounter.wrap(bytes32(0)),
-      new bytes(0),
-      sourceTableFieldLayout
-    );
+    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value), PackedCounter.wrap(bytes32(0)), new bytes(0));
     endGasReport();
 
     // Get the list of entities with this value from the target table
@@ -113,14 +106,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     // Set a value in the source table
     uint256 value1 = 1;
 
-    world.setRecord(
-      sourceTableId,
-      keyTuple1,
-      abi.encodePacked(value1),
-      PackedCounter.wrap(bytes32(0)),
-      new bytes(0),
-      sourceTableFieldLayout
-    );
+    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value1), PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get the list of entities with value1 from the target table
     bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value1)));
@@ -130,14 +116,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(keysWithValue[0], key1, "2");
 
     // Set a another key with the same value
-    world.setRecord(
-      sourceTableId,
-      keyTuple2,
-      abi.encodePacked(value1),
-      PackedCounter.wrap(bytes32(0)),
-      new bytes(0),
-      sourceTableFieldLayout
-    );
+    world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value1), PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get the list of entities with value2 from the target table
     keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value1)));
@@ -151,14 +130,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     uint256 value2 = 2;
 
     startGasReport("change a record on a table with KeysWithValueModule installed");
-    world.setRecord(
-      sourceTableId,
-      keyTuple1,
-      abi.encodePacked(value2),
-      PackedCounter.wrap(bytes32(0)),
-      new bytes(0),
-      sourceTableFieldLayout
-    );
+    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value2), PackedCounter.wrap(bytes32(0)), new bytes(0));
     endGasReport();
 
     // Get the list of entities with value1 from the target table
@@ -177,7 +149,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
 
     // Delete the first key
     startGasReport("delete a record on a table with KeysWithValueModule installed");
-    world.deleteRecord(sourceTableId, keyTuple1, sourceTableFieldLayout);
+    world.deleteRecord(sourceTableId, keyTuple1);
     endGasReport();
 
     // Get the list of entities with value2 from the target table
@@ -260,14 +232,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     _installKeysWithValueModule();
 
     // Set a value in the source table
-    world.setRecord(
-      sourceTableId,
-      keyTuple1,
-      abi.encodePacked(value),
-      PackedCounter.wrap(bytes32(0)),
-      new bytes(0),
-      sourceTableFieldLayout
-    );
+    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value), PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     startGasReport("Get list of keys with a given value");
     bytes32[] memory keysWithValue = getKeysWithValue(
@@ -284,14 +249,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(keysWithValue[0], key1);
 
     // Set a another key with the same value
-    world.setRecord(
-      sourceTableId,
-      keyTuple2,
-      abi.encodePacked(value),
-      PackedCounter.wrap(bytes32(0)),
-      new bytes(0),
-      sourceTableFieldLayout
-    );
+    world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value), PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get the list of keys with value from the target table
     keysWithValue = getKeysWithValue(

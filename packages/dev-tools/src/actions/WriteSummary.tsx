@@ -153,9 +153,11 @@ export function WriteSummary({ write }: Props) {
                       {table.namespace}:{table.name}
                     </td>
                     <td className="whitespace-nowrap">
-                      {eventName === "StoreSetRecord" ? <span className="text-green-500 font-bold">=</span> : null}
-                      {eventName === "StoreSetField" ? <span className="text-green-500 font-bold">+</span> : null}
-                      {eventName === "StoreDeleteRecord" ? <span className="text-red-500 font-bold">-</span> : null}
+                      {eventName === "Store_SetRecord" ? <span className="text-green-500 font-bold">=</span> : null}
+                      {eventName === "Store_SpliceStaticData" || eventName === "Store_SpliceDynamicData" ? (
+                        <span className="text-green-500 font-bold">+</span>
+                      ) : null}
+                      {eventName === "Store_DeleteRecord" ? <span className="text-red-500 font-bold">-</span> : null}
                     </td>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">
                       {hexKeyTupleToEntity((args as any).keyTuple)}

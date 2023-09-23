@@ -150,7 +150,7 @@ library TimeboundDelegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
   }
 
   /** Set maxTimestamp */
@@ -159,7 +159,7 @@ library TimeboundDelegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
   }
 
   /** Set maxTimestamp (using the specified store) */
@@ -168,7 +168,7 @@ library TimeboundDelegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
   }
 
   /** Set maxTimestamp */
@@ -177,7 +177,7 @@ library TimeboundDelegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
   }
 
   /** Set maxTimestamp */
@@ -186,7 +186,7 @@ library TimeboundDelegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
   }
 
   /** Set maxTimestamp (using the specified store) */
@@ -195,7 +195,7 @@ library TimeboundDelegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
   }
 
   /** Delete all data for given keys */
@@ -204,7 +204,7 @@ library TimeboundDelegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
@@ -222,7 +222,7 @@ library TimeboundDelegations {
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack static data using this table's schema */

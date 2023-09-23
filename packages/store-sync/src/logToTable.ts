@@ -5,7 +5,7 @@ import { hexToResourceId } from "@latticexyz/common";
 
 // TODO: add tableToLog
 
-export function logToTable(log: StorageAdapterLog & { eventName: "StoreSetRecord" }): Table {
+export function logToTable(log: StorageAdapterLog & { eventName: "Store_SetRecord" }): Table {
   const [tableId, ...otherKeys] = log.args.keyTuple;
   if (otherKeys.length) {
     console.warn("registerSchema event is expected to have only one key in key tuple, but got multiple", log);

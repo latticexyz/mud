@@ -3,6 +3,7 @@ pragma solidity >=0.8.21;
 
 import "forge-std/Test.sol";
 import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
+import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
 
 import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Offchain, UserTyped, UserTypedData } from "../src/codegen/index.sol";
 import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "../src/types.sol";
@@ -142,6 +143,7 @@ contract TablegenTest is Test, StoreMock {
     assertEq(abi.encode(Singleton.getV4()), abi.encode([uint32(5)]));
     assertEq(Singleton.lengthV4(), 1);
     assertEq(Singleton.getItemV4(0), 5);
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 4, 4));
     assertEq(Singleton.getItemV4(1), 0);
   }
 

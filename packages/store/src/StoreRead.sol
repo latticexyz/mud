@@ -28,10 +28,25 @@ contract StoreRead is IStoreRead {
 
   function getRecord(
     ResourceId tableId,
+    bytes32[] calldata keyTuple
+  ) public view virtual returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
+    return StoreCore.getRecord(tableId, keyTuple);
+  }
+
+  function getRecord(
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     FieldLayout fieldLayout
   ) public view virtual returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
     return StoreCore.getRecord(tableId, keyTuple, fieldLayout);
+  }
+
+  function getField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex
+  ) public view virtual returns (bytes memory data) {
+    data = StoreCore.getField(tableId, keyTuple, fieldIndex);
   }
 
   function getField(
@@ -63,20 +78,35 @@ contract StoreRead is IStoreRead {
   function getFieldLength(
     ResourceId tableId,
     bytes32[] memory keyTuple,
+    uint8 fieldIndex
+  ) public view virtual returns (uint256) {
+    return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex);
+  }
+
+  function getFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
   ) public view virtual returns (uint256) {
     return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex, fieldLayout);
   }
 
-  function getFieldSlice(
+  function getDynamicFieldLength(
     ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    FieldLayout fieldLayout,
+    uint8 dynamicFieldIndex
+  ) public view virtual returns (uint256) {
+    return StoreCore.getFieldLength(tableId, keyTuple, dynamicFieldIndex);
+  }
+
+  function getDynamicFieldSlice(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
     uint256 start,
     uint256 end
   ) public view virtual returns (bytes memory) {
-    return StoreCore.getFieldSlice(tableId, keyTuple, fieldIndex, fieldLayout, start, end);
+    return StoreCore.getDynamicFieldSlice(tableId, keyTuple, dynamicFieldIndex, start, end);
   }
 }
