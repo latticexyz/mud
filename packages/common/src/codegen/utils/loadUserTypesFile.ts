@@ -31,8 +31,9 @@ function loadUserTypesFile(
   data: string;
 } {
   if (unresolvedFilePath.at(0) === ".") {
+    const relativePath = path.relative(outputBaseDirectory, unresolvedFilePath);
     return {
-      filePath: path.relative(outputBaseDirectory, unresolvedFilePath),
+      filePath: "./" + relativePath, // solc doesn't like relative paths without "./"
       data: readFileSync(unresolvedFilePath, "utf8"),
     };
   } else {
