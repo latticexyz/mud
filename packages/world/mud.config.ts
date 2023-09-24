@@ -40,10 +40,18 @@ export default mudConfig({
         moduleAddress: "address",
       },
     },
-    Delegations: {
+    UserDelegationControl: {
       keySchema: {
         delegator: "address",
         delegatee: "address",
+      },
+      valueSchema: {
+        delegationControlId: "ResourceId",
+      },
+    },
+    FallbackDelegationControl: {
+      keySchema: {
+        namespaceId: "ResourceId",
       },
       valueSchema: {
         delegationControlId: "ResourceId",

@@ -15,7 +15,7 @@ import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../tables/ResourceAccess.sol";
 import { InstalledModules } from "../../tables/InstalledModules.sol";
-import { Delegations } from "../../tables/Delegations.sol";
+import { UserDelegationControl } from "../../tables/UserDelegationControl.sol";
 
 import { CoreSystem } from "./CoreSystem.sol";
 import { CORE_MODULE_NAME, CORE_SYSTEM_ID } from "./constants.sol";
@@ -67,7 +67,7 @@ contract CoreModule is Module {
     NamespaceOwner.register();
     Balances.register();
     InstalledModules.register();
-    Delegations.register();
+    UserDelegationControl.register();
     ResourceAccess.register();
     Systems.register();
     FunctionSelectors.register();

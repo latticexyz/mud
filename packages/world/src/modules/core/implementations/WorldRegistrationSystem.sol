@@ -16,7 +16,7 @@ import { Delegation } from "../../../Delegation.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { Delegations } from "../../../tables/Delegations.sol";
+import { UserDelegationControl } from "../../../tables/UserDelegationControl.sol";
 import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../../../interfaces/ISystemHook.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 import { IDelegationControl, DELEGATION_CONTROL_INTERFACE_ID } from "../../../interfaces/IDelegationControl.sol";
@@ -214,7 +214,11 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData) public {
     // Store the delegation control contract address
-    Delegations._set({ delegator: _msgSender(), delegatee: delegatee, delegationControlId: delegationControlId });
+    UserDelegationControl._set({
+      delegator: _msgSender(),
+      delegatee: delegatee,
+      delegationControlId: delegationControlId
+    });
 
     // If the delegation is limited...
     if (Delegation.isLimited(delegationControlId) && initCallData.length > 0) {

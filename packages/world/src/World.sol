@@ -23,7 +23,7 @@ import { requireInterface } from "./requireInterface.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { InstalledModules } from "./tables/InstalledModules.sol";
-import { Delegations } from "./tables/Delegations.sol";
+import { UserDelegationControl } from "./tables/UserDelegationControl.sol";
 
 import { IModule, MODULE_INTERFACE_ID } from "./interfaces/IModule.sol";
 import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
@@ -303,7 +303,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
 
     // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
-    ResourceId explicitDelegationId = Delegations._get({ delegator: delegator, delegatee: msg.sender });
+    ResourceId explicitDelegationId = UserDelegationControl._get({ delegator: delegator, delegatee: msg.sender });
 
     if (Delegation.verify(explicitDelegationId, delegator, msg.sender, systemId, callData)) {
       // forward the call as `delegator`
@@ -311,7 +311,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
 
     // Check if the delegator has a fallback delegation control set
-    ResourceId fallbackDelegationId = Delegations._get({ delegator: delegator, delegatee: address(0) });
+    ResourceId fallbackDelegationId = UserDelegationControl._get({ delegator: delegator, delegatee: address(0) });
     if (Delegation.verify(fallbackDelegationId, delegator, msg.sender, systemId, callData)) {
       // forward the call with `from` as `msgSender`
       return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
