@@ -37,6 +37,7 @@ import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
+
   address public immutable creator;
 
   function worldVersion() public pure returns (bytes32) {
@@ -302,16 +303,16 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
 
     // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
-    Delegation explicitDelegation = Delegation.wrap(Delegations._get({ delegator: delegator, delegatee: msg.sender }));
+    ResourceId explicitDelegationId = Delegations._get({ delegator: delegator, delegatee: msg.sender });
 
-    if (explicitDelegation.verify(delegator, msg.sender, systemId, callData)) {
+    if (Delegation.verify(explicitDelegationId, delegator, msg.sender, systemId, callData)) {
       // forward the call as `delegator`
       return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
     }
 
     // Check if the delegator has a fallback delegation control set
-    Delegation fallbackDelegation = Delegation.wrap(Delegations._get({ delegator: delegator, delegatee: address(0) }));
-    if (fallbackDelegation.verify(delegator, msg.sender, systemId, callData)) {
+    ResourceId fallbackDelegationId = Delegations._get({ delegator: delegator, delegatee: address(0) });
+    if (Delegation.verify(fallbackDelegationId, delegator, msg.sender, systemId, callData)) {
       // forward the call with `from` as `msgSender`
       return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
     }
@@ -329,28 +330,23 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * ETH sent to the World without calldata is added to the root namespace's balance
    */
   receive() external payable {
-    uint256 rootBalance = Balances._get(ResourceId.unwrap(ROOT_NAMESPACE_ID));
-    Balances._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), rootBalance + msg.value);
+    uint256 rootBalance = Balances._get(ROOT_NAMESPACE_ID);
+    Balances._set(ROOT_NAMESPACE_ID, rootBalance + msg.value);
   }
 
   /**
    * Fallback function to call registered function selectors
    */
   fallback() external payable requireNoCallback {
-    (bytes32 systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
+    (ResourceId systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
-    if (systemId == 0) revert World_FunctionSelectorNotFound(msg.sig);
+    if (ResourceId.unwrap(systemId) == 0) revert World_FunctionSelectorNotFound(msg.sig);
 
     // Replace function selector in the calldata with the system function selector
     bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);
 
     // Call the function and forward the call data
-    bytes memory returnData = SystemCall.callWithHooksOrRevert(
-      msg.sender,
-      ResourceId.wrap(systemId),
-      callData,
-      msg.value
-    );
+    bytes memory returnData = SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
 
     // If the call was successful, return the return data
     assembly {

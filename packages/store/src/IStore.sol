@@ -123,7 +123,7 @@ interface IStoreWrite {
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
-    bytes32 encodedLengths,
+    PackedCounter encodedLengths,
     bytes dynamicData
   );
   event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
@@ -133,7 +133,7 @@ interface IStoreWrite {
     uint48 start,
     uint40 deleteCount,
     bytes data,
-    bytes32 encodedLengths
+    PackedCounter encodedLengths
   );
   event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 

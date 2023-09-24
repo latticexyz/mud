@@ -46,7 +46,7 @@ contract KeysInTableModule is Module {
     bool success;
     bytes memory returnData;
 
-    if (!ResourceIds._getExists(ResourceId.unwrap(KeysInTableTableId))) {
+    if (!ResourceIds._getExists(KeysInTableTableId)) {
       // Register the tables
       (success, returnData) = address(world).delegatecall(
         abi.encodeCall(

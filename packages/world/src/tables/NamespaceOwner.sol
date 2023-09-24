@@ -20,6 +20,9 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
+// Import user types
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
 ResourceId constant _tableId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("NamespaceOwner")))
 );
@@ -79,127 +82,127 @@ library NamespaceOwner {
   }
 
   /** Get owner */
-  function getOwner(bytes32 namespaceId) internal view returns (address owner) {
+  function getOwner(ResourceId namespaceId) internal view returns (address owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /** Get owner */
-  function _getOwner(bytes32 namespaceId) internal view returns (address owner) {
+  function _getOwner(ResourceId namespaceId) internal view returns (address owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /** Get owner (using the specified store) */
-  function getOwner(IStore _store, bytes32 namespaceId) internal view returns (address owner) {
+  function getOwner(IStore _store, ResourceId namespaceId) internal view returns (address owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /** Get owner */
-  function get(bytes32 namespaceId) internal view returns (address owner) {
+  function get(ResourceId namespaceId) internal view returns (address owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /** Get owner */
-  function _get(bytes32 namespaceId) internal view returns (address owner) {
+  function _get(ResourceId namespaceId) internal view returns (address owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /** Get owner (using the specified store) */
-  function get(IStore _store, bytes32 namespaceId) internal view returns (address owner) {
+  function get(IStore _store, ResourceId namespaceId) internal view returns (address owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /** Set owner */
-  function setOwner(bytes32 namespaceId, address owner) internal {
+  function setOwner(ResourceId namespaceId, address owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
   }
 
   /** Set owner */
-  function _setOwner(bytes32 namespaceId, address owner) internal {
+  function _setOwner(ResourceId namespaceId, address owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
   }
 
   /** Set owner (using the specified store) */
-  function setOwner(IStore _store, bytes32 namespaceId, address owner) internal {
+  function setOwner(IStore _store, ResourceId namespaceId, address owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
   }
 
   /** Set owner */
-  function set(bytes32 namespaceId, address owner) internal {
+  function set(ResourceId namespaceId, address owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
   }
 
   /** Set owner */
-  function _set(bytes32 namespaceId, address owner) internal {
+  function _set(ResourceId namespaceId, address owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
   }
 
   /** Set owner (using the specified store) */
-  function set(IStore _store, bytes32 namespaceId, address owner) internal {
+  function set(IStore _store, ResourceId namespaceId, address owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
   }
 
   /** Delete all data for given keys */
-  function deleteRecord(bytes32 namespaceId) internal {
+  function deleteRecord(ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
-  function _deleteRecord(bytes32 namespaceId) internal {
+  function _deleteRecord(ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 namespaceId) internal {
+  function deleteRecord(IStore _store, ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     _store.deleteRecord(_tableId, _keyTuple);
   }
@@ -220,9 +223,9 @@ library NamespaceOwner {
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
-  function encodeKeyTuple(bytes32 namespaceId) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(ResourceId namespaceId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     return _keyTuple;
   }

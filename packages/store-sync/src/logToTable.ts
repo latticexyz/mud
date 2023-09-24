@@ -1,5 +1,5 @@
-import { hexToSchema, decodeValue } from "@latticexyz/protocol-parser";
-import { concatHex, decodeAbiParameters, parseAbiParameters } from "viem";
+import { hexToSchema, decodeValue, ValueSchema } from "@latticexyz/protocol-parser";
+import { Hex, concatHex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { StorageAdapterLog, Table, schemasTable } from "./common";
 import { hexToResourceId } from "@latticexyz/common";
 
@@ -14,15 +14,22 @@ export function logToTable(log: StorageAdapterLog & { eventName: "Store_SetRecor
   const table = hexToResourceId(tableId);
 
   const value = decodeValue(
-    schemasTable.valueSchema,
+    // TODO: remove cast when we have strong types for user types
+    schemasTable.valueSchema as ValueSchema,
     concatHex([log.args.staticData, log.args.encodedLengths, log.args.dynamicData])
   );
 
-  const keySchema = hexToSchema(value.keySchema);
-  const valueSchema = hexToSchema(value.valueSchema);
+  // TODO: remove cast when we have strong types for user types
+  const keySchema = hexToSchema(value.keySchema as Hex);
 
-  const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedKeyNames)[0];
-  const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedFieldNames)[0];
+  // TODO: remove cast when we have strong types for user types
+  const valueSchema = hexToSchema(value.valueSchema as Hex);
+
+  // TODO: remove cast when we have strong types for user types
+  const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedKeyNames as Hex)[0];
+
+  // TODO: remove cast when we have strong types for user types
+  const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedFieldNames as Hex)[0];
 
   const valueAbiTypes = [...valueSchema.staticFields, ...valueSchema.dynamicFields];
 

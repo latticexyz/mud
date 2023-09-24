@@ -17,20 +17,20 @@ contract KeysInTableHook is StoreHook {
     bytes32 keysHash = keccak256(abi.encode(keyTuple));
 
     // If the keyTuple has not yet been set in the table...
-    if (!UsedKeysIndex.getHas(ResourceId.unwrap(tableId), keysHash)) {
-      uint40 length = uint40(KeysInTable.lengthKeys0(ResourceId.unwrap(tableId)));
+    if (!UsedKeysIndex.getHas(tableId, keysHash)) {
+      uint40 length = uint40(KeysInTable.lengthKeys0(tableId));
 
       // Push the keyTuple to the list of keys in this table
       if (keyTuple.length > 0) {
-        KeysInTable.pushKeys0(ResourceId.unwrap(tableId), keyTuple[0]);
+        KeysInTable.pushKeys0(tableId, keyTuple[0]);
         if (keyTuple.length > 1) {
-          KeysInTable.pushKeys1(ResourceId.unwrap(tableId), keyTuple[1]);
+          KeysInTable.pushKeys1(tableId, keyTuple[1]);
           if (keyTuple.length > 2) {
-            KeysInTable.pushKeys2(ResourceId.unwrap(tableId), keyTuple[2]);
+            KeysInTable.pushKeys2(tableId, keyTuple[2]);
             if (keyTuple.length > 3) {
-              KeysInTable.pushKeys3(ResourceId.unwrap(tableId), keyTuple[3]);
+              KeysInTable.pushKeys3(tableId, keyTuple[3]);
               if (keyTuple.length > 4) {
-                KeysInTable.pushKeys4(ResourceId.unwrap(tableId), keyTuple[4]);
+                KeysInTable.pushKeys4(tableId, keyTuple[4]);
               }
             }
           }
@@ -38,7 +38,7 @@ contract KeysInTableHook is StoreHook {
       }
 
       // Update the index to avoid duplicating this keyTuple in the array
-      UsedKeysIndex.set(ResourceId.unwrap(tableId), keysHash, true, length);
+      UsedKeysIndex.set(tableId, keysHash, true, length);
     }
   }
 
@@ -76,56 +76,56 @@ contract KeysInTableHook is StoreHook {
 
   function onBeforeDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout) public override {
     bytes32 keysHash = keccak256(abi.encode(keyTuple));
-    (bool has, uint40 index) = UsedKeysIndex.get(ResourceId.unwrap(tableId), keysHash);
+    (bool has, uint40 index) = UsedKeysIndex.get(tableId, keysHash);
 
     // If the keyTuple was part of the table...
     if (has) {
       // Delete the index as the keyTuple is not in the table anymore
-      UsedKeysIndex.deleteRecord(ResourceId.unwrap(tableId), keysHash);
+      UsedKeysIndex.deleteRecord(tableId, keysHash);
 
-      uint40 length = uint40(KeysInTable.lengthKeys0(ResourceId.unwrap(tableId)));
+      uint40 length = uint40(KeysInTable.lengthKeys0(tableId));
 
       if (length == 1) {
         // Delete the list of keys in this table
-        KeysInTable.deleteRecord(ResourceId.unwrap(tableId));
+        KeysInTable.deleteRecord(tableId);
       } else {
         if (keyTuple.length > 0) {
           bytes32[] memory lastKeyTuple = new bytes32[](keyTuple.length);
 
-          bytes32 lastKey = KeysInTable.getItemKeys0(ResourceId.unwrap(tableId), length - 1);
+          bytes32 lastKey = KeysInTable.getItemKeys0(tableId, length - 1);
           lastKeyTuple[0] = lastKey;
 
           // Remove the keyTuple from the list of keys in this table
-          KeysInTable.updateKeys0(ResourceId.unwrap(tableId), index, lastKey);
-          KeysInTable.popKeys0(ResourceId.unwrap(tableId));
+          KeysInTable.updateKeys0(tableId, index, lastKey);
+          KeysInTable.popKeys0(tableId);
 
           if (keyTuple.length > 1) {
-            lastKey = KeysInTable.getItemKeys1(ResourceId.unwrap(tableId), length - 1);
+            lastKey = KeysInTable.getItemKeys1(tableId, length - 1);
             lastKeyTuple[1] = lastKey;
 
-            KeysInTable.updateKeys1(ResourceId.unwrap(tableId), index, lastKey);
-            KeysInTable.popKeys1(ResourceId.unwrap(tableId));
+            KeysInTable.updateKeys1(tableId, index, lastKey);
+            KeysInTable.popKeys1(tableId);
 
             if (keyTuple.length > 2) {
-              lastKey = KeysInTable.getItemKeys2(ResourceId.unwrap(tableId), length - 1);
+              lastKey = KeysInTable.getItemKeys2(tableId, length - 1);
               lastKeyTuple[2] = lastKey;
 
-              KeysInTable.updateKeys2(ResourceId.unwrap(tableId), index, lastKey);
-              KeysInTable.popKeys2(ResourceId.unwrap(tableId));
+              KeysInTable.updateKeys2(tableId, index, lastKey);
+              KeysInTable.popKeys2(tableId);
 
               if (keyTuple.length > 3) {
-                lastKey = KeysInTable.getItemKeys3(ResourceId.unwrap(tableId), length - 1);
+                lastKey = KeysInTable.getItemKeys3(tableId, length - 1);
                 lastKeyTuple[3] = lastKey;
 
-                KeysInTable.updateKeys3(ResourceId.unwrap(tableId), index, lastKey);
-                KeysInTable.popKeys3(ResourceId.unwrap(tableId));
+                KeysInTable.updateKeys3(tableId, index, lastKey);
+                KeysInTable.popKeys3(tableId);
 
                 if (keyTuple.length > 4) {
-                  lastKey = KeysInTable.getItemKeys4(ResourceId.unwrap(tableId), length - 1);
+                  lastKey = KeysInTable.getItemKeys4(tableId, length - 1);
                   lastKeyTuple[4] = lastKey;
 
-                  KeysInTable.updateKeys4(ResourceId.unwrap(tableId), index, lastKey);
-                  KeysInTable.popKeys4(ResourceId.unwrap(tableId));
+                  KeysInTable.updateKeys4(tableId, index, lastKey);
+                  KeysInTable.popKeys4(tableId);
                 }
               }
             }
@@ -133,7 +133,7 @@ contract KeysInTableHook is StoreHook {
 
           // Update the index of lastKeyTuple after swapping it with the deleted keyTuple
           bytes32 lastKeyHash = keccak256(abi.encode(lastKeyTuple));
-          UsedKeysIndex.setIndex(ResourceId.unwrap(tableId), lastKeyHash, index);
+          UsedKeysIndex.setIndex(tableId, lastKeyHash, index);
         }
       }
     }

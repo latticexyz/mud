@@ -25,7 +25,7 @@ contract UniqueEntityModule is Module {
     return MODULE_NAME;
   }
 
-  function installRoot(bytes memory args) public {
+  function installRoot(bytes memory) public {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register table

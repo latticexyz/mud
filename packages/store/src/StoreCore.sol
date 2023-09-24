@@ -32,7 +32,7 @@ library StoreCore {
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
-    bytes32 encodedLengths,
+    PackedCounter encodedLengths,
     bytes dynamicData
   );
   event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
@@ -42,7 +42,7 @@ library StoreCore {
     uint48 start,
     uint40 deleteCount,
     bytes data,
-    bytes32 encodedLengths
+    PackedCounter encodedLengths
   );
   event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
@@ -99,9 +99,9 @@ library StoreCore {
    * Get the key schema for the given tableId
    */
   function getKeySchema(ResourceId tableId) internal view returns (Schema keySchema) {
-    keySchema = Schema.wrap(Tables._getKeySchema(ResourceId.unwrap(tableId)));
+    keySchema = Tables._getKeySchema(tableId);
     // key schemas can be empty for singleton tables, so we can't depend on key schema for table check
-    if (!ResourceIds._getExists(ResourceId.unwrap(tableId))) {
+    if (!ResourceIds._getExists(tableId)) {
       revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
   }
@@ -110,7 +110,7 @@ library StoreCore {
    * Get the schema for the given tableId
    */
   function getValueSchema(ResourceId tableId) internal view returns (Schema valueSchema) {
-    valueSchema = Schema.wrap(Tables._getValueSchema(ResourceId.unwrap(tableId)));
+    valueSchema = Tables._getValueSchema(tableId);
     if (valueSchema.isEmpty()) {
       revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
@@ -155,22 +155,15 @@ library StoreCore {
     }
 
     // Verify there is no resource with this ID yet
-    if (ResourceIds._getExists(ResourceId.unwrap(tableId))) {
+    if (ResourceIds._getExists(tableId)) {
       revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
     }
 
     // Register the table metadata
-    Tables._set(
-      ResourceId.unwrap(tableId),
-      FieldLayout.unwrap(fieldLayout),
-      Schema.unwrap(keySchema),
-      Schema.unwrap(valueSchema),
-      abi.encode(keyNames),
-      abi.encode(fieldNames)
-    );
+    Tables._set(tableId, fieldLayout, keySchema, valueSchema, abi.encode(keyNames), abi.encode(fieldNames));
 
     // Register the table ID
-    ResourceIds._setExists(ResourceId.unwrap(tableId), true);
+    ResourceIds._setExists(tableId, true);
   }
 
   /************************************************************************
@@ -188,7 +181,7 @@ library StoreCore {
       revert IStoreErrors.Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
     }
 
-    StoreHooks.push(ResourceId.unwrap(tableId), Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
+    StoreHooks.push(tableId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
   }
 
   /**
@@ -231,7 +224,7 @@ library StoreCore {
     FieldLayout fieldLayout
   ) internal {
     // Emit event to notify indexers
-    emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
+    emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
 
     // Early return if the table is an offchain table
     if (tableId.getType() != RESOURCE_TABLE) {
@@ -239,7 +232,7 @@ library StoreCore {
     }
 
     // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = StoreHooks._get(ResourceId.unwrap(tableId));
+    bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(BEFORE_SET_RECORD)) {
@@ -320,7 +313,7 @@ library StoreCore {
     }
 
     // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = StoreHooks._get(ResourceId.unwrap(tableId));
+    bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(BEFORE_SPLICE_STATIC_DATA)) {
@@ -451,7 +444,7 @@ library StoreCore {
     }
 
     // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = StoreHooks._get(ResourceId.unwrap(tableId));
+    bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(BEFORE_DELETE_RECORD)) {
@@ -771,11 +764,11 @@ library StoreCoreInternal {
       start: uint48(start),
       deleteCount: deleteCount,
       data: data,
-      encodedLengths: updatedEncodedLengths.unwrap()
+      encodedLengths: updatedEncodedLengths
     });
 
     // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = StoreHooks._get(ResourceId.unwrap(tableId));
+    bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA)) {

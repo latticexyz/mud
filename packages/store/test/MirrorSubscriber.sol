@@ -35,7 +35,7 @@ contract MirrorSubscriber is StoreHook {
     bytes memory staticData,
     PackedCounter encodedLengths,
     bytes memory dynamicData,
-    FieldLayout fieldLayout
+    FieldLayout
   ) public override {
     if (ResourceId.unwrap(tableId) != _tableId) revert("invalid table");
     StoreSwitch.setRecord(indexerTableId, keyTuple, staticData, encodedLengths, dynamicData);
@@ -64,11 +64,7 @@ contract MirrorSubscriber is StoreHook {
     StoreSwitch.spliceDynamicData(indexerTableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
   }
 
-  function onBeforeDeleteRecord(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    FieldLayout fieldLayout
-  ) public override {
+  function onBeforeDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout) public override {
     if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
     StoreSwitch.deleteRecord(indexerTableId, keyTuple);
   }

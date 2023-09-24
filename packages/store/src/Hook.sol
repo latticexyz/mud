@@ -26,7 +26,7 @@ library HookLib {
     ResourceId tableWithHooks,
     address hookAddressToRemove
   ) internal {
-    bytes21[] memory currentHooks = Hooks._get(hookTableId, ResourceId.unwrap(tableWithHooks));
+    bytes21[] memory currentHooks = Hooks._get(hookTableId, tableWithHooks);
 
     // Initialize the new hooks array with the same length because we don't know if the hook is registered yet
     bytes21[] memory newHooks = new bytes21[](currentHooks.length);
@@ -49,7 +49,7 @@ library HookLib {
     }
 
     // Set the new hooks table
-    Hooks._set(hookTableId, ResourceId.unwrap(tableWithHooks), newHooks);
+    Hooks._set(hookTableId, tableWithHooks, newHooks);
   }
 }
 

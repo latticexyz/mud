@@ -85,6 +85,8 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   function testPopFromSecondField() public {
     FieldLayout fieldLayout = StoreCore.getFieldLayout(_tableId);
     bytes memory dataBytes = secondDataBytes;
+    ResourceId tableId = _tableId;
+    bytes32[] memory keyTuple = _keyTuple;
 
     // Prepare expected data
     uint256 byteLengthToPop = 1 * 4;
@@ -96,41 +98,43 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
     emit Store_SpliceDynamicData(
-      _tableId,
-      _keyTuple,
+      tableId,
+      keyTuple,
       uint48(secondDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
       new bytes(0),
-      PackedCounterLib.pack(newDataBytes.length, thirdDataBytes.length).unwrap()
+      PackedCounterLib.pack(newDataBytes.length, thirdDataBytes.length)
     );
 
     // Pop from second field
     startGasReport("pop from field (cold, 1 slot, 1 uint32 item)");
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, byteLengthToPop);
+    StoreCore.popFromDynamicField(tableId, keyTuple, 0, byteLengthToPop);
     endGasReport();
     // Get second field
-    bytes memory loadedData = StoreCore.getField(_tableId, _keyTuple, 1, fieldLayout);
+    bytes memory loadedData = StoreCore.getField(tableId, keyTuple, 1, fieldLayout);
     // Verify loaded data is correct
     assertEq(loadedData, newDataBytes);
 
     // Reset the second field and pop again (but warm this time)
-    StoreCore.setField(_tableId, _keyTuple, 1, dataBytes, fieldLayout);
+    StoreCore.setField(tableId, keyTuple, 1, dataBytes, fieldLayout);
     startGasReport("pop from field (warm, 1 slot, 1 uint32 item)");
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, byteLengthToPop);
+    StoreCore.popFromDynamicField(tableId, keyTuple, 0, byteLengthToPop);
     endGasReport();
     // Get second field
-    loadedData = StoreCore.getField(_tableId, _keyTuple, 1, fieldLayout);
+    loadedData = StoreCore.getField(tableId, keyTuple, 1, fieldLayout);
     // Verify loaded data is correct
     assertEq(loadedData, newDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(StoreCore.getField(_tableId, _keyTuple, 0, fieldLayout)), firstDataBytes);
-    assertEq(StoreCore.getField(_tableId, _keyTuple, 2, fieldLayout), thirdDataBytes);
+    assertEq(bytes32(StoreCore.getField(tableId, keyTuple, 0, fieldLayout)), firstDataBytes);
+    assertEq(StoreCore.getField(tableId, keyTuple, 2, fieldLayout), thirdDataBytes);
   }
 
   function testPopFromThirdField() public {
     FieldLayout fieldLayout = StoreCore.getFieldLayout(_tableId);
     bytes memory dataBytes = thirdDataBytes;
+    ResourceId tableId = _tableId;
+    bytes32[] memory keyTuple = _keyTuple;
 
     // Prepare expected data
     uint256 byteLengthToPop = 10 * 4;
@@ -142,90 +146,95 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     // Expect a StoreSpliceRecord event to be emitted after pop
     vm.expectEmit(true, true, true, true);
     emit Store_SpliceDynamicData(
-      _tableId,
-      _keyTuple,
+      tableId,
+      keyTuple,
       uint48(secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
       new bytes(0),
-      PackedCounterLib.pack(secondDataBytes.length, newDataBytes.length).unwrap()
+      PackedCounterLib.pack(secondDataBytes.length, newDataBytes.length)
     );
 
     // Pop from the field
     startGasReport("pop from field (cold, 2 slots, 10 uint32 items)");
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, byteLengthToPop);
+    StoreCore.popFromDynamicField(tableId, keyTuple, 1, byteLengthToPop);
     endGasReport();
     // Load and verify the field
-    bytes memory loadedData = StoreCore.getField(_tableId, _keyTuple, 2, fieldLayout);
+    bytes memory loadedData = StoreCore.getField(tableId, keyTuple, 2, fieldLayout);
     assertEq(loadedData, newDataBytes);
 
     // Reset the field and pop again (but warm this time)
-    StoreCore.setField(_tableId, _keyTuple, 2, dataBytes, fieldLayout);
+    StoreCore.setField(tableId, keyTuple, 2, dataBytes, fieldLayout);
     startGasReport("pop from field (warm, 2 slots, 10 uint32 items)");
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, byteLengthToPop);
+    StoreCore.popFromDynamicField(tableId, keyTuple, 1, byteLengthToPop);
     endGasReport();
     // Load and verify the field
-    loadedData = StoreCore.getField(_tableId, _keyTuple, 2, fieldLayout);
+    loadedData = StoreCore.getField(tableId, keyTuple, 2, fieldLayout);
     assertEq(loadedData, newDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(StoreCore.getField(_tableId, _keyTuple, 0, fieldLayout)), firstDataBytes);
-    assertEq(StoreCore.getField(_tableId, _keyTuple, 1, fieldLayout), secondDataBytes);
+    assertEq(bytes32(StoreCore.getField(tableId, keyTuple, 0, fieldLayout)), firstDataBytes);
+    assertEq(StoreCore.getField(tableId, keyTuple, 1, fieldLayout), secondDataBytes);
   }
 
   function testGetSecondFieldLength() public {
     FieldLayout fieldLayout = StoreCore.getFieldLayout(_tableId);
+    ResourceId tableId = _tableId;
+    bytes32[] memory keyTuple = _keyTuple;
 
     startGasReport("get field length (cold, 1 slot)");
-    uint256 length = StoreCore.getFieldLength(_tableId, _keyTuple, 1, fieldLayout);
+    uint256 length = StoreCore.getFieldLength(tableId, keyTuple, 1, fieldLayout);
     endGasReport();
     assertEq(length, secondDataBytes.length);
     startGasReport("get field length (warm, 1 slot)");
-    length = StoreCore.getFieldLength(_tableId, _keyTuple, 1, fieldLayout);
+    length = StoreCore.getFieldLength(tableId, keyTuple, 1, fieldLayout);
     endGasReport();
     assertEq(length, secondDataBytes.length);
   }
 
   function testGetThirdFieldLength() public {
     FieldLayout fieldLayout = StoreCore.getFieldLayout(_tableId);
+    ResourceId tableId = _tableId;
+    bytes32[] memory keyTuple = _keyTuple;
 
     startGasReport("get field length (warm due to , 2 slots)");
-    uint256 length = StoreCore.getFieldLength(_tableId, _keyTuple, 2, fieldLayout);
+    uint256 length = StoreCore.getFieldLength(tableId, keyTuple, 2, fieldLayout);
     endGasReport();
     assertEq(length, thirdDataBytes.length);
     startGasReport("get field length (warm, 2 slots)");
-    length = StoreCore.getFieldLength(_tableId, _keyTuple, 2, fieldLayout);
+    length = StoreCore.getFieldLength(tableId, keyTuple, 2, fieldLayout);
     endGasReport();
     assertEq(length, thirdDataBytes.length);
   }
 
   function testGetDynamicFieldSlice() public {
-    FieldLayout fieldLayout = StoreCore.getFieldLayout(_tableId);
+    ResourceId tableId = _tableId;
+    bytes32[] memory keyTuple = _keyTuple;
 
     startGasReport("get field slice (cold, 1 slot)");
-    bytes memory secondFieldSlice = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 0, 4);
+    bytes memory secondFieldSlice = StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, 0, 4);
     endGasReport();
     assertEq(secondFieldSlice, SliceLib.getSubslice(secondDataBytes, 0, 4).toBytes());
     startGasReport("get field slice (warm, 1 slot)");
-    secondFieldSlice = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 4, 8);
+    secondFieldSlice = StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, 4, 8);
     endGasReport();
     assertEq(secondFieldSlice, SliceLib.getSubslice(secondDataBytes, 4, 8).toBytes());
 
     startGasReport("get field slice (semi-cold, 1 slot)");
-    bytes memory thirdFieldSlice = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, 4, 32);
+    bytes memory thirdFieldSlice = StoreCore.getDynamicFieldSlice(tableId, keyTuple, 1, 4, 32);
     endGasReport();
     assertEq(thirdFieldSlice, SliceLib.getSubslice(thirdDataBytes, 4, 32).toBytes());
     startGasReport("get field slice (warm, 2 slots)");
-    thirdFieldSlice = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, 8, 40);
+    thirdFieldSlice = StoreCore.getDynamicFieldSlice(tableId, keyTuple, 1, 8, 40);
     endGasReport();
     assertEq(thirdFieldSlice, SliceLib.getSubslice(thirdDataBytes, 8, 40).toBytes());
 
     // Expect a revert if the end index is out of bounds
     uint256 length = secondDataBytes.length;
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, length, length));
-    StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 0, length + 1);
+    StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, 0, length + 1);
 
     // Expect a revert if the start index is out of bounds
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, length, length));
-    StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, length, length);
+    StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, length, length);
   }
 }

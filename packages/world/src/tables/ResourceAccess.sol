@@ -20,6 +20,9 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
+// Import user types
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
 ResourceId constant _tableId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("ResourceAccess")))
 );
@@ -81,9 +84,9 @@ library ResourceAccess {
   }
 
   /** Get access */
-  function getAccess(bytes32 resourceId, address caller) internal view returns (bool access) {
+  function getAccess(ResourceId resourceId, address caller) internal view returns (bool access) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -91,9 +94,9 @@ library ResourceAccess {
   }
 
   /** Get access */
-  function _getAccess(bytes32 resourceId, address caller) internal view returns (bool access) {
+  function _getAccess(ResourceId resourceId, address caller) internal view returns (bool access) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -101,9 +104,9 @@ library ResourceAccess {
   }
 
   /** Get access (using the specified store) */
-  function getAccess(IStore _store, bytes32 resourceId, address caller) internal view returns (bool access) {
+  function getAccess(IStore _store, ResourceId resourceId, address caller) internal view returns (bool access) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -111,9 +114,9 @@ library ResourceAccess {
   }
 
   /** Get access */
-  function get(bytes32 resourceId, address caller) internal view returns (bool access) {
+  function get(ResourceId resourceId, address caller) internal view returns (bool access) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -121,9 +124,9 @@ library ResourceAccess {
   }
 
   /** Get access */
-  function _get(bytes32 resourceId, address caller) internal view returns (bool access) {
+  function _get(ResourceId resourceId, address caller) internal view returns (bool access) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -131,9 +134,9 @@ library ResourceAccess {
   }
 
   /** Get access (using the specified store) */
-  function get(IStore _store, bytes32 resourceId, address caller) internal view returns (bool access) {
+  function get(IStore _store, ResourceId resourceId, address caller) internal view returns (bool access) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -141,81 +144,81 @@ library ResourceAccess {
   }
 
   /** Set access */
-  function setAccess(bytes32 resourceId, address caller, bool access) internal {
+  function setAccess(ResourceId resourceId, address caller, bool access) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Set access */
-  function _setAccess(bytes32 resourceId, address caller, bool access) internal {
+  function _setAccess(ResourceId resourceId, address caller, bool access) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Set access (using the specified store) */
-  function setAccess(IStore _store, bytes32 resourceId, address caller, bool access) internal {
+  function setAccess(IStore _store, ResourceId resourceId, address caller, bool access) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Set access */
-  function set(bytes32 resourceId, address caller, bool access) internal {
+  function set(ResourceId resourceId, address caller, bool access) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Set access */
-  function _set(bytes32 resourceId, address caller, bool access) internal {
+  function _set(ResourceId resourceId, address caller, bool access) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Set access (using the specified store) */
-  function set(IStore _store, bytes32 resourceId, address caller, bool access) internal {
+  function set(IStore _store, ResourceId resourceId, address caller, bool access) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Delete all data for given keys */
-  function deleteRecord(bytes32 resourceId, address caller) internal {
+  function deleteRecord(ResourceId resourceId, address caller) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
-  function _deleteRecord(bytes32 resourceId, address caller) internal {
+  function _deleteRecord(ResourceId resourceId, address caller) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 resourceId, address caller) internal {
+  function deleteRecord(IStore _store, ResourceId resourceId, address caller) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     _store.deleteRecord(_tableId, _keyTuple);
@@ -237,9 +240,9 @@ library ResourceAccess {
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
-  function encodeKeyTuple(bytes32 resourceId, address caller) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(ResourceId resourceId, address caller) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceId;
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     return _keyTuple;

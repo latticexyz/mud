@@ -85,8 +85,8 @@ contract StoreCoreTest is Test, StoreMock {
     emit Store_SetRecord(
       TablesTableId,
       keyTuple,
-      Tables.encodeStatic(fieldLayout.unwrap(), keySchema.unwrap(), valueSchema.unwrap()),
-      Tables.encodeLengths(abi.encode(keyNames), abi.encode(fieldNames)).unwrap(),
+      Tables.encodeStatic(fieldLayout, keySchema, valueSchema),
+      Tables.encodeLengths(abi.encode(keyNames), abi.encode(fieldNames)),
       Tables.encodeDynamic(abi.encode(keyNames), abi.encode(fieldNames))
     );
     IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
@@ -95,14 +95,14 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(IStore(this).getValueSchema(tableId).unwrap(), valueSchema.unwrap());
     assertEq(IStore(this).getKeySchema(tableId).unwrap(), keySchema.unwrap());
 
-    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), ResourceId.unwrap(tableId));
+    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), tableId);
     assertEq(loadedKeyNames, abi.encode(keyNames));
 
-    bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(IStore(this), ResourceId.unwrap(tableId));
+    bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(IStore(this), tableId);
     assertEq(loadedFieldNames, abi.encode(fieldNames));
 
     // Expect the table ID to be registered
-    assertTrue(ResourceIds._getExists(ResourceId.unwrap(tableId)));
+    assertTrue(ResourceIds._getExists(tableId));
   }
 
   function testRevertTableExists() public {
@@ -117,11 +117,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a revert when registering a table that already exists
     vm.expectRevert(
-      abi.encodeWithSelector(
-        IStoreErrors.Store_TableAlreadyExists.selector,
-        ResourceId.unwrap(tableId),
-        string(bytes.concat(ResourceId.unwrap(tableId)))
-      )
+      abi.encodeWithSelector(IStoreErrors.Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
     );
     IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }
@@ -186,8 +182,8 @@ contract StoreCoreTest is Test, StoreMock {
     );
     IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
-    assertTrue(ResourceIds._getExists(ResourceId.unwrap(tableId)));
-    assertFalse(ResourceIds._getExists(ResourceId.unwrap(tableId2)));
+    assertTrue(ResourceIds._getExists(tableId));
+    assertFalse(ResourceIds._getExists(tableId2));
 
     assertEq(FieldLayout.unwrap(IStore(this).getFieldLayout(tableId)), FieldLayout.unwrap(fieldLayout));
     assertEq(Schema.unwrap(IStore(this).getValueSchema(tableId)), Schema.unwrap(valueSchema));
@@ -295,7 +291,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a Store_SetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit Store_SetRecord(tableId, keyTuple, staticData, bytes32(0), new bytes(0));
+    emit Store_SetRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
@@ -332,7 +328,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a Store_SetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit Store_SetRecord(tableId, keyTuple, staticData, bytes32(0), new bytes(0));
+    emit Store_SetRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
@@ -396,7 +392,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a Store_SetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit Store_SetRecord(tableId, keyTuple, staticData, encodedDynamicLength.unwrap(), dynamicData);
+    emit Store_SetRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
 
     // Set data
     IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
@@ -551,7 +547,7 @@ contract StoreCoreTest is Test, StoreMock {
       uint48(0),
       0,
       _data.thirdDataBytes,
-      PackedCounterLib.pack(_data.thirdDataBytes.length, 0).unwrap()
+      PackedCounterLib.pack(_data.thirdDataBytes.length, 0)
     );
 
     // Set third field
@@ -586,7 +582,7 @@ contract StoreCoreTest is Test, StoreMock {
       uint48(_data.thirdDataBytes.length),
       0,
       _data.fourthDataBytes,
-      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.fourthDataBytes.length).unwrap()
+      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.fourthDataBytes.length)
     );
 
     // Set fourth field
@@ -631,7 +627,7 @@ contract StoreCoreTest is Test, StoreMock {
       uint48(_data.thirdDataBytes.length),
       uint40(_data.fourthDataBytes.length),
       _data.thirdDataBytes,
-      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.thirdDataBytes.length).unwrap()
+      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.thirdDataBytes.length)
     );
 
     // Set fourth field
@@ -812,7 +808,7 @@ contract StoreCoreTest is Test, StoreMock {
       uint48(data.secondDataBytes.length),
       0,
       data.secondDataToPush,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length).unwrap()
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length)
     );
 
     // Push to second field
@@ -855,7 +851,7 @@ contract StoreCoreTest is Test, StoreMock {
       uint48(data.newSecondDataBytes.length + data.thirdDataBytes.length),
       0,
       data.thirdDataToPush,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length).unwrap()
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length)
     );
 
     // Push to third field
@@ -965,7 +961,7 @@ contract StoreCoreTest is Test, StoreMock {
       uint48(4 * 1),
       4 * 1,
       data.secondDataForUpdate,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length).unwrap()
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length)
     );
 
     // Update index 1 in second field (4 = byte length of uint32)
@@ -1017,7 +1013,7 @@ contract StoreCoreTest is Test, StoreMock {
       uint48(data.newSecondDataBytes.length + 8 * 1),
       8 * 4,
       data.thirdDataForUpdate,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length).unwrap()
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length)
     );
 
     // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)

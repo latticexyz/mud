@@ -33,14 +33,14 @@ contract BalanceTransferSystem is System, IWorldErrors {
     AccessControl.requireAccess(fromNamespaceId, _msgSender());
 
     // Get current namespace balance
-    uint256 balance = Balances._get(ResourceId.unwrap(fromNamespaceId));
+    uint256 balance = Balances._get(fromNamespaceId);
 
     // Require the balance balance to be greater or equal to the amount to transfer
     if (amount > balance) revert World_InsufficientBalance(balance, amount);
 
     // Update the balances
-    Balances._set(ResourceId.unwrap(fromNamespaceId), balance - amount);
-    Balances._set(ResourceId.unwrap(toNamespaceId), Balances._get(ResourceId.unwrap(toNamespaceId)) + amount);
+    Balances._set(fromNamespaceId, balance - amount);
+    Balances._set(toNamespaceId, Balances._get(toNamespaceId) + amount);
   }
 
   /**
@@ -51,13 +51,13 @@ contract BalanceTransferSystem is System, IWorldErrors {
     AccessControl.requireAccess(fromNamespaceId, _msgSender());
 
     // Get current namespace balance
-    uint256 balance = Balances._get(ResourceId.unwrap(fromNamespaceId));
+    uint256 balance = Balances._get(fromNamespaceId);
 
     // Require the balance balance to be greater or equal to the amount to transfer
     if (amount > balance) revert World_InsufficientBalance(balance, amount);
 
     // Update the balances
-    Balances._set(ResourceId.unwrap(fromNamespaceId), balance - amount);
+    Balances._set(fromNamespaceId, balance - amount);
 
     // Transfer the balance to the given address, revert on failure
     (bool success, bytes memory data) = payable(toAddress).call{ value: amount }("");

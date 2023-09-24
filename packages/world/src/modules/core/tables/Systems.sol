@@ -20,6 +20,9 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
+// Import user types
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
 ResourceId constant _tableId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Systems")))
 );
@@ -81,111 +84,111 @@ library Systems {
   }
 
   /** Get system */
-  function getSystem(bytes32 systemId) internal view returns (address system) {
+  function getSystem(ResourceId systemId) internal view returns (address system) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /** Get system */
-  function _getSystem(bytes32 systemId) internal view returns (address system) {
+  function _getSystem(ResourceId systemId) internal view returns (address system) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /** Get system (using the specified store) */
-  function getSystem(IStore _store, bytes32 systemId) internal view returns (address system) {
+  function getSystem(IStore _store, ResourceId systemId) internal view returns (address system) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /** Set system */
-  function setSystem(bytes32 systemId, address system) internal {
+  function setSystem(ResourceId systemId, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
   /** Set system */
-  function _setSystem(bytes32 systemId, address system) internal {
+  function _setSystem(ResourceId systemId, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
   /** Set system (using the specified store) */
-  function setSystem(IStore _store, bytes32 systemId, address system) internal {
+  function setSystem(IStore _store, ResourceId systemId, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
   /** Get publicAccess */
-  function getPublicAccess(bytes32 systemId) internal view returns (bool publicAccess) {
+  function getPublicAccess(ResourceId systemId) internal view returns (bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Get publicAccess */
-  function _getPublicAccess(bytes32 systemId) internal view returns (bool publicAccess) {
+  function _getPublicAccess(ResourceId systemId) internal view returns (bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Get publicAccess (using the specified store) */
-  function getPublicAccess(IStore _store, bytes32 systemId) internal view returns (bool publicAccess) {
+  function getPublicAccess(IStore _store, ResourceId systemId) internal view returns (bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Set publicAccess */
-  function setPublicAccess(bytes32 systemId, bool publicAccess) internal {
+  function setPublicAccess(ResourceId systemId, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
   }
 
   /** Set publicAccess */
-  function _setPublicAccess(bytes32 systemId, bool publicAccess) internal {
+  function _setPublicAccess(ResourceId systemId, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
   }
 
   /** Set publicAccess (using the specified store) */
-  function setPublicAccess(IStore _store, bytes32 systemId, bool publicAccess) internal {
+  function setPublicAccess(IStore _store, ResourceId systemId, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
   }
 
   /** Get the full data */
-  function get(bytes32 systemId) internal view returns (address system, bool publicAccess) {
+  function get(ResourceId systemId) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
@@ -196,9 +199,9 @@ library Systems {
   }
 
   /** Get the full data */
-  function _get(bytes32 systemId) internal view returns (address system, bool publicAccess) {
+  function _get(ResourceId systemId) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
@@ -209,9 +212,9 @@ library Systems {
   }
 
   /** Get the full data (using the specified store) */
-  function get(IStore _store, bytes32 systemId) internal view returns (address system, bool publicAccess) {
+  function get(IStore _store, ResourceId systemId) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
       _tableId,
@@ -222,40 +225,40 @@ library Systems {
   }
 
   /** Set the full data using individual values */
-  function set(bytes32 systemId, address system, bool publicAccess) internal {
+  function set(ResourceId systemId, address system, bool publicAccess) internal {
     bytes memory _staticData = encodeStatic(system, publicAccess);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
-  function _set(bytes32 systemId, address system, bool publicAccess) internal {
+  function _set(ResourceId systemId, address system, bool publicAccess) internal {
     bytes memory _staticData = encodeStatic(system, publicAccess);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values (using the specified store) */
-  function set(IStore _store, bytes32 systemId, address system, bool publicAccess) internal {
+  function set(IStore _store, ResourceId systemId, address system, bool publicAccess) internal {
     bytes memory _staticData = encodeStatic(system, publicAccess);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -283,25 +286,25 @@ library Systems {
   }
 
   /** Delete all data for given keys */
-  function deleteRecord(bytes32 systemId) internal {
+  function deleteRecord(ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
-  function _deleteRecord(bytes32 systemId) internal {
+  function _deleteRecord(ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 systemId) internal {
+  function deleteRecord(IStore _store, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     _store.deleteRecord(_tableId, _keyTuple);
   }
@@ -322,9 +325,9 @@ library Systems {
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
-  function encodeKeyTuple(bytes32 systemId) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(ResourceId systemId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = systemId;
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     return _keyTuple;
   }

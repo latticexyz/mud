@@ -49,10 +49,10 @@ contract StoreRegistrationSystem is System, IWorldErrors {
 
     // If the namespace doesn't exist yet, register it
     ResourceId namespaceId = tableId.getNamespaceId();
-    if (!ResourceIds._getExists(ResourceId.unwrap(namespaceId))) {
+    if (!ResourceIds._getExists(namespaceId)) {
       // Since this is a root system, we're in the context of the World contract already,
       // so we can use delegatecall to register the namespace
-      (address coreSystemAddress, ) = Systems._get(ResourceId.unwrap(CORE_SYSTEM_ID));
+      (address coreSystemAddress, ) = Systems._get(CORE_SYSTEM_ID);
       (bool success, bytes memory data) = coreSystemAddress.delegatecall(
         abi.encodeCall(WorldRegistrationSystem.registerNamespace, (namespaceId))
       );

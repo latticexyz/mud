@@ -19,7 +19,7 @@ library Utils {
     if (StoreSwitch.getStoreAddress() == address(this)) {
       return "";
     } else {
-      ResourceId systemId = ResourceId.wrap(SystemRegistry.get(address(this)));
+      ResourceId systemId = SystemRegistry.get(address(this));
       return systemId.getNamespace();
     }
   }

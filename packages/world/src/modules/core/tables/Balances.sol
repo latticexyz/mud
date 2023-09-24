@@ -20,6 +20,9 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
+// Import user types
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
 ResourceId constant _tableId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Balances")))
 );
@@ -79,127 +82,127 @@ library Balances {
   }
 
   /** Get balance */
-  function getBalance(bytes32 namespaceId) internal view returns (uint256 balance) {
+  function getBalance(ResourceId namespaceId) internal view returns (uint256 balance) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
 
   /** Get balance */
-  function _getBalance(bytes32 namespaceId) internal view returns (uint256 balance) {
+  function _getBalance(ResourceId namespaceId) internal view returns (uint256 balance) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
 
   /** Get balance (using the specified store) */
-  function getBalance(IStore _store, bytes32 namespaceId) internal view returns (uint256 balance) {
+  function getBalance(IStore _store, ResourceId namespaceId) internal view returns (uint256 balance) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
 
   /** Get balance */
-  function get(bytes32 namespaceId) internal view returns (uint256 balance) {
+  function get(ResourceId namespaceId) internal view returns (uint256 balance) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
 
   /** Get balance */
-  function _get(bytes32 namespaceId) internal view returns (uint256 balance) {
+  function _get(ResourceId namespaceId) internal view returns (uint256 balance) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
 
   /** Get balance (using the specified store) */
-  function get(IStore _store, bytes32 namespaceId) internal view returns (uint256 balance) {
+  function get(IStore _store, ResourceId namespaceId) internal view returns (uint256 balance) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
 
   /** Set balance */
-  function setBalance(bytes32 namespaceId, uint256 balance) internal {
+  function setBalance(ResourceId namespaceId, uint256 balance) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Set balance */
-  function _setBalance(bytes32 namespaceId, uint256 balance) internal {
+  function _setBalance(ResourceId namespaceId, uint256 balance) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Set balance (using the specified store) */
-  function setBalance(IStore _store, bytes32 namespaceId, uint256 balance) internal {
+  function setBalance(IStore _store, ResourceId namespaceId, uint256 balance) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Set balance */
-  function set(bytes32 namespaceId, uint256 balance) internal {
+  function set(ResourceId namespaceId, uint256 balance) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Set balance */
-  function _set(bytes32 namespaceId, uint256 balance) internal {
+  function _set(ResourceId namespaceId, uint256 balance) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Set balance (using the specified store) */
-  function set(IStore _store, bytes32 namespaceId, uint256 balance) internal {
+  function set(IStore _store, ResourceId namespaceId, uint256 balance) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Delete all data for given keys */
-  function deleteRecord(bytes32 namespaceId) internal {
+  function deleteRecord(ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
-  function _deleteRecord(bytes32 namespaceId) internal {
+  function _deleteRecord(ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 namespaceId) internal {
+  function deleteRecord(IStore _store, ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     _store.deleteRecord(_tableId, _keyTuple);
   }
@@ -220,9 +223,9 @@ library Balances {
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
-  function encodeKeyTuple(bytes32 namespaceId) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(ResourceId namespaceId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = namespaceId;
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     return _keyTuple;
   }

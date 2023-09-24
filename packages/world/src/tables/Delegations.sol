@@ -20,6 +20,9 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
+// Import user types
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
 ResourceId constant _tableId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Delegations")))
 );
@@ -84,26 +87,26 @@ library Delegations {
   function getDelegationControlId(
     address delegator,
     address delegatee
-  ) internal view returns (bytes32 delegationControlId) {
+  ) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return ResourceId.wrap(bytes32(_blob));
   }
 
   /** Get delegationControlId */
   function _getDelegationControlId(
     address delegator,
     address delegatee
-  ) internal view returns (bytes32 delegationControlId) {
+  ) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return ResourceId.wrap(bytes32(_blob));
   }
 
   /** Get delegationControlId (using the specified store) */
@@ -111,33 +114,33 @@ library Delegations {
     IStore _store,
     address delegator,
     address delegatee
-  ) internal view returns (bytes32 delegationControlId) {
+  ) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return ResourceId.wrap(bytes32(_blob));
   }
 
   /** Get delegationControlId */
-  function get(address delegator, address delegatee) internal view returns (bytes32 delegationControlId) {
+  function get(address delegator, address delegatee) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return ResourceId.wrap(bytes32(_blob));
   }
 
   /** Get delegationControlId */
-  function _get(address delegator, address delegatee) internal view returns (bytes32 delegationControlId) {
+  function _get(address delegator, address delegatee) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return ResourceId.wrap(bytes32(_blob));
   }
 
   /** Get delegationControlId (using the specified store) */
@@ -145,31 +148,43 @@ library Delegations {
     IStore _store,
     address delegator,
     address delegatee
-  ) internal view returns (bytes32 delegationControlId) {
+  ) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return ResourceId.wrap(bytes32(_blob));
   }
 
   /** Set delegationControlId */
-  function setDelegationControlId(address delegator, address delegatee, bytes32 delegationControlId) internal {
+  function setDelegationControlId(address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
+    StoreSwitch.setStaticField(
+      _tableId,
+      _keyTuple,
+      0,
+      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
+      _fieldLayout
+    );
   }
 
   /** Set delegationControlId */
-  function _setDelegationControlId(address delegator, address delegatee, bytes32 delegationControlId) internal {
+  function _setDelegationControlId(address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
+    StoreCore.setStaticField(
+      _tableId,
+      _keyTuple,
+      0,
+      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
+      _fieldLayout
+    );
   }
 
   /** Set delegationControlId (using the specified store) */
@@ -177,40 +192,64 @@ library Delegations {
     IStore _store,
     address delegator,
     address delegatee,
-    bytes32 delegationControlId
+    ResourceId delegationControlId
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
+    _store.setStaticField(
+      _tableId,
+      _keyTuple,
+      0,
+      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
+      _fieldLayout
+    );
   }
 
   /** Set delegationControlId */
-  function set(address delegator, address delegatee, bytes32 delegationControlId) internal {
+  function set(address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
+    StoreSwitch.setStaticField(
+      _tableId,
+      _keyTuple,
+      0,
+      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
+      _fieldLayout
+    );
   }
 
   /** Set delegationControlId */
-  function _set(address delegator, address delegatee, bytes32 delegationControlId) internal {
+  function _set(address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
+    StoreCore.setStaticField(
+      _tableId,
+      _keyTuple,
+      0,
+      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
+      _fieldLayout
+    );
   }
 
   /** Set delegationControlId (using the specified store) */
-  function set(IStore _store, address delegator, address delegatee, bytes32 delegationControlId) internal {
+  function set(IStore _store, address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), _fieldLayout);
+    _store.setStaticField(
+      _tableId,
+      _keyTuple,
+      0,
+      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
+      _fieldLayout
+    );
   }
 
   /** Delete all data for given keys */
@@ -241,12 +280,12 @@ library Delegations {
   }
 
   /** Tightly pack static data using this table's schema */
-  function encodeStatic(bytes32 delegationControlId) internal pure returns (bytes memory) {
+  function encodeStatic(ResourceId delegationControlId) internal pure returns (bytes memory) {
     return abi.encodePacked(delegationControlId);
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(bytes32 delegationControlId) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(ResourceId delegationControlId) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(delegationControlId);
 
     PackedCounter _encodedLengths;

@@ -9,9 +9,10 @@ import { System } from "../../../System.sol";
 import { WorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../../../WorldContext.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { SystemCall } from "../../../SystemCall.sol";
-import { ROOT_NAMESPACE_ID, ROOT_NAME, UNLIMITED_DELEGATION } from "../../../constants.sol";
+import { ROOT_NAMESPACE_ID, ROOT_NAME } from "../../../constants.sol";
 import { RESOURCE_NAMESPACE, RESOURCE_SYSTEM } from "../../../worldResourceTypes.sol";
 import { AccessControl } from "../../../AccessControl.sol";
+import { Delegation } from "../../../Delegation.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
@@ -44,18 +45,18 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     }
 
     // Require namespace to not exist yet
-    if (ResourceIds._getExists(ResourceId.unwrap(namespaceId))) {
+    if (ResourceIds._getExists(namespaceId)) {
       revert World_ResourceAlreadyExists(namespaceId, namespaceId.toString());
     }
 
     // Register namespace resource ID
-    ResourceIds._setExists(ResourceId.unwrap(namespaceId), true);
+    ResourceIds._setExists(namespaceId, true);
 
     // Register caller as the namespace owner
-    NamespaceOwner._set(ResourceId.unwrap(namespaceId), _msgSender());
+    NamespaceOwner._set(namespaceId, _msgSender());
 
     // Give caller access to the new namespace
-    ResourceAccess._set(ResourceId.unwrap(namespaceId), _msgSender(), true);
+    ResourceAccess._set(namespaceId, _msgSender(), true);
   }
 
   /**
@@ -69,10 +70,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     AccessControl.requireOwner(systemId, _msgSender());
 
     // Register the hook
-    SystemHooks.push(
-      ResourceId.unwrap(systemId),
-      Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap))
-    );
+    SystemHooks.push(systemId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
   }
 
   /**
@@ -108,14 +106,16 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     if (systemId.getName() == ROOT_NAME) revert World_InvalidResourceId(systemId, systemId.toString());
 
     // Require this system to not be registered at a different system ID yet
-    bytes32 existingSystemId = SystemRegistry._get(address(system));
-    if (existingSystemId != 0 && existingSystemId != ResourceId.unwrap(systemId)) {
+    ResourceId existingSystemId = SystemRegistry._get(address(system));
+    if (
+      ResourceId.unwrap(existingSystemId) != 0 && ResourceId.unwrap(existingSystemId) != ResourceId.unwrap(systemId)
+    ) {
       revert World_SystemAlreadyExists(address(system));
     }
 
     // If the namespace doesn't exist yet, register it
     ResourceId namespaceId = systemId.getNamespaceId();
-    if (!ResourceIds._getExists(ResourceId.unwrap(namespaceId))) {
+    if (!ResourceIds._getExists(namespaceId)) {
       registerNamespace(namespaceId);
     } else {
       // otherwise require caller to own the namespace
@@ -123,7 +123,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     }
 
     // Check if a system already exists at this system ID
-    address existingSystem = Systems._getSystem(ResourceId.unwrap(systemId));
+    address existingSystem = Systems._getSystem(systemId);
 
     // If there is an existing system with this system ID, remove it
     if (existingSystem != address(0)) {
@@ -131,20 +131,20 @@ contract WorldRegistrationSystem is System, IWorldErrors {
       SystemRegistry._deleteRecord(existingSystem);
 
       // Remove the existing system's access to its namespace
-      ResourceAccess._deleteRecord(ResourceId.unwrap(namespaceId), existingSystem);
+      ResourceAccess._deleteRecord(namespaceId, existingSystem);
     } else {
       // Otherwise, this is a new system, so register its resource ID
-      ResourceIds._setExists(ResourceId.unwrap(systemId), true);
+      ResourceIds._setExists(systemId, true);
     }
 
     // Systems = mapping from system ID to system address and public access flag
-    Systems._set(ResourceId.unwrap(systemId), address(system), publicAccess);
+    Systems._set(systemId, address(system), publicAccess);
 
     // SystemRegistry = mapping from system address to system ID
-    SystemRegistry._set(address(system), ResourceId.unwrap(systemId));
+    SystemRegistry._set(address(system), systemId);
 
     // Grant the system access to its namespace
-    ResourceAccess._set(ResourceId.unwrap(namespaceId), address(system), true);
+    ResourceAccess._set(namespaceId, address(system), true);
   }
 
   /**
@@ -170,13 +170,13 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     worldFunctionSelector = bytes4(keccak256(worldFunctionSignature));
 
     // Require the function selector to be globally unique
-    bytes32 existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
+    ResourceId existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
 
-    if (existingSystemId != 0) revert World_FunctionSelectorAlreadyExists(worldFunctionSelector);
+    if (ResourceId.unwrap(existingSystemId) != 0) revert World_FunctionSelectorAlreadyExists(worldFunctionSelector);
 
     // Register the function selector
     bytes4 systemFunctionSelector = bytes4(keccak256(bytes(systemFunctionSignature)));
-    FunctionSelectors._set(worldFunctionSelector, ResourceId.unwrap(systemId), systemFunctionSelector);
+    FunctionSelectors._set(worldFunctionSelector, systemId, systemFunctionSelector);
 
     // Register the function signature for offchain use
     FunctionSignatures._set(worldFunctionSelector, string(worldFunctionSignature));
@@ -198,12 +198,12 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     worldFunctionSelector = bytes4(keccak256(bytes(worldFunctionSignature)));
 
     // Require the function selector to be globally unique
-    bytes32 existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
+    ResourceId existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
 
-    if (existingSystemId != 0) revert World_FunctionSelectorAlreadyExists(worldFunctionSelector);
+    if (ResourceId.unwrap(existingSystemId) != 0) revert World_FunctionSelectorAlreadyExists(worldFunctionSelector);
 
     // Register the function selector
-    FunctionSelectors._set(worldFunctionSelector, ResourceId.unwrap(systemId), systemFunctionSelector);
+    FunctionSelectors._set(worldFunctionSelector, systemId, systemFunctionSelector);
 
     // Register the function signature for offchain use
     FunctionSignatures._set(worldFunctionSelector, worldFunctionSignature);
@@ -214,16 +214,12 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData) public {
     // Store the delegation control contract address
-    Delegations.set({
-      delegator: _msgSender(),
-      delegatee: delegatee,
-      delegationControlId: ResourceId.unwrap(delegationControlId)
-    });
+    Delegations._set({ delegator: _msgSender(), delegatee: delegatee, delegationControlId: delegationControlId });
 
-    // If the delegation is not unlimited...
-    if (ResourceId.unwrap(delegationControlId) != ResourceId.unwrap(UNLIMITED_DELEGATION) && initCallData.length > 0) {
+    // If the delegation is limited...
+    if (Delegation.isLimited(delegationControlId) && initCallData.length > 0) {
       // Require the delegationControl contract to implement the IDelegationControl interface
-      (address delegationControl, ) = Systems._get(ResourceId.unwrap(delegationControlId));
+      (address delegationControl, ) = Systems._get(delegationControlId);
       requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
 
       // Call the delegation control contract's init function
