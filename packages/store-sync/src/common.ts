@@ -1,5 +1,5 @@
 import { Address, Block, Hex, Log, PublicClient } from "viem";
-import { StoreConfig, StoreEventsAbiItem, StoreEventsAbi, storeEvents, resolveUserTypes } from "@latticexyz/store";
+import { StoreConfig, StoreEventsAbiItem, StoreEventsAbi, resolveUserTypes } from "@latticexyz/store";
 import storeConfig from "@latticexyz/store/mud.config";
 import { Observable } from "rxjs";
 import { resourceIdToHex } from "@latticexyz/common";
