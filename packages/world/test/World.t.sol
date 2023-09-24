@@ -216,7 +216,7 @@ contract WorldTest is Test, GasReporter {
 
     // Should have registered the core system function selectors
     CoreSystem coreSystem = CoreSystem(Systems.getSystem(world, CORE_SYSTEM_ID));
-    bytes4[18] memory coreFunctionSignatures = [
+    bytes4[19] memory coreFunctionSignatures = [
       // --- AccessManagementSystem ---
       coreSystem.grantAccess.selector,
       coreSystem.revokeAccess.selector,
@@ -226,6 +226,7 @@ contract WorldTest is Test, GasReporter {
       coreSystem.transferBalanceToAddress.selector,
       // --- BatchCallSystem ---
       coreSystem.batchCall.selector,
+      coreSystem.batchCallFrom.selector,
       // --- ModuleInstallationSystem ---
       coreSystem.installModule.selector,
       // --- StoreRegistrationSystem ---

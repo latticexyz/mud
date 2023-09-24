@@ -98,7 +98,7 @@ contract CoreModule is Module {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    string[18] memory functionSignatures = [
+    string[19] memory functionSignatures = [
       // --- AccessManagementSystem ---
       "grantAccess(bytes32,address)",
       "revokeAccess(bytes32,address)",
@@ -108,6 +108,7 @@ contract CoreModule is Module {
       "transferBalanceToAddress(bytes32,address,uint256)",
       // --- BatchCallSystem ---
       "batchCall((bytes32,bytes)[])",
+      "batchCallFrom((address,bytes32,bytes)[])",
       // --- ModuleInstallationSystem ---
       "installModule(address,bytes)",
       // --- StoreRegistrationSystem ---
