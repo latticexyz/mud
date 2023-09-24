@@ -1,5 +1,5 @@
 ---
-"@latticexyz/cli": path
+"@latticexyz/cli": patch
 "@latticexyz/world": major
 "@latticexyz/world-modules": major
 ---
