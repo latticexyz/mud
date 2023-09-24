@@ -102,8 +102,8 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
       keyTuple,
       uint48(secondDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
-      new bytes(0),
-      PackedCounterLib.pack(newDataBytes.length, thirdDataBytes.length)
+      PackedCounterLib.pack(newDataBytes.length, thirdDataBytes.length),
+      new bytes(0)
     );
 
     // Pop from second field
@@ -150,8 +150,8 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
       keyTuple,
       uint48(secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
-      new bytes(0),
-      PackedCounterLib.pack(secondDataBytes.length, newDataBytes.length)
+      PackedCounterLib.pack(secondDataBytes.length, newDataBytes.length),
+      new bytes(0)
     );
 
     // Pop from the field

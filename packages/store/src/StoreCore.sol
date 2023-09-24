@@ -41,8 +41,8 @@ library StoreCore {
     bytes32[] keyTuple,
     uint48 start,
     uint40 deleteCount,
-    bytes data,
-    PackedCounter encodedLengths
+    PackedCounter encodedLengths,
+    bytes data
   );
   event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
@@ -763,8 +763,8 @@ library StoreCoreInternal {
       keyTuple: keyTuple,
       start: uint48(start),
       deleteCount: deleteCount,
-      data: data,
-      encodedLengths: updatedEncodedLengths
+      encodedLengths: updatedEncodedLengths,
+      data: data
     });
 
     // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
