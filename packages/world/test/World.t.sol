@@ -49,6 +49,7 @@ import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../src/interfaces/ISystem
 import { Bool } from "./tables/Bool.sol";
 import { TwoFields, TwoFieldsData } from "./tables/TwoFields.sol";
 import { AddressArray } from "./tables/AddressArray.sol";
+import { DelegationControlMock } from "./DelegationControlMock.sol";
 
 interface IWorldTestSystem {
   function testNamespace_testSystem_err(string memory input) external pure;
@@ -215,7 +216,7 @@ contract WorldTest is Test, GasReporter {
 
     // Should have registered the core system function selectors
     CoreSystem coreSystem = CoreSystem(Systems.getSystem(world, CORE_SYSTEM_ID));
-    bytes4[17] memory coreFunctionSignatures = [
+    bytes4[18] memory coreFunctionSignatures = [
       // --- AccessManagementSystem ---
       coreSystem.grantAccess.selector,
       coreSystem.revokeAccess.selector,
@@ -238,7 +239,8 @@ contract WorldTest is Test, GasReporter {
       coreSystem.registerSystem.selector,
       coreSystem.registerFunctionSelector.selector,
       coreSystem.registerRootFunctionSelector.selector,
-      coreSystem.registerDelegation.selector
+      coreSystem.registerDelegation.selector,
+      coreSystem.registerNamespaceDelegation.selector
     ];
 
     for (uint256 i; i < coreFunctionSignatures.length; i++) {
@@ -997,6 +999,73 @@ contract WorldTest is Test, GasReporter {
     address delegatee = address(2);
     vm.prank(delegator);
     world.registerDelegation(delegatee, UNLIMITED_DELEGATION, new bytes(0));
+  }
+
+  function testCallFromNamespaceDelegation() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "testSystem"
+    });
+    world.registerSystem(systemId, system, true);
+
+    // Register a delegation control mock system
+    DelegationControlMock delegationControlMock = new DelegationControlMock();
+    ResourceId delegationControlMockId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "delegation",
+      name: "mock"
+    });
+    world.registerSystem(delegationControlMockId, delegationControlMock, true);
+
+    address delegator = address(1);
+    address delegatee = address(2);
+    ResourceId namespaceId = systemId.getNamespaceId();
+
+    // Expect a revert when attempting to perform a call via callFrom before a delegation was created
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
+    vm.prank(delegatee);
+    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+
+    // Register the delegation mock as the delegation control for the namespace
+    // with `delegatee` and `namespaceId` in the init call data
+    world.registerNamespaceDelegation(
+      namespaceId,
+      delegationControlMockId,
+      abi.encodeWithSelector(delegationControlMock.initDelegation.selector, namespaceId, delegatee)
+    );
+
+    // Call a system from the delegatee on behalf of the delegator
+    vm.prank(delegatee);
+    startGasReport("call a system via a namespace fallback delegation");
+    bytes memory returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    endGasReport();
+    address returnedAddress = abi.decode(returnData, (address));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedAddress, delegator);
+
+    // Expect a revert when attempting to perform a call on behalf of an address that doesn't have a delegation
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_DelegationNotFound.selector,
+        delegator,
+        address(3) // Invalid delegatee
+      )
+    );
+    vm.prank(address(3));
+    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+  }
+
+  function testCallFromNamespaceDelegationRevertUnlimitedNotAllowed() public {
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_UnlimitedDelegationNotAllowed.selector));
+    world.registerNamespaceDelegation(
+      WorldResourceIdLib.encodeNamespace("namespace"),
+      UNLIMITED_DELEGATION,
+      new bytes(0)
+    );
   }
 
   function testRegisterStoreHook() public {

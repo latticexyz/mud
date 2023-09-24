@@ -13,6 +13,7 @@ interface IWorldErrors {
   error World_FunctionSelectorAlreadyExists(bytes4 functionSelector);
   error World_FunctionSelectorNotFound(bytes4 functionSelector);
   error World_DelegationNotFound(address delegator, address delegatee);
+  error World_UnlimitedDelegationNotAllowed();
   error World_InsufficientBalance(uint256 balance, uint256 amount);
   error World_InterfaceNotSupported(address contractAddress, bytes4 interfaceId);
   error World_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);

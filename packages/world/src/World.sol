@@ -23,7 +23,8 @@ import { requireInterface } from "./requireInterface.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { InstalledModules } from "./tables/InstalledModules.sol";
-import { Delegations } from "./tables/Delegations.sol";
+import { UserDelegationControl } from "./tables/UserDelegationControl.sol";
+import { NamespaceDelegationControl } from "./tables/NamespaceDelegationControl.sol";
 
 import { IModule, MODULE_INTERFACE_ID } from "./interfaces/IModule.sol";
 import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
@@ -302,18 +303,25 @@ contract World is StoreRead, IStoreData, IWorldKernel {
       return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
     }
 
-    // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
-    ResourceId explicitDelegationId = Delegations._get({ delegator: delegator, delegatee: msg.sender });
+    // Check if there is an individual authorization for this caller to perform actions on behalf of the delegator
+    ResourceId individualDelegationId = UserDelegationControl._get({ delegator: delegator, delegatee: msg.sender });
 
-    if (Delegation.verify(explicitDelegationId, delegator, msg.sender, systemId, callData)) {
+    if (Delegation.verify(individualDelegationId, delegator, msg.sender, systemId, callData)) {
       // forward the call as `delegator`
       return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
     }
 
     // Check if the delegator has a fallback delegation control set
-    ResourceId fallbackDelegationId = Delegations._get({ delegator: delegator, delegatee: address(0) });
-    if (Delegation.verify(fallbackDelegationId, delegator, msg.sender, systemId, callData)) {
-      // forward the call with `from` as `msgSender`
+    ResourceId userFallbackDelegationId = UserDelegationControl._get({ delegator: delegator, delegatee: address(0) });
+    if (Delegation.verify(userFallbackDelegationId, delegator, msg.sender, systemId, callData)) {
+      // forward the call as `delegator`
+      return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
+    }
+
+    // Check if the namespace has a fallback delegation control set
+    ResourceId namespaceFallbackDelegationId = NamespaceDelegationControl._get(systemId.getNamespaceId());
+    if (Delegation.verify(namespaceFallbackDelegationId, delegator, msg.sender, systemId, callData)) {
+      // forward the call as `delegator`
       return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
     }
 

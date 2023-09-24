@@ -15,7 +15,8 @@ import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../tables/ResourceAccess.sol";
 import { InstalledModules } from "../../tables/InstalledModules.sol";
-import { Delegations } from "../../tables/Delegations.sol";
+import { UserDelegationControl } from "../../tables/UserDelegationControl.sol";
+import { NamespaceDelegationControl } from "../../tables/NamespaceDelegationControl.sol";
 
 import { CoreSystem } from "./CoreSystem.sol";
 import { CORE_MODULE_NAME, CORE_SYSTEM_ID } from "./constants.sol";
@@ -67,7 +68,8 @@ contract CoreModule is Module {
     NamespaceOwner.register();
     Balances.register();
     InstalledModules.register();
-    Delegations.register();
+    UserDelegationControl.register();
+    NamespaceDelegationControl.register();
     ResourceAccess.register();
     Systems.register();
     FunctionSelectors.register();
@@ -96,7 +98,7 @@ contract CoreModule is Module {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    string[17] memory functionSignatures = [
+    string[18] memory functionSignatures = [
       // --- AccessManagementSystem ---
       "grantAccess(bytes32,address)",
       "revokeAccess(bytes32,address)",
@@ -119,7 +121,8 @@ contract CoreModule is Module {
       "registerSystem(bytes32,address,bool)",
       "registerFunctionSelector(bytes32,string)",
       "registerRootFunctionSelector(bytes32,string,bytes4)",
-      "registerDelegation(address,bytes32,bytes)"
+      "registerDelegation(address,bytes32,bytes)",
+      "registerNamespaceDelegation(bytes32,bytes32,bytes)"
     ];
 
     for (uint256 i = 0; i < functionSignatures.length; i++) {
