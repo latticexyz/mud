@@ -1209,7 +1209,7 @@ contract StoreCoreTest is Test, StoreMock {
     emit HookCalled(
       abi.encodeCall(
         IStoreHook.onBeforeSpliceDynamicData,
-        (tableId, keyTuple, 0, 0, uint40(dynamicData.length), dynamicData, encodedLengths)
+        (tableId, keyTuple, 0, 0, uint40(dynamicData.length), encodedLengths, dynamicData)
       )
     );
 
@@ -1218,7 +1218,7 @@ contract StoreCoreTest is Test, StoreMock {
     emit HookCalled(
       abi.encodeCall(
         IStoreHook.onAfterSpliceDynamicData,
-        (tableId, keyTuple, 0, 0, uint40(dynamicData.length), dynamicData, encodedLengths)
+        (tableId, keyTuple, 0, 0, uint40(dynamicData.length), encodedLengths, dynamicData)
       )
     );
 

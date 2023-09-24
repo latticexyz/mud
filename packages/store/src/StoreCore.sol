@@ -745,27 +745,29 @@ library StoreCoreInternal {
       revert IStoreErrors.Store_IndexOutOfBounds(previousFieldLength, startWithinField);
     }
 
-    // Compute start index for the splice
-    uint256 start = startWithinField;
-    unchecked {
-      // (safe because it's a few uint40 values, which can't overflow uint48)
-      for (uint8 i; i < dynamicFieldIndex; i++) {
-        start += previousEncodedLengths.atIndex(i);
-      }
-    }
-
     // Update the encoded length
     PackedCounter updatedEncodedLengths = previousEncodedLengths.setAtIndex(dynamicFieldIndex, updatedFieldLength);
 
-    // Emit event to notify offchain indexers
-    emit StoreCore.Store_SpliceDynamicData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      start: uint48(start),
-      deleteCount: deleteCount,
-      encodedLengths: updatedEncodedLengths,
-      data: data
-    });
+    {
+      // Compute start index for the splice
+      uint256 start = startWithinField;
+      unchecked {
+        // (safe because it's a few uint40 values, which can't overflow uint48)
+        for (uint8 i; i < dynamicFieldIndex; i++) {
+          start += previousEncodedLengths.atIndex(i);
+        }
+      }
+
+      // Emit event to notify offchain indexers
+      emit StoreCore.Store_SpliceDynamicData({
+        tableId: tableId,
+        keyTuple: keyTuple,
+        start: uint48(start),
+        deleteCount: deleteCount,
+        encodedLengths: updatedEncodedLengths,
+        data: data
+      });
+    }
 
     // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks._get(tableId);
@@ -778,8 +780,8 @@ library StoreCoreInternal {
           dynamicFieldIndex: dynamicFieldIndex,
           startWithinField: startWithinField,
           deleteCount: deleteCount,
-          data: data,
-          encodedLengths: updatedEncodedLengths
+          encodedLengths: updatedEncodedLengths,
+          data: data
         });
       }
     }
@@ -806,8 +808,8 @@ library StoreCoreInternal {
           dynamicFieldIndex: dynamicFieldIndex,
           startWithinField: startWithinField,
           deleteCount: deleteCount,
-          data: data,
-          encodedLengths: updatedEncodedLengths
+          encodedLengths: updatedEncodedLengths,
+          data: data
         });
       }
     }

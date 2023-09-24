@@ -59,13 +59,13 @@ contract EchoSubscriber is StoreHook {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    bytes memory data,
-    PackedCounter encodedLengths
+    PackedCounter encodedLengths,
+    bytes memory data
   ) public override {
     emit HookCalled(
       abi.encodeCall(
         this.onBeforeSpliceDynamicData,
-        (tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data, encodedLengths)
+        (tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, encodedLengths, data)
       )
     );
   }
@@ -76,13 +76,13 @@ contract EchoSubscriber is StoreHook {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    bytes memory data,
-    PackedCounter encodedLengths
+    PackedCounter encodedLengths,
+    bytes memory data
   ) public override {
     emit HookCalled(
       abi.encodeCall(
         this.onAfterSpliceDynamicData,
-        (tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data, encodedLengths)
+        (tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, encodedLengths, data)
       )
     );
   }

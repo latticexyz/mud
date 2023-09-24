@@ -68,8 +68,8 @@ contract KeysInTableHook is StoreHook {
     uint8,
     uint40,
     uint40,
-    bytes memory,
-    PackedCounter
+    PackedCounter,
+    bytes memory
   ) public override {
     handleSet(tableId, keyTuple);
   }

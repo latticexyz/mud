@@ -57,8 +57,8 @@ contract MirrorSubscriber is StoreHook {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    bytes memory data,
-    PackedCounter
+    PackedCounter,
+    bytes memory data
   ) public override {
     if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
     StoreSwitch.spliceDynamicData(indexerTableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);

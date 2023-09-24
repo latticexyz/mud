@@ -63,7 +63,7 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallGas",
     "name": "set a record on a table with keysInTableModule installed",
-    "gasUsed": 159008
+    "gasUsed": 159030
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -81,7 +81,7 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "change a composite record on a table with keysInTableModule installed",
-    "gasUsed": 22549
+    "gasUsed": 22571
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -99,7 +99,7 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "change a record on a table with keysInTableModule installed",
-    "gasUsed": 21271
+    "gasUsed": 21293
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -135,7 +135,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testInstall",
     "name": "set a record on a table with KeysWithValueModule installed",
-    "gasUsed": 135676
+    "gasUsed": 135698
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -147,7 +147,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetAndDeleteRecordHook",
     "name": "change a record on a table with KeysWithValueModule installed",
-    "gasUsed": 104060
+    "gasUsed": 104082
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
