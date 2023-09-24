@@ -43,9 +43,15 @@
   },
   {
     "file": "test/BatchCall.t.sol",
+    "test": "testBatchCallFromReturnData",
+    "name": "call systems with batchCallFrom",
+    "gasUsed": 46608
+  },
+  {
+    "file": "test/BatchCall.t.sol",
     "test": "testBatchCallReturnData",
     "name": "call systems with batchCall",
-    "gasUsed": 45305
+    "gasUsed": 45405
   },
   {
     "file": "test/World.t.sol",
