@@ -63,9 +63,15 @@ function renderWrapperStaticArray(
     ) pure returns (
       ${elementType}[${staticLength}] memory _result
     ) {
-      // in memory static arrays are just dynamic arrays without the length byte
-      assembly {
-        _result := add(_value, 0x20)
+      if (_value.length < ${staticLength}) {
+        // ignore invalid dynamic arrays that are too small
+        return _result;
+      } else {
+        // in memory static arrays are just dynamic arrays without the length byte
+        // (without the length check this could lead to memory corruption)
+        assembly {
+          _result := add(_value, 0x20)
+        }
       }
     }
   `;
