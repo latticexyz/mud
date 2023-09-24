@@ -169,10 +169,10 @@ The command to start the indexer in PostgreSQL mode is `pnpm start:postgres`.
 
 ## Data access and interpretation
 
-### Using the indexer with recs (the MUD template code)
+### Using the indexer with RECS
 
 To use the indexer with the [MUD template code](tutorials/minimal), or with anything else that uses [the recs `store-sync`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/recs/syncToRecs.ts), you specify `indexerUrl` in the `syncToRecs` call.
-In the template this call is located in [setupNetwork.ts](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L77-L83).
+In the template this call is located in [`setupNetwork.ts`](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L77-L83).
 If you run the indexer locally, you can replace it with:
 
 ```ts
