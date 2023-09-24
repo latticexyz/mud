@@ -29,7 +29,8 @@
     "@latticexyz/store-sync": "1.42.0",
     "@latticexyz/utils": "1.42.0",
     "@latticexyz/world": "1.42.0",
-    "@latticexyz/abi-ts": "2.0.0-next.5"
+    "@latticexyz/abi-ts": "2.0.0-next.5",
+    "@latticexyz/world-modules": "1.42.0"
   },
   "changesets": [
     "afraid-hotels-bathe",
