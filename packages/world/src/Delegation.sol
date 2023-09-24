@@ -2,10 +2,9 @@
 pragma solidity >=0.8.21;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { ROOT_NAMESPACE, UNLIMITED_DELEGATION } from "./constants.sol";
+import { UNLIMITED_DELEGATION } from "./constants.sol";
 import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
 import { SystemCall } from "./SystemCall.sol";
-import { RESOURCE_SYSTEM } from "./worldResourceTypes.sol";
 
 library Delegation {
   function exists(ResourceId delegationControlId) internal pure returns (bool) {
