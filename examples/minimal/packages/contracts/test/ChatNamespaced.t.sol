@@ -19,7 +19,7 @@ contract ChatNamespacedTest is MudTest {
       MessageTableTableId,
       keyTuple,
       new bytes(0),
-      MessageTable.encodeLengths(value).unwrap(),
+      MessageTable.encodeLengths(value),
       MessageTable.encodeDynamic(value)
     );
     IChatNamespacedSystem(worldAddress).namespace_ChatNamespaced_sendMessage(value);

@@ -101,7 +101,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
       uint48(secondDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
       new bytes(0),
-      PackedCounterLib.pack(newDataBytes.length, thirdDataBytes.length).unwrap()
+      PackedCounterLib.pack(newDataBytes.length, thirdDataBytes.length)
     );
 
     // Pop from second field
@@ -147,7 +147,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
       uint48(secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
       new bytes(0),
-      PackedCounterLib.pack(secondDataBytes.length, newDataBytes.length).unwrap()
+      PackedCounterLib.pack(secondDataBytes.length, newDataBytes.length)
     );
 
     // Pop from the field
@@ -199,33 +199,34 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   }
 
   function testGetDynamicFieldSlice() public {
-    FieldLayout fieldLayout = StoreCore.getFieldLayout(_tableId);
+    ResourceId tableId = _tableId;
+    bytes32[] memory keyTuple = _keyTuple;
 
     startGasReport("get field slice (cold, 1 slot)");
-    bytes memory secondFieldSlice = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 0, 4);
+    bytes memory secondFieldSlice = StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, 0, 4);
     endGasReport();
     assertEq(secondFieldSlice, SliceLib.getSubslice(secondDataBytes, 0, 4).toBytes());
     startGasReport("get field slice (warm, 1 slot)");
-    secondFieldSlice = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 4, 8);
+    secondFieldSlice = StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, 4, 8);
     endGasReport();
     assertEq(secondFieldSlice, SliceLib.getSubslice(secondDataBytes, 4, 8).toBytes());
 
     startGasReport("get field slice (semi-cold, 1 slot)");
-    bytes memory thirdFieldSlice = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, 4, 32);
+    bytes memory thirdFieldSlice = StoreCore.getDynamicFieldSlice(tableId, keyTuple, 1, 4, 32);
     endGasReport();
     assertEq(thirdFieldSlice, SliceLib.getSubslice(thirdDataBytes, 4, 32).toBytes());
     startGasReport("get field slice (warm, 2 slots)");
-    thirdFieldSlice = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, 8, 40);
+    thirdFieldSlice = StoreCore.getDynamicFieldSlice(tableId, keyTuple, 1, 8, 40);
     endGasReport();
     assertEq(thirdFieldSlice, SliceLib.getSubslice(thirdDataBytes, 8, 40).toBytes());
 
     // Expect a revert if the end index is out of bounds
     uint256 length = secondDataBytes.length;
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, length, length));
-    StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, 0, length + 1);
+    StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, 0, length + 1);
 
     // Expect a revert if the start index is out of bounds
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, length, length));
-    StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, length, length);
+    StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, length, length);
   }
 }

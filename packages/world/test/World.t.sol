@@ -250,13 +250,16 @@ contract WorldTest is Test, GasReporter {
     }
 
     // Should have registered the table data table (fka schema table)
-    assertEq(Tables.getFieldLayout(newWorld, TablesTableId), FieldLayout.unwrap(Tables.getFieldLayout()));
+    assertEq(
+      FieldLayout.unwrap(Tables.getFieldLayout(newWorld, TablesTableId)),
+      FieldLayout.unwrap(Tables.getFieldLayout())
+    );
     assertEq(Tables.getAbiEncodedKeyNames(newWorld, TablesTableId), abi.encode(Tables.getKeyNames()));
     assertEq(Tables.getAbiEncodedFieldNames(newWorld, TablesTableId), abi.encode(Tables.getFieldNames()));
 
     // Should have registered the namespace owner table
     assertEq(
-      Tables.getFieldLayout(newWorld, NamespaceOwnerTableId),
+      FieldLayout.unwrap(Tables.getFieldLayout(newWorld, NamespaceOwnerTableId)),
       FieldLayout.unwrap(NamespaceOwner.getFieldLayout())
     );
     assertEq(Tables.getAbiEncodedKeyNames(newWorld, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));

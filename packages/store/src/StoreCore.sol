@@ -32,7 +32,7 @@ library StoreCore {
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
-    bytes32 encodedLengths,
+    PackedCounter encodedLengths,
     bytes dynamicData
   );
   event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
@@ -42,7 +42,7 @@ library StoreCore {
     uint48 start,
     uint40 deleteCount,
     bytes data,
-    bytes32 encodedLengths
+    PackedCounter encodedLengths
   );
   event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
@@ -99,7 +99,7 @@ library StoreCore {
    * Get the key schema for the given tableId
    */
   function getKeySchema(ResourceId tableId) internal view returns (Schema keySchema) {
-    keySchema = Schema.wrap(Tables._getKeySchema(tableId));
+    keySchema = Tables._getKeySchema(tableId);
     // key schemas can be empty for singleton tables, so we can't depend on key schema for table check
     if (!ResourceIds._getExists(tableId)) {
       revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
@@ -110,7 +110,7 @@ library StoreCore {
    * Get the schema for the given tableId
    */
   function getValueSchema(ResourceId tableId) internal view returns (Schema valueSchema) {
-    valueSchema = Schema.wrap(Tables._getValueSchema(tableId));
+    valueSchema = Tables._getValueSchema(tableId);
     if (valueSchema.isEmpty()) {
       revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
@@ -160,14 +160,7 @@ library StoreCore {
     }
 
     // Register the table metadata
-    Tables._set(
-      tableId,
-      FieldLayout.unwrap(fieldLayout),
-      Schema.unwrap(keySchema),
-      Schema.unwrap(valueSchema),
-      abi.encode(keyNames),
-      abi.encode(fieldNames)
-    );
+    Tables._set(tableId, fieldLayout, keySchema, valueSchema, abi.encode(keyNames), abi.encode(fieldNames));
 
     // Register the table ID
     ResourceIds._setExists(tableId, true);
@@ -231,7 +224,7 @@ library StoreCore {
     FieldLayout fieldLayout
   ) internal {
     // Emit event to notify indexers
-    emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
+    emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
 
     // Early return if the table is an offchain table
     if (tableId.getType() != RESOURCE_TABLE) {
@@ -771,7 +764,7 @@ library StoreCoreInternal {
       start: uint48(start),
       deleteCount: deleteCount,
       data: data,
-      encodedLengths: updatedEncodedLengths.unwrap()
+      encodedLengths: updatedEncodedLengths
     });
 
     // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)

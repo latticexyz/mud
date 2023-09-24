@@ -22,6 +22,8 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../../storeResourceType
 
 // Import user types
 import { ResourceId } from "./../../ResourceId.sol";
+import { FieldLayout } from "./../../FieldLayout.sol";
+import { Schema } from "./../../Schema.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("mudstore"), bytes16("Tables")))
@@ -33,9 +35,9 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 );
 
 struct TablesData {
-  bytes32 fieldLayout;
-  bytes32 keySchema;
-  bytes32 valueSchema;
+  FieldLayout fieldLayout;
+  Schema keySchema;
+  Schema valueSchema;
   bytes abiEncodedKeyNames;
   bytes abiEncodedFieldNames;
 }
@@ -98,156 +100,156 @@ library Tables {
   }
 
   /** Get fieldLayout */
-  function getFieldLayout(ResourceId tableId) internal view returns (bytes32 fieldLayout) {
+  function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout fieldLayout) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return FieldLayout.wrap(bytes32(_blob));
   }
 
   /** Get fieldLayout */
-  function _getFieldLayout(ResourceId tableId) internal view returns (bytes32 fieldLayout) {
+  function _getFieldLayout(ResourceId tableId) internal view returns (FieldLayout fieldLayout) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return FieldLayout.wrap(bytes32(_blob));
   }
 
   /** Get fieldLayout (using the specified store) */
-  function getFieldLayout(IStore _store, ResourceId tableId) internal view returns (bytes32 fieldLayout) {
+  function getFieldLayout(IStore _store, ResourceId tableId) internal view returns (FieldLayout fieldLayout) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return FieldLayout.wrap(bytes32(_blob));
   }
 
   /** Set fieldLayout */
-  function setFieldLayout(ResourceId tableId, bytes32 fieldLayout) internal {
+  function setFieldLayout(ResourceId tableId, FieldLayout fieldLayout) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((fieldLayout)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(FieldLayout.unwrap(fieldLayout)), _fieldLayout);
   }
 
   /** Set fieldLayout */
-  function _setFieldLayout(ResourceId tableId, bytes32 fieldLayout) internal {
+  function _setFieldLayout(ResourceId tableId, FieldLayout fieldLayout) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((fieldLayout)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(FieldLayout.unwrap(fieldLayout)), _fieldLayout);
   }
 
   /** Set fieldLayout (using the specified store) */
-  function setFieldLayout(IStore _store, ResourceId tableId, bytes32 fieldLayout) internal {
+  function setFieldLayout(IStore _store, ResourceId tableId, FieldLayout fieldLayout) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((fieldLayout)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(FieldLayout.unwrap(fieldLayout)), _fieldLayout);
   }
 
   /** Get keySchema */
-  function getKeySchema(ResourceId tableId) internal view returns (bytes32 keySchema) {
+  function getKeySchema(ResourceId tableId) internal view returns (Schema keySchema) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (bytes32(_blob));
+    return Schema.wrap(bytes32(_blob));
   }
 
   /** Get keySchema */
-  function _getKeySchema(ResourceId tableId) internal view returns (bytes32 keySchema) {
+  function _getKeySchema(ResourceId tableId) internal view returns (Schema keySchema) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (bytes32(_blob));
+    return Schema.wrap(bytes32(_blob));
   }
 
   /** Get keySchema (using the specified store) */
-  function getKeySchema(IStore _store, ResourceId tableId) internal view returns (bytes32 keySchema) {
+  function getKeySchema(IStore _store, ResourceId tableId) internal view returns (Schema keySchema) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (bytes32(_blob));
+    return Schema.wrap(bytes32(_blob));
   }
 
   /** Set keySchema */
-  function setKeySchema(ResourceId tableId, bytes32 keySchema) internal {
+  function setKeySchema(ResourceId tableId, Schema keySchema) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((keySchema)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(Schema.unwrap(keySchema)), _fieldLayout);
   }
 
   /** Set keySchema */
-  function _setKeySchema(ResourceId tableId, bytes32 keySchema) internal {
+  function _setKeySchema(ResourceId tableId, Schema keySchema) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((keySchema)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(Schema.unwrap(keySchema)), _fieldLayout);
   }
 
   /** Set keySchema (using the specified store) */
-  function setKeySchema(IStore _store, ResourceId tableId, bytes32 keySchema) internal {
+  function setKeySchema(IStore _store, ResourceId tableId, Schema keySchema) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
-    _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((keySchema)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(Schema.unwrap(keySchema)), _fieldLayout);
   }
 
   /** Get valueSchema */
-  function getValueSchema(ResourceId tableId) internal view returns (bytes32 valueSchema) {
+  function getValueSchema(ResourceId tableId) internal view returns (Schema valueSchema) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
-    return (bytes32(_blob));
+    return Schema.wrap(bytes32(_blob));
   }
 
   /** Get valueSchema */
-  function _getValueSchema(ResourceId tableId) internal view returns (bytes32 valueSchema) {
+  function _getValueSchema(ResourceId tableId) internal view returns (Schema valueSchema) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
-    return (bytes32(_blob));
+    return Schema.wrap(bytes32(_blob));
   }
 
   /** Get valueSchema (using the specified store) */
-  function getValueSchema(IStore _store, ResourceId tableId) internal view returns (bytes32 valueSchema) {
+  function getValueSchema(IStore _store, ResourceId tableId) internal view returns (Schema valueSchema) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
-    return (bytes32(_blob));
+    return Schema.wrap(bytes32(_blob));
   }
 
   /** Set valueSchema */
-  function setValueSchema(ResourceId tableId, bytes32 valueSchema) internal {
+  function setValueSchema(ResourceId tableId, Schema valueSchema) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((valueSchema)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked(Schema.unwrap(valueSchema)), _fieldLayout);
   }
 
   /** Set valueSchema */
-  function _setValueSchema(ResourceId tableId, bytes32 valueSchema) internal {
+  function _setValueSchema(ResourceId tableId, Schema valueSchema) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((valueSchema)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked(Schema.unwrap(valueSchema)), _fieldLayout);
   }
 
   /** Set valueSchema (using the specified store) */
-  function setValueSchema(IStore _store, ResourceId tableId, bytes32 valueSchema) internal {
+  function setValueSchema(IStore _store, ResourceId tableId, Schema valueSchema) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
-    _store.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((valueSchema)), _fieldLayout);
+    _store.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked(Schema.unwrap(valueSchema)), _fieldLayout);
   }
 
   /** Get abiEncodedKeyNames */
@@ -738,9 +740,9 @@ library Tables {
   /** Set the full data using individual values */
   function set(
     ResourceId tableId,
-    bytes32 fieldLayout,
-    bytes32 keySchema,
-    bytes32 valueSchema,
+    FieldLayout fieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
   ) internal {
@@ -758,9 +760,9 @@ library Tables {
   /** Set the full data using individual values */
   function _set(
     ResourceId tableId,
-    bytes32 fieldLayout,
-    bytes32 keySchema,
-    bytes32 valueSchema,
+    FieldLayout fieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
   ) internal {
@@ -779,9 +781,9 @@ library Tables {
   function set(
     IStore _store,
     ResourceId tableId,
-    bytes32 fieldLayout,
-    bytes32 keySchema,
-    bytes32 valueSchema,
+    FieldLayout fieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
   ) internal {
@@ -841,12 +843,12 @@ library Tables {
    */
   function decodeStatic(
     bytes memory _blob
-  ) internal pure returns (bytes32 fieldLayout, bytes32 keySchema, bytes32 valueSchema) {
-    fieldLayout = (Bytes.slice32(_blob, 0));
+  ) internal pure returns (FieldLayout fieldLayout, Schema keySchema, Schema valueSchema) {
+    fieldLayout = FieldLayout.wrap(Bytes.slice32(_blob, 0));
 
-    keySchema = (Bytes.slice32(_blob, 32));
+    keySchema = Schema.wrap(Bytes.slice32(_blob, 32));
 
-    valueSchema = (Bytes.slice32(_blob, 64));
+    valueSchema = Schema.wrap(Bytes.slice32(_blob, 64));
   }
 
   /**
@@ -911,9 +913,9 @@ library Tables {
 
   /** Tightly pack static data using this table's schema */
   function encodeStatic(
-    bytes32 fieldLayout,
-    bytes32 keySchema,
-    bytes32 valueSchema
+    FieldLayout fieldLayout,
+    Schema keySchema,
+    Schema valueSchema
   ) internal pure returns (bytes memory) {
     return abi.encodePacked(fieldLayout, keySchema, valueSchema);
   }
@@ -939,9 +941,9 @@ library Tables {
 
   /** Tightly pack full data using this table's field layout */
   function encode(
-    bytes32 fieldLayout,
-    bytes32 keySchema,
-    bytes32 valueSchema,
+    FieldLayout fieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {

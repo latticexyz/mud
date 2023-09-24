@@ -8,6 +8,8 @@ export default mudConfig({
   },
   userTypes: {
     ResourceId: "./src/ResourceId.sol",
+    FieldLayout: "./src/FieldLayout.sol",
+    Schema: "./src/Schema.sol",
   },
   tables: {
     StoreHooks: {
@@ -23,9 +25,9 @@ export default mudConfig({
         tableId: "ResourceId",
       },
       valueSchema: {
-        fieldLayout: "bytes32",
-        keySchema: "bytes32",
-        valueSchema: "bytes32",
+        fieldLayout: "FieldLayout",
+        keySchema: "Schema",
+        valueSchema: "Schema",
         abiEncodedKeyNames: "bytes",
         abiEncodedFieldNames: "bytes",
       },
