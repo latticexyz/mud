@@ -83,11 +83,11 @@ try {
     },
 
     userTypes: {
-      TestTypeAddress: "./contracts/src/types.sol",
-      TestTypeInt64: "./contracts/src/types.sol",
-      TestTypeBool: "./contracts/src/types.sol",
-      TestTypeUint128: "./contracts/src/types.sol",
-      ResourceId: "@latticexyz/store/src/ResourceId.sol",
+      TestTypeAddress: { filePath: "./contracts/src/types.sol", internalType: "address" },
+      TestTypeInt64: { filePath: "./contracts/src/types.sol", internalType: "int64" },
+      TestTypeBool: { filePath: "./contracts/src/types.sol", internalType: "bool" },
+      TestTypeUint128: { filePath: "./contracts/src/types.sol", internalType: "uint128" },
+      ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", internalType: "bytes32" },
     },
   });
 } catch (error: unknown) {

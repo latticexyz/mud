@@ -22,6 +22,7 @@ import {
   zName,
 } from "@latticexyz/config";
 import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
+import { UserType } from "@latticexyz/common/codegen";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
@@ -241,7 +242,7 @@ export const zEnumsConfig = z.object({
  *
  ************************************************************************/
 
-export type UserTypesConfig<UserTypeNames extends StringForUnion> = never extends UserTypeNames
+export type UserTypesConfig<UserTypeNames extends StringForUnion = StringForUnion> = never extends UserTypeNames
   ? {
       /**
        * User types mapped to file paths from which to import them.
@@ -250,7 +251,7 @@ export type UserTypesConfig<UserTypeNames extends StringForUnion> = never extend
        *
        * (user types are inferred to be absent)
        */
-      userTypes?: Record<UserTypeNames, string>;
+      userTypes?: Record<UserTypeNames, UserType>;
     }
   : StringForUnion extends UserTypeNames
   ? {
@@ -261,7 +262,7 @@ export type UserTypesConfig<UserTypeNames extends StringForUnion> = never extend
        *
        * (user types aren't inferred - use `mudConfig` or `storeConfig` helper, and `as const` for variables)
        */
-      userTypes?: Record<UserTypeNames, string>;
+      userTypes?: Record<UserTypeNames, UserType>;
     }
   : {
       /**
@@ -271,15 +272,20 @@ export type UserTypesConfig<UserTypeNames extends StringForUnion> = never extend
        *
        * User types defined here can be used as types in table schemas/keys
        */
-      userTypes: Record<UserTypeNames, string>;
+      userTypes: Record<UserTypeNames, UserType>;
     };
 
 export type FullUserTypesConfig<UserTypeNames extends StringForUnion> = {
   userTypes: Record<UserTypeNames, string>;
 };
 
+const zUserTypeConfig = z.object({
+  filePath: z.string(),
+  internalType: z.string(),
+});
+
 export const zUserTypesConfig = z.object({
-  userTypes: z.record(zUserTypeName, z.string()).default(DEFAULTS.userTypes),
+  userTypes: z.record(zUserTypeName, zUserTypeConfig).default(DEFAULTS.userTypes),
 });
 
 /************************************************************************

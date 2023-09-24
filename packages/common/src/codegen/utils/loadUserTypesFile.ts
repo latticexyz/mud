@@ -1,14 +1,20 @@
 import { readFileSync } from "fs";
 import path from "path";
 import { SolidityUserDefinedType, extractUserTypes } from "./extractUserTypes";
+import { MUDError } from "../../errors";
+
+export type UserType = {
+  filePath: string;
+  internalType: string;
+};
 
 export function loadAndExtractUserTypes(
-  userTypes: Record<string, string>,
+  userTypes: Record<string, UserType>,
   outputBaseDirectory: string,
   remappings: [string, string][]
 ): Record<string, SolidityUserDefinedType> {
   const userTypesPerFile: Record<string, string[]> = {};
-  for (const [userTypeName, unresolvedFilePath] of Object.entries(userTypes)) {
+  for (const [userTypeName, { filePath: unresolvedFilePath }] of Object.entries(userTypes)) {
     if (!(unresolvedFilePath in userTypesPerFile)) {
       userTypesPerFile[unresolvedFilePath] = [];
     }
@@ -17,7 +23,18 @@ export function loadAndExtractUserTypes(
   let extractedUserTypes: Record<string, SolidityUserDefinedType> = {};
   for (const [unresolvedFilePath, userTypeNames] of Object.entries(userTypesPerFile)) {
     const { filePath, data } = loadUserTypesFile(outputBaseDirectory, unresolvedFilePath, remappings);
-    extractedUserTypes = Object.assign(userTypes, extractUserTypes(data, userTypeNames, filePath));
+    const userTypesInFile = extractUserTypes(data, userTypeNames, filePath);
+
+    // Verify the actual user type matches the internalType specified in the config
+    for (const [userTypeName, userType] of Object.entries(userTypesInFile)) {
+      if (userType.internalTypeId !== userTypes[userTypeName].internalType) {
+        throw new MUDError(
+          `User type "${userTypeName}" has internal type "${userType.internalTypeId}" but config specifies "${userTypes[userTypeName].internalType}"`
+        );
+      }
+    }
+
+    extractedUserTypes = Object.assign(extractedUserTypes, userTypesInFile);
   }
   return extractedUserTypes;
 }
