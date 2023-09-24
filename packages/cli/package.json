@@ -44,6 +44,7 @@
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
+    "@latticexyz/world-modules": "workspace:*",
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
     "dotenv": "^16.0.3",

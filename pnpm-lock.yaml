@@ -157,6 +157,9 @@ importers:
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
+      '@latticexyz/world-modules':
+        specifier: workspace:*
+        version: link:../world-modules
       chalk:
         specifier: ^5.0.1
         version: 5.2.0
@@ -1017,9 +1020,6 @@ importers:
       glob:
         specifier: ^8.0.3
         version: 8.0.3
-      hardhat:
-        specifier: ^2.10.2
-        version: 2.10.2(typescript@5.1.6)
       solhint:
         specifier: ^3.3.7
         version: 3.3.7
