@@ -5,6 +5,6 @@ pragma solidity >=0.8.21;
 
 import { SystemCallData } from "./../../modules/core/types.sol";
 
-interface ICallBatchSystem {
-  function callBatch(SystemCallData[] calldata systemCalls) external returns (bytes[] memory returnDatas);
+interface IBatchCallSystem {
+  function batchCall(SystemCallData[] calldata systemCalls) external returns (bytes[] memory returnDatas);
 }

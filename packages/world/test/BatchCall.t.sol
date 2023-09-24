@@ -39,7 +39,7 @@ contract TestSystem is System {
   }
 }
 
-contract CallBatchTest is Test, GasReporter {
+contract BatchCallTest is Test, GasReporter {
   IBaseWorld world;
   bytes14 namespace = "namespace";
   bytes16 name = "testSystem";
@@ -51,7 +51,7 @@ contract CallBatchTest is Test, GasReporter {
     world.initialize(new CoreModule());
   }
 
-  function testCallBatch() public {
+  function testBatchCall() public {
     // Register a new system
     TestSystem system = new TestSystem();
     world.registerSystem(systemId, system, true);
@@ -61,7 +61,7 @@ contract CallBatchTest is Test, GasReporter {
     systemCalls[0] = SystemCallData(systemId, abi.encodeCall(TestSystem.increment, ()));
 
     vm.expectRevert("sender is not admin");
-    world.callBatch(systemCalls);
+    world.batchCall(systemCalls);
 
     // Set the admin and increment the counter twice
     systemCalls = new SystemCallData[](3);
@@ -70,10 +70,10 @@ contract CallBatchTest is Test, GasReporter {
     systemCalls[2] = SystemCallData(systemId, abi.encodeCall(TestSystem.increment, ()));
 
     vm.expectRevert("sender is not admin");
-    world.callBatch(systemCalls);
+    world.batchCall(systemCalls);
 
     vm.prank(caller);
-    world.callBatch(systemCalls);
+    world.batchCall(systemCalls);
 
     assertEq(system.counter(), 2, "wrong counter value");
 
@@ -82,12 +82,12 @@ contract CallBatchTest is Test, GasReporter {
     systemCalls[0] = SystemCallData(systemId, abi.encodeCall(TestSystem.increment, ()));
 
     vm.prank(caller);
-    world.callBatch(systemCalls);
+    world.batchCall(systemCalls);
 
     assertEq(system.counter(), 3, "wrong counter value");
   }
 
-  function testCallBatchReturnData() public {
+  function testBatchCallReturnData() public {
     // Register a new system
     TestSystem system = new TestSystem();
     world.registerSystem(systemId, system, true);
@@ -99,8 +99,8 @@ contract CallBatchTest is Test, GasReporter {
     systemCalls[1] = SystemCallData(systemId, abi.encodeCall(TestSystem.getStoreAddress, ()));
 
     vm.prank(caller);
-    startGasReport("call systems with callBatch");
-    bytes[] memory returnDatas = world.callBatch(systemCalls);
+    startGasReport("call systems with batchCall");
+    bytes[] memory returnDatas = world.batchCall(systemCalls);
     endGasReport();
 
     assertEq(abi.decode(returnDatas[0], (address)), caller, "wrong address returned");

@@ -29,7 +29,7 @@ import { Balances } from "../../codegen/tables/Balances.sol";
 
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
-import { CallBatchSystem } from "./implementations/CallBatchSystem.sol";
+import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
 import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
@@ -106,8 +106,8 @@ contract CoreModule is Module {
       // --- BalanceTransferSystem ---
       "transferBalanceToNamespace(bytes32,bytes32,uint256)",
       "transferBalanceToAddress(bytes32,address,uint256)",
-      // --- CallBatchSystem ---
-      "callBatch((bytes32,bytes)[])",
+      // --- BatchCallSystem ---
+      "batchCall((bytes32,bytes)[])",
       // --- ModuleInstallationSystem ---
       "installModule(address,bytes)",
       // --- StoreRegistrationSystem ---

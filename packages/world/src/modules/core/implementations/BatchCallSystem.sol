@@ -7,11 +7,11 @@ import { revertWithBytes } from "../../../revertWithBytes.sol";
 
 import { SystemCallData } from "../types.sol";
 
-contract CallBatchSystem is System {
+contract BatchCallSystem is System {
   /**
    * Batch calls to multiple systems into a single transaction, return the array of return data.
    */
-  function callBatch(SystemCallData[] calldata systemCalls) public returns (bytes[] memory returnDatas) {
+  function batchCall(SystemCallData[] calldata systemCalls) public returns (bytes[] memory returnDatas) {
     IBaseWorld world = IBaseWorld(_world());
     returnDatas = new bytes[](systemCalls.length);
 
