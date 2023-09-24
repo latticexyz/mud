@@ -49,7 +49,7 @@ export default mudConfig({
         delegationControlId: "ResourceId",
       },
     },
-    FallbackDelegationControl: {
+    NamespaceDelegationControl: {
       keySchema: {
         namespaceId: "ResourceId",
       },

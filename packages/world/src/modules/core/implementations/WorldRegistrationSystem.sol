@@ -17,6 +17,7 @@ import { requireInterface } from "../../../requireInterface.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
 import { UserDelegationControl } from "../../../tables/UserDelegationControl.sol";
+import { NamespaceDelegationControl } from "../../../tables/NamespaceDelegationControl.sol";
 import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../../../interfaces/ISystemHook.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 import { IDelegationControl, DELEGATION_CONTROL_INTERFACE_ID } from "../../../interfaces/IDelegationControl.sol";
@@ -227,7 +228,48 @@ contract WorldRegistrationSystem is System, IWorldErrors {
       requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
 
       // Call the delegation control contract's init function
-      SystemCall.call({ caller: _msgSender(), systemId: delegationControlId, callData: initCallData, value: 0 });
+      SystemCall.callWithHooksOrRevert({
+        caller: _msgSender(),
+        systemId: delegationControlId,
+        callData: initCallData,
+        value: 0
+      });
+    }
+  }
+
+  function registerNamespaceDelegation(
+    ResourceId namespaceId,
+    ResourceId delegationControlId,
+    bytes memory initCallData
+  ) public {
+    // Require the namespaceId to be a valid namespace ID
+    if (namespaceId.getType() != RESOURCE_NAMESPACE) {
+      revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
+    }
+
+    // Require the delegation to not be unlimited
+    if (!Delegation.isLimited(delegationControlId)) {
+      revert World_UnlimitedDelegationNotAllowed();
+    }
+
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(namespaceId, _msgSender());
+
+    // Require the delegationControl contract to implement the IDelegationControl interface
+    (address delegationControl, ) = Systems._get(delegationControlId);
+    requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
+
+    // Register the delegation control
+    NamespaceDelegationControl._set(namespaceId, delegationControlId);
+
+    // Call the delegation control contract's init function
+    if (initCallData.length > 0) {
+      SystemCall.callWithHooksOrRevert({
+        caller: _msgSender(),
+        systemId: delegationControlId,
+        callData: initCallData,
+        value: 0
+      });
     }
   }
 }

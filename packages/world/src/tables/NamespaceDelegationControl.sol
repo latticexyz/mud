@@ -24,15 +24,15 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/s
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("FallbackDelegati")))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("NamespaceDelegat")))
 );
-ResourceId constant FallbackDelegationControlTableId = _tableId;
+ResourceId constant NamespaceDelegationControlTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0020010020000000000000000000000000000000000000000000000000000000
 );
 
-library FallbackDelegationControl {
+library NamespaceDelegationControl {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;

@@ -28,4 +28,10 @@ interface IWorldRegistrationSystem {
   ) external returns (bytes4 worldFunctionSelector);
 
   function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData) external;
+
+  function registerNamespaceDelegation(
+    ResourceId namespaceId,
+    ResourceId delegationControlId,
+    bytes memory initCallData
+  ) external;
 }

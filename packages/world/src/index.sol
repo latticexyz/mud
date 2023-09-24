@@ -7,7 +7,7 @@ import { NamespaceOwner, NamespaceOwnerTableId } from "./tables/NamespaceOwner.s
 import { ResourceAccess, ResourceAccessTableId } from "./tables/ResourceAccess.sol";
 import { InstalledModules, InstalledModulesTableId } from "./tables/InstalledModules.sol";
 import { UserDelegationControl, UserDelegationControlTableId } from "./tables/UserDelegationControl.sol";
-import { FallbackDelegationControl, FallbackDelegationControlTableId } from "./tables/FallbackDelegationControl.sol";
+import { NamespaceDelegationControl, NamespaceDelegationControlTableId } from "./tables/NamespaceDelegationControl.sol";
 import { Balances, BalancesTableId } from "./modules/core/tables/Balances.sol";
 import { Systems, SystemsTableId } from "./modules/core/tables/Systems.sol";
 import { SystemRegistry, SystemRegistryTableId } from "./modules/core/tables/SystemRegistry.sol";
