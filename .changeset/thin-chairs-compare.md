@@ -4,4 +4,4 @@
 "@latticexyz/store": major
 ---
 
-Changed the `userTypes` property to accept `{ filePath: string, internalType: SchemaAbiType }` to enable strong inference of types from the config.
+Changed the `userTypes` property to accept `{ filePath: string, internalType: SchemaAbiType }` to enable strong type inference from the config.
