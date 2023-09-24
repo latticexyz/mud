@@ -33,7 +33,7 @@ library SystemCall {
     bytes memory callData
   ) internal returns (bool success, bytes memory data) {
     // Load the system data
-    (address systemAddress, bool publicAccess) = Systems._get(ResourceId.unwrap(systemId));
+    (address systemAddress, bool publicAccess) = Systems._get(systemId);
 
     // Check if the system exists
     if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
@@ -44,8 +44,8 @@ library SystemCall {
     // If the msg.value is non-zero, update the namespace's balance
     if (value > 0) {
       ResourceId namespaceId = systemId.getNamespaceId();
-      uint256 currentBalance = Balances._get(ResourceId.unwrap(namespaceId));
-      Balances._set(ResourceId.unwrap(namespaceId), currentBalance + value);
+      uint256 currentBalance = Balances._get(namespaceId);
+      Balances._set(namespaceId, currentBalance + value);
     }
 
     // Call the system and forward any return data
@@ -75,7 +75,7 @@ library SystemCall {
     uint256 value
   ) internal returns (bool success, bytes memory data) {
     // Get system hooks
-    bytes21[] memory hooks = SystemHooks._get(ResourceId.unwrap(systemId));
+    bytes21[] memory hooks = SystemHooks._get(systemId);
 
     // Call onBeforeCallSystem hooks (before calling the system)
     for (uint256 i; i < hooks.length; i++) {

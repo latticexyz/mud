@@ -3,13 +3,14 @@ pragma solidity >=0.8.21;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { StoreMock } from "../../test/StoreMock.sol";
+import { ResourceId } from "../../src/ResourceId.sol";
 import { StoreHooks } from "../../src/codegen/index.sol";
+import { StoreMock } from "../StoreMock.sol";
 
 contract StoreHooksTest is Test, GasReporter, StoreMock {
   function testTable() public {
     // StoreHooks table is already registered by StoreMock
-    bytes32 key = keccak256("somekey");
+    ResourceId key = ResourceId.wrap(keccak256("somekey"));
 
     bytes21[] memory hooks = new bytes21[](1);
     hooks[0] = bytes21("some data");
@@ -75,7 +76,7 @@ contract StoreHooksTest is Test, GasReporter, StoreMock {
   }
 
   function testOneSlot() public {
-    bytes32 key1 = keccak256("somekey");
+    ResourceId key1 = ResourceId.wrap(keccak256("somekey"));
     bytes21[] memory hooks = new bytes21[](1);
     hooks[0] = bytes21("some data");
 
@@ -85,7 +86,7 @@ contract StoreHooksTest is Test, GasReporter, StoreMock {
   }
 
   function testTwoSlots() public {
-    bytes32 key2 = keccak256("somekey");
+    ResourceId key2 = ResourceId.wrap(keccak256("somekey"));
     bytes21[] memory hooks = new bytes21[](2);
     hooks[0] = bytes21("some data");
     hooks[1] = bytes21("some other data");
@@ -96,7 +97,7 @@ contract StoreHooksTest is Test, GasReporter, StoreMock {
   }
 
   function testThreeSlots() public {
-    bytes32 key3 = keccak256("somekey");
+    ResourceId key3 = ResourceId.wrap(keccak256("somekey"));
     bytes21[] memory hooks = new bytes21[](3);
     hooks[0] = bytes21("some data");
     hooks[1] = bytes21("some other data");

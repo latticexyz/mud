@@ -95,14 +95,14 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(IStore(this).getValueSchema(tableId).unwrap(), valueSchema.unwrap());
     assertEq(IStore(this).getKeySchema(tableId).unwrap(), keySchema.unwrap());
 
-    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), ResourceId.unwrap(tableId));
+    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), tableId);
     assertEq(loadedKeyNames, abi.encode(keyNames));
 
-    bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(IStore(this), ResourceId.unwrap(tableId));
+    bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(IStore(this), tableId);
     assertEq(loadedFieldNames, abi.encode(fieldNames));
 
     // Expect the table ID to be registered
-    assertTrue(ResourceIds._getExists(ResourceId.unwrap(tableId)));
+    assertTrue(ResourceIds._getExists(tableId));
   }
 
   function testRevertTableExists() public {
@@ -117,11 +117,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a revert when registering a table that already exists
     vm.expectRevert(
-      abi.encodeWithSelector(
-        IStoreErrors.Store_TableAlreadyExists.selector,
-        ResourceId.unwrap(tableId),
-        string(bytes.concat(ResourceId.unwrap(tableId)))
-      )
+      abi.encodeWithSelector(IStoreErrors.Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
     );
     IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }
@@ -186,8 +182,8 @@ contract StoreCoreTest is Test, StoreMock {
     );
     IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
-    assertTrue(ResourceIds._getExists(ResourceId.unwrap(tableId)));
-    assertFalse(ResourceIds._getExists(ResourceId.unwrap(tableId2)));
+    assertTrue(ResourceIds._getExists(tableId));
+    assertFalse(ResourceIds._getExists(tableId2));
 
     assertEq(FieldLayout.unwrap(IStore(this).getFieldLayout(tableId)), FieldLayout.unwrap(fieldLayout));
     assertEq(Schema.unwrap(IStore(this).getValueSchema(tableId)), Schema.unwrap(valueSchema));

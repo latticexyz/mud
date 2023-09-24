@@ -215,7 +215,7 @@ contract WorldTest is Test, GasReporter {
     newWorld.initialize(coreModule);
 
     // Should have registered the core system function selectors
-    CoreSystem coreSystem = CoreSystem(Systems.getSystem(world, ResourceId.unwrap(CORE_SYSTEM_ID)));
+    CoreSystem coreSystem = CoreSystem(Systems.getSystem(world, CORE_SYSTEM_ID));
     bytes4[17] memory coreFunctionSignatures = [
       // --- AccessManagementSystem ---
       coreSystem.grantAccess.selector,
@@ -250,30 +250,18 @@ contract WorldTest is Test, GasReporter {
     }
 
     // Should have registered the table data table (fka schema table)
-    assertEq(
-      Tables.getFieldLayout(newWorld, ResourceId.unwrap(TablesTableId)),
-      FieldLayout.unwrap(Tables.getFieldLayout())
-    );
-    assertEq(
-      Tables.getAbiEncodedKeyNames(newWorld, ResourceId.unwrap(TablesTableId)),
-      abi.encode(Tables.getKeyNames())
-    );
-    assertEq(
-      Tables.getAbiEncodedFieldNames(newWorld, ResourceId.unwrap(TablesTableId)),
-      abi.encode(Tables.getFieldNames())
-    );
+    assertEq(Tables.getFieldLayout(newWorld, TablesTableId), FieldLayout.unwrap(Tables.getFieldLayout()));
+    assertEq(Tables.getAbiEncodedKeyNames(newWorld, TablesTableId), abi.encode(Tables.getKeyNames()));
+    assertEq(Tables.getAbiEncodedFieldNames(newWorld, TablesTableId), abi.encode(Tables.getFieldNames()));
 
     // Should have registered the namespace owner table
     assertEq(
-      Tables.getFieldLayout(newWorld, ResourceId.unwrap(NamespaceOwnerTableId)),
+      Tables.getFieldLayout(newWorld, NamespaceOwnerTableId),
       FieldLayout.unwrap(NamespaceOwner.getFieldLayout())
     );
+    assertEq(Tables.getAbiEncodedKeyNames(newWorld, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));
     assertEq(
-      Tables.getAbiEncodedKeyNames(newWorld, ResourceId.unwrap(NamespaceOwnerTableId)),
-      abi.encode(NamespaceOwner.getKeyNames())
-    );
-    assertEq(
-      Tables.getAbiEncodedFieldNames(newWorld, ResourceId.unwrap(NamespaceOwnerTableId)),
+      Tables.getAbiEncodedFieldNames(newWorld, NamespaceOwnerTableId),
       abi.encode(NamespaceOwner.getFieldNames())
     );
 
@@ -306,11 +294,11 @@ contract WorldTest is Test, GasReporter {
 
   function testRootNamespace() public {
     // Owner of root route should be the creator of the World
-    address rootOwner = NamespaceOwner.get(world, ResourceId.unwrap(ROOT_NAMESPACE_ID));
+    address rootOwner = NamespaceOwner.get(world, ROOT_NAMESPACE_ID);
     assertEq(rootOwner, address(this));
 
     // The creator of the World should have access to the root namespace
-    assertTrue(ResourceAccess.get(world, ResourceId.unwrap(ROOT_NAMESPACE_ID), address(this)));
+    assertTrue(ResourceAccess.get(world, ROOT_NAMESPACE_ID, address(this)));
   }
 
   function testStoreAddress() public {
@@ -336,21 +324,13 @@ contract WorldTest is Test, GasReporter {
     endGasReport();
 
     // Expect the caller to be the namespace owner
-    assertEq(
-      NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)),
-      address(this),
-      "caller should be namespace owner"
-    );
+    assertEq(NamespaceOwner.get(world, namespaceId), address(this), "caller should be namespace owner");
 
     // Expect the caller to have access
-    assertEq(
-      ResourceAccess.get(world, ResourceId.unwrap(namespaceId), address(this)),
-      true,
-      "caller should have access"
-    );
+    assertEq(ResourceAccess.get(world, namespaceId, address(this)), true, "caller should have access");
 
     // Expect the resource ID to have been registered
-    assertTrue(ResourceIds.getExists(world, ResourceId.unwrap(namespaceId)));
+    assertTrue(ResourceIds.getExists(world, namespaceId));
 
     // Expect an error when registering an existing namespace
     vm.expectRevert(
@@ -386,12 +366,12 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the new owner to not be namespace owner before transfer
     assertFalse(
-      (NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)) == address(1)),
+      (NamespaceOwner.get(world, namespaceId)) == address(1),
       "new owner should not be namespace owner before transfer"
     );
     // Expect the new owner to not have access before transfer
     assertEq(
-      ResourceAccess.get(world, ResourceId.unwrap(namespaceId), address(1)),
+      ResourceAccess.get(world, namespaceId, address(1)),
       false,
       "new owner should not have access before transfer"
     );
@@ -399,31 +379,19 @@ contract WorldTest is Test, GasReporter {
     world.transferOwnership(namespaceId, address(1));
 
     // Expect the new owner to be namespace owner
-    assertEq(
-      NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)),
-      address(1),
-      "new owner should be namespace owner"
-    );
+    assertEq(NamespaceOwner.get(world, namespaceId), address(1), "new owner should be namespace owner");
 
     // Expect the new owner to have access
-    assertEq(
-      ResourceAccess.get(world, ResourceId.unwrap(namespaceId), address(1)),
-      true,
-      "new owner should have access"
-    );
+    assertEq(ResourceAccess.get(world, namespaceId, address(1)), true, "new owner should have access");
 
     // Expect previous owner to no longer be owner
     assertFalse(
-      (NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)) == address(this)),
+      (NamespaceOwner.get(world, namespaceId)) == address(this),
       "caller should no longer be namespace owner"
     );
 
     // Expect previous owner to no longer have access
-    assertEq(
-      ResourceAccess.get(world, ResourceId.unwrap(namespaceId), address(this)),
-      false,
-      "caller should no longer have access"
-    );
+    assertEq(ResourceAccess.get(world, namespaceId, address(this)), false, "caller should no longer have access");
 
     // Expect revert if caller is not the owner
     _expectAccessDenied(address(this), namespace, 0, RESOURCE_NAMESPACE);
@@ -449,28 +417,20 @@ contract WorldTest is Test, GasReporter {
     endGasReport();
 
     // Expect the namespace to be created and owned by the caller
-    assertEq(
-      NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)),
-      address(this),
-      "namespace should be created by caller"
-    );
+    assertEq(NamespaceOwner.get(world, namespaceId), address(this), "namespace should be created by caller");
 
     // Expect the table to be registered
     assertEq(world.getFieldLayout(tableId).unwrap(), fieldLayout.unwrap(), "value schema should be registered");
 
-    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(world, ResourceId.unwrap(tableId));
+    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(world, tableId);
     assertEq(loadedKeyNames, abi.encode(keyNames), "key names should be registered");
 
-    bytes memory loadedfieldNames = Tables.getAbiEncodedFieldNames(world, ResourceId.unwrap(tableId));
+    bytes memory loadedfieldNames = Tables.getAbiEncodedFieldNames(world, tableId);
     assertEq(loadedfieldNames, abi.encode(fieldNames), "value names should be registered");
 
     // Expect an error when registering an existing table
     vm.expectRevert(
-      abi.encodeWithSelector(
-        IStoreErrors.Store_TableAlreadyExists.selector,
-        tableId,
-        string(bytes.concat(ResourceId.unwrap(tableId)))
-      )
+      abi.encodeWithSelector(IStoreErrors.Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
     );
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
@@ -503,43 +463,37 @@ contract WorldTest is Test, GasReporter {
     endGasReport();
 
     // Expect the system to be registered
-    (address registeredAddress, bool publicAccess) = Systems.get(world, ResourceId.unwrap(systemId));
+    (address registeredAddress, bool publicAccess) = Systems.get(world, systemId);
     assertEq(registeredAddress, address(system));
 
     // Expect the system's resource ID to have been registered
-    assertTrue(ResourceIds.getExists(world, ResourceId.unwrap(systemId)));
+    assertTrue(ResourceIds.getExists(world, systemId));
 
     // Expect the system namespace to be owned by the caller
-    address routeOwner = NamespaceOwner.get(world, ResourceId.unwrap(namespaceId));
+    address routeOwner = NamespaceOwner.get(world, namespaceId);
     assertEq(routeOwner, address(this));
 
     // Expect the system to not be publicly accessible
     assertFalse(publicAccess);
 
     // Expect the system to be accessible by the caller
-    assertTrue(
-      ResourceAccess.get({ _store: world, resourceId: ResourceId.unwrap(namespaceId), caller: address(this) })
-    );
+    assertTrue(ResourceAccess.get({ _store: world, resourceId: namespaceId, caller: address(this) }));
 
     // Expect the system to not be accessible by another address
-    assertFalse(
-      ResourceAccess.get({ _store: world, resourceId: ResourceId.unwrap(namespaceId), caller: address(0x1) })
-    );
+    assertFalse(ResourceAccess.get({ _store: world, resourceId: namespaceId, caller: address(0x1) }));
 
     // Expect the system to have access to its own namespace
-    assertTrue(
-      ResourceAccess.get({ _store: world, resourceId: ResourceId.unwrap(namespaceId), caller: address(system) })
-    );
+    assertTrue(ResourceAccess.get({ _store: world, resourceId: namespaceId, caller: address(system) }));
 
     ResourceId newNamespaceId = WorldResourceIdLib.encodeNamespace("newNamespace");
     // Expect the namespace to be created if it doesn't exist yet
-    assertEq(NamespaceOwner.get(world, ResourceId.unwrap(newNamespaceId)), address(0));
+    assertEq(NamespaceOwner.get(world, newNamespaceId), address(0));
     world.registerSystem(
       WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "newNamespace", name: "testSystem" }),
       new System(),
       false
     );
-    assertEq(NamespaceOwner.get(world, ResourceId.unwrap(newNamespaceId)), address(this));
+    assertEq(NamespaceOwner.get(world, newNamespaceId), address(this));
 
     // Expect an error when registering an existing system at a new system ID
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_SystemAlreadyExists.selector, address(system)));
@@ -627,32 +581,36 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(systemId, newSystem, false);
 
     // Expect the system address and public access to be updated in the System table
-    (address registeredAddress, bool publicAccess) = Systems.get(world, ResourceId.unwrap(systemId));
+    (address registeredAddress, bool publicAccess) = Systems.get(world, systemId);
     assertEq(registeredAddress, address(newSystem), "system address should be updated");
     assertEq(publicAccess, false, "public access should be updated");
 
     // Expect the SystemRegistry table to not have a reference to the old system anymore
-    bytes32 registeredSystemId = SystemRegistry.get(world, address(oldSystem));
-    assertEq(registeredSystemId, bytes32(0), "old system should be removed from SystemRegistry");
+    ResourceId registeredSystemId = SystemRegistry.get(world, address(oldSystem));
+    assertEq(ResourceId.unwrap(registeredSystemId), bytes32(0), "old system should be removed from SystemRegistry");
 
     // Expect the SystemRegistry table to have a reference to the new system
     registeredSystemId = SystemRegistry.get(world, address(newSystem));
-    assertEq(registeredSystemId, ResourceId.unwrap(systemId), "new system should be added to SystemRegistry");
+    assertEq(
+      ResourceId.unwrap(registeredSystemId),
+      ResourceId.unwrap(systemId),
+      "new system should be added to SystemRegistry"
+    );
 
     // Expect the old system to not have access to the namespace anymore
     assertFalse(
-      ResourceAccess.get(world, ResourceId.unwrap(namespaceId), address(oldSystem)),
+      ResourceAccess.get(world, namespaceId, address(oldSystem)),
       "old system should not have access to the namespace"
     );
 
     // Expect the new system to have access to the namespace
     assertTrue(
-      ResourceAccess.get(world, ResourceId.unwrap(namespaceId), address(newSystem)),
+      ResourceAccess.get(world, namespaceId, address(newSystem)),
       "new system should have access to the namespace"
     );
 
     // Expect the resource ID to still be registered
-    assertTrue(ResourceIds.getExists(world, ResourceId.unwrap(systemId)), "resource type should still be SYSTEM");
+    assertTrue(ResourceIds.getExists(world, systemId), "resource type should still be SYSTEM");
   }
 
   function testInvalidIds() public {
@@ -705,11 +663,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to register a new table at an existing table ID
     vm.expectRevert(
-      abi.encodeWithSelector(
-        IStoreErrors.Store_TableAlreadyExists.selector,
-        ResourceId.unwrap(tableId),
-        string(bytes.concat(ResourceId.unwrap(tableId)))
-      )
+      abi.encodeWithSelector(IStoreErrors.Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
     );
     world.registerTable(
       tableId,

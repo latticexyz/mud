@@ -22,7 +22,7 @@ contract AccessManagementSystem is System {
     AccessControl.requireOwner(resourceId, _msgSender());
 
     // Grant access to the given resource
-    ResourceAccess._set(ResourceId.unwrap(resourceId), grantee, true);
+    ResourceAccess._set(resourceId, grantee, true);
   }
 
   /**
@@ -34,7 +34,7 @@ contract AccessManagementSystem is System {
     AccessControl.requireOwner(resourceId, _msgSender());
 
     // Revoke access from the given resource
-    ResourceAccess._deleteRecord(ResourceId.unwrap(resourceId), grantee);
+    ResourceAccess._deleteRecord(resourceId, grantee);
   }
 
   /**
@@ -47,12 +47,12 @@ contract AccessManagementSystem is System {
     AccessControl.requireOwner(namespaceId, _msgSender());
 
     // Set namespace new owner
-    NamespaceOwner._set(ResourceId.unwrap(namespaceId), newOwner);
+    NamespaceOwner._set(namespaceId, newOwner);
 
     // Revoke access from old owner
-    ResourceAccess._deleteRecord(ResourceId.unwrap(namespaceId), _msgSender());
+    ResourceAccess._deleteRecord(namespaceId, _msgSender());
 
     // Grant access to new owner
-    ResourceAccess._set(ResourceId.unwrap(namespaceId), newOwner, true);
+    ResourceAccess._set(namespaceId, newOwner, true);
   }
 }

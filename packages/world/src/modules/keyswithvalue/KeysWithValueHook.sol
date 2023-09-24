@@ -64,7 +64,7 @@ contract KeysWithValueHook is StoreHook {
     bytes memory
   ) public override {
     // Remove the key from the list of keys with the previous value
-    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(ResourceId.unwrap(sourceTableId)));
+    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
     bytes32 previousValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
     ResourceId targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
@@ -77,7 +77,7 @@ contract KeysWithValueHook is StoreHook {
     bytes memory
   ) public override {
     // Add the key to the list of keys with the new value
-    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(ResourceId.unwrap(sourceTableId)));
+    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
     bytes32 newValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
     ResourceId targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
     KeysWithValue.push(targetTableId, newValue, keyTuple[0]);
@@ -93,7 +93,7 @@ contract KeysWithValueHook is StoreHook {
     PackedCounter
   ) public override {
     // Remove the key from the list of keys with the previous value
-    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(ResourceId.unwrap(sourceTableId)));
+    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
     bytes32 previousValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
     ResourceId targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
@@ -109,7 +109,7 @@ contract KeysWithValueHook is StoreHook {
     PackedCounter
   ) public override {
     // Add the key to the list of keys with the new value
-    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(ResourceId.unwrap(sourceTableId)));
+    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
     bytes32 newValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
     ResourceId targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
     KeysWithValue.push(targetTableId, newValue, keyTuple[0]);

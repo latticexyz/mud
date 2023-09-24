@@ -82,6 +82,6 @@ contract FactoriesTest is Test {
     assertEq(uint256(worldFactory.worldCount()), uint256(1));
 
     // Confirm the msg.sender is owner of the root namespace of the new world
-    assertEq(NamespaceOwner.get(ResourceId.unwrap(ROOT_NAMESPACE_ID)), address(this));
+    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), address(this));
   }
 }

@@ -6,12 +6,21 @@ export default mudConfig({
   enums: {
     ExampleEnum: ["None", "First", "Second", "Third"],
   },
+  userTypes: {
+    ResourceId: "./src/ResourceId.sol",
+  },
   tables: {
-    StoreHooks: "bytes21[]",
-    Callbacks: "bytes24[]",
+    StoreHooks: {
+      keySchema: {
+        tableId: "ResourceId",
+      },
+      valueSchema: {
+        hooks: "bytes21[]",
+      },
+    },
     Tables: {
       keySchema: {
-        tableId: "bytes32",
+        tableId: "ResourceId",
       },
       valueSchema: {
         fieldLayout: "bytes32",
@@ -23,7 +32,7 @@ export default mudConfig({
     },
     ResourceIds: {
       keySchema: {
-        resourceId: "bytes32",
+        resourceId: "ResourceId",
       },
       valueSchema: {
         exists: "bool",
@@ -31,10 +40,16 @@ export default mudConfig({
     },
     // The Hooks table is a generic table used by the `filterFromList` util in `Hook.sol`
     Hooks: {
-      valueSchema: "bytes21[]",
+      keySchema: {
+        resourceId: "ResourceId",
+      },
+      valueSchema: {
+        hooks: "bytes21[]",
+      },
       tableIdArgument: true,
     },
     // TODO: move these test tables to a separate mud config
+    Callbacks: "bytes24[]",
     Mixed: {
       valueSchema: {
         u32: "uint32",

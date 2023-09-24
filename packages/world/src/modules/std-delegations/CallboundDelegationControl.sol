@@ -16,7 +16,7 @@ contract CallboundDelegationControl is DelegationControl {
     uint256 availableCalls = CallboundDelegations.get({
       delegator: delegator,
       delegatee: _msgSender(),
-      systemId: ResourceId.unwrap(systemId),
+      systemId: systemId,
       callDataHash: callDataHash
     });
 
@@ -25,7 +25,7 @@ contract CallboundDelegationControl is DelegationControl {
       CallboundDelegations.deleteRecord({
         delegator: delegator,
         delegatee: _msgSender(),
-        systemId: ResourceId.unwrap(systemId),
+        systemId: systemId,
         callDataHash: callDataHash
       });
       return true;
@@ -39,7 +39,7 @@ contract CallboundDelegationControl is DelegationControl {
       CallboundDelegations.set({
         delegator: delegator,
         delegatee: _msgSender(),
-        systemId: ResourceId.unwrap(systemId),
+        systemId: systemId,
         callDataHash: callDataHash,
         availableCalls: availableCalls
       });
@@ -56,7 +56,7 @@ contract CallboundDelegationControl is DelegationControl {
     CallboundDelegations.set({
       delegator: _msgSender(),
       delegatee: delegatee,
-      systemId: ResourceId.unwrap(systemId),
+      systemId: systemId,
       callDataHash: keccak256(callData),
       availableCalls: numCalls
     });

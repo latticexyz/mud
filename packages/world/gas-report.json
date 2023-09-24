@@ -30,6 +30,18 @@
     "gasUsed": 3030
   },
   {
+    "file": "test/AccessControl.t.sol",
+    "test": "testRequireOwner",
+    "name": "AccessControl: requireOwner (cold)",
+    "gasUsed": 3325
+  },
+  {
+    "file": "test/AccessControl.t.sol",
+    "test": "testRequireOwner",
+    "name": "AccessControl: requireOwner (warm)",
+    "gasUsed": 1326
+  },
+  {
     "file": "test/CallBatch.t.sol",
     "test": "testCallBatchReturnData",
     "name": "call systems with callBatch",

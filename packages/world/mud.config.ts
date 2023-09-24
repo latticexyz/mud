@@ -5,6 +5,9 @@ export default mudConfig({
   worldgenDirectory: "interfaces",
   worldInterfaceName: "IBaseWorld",
   codegenDirectory: "",
+  userTypes: {
+    ResourceId: "@latticexyz/store/src/ResourceId.sol",
+  },
   tables: {
     /************************************************************************
      *
@@ -13,7 +16,7 @@ export default mudConfig({
      ************************************************************************/
     NamespaceOwner: {
       keySchema: {
-        namespaceId: "bytes32",
+        namespaceId: "ResourceId",
       },
       valueSchema: {
         owner: "address",
@@ -21,7 +24,7 @@ export default mudConfig({
     },
     ResourceAccess: {
       keySchema: {
-        resourceId: "bytes32",
+        resourceId: "ResourceId",
         caller: "address",
       },
       valueSchema: {
@@ -43,7 +46,7 @@ export default mudConfig({
         delegatee: "address",
       },
       valueSchema: {
-        delegationControlId: "bytes32",
+        delegationControlId: "ResourceId", // TODO: make this Delegation
       },
     },
     /************************************************************************
@@ -54,7 +57,7 @@ export default mudConfig({
     Balances: {
       directory: "modules/core/tables",
       keySchema: {
-        namespaceId: "bytes32",
+        namespaceId: "ResourceId",
       },
       valueSchema: {
         balance: "uint256",
@@ -63,7 +66,7 @@ export default mudConfig({
     Systems: {
       directory: "modules/core/tables",
       keySchema: {
-        systemId: "bytes32",
+        systemId: "ResourceId",
       },
       valueSchema: {
         system: "address",
@@ -77,13 +80,13 @@ export default mudConfig({
         system: "address",
       },
       valueSchema: {
-        systemId: "bytes32",
+        systemId: "ResourceId",
       },
     },
     SystemHooks: {
       directory: "modules/core/tables",
       keySchema: {
-        systemId: "bytes32",
+        systemId: "ResourceId",
       },
       valueSchema: "bytes21[]",
     },
@@ -93,7 +96,7 @@ export default mudConfig({
         functionSelector: "bytes4",
       },
       valueSchema: {
-        systemId: "bytes32",
+        systemId: "ResourceId",
         systemFunctionSelector: "bytes4",
       },
       dataStruct: false,
@@ -120,7 +123,7 @@ export default mudConfig({
     },
     KeysInTable: {
       directory: "modules/keysintable/tables",
-      keySchema: { sourceTable: "bytes32" },
+      keySchema: { sourceTableId: "ResourceId" },
       valueSchema: {
         keys0: "bytes32[]",
         keys1: "bytes32[]",
@@ -132,7 +135,7 @@ export default mudConfig({
     UsedKeysIndex: {
       directory: "modules/keysintable/tables",
       keySchema: {
-        sourceTable: "bytes32",
+        sourceTableId: "ResourceId",
         keysHash: "bytes32",
       },
       valueSchema: { has: "bool", index: "uint40" },
@@ -150,7 +153,7 @@ export default mudConfig({
       keySchema: {
         delegator: "address",
         delegatee: "address",
-        systemId: "bytes32",
+        systemId: "ResourceId",
         callDataHash: "bytes32",
       },
       valueSchema: {

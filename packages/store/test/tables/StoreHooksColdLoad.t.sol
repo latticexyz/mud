@@ -3,6 +3,7 @@ pragma solidity >=0.8.21;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
+import { ResourceId } from "../../src/ResourceId.sol";
 import { StoreMock } from "../../test/StoreMock.sol";
 import { StoreHooks } from "../../src/codegen/index.sol";
 
@@ -11,7 +12,7 @@ contract StoreHooksColdLoadTest is Test, GasReporter, StoreMock {
 
   function setUp() public {
     // StoreHooks schema is already registered by StoreCore
-    bytes32 key = keccak256("somekey");
+    ResourceId key = ResourceId.wrap(keccak256("somekey"));
 
     hooks = new bytes21[](1);
     hooks[0] = bytes21("some data");
@@ -20,7 +21,7 @@ contract StoreHooksColdLoadTest is Test, GasReporter, StoreMock {
   }
 
   function testGet() public {
-    bytes32 key = keccak256("somekey");
+    ResourceId key = ResourceId.wrap(keccak256("somekey"));
 
     startGasReport("StoreHooks: get field (cold)");
     bytes21[] memory returnedAddresses = StoreHooks.get(key);
@@ -31,7 +32,7 @@ contract StoreHooksColdLoadTest is Test, GasReporter, StoreMock {
   }
 
   function testLength() public {
-    bytes32 key = keccak256("somekey");
+    ResourceId key = ResourceId.wrap(keccak256("somekey"));
 
     startGasReport("StoreHooks: get length (cold)");
     uint256 length = StoreHooks.length(key);
@@ -41,7 +42,7 @@ contract StoreHooksColdLoadTest is Test, GasReporter, StoreMock {
   }
 
   function testGetItem() public {
-    bytes32 key = keccak256("somekey");
+    ResourceId key = ResourceId.wrap(keccak256("somekey"));
 
     startGasReport("StoreHooks: get 1 element (cold)");
     bytes21 returnedAddress = StoreHooks.getItem(key, 0);
@@ -51,7 +52,7 @@ contract StoreHooksColdLoadTest is Test, GasReporter, StoreMock {
   }
 
   function testPop() public {
-    bytes32 key = keccak256("somekey");
+    ResourceId key = ResourceId.wrap(keccak256("somekey"));
 
     startGasReport("StoreHooks: pop 1 element (cold)");
     StoreHooks.pop(key);
@@ -63,7 +64,7 @@ contract StoreHooksColdLoadTest is Test, GasReporter, StoreMock {
   }
 
   function testUpdate() public {
-    bytes32 key = keccak256("somekey");
+    ResourceId key = ResourceId.wrap(keccak256("somekey"));
 
     bytes21 newAddress = bytes21(bytes20(keccak256("alice")));
     startGasReport("StoreHooks: update 1 element (cold)");
@@ -76,7 +77,7 @@ contract StoreHooksColdLoadTest is Test, GasReporter, StoreMock {
   }
 
   function testDelete() public {
-    bytes32 key = keccak256("somekey");
+    ResourceId key = ResourceId.wrap(keccak256("somekey"));
 
     startGasReport("StoreHooks: delete record (cold)");
     StoreHooks.deleteRecord(key);

@@ -15,8 +15,7 @@ library AccessControl {
    */
   function hasAccess(ResourceId resourceId, address caller) internal view returns (bool) {
     return
-      ResourceAccess._get(ResourceId.unwrap(resourceId.getNamespaceId()), caller) || // First check access based on the namespace
-      ResourceAccess._get(ResourceId.unwrap(resourceId), caller); // If caller has no namespace access, check access on the name
+      ResourceAccess._get(resourceId.getNamespaceId(), caller) || ResourceAccess._get(resourceId, caller); // First check access based on the namespace // If caller has no namespace access, check access on the name
   }
 
   /**
@@ -35,7 +34,7 @@ library AccessControl {
    * Reverts with World_AccessDenied if the check fails.
    */
   function requireOwner(ResourceId resourceId, address caller) internal view {
-    if (NamespaceOwner._get(ResourceId.unwrap(resourceId.getNamespaceId())) != caller) {
+    if (NamespaceOwner._get(resourceId.getNamespaceId()) != caller) {
       revert IWorldErrors.World_AccessDenied(resourceId.toString(), caller);
     }
   }

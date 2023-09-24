@@ -74,9 +74,9 @@ contract CoreModule is Module {
     SystemHooks.register();
     SystemRegistry.register();
 
-    ResourceIds._setExists(ResourceId.unwrap(ROOT_NAMESPACE_ID), true);
-    NamespaceOwner._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), _msgSender());
-    ResourceAccess._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), _msgSender(), true);
+    ResourceIds._setExists(ROOT_NAMESPACE_ID, true);
+    NamespaceOwner._set(ROOT_NAMESPACE_ID, _msgSender());
+    ResourceAccess._set(ROOT_NAMESPACE_ID, _msgSender(), true);
   }
 
   /**
