@@ -58,8 +58,8 @@ export function LogsTable({ logs }: Props) {
                   ? JSON.stringify({
                       start: log.args.start,
                       deleteCount: log.args.deleteCount,
-                      data: log.args.data,
                       encodedLengths: log.args.encodedLengths,
+                      data: log.args.data,
                     })
                   : null}
               </td>

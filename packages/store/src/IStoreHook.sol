@@ -58,8 +58,8 @@ interface IStoreHook is IERC165 {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    bytes memory data,
-    PackedCounter encodedLengths
+    PackedCounter encodedLengths,
+    bytes memory data
   ) external;
 
   function onAfterSpliceDynamicData(
@@ -68,8 +68,8 @@ interface IStoreHook is IERC165 {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    bytes memory data,
-    PackedCounter encodedLengths
+    PackedCounter encodedLengths,
+    bytes memory data
   ) external;
 
   function onBeforeDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;

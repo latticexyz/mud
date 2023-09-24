@@ -43,8 +43,8 @@ contract RevertSubscriber is StoreHook {
     uint8,
     uint40,
     uint40,
-    bytes memory,
-    PackedCounter
+    PackedCounter,
+    bytes memory
   ) public pure override {
     revert("onBeforeSpliceDynamicData");
   }
@@ -55,8 +55,8 @@ contract RevertSubscriber is StoreHook {
     uint8,
     uint40,
     uint40,
-    bytes memory,
-    PackedCounter
+    PackedCounter,
+    bytes memory
   ) public pure override {
     revert("onAfterSpliceDynamicData");
   }

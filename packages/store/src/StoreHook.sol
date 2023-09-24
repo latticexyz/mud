@@ -49,8 +49,8 @@ abstract contract StoreHook is IStoreHook {
     uint8,
     uint40,
     uint40,
-    bytes memory,
-    PackedCounter
+    PackedCounter,
+    bytes memory
   ) public virtual {
     revert StoreHook_NotImplemented();
   }
@@ -61,8 +61,8 @@ abstract contract StoreHook is IStoreHook {
     uint8,
     uint40,
     uint40,
-    bytes memory,
-    PackedCounter
+    PackedCounter,
+    bytes memory
   ) public virtual {
     revert StoreHook_NotImplemented();
   }

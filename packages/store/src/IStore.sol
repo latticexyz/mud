@@ -132,8 +132,8 @@ interface IStoreWrite {
     bytes32[] keyTuple,
     uint48 start,
     uint40 deleteCount,
-    bytes data,
-    PackedCounter encodedLengths
+    PackedCounter encodedLengths,
+    bytes data
   );
   event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 

@@ -546,8 +546,8 @@ contract StoreCoreTest is Test, StoreMock {
       keyTuple,
       uint48(0),
       0,
-      _data.thirdDataBytes,
-      PackedCounterLib.pack(_data.thirdDataBytes.length, 0)
+      PackedCounterLib.pack(_data.thirdDataBytes.length, 0),
+      _data.thirdDataBytes
     );
 
     // Set third field
@@ -581,8 +581,8 @@ contract StoreCoreTest is Test, StoreMock {
       keyTuple,
       uint48(_data.thirdDataBytes.length),
       0,
-      _data.fourthDataBytes,
-      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.fourthDataBytes.length)
+      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.fourthDataBytes.length),
+      _data.fourthDataBytes
     );
 
     // Set fourth field
@@ -626,8 +626,8 @@ contract StoreCoreTest is Test, StoreMock {
       keyTuple,
       uint48(_data.thirdDataBytes.length),
       uint40(_data.fourthDataBytes.length),
-      _data.thirdDataBytes,
-      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.thirdDataBytes.length)
+      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.thirdDataBytes.length),
+      _data.thirdDataBytes
     );
 
     // Set fourth field
@@ -807,8 +807,8 @@ contract StoreCoreTest is Test, StoreMock {
       data.keyTuple,
       uint48(data.secondDataBytes.length),
       0,
-      data.secondDataToPush,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length)
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
+      data.secondDataToPush
     );
 
     // Push to second field
@@ -850,8 +850,8 @@ contract StoreCoreTest is Test, StoreMock {
       data.keyTuple,
       uint48(data.newSecondDataBytes.length + data.thirdDataBytes.length),
       0,
-      data.thirdDataToPush,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length)
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
+      data.thirdDataToPush
     );
 
     // Push to third field
@@ -960,8 +960,8 @@ contract StoreCoreTest is Test, StoreMock {
       data.keyTuple,
       uint48(4 * 1),
       4 * 1,
-      data.secondDataForUpdate,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length)
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
+      data.secondDataForUpdate
     );
 
     // Update index 1 in second field (4 = byte length of uint32)
@@ -1012,8 +1012,8 @@ contract StoreCoreTest is Test, StoreMock {
       data.keyTuple,
       uint48(data.newSecondDataBytes.length + 8 * 1),
       8 * 4,
-      data.thirdDataForUpdate,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length)
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
+      data.thirdDataForUpdate
     );
 
     // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)
@@ -1209,7 +1209,7 @@ contract StoreCoreTest is Test, StoreMock {
     emit HookCalled(
       abi.encodeCall(
         IStoreHook.onBeforeSpliceDynamicData,
-        (tableId, keyTuple, 0, 0, uint40(dynamicData.length), dynamicData, encodedLengths)
+        (tableId, keyTuple, 0, 0, uint40(dynamicData.length), encodedLengths, dynamicData)
       )
     );
 
@@ -1218,7 +1218,7 @@ contract StoreCoreTest is Test, StoreMock {
     emit HookCalled(
       abi.encodeCall(
         IStoreHook.onAfterSpliceDynamicData,
-        (tableId, keyTuple, 0, 0, uint40(dynamicData.length), dynamicData, encodedLengths)
+        (tableId, keyTuple, 0, 0, uint40(dynamicData.length), encodedLengths, dynamicData)
       )
     );
 
