@@ -23,20 +23,23 @@ This can also quickly accelerate the need to run a set of dedicated nodes just t
 These are the steps to install and start the MUD indexer.
 They are written under the assumption you are using `anvil` for your test chain, which is what the getting started package's `pnpm dev` does.
 
+```
+pnpm mud set-version --tag next
+```
+
+Before you build the software with `pnpm install` and `pnpm build`.
+
 1. Build the repository [as explained here](contribute#local-development-setup).
+
+   **Note**: While MUD v2 is in alpha, there might be breaking changes between pre-release versions.
+   To ensure your World is compatible with your indexer, make sure both are running the same MUD version.
+   There are multiple ways to do this, but an easy way is to go to [our tags page](https://github.com/latticexyz/mud/tags) and download the repository from there.
+   Once you do that, unzip it and proceed with `pnpm install` and `pnpm build` normally.
 
 1. Ensure you have [`jq`](https://jqlang.github.io/jq/) installed.
 
 1. Run a test world.
    The easiest way to do this is to follow [these directions](tutorials/minimal#getting-the-initial-version) in a separate command line window.
-
-   **Note**: While MUD v2 is in alpha, there might be breaking changes between pre-release versions.
-   To ensure your World is compatible with your indexer, make sure both are running the same MUD version.
-   To create a project with the MUD version on the `main` branch, use `mud@main` instead of ~`mud@next`~.
-
-   ```sh copy
-   pnpm create mud@main project-name
-   ```
 
 1. Start the indexer.
 
