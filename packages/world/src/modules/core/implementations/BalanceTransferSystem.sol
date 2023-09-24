@@ -10,7 +10,7 @@ import { AccessControl } from "../../../AccessControl.sol";
 import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
-import { Balances } from "../tables/Balances.sol";
+import { Balances } from "../../../codegen/tables/Balances.sol";
 
 contract BalanceTransferSystem is System, IWorldErrors {
   using ResourceIdInstance for ResourceId;

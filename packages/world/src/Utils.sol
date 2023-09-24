@@ -3,7 +3,7 @@ pragma solidity >=0.8.21;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
-import { SystemRegistry } from "./index.sol";
+import { SystemRegistry } from "./codegen/tables/SystemRegistry.sol";
 
 library Utils {
   using WorldResourceIdInstance for ResourceId;

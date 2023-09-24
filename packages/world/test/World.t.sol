@@ -32,17 +32,17 @@ import { SystemHook } from "../src/SystemHook.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
 import { Module, MODULE_INTERFACE_ID } from "../src/Module.sol";
 
-import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
+import { NamespaceOwner, NamespaceOwnerTableId } from "../src/codegen/tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { CoreSystem } from "../src/modules/core/CoreSystem.sol";
 import { CORE_SYSTEM_ID } from "../src/modules/core/constants.sol";
-import { Systems } from "../src/modules/core/tables/Systems.sol";
-import { SystemRegistry } from "../src/modules/core/tables/SystemRegistry.sol";
-import { FunctionSelectors } from "../src/modules/core/tables/FunctionSelectors.sol";
+import { Systems } from "../src/codegen/tables/Systems.sol";
+import { SystemRegistry } from "../src/codegen/tables/SystemRegistry.sol";
+import { FunctionSelectors } from "../src/codegen/tables/FunctionSelectors.sol";
 
-import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../src/interfaces/ISystemHook.sol";
 

@@ -14,19 +14,19 @@ import { RESOURCE_NAMESPACE, RESOURCE_SYSTEM } from "../../../worldResourceTypes
 import { AccessControl } from "../../../AccessControl.sol";
 import { Delegation } from "../../../Delegation.sol";
 import { requireInterface } from "../../../requireInterface.sol";
-import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { UserDelegationControl } from "../../../tables/UserDelegationControl.sol";
-import { NamespaceDelegationControl } from "../../../tables/NamespaceDelegationControl.sol";
+import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
+import { UserDelegationControl } from "../../../codegen/tables/UserDelegationControl.sol";
+import { NamespaceDelegationControl } from "../../../codegen/tables/NamespaceDelegationControl.sol";
 import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../../../interfaces/ISystemHook.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 import { IDelegationControl, DELEGATION_CONTROL_INTERFACE_ID } from "../../../interfaces/IDelegationControl.sol";
 
-import { SystemHooks, SystemHooksTableId } from "../tables/SystemHooks.sol";
-import { SystemRegistry } from "../tables/SystemRegistry.sol";
-import { Systems } from "../tables/Systems.sol";
-import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
-import { FunctionSignatures } from "../tables/FunctionSignatures.sol";
+import { SystemHooks, SystemHooksTableId } from "../../../codegen/tables/SystemHooks.sol";
+import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
+import { Systems } from "../../../codegen/tables/Systems.sol";
+import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
+import { FunctionSignatures } from "../../../codegen/tables/FunctionSignatures.sol";
 
 /**
  * Functions related to registering resources other than tables in the World.

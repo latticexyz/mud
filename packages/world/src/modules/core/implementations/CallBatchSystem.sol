@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { System } from "../../../System.sol";
-import { IBaseWorld } from "../../../interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../../../codegen/interfaces/IBaseWorld.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
 
 import { SystemCallData } from "../types.sol";

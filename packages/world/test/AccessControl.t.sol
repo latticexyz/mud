@@ -11,8 +11,8 @@ import { AccessControl } from "../src/AccessControl.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
-import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
-import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
+import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 
 contract AccessControlTest is Test, GasReporter, StoreMock {
   using WorldResourceIdInstance for ResourceId;

@@ -10,7 +10,7 @@ import { System } from "../src/System.sol";
 import { ResourceId, WorldResourceIdLib } from "../src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
-import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { SystemCallData } from "../src/modules/core/types.sol";
 
