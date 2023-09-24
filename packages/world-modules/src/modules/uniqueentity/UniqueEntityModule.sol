@@ -2,9 +2,10 @@
 pragma solidity >=0.8.21;
 
 import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
+
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { WorldContextConsumer } from "@latticexyz/world/src/WorldContext.sol";
-import { revertWithBytes } from "../../revertWithBytes.sol";
+import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { UniqueEntity } from "./tables/UniqueEntity.sol";
 import { UniqueEntitySystem } from "./UniqueEntitySystem.sol";

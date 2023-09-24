@@ -1033,6 +1033,70 @@ importers:
         specifier: 0.31.4
         version: 0.31.4(jsdom@22.1.0)
 
+  packages/world-modules:
+    dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
+      '@latticexyz/config':
+        specifier: workspace:*
+        version: link:../config
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../schema-type
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      '@latticexyz/world':
+        specifier: workspace:*
+        version: link:../world
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
+    devDependencies:
+      '@latticexyz/abi-ts':
+        specifier: workspace:*
+        version: link:../abi-ts
+      '@latticexyz/gas-report':
+        specifier: workspace:*
+        version: link:../gas-report
+      '@types/ejs':
+        specifier: ^3.1.1
+        version: 3.1.1
+      '@types/glob':
+        specifier: ^7.2.0
+        version: 7.2.0
+      '@types/mocha':
+        specifier: ^9.1.1
+        version: 9.1.1
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.15.11
+      ds-test:
+        specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
+        version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
+      ejs:
+        specifier: ^3.1.8
+        version: 3.1.8
+      forge-std:
+        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
+      glob:
+        specifier: ^8.0.3
+        version: 8.0.3
+      solhint:
+        specifier: ^3.3.7
+        version: 3.3.7
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
+      tsx:
+        specifier: ^3.12.6
+        version: 3.12.6
+      vitest:
+        specifier: 0.31.4
+        version: 0.31.4(jsdom@22.1.0)
+
 packages:
 
   /@adraffy/ens-normalize@1.9.0:
