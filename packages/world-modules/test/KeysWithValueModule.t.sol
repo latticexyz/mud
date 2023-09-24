@@ -14,7 +14,7 @@ import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 
 import { World } from "@latticexyz/world/src/World.sol";
-import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance, NAME_BITS, TYPE_BITS } from "@latticexyz/world/src/WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
 import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";

@@ -7,7 +7,7 @@ import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { Tables } from "@latticexyz/store/src/codegen/tables/Tables.sol";
-import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 
 import { ResourceId, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 

@@ -6,7 +6,7 @@ import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.so
 
 import { Module } from "@latticexyz/world/src/Module.sol";
 
-import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 
 import { ResourceId, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";

@@ -6,12 +6,10 @@ pragma solidity >=0.8.21;
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { IWorldKernel } from "@latticexyz/world/src/interfaces/IWorldKernel.sol";
 
-import { IUniqueEntitySystem } from "./IUniqueEntitySystem.sol";
-
 /**
  * The IBaseWorld interface includes all systems dynamically added to the World
  * during the deploy process.
  */
-interface IBaseWorld is IStore, IWorldKernel, IUniqueEntitySystem {
+interface IBaseWorld is IStore, IWorldKernel {
 
 }

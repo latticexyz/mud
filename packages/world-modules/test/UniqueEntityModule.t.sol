@@ -5,7 +5,7 @@ import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { World } from "@latticexyz/world/src/World.sol";
-import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "@latticexyz/world/src/interfaces/IWorldErrors.sol";
 
 import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
