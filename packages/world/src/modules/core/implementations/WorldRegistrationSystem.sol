@@ -9,9 +9,10 @@ import { System } from "../../../System.sol";
 import { WorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../../../WorldContext.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { SystemCall } from "../../../SystemCall.sol";
-import { ROOT_NAMESPACE_ID, ROOT_NAME, UNLIMITED_DELEGATION } from "../../../constants.sol";
+import { ROOT_NAMESPACE_ID, ROOT_NAME } from "../../../constants.sol";
 import { RESOURCE_NAMESPACE, RESOURCE_SYSTEM } from "../../../worldResourceTypes.sol";
 import { AccessControl } from "../../../AccessControl.sol";
+import { Delegation } from "../../../Delegation.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
@@ -213,10 +214,10 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData) public {
     // Store the delegation control contract address
-    Delegations.set({ delegator: _msgSender(), delegatee: delegatee, delegationControlId: delegationControlId });
+    Delegations._set({ delegator: _msgSender(), delegatee: delegatee, delegationControlId: delegationControlId });
 
-    // If the delegation is not unlimited...
-    if (ResourceId.unwrap(delegationControlId) != ResourceId.unwrap(UNLIMITED_DELEGATION) && initCallData.length > 0) {
+    // If the delegation is limited...
+    if (Delegation.isLimited(delegationControlId) && initCallData.length > 0) {
       // Require the delegationControl contract to implement the IDelegationControl interface
       (address delegationControl, ) = Systems._get(delegationControlId);
       requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);

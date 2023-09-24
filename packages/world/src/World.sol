@@ -37,6 +37,7 @@ import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
+
   address public immutable creator;
 
   function worldVersion() public pure returns (bytes32) {
@@ -302,20 +303,16 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
 
     // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
-    Delegation explicitDelegation = Delegation.wrap(
-      ResourceId.unwrap(Delegations._get({ delegator: delegator, delegatee: msg.sender }))
-    );
+    ResourceId explicitDelegationId = Delegations._get({ delegator: delegator, delegatee: msg.sender });
 
-    if (explicitDelegation.verify(delegator, msg.sender, systemId, callData)) {
+    if (Delegation.verify(explicitDelegationId, delegator, msg.sender, systemId, callData)) {
       // forward the call as `delegator`
       return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
     }
 
     // Check if the delegator has a fallback delegation control set
-    Delegation fallbackDelegation = Delegation.wrap(
-      ResourceId.unwrap(Delegations._get({ delegator: delegator, delegatee: address(0) }))
-    );
-    if (fallbackDelegation.verify(delegator, msg.sender, systemId, callData)) {
+    ResourceId fallbackDelegationId = Delegations._get({ delegator: delegator, delegatee: address(0) });
+    if (Delegation.verify(fallbackDelegationId, delegator, msg.sender, systemId, callData)) {
       // forward the call with `from` as `msgSender`
       return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
     }

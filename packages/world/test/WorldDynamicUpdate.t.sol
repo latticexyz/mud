@@ -140,8 +140,6 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
   }
 
   function testSpliceDynamicData() public {
-    FieldLayout fieldLayout = AddressArray.getFieldLayout();
-
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), initData);
 

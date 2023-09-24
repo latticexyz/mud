@@ -243,7 +243,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromCallboundDelegation",
     "name": "register a callbound delegation",
-    "gasUsed": 113124
+    "gasUsed": 112955
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -255,7 +255,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromTimeboundDelegation",
     "name": "register a timebound delegation",
-    "gasUsed": 107619
+    "gasUsed": 107450
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -267,7 +267,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "install unique entity module",
-    "gasUsed": 676007
+    "gasUsed": 676006
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -279,7 +279,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 643281
+    "gasUsed": 643280
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -297,7 +297,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 49845
+    "gasUsed": 47676
   },
   {
     "file": "test/World.t.sol",
@@ -339,7 +339,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 162836
+    "gasUsed": 162835
   },
   {
     "file": "test/World.t.sol",
