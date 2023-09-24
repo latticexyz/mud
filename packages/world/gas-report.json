@@ -295,6 +295,12 @@
   },
   {
     "file": "test/World.t.sol",
+    "test": "testCallFromNamespaceDelegation",
+    "name": "call a system via a namespace fallback delegation",
+    "gasUsed": 26144
+  },
+  {
+    "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
     "gasUsed": 47695
@@ -303,7 +309,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 12839
+    "gasUsed": 12845
   },
   {
     "file": "test/World.t.sol",
@@ -345,7 +351,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 637741
+    "gasUsed": 637709
   },
   {
     "file": "test/World.t.sol",
