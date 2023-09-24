@@ -7,6 +7,7 @@ export default mudConfig({
   codegenDirectory: "",
   userTypes: {
     ResourceId: "@latticexyz/store/src/ResourceId.sol",
+    Delegation: "./src/Delegation.sol",
   },
   tables: {
     /************************************************************************
@@ -46,7 +47,7 @@ export default mudConfig({
         delegatee: "address",
       },
       valueSchema: {
-        delegationControlId: "ResourceId", // TODO: make this Delegation
+        delegationControlId: "Delegation",
       },
     },
     /************************************************************************
