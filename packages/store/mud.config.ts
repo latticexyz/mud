@@ -7,9 +7,9 @@ export default mudConfig({
     ExampleEnum: ["None", "First", "Second", "Third"],
   },
   userTypes: {
-    ResourceId: "./src/ResourceId.sol",
-    FieldLayout: "./src/FieldLayout.sol",
-    Schema: "./src/Schema.sol",
+    ResourceId: { filePath: "./src/ResourceId.sol", internalType: "bytes32" },
+    FieldLayout: { filePath: "./src/FieldLayout.sol", internalType: "bytes32" },
+    Schema: { filePath: "./src/Schema.sol", internalType: "bytes32" },
   },
   tables: {
     StoreHooks: {

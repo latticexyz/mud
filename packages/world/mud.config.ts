@@ -6,7 +6,7 @@ export default mudConfig({
   worldInterfaceName: "IBaseWorld",
   codegenDirectory: "",
   userTypes: {
-    ResourceId: "@latticexyz/store/src/ResourceId.sol",
+    ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", internalType: "bytes32" },
   },
   tables: {
     /************************************************************************
