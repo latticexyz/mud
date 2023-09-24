@@ -288,6 +288,32 @@ export const zUserTypesConfig = z.object({
   userTypes: z.record(zUserTypeName, zUserTypeConfig).default(DEFAULTS.userTypes),
 });
 
+type SchemaWithResolvedUserTypes<
+  TUserTypesConfig extends UserTypesConfig<string>,
+  TSchemaConfig extends FullSchemaConfig
+> = {
+  [key in keyof TSchemaConfig]: TSchemaConfig[key] extends keyof TUserTypesConfig["userTypes"]
+    ? TUserTypesConfig["userTypes"][TSchemaConfig[key]] extends UserType
+      ? TUserTypesConfig["userTypes"][TSchemaConfig[key]]["internalType"]
+      : TSchemaConfig[key]
+    : TSchemaConfig[key];
+};
+
+type TableConfigWithResolvedUserTypes<
+  TUserTypesConfig extends UserTypesConfig<string>,
+  TTableConfig extends TableConfig
+> = Omit<TTableConfig, "valueSchema"> & {
+  valueSchema: SchemaWithResolvedUserTypes<TUserTypesConfig, ExpandSchemaConfig<TTableConfig["valueSchema"]>>;
+};
+
+export function resolveUserTypes<
+  TUserTypes extends StringForUnion,
+  TUserTypesConfig extends UserTypesConfig<TUserTypes>,
+  TTableConfig extends TableConfig
+>(table: TTableConfig, userTypes: TUserTypesConfig): TableConfigWithResolvedUserTypes<TUserTypesConfig, TTableConfig> {
+  return {} as any;
+}
+
 /************************************************************************
  *
  *    FINAL
