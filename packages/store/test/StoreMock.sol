@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { IStore, IStoreHook } from "../src/IStore.sol";
+import { Store } from "../src/Store.sol";
+import { IStoreHook } from "../src/IStore.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { Schema } from "../src/Schema.sol";
@@ -12,7 +13,7 @@ import { ResourceId } from "../src/ResourceId.sol";
 /**
  * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
  */
-contract StoreMock is IStore, StoreRead {
+contract StoreMock is Store {
   constructor() {
     StoreCore.initialize();
     StoreCore.registerCoreTables();

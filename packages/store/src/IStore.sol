@@ -9,10 +9,6 @@ import { IStoreHook } from "./IStoreHook.sol";
 import { ResourceId } from "./ResourceId.sol";
 
 interface IStoreRead {
-  event HelloStore(bytes32 indexed storeVersion);
-
-  function storeVersion() external view returns (bytes32);
-
   function getFieldLayout(ResourceId tableId) external view returns (FieldLayout fieldLayout);
 
   function getValueSchema(ResourceId tableId) external view returns (Schema valueSchema);
@@ -118,7 +114,7 @@ interface IStoreRead {
   ) external view returns (bytes memory data);
 }
 
-interface IStoreWrite {
+interface IStoreEvents {
   event Store_SetRecord(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
@@ -136,7 +132,9 @@ interface IStoreWrite {
     bytes data
   );
   event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
+}
 
+interface IStoreWrite is IStoreEvents {
   // Set full record (including full dynamic data)
   function setRecord(
     ResourceId tableId,
@@ -242,4 +240,8 @@ interface IStoreRegistration {
   function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) external;
 }
 
-interface IStore is IStoreData, IStoreRegistration, IStoreErrors {}
+interface IStore is IStoreData, IStoreRegistration, IStoreErrors {
+  event HelloStore(bytes32 indexed storeVersion);
+
+  function storeVersion() external view returns (bytes32);
+}

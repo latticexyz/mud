@@ -10,10 +10,6 @@ import { PackedCounter } from "./PackedCounter.sol";
 import { ResourceId } from "./ResourceId.sol";
 
 contract StoreRead is IStoreRead {
-  function storeVersion() public pure returns (bytes32) {
-    return STORE_VERSION;
-  }
-
   function getFieldLayout(ResourceId tableId) public view virtual returns (FieldLayout fieldLayout) {
     fieldLayout = StoreCore.getFieldLayout(tableId);
   }
