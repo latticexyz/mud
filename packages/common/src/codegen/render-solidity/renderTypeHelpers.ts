@@ -64,7 +64,7 @@ function renderWrapperStaticArray(
       ${elementType}[${staticLength}] memory _result
     ) {
       if (_value.length < ${staticLength}) {
-        // ignore invalid dynamic arrays that are too small
+        // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
         return _result;
       } else {
         // in memory static arrays are just dynamic arrays without the length byte
