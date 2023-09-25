@@ -46,9 +46,9 @@ import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../src/interfaces/ISystemHook.sol";
 
-import { Bool } from "./tables/Bool.sol";
-import { TwoFields, TwoFieldsData } from "./tables/TwoFields.sol";
-import { AddressArray } from "./tables/AddressArray.sol";
+import { Bool } from "./codegen/tables/Bool.sol";
+import { TwoFields, TwoFieldsData } from "./codegen/tables/TwoFields.sol";
+import { AddressArray } from "./codegen/tables/AddressArray.sol";
 import { DelegationControlMock } from "./DelegationControlMock.sol";
 
 interface IWorldTestSystem {

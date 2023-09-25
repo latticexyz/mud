@@ -3,8 +3,8 @@ pragma solidity >=0.8.21;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { StoreMock } from "../../test/StoreMock.sol";
-import { Callbacks } from "../../src/codegen/index.sol";
+import { Callbacks } from "./codegen/tables/Callbacks.sol";
+import { StoreMock } from "./StoreMock.sol";
 
 contract CallbacksTest is Test, GasReporter, StoreMock {
   function testSetAndGet() public {

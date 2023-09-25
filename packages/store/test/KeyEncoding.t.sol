@@ -3,12 +3,13 @@ pragma solidity >=0.8.21;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { KeyEncoding, KeyEncodingTableId } from "../src/codegen/index.sol";
-import { ExampleEnum } from "../src/codegen/common.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
+
+import { StoreMock } from "./StoreMock.sol";
+import { KeyEncoding, KeyEncodingTableId } from "./codegen/index.sol";
+import { ExampleEnum } from "./codegen/common.sol";
 
 contract KeyEncodingTest is Test, GasReporter, StoreMock {
   function testRegisterAndGetFieldLayout() public {

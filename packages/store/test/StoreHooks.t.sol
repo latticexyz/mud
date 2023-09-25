@@ -3,9 +3,9 @@ pragma solidity >=0.8.21;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { ResourceId } from "../../src/ResourceId.sol";
-import { StoreHooks } from "../../src/codegen/index.sol";
-import { StoreMock } from "../StoreMock.sol";
+import { ResourceId } from "../src/ResourceId.sol";
+import { StoreHooks } from "../src/codegen/tables/StoreHooks.sol";
+import { StoreMock } from "./StoreMock.sol";
 
 contract StoreHooksTest is Test, GasReporter, StoreMock {
   function testTable() public {

@@ -3,12 +3,13 @@ pragma solidity >=0.8.21;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { Mixed, MixedData, MixedTableId } from "../src/codegen/index.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
+
+import { Mixed, MixedData, MixedTableId } from "./codegen/index.sol";
 
 contract MixedTest is Test, GasReporter, StoreMock {
   MixedData private testMixed;

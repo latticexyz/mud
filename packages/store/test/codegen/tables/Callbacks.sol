@@ -7,18 +7,18 @@ pragma solidity >=0.8.21;
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 // Import store internals
-import { IStore } from "../../IStore.sol";
-import { StoreSwitch } from "../../StoreSwitch.sol";
-import { StoreCore } from "../../StoreCore.sol";
-import { Bytes } from "../../Bytes.sol";
-import { Memory } from "../../Memory.sol";
-import { SliceLib } from "../../Slice.sol";
-import { EncodeArray } from "../../tightcoder/EncodeArray.sol";
-import { FieldLayout, FieldLayoutLib } from "../../FieldLayout.sol";
-import { Schema, SchemaLib } from "../../Schema.sol";
-import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
-import { ResourceId } from "../../ResourceId.sol";
-import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../../storeResourceTypes.sol";
+import { IStore } from "../../../src/IStore.sol";
+import { StoreSwitch } from "../../../src/StoreSwitch.sol";
+import { StoreCore } from "../../../src/StoreCore.sol";
+import { Bytes } from "../../../src/Bytes.sol";
+import { Memory } from "../../../src/Memory.sol";
+import { SliceLib } from "../../../src/Slice.sol";
+import { EncodeArray } from "../../../src/tightcoder/EncodeArray.sol";
+import { FieldLayout, FieldLayoutLib } from "../../../src/FieldLayout.sol";
+import { Schema, SchemaLib } from "../../../src/Schema.sol";
+import { PackedCounter, PackedCounterLib } from "../../../src/PackedCounter.sol";
+import { ResourceId } from "../../../src/ResourceId.sol";
+import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../../../src/storeResourceTypes.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("mudstore"), bytes16("Callbacks")))

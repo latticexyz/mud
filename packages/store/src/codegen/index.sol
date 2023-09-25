@@ -7,7 +7,3 @@ import { StoreHooks, StoreHooksTableId } from "./tables/StoreHooks.sol";
 import { Tables, TablesData, TablesTableId } from "./tables/Tables.sol";
 import { ResourceIds, ResourceIdsTableId } from "./tables/ResourceIds.sol";
 import { Hooks } from "./tables/Hooks.sol";
-import { Callbacks, CallbacksTableId } from "./tables/Callbacks.sol";
-import { Mixed, MixedData, MixedTableId } from "./tables/Mixed.sol";
-import { Vector2, Vector2Data, Vector2TableId } from "./tables/Vector2.sol";
-import { KeyEncoding, KeyEncodingTableId } from "./tables/KeyEncoding.sol";
