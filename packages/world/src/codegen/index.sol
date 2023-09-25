@@ -14,6 +14,3 @@ import { SystemRegistry, SystemRegistryTableId } from "./tables/SystemRegistry.s
 import { SystemHooks, SystemHooksTableId } from "./tables/SystemHooks.sol";
 import { FunctionSelectors, FunctionSelectorsTableId } from "./tables/FunctionSelectors.sol";
 import { FunctionSignatures, FunctionSignaturesTableId } from "./tables/FunctionSignatures.sol";
-import { Bool } from "./../test/tables/Bool.sol";
-import { TwoFields, TwoFieldsData } from "./../test/tables/TwoFields.sol";
-import { AddressArray } from "./../test/tables/AddressArray.sol";

@@ -8,11 +8,6 @@ export default mudConfig({
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", internalType: "bytes32" },
   },
   tables: {
-    /************************************************************************
-     *
-     *    CORE TABLES
-     *
-     ************************************************************************/
     NamespaceOwner: {
       keySchema: {
         namespaceId: "ResourceId",
@@ -56,11 +51,6 @@ export default mudConfig({
         delegationControlId: "ResourceId",
       },
     },
-    /************************************************************************
-     *
-     *    CORE MODULE TABLES
-     *
-     ************************************************************************/
     Balances: {
       keySchema: {
         namespaceId: "ResourceId",
@@ -111,33 +101,6 @@ export default mudConfig({
         functionSignature: "string",
       },
       offchainOnly: true,
-    },
-    /************************************************************************
-     *
-     *    TEST TABLES
-     *
-     ************************************************************************/
-    Bool: {
-      directory: "../test/tables",
-      keySchema: {},
-      valueSchema: {
-        value: "bool",
-      },
-      tableIdArgument: true,
-    },
-    TwoFields: {
-      directory: "../test/tables",
-      keySchema: {},
-      valueSchema: {
-        value1: "bool",
-        value2: "bool",
-      },
-      tableIdArgument: true,
-    },
-    AddressArray: {
-      directory: "../test/tables",
-      valueSchema: "address[]",
-      tableIdArgument: true,
     },
   },
   excludeSystems: [
