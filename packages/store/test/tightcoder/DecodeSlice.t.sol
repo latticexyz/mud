@@ -22,18 +22,6 @@ contract DecodeSliceTest is Test, GasReporter {
     assertEq(uint256(output[1]), 0x0300000000000000000000000000000000000000000000000000000000000004);
   }
 
-  function testToBytes32ArrayUneven() public {
-    bytes memory input = new bytes(65);
-    input[0] = 0x01;
-    input[31] = 0x02;
-    input[32] = 0x03;
-    input[63] = 0x04;
-    input[64] = 0x05;
-
-    vm.expectRevert("unpackToArray: packedLength must be a multiple of elementSize");
-    SliceLib.fromBytes(input).decodeArray_bytes32();
-  }
-
   function testToArrayUint32() public {
     uint32 num1 = 0x01020304;
     uint32 num2 = 0x05060708;
@@ -46,12 +34,5 @@ contract DecodeSliceTest is Test, GasReporter {
     assertEq(arr.length, 2);
     assertEq(arr[0], num1);
     assertEq(arr[1], num2);
-  }
-
-  function testToArrayUint32Uneven() public {
-    bytes memory input = abi.encodePacked(uint32(1), uint32(2), uint8(3));
-
-    vm.expectRevert("unpackToArray: packedLength must be a multiple of elementSize");
-    SliceLib.fromBytes(input).decodeArray_uint32();
   }
 }

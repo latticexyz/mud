@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { leftMask } from "./Utils.sol";
+import { leftMask } from "./utils.sol";
 
 library Memory {
   /**
