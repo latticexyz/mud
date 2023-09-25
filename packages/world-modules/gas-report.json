@@ -117,13 +117,13 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetField",
     "name": "set a field on a table with KeysWithValueModule installed",
-    "gasUsed": 146599
+    "gasUsed": 146611
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetField",
     "name": "change a field on a table with KeysWithValueModule installed",
-    "gasUsed": 111358
+    "gasUsed": 111370
   },
   {
     "file": "test/query.t.sol",
@@ -231,7 +231,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 642427
+    "gasUsed": 642457
   },
   {
     "file": "test/UniqueEntityModule.t.sol",

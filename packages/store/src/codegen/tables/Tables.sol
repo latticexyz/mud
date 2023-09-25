@@ -26,7 +26,7 @@ import { FieldLayout } from "./../../FieldLayout.sol";
 import { Schema } from "./../../Schema.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("mudstore"), bytes16("Tables")))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("store"), bytes16("Tables")))
 );
 ResourceId constant TablesTableId = _tableId;
 

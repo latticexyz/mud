@@ -2,7 +2,7 @@ import { mudConfig } from "./ts/register";
 
 export default mudConfig({
   storeImportPath: "../../",
-  namespace: "mudstore",
+  namespace: "store",
   userTypes: {
     ResourceId: { filePath: "./src/ResourceId.sol", internalType: "bytes32" },
     FieldLayout: { filePath: "./src/FieldLayout.sol", internalType: "bytes32" },
