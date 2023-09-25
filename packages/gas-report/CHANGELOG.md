@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.0-next.9
+
+### Major Changes
+
+- [#1473](https://github.com/latticexyz/mud/pull/1473) [`92de5998`](https://github.com/latticexyz/mud/commit/92de59982fb9fc4e00e50c4a5232ed541f3ce71a) Thanks [@holic](https://github.com/holic)! - Bump Solidity version to 0.8.21
+
 ## 2.0.0-next.8
 
 ## 2.0.0-next.7

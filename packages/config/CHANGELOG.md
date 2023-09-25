@@ -1,5 +1,79 @@
 # Change Log
 
+## 2.0.0-next.9
+
+### Major Changes
+
+- [#1544](https://github.com/latticexyz/mud/pull/1544) [`5e723b90`](https://github.com/latticexyz/mud/commit/5e723b90e6b18bc70d357ff4b0a1b217611236ae) Thanks [@alvrs](https://github.com/alvrs)! - - `ResourceSelector` is replaced with `ResourceId`, `ResourceIdLib`, `ResourceIdInstance`, `WorldResourceIdLib` and `WorldResourceIdInstance`.
+
+  Previously a "resource selector" was a `bytes32` value with the first 16 bytes reserved for the resource's namespace, and the last 16 bytes reserved for the resource's name.
+  Now a "resource ID" is a `bytes32` value with the first 2 bytes reserved for the resource type, the next 14 bytes reserved for the resource's namespace, and the last 16 bytes reserved for the resource's name.
+
+  Previously `ResouceSelector` was a library and the resource selector type was a plain `bytes32`.
+  Now `ResourceId` is a user type, and the functionality is implemented in the `ResourceIdInstance` (for type) and `WorldResourceIdInstance` (for namespace and name) libraries.
+  We split the logic into two libraries, because `Store` now also uses `ResourceId` and needs to be aware of resource types, but not of namespaces/names.
+
+  ```diff
+  - import { ResourceSelector } from "@latticexyz/world/src/ResourceSelector.sol";
+  + import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+  + import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+  + import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+  - bytes32 systemId = ResourceSelector.from("namespace", "name");
+  + ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "namespace", "name");
+
+  - using ResourceSelector for bytes32;
+  + using WorldResourceIdInstance for ResourceId;
+  + using ResourceIdInstance for ResourceId;
+
+    systemId.getName();
+    systemId.getNamespace();
+  + systemId.getType();
+
+  ```
+
+  - All `Store` and `World` methods now use the `ResourceId` type for `tableId`, `systemId`, `moduleId` and `namespaceId`.
+    All mentions of `resourceSelector` were renamed to `resourceId` or the more specific type (e.g. `tableId`, `systemId`)
+
+    ```diff
+    import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+    IStore {
+      function setRecord(
+    -   bytes32 tableId,
+    +   ResourceId tableId,
+        bytes32[] calldata keyTuple,
+        bytes calldata staticData,
+        PackedCounter encodedLengths,
+        bytes calldata dynamicData,
+        FieldLayout fieldLayout
+      ) external;
+
+      // Same for all other methods
+    }
+    ```
+
+    ```diff
+    import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+    IBaseWorld {
+      function callFrom(
+        address delegator,
+    -   bytes32 resourceSelector,
+    +   ResourceId systemId,
+        bytes memory callData
+      ) external payable returns (bytes memory);
+
+      // Same for all other methods
+    }
+    ```
+
+### Patch Changes
+
+- Updated dependencies [[`65c9546c`](https://github.com/latticexyz/mud/commit/65c9546c4ee8a410b21d032f02b0050442152e7e), [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853), [`0b8ce3f2`](https://github.com/latticexyz/mud/commit/0b8ce3f2c9b540dbd1c9ba21354f8bf850e72a96), [`44a5432a`](https://github.com/latticexyz/mud/commit/44a5432acb9c5af3dca1447c50219a00894c45a9), [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853), [`92de5998`](https://github.com/latticexyz/mud/commit/92de59982fb9fc4e00e50c4a5232ed541f3ce71a), [`bfcb293d`](https://github.com/latticexyz/mud/commit/bfcb293d1931edde7f8a3e077f6f555a26fd1d2f), [`5e723b90`](https://github.com/latticexyz/mud/commit/5e723b90e6b18bc70d357ff4b0a1b217611236ae), [`24a6cd53`](https://github.com/latticexyz/mud/commit/24a6cd536f0c31cab93fb7644751cb9376be383d), [`708b49c5`](https://github.com/latticexyz/mud/commit/708b49c50e05f7b67b596e72ebfcbd76e1ff6280), [`c4f49240`](https://github.com/latticexyz/mud/commit/c4f49240d7767c3fa7a25926f74b4b62ad67ca04), [`cea754dd`](https://github.com/latticexyz/mud/commit/cea754dde0d8abf7392e93faa319b260956ae92b)]:
+  - @latticexyz/common@2.0.0-next.9
+  - @latticexyz/schema-type@2.0.0-next.9
+
 ## 2.0.0-next.8
 
 ### Patch Changes

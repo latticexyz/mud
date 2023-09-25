@@ -1,5 +1,63 @@
 # @latticexyz/protocol-parser
 
+## 2.0.0-next.9
+
+### Major Changes
+
+- [#1482](https://github.com/latticexyz/mud/pull/1482) [`07dd6f32`](https://github.com/latticexyz/mud/commit/07dd6f32c9bb9f0e807bac3586c5cc9833f14ab9) Thanks [@alvrs](https://github.com/alvrs)! - Renamed all occurrences of `schema` where it is used as "value schema" to `valueSchema` to clearly distinguish it from "key schema".
+  The only breaking change for users is the change from `schema` to `valueSchema` in `mud.config.ts`.
+
+  ```diff
+  // mud.config.ts
+  export default mudConfig({
+    tables: {
+      CounterTable: {
+        keySchema: {},
+  -     schema: {
+  +     valueSchema: {
+          value: "uint32",
+        },
+      },
+    }
+  }
+  ```
+
+- [#1354](https://github.com/latticexyz/mud/pull/1354) [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853) Thanks [@dk1a](https://github.com/dk1a)! - `readHex` was moved from `@latticexyz/protocol-parser` to `@latticexyz/common`
+
+### Minor Changes
+
+- [#1336](https://github.com/latticexyz/mud/pull/1336) [`de151fec`](https://github.com/latticexyz/mud/commit/de151fec07b63a6022483c1ad133c556dd44992e) Thanks [@dk1a](https://github.com/dk1a)! - - Add `FieldLayout`, which is a `bytes32` user-type similar to `Schema`.
+
+  Both `FieldLayout` and `Schema` have the same kind of data in the first 4 bytes.
+
+  - 2 bytes for total length of all static fields
+  - 1 byte for number of static size fields
+  - 1 byte for number of dynamic size fields
+
+  But whereas `Schema` has `SchemaType` enum in each of the other 28 bytes, `FieldLayout` has static byte lengths in each of the other 28 bytes.
+
+  - Replace `Schema valueSchema` with `FieldLayout fieldLayout` in Store and World contracts.
+
+    `FieldLayout` is more gas-efficient because it already has lengths, and `Schema` has types which need to be converted to lengths.
+
+  - Add `getFieldLayout` to `IStore` interface.
+
+    There is no `FieldLayout` for keys, only for values, because key byte lengths aren't usually relevant on-chain. You can still use `getKeySchema` if you need key types.
+
+  - Add `fieldLayoutToHex` utility to `protocol-parser` package.
+
+  - Add `constants.sol` for constants shared between `FieldLayout`, `Schema` and `PackedCounter`.
+
+- [#1476](https://github.com/latticexyz/mud/pull/1476) [`9ff4dd95`](https://github.com/latticexyz/mud/commit/9ff4dd955fd6dca36eb15cfe7e46bb522d2e943b) Thanks [@holic](https://github.com/holic)! - Adds `valueSchemaToFieldLayoutHex` helper
+
+### Patch Changes
+
+- [#1481](https://github.com/latticexyz/mud/pull/1481) [`f8a01a04`](https://github.com/latticexyz/mud/commit/f8a01a047d73a15326ebf6577ea033674d8e61a9) Thanks [@holic](https://github.com/holic)! - Export `valueSchemaToFieldLayoutHex` helper
+
+- Updated dependencies [[`65c9546c`](https://github.com/latticexyz/mud/commit/65c9546c4ee8a410b21d032f02b0050442152e7e), [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853), [`0b8ce3f2`](https://github.com/latticexyz/mud/commit/0b8ce3f2c9b540dbd1c9ba21354f8bf850e72a96), [`44a5432a`](https://github.com/latticexyz/mud/commit/44a5432acb9c5af3dca1447c50219a00894c45a9), [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853), [`92de5998`](https://github.com/latticexyz/mud/commit/92de59982fb9fc4e00e50c4a5232ed541f3ce71a), [`bfcb293d`](https://github.com/latticexyz/mud/commit/bfcb293d1931edde7f8a3e077f6f555a26fd1d2f), [`5e723b90`](https://github.com/latticexyz/mud/commit/5e723b90e6b18bc70d357ff4b0a1b217611236ae), [`24a6cd53`](https://github.com/latticexyz/mud/commit/24a6cd536f0c31cab93fb7644751cb9376be383d), [`708b49c5`](https://github.com/latticexyz/mud/commit/708b49c50e05f7b67b596e72ebfcbd76e1ff6280), [`c4f49240`](https://github.com/latticexyz/mud/commit/c4f49240d7767c3fa7a25926f74b4b62ad67ca04), [`cea754dd`](https://github.com/latticexyz/mud/commit/cea754dde0d8abf7392e93faa319b260956ae92b)]:
+  - @latticexyz/common@2.0.0-next.9
+  - @latticexyz/schema-type@2.0.0-next.9
+
 ## 2.0.0-next.8
 
 ### Minor Changes
