@@ -29,7 +29,7 @@ import { Balances } from "../../codegen/tables/Balances.sol";
 
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
-import { CallBatchSystem } from "./implementations/CallBatchSystem.sol";
+import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
 import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
@@ -98,7 +98,7 @@ contract CoreModule is Module {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    string[18] memory functionSignatures = [
+    string[19] memory functionSignatures = [
       // --- AccessManagementSystem ---
       "grantAccess(bytes32,address)",
       "revokeAccess(bytes32,address)",
@@ -106,8 +106,9 @@ contract CoreModule is Module {
       // --- BalanceTransferSystem ---
       "transferBalanceToNamespace(bytes32,bytes32,uint256)",
       "transferBalanceToAddress(bytes32,address,uint256)",
-      // --- CallBatchSystem ---
-      "callBatch((bytes32,bytes)[])",
+      // --- BatchCallSystem ---
+      "batchCall((bytes32,bytes)[])",
+      "batchCallFrom((address,bytes32,bytes)[])",
       // --- ModuleInstallationSystem ---
       "installModule(address,bytes)",
       // --- StoreRegistrationSystem ---

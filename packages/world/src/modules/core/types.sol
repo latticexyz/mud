@@ -7,3 +7,9 @@ struct SystemCallData {
   ResourceId systemId;
   bytes callData;
 }
+
+struct SystemCallFromData {
+  address from;
+  ResourceId systemId;
+  bytes callData;
+}
