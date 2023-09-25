@@ -2,6 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { ResourceId } from "./ResourceId.sol";
+import { PackedCounter } from "./PackedCounter.sol";
 
 interface IStoreEvents {
   event Store_SetRecord(

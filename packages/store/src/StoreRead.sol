@@ -2,7 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { STORE_VERSION } from "./version.sol";
-import { IStoreRead } from "./IStore.sol";
+import { IStoreRead } from "./IStoreRead.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";

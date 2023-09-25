@@ -2,7 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { STORE_VERSION } from "./version.sol";
-import { IStoreData } from "./IStore.sol";
+import { IStoreData } from "./IStoreData.sol";
 import { StoreRead } from "./StoreRead.sol";
 import { StoreCore } from "./StoreCore.sol";
 
