@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { IStoreData } from "@latticexyz/store/src/IStore.sol";
+import { StoreData } from "@latticexyz/store/src/StoreData.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
@@ -36,7 +35,7 @@ import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
 import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
-contract World is StoreRead, IStoreData, IWorldKernel {
+contract World is StoreData, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
 
   address public immutable creator;

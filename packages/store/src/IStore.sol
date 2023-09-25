@@ -215,7 +215,9 @@ interface IStoreWrite is IStoreEvents {
  * optimizing their gas cost
  */
 interface IStoreData is IStoreRead, IStoreWrite {
+  event HelloStore(bytes32 indexed storeVersion);
 
+  function storeVersion() external view returns (bytes32);
 }
 
 /**
@@ -240,8 +242,4 @@ interface IStoreRegistration {
   function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) external;
 }
 
-interface IStore is IStoreData, IStoreRegistration, IStoreErrors {
-  event HelloStore(bytes32 indexed storeVersion);
-
-  function storeVersion() external view returns (bytes32);
-}
+interface IStore is IStoreData, IStoreRegistration, IStoreErrors {}
