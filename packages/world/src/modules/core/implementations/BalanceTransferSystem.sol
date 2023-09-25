@@ -8,7 +8,7 @@ import { revertWithBytes } from "../../../revertWithBytes.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
-import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
+import { IWorldErrors } from "../../../IWorldErrors.sol";
 
 import { Balances } from "../../../codegen/tables/Balances.sol";
 

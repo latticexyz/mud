@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { IERC165 } from "./interfaces/IERC165.sol";
-import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
+import { IERC165 } from "./IERC165.sol";
+import { IWorldErrors } from "./IWorldErrors.sol";
 
 /**
  * Require the given contract to support the given interface by calling the ERC-165 supportsInterface function.

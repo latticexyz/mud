@@ -18,9 +18,9 @@ import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { UserDelegationControl } from "../../../codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "../../../codegen/tables/NamespaceDelegationControl.sol";
-import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../../../interfaces/ISystemHook.sol";
-import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
-import { IDelegationControl, DELEGATION_CONTROL_INTERFACE_ID } from "../../../interfaces/IDelegationControl.sol";
+import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../../../ISystemHook.sol";
+import { IWorldErrors } from "../../../IWorldErrors.sol";
+import { IDelegationControl, DELEGATION_CONTROL_INTERFACE_ID } from "../../../IDelegationControl.sol";
 
 import { SystemHooks, SystemHooksTableId } from "../../../codegen/tables/SystemHooks.sol";
 import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";

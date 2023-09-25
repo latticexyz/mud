@@ -43,8 +43,8 @@ import { SystemRegistry } from "../src/codegen/tables/SystemRegistry.sol";
 import { FunctionSelectors } from "../src/codegen/tables/FunctionSelectors.sol";
 
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
-import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
-import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../src/interfaces/ISystemHook.sol";
+import { IWorldErrors } from "../src/IWorldErrors.sol";
+import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../src/ISystemHook.sol";
 
 import { Bool } from "./codegen/tables/Bool.sol";
 import { TwoFields, TwoFieldsData } from "./codegen/tables/TwoFields.sol";

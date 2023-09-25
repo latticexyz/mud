@@ -6,7 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { World } from "@latticexyz/world/src/World.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
-import { IWorldErrors } from "@latticexyz/world/src/interfaces/IWorldErrors.sol";
+import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 
 import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
 import { UniqueEntityModule } from "../src/modules/uniqueentity/UniqueEntityModule.sol";

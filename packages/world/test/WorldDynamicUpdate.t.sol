@@ -24,7 +24,7 @@ import { AddressArray } from "./codegen/tables/AddressArray.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
-import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
+import { IWorldErrors } from "../src/IWorldErrors.sol";
 
 contract UpdateInDynamicFieldTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;

@@ -22,7 +22,7 @@ import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
 import { Systems } from "../../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
 
-import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
+import { IWorldErrors } from "../../../IWorldErrors.sol";
 
 import { CORE_SYSTEM_ID } from "../constants.sol";
 
