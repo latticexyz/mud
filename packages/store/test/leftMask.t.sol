@@ -3,9 +3,9 @@ pragma solidity >=0.8.21;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { leftMask } from "../src/Utils.sol";
+import { leftMask } from "../src/leftMask.sol";
 
-contract UtilsTest is Test, GasReporter {
+contract LeftMaskTest is Test, GasReporter {
   function testLeftMask() public {
     bytes32 mask;
     assertEq(leftMask(0), uint256(mask));
