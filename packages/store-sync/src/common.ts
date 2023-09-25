@@ -76,6 +76,11 @@ export type StorageOperation<TConfig extends StoreConfig> =
   | SetRecordOperation<TConfig>
   | DeleteRecordOperation<TConfig>;
 
+export type InitialState = {
+  blockNumber: bigint | null;
+  tables: TableWithRecords[];
+};
+
 export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
   /**
    * MUD config
@@ -110,10 +115,7 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
   /**
    * Optional initial state to hydrate from. Useful if you're hydrating from your own indexer or cache.
    */
-  initialState?: {
-    blockNumber: bigint | null;
-    tables: TableWithRecords[];
-  };
+  initialState?: InitialState;
   /** Sky Strife-specific option to filter data by match ID */
   matchId?: number;
 };

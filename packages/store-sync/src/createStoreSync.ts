@@ -1,6 +1,14 @@
 import { ConfigToKeyPrimitives, ConfigToValuePrimitives, StoreConfig, storeEventsAbi } from "@latticexyz/store";
 import { Hex, TransactionReceiptNotFoundError } from "viem";
-import { BlockLogs, SetRecordOperation, StorageAdapter, SyncOptions, SyncResult, TableWithRecords } from "./common";
+import {
+  BlockLogs,
+  InitialState,
+  SetRecordOperation,
+  StorageAdapter,
+  SyncOptions,
+  SyncResult,
+  TableWithRecords,
+} from "./common";
 import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
   filter,
@@ -38,6 +46,7 @@ type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOpt
     lastBlockNumberProcessed: bigint;
     message: string;
   }) => void;
+  onIndexerState?: (initialState: InitialState) => void;
 };
 
 type CreateStoreSyncResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig>;
@@ -53,43 +62,38 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   initialState,
   indexerUrl,
   matchId,
+  onIndexerState,
 }: CreateStoreSyncOptions<TConfig>): Promise<CreateStoreSyncResult<TConfig>> {
-  const initialState$ = defer(
-    async (): Promise<
-      | {
-          blockNumber: bigint | null;
-          tables: TableWithRecords[];
-        }
-      | undefined
-    > => {
-      if (initialState) return initialState;
-      if (!indexerUrl) return;
+  const initialState$ = defer(async (): Promise<InitialState | undefined> => {
+    if (initialState) return initialState;
+    if (!indexerUrl) return;
 
-      debug("fetching initial state from indexer", indexerUrl);
+    debug("fetching initial state from indexer", indexerUrl);
 
-      onProgress?.({
-        step: SyncStep.SNAPSHOT,
-        percentage: 0,
-        latestBlockNumber: 0n,
-        lastBlockNumberProcessed: 0n,
-        message: "Fetching snapshot from indexer",
-      });
+    onProgress?.({
+      step: SyncStep.SNAPSHOT,
+      percentage: 0,
+      latestBlockNumber: 0n,
+      lastBlockNumberProcessed: 0n,
+      message: "Fetching snapshot from indexer",
+    });
 
-      const indexer = createIndexerClient({ url: indexerUrl });
-      const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
-      const result = await indexer.findAll.query({ chainId, address, tableIds, matchId });
+    const indexer = createIndexerClient({ url: indexerUrl });
+    const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+    const result = await indexer.findAll.query({ chainId, address, tableIds, matchId });
 
-      onProgress?.({
-        step: SyncStep.SNAPSHOT,
-        percentage: 100,
-        latestBlockNumber: 0n,
-        lastBlockNumberProcessed: 0n,
-        message: "Fetched snapshot from indexer",
-      });
+    onProgress?.({
+      step: SyncStep.SNAPSHOT,
+      percentage: 100,
+      latestBlockNumber: 0n,
+      lastBlockNumberProcessed: 0n,
+      message: "Fetched snapshot from indexer",
+    });
 
-      return result;
-    }
-  ).pipe(
+    onIndexerState?.(result);
+
+    return result;
+  }).pipe(
     catchError((error) => {
       debug("error fetching initial state from indexer", error);
 
