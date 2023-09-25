@@ -24,7 +24,7 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../../storeResourceType
 import { ResourceId } from "./../../ResourceId.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("mudstore"), bytes16("StoreHooks")))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("store"), bytes16("StoreHooks")))
 );
 ResourceId constant StoreHooksTableId = _tableId;
 
