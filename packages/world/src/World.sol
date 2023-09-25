@@ -21,19 +21,19 @@ import { revertWithBytes } from "./revertWithBytes.sol";
 import { Delegation } from "./Delegation.sol";
 import { requireInterface } from "./requireInterface.sol";
 
-import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
-import { InstalledModules } from "./tables/InstalledModules.sol";
-import { UserDelegationControl } from "./tables/UserDelegationControl.sol";
-import { NamespaceDelegationControl } from "./tables/NamespaceDelegationControl.sol";
+import { NamespaceOwner } from "./codegen/tables/NamespaceOwner.sol";
+import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
+import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
+import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
 
 import { IModule, MODULE_INTERFACE_ID } from "./interfaces/IModule.sol";
 import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
 import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
 
-import { Systems } from "./modules/core/tables/Systems.sol";
-import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
-import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
-import { Balances } from "./modules/core/tables/Balances.sol";
+import { Systems } from "./codegen/tables/Systems.sol";
+import { SystemHooks } from "./codegen/tables/SystemHooks.sol";
+import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
+import { Balances } from "./codegen/tables/Balances.sol";
 import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {

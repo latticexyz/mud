@@ -23,7 +23,7 @@ import { AddressArray } from "./tables/AddressArray.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 
-import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 
 contract UpdateInDynamicFieldTest is Test, GasReporter {

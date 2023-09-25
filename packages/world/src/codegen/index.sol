@@ -8,12 +8,12 @@ import { ResourceAccess, ResourceAccessTableId } from "./tables/ResourceAccess.s
 import { InstalledModules, InstalledModulesTableId } from "./tables/InstalledModules.sol";
 import { UserDelegationControl, UserDelegationControlTableId } from "./tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl, NamespaceDelegationControlTableId } from "./tables/NamespaceDelegationControl.sol";
-import { Balances, BalancesTableId } from "./modules/core/tables/Balances.sol";
-import { Systems, SystemsTableId } from "./modules/core/tables/Systems.sol";
-import { SystemRegistry, SystemRegistryTableId } from "./modules/core/tables/SystemRegistry.sol";
-import { SystemHooks, SystemHooksTableId } from "./modules/core/tables/SystemHooks.sol";
-import { FunctionSelectors, FunctionSelectorsTableId } from "./modules/core/tables/FunctionSelectors.sol";
-import { FunctionSignatures, FunctionSignaturesTableId } from "./modules/core/tables/FunctionSignatures.sol";
+import { Balances, BalancesTableId } from "./tables/Balances.sol";
+import { Systems, SystemsTableId } from "./tables/Systems.sol";
+import { SystemRegistry, SystemRegistryTableId } from "./tables/SystemRegistry.sol";
+import { SystemHooks, SystemHooksTableId } from "./tables/SystemHooks.sol";
+import { FunctionSelectors, FunctionSelectorsTableId } from "./tables/FunctionSelectors.sol";
+import { FunctionSignatures, FunctionSignaturesTableId } from "./tables/FunctionSignatures.sol";
 import { Bool } from "./../test/tables/Bool.sol";
 import { TwoFields, TwoFieldsData } from "./../test/tables/TwoFields.sol";
 import { AddressArray } from "./../test/tables/AddressArray.sol";

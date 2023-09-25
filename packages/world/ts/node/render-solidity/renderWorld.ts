@@ -18,7 +18,7 @@ export function renderWorld(options: RenderWorldOptions) {
       : [
           {
             symbol: "IBaseWorld",
-            path: `${worldImportPath}interfaces/IBaseWorld.sol`,
+            path: `${worldImportPath}codegen/interfaces/IBaseWorld.sol`,
           },
         ];
   const importSymbols = [...baseImports, ...imports].map(({ symbol }) => symbol);

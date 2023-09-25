@@ -4,8 +4,8 @@ pragma solidity >=0.8.21;
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
 
-import { ResourceAccess } from "./tables/ResourceAccess.sol";
-import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
+import { ResourceAccess } from "./codegen/tables/ResourceAccess.sol";
+import { NamespaceOwner } from "./codegen/tables/NamespaceOwner.sol";
 
 library AccessControl {
   using WorldResourceIdInstance for ResourceId;

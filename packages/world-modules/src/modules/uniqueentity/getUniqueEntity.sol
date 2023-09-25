@@ -2,9 +2,9 @@
 pragma solidity >=0.8.21;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 
-import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
-import { IUniqueEntitySystem } from "@latticexyz/world/src/interfaces/IUniqueEntitySystem.sol";
+import { IUniqueEntitySystem } from "../../interfaces/IUniqueEntitySystem.sol";
 
 /**
  * Increment and get an entity nonce.

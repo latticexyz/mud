@@ -73,5 +73,5 @@ export default mudConfig({
       },
     },
   },
-  excludeSystems: [],
+  excludeSystems: ["UniqueEntitySystem"],
 });

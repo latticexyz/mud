@@ -14,14 +14,15 @@ import { AccessControl } from "../../../AccessControl.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
 import { WorldContextProvider } from "../../../WorldContext.sol";
-import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
-import { SystemHooks } from "../tables/SystemHooks.sol";
-import { SystemRegistry } from "../tables/SystemRegistry.sol";
-import { Systems } from "../tables/Systems.sol";
-import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
+import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
+import { SystemHooks } from "../../../codegen/tables/SystemHooks.sol";
+import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
+import { Systems } from "../../../codegen/tables/Systems.sol";
+import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
+
+import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
 import { CORE_SYSTEM_ID } from "../constants.sol";
 

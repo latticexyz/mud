@@ -14,10 +14,10 @@ import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "./systemHookTypes.sol";
 import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
 import { ISystemHook } from "./interfaces/ISystemHook.sol";
 
-import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
-import { Systems } from "./modules/core/tables/Systems.sol";
-import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
-import { Balances } from "./modules/core/tables/Balances.sol";
+import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
+import { Systems } from "./codegen/tables/Systems.sol";
+import { SystemHooks } from "./codegen/tables/SystemHooks.sol";
+import { Balances } from "./codegen/tables/Balances.sol";
 
 library SystemCall {
   using WorldResourceIdInstance for ResourceId;

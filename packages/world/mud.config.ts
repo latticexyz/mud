@@ -1,10 +1,9 @@
 import { mudConfig } from "./ts/register";
 
 export default mudConfig({
-  worldImportPath: "../",
+  worldImportPath: "../../",
   worldgenDirectory: "interfaces",
   worldInterfaceName: "IBaseWorld",
-  codegenDirectory: "",
   userTypes: {
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", internalType: "bytes32" },
   },
@@ -63,7 +62,6 @@ export default mudConfig({
      *
      ************************************************************************/
     Balances: {
-      directory: "modules/core/tables",
       keySchema: {
         namespaceId: "ResourceId",
       },
@@ -72,7 +70,6 @@ export default mudConfig({
       },
     },
     Systems: {
-      directory: "modules/core/tables",
       keySchema: {
         systemId: "ResourceId",
       },
@@ -83,7 +80,6 @@ export default mudConfig({
       dataStruct: false,
     },
     SystemRegistry: {
-      directory: "modules/core/tables",
       keySchema: {
         system: "address",
       },
@@ -92,14 +88,12 @@ export default mudConfig({
       },
     },
     SystemHooks: {
-      directory: "modules/core/tables",
       keySchema: {
         systemId: "ResourceId",
       },
       valueSchema: "bytes21[]",
     },
     FunctionSelectors: {
-      directory: "modules/core/tables",
       keySchema: {
         functionSelector: "bytes4",
       },
@@ -110,7 +104,6 @@ export default mudConfig({
       dataStruct: false,
     },
     FunctionSignatures: {
-      directory: "modules/core/tables",
       keySchema: {
         functionSelector: "bytes4",
       },

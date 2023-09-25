@@ -12,8 +12,8 @@ import { CORE_MODULE_NAME } from "../src/modules/core/constants.sol";
 import { Create2Factory } from "../src/factories/Create2Factory.sol";
 import { WorldFactory } from "../src/factories/WorldFactory.sol";
 import { IWorldFactory } from "../src/factories/IWorldFactory.sol";
-import { InstalledModules } from "../src/tables/InstalledModules.sol";
-import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
+import { InstalledModules } from "../src/codegen/tables/InstalledModules.sol";
+import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ROOT_NAMESPACE_ID } from "../src/constants.sol";
 
 contract FactoriesTest is Test {

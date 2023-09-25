@@ -5,9 +5,9 @@ import { IModule } from "../../../interfaces/IModule.sol";
 import { System } from "../../../System.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { ResourceId, WorldResourceIdLib } from "../../../WorldResourceId.sol";
-import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { InstalledModules } from "../../../tables/InstalledModules.sol";
-import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
+import { InstalledModules } from "../../../codegen/tables/InstalledModules.sol";
+import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 
 /**
  * Granting and revoking access from/to resources.
