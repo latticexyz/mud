@@ -46,7 +46,6 @@ contract World is StoreData, IWorldKernel {
 
   constructor() {
     creator = msg.sender;
-    StoreCore.initialize();
     emit HelloWorld(WORLD_VERSION);
   }
 
