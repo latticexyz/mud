@@ -20,4 +20,3 @@ interface IBaseWorld {
 + function batchCall(SystemCallData[] calldata systemCalls) external returns (bytes[] memory returnDatas);
 }
 ```
-
