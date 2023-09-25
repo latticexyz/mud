@@ -6,7 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
-import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";

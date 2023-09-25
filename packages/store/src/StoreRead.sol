@@ -2,7 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { STORE_VERSION } from "./version.sol";
-import { IStoreRead } from "./IStore.sol";
+import { IStoreRead } from "./IStoreRead.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
@@ -10,10 +10,6 @@ import { PackedCounter } from "./PackedCounter.sol";
 import { ResourceId } from "./ResourceId.sol";
 
 contract StoreRead is IStoreRead {
-  function storeVersion() public pure returns (bytes32) {
-    return STORE_VERSION;
-  }
-
   function getFieldLayout(ResourceId tableId) public view virtual returns (FieldLayout fieldLayout) {
     fieldLayout = StoreCore.getFieldLayout(tableId);
   }

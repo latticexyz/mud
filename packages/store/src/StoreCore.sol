@@ -51,8 +51,6 @@ library StoreCore {
    * Consumers must call this function in their constructor.
    */
   function initialize() internal {
-    emit HelloStore(STORE_VERSION);
-
     // StoreSwitch uses the storeAddress to decide where to write data to.
     // If StoreSwitch is called in the context of a Store contract (storeAddress == address(this)),
     // StoreSwitch uses internal methods to write data instead of external calls.
