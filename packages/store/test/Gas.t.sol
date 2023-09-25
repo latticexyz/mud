@@ -7,7 +7,8 @@ import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { Storage } from "../src/Storage.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
-import { Mixed, MixedData } from "../src/codegen/index.sol";
+
+import { Mixed, MixedData } from "./codegen/index.sol";
 
 contract SomeContract {
   function doSomethingWithBytes(bytes memory data) public {}
