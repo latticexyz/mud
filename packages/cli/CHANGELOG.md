@@ -1,5 +1,416 @@
 # Change Log
 
+## 2.0.0-next.9
+
+### Major Changes
+
+- [#1482](https://github.com/latticexyz/mud/pull/1482) [`07dd6f32`](https://github.com/latticexyz/mud/commit/07dd6f32c9bb9f0e807bac3586c5cc9833f14ab9) Thanks [@alvrs](https://github.com/alvrs)! - Renamed all occurrences of `schema` where it is used as "value schema" to `valueSchema` to clearly distinguish it from "key schema".
+  The only breaking change for users is the change from `schema` to `valueSchema` in `mud.config.ts`.
+
+  ```diff
+  // mud.config.ts
+  export default mudConfig({
+    tables: {
+      CounterTable: {
+        keySchema: {},
+  -     schema: {
+  +     valueSchema: {
+          value: "uint32",
+        },
+      },
+    }
+  }
+  ```
+
+- [#1336](https://github.com/latticexyz/mud/pull/1336) [`de151fec`](https://github.com/latticexyz/mud/commit/de151fec07b63a6022483c1ad133c556dd44992e) Thanks [@dk1a](https://github.com/dk1a)! - - Add `FieldLayout`, which is a `bytes32` user-type similar to `Schema`.
+
+  Both `FieldLayout` and `Schema` have the same kind of data in the first 4 bytes.
+
+  - 2 bytes for total length of all static fields
+  - 1 byte for number of static size fields
+  - 1 byte for number of dynamic size fields
+
+  But whereas `Schema` has `SchemaType` enum in each of the other 28 bytes, `FieldLayout` has static byte lengths in each of the other 28 bytes.
+
+  - Replace `Schema valueSchema` with `FieldLayout fieldLayout` in Store and World contracts.
+
+    `FieldLayout` is more gas-efficient because it already has lengths, and `Schema` has types which need to be converted to lengths.
+
+  - Add `getFieldLayout` to `IStore` interface.
+
+    There is no `FieldLayout` for keys, only for values, because key byte lengths aren't usually relevant on-chain. You can still use `getKeySchema` if you need key types.
+
+  - Add `fieldLayoutToHex` utility to `protocol-parser` package.
+
+  - Add `constants.sol` for constants shared between `FieldLayout`, `Schema` and `PackedCounter`.
+
+- [#1575](https://github.com/latticexyz/mud/pull/1575) [`e5d208e4`](https://github.com/latticexyz/mud/commit/e5d208e40b2b2fae223b48716ce3f62c530ea1ca) Thanks [@alvrs](https://github.com/alvrs)! - The `registerRootFunctionSelector` function's signature was changed to accept a `string functionSignature` parameter instead of a `bytes4 functionSelector` parameter.
+  This change enables the `World` to store the function signatures of all registered functions in a `FunctionSignatures` offchain table, which will allow for the automatic generation of interfaces for a given `World` address in the future.
+
+  ```diff
+  IBaseWorld {
+    function registerRootFunctionSelector(
+      ResourceId systemId,
+  -   bytes4 worldFunctionSelector,
+  +   string memory worldFunctionSignature,
+      bytes4 systemFunctionSelector
+    ) external returns (bytes4 worldFunctionSelector);
+  }
+  ```
+
+- [#1574](https://github.com/latticexyz/mud/pull/1574) [`31ffc9d5`](https://github.com/latticexyz/mud/commit/31ffc9d5d0a6d030cc61349f0f8fbcf6748ebc48) Thanks [@alvrs](https://github.com/alvrs)! - The `registerFunctionSelector` function now accepts a single `functionSignature` string paramemer instead of separating function name and function arguments into separate parameters.
+
+  ```diff
+  IBaseWorld {
+    function registerFunctionSelector(
+      ResourceId systemId,
+  -   string memory systemFunctionName,
+  -   string memory systemFunctionArguments
+  +   string memory systemFunctionSignature
+    ) external returns (bytes4 worldFunctionSelector);
+  }
+  ```
+
+  This is a breaking change if you were manually registering function selectors, e.g. in a `PostDeploy.s.sol` script or a module.
+  To upgrade, simply replace the separate `systemFunctionName` and `systemFunctionArguments` parameters with a single `systemFunctionSignature` parameter.
+
+  ```diff
+    world.registerFunctionSelector(
+      systemId,
+  -   systemFunctionName,
+  -   systemFunctionArguments,
+  +   string(abi.encodePacked(systemFunctionName, systemFunctionArguments))
+    );
+  ```
+
+- [#1318](https://github.com/latticexyz/mud/pull/1318) [`ac508bf1`](https://github.com/latticexyz/mud/commit/ac508bf189b098e66b59a725f58a2008537be130) Thanks [@holic](https://github.com/holic)! - Renamed the default filename of generated user types from `Types.sol` to `common.sol` and the default filename of the generated table index file from `Tables.sol` to `index.sol`.
+
+  Both can be overridden via the MUD config:
+
+  ```ts
+  export default mudConfig({
+    /** Filename where common user types will be generated and imported from. */
+    userTypesFilename: "common.sol",
+    /** Filename where codegen index will be generated. */
+    codegenIndexFilename: "index.sol",
+  });
+  ```
+
+  Note: `userTypesFilename` was renamed from `userTypesPath` and `.sol` is not appended automatically anymore but needs to be part of the provided filename.
+
+  To update your existing project, update all imports from `Tables.sol` to `index.sol` and all imports from `Types.sol` to `common.sol`, or override the defaults in your MUD config to the previous values.
+
+  ```diff
+  - import { Counter } from "../src/codegen/Tables.sol";
+  + import { Counter } from "../src/codegen/index.sol";
+  - import { ExampleEnum } from "../src/codegen/Types.sol";
+  + import { ExampleEnum } from "../src/codegen/common.sol";
+  ```
+
+- [#1544](https://github.com/latticexyz/mud/pull/1544) [`5e723b90`](https://github.com/latticexyz/mud/commit/5e723b90e6b18bc70d357ff4b0a1b217611236ae) Thanks [@alvrs](https://github.com/alvrs)! - - `ResourceSelector` is replaced with `ResourceId`, `ResourceIdLib`, `ResourceIdInstance`, `WorldResourceIdLib` and `WorldResourceIdInstance`.
+
+  Previously a "resource selector" was a `bytes32` value with the first 16 bytes reserved for the resource's namespace, and the last 16 bytes reserved for the resource's name.
+  Now a "resource ID" is a `bytes32` value with the first 2 bytes reserved for the resource type, the next 14 bytes reserved for the resource's namespace, and the last 16 bytes reserved for the resource's name.
+
+  Previously `ResouceSelector` was a library and the resource selector type was a plain `bytes32`.
+  Now `ResourceId` is a user type, and the functionality is implemented in the `ResourceIdInstance` (for type) and `WorldResourceIdInstance` (for namespace and name) libraries.
+  We split the logic into two libraries, because `Store` now also uses `ResourceId` and needs to be aware of resource types, but not of namespaces/names.
+
+  ```diff
+  - import { ResourceSelector } from "@latticexyz/world/src/ResourceSelector.sol";
+  + import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+  + import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+  + import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+  - bytes32 systemId = ResourceSelector.from("namespace", "name");
+  + ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "namespace", "name");
+
+  - using ResourceSelector for bytes32;
+  + using WorldResourceIdInstance for ResourceId;
+  + using ResourceIdInstance for ResourceId;
+
+    systemId.getName();
+    systemId.getNamespace();
+  + systemId.getType();
+
+  ```
+
+  - All `Store` and `World` methods now use the `ResourceId` type for `tableId`, `systemId`, `moduleId` and `namespaceId`.
+    All mentions of `resourceSelector` were renamed to `resourceId` or the more specific type (e.g. `tableId`, `systemId`)
+
+    ```diff
+    import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+    IStore {
+      function setRecord(
+    -   bytes32 tableId,
+    +   ResourceId tableId,
+        bytes32[] calldata keyTuple,
+        bytes calldata staticData,
+        PackedCounter encodedLengths,
+        bytes calldata dynamicData,
+        FieldLayout fieldLayout
+      ) external;
+
+      // Same for all other methods
+    }
+    ```
+
+    ```diff
+    import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+    IBaseWorld {
+      function callFrom(
+        address delegator,
+    -   bytes32 resourceSelector,
+    +   ResourceId systemId,
+        bytes memory callData
+      ) external payable returns (bytes memory);
+
+      // Same for all other methods
+    }
+    ```
+
+### Minor Changes
+
+- [#1473](https://github.com/latticexyz/mud/pull/1473) [`92de5998`](https://github.com/latticexyz/mud/commit/92de59982fb9fc4e00e50c4a5232ed541f3ce71a) Thanks [@holic](https://github.com/holic)! - Bump Solidity version to 0.8.21
+
+### Patch Changes
+
+- [#1490](https://github.com/latticexyz/mud/pull/1490) [`aea67c58`](https://github.com/latticexyz/mud/commit/aea67c5804efb2a8b919f5aa3a053d9b04184e84) Thanks [@alvrs](https://github.com/alvrs)! - Include bytecode for `World` and `Store` in npm packages.
+
+- [#1592](https://github.com/latticexyz/mud/pull/1592) [`c07fa021`](https://github.com/latticexyz/mud/commit/c07fa021501ff92be35c0491dd89bbb8161e1c07) Thanks [@alvrs](https://github.com/alvrs)! - Tables and interfaces in the `world` package are now generated to the `codegen` folder.
+  This is only a breaking change if you imported tables or codegenerated interfaces from `@latticexyz/world` directly.
+  If you're using the MUD CLI, the changed import paths are already integrated and no further changes are necessary.
+
+  ```diff
+  - import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
+  + import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
+
+  ```
+
+- [#1508](https://github.com/latticexyz/mud/pull/1508) [`211be2a1`](https://github.com/latticexyz/mud/commit/211be2a1eba8600ad53be6f8c70c64a8523113b9) Thanks [@Boffee](https://github.com/Boffee)! - The `FieldLayout` in table libraries is now generated at compile time instead of dynamically in a table library function.
+  This significantly reduces gas cost in all table library functions.
+
+- [#1503](https://github.com/latticexyz/mud/pull/1503) [`bd9cc8ec`](https://github.com/latticexyz/mud/commit/bd9cc8ec2608efcb05ef95df64448b2ec28bcb49) Thanks [@holic](https://github.com/holic)! - Refactor `deploy` command to break up logic into modules
+
+- [#1558](https://github.com/latticexyz/mud/pull/1558) [`bfcb293d`](https://github.com/latticexyz/mud/commit/bfcb293d1931edde7f8a3e077f6f555a26fd1d2f) Thanks [@alvrs](https://github.com/alvrs)! - What used to be known as `ephemeral` table is now called `offchain` table.
+  The previous `ephemeral` tables only supported an `emitEphemeral` method, which emitted a `StoreSetEphemeralRecord` event.
+
+  Now `offchain` tables support all regular table methods, except partial operations on dynamic fields (`push`, `pop`, `update`).
+  Unlike regular tables they don't store data on-chain but emit the same events as regular tables (`StoreSetRecord`, `StoreSpliceStaticData`, `StoreDeleteRecord`), so their data can be indexed by offchain indexers/clients.
+
+  ```diff
+  - EphemeralTable.emitEphemeral(value);
+  + OffchainTable.set(value);
+  ```
+
+- [#1521](https://github.com/latticexyz/mud/pull/1521) [`55ab88a6`](https://github.com/latticexyz/mud/commit/55ab88a60adb3ad72ebafef4d50513eb71e3c314) Thanks [@alvrs](https://github.com/alvrs)! - `StoreCore` and `IStore` now expose specific functions for `getStaticField` and `getDynamicField` in addition to the general `getField`.
+  Using the specific functions reduces gas overhead because more optimized logic can be executed.
+
+  ```solidity
+  interface IStore {
+    /**
+     * Get a single static field from the given tableId and key tuple, with the given value field layout.
+     * Note: the field value is left-aligned in the returned bytes32, the rest of the word is not zeroed out.
+     * Consumers are expected to truncate the returned value as needed.
+     */
+    function getStaticField(
+      bytes32 tableId,
+      bytes32[] calldata keyTuple,
+      uint8 fieldIndex,
+      FieldLayout fieldLayout
+    ) external view returns (bytes32);
+
+    /**
+     * Get a single dynamic field from the given tableId and key tuple at the given dynamic field index.
+     * (Dynamic field index = field index - number of static fields)
+     */
+    function getDynamicField(
+      bytes32 tableId,
+      bytes32[] memory keyTuple,
+      uint8 dynamicFieldIndex
+    ) external view returns (bytes memory);
+  }
+  ```
+
+- [#1483](https://github.com/latticexyz/mud/pull/1483) [`83583a50`](https://github.com/latticexyz/mud/commit/83583a5053de4e5e643572e3b1c0f49467e8e2ab) Thanks [@holic](https://github.com/holic)! - `deploy` and `dev-contracts` CLI commands now use `forge build --skip test script` before deploying and run `mud abi-ts` to generate strong types for ABIs.
+
+- [#1587](https://github.com/latticexyz/mud/pull/1587) [`24a6cd53`](https://github.com/latticexyz/mud/commit/24a6cd536f0c31cab93fb7644751cb9376be383d) Thanks [@alvrs](https://github.com/alvrs)! - Changed the `userTypes` property to accept `{ filePath: string, internalType: SchemaAbiType }` to enable strong type inference from the config.
+
+- [#1513](https://github.com/latticexyz/mud/pull/1513) [`708b49c5`](https://github.com/latticexyz/mud/commit/708b49c50e05f7b67b596e72ebfcbd76e1ff6280) Thanks [@Boffee](https://github.com/Boffee)! - Generated table libraries now have a set of functions prefixed with `_` that always use their own storage for read/write.
+  This saves gas for use cases where the functionality to dynamically determine which `Store` to use for read/write is not needed, e.g. root systems in a `World`, or when using `Store` without `World`.
+
+  We decided to continue to always generate a set of functions that dynamically decide which `Store` to use, so that the generated table libraries can still be imported by non-root systems.
+
+  ```solidity
+  library Counter {
+    // Dynamically determine which store to write to based on the context
+    function set(uint32 value) internal;
+
+    // Always write to own storage
+    function _set(uint32 value) internal;
+
+    // ... equivalent functions for all other Store methods
+  }
+  ```
+
+- [#1472](https://github.com/latticexyz/mud/pull/1472) [`c049c23f`](https://github.com/latticexyz/mud/commit/c049c23f48b93ac7881fb1a5a8417831611d5cbf) Thanks [@alvrs](https://github.com/alvrs)! - - The `World` contract now has an `initialize` function, which can be called once by the creator of the World to install the core module.
+  This change allows the registration of all core tables to happen in the `CoreModule`, so no table metadata has to be included in the `World`'s bytecode.
+
+  ```solidity
+  interface IBaseWorld {
+    function initialize(IModule coreModule) public;
+  }
+  ```
+
+  - The `World` contract now stores the original creator of the `World` in an immutable state variable.
+    It is used internally to only allow the original creator to initialize the `World` in a separate transaction.
+
+    ```solidity
+    interface IBaseWorld {
+      function creator() external view returns (address);
+    }
+    ```
+
+  - The deploy script is updated to use the `World`'s `initialize` function to install the `CoreModule` instead of `registerRootModule` as before.
+
+- [#1591](https://github.com/latticexyz/mud/pull/1591) [`251170e1`](https://github.com/latticexyz/mud/commit/251170e1ef0b07466c597ea84df0cb49de7d6a23) Thanks [@alvrs](https://github.com/alvrs)! - All optional modules have been moved from `@latticexyz/world` to `@latticexyz/world-modules`.
+  If you're using the MUD CLI, the import is already updated and no changes are necessary.
+
+- [#1598](https://github.com/latticexyz/mud/pull/1598) [`c4f49240`](https://github.com/latticexyz/mud/commit/c4f49240d7767c3fa7a25926f74b4b62ad67ca04) Thanks [@dk1a](https://github.com/dk1a)! - Table libraries now correctly handle uninitialized fixed length arrays.
+
+- [#1581](https://github.com/latticexyz/mud/pull/1581) [`cea754dd`](https://github.com/latticexyz/mud/commit/cea754dde0d8abf7392e93faa319b260956ae92b) Thanks [@alvrs](https://github.com/alvrs)! - - The external `setRecord` and `deleteRecord` methods of `IStore` no longer accept a `FieldLayout` as input, but load it from storage instead.
+  This is to prevent invalid `FieldLayout` values being passed, which could cause the onchain state to diverge from the indexer state.
+  However, the internal `StoreCore` library still exposes a `setRecord` and `deleteRecord` method that allows a `FieldLayout` to be passed.
+  This is because `StoreCore` can only be used internally, so the `FieldLayout` value can be trusted and we can save the gas for accessing storage.
+
+  ```diff
+  interface IStore {
+    function setRecord(
+      ResourceId tableId,
+      bytes32[] calldata keyTuple,
+      bytes calldata staticData,
+      PackedCounter encodedLengths,
+      bytes calldata dynamicData,
+  -   FieldLayout fieldLayout
+    ) external;
+
+    function deleteRecord(
+      ResourceId tableId,
+      bytes32[] memory keyTuple,
+  -   FieldLayout fieldLayout
+    ) external;
+  }
+  ```
+
+  - The `spliceStaticData` method and `Store_SpliceStaticData` event of `IStore` and `StoreCore` no longer include `deleteCount` in their signature.
+    This is because when splicing static data, the data after `start` is always overwritten with `data` instead of being shifted, so `deleteCount` is always the length of the data to be written.
+
+    ```diff
+
+    event Store_SpliceStaticData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+    - uint40 deleteCount,
+      bytes data
+    );
+
+    interface IStore {
+      function spliceStaticData(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+        uint48 start,
+    -   uint40 deleteCount,
+        bytes calldata data
+      ) external;
+    }
+    ```
+
+  - The `updateInField` method has been removed from `IStore`, as it's almost identical to the more general `spliceDynamicData`.
+    If you're manually calling `updateInField`, here is how to upgrade to `spliceDynamicData`:
+
+    ```diff
+    - store.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+    + uint8 dynamicFieldIndex = fieldIndex - fieldLayout.numStaticFields();
+    + store.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, uint40(startByteIndex), uint40(dataToSet.length), dataToSet);
+    ```
+
+  - All other methods that are only valid for dynamic fields (`pushToField`, `popFromField`, `getFieldSlice`)
+    have been renamed to make this more explicit (`pushToDynamicField`, `popFromDynamicField`, `getDynamicFieldSlice`).
+
+    Their `fieldIndex` parameter has been replaced by a `dynamicFieldIndex` parameter, which is the index relative to the first dynamic field (i.e. `dynamicFieldIndex` = `fieldIndex` - `numStaticFields`).
+    The `FieldLayout` parameter has been removed, as it was only used to calculate the `dynamicFieldIndex` in the method.
+
+    ```diff
+    interface IStore {
+    - function pushToField(
+    + function pushToDynamicField(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+        bytes calldata dataToPush,
+    -   FieldLayout fieldLayout
+      ) external;
+
+    - function popFromField(
+    + function popFromDynamicField(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+        uint256 byteLengthToPop,
+    -   FieldLayout fieldLayout
+      ) external;
+
+    - function getFieldSlice(
+    + function getDynamicFieldSlice(
+        ResourceId tableId,
+        bytes32[] memory keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+    -   FieldLayout fieldLayout,
+        uint256 start,
+        uint256 end
+      ) external view returns (bytes memory data);
+    }
+    ```
+
+  - `IStore` has a new `getDynamicFieldLength` length method, which returns the byte length of the given dynamic field and doesn't require the `FieldLayout`.
+
+    ```diff
+    IStore {
+    + function getDynamicFieldLength(
+    +   ResourceId tableId,
+    +   bytes32[] memory keyTuple,
+    +   uint8 dynamicFieldIndex
+    + ) external view returns (uint256);
+    }
+
+    ```
+
+  - `IStore` now has additional overloads for `getRecord`, `getField`, `getFieldLength` and `setField` that don't require a `FieldLength` to be passed, but instead load it from storage.
+
+  - `IStore` now exposes `setStaticField` and `setDynamicField` to save gas by avoiding the dynamic inference of whether the field is static or dynamic.
+
+  - The `getDynamicFieldSlice` method no longer accepts reading outside the bounds of the dynamic field.
+    This is to avoid returning invalid data, as the data of a dynamic field is not deleted when the record is deleted, but only its length is set to zero.
+
+- Updated dependencies [[`77dce993`](https://github.com/latticexyz/mud/commit/77dce993a12989dc58534ccf1a8928b156be494a), [`748f4588`](https://github.com/latticexyz/mud/commit/748f4588a218928bca041760448c26991c0d8033), [`aea67c58`](https://github.com/latticexyz/mud/commit/aea67c5804efb2a8b919f5aa3a053d9b04184e84), [`07dd6f32`](https://github.com/latticexyz/mud/commit/07dd6f32c9bb9f0e807bac3586c5cc9833f14ab9), [`c07fa021`](https://github.com/latticexyz/mud/commit/c07fa021501ff92be35c0491dd89bbb8161e1c07), [`90e4161b`](https://github.com/latticexyz/mud/commit/90e4161bb8574a279d9edb517ce7def3624adaa8), [`65c9546c`](https://github.com/latticexyz/mud/commit/65c9546c4ee8a410b21d032f02b0050442152e7e), [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853), [`f9f9609e`](https://github.com/latticexyz/mud/commit/f9f9609ef69d7fa58cad6a9af3fe6d2eed6d8aa2), [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853), [`759514d8`](https://github.com/latticexyz/mud/commit/759514d8b980fa5fe49a4ef919d8008b215f2af8), [`d5094a24`](https://github.com/latticexyz/mud/commit/d5094a2421cf2882a317e3ad9600c8de004b20d4), [`0b8ce3f2`](https://github.com/latticexyz/mud/commit/0b8ce3f2c9b540dbd1c9ba21354f8bf850e72a96), [`de151fec`](https://github.com/latticexyz/mud/commit/de151fec07b63a6022483c1ad133c556dd44992e), [`ae340b2b`](https://github.com/latticexyz/mud/commit/ae340b2bfd98f4812ed3a94c746af3611645a623), [`e5d208e4`](https://github.com/latticexyz/mud/commit/e5d208e40b2b2fae223b48716ce3f62c530ea1ca), [`211be2a1`](https://github.com/latticexyz/mud/commit/211be2a1eba8600ad53be6f8c70c64a8523113b9), [`0f3e2e02`](https://github.com/latticexyz/mud/commit/0f3e2e02b5114e08fe700c18326db76816ffad3c), [`1f80a0b5`](https://github.com/latticexyz/mud/commit/1f80a0b52a5c2d051e3697d6e60aad7364b0a925), [`d0878928`](https://github.com/latticexyz/mud/commit/d08789282c8b8d4c12897e2ff5a688af9115fb1c), [`4c7fd3eb`](https://github.com/latticexyz/mud/commit/4c7fd3eb29e3d3954f2f1f36ace474a436082651), [`a0341daf`](https://github.com/latticexyz/mud/commit/a0341daf9fd87e8072ffa292a33f508dd37b8ca6), [`83583a50`](https://github.com/latticexyz/mud/commit/83583a5053de4e5e643572e3b1c0f49467e8e2ab), [`5e723b90`](https://github.com/latticexyz/mud/commit/5e723b90e6b18bc70d357ff4b0a1b217611236ae), [`6573e38e`](https://github.com/latticexyz/mud/commit/6573e38e9064121540aa46ce204d8ca5d61ed847), [`44a5432a`](https://github.com/latticexyz/mud/commit/44a5432acb9c5af3dca1447c50219a00894c45a9), [`6e66c5b7`](https://github.com/latticexyz/mud/commit/6e66c5b745a036c5bc5422819de9c518a6f6cc96), [`65c9546c`](https://github.com/latticexyz/mud/commit/65c9546c4ee8a410b21d032f02b0050442152e7e), [`f8a01a04`](https://github.com/latticexyz/mud/commit/f8a01a047d73a15326ebf6577ea033674d8e61a9), [`44a5432a`](https://github.com/latticexyz/mud/commit/44a5432acb9c5af3dca1447c50219a00894c45a9), [`672d05ca`](https://github.com/latticexyz/mud/commit/672d05ca130649bd90df337c2bf03204a5878840), [`f1cd43bf`](https://github.com/latticexyz/mud/commit/f1cd43bf9264d5a23a3edf2a1ea4212361a72203), [`31ffc9d5`](https://github.com/latticexyz/mud/commit/31ffc9d5d0a6d030cc61349f0f8fbcf6748ebc48), [`5e723b90`](https://github.com/latticexyz/mud/commit/5e723b90e6b18bc70d357ff4b0a1b217611236ae), [`63831a26`](https://github.com/latticexyz/mud/commit/63831a264b6b09501f380a4601f82ba7bf07a619), [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853), [`92de5998`](https://github.com/latticexyz/mud/commit/92de59982fb9fc4e00e50c4a5232ed541f3ce71a), [`5741d53d`](https://github.com/latticexyz/mud/commit/5741d53d0a39990a0d7b2842f1f012973655e060), [`22ee4470`](https://github.com/latticexyz/mud/commit/22ee4470047e4611a3cae62e9d0af4713aa1e612), [`be313068`](https://github.com/latticexyz/mud/commit/be313068b158265c2deada55eebfd6ba753abb87), [`ac508bf1`](https://github.com/latticexyz/mud/commit/ac508bf189b098e66b59a725f58a2008537be130), [`9ff4dd95`](https://github.com/latticexyz/mud/commit/9ff4dd955fd6dca36eb15cfe7e46bb522d2e943b), [`bfcb293d`](https://github.com/latticexyz/mud/commit/bfcb293d1931edde7f8a3e077f6f555a26fd1d2f), [`1890f1a0`](https://github.com/latticexyz/mud/commit/1890f1a0603982477bfde1b7335969f51e2dce70), [`9b43029c`](https://github.com/latticexyz/mud/commit/9b43029c3c888f8e82b146312f5c2e92321c28a7), [`55ab88a6`](https://github.com/latticexyz/mud/commit/55ab88a60adb3ad72ebafef4d50513eb71e3c314), [`af639a26`](https://github.com/latticexyz/mud/commit/af639a26446ca4b689029855767f8a723557f62c), [`5e723b90`](https://github.com/latticexyz/mud/commit/5e723b90e6b18bc70d357ff4b0a1b217611236ae), [`99ab9cd6`](https://github.com/latticexyz/mud/commit/99ab9cd6fff1a732b47d63ead894292661682380), [`c049c23f`](https://github.com/latticexyz/mud/commit/c049c23f48b93ac7881fb1a5a8417831611d5cbf), [`80dd6992`](https://github.com/latticexyz/mud/commit/80dd6992e98c90a91d417fc785d0d53260df6ce2), [`24a6cd53`](https://github.com/latticexyz/mud/commit/24a6cd536f0c31cab93fb7644751cb9376be383d), [`708b49c5`](https://github.com/latticexyz/mud/commit/708b49c50e05f7b67b596e72ebfcbd76e1ff6280), [`22ba7b67`](https://github.com/latticexyz/mud/commit/22ba7b675bd50d1bb18b8a71c0de17c6d70d78c7), [`c049c23f`](https://github.com/latticexyz/mud/commit/c049c23f48b93ac7881fb1a5a8417831611d5cbf), [`251170e1`](https://github.com/latticexyz/mud/commit/251170e1ef0b07466c597ea84df0cb49de7d6a23), [`c4f49240`](https://github.com/latticexyz/mud/commit/c4f49240d7767c3fa7a25926f74b4b62ad67ca04), [`cea754dd`](https://github.com/latticexyz/mud/commit/cea754dde0d8abf7392e93faa319b260956ae92b), [`95c59b20`](https://github.com/latticexyz/mud/commit/95c59b203259c20a6f944c5f9af008b44e2902b6)]:
+  - @latticexyz/world@2.0.0-next.9
+  - @latticexyz/store@2.0.0-next.9
+  - @latticexyz/protocol-parser@2.0.0-next.9
+  - @latticexyz/world-modules@2.0.0-next.9
+  - @latticexyz/common@2.0.0-next.9
+  - @latticexyz/gas-report@2.0.0-next.9
+  - @latticexyz/schema-type@2.0.0-next.9
+  - @latticexyz/config@2.0.0-next.9
+  - @latticexyz/abi-ts@2.0.0-next.9
+  - @latticexyz/services@2.0.0-next.9
+  - @latticexyz/utils@2.0.0-next.9
+
 ## 2.0.0-next.8
 
 ### Patch Changes

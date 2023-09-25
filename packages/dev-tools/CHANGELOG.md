@@ -1,5 +1,198 @@
 # @latticexyz/dev-tools
 
+## 2.0.0-next.9
+
+### Major Changes
+
+- [#1354](https://github.com/latticexyz/mud/pull/1354) [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853) Thanks [@dk1a](https://github.com/dk1a)! - We've updated Store events to be "schemaless", meaning there is enough information in each event to only need to operate on the bytes of each record to make an update to that record without having to first decode the record by its schema. This enables new kinds of indexers and sync strategies.
+
+  As such, we've replaced `blockStorageOperations# @latticexyz/dev-tools with `storedBlockLogs# @latticexyz/dev-tools, a stream of simplified Store event logs after they've been synced to the configured storage adapter. These logs may not reflect exactly the events that are on chain when e.g. hydrating from an indexer, but they will still allow the client to "catch up" to the on-chain state of your tables.
+
+### Minor Changes
+
+- [#1497](https://github.com/latticexyz/mud/pull/1497) [`24a0dd44`](https://github.com/latticexyz/mud/commit/24a0dd4440d6fe661640c581ff5348d62eae9302) Thanks [@y77cao](https://github.com/y77cao)! - Improved rendering of transactions that make calls via World's `call` and `callFrom` methods
+
+### Patch Changes
+
+- [#1505](https://github.com/latticexyz/mud/pull/1505) [`e0193e57`](https://github.com/latticexyz/mud/commit/e0193e5737fa2148d5d2b888d71df01d1e46b6d5) Thanks [@holic](https://github.com/holic)! - Updates store event `key` reference to `keyTuple`
+
+- [#1502](https://github.com/latticexyz/mud/pull/1502) [`e0377761`](https://github.com/latticexyz/mud/commit/e0377761c3a3f83a23de78f6bcb0733c500a0825) Thanks [@holic](https://github.com/holic)! - Updates `table` reference to `tableId`
+
+- [#1558](https://github.com/latticexyz/mud/pull/1558) [`bfcb293d`](https://github.com/latticexyz/mud/commit/bfcb293d1931edde7f8a3e077f6f555a26fd1d2f) Thanks [@alvrs](https://github.com/alvrs)! - What used to be known as `ephemeral` table is now called `offchain` table.
+  The previous `ephemeral` tables only supported an `emitEphemeral` method, which emitted a `StoreSetEphemeralRecord` event.
+
+  Now `offchain` tables support all regular table methods, except partial operations on dynamic fields (`push`, `pop`, `update`).
+  Unlike regular tables they don't store data on-chain but emit the same events as regular tables (`StoreSetRecord`, `StoreSpliceStaticData`, `StoreDeleteRecord`), so their data can be indexed by offchain indexers/clients.
+
+  ```diff
+  - EphemeralTable.emitEphemeral(value);
+  + OffchainTable.set(value);
+  ```
+
+- [#1577](https://github.com/latticexyz/mud/pull/1577) [`af639a26`](https://github.com/latticexyz/mud/commit/af639a26446ca4b689029855767f8a723557f62c) Thanks [@alvrs](https://github.com/alvrs)! - `Store` events have been renamed for consistency and readability.
+  If you're parsing `Store` events manually, you need to update your ABI.
+  If you're using the MUD sync stack, the new events are already integrated and no further changes are necessary.
+
+  ```diff
+  - event StoreSetRecord(
+  + event Store_SetRecord(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      bytes staticData,
+      bytes32 encodedLengths,
+      bytes dynamicData
+    );
+  - event StoreSpliceStaticData(
+  + event Store_SpliceStaticData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+      uint40 deleteCount,
+      bytes data
+    );
+  - event StoreSpliceDynamicData(
+  + event Store_SpliceDynamicData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+      uint40 deleteCount,
+      bytes data,
+      bytes32 encodedLengths
+    );
+  - event StoreDeleteRecord(
+  + event Store_DeleteRecord(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple
+    );
+  ```
+
+- [#1581](https://github.com/latticexyz/mud/pull/1581) [`cea754dd`](https://github.com/latticexyz/mud/commit/cea754dde0d8abf7392e93faa319b260956ae92b) Thanks [@alvrs](https://github.com/alvrs)! - - The external `setRecord` and `deleteRecord` methods of `IStore` no longer accept a `FieldLayout` as input, but load it from storage instead.
+  This is to prevent invalid `FieldLayout` values being passed, which could cause the onchain state to diverge from the indexer state.
+  However, the internal `StoreCore` library still exposes a `setRecord` and `deleteRecord` method that allows a `FieldLayout` to be passed.
+  This is because `StoreCore` can only be used internally, so the `FieldLayout` value can be trusted and we can save the gas for accessing storage.
+
+  ```diff
+  interface IStore {
+    function setRecord(
+      ResourceId tableId,
+      bytes32[] calldata keyTuple,
+      bytes calldata staticData,
+      PackedCounter encodedLengths,
+      bytes calldata dynamicData,
+  -   FieldLayout fieldLayout
+    ) external;
+
+    function deleteRecord(
+      ResourceId tableId,
+      bytes32[] memory keyTuple,
+  -   FieldLayout fieldLayout
+    ) external;
+  }
+  ```
+
+  - The `spliceStaticData` method and `Store_SpliceStaticData` event of `IStore` and `StoreCore` no longer include `deleteCount` in their signature.
+    This is because when splicing static data, the data after `start` is always overwritten with `data` instead of being shifted, so `deleteCount` is always the length of the data to be written.
+
+    ```diff
+
+    event Store_SpliceStaticData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+    - uint40 deleteCount,
+      bytes data
+    );
+
+    interface IStore {
+      function spliceStaticData(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+        uint48 start,
+    -   uint40 deleteCount,
+        bytes calldata data
+      ) external;
+    }
+    ```
+
+  - The `updateInField` method has been removed from `IStore`, as it's almost identical to the more general `spliceDynamicData`.
+    If you're manually calling `updateInField`, here is how to upgrade to `spliceDynamicData`:
+
+    ```diff
+    - store.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+    + uint8 dynamicFieldIndex = fieldIndex - fieldLayout.numStaticFields();
+    + store.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, uint40(startByteIndex), uint40(dataToSet.length), dataToSet);
+    ```
+
+  - All other methods that are only valid for dynamic fields (`pushToField`, `popFromField`, `getFieldSlice`)
+    have been renamed to make this more explicit (`pushToDynamicField`, `popFromDynamicField`, `getDynamicFieldSlice`).
+
+    Their `fieldIndex` parameter has been replaced by a `dynamicFieldIndex` parameter, which is the index relative to the first dynamic field (i.e. `dynamicFieldIndex` = `fieldIndex` - `numStaticFields`).
+    The `FieldLayout` parameter has been removed, as it was only used to calculate the `dynamicFieldIndex` in the method.
+
+    ```diff
+    interface IStore {
+    - function pushToField(
+    + function pushToDynamicField(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+        bytes calldata dataToPush,
+    -   FieldLayout fieldLayout
+      ) external;
+
+    - function popFromField(
+    + function popFromDynamicField(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+        uint256 byteLengthToPop,
+    -   FieldLayout fieldLayout
+      ) external;
+
+    - function getFieldSlice(
+    + function getDynamicFieldSlice(
+        ResourceId tableId,
+        bytes32[] memory keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+    -   FieldLayout fieldLayout,
+        uint256 start,
+        uint256 end
+      ) external view returns (bytes memory data);
+    }
+    ```
+
+  - `IStore` has a new `getDynamicFieldLength` length method, which returns the byte length of the given dynamic field and doesn't require the `FieldLayout`.
+
+    ```diff
+    IStore {
+    + function getDynamicFieldLength(
+    +   ResourceId tableId,
+    +   bytes32[] memory keyTuple,
+    +   uint8 dynamicFieldIndex
+    + ) external view returns (uint256);
+    }
+
+    ```
+
+  - `IStore` now has additional overloads for `getRecord`, `getField`, `getFieldLength` and `setField` that don't require a `FieldLength` to be passed, but instead load it from storage.
+
+  - `IStore` now exposes `setStaticField` and `setDynamicField` to save gas by avoiding the dynamic inference of whether the field is static or dynamic.
+
+  - The `getDynamicFieldSlice` method no longer accepts reading outside the bounds of the dynamic field.
+    This is to avoid returning invalid data, as the data of a dynamic field is not deleted when the record is deleted, but only its length is set to zero.
+
+- Updated dependencies [[`77dce993`](https://github.com/latticexyz/mud/commit/77dce993a12989dc58534ccf1a8928b156be494a), [`748f4588`](https://github.com/latticexyz/mud/commit/748f4588a218928bca041760448c26991c0d8033), [`aea67c58`](https://github.com/latticexyz/mud/commit/aea67c5804efb2a8b919f5aa3a053d9b04184e84), [`07dd6f32`](https://github.com/latticexyz/mud/commit/07dd6f32c9bb9f0e807bac3586c5cc9833f14ab9), [`c07fa021`](https://github.com/latticexyz/mud/commit/c07fa021501ff92be35c0491dd89bbb8161e1c07), [`90e4161b`](https://github.com/latticexyz/mud/commit/90e4161bb8574a279d9edb517ce7def3624adaa8), [`65c9546c`](https://github.com/latticexyz/mud/commit/65c9546c4ee8a410b21d032f02b0050442152e7e), [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853), [`f9f9609e`](https://github.com/latticexyz/mud/commit/f9f9609ef69d7fa58cad6a9af3fe6d2eed6d8aa2), [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853), [`759514d8`](https://github.com/latticexyz/mud/commit/759514d8b980fa5fe49a4ef919d8008b215f2af8), [`d5094a24`](https://github.com/latticexyz/mud/commit/d5094a2421cf2882a317e3ad9600c8de004b20d4), [`0b8ce3f2`](https://github.com/latticexyz/mud/commit/0b8ce3f2c9b540dbd1c9ba21354f8bf850e72a96), [`de151fec`](https://github.com/latticexyz/mud/commit/de151fec07b63a6022483c1ad133c556dd44992e), [`ae340b2b`](https://github.com/latticexyz/mud/commit/ae340b2bfd98f4812ed3a94c746af3611645a623), [`e5d208e4`](https://github.com/latticexyz/mud/commit/e5d208e40b2b2fae223b48716ce3f62c530ea1ca), [`211be2a1`](https://github.com/latticexyz/mud/commit/211be2a1eba8600ad53be6f8c70c64a8523113b9), [`0f3e2e02`](https://github.com/latticexyz/mud/commit/0f3e2e02b5114e08fe700c18326db76816ffad3c), [`1f80a0b5`](https://github.com/latticexyz/mud/commit/1f80a0b52a5c2d051e3697d6e60aad7364b0a925), [`d0878928`](https://github.com/latticexyz/mud/commit/d08789282c8b8d4c12897e2ff5a688af9115fb1c), [`4c7fd3eb`](https://github.com/latticexyz/mud/commit/4c7fd3eb29e3d3954f2f1f36ace474a436082651), [`a0341daf`](https://github.com/latticexyz/mud/commit/a0341daf9fd87e8072ffa292a33f508dd37b8ca6), [`83583a50`](https://github.com/latticexyz/mud/commit/83583a5053de4e5e643572e3b1c0f49467e8e2ab), [`5e723b90`](https://github.com/latticexyz/mud/commit/5e723b90e6b18bc70d357ff4b0a1b217611236ae), [`6573e38e`](https://github.com/latticexyz/mud/commit/6573e38e9064121540aa46ce204d8ca5d61ed847), [`44a5432a`](https://github.com/latticexyz/mud/commit/44a5432acb9c5af3dca1447c50219a00894c45a9), [`6e66c5b7`](https://github.com/latticexyz/mud/commit/6e66c5b745a036c5bc5422819de9c518a6f6cc96), [`65c9546c`](https://github.com/latticexyz/mud/commit/65c9546c4ee8a410b21d032f02b0050442152e7e), [`44a5432a`](https://github.com/latticexyz/mud/commit/44a5432acb9c5af3dca1447c50219a00894c45a9), [`672d05ca`](https://github.com/latticexyz/mud/commit/672d05ca130649bd90df337c2bf03204a5878840), [`f1cd43bf`](https://github.com/latticexyz/mud/commit/f1cd43bf9264d5a23a3edf2a1ea4212361a72203), [`7e6e5157`](https://github.com/latticexyz/mud/commit/7e6e5157bb124f19bd8ed9f02b93afadc97cdf50), [`31ffc9d5`](https://github.com/latticexyz/mud/commit/31ffc9d5d0a6d030cc61349f0f8fbcf6748ebc48), [`5e723b90`](https://github.com/latticexyz/mud/commit/5e723b90e6b18bc70d357ff4b0a1b217611236ae), [`63831a26`](https://github.com/latticexyz/mud/commit/63831a264b6b09501f380a4601f82ba7bf07a619), [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853), [`92de5998`](https://github.com/latticexyz/mud/commit/92de59982fb9fc4e00e50c4a5232ed541f3ce71a), [`5741d53d`](https://github.com/latticexyz/mud/commit/5741d53d0a39990a0d7b2842f1f012973655e060), [`22ee4470`](https://github.com/latticexyz/mud/commit/22ee4470047e4611a3cae62e9d0af4713aa1e612), [`be313068`](https://github.com/latticexyz/mud/commit/be313068b158265c2deada55eebfd6ba753abb87), [`ac508bf1`](https://github.com/latticexyz/mud/commit/ac508bf189b098e66b59a725f58a2008537be130), [`331dbfdc`](https://github.com/latticexyz/mud/commit/331dbfdcbbda404de4b0fd4d439d636ae2033853), [`bfcb293d`](https://github.com/latticexyz/mud/commit/bfcb293d1931edde7f8a3e077f6f555a26fd1d2f), [`1890f1a0`](https://github.com/latticexyz/mud/commit/1890f1a0603982477bfde1b7335969f51e2dce70), [`9b43029c`](https://github.com/latticexyz/mud/commit/9b43029c3c888f8e82b146312f5c2e92321c28a7), [`55ab88a6`](https://github.com/latticexyz/mud/commit/55ab88a60adb3ad72ebafef4d50513eb71e3c314), [`af639a26`](https://github.com/latticexyz/mud/commit/af639a26446ca4b689029855767f8a723557f62c), [`5e723b90`](https://github.com/latticexyz/mud/commit/5e723b90e6b18bc70d357ff4b0a1b217611236ae), [`99ab9cd6`](https://github.com/latticexyz/mud/commit/99ab9cd6fff1a732b47d63ead894292661682380), [`c049c23f`](https://github.com/latticexyz/mud/commit/c049c23f48b93ac7881fb1a5a8417831611d5cbf), [`80dd6992`](https://github.com/latticexyz/mud/commit/80dd6992e98c90a91d417fc785d0d53260df6ce2), [`24a6cd53`](https://github.com/latticexyz/mud/commit/24a6cd536f0c31cab93fb7644751cb9376be383d), [`708b49c5`](https://github.com/latticexyz/mud/commit/708b49c50e05f7b67b596e72ebfcbd76e1ff6280), [`22ba7b67`](https://github.com/latticexyz/mud/commit/22ba7b675bd50d1bb18b8a71c0de17c6d70d78c7), [`c049c23f`](https://github.com/latticexyz/mud/commit/c049c23f48b93ac7881fb1a5a8417831611d5cbf), [`251170e1`](https://github.com/latticexyz/mud/commit/251170e1ef0b07466c597ea84df0cb49de7d6a23), [`c4f49240`](https://github.com/latticexyz/mud/commit/c4f49240d7767c3fa7a25926f74b4b62ad67ca04), [`cea754dd`](https://github.com/latticexyz/mud/commit/cea754dde0d8abf7392e93faa319b260956ae92b), [`95c59b20`](https://github.com/latticexyz/mud/commit/95c59b203259c20a6f944c5f9af008b44e2902b6)]:
+  - @latticexyz/world@2.0.0-next.9
+  - @latticexyz/store@2.0.0-next.9
+  - @latticexyz/store-sync@2.0.0-next.9
+  - @latticexyz/common@2.0.0-next.9
+  - @latticexyz/react@2.0.0-next.9
+  - @latticexyz/recs@2.0.0-next.9
+  - @latticexyz/utils@2.0.0-next.9
+
 ## 2.0.0-next.8
 
 ### Patch Changes
