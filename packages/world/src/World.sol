@@ -25,9 +25,9 @@ import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
 
-import { IModule, MODULE_INTERFACE_ID } from "./interfaces/IModule.sol";
-import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
-import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
+import { IModule, MODULE_INTERFACE_ID } from "./IModule.sol";
+import { IWorldKernel } from "./IWorldKernel.sol";
+import { IDelegationControl } from "./IDelegationControl.sol";
 
 import { Systems } from "./codegen/tables/Systems.sol";
 import { SystemHooks } from "./codegen/tables/SystemHooks.sol";

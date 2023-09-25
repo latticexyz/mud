@@ -2,8 +2,8 @@
 pragma solidity >=0.8.21;
 
 import { WorldContextConsumer } from "./WorldContext.sol";
-import { IModule, MODULE_INTERFACE_ID } from "./interfaces/IModule.sol";
-import { IERC165, ERC165_INTERFACE_ID } from "./interfaces/IERC165.sol";
+import { IModule, MODULE_INTERFACE_ID } from "./IModule.sol";
+import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
 
 abstract contract Module is IModule, WorldContextConsumer {
   // ERC-165 supportsInterface (see https://eips.ethereum.org/EIPS/eip-165)

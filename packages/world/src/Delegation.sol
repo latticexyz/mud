@@ -3,7 +3,7 @@ pragma solidity >=0.8.21;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { UNLIMITED_DELEGATION } from "./constants.sol";
-import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
+import { IDelegationControl } from "./IDelegationControl.sol";
 import { SystemCall } from "./SystemCall.sol";
 
 library Delegation {

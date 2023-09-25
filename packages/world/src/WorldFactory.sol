@@ -2,11 +2,11 @@
 pragma solidity >=0.8.21;
 
 import { Create2 } from "./Create2.sol";
-import { World } from "../World.sol";
+import { World } from "./World.sol";
 import { IWorldFactory } from "./IWorldFactory.sol";
-import { IBaseWorld } from "../codegen/interfaces/IBaseWorld.sol";
-import { IModule } from "../interfaces/IModule.sol";
-import { ROOT_NAMESPACE_ID } from "../constants.sol";
+import { IBaseWorld } from "./codegen/interfaces/IBaseWorld.sol";
+import { IModule } from "./IModule.sol";
+import { ROOT_NAMESPACE_ID } from "./constants.sol";
 
 contract WorldFactory is IWorldFactory {
   IModule public coreModule;

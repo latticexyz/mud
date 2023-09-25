@@ -2,7 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
-import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
+import { IWorldErrors } from "./IWorldErrors.sol";
 
 import { ResourceAccess } from "./codegen/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "./codegen/tables/NamespaceOwner.sol";

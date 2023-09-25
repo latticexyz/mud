@@ -11,8 +11,8 @@ import { WorldContextProvider } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "./systemHookTypes.sol";
 
-import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
-import { ISystemHook } from "./interfaces/ISystemHook.sol";
+import { IWorldErrors } from "./IWorldErrors.sol";
+import { ISystemHook } from "./ISystemHook.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Systems } from "./codegen/tables/Systems.sol";
