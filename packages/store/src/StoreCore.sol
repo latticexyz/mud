@@ -848,9 +848,9 @@ library StoreCoreInternal {
     // and load the data from storage
     return
       Storage.load({
-        storagePointer: StoreCoreInternal._getStaticDataLocation(tableId, keyTuple),
+        storagePointer: _getStaticDataLocation(tableId, keyTuple),
         length: fieldLayout.atIndex(fieldIndex),
-        offset: StoreCoreInternal._getStaticDataOffset(fieldLayout, fieldIndex)
+        offset: _getStaticDataOffset(fieldLayout, fieldIndex)
       });
   }
 
