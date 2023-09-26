@@ -81,6 +81,7 @@ export default mudConfig({
     SystemHooks: {
       keySchema: {
         systemId: "ResourceId",
+        functionSelector: "bytes4",
       },
       valueSchema: "bytes21[]",
     },

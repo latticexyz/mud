@@ -40,8 +40,9 @@ library SystemHooks {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](1);
+    SchemaType[] memory _keySchema = new SchemaType[](2);
     _keySchema[0] = SchemaType.BYTES32;
+    _keySchema[1] = SchemaType.BYTES4;
 
     return SchemaLib.encode(_keySchema);
   }
@@ -56,8 +57,9 @@ library SystemHooks {
 
   /** Get the table's key names */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
-    keyNames = new string[](1);
+    keyNames = new string[](2);
     keyNames[0] = "systemId";
+    keyNames[1] = "functionSelector";
   }
 
   /** Get the table's field names */
@@ -82,111 +84,132 @@ library SystemHooks {
   }
 
   /** Get value */
-  function getValue(ResourceId systemId) internal view returns (bytes21[] memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function getValue(ResourceId systemId, bytes4 functionSelector) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
   }
 
   /** Get value */
-  function _getValue(ResourceId systemId) internal view returns (bytes21[] memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _getValue(ResourceId systemId, bytes4 functionSelector) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
   }
 
   /** Get value (using the specified store) */
-  function getValue(IStore _store, ResourceId systemId) internal view returns (bytes21[] memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function getValue(
+    IStore _store,
+    ResourceId systemId,
+    bytes4 functionSelector
+  ) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
   }
 
   /** Get value */
-  function get(ResourceId systemId) internal view returns (bytes21[] memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function get(ResourceId systemId, bytes4 functionSelector) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
   }
 
   /** Get value */
-  function _get(ResourceId systemId) internal view returns (bytes21[] memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _get(ResourceId systemId, bytes4 functionSelector) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
   }
 
   /** Get value (using the specified store) */
-  function get(IStore _store, ResourceId systemId) internal view returns (bytes21[] memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function get(
+    IStore _store,
+    ResourceId systemId,
+    bytes4 functionSelector
+  ) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
   }
 
   /** Set value */
-  function setValue(ResourceId systemId, bytes21[] memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function setValue(ResourceId systemId, bytes4 functionSelector, bytes21[] memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
   /** Set value */
-  function _setValue(ResourceId systemId, bytes21[] memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _setValue(ResourceId systemId, bytes4 functionSelector, bytes21[] memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
   /** Set value (using the specified store) */
-  function setValue(IStore _store, ResourceId systemId, bytes21[] memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function setValue(IStore _store, ResourceId systemId, bytes4 functionSelector, bytes21[] memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
   /** Set value */
-  function set(ResourceId systemId, bytes21[] memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function set(ResourceId systemId, bytes4 functionSelector, bytes21[] memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
   /** Set value */
-  function _set(ResourceId systemId, bytes21[] memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _set(ResourceId systemId, bytes4 functionSelector, bytes21[] memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
   /** Set value (using the specified store) */
-  function set(IStore _store, ResourceId systemId, bytes21[] memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function set(IStore _store, ResourceId systemId, bytes4 functionSelector, bytes21[] memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
   /** Get the length of value */
-  function lengthValue(ResourceId systemId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function lengthValue(ResourceId systemId, bytes4 functionSelector) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
@@ -195,9 +218,10 @@ library SystemHooks {
   }
 
   /** Get the length of value */
-  function _lengthValue(ResourceId systemId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _lengthValue(ResourceId systemId, bytes4 functionSelector) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
@@ -206,9 +230,10 @@ library SystemHooks {
   }
 
   /** Get the length of value (using the specified store) */
-  function lengthValue(IStore _store, ResourceId systemId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function lengthValue(IStore _store, ResourceId systemId, bytes4 functionSelector) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
@@ -217,9 +242,10 @@ library SystemHooks {
   }
 
   /** Get the length of value */
-  function length(ResourceId systemId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function length(ResourceId systemId, bytes4 functionSelector) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
@@ -228,9 +254,10 @@ library SystemHooks {
   }
 
   /** Get the length of value */
-  function _length(ResourceId systemId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _length(ResourceId systemId, bytes4 functionSelector) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
@@ -239,9 +266,10 @@ library SystemHooks {
   }
 
   /** Get the length of value (using the specified store) */
-  function length(IStore _store, ResourceId systemId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function length(IStore _store, ResourceId systemId, bytes4 functionSelector) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
@@ -253,9 +281,10 @@ library SystemHooks {
    * Get an item of value
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemValue(ResourceId systemId, uint256 _index) internal view returns (bytes21) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function getItemValue(ResourceId systemId, bytes4 functionSelector, uint256 _index) internal view returns (bytes21) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 21, (_index + 1) * 21);
@@ -267,9 +296,10 @@ library SystemHooks {
    * Get an item of value
    * (unchecked, returns invalid data if index overflows)
    */
-  function _getItemValue(ResourceId systemId, uint256 _index) internal view returns (bytes21) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _getItemValue(ResourceId systemId, bytes4 functionSelector, uint256 _index) internal view returns (bytes21) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 21, (_index + 1) * 21);
@@ -281,9 +311,15 @@ library SystemHooks {
    * Get an item of value (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemValue(IStore _store, ResourceId systemId, uint256 _index) internal view returns (bytes21) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function getItemValue(
+    IStore _store,
+    ResourceId systemId,
+    bytes4 functionSelector,
+    uint256 _index
+  ) internal view returns (bytes21) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     unchecked {
       bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 21, (_index + 1) * 21);
@@ -295,9 +331,10 @@ library SystemHooks {
    * Get an item of value
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItem(ResourceId systemId, uint256 _index) internal view returns (bytes21) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function getItem(ResourceId systemId, bytes4 functionSelector, uint256 _index) internal view returns (bytes21) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 21, (_index + 1) * 21);
@@ -309,9 +346,10 @@ library SystemHooks {
    * Get an item of value
    * (unchecked, returns invalid data if index overflows)
    */
-  function _getItem(ResourceId systemId, uint256 _index) internal view returns (bytes21) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _getItem(ResourceId systemId, bytes4 functionSelector, uint256 _index) internal view returns (bytes21) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 21, (_index + 1) * 21);
@@ -323,9 +361,15 @@ library SystemHooks {
    * Get an item of value (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItem(IStore _store, ResourceId systemId, uint256 _index) internal view returns (bytes21) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function getItem(
+    IStore _store,
+    ResourceId systemId,
+    bytes4 functionSelector,
+    uint256 _index
+  ) internal view returns (bytes21) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     unchecked {
       bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 21, (_index + 1) * 21);
@@ -334,97 +378,109 @@ library SystemHooks {
   }
 
   /** Push an element to value */
-  function pushValue(ResourceId systemId, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function pushValue(ResourceId systemId, bytes4 functionSelector, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to value */
-  function _pushValue(ResourceId systemId, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _pushValue(ResourceId systemId, bytes4 functionSelector, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to value (using the specified store) */
-  function pushValue(IStore _store, ResourceId systemId, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function pushValue(IStore _store, ResourceId systemId, bytes4 functionSelector, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to value */
-  function push(ResourceId systemId, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function push(ResourceId systemId, bytes4 functionSelector, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to value */
-  function _push(ResourceId systemId, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _push(ResourceId systemId, bytes4 functionSelector, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to value (using the specified store) */
-  function push(IStore _store, ResourceId systemId, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function push(IStore _store, ResourceId systemId, bytes4 functionSelector, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /** Pop an element from value */
-  function popValue(ResourceId systemId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function popValue(ResourceId systemId, bytes4 functionSelector) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
 
   /** Pop an element from value */
-  function _popValue(ResourceId systemId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _popValue(ResourceId systemId, bytes4 functionSelector) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
 
   /** Pop an element from value (using the specified store) */
-  function popValue(IStore _store, ResourceId systemId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function popValue(IStore _store, ResourceId systemId, bytes4 functionSelector) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     _store.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
 
   /** Pop an element from value */
-  function pop(ResourceId systemId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function pop(ResourceId systemId, bytes4 functionSelector) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
 
   /** Pop an element from value */
-  function _pop(ResourceId systemId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _pop(ResourceId systemId, bytes4 functionSelector) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
 
   /** Pop an element from value (using the specified store) */
-  function pop(IStore _store, ResourceId systemId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function pop(IStore _store, ResourceId systemId, bytes4 functionSelector) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     _store.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
@@ -433,9 +489,10 @@ library SystemHooks {
    * Update an element of value at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateValue(ResourceId systemId, uint256 _index, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function updateValue(ResourceId systemId, bytes4 functionSelector, uint256 _index, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
@@ -447,9 +504,10 @@ library SystemHooks {
    * Update an element of value at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function _updateValue(ResourceId systemId, uint256 _index, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _updateValue(ResourceId systemId, bytes4 functionSelector, uint256 _index, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
@@ -461,9 +519,16 @@ library SystemHooks {
    * Update an element of value (using the specified store) at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateValue(IStore _store, ResourceId systemId, uint256 _index, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function updateValue(
+    IStore _store,
+    ResourceId systemId,
+    bytes4 functionSelector,
+    uint256 _index,
+    bytes21 _element
+  ) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
@@ -475,9 +540,10 @@ library SystemHooks {
    * Update an element of value at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function update(ResourceId systemId, uint256 _index, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function update(ResourceId systemId, bytes4 functionSelector, uint256 _index, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
@@ -489,9 +555,10 @@ library SystemHooks {
    * Update an element of value at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function _update(ResourceId systemId, uint256 _index, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _update(ResourceId systemId, bytes4 functionSelector, uint256 _index, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
@@ -503,9 +570,16 @@ library SystemHooks {
    * Update an element of value (using the specified store) at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function update(IStore _store, ResourceId systemId, uint256 _index, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function update(
+    IStore _store,
+    ResourceId systemId,
+    bytes4 functionSelector,
+    uint256 _index,
+    bytes21 _element
+  ) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
@@ -514,25 +588,28 @@ library SystemHooks {
   }
 
   /** Delete all data for given keys */
-  function deleteRecord(ResourceId systemId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function deleteRecord(ResourceId systemId, bytes4 functionSelector) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
-  function _deleteRecord(ResourceId systemId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function _deleteRecord(ResourceId systemId, bytes4 functionSelector) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /** Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, ResourceId systemId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function deleteRecord(IStore _store, ResourceId systemId, bytes4 functionSelector) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     _store.deleteRecord(_tableId, _keyTuple);
   }
@@ -560,9 +637,10 @@ library SystemHooks {
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
-  function encodeKeyTuple(ResourceId systemId) internal pure returns (bytes32[] memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+  function encodeKeyTuple(ResourceId systemId, bytes4 functionSelector) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(systemId);
+    _keyTuple[1] = bytes32(functionSelector);
 
     return _keyTuple;
   }

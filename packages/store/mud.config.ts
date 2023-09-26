@@ -37,15 +37,5 @@ export default mudConfig({
         exists: "bool",
       },
     },
-    // The Hooks table is a generic table used by the `filterFromList` util in `Hook.sol`
-    Hooks: {
-      keySchema: {
-        resourceId: "ResourceId",
-      },
-      valueSchema: {
-        hooks: "bytes21[]",
-      },
-      tableIdArgument: true,
-    },
   },
 });

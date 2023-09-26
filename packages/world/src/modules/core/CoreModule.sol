@@ -121,8 +121,8 @@ contract CoreModule is Module {
       "unregisterStoreHook(bytes32,address)",
       // --- WorldRegistrationSystem ---
       "registerNamespace(bytes32)",
-      "registerSystemHook(bytes32,address,uint8)",
-      "unregisterSystemHook(bytes32,address)",
+      "registerSystemHook(bytes32,bytes4,address,uint8)",
+      "unregisterSystemHook(bytes32,bytes4,address)",
       "registerSystem(bytes32,address,bool)",
       "registerFunctionSelector(bytes32,string)",
       "registerRootFunctionSelector(bytes32,string,bytes4)",

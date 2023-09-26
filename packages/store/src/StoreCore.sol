@@ -186,7 +186,9 @@ library StoreCore {
    * Unregister a hook from the given tableId
    */
   function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) internal {
-    HookLib.filterListByAddress(StoreHooksTableId, tableId, address(hookAddress));
+    bytes21[] memory hooks = StoreHooks._get(tableId);
+    hooks = HookLib.filterHookListByAddress(hooks, address(hookAddress));
+    StoreHooks._set(tableId, hooks);
   }
 
   /************************************************************************

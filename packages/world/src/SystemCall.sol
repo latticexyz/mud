@@ -75,7 +75,7 @@ library SystemCall {
     uint256 value
   ) internal returns (bool success, bytes memory data) {
     // Get system hooks
-    bytes21[] memory hooks = SystemHooks._get(systemId);
+    bytes21[] memory hooks = SystemHooks._get(systemId, bytes4(callData));
 
     // Call onBeforeCallSystem hooks (before calling the system)
     for (uint256 i; i < hooks.length; i++) {

@@ -63,7 +63,12 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   /**
    * Register a hook for the system at the given system ID
    */
-  function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) public virtual {
+  function registerSystemHook(
+    ResourceId systemId,
+    bytes4 functionSelector,
+    ISystemHook hookAddress,
+    uint8 enabledHooksBitmap
+  ) public virtual {
     // Require the provided address to implement the ISystemHook interface
     requireInterface(address(hookAddress), SYSTEM_HOOK_INTERFACE_ID);
 
@@ -71,18 +76,20 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     AccessControl.requireOwner(systemId, _msgSender());
 
     // Register the hook
-    SystemHooks.push(systemId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
+    SystemHooks.push(systemId, functionSelector, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
   }
 
   /**
    * Unregister the given hook for the system at the given system ID
    */
-  function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) public virtual {
+  function unregisterSystemHook(ResourceId systemId, bytes4 functionSelector, ISystemHook hookAddress) public virtual {
     // Require caller to own the namespace
     AccessControl.requireOwner(systemId, _msgSender());
 
     // Remove the hook from the list of hooks for this system in the system hooks table
-    HookLib.filterListByAddress(SystemHooksTableId, systemId, address(hookAddress));
+    bytes21[] memory hooks = SystemHooks._get(systemId, functionSelector);
+    hooks = HookLib.filterHookListByAddress(hooks, address(hookAddress));
+    SystemHooks._set(systemId, functionSelector, hooks);
   }
 
   /**

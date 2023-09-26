@@ -45,37 +45,37 @@
     "file": "test/BatchCall.t.sol",
     "test": "testBatchCallFromReturnData",
     "name": "call systems with batchCallFrom",
-    "gasUsed": 46377
+    "gasUsed": 49527
   },
   {
     "file": "test/BatchCall.t.sol",
     "test": "testBatchCallReturnData",
     "name": "call systems with batchCall",
-    "gasUsed": 45171
+    "gasUsed": 50321
   },
   {
     "file": "test/World.t.sol",
     "test": "testCall",
     "name": "call a system via the World",
-    "gasUsed": 12335
+    "gasUsed": 12711
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromNamespaceDelegation",
     "name": "call a system via a namespace fallback delegation",
-    "gasUsed": 26073
+    "gasUsed": 26449
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 47588
+    "gasUsed": 49964
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 12771
+    "gasUsed": 13146
   },
   {
     "file": "test/World.t.sol",
@@ -93,31 +93,31 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 83114
+    "gasUsed": 85537
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 120817
+    "gasUsed": 121192
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterRootFunctionSelector",
     "name": "Register a root function selector",
-    "gasUsed": 80398
+    "gasUsed": 82821
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 162559
+    "gasUsed": 162945
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 637329
+    "gasUsed": 637717
   },
   {
     "file": "test/World.t.sol",

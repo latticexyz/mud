@@ -1210,6 +1210,8 @@ contract WorldTest is Test, GasReporter {
       name: "testSystem"
     });
 
+    bytes4 functionSelector = bytes4(keccak256("fallbackselector"));
+
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(systemId, system, true);
@@ -1224,15 +1226,16 @@ contract WorldTest is Test, GasReporter {
     );
     world.registerSystemHook(
       systemId,
+      functionSelector,
       ISystemHook(address(world)), // the World contract does not implement the system hook interface
       BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM
     );
 
     // Register a new hook
     ISystemHook systemHook = new EchoSystemHook();
-    world.registerSystemHook(systemId, systemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
+    world.registerSystemHook(systemId, functionSelector, systemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
 
-    bytes memory callData = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
+    bytes memory callData = abi.encodeWithSelector(functionSelector);
 
     // Expect the hooks to be called in correct order
     vm.expectEmit(true, true, true, true);
@@ -1255,26 +1258,28 @@ contract WorldTest is Test, GasReporter {
       name: "testTable"
     });
 
+    bytes4 functionSelector = bytes4(keccak256("fallbackselector"));
+
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(systemId, system, false);
 
     // Register a new RevertSystemHook
     ISystemHook revertSystemHook = new RevertSystemHook();
-    world.registerSystemHook(systemId, revertSystemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
+    world.registerSystemHook(systemId, functionSelector, revertSystemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
 
     // Register a new EchoSystemHook
     ISystemHook echoSystemHook = new EchoSystemHook();
-    world.registerSystemHook(systemId, echoSystemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
+    world.registerSystemHook(systemId, functionSelector, echoSystemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
 
-    bytes memory callData = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
+    bytes memory callData = abi.encodeWithSelector(functionSelector);
 
     // Expect calls to fail while the RevertSystemHook is registered
     vm.expectRevert(bytes("onBeforeCallSystem"));
     world.call(systemId, callData);
 
     // Unregister the RevertSystemHook
-    world.unregisterSystemHook(systemId, revertSystemHook);
+    world.unregisterSystemHook(systemId, functionSelector, revertSystemHook);
 
     // Expect the echo hooks to be called in correct order
     vm.expectEmit(true, true, true, true);
