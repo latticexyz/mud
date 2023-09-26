@@ -23,6 +23,7 @@ import { postDeploy } from "./utils/postDeploy";
 import { setInternalFeePerGas } from "./utils/setInternalFeePerGas";
 import { toBytes16 } from "./utils/toBytes16";
 import { ContractCode } from "./utils/types";
+import { resourceIdToHex } from "@latticexyz/common";
 
 export interface DeployConfig {
   profile?: string;
@@ -151,7 +152,7 @@ export async function deploy(
       nonce: nonce++,
       contract: worldContract,
       func: "registerNamespace",
-      args: [toBytes16(mudConfig.namespace)],
+      args: [resourceIdToHex({ type: "namespace", namespace: mudConfig.namespace, name: "" })],
     });
     console.log(chalk.green("Namespace registered"));
   }
