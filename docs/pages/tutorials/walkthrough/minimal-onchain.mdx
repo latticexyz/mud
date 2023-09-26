@@ -129,6 +129,7 @@ Here is the interpretation of this value:
 | Length of first static field |      1 |   0x04 | ` uint32` is four bytes     |
 
 The field layout is only for the value schema, not the key schema.
+The key is not actually written to the storage, it is just used to find the storage slot for the value.
 
 ```solidity
 library Counter {
