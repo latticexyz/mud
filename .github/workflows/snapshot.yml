@@ -12,7 +12,6 @@ jobs:
   release-snapshot:
     name: Publish snapshot release to npm
     runs-on: ubuntu-latest
-    if: github.event_name != 'workflow_dispatch'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
