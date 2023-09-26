@@ -9,18 +9,12 @@ import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.so
 
 import { System } from "../../../System.sol";
 import { ResourceId, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
+import { ROOT_NAME } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
-import { WorldContextProvider } from "../../../WorldContext.sol";
 
-import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
-import { SystemHooks } from "../../../codegen/tables/SystemHooks.sol";
-import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
 import { Systems } from "../../../codegen/tables/Systems.sol";
-import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
 
 import { IWorldErrors } from "../../../IWorldErrors.sol";
 
