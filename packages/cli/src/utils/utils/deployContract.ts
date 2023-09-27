@@ -1,25 +1,33 @@
 import chalk from "chalk";
-import { ethers } from "ethers";
 import { MUDError } from "@latticexyz/common/errors";
-import { TxConfig, ContractCode } from "./types";
+import { ContractCode } from "./types";
+import { Abi, Hex, WalletClient, PublicClient, Account, Address, Chain } from "viem";
 
-export async function deployContract(input: TxConfig & { nonce: number; contract: ContractCode }): Promise<string> {
-  const { signer, nonce, maxPriorityFeePerGas, maxFeePerGas, debug, gasPrice, confirmations, contract } = input;
+export async function deployContract(input: {
+  contract: ContractCode;
+  walletClient: WalletClient;
+  publicClient: PublicClient;
+  account: Account | Address;
+  debug: boolean;
+  chain: Chain;
+  nonce: number;
+}): Promise<string> {
+  const { debug, contract, publicClient, account, walletClient, chain, nonce } = input;
 
   try {
-    const factory = new ethers.ContractFactory(contract.abi, contract.bytecode, signer);
-    console.log(chalk.gray(`executing deployment of ${contract.name} with nonce ${nonce}`));
-    const deployPromise = factory
-      .deploy({
-        nonce,
-        maxPriorityFeePerGas,
-        maxFeePerGas,
-        gasPrice,
-      })
-      .then((c) => (confirmations ? c : c.deployed()));
-    const { address } = await deployPromise;
-    console.log(chalk.green("Deployed", contract.name, "to", address));
-    return address;
+    const hash = await walletClient.deployContract({
+      account,
+      chain,
+      abi: contract.abi as Abi,
+      bytecode: typeof contract.bytecode === "string" ? (contract.bytecode as Hex) : (contract.bytecode.object as Hex),
+      nonce,
+    });
+    if (!hash) throw new MUDError(`Error deploying ${contract.name}, no hash for deploy tx.`);
+
+    console.log(chalk.gray(`executing deployment of ${contract.name} ${nonce}`));
+    const receipt = await publicClient.waitForTransactionReceipt({ hash });
+    console.log(chalk.green("Deployed", contract.name, "to", receipt.contractAddress));
+    return receipt.contractAddress as string;
   } catch (error: any) {
     if (debug) console.error(error);
     if (error?.message.includes("invalid bytecode")) {
@@ -28,6 +36,10 @@ export async function deployContract(input: TxConfig & { nonce: number; contract
       );
     } else if (error?.message.includes("CreateContractLimit")) {
       throw new MUDError(`Error deploying ${contract.name}: CreateContractLimit exceeded.`);
-    } else throw error;
+    } else if (error?.message.includes("Nonce too high")) {
+      const delayMs = 100;
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      return deployContract(input);
+    } else throw Error;
   }
 }

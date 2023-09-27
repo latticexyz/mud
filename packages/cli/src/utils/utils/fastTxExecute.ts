@@ -1,56 +1,65 @@
 import chalk from "chalk";
-import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import { MUDError } from "@latticexyz/common/errors";
-import { TxConfig } from "./types";
+import { Address, Abi, Hex, WalletClient, PublicClient, Account, TransactionReceipt } from "viem";
 
-/**
- * Only await gas estimation (for speed), only execute if gas estimation succeeds (for safety)
- */
-export async function fastTxExecute<
-  C extends { connect: any; estimateGas: any; [key: string]: any },
-  F extends keyof C
->(
-  input: TxConfig & {
-    nonce: number;
-    contract: C;
-    func: F;
-    args: Parameters<C[F]>;
-    confirmations: number;
-  }
-): Promise<TransactionResponse | TransactionReceipt> {
+export async function fastTx(input: {
+  maxPriorityFeePerGas: bigint | undefined;
+  maxFeePerGas: bigint | undefined;
+  gasPrice: bigint | undefined;
+  nonce: number;
+  walletClient: WalletClient;
+  account: Account;
+  address: Address;
+  publicClient: PublicClient;
+  args: any[];
+  abi: Abi;
+  functionName: string;
+  debug: boolean;
+  confirmations: number;
+}): Promise<Hex | TransactionReceipt> {
   const {
-    func,
-    args,
-    contract,
-    signer,
     nonce,
-    maxPriorityFeePerGas,
-    maxFeePerGas,
-    gasPrice,
-    confirmations = 1,
+    walletClient,
+    account,
+    address,
+    publicClient,
+    args,
+    abi,
+    functionName,
     debug,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
+    gasPrice,
+    confirmations,
   } = input;
-  const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
   try {
-    const contractWithSigner = contract.connect(signer);
-    const gasLimit = await contractWithSigner.estimateGas[func].apply(null, args);
-    console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${nonce}`));
-    return contractWithSigner[func]
-      .apply(null, [
-        ...args,
-        {
-          gasLimit,
-          nonce: nonce,
-          maxPriorityFeePerGas: maxPriorityFeePerGas,
-          maxFeePerGas: maxFeePerGas,
-          gasPrice: gasPrice,
-        },
-      ])
-      .then((tx: TransactionResponse) => {
-        return confirmations === 0 ? tx : tx.wait(confirmations);
-      });
+    const func = `${functionName as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
+    let gasSettings = {};
+    if (gasPrice) gasSettings = { gasPrice };
+    else if (maxFeePerGas && maxPriorityFeePerGas) gasSettings = { maxFeePerGas, maxPriorityFeePerGas };
+    // Note - calling simulate with Viems internal nonce but writeContract with provided - this speeds things up
+    const { request } = await publicClient.simulateContract({
+      ...gasSettings,
+      abi,
+      functionName,
+      account,
+      address,
+      args: args,
+    });
+    const hash = await walletClient.writeContract({ ...request, nonce });
+    console.log(chalk.gray(`executing transaction: ${func} with nonce ${nonce}`));
+    if (confirmations === 0) return hash;
+    else {
+      return publicClient.waitForTransactionReceipt({ confirmations, hash });
+    }
   } catch (error: any) {
-    if (debug) console.error(error);
-    throw new MUDError(`Gas estimation error for ${functionName}: ${error?.reason}`);
+    if (debug) console.error(error.message);
+
+    if (error?.message.includes("is higher than the next one expected")) {
+      const delayMs = 100;
+      // console.log(`Tx retry with nonce ${nonce}`);
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      return fastTx(input);
+    } else throw new MUDError(`Tx error for ${functionName}: ${error?.reason}`);
   }
 }

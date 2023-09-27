@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { keccak256, stringToBytes, slice } from "viem";
 import { ParamType } from "ethers/lib/utils.js";
 import { getContractData } from "../utils/getContractData";
 
@@ -38,5 +38,5 @@ function parseComponents(params: ParamType[]): string {
 // TODO: move this to utils as soon as utils are usable inside cli
 // (see https://github.com/latticexyz/mud/issues/499)
 function sigHash(signature: string) {
-  return ethers.utils.hexDataSlice(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(signature)), 0, 4);
+  return slice(keccak256(stringToBytes(signature)), 0, 4);
 }

@@ -1,28 +1,35 @@
 import chalk from "chalk";
-
+import { WalletClient, PublicClient, Account, Address, Chain, Abi } from "viem";
 import WorldData from "@latticexyz/world/out/World.sol/World.json" assert { type: "json" };
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import { deployContract } from "./utils/deployContract";
 import { getContractData } from "./utils/getContractData";
-import { TxConfig } from "./utils/types";
 
-export async function deployWorldContract(
-  ip: TxConfig & {
-    nonce: number;
-    worldContractName: string | undefined;
-    forgeOutDirectory: string;
-  }
-): Promise<string> {
+export async function deployWorldContract(ip: {
+  worldContractName: string | undefined;
+  forgeOutDirectory: string;
+  walletClient: WalletClient;
+  publicClient: PublicClient;
+  account: Account | Address;
+  debug: boolean;
+  chain: Chain;
+  nonce: number;
+}): Promise<string> {
+  const { worldContractName, forgeOutDirectory, walletClient, publicClient, account, debug, chain, nonce } = ip;
   console.log(chalk.blue(`Deploying World`));
-  const contractData = ip.worldContractName
+  const contractData = worldContractName
     ? {
         name: "World",
-        ...getContractData(ip.worldContractName, ip.forgeOutDirectory),
+        ...getContractData(worldContractName, forgeOutDirectory),
       }
-    : { abi: IBaseWorldAbi, bytecode: WorldData.bytecode, name: "World" };
+    : { abi: IBaseWorldAbi as Abi, bytecode: WorldData.bytecode, name: "World" };
   return deployContract({
-    ...ip,
-    nonce: ip.nonce,
     contract: contractData,
+    walletClient,
+    publicClient,
+    account,
+    debug: Boolean(debug),
+    chain,
+    nonce,
   });
 }

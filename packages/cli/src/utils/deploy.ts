@@ -1,6 +1,5 @@
 import chalk from "chalk";
 import path from "path";
-import { ethers } from "ethers";
 import { getOutDirectory, cast, getSrcDirectory, getRemappings } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
@@ -17,12 +16,27 @@ import { getRegisterTableCallData } from "./tables/getRegisterTableCallData";
 import { getTableIds } from "./tables/getTableIds";
 import { confirmNonce } from "./utils/confirmNonce";
 import { deployContract } from "./utils/deployContract";
-import { fastTxExecute } from "./utils/fastTxExecute";
+import { fastTx } from "./utils/fastTxExecute";
 import { getContractData } from "./utils/getContractData";
 import { postDeploy } from "./utils/postDeploy";
 import { setInternalFeePerGas } from "./utils/setInternalFeePerGas";
-import { toBytes16 } from "./utils/toBytes16";
 import { ContractCode } from "./utils/types";
+import {
+  Address,
+  Abi,
+  createPublicClient,
+  createWalletClient,
+  http,
+  Hex,
+  toHex,
+  Chain,
+  TransactionReceipt,
+} from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains";
+
+// If you are deploying to chains other than anvil or Lattice testnet, add them here
+export const supportedChains: MUDChain[] = [mudFoundry, latticeTestnet];
 
 export interface DeployConfig {
   profile?: string;
@@ -46,31 +60,39 @@ export async function deploy(
   deployConfig: DeployConfig
 ): Promise<DeploymentInfo> {
   const startTime = Date.now();
-  const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress, disableTxWait, pollInterval } =
-    deployConfig;
+  const { profile, rpc, privateKey, debug, worldAddress, disableTxWait, pollInterval } = deployConfig;
   const resolvedConfig = resolveWorldConfig(mudConfig, existingContractNames);
   const forgeOutDirectory = await getOutDirectory(profile);
   const remappings = await getRemappings(profile);
   const outputBaseDirectory = path.join(await getSrcDirectory(profile), mudConfig.codegenDirectory);
 
-  // Set up signer for deployment
-  const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
-  provider.pollingInterval = pollInterval;
-  const signer = new ethers.Wallet(privateKey, provider);
-  console.log("Deploying from", signer.address);
+  // Set up Local Account for deployment
+  const publicClient = createPublicClient({
+    transport: http(rpc),
+    pollingInterval: pollInterval,
+  });
+  const chainId = await publicClient.getChainId();
+  const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
+  const chain = supportedChains[chainIndex];
+  if (!chain) {
+    throw new Error(`Chain ${chainId} not found`);
+  }
+  const account = privateKeyToAccount(privateKey as Hex);
+  const walletClient = createWalletClient({
+    chain: chain as Chain,
+    account,
+    transport: http(rpc),
+  });
+  console.log("Deploying from", walletClient.account.address);
 
-  let nonce = await signer.getTransactionCount();
+  // Manual nonce handling to allow for faster sending of transactions without waiting for previous transactions
+  let nonce = await publicClient.getTransactionCount({
+    address: account.address,
+  });
   console.log("Initial nonce", nonce);
 
-  const txParams = await setInternalFeePerGas(signer, priorityFeeMultiplier);
-
-  const txConfig = {
-    ...txParams,
-    signer,
-    debug: Boolean(debug),
-    disableTxWait,
-    confirmations: disableTxWait ? 0 : 1,
-  };
+  const confirmations = disableTxWait ? 0 : 1;
+  const feeData = await setInternalFeePerGas(publicClient, walletClient.account.address);
 
   // Get block number before deploying
   const blockNumber = Number(await cast(["block-number", "--rpc-url", rpc], { profile }));
@@ -80,7 +102,11 @@ export async function deploy(
   const worldPromise: Promise<string> = worldAddress
     ? Promise.resolve(worldAddress)
     : deployWorldContract({
-        ...txConfig,
+        walletClient,
+        publicClient,
+        account,
+        debug: Boolean(debug),
+        chain: chain as Chain,
         nonce: nonce++,
         worldContractName: mudConfig.worldContractName,
         forgeOutDirectory,
@@ -109,7 +135,7 @@ export async function deploy(
   const contracts: ContractCode[] = [
     {
       name: "CoreModule",
-      abi: CoreModuleData.abi,
+      abi: CoreModuleData.abi as Abi,
       bytecode: CoreModuleData.bytecode,
     },
     ...defaultModuleContracts,
@@ -117,41 +143,64 @@ export async function deploy(
     ...systemContracts,
   ];
 
+  // Wait for world to be deployed
+  const deployedWorldAddress = await worldPromise;
+
   // Deploy the System and Module contracts
   const deployedContracts = contracts.reduce<Record<string, Promise<string>>>((acc, contract) => {
     acc[contract.name] = deployContract({
-      ...txConfig,
-      nonce: nonce++,
       contract,
+      walletClient,
+      publicClient,
+      account,
+      debug: Boolean(debug),
+      chain: chain as Chain,
+      nonce: nonce++,
     });
     return acc;
   }, {});
 
-  // Wait for world to be deployed
-  const deployedWorldAddress = await worldPromise;
-  const worldContract = new ethers.Contract(deployedWorldAddress, IBaseWorldAbi);
-
   // If an existing World is passed assume its coreModule is already installed - blocking to install if not
   if (!worldAddress) {
     console.log(chalk.blue("Installing CoreModule"));
-    await fastTxExecute({
-      ...txConfig,
+    const hash = await fastTx({
+      ...feeData,
       nonce: nonce++,
-      contract: worldContract,
-      func: "initialize",
-      args: [await deployedContracts["CoreModule"]],
+      walletClient,
+      account,
+      address: deployedWorldAddress as Address,
+      publicClient,
+      args: [(await deployedContracts["CoreModule"]) as Hex],
+      abi: IBaseWorldAbi,
+      functionName: "initialize",
+      debug: Boolean(debug),
+      confirmations,
     });
+    // We need to wait for CoreModule tx before we can simulate future install steps
+    if (confirmations === 0) {
+      console.log("Waiting for receipt");
+      await publicClient.waitForTransactionReceipt({
+        hash: hash as Hex,
+        confirmations: 1,
+      });
+    }
     console.log(chalk.green("Installed CoreModule"));
   }
 
   if (mudConfig.namespace) {
     console.log(chalk.blue("Registering Namespace"));
-    await fastTxExecute({
-      ...txConfig,
+    await fastTx({
+      ...feeData,
       nonce: nonce++,
-      contract: worldContract,
-      func: "registerNamespace",
-      args: [toBytes16(mudConfig.namespace)],
+      walletClient,
+      account,
+      address: deployedWorldAddress as Address,
+      publicClient,
+      args: [toHex(mudConfig.namespace, { size: 32 })],
+      abi: IBaseWorldAbi,
+      functionName: "registerNamespace",
+      debug: Boolean(debug),
+      confirmations,
     });
     console.log(chalk.green("Namespace registered"));
   }
@@ -162,17 +211,25 @@ export async function deploy(
     getRegisterTableCallData(table, mudConfig, outputBaseDirectory, remappings)
   );
 
+  let calls: Promise<Hex | TransactionReceipt>[] = [];
+
   console.log(chalk.blue("Registering tables"));
-  await Promise.all(
-    registerTableCalls.map((call) =>
-      fastTxExecute({
-        ...txConfig,
-        nonce: nonce++,
-        contract: worldContract,
-        ...call,
-      })
-    )
+  calls = registerTableCalls.map((c) =>
+    fastTx({
+      ...feeData,
+      nonce: nonce++,
+      walletClient,
+      account,
+      address: deployedWorldAddress as Address,
+      publicClient,
+      args: c.args,
+      abi: IBaseWorldAbi as Abi,
+      functionName: c.func,
+      debug: Boolean(debug),
+      confirmations,
+    })
   );
+  await Promise.all(calls);
   console.log(chalk.green(`Tables registered`));
 
   console.log(chalk.blue("Registering Systems and Functions"));
@@ -194,16 +251,23 @@ export async function deploy(
       forgeOutDirectory,
     })
   );
-  await Promise.all(
-    [...systemCalls, ...functionCalls].map((call) =>
-      fastTxExecute({
-        ...txConfig,
-        nonce: nonce++,
-        contract: worldContract,
-        ...call,
-      })
-    )
+
+  calls = [...systemCalls, ...functionCalls].map((c) =>
+    fastTx({
+      ...feeData,
+      nonce: nonce++,
+      walletClient,
+      account,
+      address: deployedWorldAddress as Address,
+      publicClient,
+      args: c.args,
+      abi: IBaseWorldAbi as Abi,
+      functionName: c.func,
+      debug: Boolean(debug),
+      confirmations,
+    })
   );
+  await Promise.all(calls);
   console.log(chalk.green(`Systems and Functions registered`));
 
   // Wait for System access to be granted before installing modules
@@ -214,16 +278,22 @@ export async function deploy(
   });
 
   console.log(chalk.blue("Granting Access"));
-  await Promise.all(
-    grantCalls.map((call) =>
-      fastTxExecute({
-        ...txConfig,
-        nonce: nonce++,
-        contract: worldContract,
-        ...call,
-      })
-    )
+  calls = grantCalls.map((c) =>
+    fastTx({
+      ...feeData,
+      nonce: nonce++,
+      walletClient,
+      account,
+      address: deployedWorldAddress as Address,
+      publicClient,
+      args: c.args,
+      abi: IBaseWorldAbi as Abi,
+      functionName: c.func,
+      debug: Boolean(debug),
+      confirmations,
+    })
   );
+  await Promise.all(calls);
   console.log(chalk.green(`Access granted`));
 
   const moduleCalls = await Promise.all(
@@ -231,20 +301,26 @@ export async function deploy(
   );
 
   console.log(chalk.blue("Installing User Modules"));
-  await Promise.all(
-    moduleCalls.map((call) =>
-      fastTxExecute({
-        ...txConfig,
-        nonce: nonce++,
-        contract: worldContract,
-        ...call,
-      })
-    )
+  calls = moduleCalls.map((c) =>
+    fastTx({
+      ...feeData,
+      nonce: nonce++,
+      walletClient,
+      account,
+      address: deployedWorldAddress as Address,
+      publicClient,
+      args: c.args,
+      abi: IBaseWorldAbi as Abi,
+      functionName: c.func,
+      debug: Boolean(debug),
+      confirmations,
+    })
   );
+  await Promise.all(calls);
   console.log(chalk.green(`User Modules Installed`));
 
   // Double check that all transactions have been included by confirming the current nonce is the expected nonce
-  await confirmNonce(signer, nonce, pollInterval);
+  await confirmNonce(publicClient, walletClient.account.address, nonce, pollInterval);
 
   await postDeploy(mudConfig.postDeployScript, deployedWorldAddress, rpc, profile);
 

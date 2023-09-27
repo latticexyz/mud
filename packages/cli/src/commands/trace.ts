@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "fs";
 import type { CommandModule } from "yargs";
-import { ethers } from "ethers";
+import { Address, createPublicClient, http } from "viem";
 
 import { loadConfig } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
@@ -68,21 +68,32 @@ const commandModule: CommandModule<Options, Options> = {
     // Get worldAddress either from args or from worldsFile
     const worldAddress = args.worldAddress ?? (await getWorldAddress(mudConfig.worldsFile, rpc));
 
-    // Create World contract instance from deployed address
-    const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
-    const WorldContract = new ethers.Contract(worldAddress, IBaseWorldAbi, provider);
+    // Create publicClient for reading from World
+    const publicClient = createPublicClient({
+      transport: http(rpc),
+    });
 
     // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
     const namespace = mudConfig.namespace;
     const names = Object.values(resolvedConfig.systems).map(({ name }) => name);
 
     // Fetch system table field layout from chain
-    const systemTableFieldLayout = await WorldContract.getFieldLayout(systemsTableId);
+    const systemTableFieldLayout = await publicClient.readContract({
+      address: worldAddress as Address,
+      abi: IBaseWorldAbi,
+      functionName: "getFieldLayout",
+      args: [systemsTableId],
+    });
     const labels: { name: string; address: string }[] = [];
     for (const name of names) {
       const systemSelector = resourceIdToHex({ type: "system", namespace, name });
       // Get the first field of `Systems` table (the table maps system name to its address and other data)
-      const address = await WorldContract.getField(systemsTableId, [systemSelector], 0, systemTableFieldLayout);
+      const address = await publicClient.readContract({
+        address: worldAddress as Address,
+        abi: IBaseWorldAbi,
+        functionName: "getField",
+        args: [systemsTableId, [systemSelector], 0, systemTableFieldLayout],
+      });
       labels.push({ name, address });
     }
 

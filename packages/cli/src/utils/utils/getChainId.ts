@@ -1,10 +1,9 @@
-import { ethers } from "ethers";
+import { createPublicClient, http } from "viem";
 
-// TODO: Use viem's getChainId
 export async function getChainId(rpc: string) {
-  const { result: chainId } = await ethers.utils.fetchJson(
-    rpc,
-    '{ "id": 42, "jsonrpc": "2.0", "method": "eth_chainId", "params": [ ] }'
-  );
-  return Number(chainId);
+  const publicClient = createPublicClient({
+    transport: http(rpc),
+  });
+  const chainId = await publicClient.getChainId();
+  return chainId;
 }

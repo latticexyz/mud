@@ -1,4 +1,4 @@
-import { defaultAbiCoder } from "ethers/lib/utils.js";
+import { encodePacked } from "viem";
 import { resolveWithContext } from "@latticexyz/config";
 import { Module } from "./types";
 import { CallData } from "../utils/types";
@@ -22,6 +22,6 @@ export async function getInstallModuleCallData(
 
   return {
     func: module.root ? "installRootModule" : "installModule",
-    args: [moduleAddress, defaultAbiCoder.encode(types, values)],
+    args: [moduleAddress, encodePacked(types, values)],
   };
 }

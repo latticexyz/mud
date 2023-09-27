@@ -6,6 +6,7 @@ import { Table } from "./types";
 import { fieldLayoutToHex } from "@latticexyz/protocol-parser";
 import { CallData } from "../utils/types";
 import { loadAndExtractUserTypes } from "@latticexyz/common/codegen";
+import { toHex } from "viem";
 
 export function getRegisterTableCallData(
   table: Table,
@@ -40,8 +41,8 @@ export function getRegisterTableCallData(
       // TODO: add support for table namespaces (https://github.com/latticexyz/mud/issues/994)
       resourceIdToHex({ type: table.offchainOnly ? "offchainTable" : "table", namespace: storeConfig.namespace, name }),
       fieldLayoutToHex(fieldLayout),
-      encodeSchema(keyTypes),
-      encodeSchema(schemaTypes),
+      toHex(encodeSchema(keyTypes), { size: 32 }),
+      toHex(encodeSchema(schemaTypes), { size: 32 }),
       Object.keys(keySchema),
       Object.keys(valueSchema),
     ],

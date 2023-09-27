@@ -1,9 +1,14 @@
 import chalk from "chalk";
-import { Wallet } from "ethers";
+import { PublicClient, Address } from "viem";
 import { MUDError } from "@latticexyz/common/errors";
 
-export async function confirmNonce(signer: Wallet, nonce: number, pollInterval: number): Promise<void> {
-  let remoteNonce = await signer.getTransactionCount();
+export async function confirmNonce(
+  publicClient: PublicClient,
+  address: Address,
+  nonce: number,
+  pollInterval: number
+): Promise<void> {
+  let remoteNonce = await publicClient.getTransactionCount({ address });
   let retryCount = 0;
   const maxRetries = 100;
   while (remoteNonce !== nonce && retryCount < maxRetries) {
@@ -14,7 +19,7 @@ export async function confirmNonce(signer: Wallet, nonce: number, pollInterval: 
     );
     await new Promise((resolve) => setTimeout(resolve, pollInterval));
     retryCount++;
-    remoteNonce = await signer.getTransactionCount();
+    remoteNonce = await publicClient.getTransactionCount({ address });
   }
   if (remoteNonce !== nonce) {
     throw new MUDError(
