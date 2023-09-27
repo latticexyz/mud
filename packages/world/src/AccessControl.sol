@@ -18,7 +18,7 @@ library AccessControl {
    * @notice Checks if the caller has access to the given resource ID or its namespace.
    * @param resourceId The resource ID or namespace ID to check access for.
    * @param caller The address of the caller.
-   * @return True if the caller has access, false otherwise.
+   * @return true if the caller has access, false otherwise.
    */
   function hasAccess(ResourceId resourceId, address caller) internal view returns (bool) {
     return
@@ -28,9 +28,9 @@ library AccessControl {
 
   /**
    * @notice Check for access at the given namespace or resource.
-   * @dev Reverts with World_AccessDenied if the caller has no access.
    * @param resourceId The resource ID or namespace ID to check access for.
    * @param caller The address of the caller.
+   * @dev IWorldErrors.World_AccessDenied if access is denied.
    */
   function requireAccess(ResourceId resourceId, address caller) internal view {
     // Check if the given caller has access to the given namespace or name
@@ -44,6 +44,7 @@ library AccessControl {
    * @dev Reverts with World_AccessDenied if the check fails.
    * @param resourceId The resource ID to check ownership for.
    * @param caller The address of the caller.
+   * @dev IWorldErrors.World_AccessDenied if caller is not owner of the namespace of the resource
    */
   function requireOwner(ResourceId resourceId, address caller) internal view {
     if (NamespaceOwner._get(resourceId.getNamespaceId()) != caller) {
