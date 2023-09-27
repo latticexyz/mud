@@ -13,7 +13,7 @@ export function renderWorld(options: RenderWorldOptions) {
     interfaceName === "IBaseWorld"
       ? [
           { symbol: "IStore", path: `${storeImportPath}IStore.sol` },
-          { symbol: "IWorldKernel", path: `${worldImportPath}interfaces/IWorldKernel.sol` },
+          { symbol: "IWorldKernel", path: `${worldImportPath}IWorldKernel.sol` },
         ]
       : [
           {

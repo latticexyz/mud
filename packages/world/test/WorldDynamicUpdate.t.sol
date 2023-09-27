@@ -6,7 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
-import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
@@ -24,7 +24,7 @@ import { AddressArray } from "./codegen/tables/AddressArray.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
-import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
+import { IWorldErrors } from "../src/IWorldErrors.sol";
 
 contract UpdateInDynamicFieldTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;

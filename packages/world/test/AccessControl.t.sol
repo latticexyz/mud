@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
 
-import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
+import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { World } from "../src/World.sol";
 import { AccessControl } from "../src/AccessControl.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";

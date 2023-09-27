@@ -2,9 +2,9 @@
 pragma solidity >=0.8.21;
 
 import { WorldContextConsumer } from "./WorldContext.sol";
-import { IDelegationControl, DELEGATION_CONTROL_INTERFACE_ID } from "./interfaces/IDelegationControl.sol";
-import { WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "./interfaces/IWorldContextConsumer.sol";
-import { IERC165, ERC165_INTERFACE_ID } from "./interfaces/IERC165.sol";
+import { IDelegationControl, DELEGATION_CONTROL_INTERFACE_ID } from "./IDelegationControl.sol";
+import { WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "./IWorldContextConsumer.sol";
+import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
 
 abstract contract DelegationControl is WorldContextConsumer, IDelegationControl {
   function supportsInterface(

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.0-next.8",
+  "version": "2.0.0-next.9",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -66,7 +66,6 @@
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "ejs": "^3.1.8",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
-    "hardhat": "^2.10.2",
     "solhint": "^3.3.7",
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",

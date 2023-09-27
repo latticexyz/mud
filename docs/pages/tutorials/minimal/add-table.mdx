@@ -77,7 +77,7 @@ Block numbers and timestamps can be values up to `uint256`, so we'll use this ty
 pragma solidity >=0.8.0;
 
 import { System } from "@latticexyz/world/src/System.sol";
-import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+import { Counter, History, HistoryData } from "../codegen/index.sol";
 
 contract IncrementSystem is System {
   function increment() public returns (uint32) {
@@ -96,7 +96,7 @@ contract IncrementSystem is System {
    <summary>Explanation</summary>
 
 ```solidity
-import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+import { Counter, History, HistoryData } from "../codegen/index.sol";
 ```
 
 When a table has multiple fields in the value schema, MUD generates a [Struct](https://www.tutorialspoint.com/solidity/solidity_structs.htm) to hold a full value.

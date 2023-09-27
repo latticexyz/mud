@@ -3,7 +3,7 @@ pragma solidity >=0.8.21;
 
 import { IWorldErrors } from "./IWorldErrors.sol";
 import { IModule } from "./IModule.sol";
-import { ResourceId } from "../WorldResourceId.sol";
+import { ResourceId } from "./WorldResourceId.sol";
 
 interface IWorldModuleInstallation {
   /**

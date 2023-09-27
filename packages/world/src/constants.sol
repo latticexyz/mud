@@ -8,6 +8,10 @@ import { RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "./worldResourceTypes.sol";
 bytes14 constant ROOT_NAMESPACE = "";
 bytes16 constant ROOT_NAME = "";
 
+ResourceId constant WORLD_NAMESPACE_ID = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_NAMESPACE, bytes14("world"), ROOT_NAME))
+);
+
 ResourceId constant ROOT_NAMESPACE_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_NAMESPACE, ROOT_NAMESPACE, ROOT_NAME))
 );

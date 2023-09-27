@@ -11,7 +11,7 @@ import { UNLIMITED_DELEGATION } from "../src/constants.sol";
 import { ResourceId, WorldResourceIdLib } from "../src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
-import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
+import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { SystemCallData, SystemCallFromData } from "../src/modules/core/types.sol";

@@ -5,7 +5,7 @@ import { mudConfig } from "../register";
 
 const config = mudConfig({
   storeImportPath: "../../../src/",
-  namespace: "mudstore",
+  namespace: "store",
   codegenDirectory: "../test/codegen",
   enums: {
     ExampleEnum: ["None", "First", "Second", "Third"],

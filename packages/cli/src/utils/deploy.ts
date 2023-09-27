@@ -37,6 +37,7 @@ import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains"
 
 // If you are deploying to chains other than anvil or Lattice testnet, add them here
 export const supportedChains: MUDChain[] = [mudFoundry, latticeTestnet];
+import { resourceIdToHex } from "@latticexyz/common";
 
 export interface DeployConfig {
   profile?: string;
@@ -196,7 +197,7 @@ export async function deploy(
       account,
       address: deployedWorldAddress as Address,
       publicClient,
-      args: [toHex(mudConfig.namespace, { size: 32 })],
+      args: [[resourceIdToHex({ type: "namespace", namespace: mudConfig.namespace, name: "" })]],
       abi: IBaseWorldAbi,
       functionName: "registerNamespace",
       debug: Boolean(debug),

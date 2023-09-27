@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { IStoreData } from "@latticexyz/store/src/IStore.sol";
+import { StoreData } from "@latticexyz/store/src/StoreData.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
@@ -26,9 +25,9 @@ import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
 
-import { IModule, MODULE_INTERFACE_ID } from "./interfaces/IModule.sol";
-import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
-import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
+import { IModule, MODULE_INTERFACE_ID } from "./IModule.sol";
+import { IWorldKernel } from "./IWorldKernel.sol";
+import { IDelegationControl } from "./IDelegationControl.sol";
 
 import { Systems } from "./codegen/tables/Systems.sol";
 import { SystemHooks } from "./codegen/tables/SystemHooks.sol";
@@ -36,7 +35,7 @@ import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
 import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
-contract World is StoreRead, IStoreData, IWorldKernel {
+contract World is StoreData, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
 
   address public immutable creator;
@@ -47,7 +46,6 @@ contract World is StoreRead, IStoreData, IWorldKernel {
 
   constructor() {
     creator = msg.sender;
-    StoreCore.initialize();
     emit HelloWorld(WORLD_VERSION);
   }
 
