@@ -27,7 +27,7 @@ import { System } from "../src/System.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, ROOT_NAMESPACE_ID, UNLIMITED_DELEGATION } from "../src/constants.sol";
 import { RESOURCE_TABLE, RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "../src/worldResourceTypes.sol";
-import { WorldContextProvider, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
+import { WorldContextProviderLib, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
 import { SystemHook } from "../src/SystemHook.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
 import { Module, MODULE_INTERFACE_ID } from "../src/Module.sol";
@@ -900,7 +900,7 @@ contract WorldTest is Test, GasReporter {
         WorldTestSystem.delegateCallSubSystem, // Function in system
         (
           address(subSystem), // Address of subsystem
-          WorldContextProvider.appendContext({
+          WorldContextProviderLib.appendContext({
             callData: abi.encodeCall(WorldTestSystem.msgSender, ()),
             msgSender: address(this),
             msgValue: uint256(0)

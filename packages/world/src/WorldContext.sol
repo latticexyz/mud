@@ -14,21 +14,12 @@ uint256 constant CONTEXT_BYTES = 20 + 32;
 abstract contract WorldContextConsumer is IWorldContextConsumer {
   // Extract the trusted msg.sender value appended to the calldata
   function _msgSender() public view returns (address sender) {
-    assembly {
-      // Load 32 bytes from calldata at position calldatasize() - context size,
-      // then shift left 96 bits (to right-align the address)
-      // 96 = 256 - 20 * 8
-      sender := shr(96, calldataload(sub(calldatasize(), CONTEXT_BYTES)))
-    }
-    if (sender == address(0)) sender = msg.sender;
+    return WorldContextConsumerLib._msgSender();
   }
 
   // Extract the trusted msg.value value appended to the calldata
   function _msgValue() public pure returns (uint256 value) {
-    assembly {
-      // Load 32 bytes from calldata at position calldatasize() - 32 bytes,
-      value := calldataload(sub(calldatasize(), 32))
-    }
+    return WorldContextConsumerLib._msgValue();
   }
 
   function _world() public view returns (address) {
@@ -41,10 +32,35 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
   }
 }
 
+library WorldContextConsumerLib {
+  // Extract the trusted msg.sender value appended to the calldata
+  function _msgSender() internal view returns (address sender) {
+    assembly {
+      // Load 32 bytes from calldata at position calldatasize() - context size,
+      // then shift left 96 bits (to right-align the address)
+      // 96 = 256 - 20 * 8
+      sender := shr(96, calldataload(sub(calldatasize(), CONTEXT_BYTES)))
+    }
+    if (sender == address(0)) sender = msg.sender;
+  }
+
+  // Extract the trusted msg.value value appended to the calldata
+  function _msgValue() internal pure returns (uint256 value) {
+    assembly {
+      // Load 32 bytes from calldata at position calldatasize() - 32 bytes,
+      value := calldataload(sub(calldatasize(), 32))
+    }
+  }
+
+  function _world() internal view returns (address) {
+    return StoreSwitch.getStoreAddress();
+  }
+}
+
 /**
  * Simple utility function to call a contract and append the msg.sender to the calldata (to be consumed by WorldContextConsumer)
  */
-library WorldContextProvider {
+library WorldContextProviderLib {
   function appendContext(
     bytes memory callData,
     address msgSender,

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { WorldContextProvider } from "../../WorldContext.sol";
+import { WorldContextProviderLib } from "../../WorldContext.sol";
 import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID, WORLD_NAMESPACE_ID } from "../../constants.sol";
 import { Module } from "../../Module.sol";
 
@@ -90,7 +90,7 @@ contract CoreModule is Module {
    */
   function _registerCoreSystem() internal {
     // Use the CoreSystem's `registerSystem` implementation to register itself on the World.
-    WorldContextProvider.delegatecallWithContextOrRevert({
+    WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
       msgValue: 0,
       target: coreSystem,
@@ -133,7 +133,7 @@ contract CoreModule is Module {
     for (uint256 i = 0; i < functionSignatures.length; i++) {
       // Use the CoreSystem's `registerRootFunctionSelector` to register the
       // root function selectors in the World.
-      WorldContextProvider.delegatecallWithContextOrRevert({
+      WorldContextProviderLib.delegatecallWithContextOrRevert({
         msgSender: _msgSender(),
         msgValue: 0,
         target: coreSystem,

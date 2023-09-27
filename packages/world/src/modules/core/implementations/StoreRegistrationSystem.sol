@@ -13,7 +13,7 @@ import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
-import { WorldContextProvider } from "../../../WorldContext.sol";
+import { WorldContextProviderLib } from "../../../WorldContext.sol";
 
 import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
