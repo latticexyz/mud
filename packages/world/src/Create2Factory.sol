@@ -19,7 +19,7 @@ contract Create2Factory {
    * @dev Deploys a new Contract using create2.
    * @param byteCode The bytecode of the contract to be deployed.
    * @param salt A 256-bit value that, combined with the bytecode, determines the address.
-   * @custom:emit ContractDeployed
+   * @dev Emit ContractDeployed on success
    */
   function deployContract(bytes memory byteCode, uint256 salt) public {
     address addr = Create2.deploy(byteCode, salt);
