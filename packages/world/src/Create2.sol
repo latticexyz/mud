@@ -20,8 +20,8 @@ library Create2 {
    *
    * @param byteCode The bytecode of the contract to be deployed.
    * @param salt A 256-bit value that, combined with the bytecode, determines the address.
-   *
    * @return addr The address of the newly deployed contract.
+   * @custom:throw If the CREATE2 fails, reverts
    */
   function deploy(bytes memory byteCode, uint256 salt) internal returns (address addr) {
     assembly {
