@@ -7,11 +7,18 @@ import { IWorldErrors } from "./IWorldErrors.sol";
 import { ResourceAccess } from "./codegen/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "./codegen/tables/NamespaceOwner.sol";
 
+/**
+ * @title AccessControl
+ * @dev Provides access control functions for checking permissions and ownership within a namespace.
+ */
 library AccessControl {
   using WorldResourceIdInstance for ResourceId;
 
   /**
-   * Returns true if the caller has access to the namespace or name, false otherwise.
+   * @notice Checks if the caller has access to the given resource ID or its namespace.
+   * @param resourceId The resource ID or namespace ID to check access for.
+   * @param caller The address of the caller.
+   * @return True if the caller has access, false otherwise.
    */
   function hasAccess(ResourceId resourceId, address caller) internal view returns (bool) {
     return
@@ -20,8 +27,10 @@ library AccessControl {
   }
 
   /**
-   * Check for access at the given namespace or resource.
-   * Reverts with World_AccessDenied if the caller has no access.
+   * @notice Check for access at the given namespace or resource.
+   * @dev Reverts with World_AccessDenied if the caller has no access.
+   * @param resourceId The resource ID or namespace ID to check access for.
+   * @param caller The address of the caller.
    */
   function requireAccess(ResourceId resourceId, address caller) internal view {
     // Check if the given caller has access to the given namespace or name
@@ -31,8 +40,10 @@ library AccessControl {
   }
 
   /**
-   * Check for ownership of the namespace of the given resource ID.
-   * Reverts with World_AccessDenied if the check fails.
+   * @notice Check for ownership of the namespace of the given resource ID.
+   * @dev Reverts with World_AccessDenied if the check fails.
+   * @param resourceId The resource ID to check ownership for.
+   * @param caller The address of the caller.
    */
   function requireOwner(ResourceId resourceId, address caller) internal view {
     if (NamespaceOwner._get(resourceId.getNamespaceId()) != caller) {
