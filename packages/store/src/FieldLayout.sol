@@ -3,17 +3,23 @@ pragma solidity >=0.8.21;
 
 import { WORD_SIZE, WORD_LAST_INDEX, BYTE_TO_BITS, MAX_TOTAL_FIELDS, MAX_DYNAMIC_FIELDS, LayoutOffsets } from "./constants.sol";
 
-// - 2 bytes for total length of all static fields
-// - 1 byte for number of static size fields
-// - 1 byte for number of dynamic size fields
-// - 28 bytes for 28 static field lengths
-// (MAX_DYNAMIC_FIELDS allows PackedCounter to pack the dynamic lengths into 1 word)
+/**
+ * - 2 bytes for total length of all static fields
+ * - 1 byte for number of static size fields
+ * - 1 byte for number of dynamic size fields
+ * - 28 bytes for 28 static field lengths
+ * (MAX_DYNAMIC_FIELDS allows PackedCounter to pack the dynamic lengths into 1 word)
+ */
 type FieldLayout is bytes32;
 
+// When importing FieldLayout, attach FieldLayoutInstance to it
 using FieldLayoutInstance for FieldLayout global;
 
 /**
- * Static functions for FieldLayout
+ * @title FieldLayoutLib
+ * @dev A library for handling field layout encoding into a single bytes32.
+ * It provides a function to encode static and dynamic fields and ensure
+ * various constraints regarding the length and size of the fields.
  */
 library FieldLayoutLib {
   error FieldLayoutLib_InvalidLength(uint256 length);
@@ -21,7 +27,12 @@ library FieldLayoutLib {
   error FieldLayoutLib_StaticLengthDoesNotFitInAWord();
 
   /**
-   * Encode the given field layout into a single bytes32
+   * @notice Encodes the given field layout into a single bytes32.
+   * @dev Ensures various constraints on the length and size of the fields.
+   * Reverts if total fields, static field length, or static byte length exceed allowed limits.
+   * @param _staticFields An array of static field lengths.
+   * @param numDynamicFields The number of dynamic fields.
+   * @return A FieldLayout structure containing the encoded field layout.
    */
   function encode(uint256[] memory _staticFields, uint256 numDynamicFields) internal pure returns (FieldLayout) {
     uint256 fieldLayout;
@@ -62,11 +73,15 @@ library FieldLayoutLib {
 }
 
 /**
- * Instance functions for FieldLayout
+ * @title FieldLayoutInstance
+ * @dev Provides instance functions for obtaining information from an encoded FieldLayout.
  */
 library FieldLayoutInstance {
   /**
-   * Get the static byte length at the given index
+   * @notice Get the static byte length at the given index from the field layout.
+   * @param fieldLayout The FieldLayout to extract the byte length from.
+   * @param index The field index to get the static byte length from.
+   * @return The static byte length at the specified index.
    */
   function atIndex(FieldLayout fieldLayout, uint256 index) internal pure returns (uint256) {
     unchecked {
@@ -75,28 +90,36 @@ library FieldLayoutInstance {
   }
 
   /**
-   * Get the total static byte length for the given field layout
+   * @notice Get the total static byte length for the given field layout.
+   * @param fieldLayout The FieldLayout to extract the total static byte length from.
+   * @return The total static byte length.
    */
   function staticDataLength(FieldLayout fieldLayout) internal pure returns (uint256) {
     return uint256(FieldLayout.unwrap(fieldLayout)) >> LayoutOffsets.TOTAL_LENGTH;
   }
 
   /**
-   * Get the number of static fields for the field layout
+   * @notice Get the number of static fields for the field layout.
+   * @param fieldLayout The FieldLayout to extract the number of static fields from.
+   * @return The number of static fields.
    */
   function numStaticFields(FieldLayout fieldLayout) internal pure returns (uint256) {
     return uint8(uint256(fieldLayout.unwrap()) >> LayoutOffsets.NUM_STATIC_FIELDS);
   }
 
   /**
-   * Get the number of dynamic length fields for the field layout
+   * @notice Get the number of dynamic length fields for the field layout.
+   * @param fieldLayout The FieldLayout to extract the number of dynamic fields from.
+   * @return The number of dynamic length fields.
    */
   function numDynamicFields(FieldLayout fieldLayout) internal pure returns (uint256) {
     return uint8(uint256(fieldLayout.unwrap()) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
   }
 
   /**
-   * Get the total number of fields for the field layout
+   * @notice Get the total number of fields for the field layout.
+   * @param fieldLayout The FieldLayout to extract the total number of fields from.
+   * @return The total number of fields.
    */
   function numFields(FieldLayout fieldLayout) internal pure returns (uint256) {
     unchecked {
@@ -107,12 +130,20 @@ library FieldLayoutInstance {
   }
 
   /**
-   * Check if the field layout is empty
+   * @notice Check if the field layout is empty.
+   * @param fieldLayout The FieldLayout to check.
+   * @return True if the field layout is empty, false otherwise.
    */
   function isEmpty(FieldLayout fieldLayout) internal pure returns (bool) {
     return FieldLayout.unwrap(fieldLayout) == bytes32(0);
   }
 
+  /**
+   * @notice Validate the field layout with various checks on the length and size of the fields.
+   * @dev Reverts if total fields, static field length, or static byte length exceed allowed limits.
+   * @param fieldLayout The FieldLayout to validate.
+   * @param allowEmpty A flag to determine if empty field layouts are allowed.
+   */
   function validate(FieldLayout fieldLayout, bool allowEmpty) internal pure {
     // FieldLayout must not be empty
     if (!allowEmpty && fieldLayout.isEmpty()) revert FieldLayoutLib.FieldLayoutLib_InvalidLength(0);
@@ -141,7 +172,9 @@ library FieldLayoutInstance {
   }
 
   /**
-   * Unwrap the field layout
+   * @notice Unwrap the field layout to obtain the raw bytes32 representation.
+   * @param fieldLayout The FieldLayout to unwrap.
+   * @return The unwrapped bytes32 representation of the FieldLayout.
    */
   function unwrap(FieldLayout fieldLayout) internal pure returns (bytes32) {
     return FieldLayout.unwrap(fieldLayout);
