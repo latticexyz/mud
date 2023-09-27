@@ -5,6 +5,31 @@ import { QueryAdapter } from "@latticexyz/store-sync/trpc-indexer";
 import { debug } from "../debug";
 import { Hex, getAddress } from "viem";
 
+const EXCLUDE_TABLES = [
+  "Position",
+  "MoveDifficulty",
+  "TerrainType",
+  "ArmorModifier",
+  "Untraversable",
+  "LastAction",
+  "StaminaOnKill",
+  "UnitType",
+  "Movable",
+  "Capturer",
+  "Range",
+  "Tier",
+  "Combat",
+  "StructureType",
+  "Capturable",
+  "KillCount",
+  "Stamina",
+  "ChargeCap",
+  "Charger",
+  "Chargee",
+  "ChargedByStart",
+  "Factory",
+];
+
 /**
  * Creates a storage adapter for the tRPC server/client to query data from SQLite.
  *
@@ -51,10 +76,7 @@ export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", an
           .where(
             and(
               eq(sqliteTable.__isDeleted, false),
-              entities.length &&
-                (table.name === "MoveDifficulty" || table.name === "TerrainType") /* || table.name === "ArmorModifier"*/
-                ? inArray(sqliteTable.__key, entities)
-                : undefined
+              entities.length && EXCLUDE_TABLES.includes(table.name) ? inArray(sqliteTable.__key, entities) : undefined
             )
           )
           .all();
