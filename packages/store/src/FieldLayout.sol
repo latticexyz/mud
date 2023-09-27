@@ -4,6 +4,9 @@ pragma solidity >=0.8.21;
 import { WORD_SIZE, WORD_LAST_INDEX, BYTE_TO_BITS, MAX_TOTAL_FIELDS, MAX_DYNAMIC_FIELDS, LayoutOffsets } from "./constants.sol";
 
 /**
+ * @title FieldLayout
+ * @dev Represents a field layout encoded into a single bytes32.
+ * From left to right, the bytes are laid out as follows:
  * - 2 bytes for total length of all static fields
  * - 1 byte for number of static size fields
  * - 1 byte for number of dynamic size fields
