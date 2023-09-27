@@ -40,10 +40,12 @@ jobs:
         shell: bash
         run: pnpm turbo run build --force --concurrency 10
 
+      # The changesets action doesn't support releasing snapshots (yet),
+      # so doing it manually here
       - name: Publish snapshots
-        uses: seek-oss/changesets-snapshot@v0
-        with:
-          pre-publish: pnpm build
+        run: |
+          pnpm changeset version --snapshot ${{ github.ref_name }}
+          pnpm changeset publish --tag ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
