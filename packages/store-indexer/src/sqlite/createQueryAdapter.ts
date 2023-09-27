@@ -61,8 +61,24 @@ export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", an
               z: "int32",
             },
           });
+
+          const Match = createSqliteTable({
+            address,
+            namespace: "",
+            name: "Match",
+            keySchema: { key: "bytes32" },
+            valueSchema: {
+              value: "int32",
+            },
+          });
+
           const positions = database.select().from(Position).where(eq(Position.z, matchId)).all();
-          return positions.map((pos) => pos.key);
+          const positionKeys = positions.map((pos) => pos.key);
+
+          const matches = database.select().from(Match).where(eq(Match.value, matchId)).all();
+          const matchKeys = matches.map((match) => match.key);
+
+          return [...new Set([...positionKeys, ...matchKeys])];
         } catch (error: unknown) {
           return [];
         }
