@@ -35,12 +35,12 @@ abstract contract StoreHook is IStoreHook {
    * @param fieldLayout The layout of the field, see FieldLayout.sol.
    */
   function onBeforeSetRecord(
-    ResourceId,
-    bytes32[] memory,
-    bytes memory,
-    PackedCounter,
-    bytes memory,
-    FieldLayout
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
+    FieldLayout fieldLayout
   ) public virtual {
     revert StoreHook_NotImplemented();
   }
@@ -56,12 +56,12 @@ abstract contract StoreHook is IStoreHook {
    * @param fieldLayout The layout of the field, see FieldLayout.sol.
    */
   function onAfterSetRecord(
-    ResourceId,
-    bytes32[] memory,
-    bytes memory,
-    PackedCounter,
-    bytes memory,
-    FieldLayout
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
+    FieldLayout fieldLayout
   ) public virtual {
     revert StoreHook_NotImplemented();
   }
@@ -77,7 +77,12 @@ abstract contract StoreHook is IStoreHook {
    * @param start The start byte position for splicing.
    * @param data The data to be written to the static data of the record at the start byte.
    */
-  function onBeforeSpliceStaticData(ResourceId, bytes32[] memory, uint48, bytes memory) public virtual {
+  function onBeforeSpliceStaticData(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint48 start,
+    bytes memory data
+  ) public virtual {
     revert StoreHook_NotImplemented();
   }
 
@@ -92,7 +97,12 @@ abstract contract StoreHook is IStoreHook {
    * @param start The start byte position for splicing.
    * @param data The data to be written to the static data of the record at the start byte.
    */
-  function onAfterSpliceStaticData(ResourceId, bytes32[] memory, uint48, bytes memory) public virtual {
+  function onAfterSpliceStaticData(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint48 start,
+    bytes memory data
+  ) public virtual {
     revert StoreHook_NotImplemented();
   }
 
@@ -110,13 +120,13 @@ abstract contract StoreHook is IStoreHook {
    * @param data The data to be inserted into the dynamic data of the record at the start byte.
    */
   function onBeforeSpliceDynamicData(
-    ResourceId,
-    bytes32[] memory,
-    uint8,
-    uint40,
-    uint40,
-    PackedCounter,
-    bytes memory
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    PackedCounter encodedLengths,
+    bytes memory data
   ) public virtual {
     revert StoreHook_NotImplemented();
   }
@@ -135,13 +145,13 @@ abstract contract StoreHook is IStoreHook {
    * @param data The data to be inserted into the dynamic data of the record at the start byte.
    */
   function onAfterSpliceDynamicData(
-    ResourceId,
-    bytes32[] memory,
-    uint8,
-    uint40,
-    uint40,
-    PackedCounter,
-    bytes memory
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    PackedCounter encodedLengths,
+    bytes memory data
   ) public virtual {
     revert StoreHook_NotImplemented();
   }
