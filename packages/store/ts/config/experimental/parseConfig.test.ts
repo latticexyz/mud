@@ -82,14 +82,13 @@ describe("parseConfig", () => {
         MyNamespace: {
           tables: {
             PlayerNames: "string",
-            // TODO: make table overrides work or "throw"
-            // Exists: {
-            //   // TODO: disable overriding namespace here
-            //   namespace: "OverrideNamespace",
-            //   valueSchema: {
-            //     exists: "bool",
-            //   },
-            // },
+            Exists: {
+              // TODO: disable overriding namespace here
+              namespace: "OverrideNamespace",
+              valueSchema: {
+                exists: "bool",
+              },
+            },
           },
         },
       },
@@ -99,14 +98,14 @@ describe("parseConfig", () => {
       tables: {
         Exists: {
           type: "table",
-          namespace: "DefaultNamespace",
+          namespace: "OverrideNamespace",
           name: "Exists",
-          tableId: resourceIdToHex({ type: "table", namespace: "DefaultNamespace", name: "Exists" }),
+          tableId: resourceIdToHex({ type: "table", namespace: "OverrideNamespace", name: "Exists" }),
           keySchema: {
             key: "bytes32",
           },
           valueSchema: {
-            value: "bool",
+            exists: "bool",
           },
         },
         Position: {

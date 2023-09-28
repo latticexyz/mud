@@ -1,3 +1,4 @@
+import { EmptyObject } from "./common";
 import { ParseTableInput, ParseTableOutput, parseTable } from "./parseTable";
 
 export type ParseNamespaceInput = {
@@ -6,13 +7,11 @@ export type ParseNamespaceInput = {
 };
 
 export type ParseNamespaceOutput<namespace extends string, input extends ParseNamespaceInput> = Readonly<{
-  tables: Readonly<{
-    [name in keyof NonNullable<input["tables"]> & string]: ParseTableOutput<
-      namespace,
-      name,
-      NonNullable<input["tables"]>[name]
-    >;
-  }>;
+  tables: input["tables"] extends ParseTableInput
+    ? Readonly<{
+        [name in keyof input["tables"] & string]: ParseTableOutput<namespace, name, input["tables"][name]>;
+      }>
+    : EmptyObject;
 }>;
 
 export function parseNamespace<namespace extends string, input extends ParseNamespaceInput>(
