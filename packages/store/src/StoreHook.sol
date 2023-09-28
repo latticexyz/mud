@@ -163,7 +163,7 @@ abstract contract StoreHook is IStoreHook {
    * @param keyTuple An array representing the composite key for the record.
    * @param fieldLayout The layout of the field, see FieldLayout.sol.
    */
-  function onBeforeDeleteRecord(ResourceId, bytes32[] memory, FieldLayout) public virtual {
+  function onBeforeDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public virtual {
     revert StoreHook_NotImplemented();
   }
 
@@ -174,7 +174,7 @@ abstract contract StoreHook is IStoreHook {
    * @param keyTuple An array representing the composite key for the record.
    * @param fieldLayout The layout of the field, see FieldLayout.sol.
    */
-  function onAfterDeleteRecord(ResourceId, bytes32[] memory, FieldLayout) public virtual {
+  function onAfterDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public virtual {
     revert StoreHook_NotImplemented();
   }
 }
