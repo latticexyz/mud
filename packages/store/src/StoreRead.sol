@@ -1,32 +1,36 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { STORE_VERSION } from "./version.sol";
-import { IStoreRead } from "./IStore.sol";
+import { IStoreRead } from "./IStoreRead.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
+import { ResourceId } from "./ResourceId.sol";
 
 contract StoreRead is IStoreRead {
-  function storeVersion() public pure returns (bytes32) {
-    return STORE_VERSION;
-  }
-
-  function getFieldLayout(bytes32 tableId) public view virtual returns (FieldLayout fieldLayout) {
+  function getFieldLayout(ResourceId tableId) public view virtual returns (FieldLayout fieldLayout) {
     fieldLayout = StoreCore.getFieldLayout(tableId);
   }
 
-  function getValueSchema(bytes32 tableId) public view virtual returns (Schema valueSchema) {
+  function getValueSchema(ResourceId tableId) public view virtual returns (Schema valueSchema) {
     valueSchema = StoreCore.getValueSchema(tableId);
   }
 
-  function getKeySchema(bytes32 tableId) public view virtual returns (Schema keySchema) {
+  function getKeySchema(ResourceId tableId) public view virtual returns (Schema keySchema) {
     keySchema = StoreCore.getKeySchema(tableId);
   }
 
   function getRecord(
-    bytes32 tableId,
+    ResourceId tableId,
+    bytes32[] calldata keyTuple
+  ) public view virtual returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
+    return StoreCore.getRecord(tableId, keyTuple);
+  }
+
+  function getRecord(
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     FieldLayout fieldLayout
   ) public view virtual returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
@@ -34,7 +38,15 @@ contract StoreRead is IStoreRead {
   }
 
   function getField(
-    bytes32 tableId,
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex
+  ) public view virtual returns (bytes memory data) {
+    data = StoreCore.getField(tableId, keyTuple, fieldIndex);
+  }
+
+  function getField(
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -43,7 +55,7 @@ contract StoreRead is IStoreRead {
   }
 
   function getStaticField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -52,7 +64,7 @@ contract StoreRead is IStoreRead {
   }
 
   function getDynamicField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 dynamicFieldIndex
   ) public view virtual returns (bytes memory data) {
@@ -60,7 +72,15 @@ contract StoreRead is IStoreRead {
   }
 
   function getFieldLength(
-    bytes32 tableId,
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex
+  ) public view virtual returns (uint256) {
+    return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex);
+  }
+
+  function getFieldLength(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -68,14 +88,21 @@ contract StoreRead is IStoreRead {
     return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex, fieldLayout);
   }
 
-  function getFieldSlice(
-    bytes32 tableId,
+  function getDynamicFieldLength(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    FieldLayout fieldLayout,
+    uint8 dynamicFieldIndex
+  ) public view virtual returns (uint256) {
+    return StoreCore.getFieldLength(tableId, keyTuple, dynamicFieldIndex);
+  }
+
+  function getDynamicFieldSlice(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
     uint256 start,
     uint256 end
   ) public view virtual returns (bytes memory) {
-    return StoreCore.getFieldSlice(tableId, keyTuple, fieldIndex, fieldLayout, start, end);
+    return StoreCore.getDynamicFieldSlice(tableId, keyTuple, dynamicFieldIndex, start, end);
   }
 }

@@ -3,16 +3,15 @@ import {
   renderArguments,
   renderCommonData,
   renderList,
-  renderRelativeImports,
+  renderImports,
   renderTableId,
   renderTypeHelpers,
   renderWithStore,
   renderedSolidityHeader,
   RenderStaticField,
 } from "@latticexyz/common/codegen";
-import { renderEphemeralMethods } from "./ephemeral";
 import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
-import { renderRecordData, renderRecordMethods } from "./record";
+import { renderDeleteRecordMethods, renderRecordData, renderRecordMethods } from "./record";
 import { renderFieldLayout } from "./renderFieldLayout";
 import { RenderTableOptions } from "./types";
 
@@ -26,15 +25,12 @@ export function renderTable(options: RenderTableOptions) {
     fields,
     staticFields,
     dynamicFields,
-    withFieldMethods,
     withRecordMethods,
-    withEphemeralMethods,
     storeArgument,
     keyTuple,
   } = options;
 
   const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
-  const shouldRenderDelete = !withEphemeralMethods;
 
   return `
     ${renderedSolidityHeader}
@@ -53,12 +49,14 @@ export function renderTable(options: RenderTableOptions) {
     import { FieldLayout, FieldLayoutLib } from "${storeImportPath}FieldLayout.sol";
     import { Schema, SchemaLib } from "${storeImportPath}Schema.sol";
     import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter.sol";
+    import { ResourceId } from "${storeImportPath}ResourceId.sol";
+    import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "${storeImportPath}storeResourceTypes.sol";
 
     ${
       imports.length > 0
         ? `
           // Import user types
-          ${renderRelativeImports(imports)}
+          ${renderImports(imports)}
           `
         : ""
     }
@@ -121,11 +119,11 @@ export function renderTable(options: RenderTableOptions) {
         `
       )}
 
-      ${withFieldMethods ? renderFieldMethods(options) : ""}
+      ${renderFieldMethods(options)}
 
       ${withRecordMethods ? renderRecordMethods(options) : ""}
 
-      ${withEphemeralMethods ? renderEphemeralMethods(options) : ""}
+      ${renderDeleteRecordMethods(options)}
 
       ${renderEncodeStatic(staticFields)}
 
@@ -146,25 +144,6 @@ export function renderTable(options: RenderTableOptions) {
       function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory) {
         ${_keyTupleDefinition}
         return _keyTuple;
-      }
-
-      ${
-        shouldRenderDelete
-          ? renderWithStore(
-              storeArgument,
-              (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-                /* Delete all data for given keys${_commentSuffix} */
-                function ${_methodNamePrefix}deleteRecord(${renderArguments([
-                _typedStore,
-                _typedTableId,
-                _typedKeyArgs,
-              ])}) internal {
-                  ${_keyTupleDefinition}
-                  ${_store}.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-                }
-              `
-            )
-          : ""
       }
     }
 

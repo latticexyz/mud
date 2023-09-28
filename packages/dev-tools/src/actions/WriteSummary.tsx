@@ -9,7 +9,7 @@ import { getTransaction } from "./getTransaction";
 import { getTransactionReceipt } from "./getTransactionReceipt";
 import { getTransactionResult } from "./getTransactionResult";
 import { ErrorTrace } from "../ErrorTrace";
-import { ContractWrite, hexToTableId } from "@latticexyz/common";
+import { ContractWrite, hexToResourceId } from "@latticexyz/common";
 import { useDevToolsContext } from "../DevToolsContext";
 import { hexKeyTupleToEntity } from "@latticexyz/store-sync/recs";
 
@@ -145,7 +145,7 @@ export function WriteSummary({ write }: Props) {
             </thead>
             <tbody className="font-mono text-xs">
               {events.map(({ eventName, args }, i) => {
-                const table = hexToTableId((args as any).tableId);
+                const table = hexToResourceId((args as any).tableId);
                 // TODO: dedupe this with logs table so we can get both rendering the same
                 return (
                   <tr key={i}>
@@ -153,9 +153,11 @@ export function WriteSummary({ write }: Props) {
                       {table.namespace}:{table.name}
                     </td>
                     <td className="whitespace-nowrap">
-                      {eventName === "StoreSetRecord" ? <span className="text-green-500 font-bold">=</span> : null}
-                      {eventName === "StoreSetField" ? <span className="text-green-500 font-bold">+</span> : null}
-                      {eventName === "StoreDeleteRecord" ? <span className="text-red-500 font-bold">-</span> : null}
+                      {eventName === "Store_SetRecord" ? <span className="text-green-500 font-bold">=</span> : null}
+                      {eventName === "Store_SpliceStaticData" || eventName === "Store_SpliceDynamicData" ? (
+                        <span className="text-green-500 font-bold">+</span>
+                      ) : null}
+                      {eventName === "Store_DeleteRecord" ? <span className="text-red-500 font-bold">-</span> : null}
                     </td>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">
                       {hexKeyTupleToEntity((args as any).keyTuple)}

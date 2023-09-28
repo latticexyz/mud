@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { IStore } from "../src/IStore.sol";
 import { StoreHook } from "../src/StoreHook.sol";
@@ -7,14 +7,18 @@ import { PackedCounter } from "../src/PackedCounter.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
+import { ResourceId } from "../src/ResourceId.sol";
+import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
 
-bytes32 constant indexerTableId = keccak256("indexer.tableId");
+ResourceId constant indexerTableId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("mirror"), bytes16("indexer")))
+);
 
 contract MirrorSubscriber is StoreHook {
-  bytes32 _tableId;
+  bytes32 public _tableId;
 
   constructor(
-    bytes32 tableId,
+    ResourceId tableId,
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
@@ -22,53 +26,46 @@ contract MirrorSubscriber is StoreHook {
     string[] memory fieldNames
   ) {
     IStore(msg.sender).registerTable(indexerTableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
-    _tableId = tableId;
+    _tableId = ResourceId.unwrap(tableId);
   }
 
   function onBeforeSetRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
-    bytes calldata staticData,
+    bytes memory staticData,
     PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
-  ) public {
-    if (tableId != _tableId) revert("invalid table");
-    StoreSwitch.setRecord(indexerTableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    bytes memory dynamicData,
+    FieldLayout
+  ) public override {
+    if (ResourceId.unwrap(tableId) != _tableId) revert("invalid table");
+    StoreSwitch.setRecord(indexerTableId, keyTuple, staticData, encodedLengths, dynamicData);
   }
 
-  function onAfterSetRecord(
-    bytes32 tableId,
+  function onBeforeSpliceStaticData(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
-    bytes calldata staticData,
-    PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
-  ) public {
-    // NOOP
+    uint48 start,
+    bytes memory data
+  ) public override {
+    if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
+    StoreSwitch.spliceStaticData(indexerTableId, keyTuple, start, data);
   }
 
-  function onBeforeSetField(
-    bytes32 tableId,
+  function onBeforeSpliceDynamicData(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
-  ) public {
-    if (tableId != tableId) revert("invalid tableId");
-    StoreSwitch.setField(indexerTableId, keyTuple, fieldIndex, data, fieldLayout);
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    PackedCounter,
+    bytes memory data
+  ) public override {
+    if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
+    StoreSwitch.spliceDynamicData(indexerTableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
   }
 
-  function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory, FieldLayout) public {
-    // NOOP
-  }
-
-  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
-    if (tableId != tableId) revert("invalid tableId");
-    StoreSwitch.deleteRecord(indexerTableId, keyTuple, fieldLayout);
-  }
-
-  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
-    // NOOP
+  function onBeforeDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout) public override {
+    if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
+    StoreSwitch.deleteRecord(indexerTableId, keyTuple);
   }
 }

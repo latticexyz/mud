@@ -1,10 +1,30 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 uint8 constant BEFORE_SET_RECORD = 1 << 0;
 uint8 constant AFTER_SET_RECORD = 1 << 1;
-// TODO: do we need to differentiate between static and dynamic set field?
-uint8 constant BEFORE_SET_FIELD = 1 << 2;
-uint8 constant AFTER_SET_FIELD = 1 << 3;
-uint8 constant BEFORE_DELETE_RECORD = 1 << 4;
-uint8 constant AFTER_DELETE_RECORD = 1 << 5;
+uint8 constant BEFORE_SPLICE_STATIC_DATA = 1 << 2;
+uint8 constant AFTER_SPLICE_STATIC_DATA = 1 << 3;
+uint8 constant BEFORE_SPLICE_DYNAMIC_DATA = 1 << 4;
+uint8 constant AFTER_SPLICE_DYNAMIC_DATA = 1 << 5;
+uint8 constant BEFORE_DELETE_RECORD = 1 << 6;
+uint8 constant AFTER_DELETE_RECORD = 1 << 7;
+
+uint8 constant ALL = BEFORE_SET_RECORD |
+  AFTER_SET_RECORD |
+  BEFORE_SPLICE_STATIC_DATA |
+  AFTER_SPLICE_STATIC_DATA |
+  BEFORE_SPLICE_DYNAMIC_DATA |
+  AFTER_SPLICE_DYNAMIC_DATA |
+  BEFORE_DELETE_RECORD |
+  AFTER_DELETE_RECORD;
+
+uint8 constant BEFORE_ALL = BEFORE_SET_RECORD |
+  BEFORE_SPLICE_STATIC_DATA |
+  BEFORE_SPLICE_DYNAMIC_DATA |
+  BEFORE_DELETE_RECORD;
+
+uint8 constant AFTER_ALL = AFTER_SET_RECORD |
+  AFTER_SPLICE_STATIC_DATA |
+  AFTER_SPLICE_DYNAMIC_DATA |
+  AFTER_DELETE_RECORD;

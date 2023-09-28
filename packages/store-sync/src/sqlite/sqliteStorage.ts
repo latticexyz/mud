@@ -1,4 +1,4 @@
-import { Hex, PublicClient, concatHex, getAddress } from "viem";
+import { Hex, PublicClient, concatHex, getAddress, size } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
@@ -12,7 +12,7 @@ import { schemaVersion } from "./schemaVersion";
 import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { hexToTableId, spliceHex, tableIdToHex } from "@latticexyz/common";
+import { hexToResourceId, spliceHex } from "@latticexyz/common";
 import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
@@ -38,13 +38,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
       for (const table of newTables) {
         debug(`creating table ${table.namespace}:${table.name} for world ${chainId}:${table.address}`);
 
-        const sqliteTable = buildTable({
-          address: table.address,
-          namespace: table.namespace,
-          name: table.name,
-          keySchema: table.keySchema,
-          valueSchema: table.valueSchema,
-        });
+        const sqliteTable = buildTable(table);
 
         tx.run(sql.raw(sqliteTableToSql(sqliteTable)));
 
@@ -52,12 +46,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           .values({
             schemaVersion,
             id: getTableName(table.address, table.namespace, table.name),
-            address: table.address,
-            tableId: tableIdToHex(table.namespace, table.name),
-            namespace: table.namespace,
-            name: table.name,
-            keySchema: table.keySchema,
-            valueSchema: table.valueSchema,
+            ...table,
             lastUpdatedBlockNumber: blockNumber,
           })
           .onConflictDoNothing()
@@ -72,7 +61,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           logs.map((log) =>
             JSON.stringify({
               address: getAddress(log.address),
-              ...hexToTableId(log.args.tableId),
+              ...hexToResourceId(log.args.tableId),
             })
           )
         )
@@ -98,7 +87,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           (table) => table.address === getAddress(log.address) && table.tableId === log.args.tableId
         );
         if (!table) {
-          const tableId = hexToTableId(log.args.tableId);
+          const tableId = hexToResourceId(log.args.tableId);
           debug(`table ${tableId.namespace}:${tableId.name} not found, skipping log`, log);
           continue;
         }
@@ -107,7 +96,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
         const uniqueKey = concatHex(log.args.keyTuple as Hex[]);
         const key = decodeKey(table.keySchema, log.args.keyTuple);
 
-        if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
+        if (log.eventName === "Store_SetRecord") {
           const value = decodeValueArgs(table.valueSchema, log.args);
           debug("upserting record", {
             namespace: table.namespace,
@@ -138,11 +127,11 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
               },
             })
             .run();
-        } else if (log.eventName === "StoreSpliceStaticData") {
+        } else if (log.eventName === "Store_SpliceStaticData") {
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
           const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
           const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
-          const newStaticData = spliceHex(previousStaticData, log.args.start, log.args.deleteCount, log.args.data);
+          const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
           const newValue = decodeValueArgs(table.valueSchema, {
             staticData: newStaticData,
             encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
@@ -176,7 +165,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
               },
             })
             .run();
-        } else if (log.eventName === "StoreSpliceDynamicData") {
+        } else if (log.eventName === "Store_SpliceDynamicData") {
           const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
           const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
           const newDynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);
@@ -218,7 +207,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
               },
             })
             .run();
-        } else if (log.eventName === "StoreDeleteRecord") {
+        } else if (log.eventName === "Store_DeleteRecord") {
           // TODO: should we upsert so we at least have a DB record of when a thing was created/deleted within the same block?
           debug("deleting record", {
             namespace: table.namespace,

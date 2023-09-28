@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
-import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
@@ -16,19 +16,18 @@ import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.so
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
 import { World } from "../src/World.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
+import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
-import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
-import { AddressArray } from "./tables/AddressArray.sol";
+import { AddressArray } from "./codegen/tables/AddressArray.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 
-import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
+import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
+import { IWorldErrors } from "../src/IWorldErrors.sol";
 
-contract UpdateInFieldTest is Test, GasReporter {
-  using ResourceSelector for bytes32;
+contract UpdateInDynamicFieldTest is Test, GasReporter {
+  using WorldResourceIdInstance for ResourceId;
 
   event HookCalled(bytes data);
   event WorldTestSystemLog(string log);
@@ -40,9 +39,9 @@ contract UpdateInFieldTest is Test, GasReporter {
   bytes32[] internal keyTuple;
   bytes32[] internal singletonKey;
 
-  bytes16 namespace;
+  bytes14 namespace;
   bytes16 name;
-  bytes32 internal tableId;
+  ResourceId internal tableId;
   address[] internal initData;
   bytes internal encodedData;
 
@@ -61,7 +60,7 @@ contract UpdateInFieldTest is Test, GasReporter {
 
     namespace = "DynamicUpdTest";
     name = "testTable";
-    tableId = ResourceSelector.from(namespace, name);
+    tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
 
     // Register a new table
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
@@ -77,12 +76,12 @@ contract UpdateInFieldTest is Test, GasReporter {
   }
 
   // Expect an error when trying to write from an address that doesn't have access
-  function _expectAccessDenied(address _caller, bytes32 _tableId) internal {
+  function _expectAccessDenied(address _caller, ResourceId _tableId) internal {
     vm.prank(_caller);
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.AccessDenied.selector, _tableId.toString(), _caller));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, _tableId.toString(), _caller));
   }
 
-  function testPopFromField() public {
+  function testPopFromDynamicField() public {
     FieldLayout fieldLayout = AddressArray.getFieldLayout();
 
     // Expect the data to be written
@@ -92,7 +91,7 @@ contract UpdateInFieldTest is Test, GasReporter {
     uint256 byteLengthToPop = 20;
 
     startGasReport("pop 1 address (cold)");
-    world.popFromField(tableId, keyTuple, 0, byteLengthToPop, fieldLayout);
+    world.popFromDynamicField(tableId, keyTuple, 0, byteLengthToPop);
     endGasReport();
 
     // Expect the data to be updated
@@ -106,7 +105,7 @@ contract UpdateInFieldTest is Test, GasReporter {
     byteLengthToPop = 20;
 
     startGasReport("pop 1 address (warm)");
-    world.popFromField(tableId, keyTuple, 0, byteLengthToPop, fieldLayout);
+    world.popFromDynamicField(tableId, keyTuple, 0, byteLengthToPop);
     endGasReport();
 
     // Expect the data to be updated
@@ -120,7 +119,7 @@ contract UpdateInFieldTest is Test, GasReporter {
     world.setField(tableId, keyTuple, 0, encodedData, fieldLayout);
     // Pop 2 items via direct access
     byteLengthToPop = 20 * 2;
-    world.popFromField(tableId, keyTuple, 0, byteLengthToPop, fieldLayout);
+    world.popFromDynamicField(tableId, keyTuple, 0, byteLengthToPop);
     // Expect the data to be updated
     loadedData = AddressArray.get(world, tableId, key);
     assertEq(loadedData.length, initData.length - 2);
@@ -130,29 +129,31 @@ contract UpdateInFieldTest is Test, GasReporter {
 
     // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), tableId);
-    world.popFromField(tableId, keyTuple, 0, 20, fieldLayout);
+    world.popFromDynamicField(tableId, keyTuple, 0, 20);
 
-    // Expect the World to have access
+    // Expect the World to not have access
     vm.prank(address(world));
-    world.popFromField(tableId, keyTuple, 0, 20, fieldLayout);
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.popFromDynamicField.selector)
+    );
+    world.popFromDynamicField(tableId, keyTuple, 0, 20);
   }
 
-  function testUpdateInField() public {
-    FieldLayout fieldLayout = AddressArray.getFieldLayout();
-
+  function testSpliceDynamicData() public {
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), initData);
 
     // Update index 0
     address[] memory dataForUpdate = new address[](1);
     dataForUpdate[0] = address(bytes20(keccak256("address for update")));
+    bytes memory encodedDataForUpdate = EncodeArray.encode(dataForUpdate);
 
-    startGasReport("updateInField 1 item (cold)");
-    world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate), fieldLayout);
+    startGasReport("update in field 1 item (cold)");
+    world.spliceDynamicData(tableId, keyTuple, 0, uint40(0), uint40(encodedDataForUpdate.length), encodedDataForUpdate);
     endGasReport();
 
-    startGasReport("updateInField 1 item (warm)");
-    world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate), fieldLayout);
+    startGasReport("update in field 1 item (warm)");
+    world.spliceDynamicData(tableId, keyTuple, 0, uint40(0), uint40(encodedDataForUpdate.length), encodedDataForUpdate);
     endGasReport();
 
     // Expect the data to be updated
@@ -160,7 +161,14 @@ contract UpdateInFieldTest is Test, GasReporter {
     assertEq(AddressArray.get(world, tableId, key), initData);
 
     // Update index 1 via direct access
-    world.updateInField(tableId, keyTuple, 0, 20 * 1, EncodeArray.encode(dataForUpdate), fieldLayout);
+    world.spliceDynamicData(
+      tableId,
+      keyTuple,
+      0,
+      uint40(20 * 1),
+      uint40(encodedDataForUpdate.length),
+      encodedDataForUpdate
+    );
 
     // Expect the data to be updated
     initData[1] = dataForUpdate[0];
@@ -168,10 +176,13 @@ contract UpdateInFieldTest is Test, GasReporter {
 
     // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), tableId);
-    world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate), fieldLayout);
+    world.spliceDynamicData(tableId, keyTuple, 0, uint40(0), uint40(encodedDataForUpdate.length), encodedDataForUpdate);
 
-    // Expect the World to have access
+    // Expect the World to not have access
     vm.prank(address(world));
-    world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate), fieldLayout);
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.spliceDynamicData.selector)
+    );
+    world.spliceDynamicData(tableId, keyTuple, 0, uint40(0), uint40(encodedDataForUpdate.length), encodedDataForUpdate);
   }
 }

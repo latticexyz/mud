@@ -1,35 +1,35 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { WorldContextProvider } from "../../WorldContext.sol";
-import { ROOT_NAMESPACE } from "../../constants.sol";
-import { Resource } from "../../common.sol";
+import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID, WORLD_NAMESPACE_ID } from "../../constants.sol";
 import { Module } from "../../Module.sol";
 
-import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
 
-import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { ResourceSelector } from "../../ResourceSelector.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../../WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
 
-import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../tables/ResourceAccess.sol";
-import { InstalledModules } from "../../tables/InstalledModules.sol";
-import { Delegations } from "../../tables/Delegations.sol";
+import { NamespaceOwner } from "../../codegen/tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../../codegen/tables/ResourceAccess.sol";
+import { InstalledModules } from "../../codegen/tables/InstalledModules.sol";
+import { UserDelegationControl } from "../../codegen/tables/UserDelegationControl.sol";
+import { NamespaceDelegationControl } from "../../codegen/tables/NamespaceDelegationControl.sol";
 
 import { CoreSystem } from "./CoreSystem.sol";
-import { CORE_MODULE_NAME, CORE_SYSTEM_NAME } from "./constants.sol";
+import { CORE_MODULE_NAME, CORE_SYSTEM_ID } from "./constants.sol";
 
-import { Systems } from "./tables/Systems.sol";
-import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
-import { ResourceType } from "./tables/ResourceType.sol";
-import { SystemHooks } from "./tables/SystemHooks.sol";
-import { SystemRegistry } from "./tables/SystemRegistry.sol";
-import { Balances } from "./tables/Balances.sol";
+import { Systems } from "../../codegen/tables/Systems.sol";
+import { FunctionSelectors } from "../../codegen/tables/FunctionSelectors.sol";
+import { SystemHooks } from "../../codegen/tables/SystemHooks.sol";
+import { SystemRegistry } from "../../codegen/tables/SystemRegistry.sol";
+import { Balances } from "../../codegen/tables/Balances.sol";
 
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
-import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
+import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
 import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
@@ -57,7 +57,7 @@ contract CoreModule is Module {
   }
 
   function install(bytes memory) public pure {
-    revert NonRootInstallNotSupported();
+    revert Module_NonRootInstallNotSupported();
   }
 
   /**
@@ -68,17 +68,21 @@ contract CoreModule is Module {
     NamespaceOwner.register();
     Balances.register();
     InstalledModules.register();
-    Delegations.register();
+    UserDelegationControl.register();
+    NamespaceDelegationControl.register();
     ResourceAccess.register();
     Systems.register();
     FunctionSelectors.register();
     SystemHooks.register();
     SystemRegistry.register();
-    ResourceType.register();
 
-    NamespaceOwner._set(ROOT_NAMESPACE, _msgSender());
-    ResourceAccess._set(ROOT_NAMESPACE, _msgSender(), true);
-    ResourceType._set(ROOT_NAMESPACE, Resource.NAMESPACE);
+    ResourceIds._setExists(ROOT_NAMESPACE_ID, true);
+    NamespaceOwner._set(ROOT_NAMESPACE_ID, _msgSender());
+    ResourceAccess._set(ROOT_NAMESPACE_ID, _msgSender(), true);
+
+    ResourceIds._setExists(WORLD_NAMESPACE_ID, true);
+    NamespaceOwner._set(WORLD_NAMESPACE_ID, _msgSender());
+    ResourceAccess._set(WORLD_NAMESPACE_ID, _msgSender(), true);
   }
 
   /**
@@ -90,10 +94,7 @@ contract CoreModule is Module {
       msgSender: _msgSender(),
       msgValue: 0,
       target: coreSystem,
-      callData: abi.encodeCall(
-        WorldRegistrationSystem.registerSystem,
-        (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), CoreSystem(coreSystem), true)
-      )
+      callData: abi.encodeCall(WorldRegistrationSystem.registerSystem, (CORE_SYSTEM_ID, CoreSystem(coreSystem), true))
     });
   }
 
@@ -101,33 +102,35 @@ contract CoreModule is Module {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[17] memory functionSelectors = [
+    string[19] memory functionSignatures = [
       // --- AccessManagementSystem ---
-      AccessManagementSystem.grantAccess.selector,
-      AccessManagementSystem.revokeAccess.selector,
-      AccessManagementSystem.transferOwnership.selector,
+      "grantAccess(bytes32,address)",
+      "revokeAccess(bytes32,address)",
+      "transferOwnership(bytes32,address)",
       // --- BalanceTransferSystem ---
-      BalanceTransferSystem.transferBalanceToNamespace.selector,
-      BalanceTransferSystem.transferBalanceToAddress.selector,
-      // --- EphemeralRecordSystem ---
-      IStoreEphemeral.emitEphemeralRecord.selector,
+      "transferBalanceToNamespace(bytes32,bytes32,uint256)",
+      "transferBalanceToAddress(bytes32,address,uint256)",
+      // --- BatchCallSystem ---
+      "batchCall((bytes32,bytes)[])",
+      "batchCallFrom((address,bytes32,bytes)[])",
       // --- ModuleInstallationSystem ---
-      ModuleInstallationSystem.installModule.selector,
+      "installModule(address,bytes)",
       // --- StoreRegistrationSystem ---
-      StoreRegistrationSystem.registerTable.selector,
-      StoreRegistrationSystem.registerStoreHook.selector,
-      StoreRegistrationSystem.unregisterStoreHook.selector,
+      "registerTable(bytes32,bytes32,bytes32,bytes32,string[],string[])",
+      "registerStoreHook(bytes32,address,uint8)",
+      "unregisterStoreHook(bytes32,address)",
       // --- WorldRegistrationSystem ---
-      WorldRegistrationSystem.registerNamespace.selector,
-      WorldRegistrationSystem.registerSystemHook.selector,
-      WorldRegistrationSystem.unregisterSystemHook.selector,
-      WorldRegistrationSystem.registerSystem.selector,
-      WorldRegistrationSystem.registerFunctionSelector.selector,
-      WorldRegistrationSystem.registerRootFunctionSelector.selector,
-      WorldRegistrationSystem.registerDelegation.selector
+      "registerNamespace(bytes32)",
+      "registerSystemHook(bytes32,address,uint8)",
+      "unregisterSystemHook(bytes32,address)",
+      "registerSystem(bytes32,address,bool)",
+      "registerFunctionSelector(bytes32,string)",
+      "registerRootFunctionSelector(bytes32,string,bytes4)",
+      "registerDelegation(address,bytes32,bytes)",
+      "registerNamespaceDelegation(bytes32,bytes32,bytes)"
     ];
 
-    for (uint256 i = 0; i < functionSelectors.length; i++) {
+    for (uint256 i = 0; i < functionSignatures.length; i++) {
       // Use the CoreSystem's `registerRootFunctionSelector` to register the
       // root function selectors in the World.
       WorldContextProvider.delegatecallWithContextOrRevert({
@@ -136,7 +139,7 @@ contract CoreModule is Module {
         target: coreSystem,
         callData: abi.encodeCall(
           WorldRegistrationSystem.registerRootFunctionSelector,
-          (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), functionSelectors[i], functionSelectors[i])
+          (CORE_SYSTEM_ID, functionSignatures[i], bytes4(keccak256(bytes(functionSignatures[i]))))
         )
       });
     }

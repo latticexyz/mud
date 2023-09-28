@@ -18,6 +18,8 @@ This can also quickly accelerate the need to run a set of dedicated nodes just t
 
 ## Installation
 
+### Running the indexer locally (on the host)
+
 These are the steps to install and start the MUD indexer.
 They are written under the assumption you are using `anvil` for your test chain, which is what the getting started package's `pnpm dev` does.
 
@@ -56,6 +58,114 @@ They are written under the assumption you are using `anvil` for your test chain,
    ```
 
    The result should be nicely formatted (and long) JSON output.
+
+### Running the indexer on Docker
+
+The indexer Docker image is available [on github](https://github.com/latticexyz/mud/pkgs/container/store-indexer).
+
+These environment variables need to be provided to the docker indexer to work:
+
+| Type                          | Variable        | Meaning                                                                                                  | Sample value (using `anvil` running on the host) |
+| ----------------------------- | --------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Needed                        | RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              | http://host.docker.internal:8545                 |
+| Optional                      | RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
+| Optional                      | START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                |
+| Optional                      | DEBUG=mud:\*    | Turn on debugging                                                                                        |                                                  |
+| Optional, only for SQLite     | SQLITE_FILENAME | Name of database                                                                                         | `anvil.db`                                       |
+| Optional, only for PostgreSQL | DATABASE_URL    | URL for the database, of the form `postgres://<host>/<database>`                                         |
+
+There are several ways to provide those environment variables to `docker run`:
+
+- On the command line you can specify `-e <variable>=<value>`.
+  You specify this after the `docker run`, but before the name of the image.
+- You can also write all the environment variables in a file and specify it using `--env-file`.
+  You specify this after the `docker run`, but before the name of the image.
+- Both [Docker Compose](https://docs.docker.com/compose/) and [Kubernetes](https://kubernetes.io/) have their own mechanisms for starting docker containers with environment variables.
+
+#### SQLite
+
+The command to start the indexer in SQLite mode is `pnpm start:sqlite`.
+To index an `anvil` instance running to the host, use:
+
+```sh copy
+docker run \
+  --platform linux/amd64 \
+  -e RPC_HTTP_URL=http://host.docker.internal:8545 \
+  -p 3001:3001  \
+  ghcr.io/latticexyz/store-indexer:latest  \
+  pnpm start:sqlite
+```
+
+However, this creates a docker container with a state, the SQLite database file.
+If we start a new container with the same image and parameters, it is going to have to go back to the start of the blockchain, which depending on how long the blockchain has been in use may be a problem.
+We can solve this with [volumes](https://docs.docker.com/storage/volumes/):
+
+1. Create a docker volume for the SQLite database file.
+
+   ```sh copy
+   docker volume create sqlite-db-file
+   ```
+
+1. Run the indexer container using the volume.
+
+   ```sh copy
+   docker run \
+      --platform linux/amd64 \
+      -e RPC_HTTP_URL=http://host.docker.internal:8545 \
+      -e SQLITE_FILENAME=/dbase/anvil.db \
+      -v sqlite-db-file:/dbase \
+      -p 3001:3001  \
+      ghcr.io/latticexyz/store-indexer:latest  \
+      pnpm start:sqlite
+   ```
+
+1. You can stop the docker container and restart it, or start a separate container using the same database.
+
+1. When you are done, you have to delete the docker containers that used it before you can delete the volume.
+   You can use these commands:
+
+   ```sh copy
+   docker rm `docker ps -a --filter volume=sqlite-db-file -q`
+   docker volume rm sqlite-db-file
+   ```
+
+   **Note:** You should do this every time you restart the blockchain.
+   Otherwise your index will include data from multiple blockchains, and make no sense.
+
+#### PostgreSQL
+
+The command to start the indexer in PostgreSQL mode is `pnpm start:postgres`.
+
+1. The docker instance identifies to PostgreSQL as `root`.
+   To give this user permissions on the database, enter `psql` and run this command.
+
+   ```sql copy
+   CREATE ROLE root SUPERUSER LOGIN;
+   ```
+
+   **Note:** This is assuming a database that is isolated from the Internet and only used by trusted entities.
+   In a production system you will use at least a password as authentication, and limit the user's authority.
+
+1. Start the docker container.
+   For example, to index an `anvil` instance running to the host to the database `postgres` on the host, use.
+
+   ```sh copy
+   docker run \
+     --platform linux/amd64 \
+     -e RPC_HTTP_URL=http://host.docker.internal:8545 \
+     -e DATABASE_URL=postgres://host.docker.internal/postgres \
+     -p 3001:3001  \
+     ghcr.io/latticexyz/store-indexer:latest  \
+     pnpm start:postgres
+   ```
+
+1. The PostgreSQL database is persistent.
+   If you restart the blockchain you have to delete the content of this database, otherwise the indexer will include old information.
+   To delete the database content, enter `psql` and run this command.
+
+   ```sql copy
+   DROP OWNED BY root;
+   ```
 
 ## Data access and interpretation
 
@@ -284,12 +394,14 @@ To understand the result, it is easiest to look at it inside Node.
 
 To index a different blockchain, you specify these environment variables:
 
-| Variable        | Value                                                                                                    |
-| --------------- | -------------------------------------------------------------------------------------------------------- |
-| RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              |
-| RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
-| START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
-| SQLITE_FILENAME | `<blockchain name>.db`                                                                                   |
+| Variable                | Value                                                                                                    |
+| ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| RPC_HTTP_URL            | The URL to access the blockchain using HTTP                                                              |
+| RPC_WS_URL              | The URL to access the blockchain using WebSocket                                                         |
+| START_BLOCK<sup>1</sup> | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
+| SQLITE_FILENAME         | `<blockchain name>.db`                                                                                   |
+
+(1) This value is optional, but highly recommended in chains where the world was deployed after a large number of blocks had already passed.
 
 After you do that, start the indexer with this command:
 
@@ -298,3 +410,110 @@ pnpm start:sqlite
 ```
 
 Note that in your queries you need to specify the correct chainId for the chain you are indexing.
+
+## Using the indexer with PostgreSQL
+
+To run the indexer with [PostgreSQL](https://www.postgresql.org/), follow these steps:
+
+1. Download and install [PostgreSQL](https://www.postgresql.org/download/).
+
+1. To use the default setting (local PostgreSQL, using the `postgres` database, indexing the local `anvil` chain), run:
+
+   ```sh copy
+   pnpm start:postgres:local
+   ```
+
+   Otherwise, set these environment variables:
+
+   | Variable                 | Value                                                                                                    |
+   | ------------------------ | -------------------------------------------------------------------------------------------------------- |
+   | CHAIN_ID                 | ChainID for the chain you index                                                                          |
+   | RPC_HTTP_URL<sup>1</sup> | The URL to access the blockchain using HTTP                                                              |
+   | RPC_WS_URL<sup>1</sup>   | The URL to access the blockchain using WebSocket                                                         |
+   | START_BLOCK<sup>2</sup>  | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
+   | DATABASE_URL             | URL for the database, of the form `postgres://<host>/<database>`                                         |
+
+   (1) Not necessary in the case of a Lattice testnet.
+
+   (2) This value is optional, but highly recommended in chains where the world was deployed after a large number of blocks had already passed for performance reasons.
+
+   And then run:
+
+   ```sh copy
+   pnpm start:postgres
+   ```
+
+### Reading information from PostgreSQL
+
+You can now use [`psql`](https://www.postgresql.org/docs/current/app-psql.html) to view the indexer information.
+
+Note: This example uses [the template](http://localhost:3000/tutorials/minimal).
+If you are indexing a different `World`, change the world address and use the name of a table you have rather than `Counter`.
+
+1. Get the list of schemas to verify `__mud_internal` is there.
+
+   ```sql copy
+   \dn
+   ```
+
+1. Get the list of relations in the schema.
+
+   ```sql copy
+   \dt __mud_internal.*
+   ```
+
+   You should get two tables, `chain` and `tables`.
+
+1. Get the list of chains being indexed.
+
+   ```sql copy
+   SELECT * FROM __mud_internal.chain;
+   ```
+
+1. The `tables` table is a lot bigger, so first get the list of columns within the table.
+
+   ```sql copy
+   \d+ __mud_internal.tables
+   ```
+
+1. Get the list of MUD table names.
+
+   ```sql copy
+   SELECT name FROM __mud_internal.tables;
+   ```
+
+1. Get the key and value schemas for `Counter`.
+
+   ```sql copy
+   SELECT key_schema, value_schema FROM __mud_internal.tables WHERE name='Counter';
+   ```
+
+1. The schema for a world is `<address>__`.
+   Get the list of tables for a specific world.
+
+   ```sql copy
+   \dt "0x5FbDB2315678afecb367f032d93F642f64180aa3__".*
+   ```
+
+1. Specify the world schema is the default.
+
+   ```sql copy
+   SET search_path TO "0x5FbDB2315678afecb367f032d93F642f64180aa3__";
+   ```
+
+1. Get the value of the counter.
+
+   ```sql copy
+   SELECT * FROM "Counter";
+   ```
+
+### Deleting the PostgreSQL data
+
+PostgreSQL is a persistent data storage.
+This means that if you restart the blockchain without manually deleting the data, your indexer will use old data and provide incorrect results.
+
+To avoid this, enter `psql` and run this command:
+
+```sql copy
+DROP OWNED BY <your user name>;
+```

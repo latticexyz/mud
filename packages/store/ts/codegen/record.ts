@@ -10,67 +10,84 @@ import { RenderTableOptions } from "./types";
 
 export function renderRecordMethods(options: RenderTableOptions) {
   const { structName, storeArgument } = options;
-  const { _tableId, _typedTableId, _keyArgs, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
+  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
 
-  let result = renderWithStore(
-    storeArgument,
-    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-      /** Get the full data${_commentSuffix} */
-      function ${_methodNamePrefix}get(${renderArguments([
-      _typedStore,
-      _typedTableId,
-      _typedKeyArgs,
-    ])}) internal view returns (${renderDecodedRecord(options)}) {
-        ${_keyTupleDefinition}
+  let result = "";
 
-        (
-          bytes memory _staticData,
-          PackedCounter _encodedLengths,
-          bytes memory _dynamicData
-        ) = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
-        return decode(_staticData, _encodedLengths, _dynamicData);
-      }
-    `
-  );
+  if (options.withGetters) {
+    result += renderWithStore(
+      storeArgument,
+      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+        /** Get the full data${_commentSuffix} */
+        function ${_methodNamePrefix}get(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+      ])}) internal view returns (${renderDecodedRecord(options)}) {
+          ${_keyTupleDefinition}
+          
+          (
+            bytes memory _staticData,
+            PackedCounter _encodedLengths,
+            bytes memory _dynamicData
+            ) = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
+            return decode(_staticData, _encodedLengths, _dynamicData);
+          }
+        `
+    );
+  }
 
   result += renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-      /** Set the full data using individual values${_commentSuffix} */
-      function ${_methodNamePrefix}set(${renderArguments([
-      _typedStore,
-      _typedTableId,
-      _typedKeyArgs,
-      renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
-    ])}) internal {
-        ${renderRecordData(options)}
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+      const externalArguments = renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+        renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
+      ]);
 
-        ${_keyTupleDefinition}
+      const internalArguments =
+        "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" + (_internal ? ", _fieldLayout" : "");
 
-        ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
-      }
-    `
+      return `
+        /** Set the full data using individual values${_commentSuffix} */
+        function ${_methodNamePrefix}set(${externalArguments}) internal {
+          ${renderRecordData(options)}
+
+          ${_keyTupleDefinition}
+
+          ${_store}.setRecord(${internalArguments});
+        }
+    `;
+    }
   );
 
   if (structName !== undefined) {
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-        /** Set the full data using the data struct${_commentSuffix} */
-        function ${_methodNamePrefix}set(${renderArguments([
-        _typedStore,
-        _typedTableId,
-        _typedKeyArgs,
-        `${structName} memory _table`,
-      ])}) internal {
-          set(${renderArguments([
-            _untypedStore,
-            _tableId,
-            _keyArgs,
-            renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
-          ])});
-        }
-      `
+      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+        const externalArguments = renderArguments([
+          _typedStore,
+          _typedTableId,
+          _typedKeyArgs,
+          `${structName} memory _table`,
+        ]);
+
+        const internalArguments =
+          "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" + (_internal ? ", _fieldLayout" : "");
+
+        return `
+          /** Set the full data using the data struct${_commentSuffix} */
+          function ${_methodNamePrefix}set(${externalArguments}) internal {
+            ${renderRecordData(options, "_table.")}
+
+            ${_keyTupleDefinition}
+
+            ${_store}.setRecord(${internalArguments});
+          }
+      `;
+      }
     );
   }
 
@@ -79,11 +96,13 @@ export function renderRecordMethods(options: RenderTableOptions) {
   return result;
 }
 
-export function renderRecordData(options: RenderTableOptions) {
+export function renderRecordData(options: RenderTableOptions, namePrefix = "") {
   let result = "";
   if (options.staticFields.length > 0) {
     result += `
-      bytes memory _staticData = encodeStatic(${renderArguments(options.staticFields.map(({ name }) => name))});
+      bytes memory _staticData = encodeStatic(
+        ${renderArguments(options.staticFields.map(({ name }) => `${namePrefix}${name}`))}
+      );
     `;
   } else {
     result += `bytes memory _staticData;`;
@@ -91,8 +110,12 @@ export function renderRecordData(options: RenderTableOptions) {
 
   if (options.dynamicFields.length > 0) {
     result += `
-      PackedCounter _encodedLengths = encodeLengths(${renderArguments(options.dynamicFields.map(({ name }) => name))});
-      bytes memory _dynamicData = encodeDynamic(${renderArguments(options.dynamicFields.map(({ name }) => name))});
+      PackedCounter _encodedLengths = encodeLengths(
+        ${renderArguments(options.dynamicFields.map(({ name }) => `${namePrefix}${name}`))}
+      );
+      bytes memory _dynamicData = encodeDynamic(
+        ${renderArguments(options.dynamicFields.map(({ name }) => `${namePrefix}${name}`))}
+      );
     `;
   } else {
     result += `
@@ -102,6 +125,27 @@ export function renderRecordData(options: RenderTableOptions) {
   }
 
   return result;
+}
+
+export function renderDeleteRecordMethods(options: RenderTableOptions) {
+  const { storeArgument } = options;
+  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
+
+  return renderWithStore(
+    storeArgument,
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+      const externalArguments = renderArguments([_typedStore, _typedTableId, _typedKeyArgs]);
+      const internalArguments = "_tableId, _keyTuple" + (_internal ? ", _fieldLayout" : "");
+
+      return `
+      /** Delete all data for given keys${_commentSuffix} */
+      function ${_methodNamePrefix}deleteRecord(${externalArguments}) internal {
+        ${_keyTupleDefinition}
+        ${_store}.deleteRecord(${internalArguments});
+      }
+    `;
+    }
+  );
 }
 
 // Renders the `decode` function that parses a bytes blob into the table data

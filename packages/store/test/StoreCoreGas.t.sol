@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -14,11 +14,15 @@ import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
+import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
+import { ResourceIds } from "../src/codegen/tables/ResourceIds.sol";
+import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber } from "./MirrorSubscriber.sol";
-import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SET_FIELD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "../src/storeHookTypes.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD, BEFORE_ALL } from "../src/storeHookTypes.sol";
+import { setDynamicDataLengthAtIndex } from "./setDynamicDataLengthAtIndex.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -31,8 +35,27 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
   mapping(uint256 => bytes) private testMapping;
   Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
+  ResourceId _tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some table" });
+  ResourceId _tableId2 = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some other table" });
+
+  function testGetStaticDataLocation() public {
+    ResourceId tableId = _tableId;
+    bytes32 key = "some key";
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+
+    startGasReport("get static data location (single key)");
+    StoreCoreInternal._getStaticDataLocation(tableId, key);
+    endGasReport();
+
+    startGasReport("get static data location (single key tuple)");
+    StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
+    endGasReport();
+  }
 
   function testRegisterAndGetFieldLayout() public {
+    ResourceId tableId = _tableId;
+
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
@@ -41,7 +64,6 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       SchemaType.UINT16
     );
     Schema keySchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16);
-    bytes32 tableId = keccak256("some.tableId");
 
     string[] memory keyNames = new string[](2);
     keyNames[0] = "key1";
@@ -70,6 +92,9 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testHasFieldLayout() public {
+    ResourceId tableId = _tableId;
+    ResourceId tableId2 = _tableId2;
+
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
       SchemaType.UINT16,
@@ -77,21 +102,19 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       SchemaType.UINT16
     );
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
-    bytes32 tableId = keccak256("some.tableId");
-    bytes32 tableId2 = keccak256("other.tableId");
     StoreCore.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     startGasReport("Check for existence of table (existent)");
-    StoreCore.hasTable(tableId);
+    ResourceIds._getExists(tableId);
     endGasReport();
 
     startGasReport("check for existence of table (non-existent)");
-    StoreCore.hasTable(tableId2);
+    ResourceIds._getExists(tableId2);
     endGasReport();
   }
 
   function testSetAndGetDynamicDataLength() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
 
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
@@ -112,21 +135,23 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Set dynamic data length of dynamic index 0
     startGasReport("set dynamic length of dynamic index 0");
-    StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 10);
+    setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 10);
     endGasReport();
 
     // Set dynamic data length of dynamic index 1
     startGasReport("set dynamic length of dynamic index 1");
-    StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 1, 99);
+    setDynamicDataLengthAtIndex(tableId, keyTuple, 1, 99);
     endGasReport();
 
     // Reduce dynamic data length of dynamic index 0 again
     startGasReport("reduce dynamic length of dynamic index 0");
-    StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 5);
+    setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 5);
     endGasReport();
   }
 
   function testSetAndGetStaticData() public {
+    ResourceId tableId = _tableId;
+
     // Register table
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
@@ -135,7 +160,6 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       SchemaType.UINT16
     );
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
-    bytes32 tableId = keccak256("some.tableId");
     StoreCore.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
@@ -145,7 +169,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     keyTuple[0] = keccak256("some.key");
 
     startGasReport("set static record (1 slot)");
-    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData);
     endGasReport();
 
     // Get data
@@ -155,10 +179,11 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testSetAndGetStaticDataSpanningWords() public {
+    ResourceId tableId = _tableId;
+
     // Register table
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT256);
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 0);
-    bytes32 tableId = keccak256("some.tableId");
     StoreCore.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));
 
     // Set data
@@ -172,7 +197,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     keyTuple[0] = "some key";
 
     startGasReport("set static record (2 slots)");
-    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData);
     endGasReport();
 
     // Get data
@@ -182,7 +207,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testSetAndGetDynamicData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
@@ -227,7 +252,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Set data
     startGasReport("set complex record with dynamic data (4 slots)");
-    StoreCore.setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
     endGasReport();
 
     // Get data
@@ -254,7 +279,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testSetAndGetField() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 2);
@@ -344,7 +369,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testDeleteData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
@@ -388,16 +413,16 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     keyTuple[0] = "some key";
 
     // Set data
-    StoreCore.setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
 
     // Delete data
     startGasReport("delete record (complex data, 3 slots)");
-    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
+    StoreCore.deleteRecord(tableId, keyTuple);
     endGasReport();
   }
 
-  function testPushToField() public {
-    bytes32 tableId = keccak256("some.tableId");
+  function testPushToDynamicField() public {
+    ResourceId tableId = _tableId;
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
@@ -434,7 +459,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.setField(tableId, keyTuple, 0, abi.encodePacked(firstDataBytes), fieldLayout);
     StoreCore.setField(tableId, keyTuple, 1, secondDataBytes, fieldLayout);
     // Initialize a field with push
-    StoreCore.pushToField(tableId, keyTuple, 2, thirdDataBytes, fieldLayout);
+    StoreCore.pushToDynamicField(tableId, keyTuple, 1, thirdDataBytes);
 
     // Create data to push
     bytes memory secondDataToPush;
@@ -446,7 +471,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Push to second field
     startGasReport("push to field (1 slot, 1 uint32 item)");
-    StoreCore.pushToField(tableId, keyTuple, 1, secondDataToPush, fieldLayout);
+    StoreCore.pushToDynamicField(tableId, keyTuple, 0, secondDataToPush);
     endGasReport();
 
     // Create data to push
@@ -468,11 +493,11 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Push to third field
     startGasReport("push to field (2 slots, 10 uint32 items)");
-    StoreCore.pushToField(tableId, keyTuple, 2, thirdDataToPush, fieldLayout);
+    StoreCore.pushToDynamicField(tableId, keyTuple, 1, thirdDataToPush);
     endGasReport();
   }
 
-  struct TestUpdateInFieldData {
+  struct TestUpdateInDynamicFieldData {
     bytes32 firstDataBytes;
     bytes secondDataBytes;
     bytes secondDataForUpdate;
@@ -482,10 +507,10 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     bytes newThirdDataBytes;
   }
 
-  function testUpdateInField() public {
-    TestUpdateInFieldData memory data = TestUpdateInFieldData("", "", "", "", "", "", "");
-    bytes32 tableId = keccak256("some.tableId");
+  function testUpdateInDynamicField() public {
+    ResourceId tableId = _tableId;
 
+    TestUpdateInDynamicFieldData memory data = TestUpdateInDynamicFieldData("", "", "", "", "", "", "");
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
@@ -531,7 +556,14 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Update index 1 in second field (4 = byte length of uint32)
     startGasReport("update in field (1 slot, 1 uint32 item)");
-    StoreCore.updateInField(tableId, keyTuple, 1, 4 * 1, data.secondDataForUpdate, fieldLayout);
+    StoreCore.spliceDynamicData(
+      tableId,
+      keyTuple,
+      0,
+      uint40(4 * 1),
+      uint40(data.secondDataForUpdate.length),
+      data.secondDataForUpdate
+    );
     endGasReport();
 
     // Create data for update
@@ -555,12 +587,20 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)
     startGasReport("push to field (2 slots, 6 uint64 items)");
-    StoreCore.updateInField(tableId, keyTuple, 2, 8 * 1, data.thirdDataForUpdate, fieldLayout);
+    StoreCore.spliceDynamicData(
+      tableId,
+      keyTuple,
+      1,
+      uint40(8 * 1),
+      uint40(data.thirdDataForUpdate.length),
+      data.thirdDataForUpdate
+    );
     endGasReport();
   }
 
   function testAccessEmptyData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(4, 1);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
@@ -586,13 +626,13 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.getFieldLength(tableId, keyTuple, 1, fieldLayout);
     endGasReport();
 
-    startGasReport("access slice of dynamic field of non-existing record");
-    StoreCore.getFieldSlice(tableId, keyTuple, 1, fieldLayout, 0, 0);
-    endGasReport();
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 0));
+    StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, 0, 0);
   }
 
   function testHooks() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = keccak256("some key");
 
@@ -612,14 +652,14 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     );
 
     startGasReport("register subscriber");
-    StoreCore.registerStoreHook(tableId, subscriber, BEFORE_SET_RECORD | BEFORE_SET_FIELD | BEFORE_DELETE_RECORD);
+    StoreCore.registerStoreHook(tableId, subscriber, BEFORE_ALL);
     endGasReport();
 
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
     bytes memory dynamicData = new bytes(0);
 
     startGasReport("set record on table with subscriber");
-    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData);
     endGasReport();
 
     staticData = abi.encodePacked(bytes16(0x1112131415161718191a1b1c1d1e1f20));
@@ -629,12 +669,13 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     endGasReport();
 
     startGasReport("delete record on table with subscriber");
-    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
+    StoreCore.deleteRecord(tableId, keyTuple);
     endGasReport();
   }
 
   function testHooksDynamicData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = keccak256("some key");
 
@@ -654,7 +695,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     );
 
     startGasReport("register subscriber");
-    StoreCore.registerStoreHook(tableId, subscriber, BEFORE_SET_RECORD | BEFORE_SET_FIELD | BEFORE_DELETE_RECORD);
+    StoreCore.registerStoreHook(tableId, subscriber, BEFORE_ALL);
     endGasReport();
 
     uint32[] memory arrayData = new uint32[](1);
@@ -666,7 +707,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     bytes memory data = abi.encodePacked(staticData, encodedArrayDataLength, dynamicData);
 
     startGasReport("set (dynamic) record on table with subscriber");
-    StoreCore.setRecord(tableId, keyTuple, staticData, encodedArrayDataLength, dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedArrayDataLength, dynamicData);
     endGasReport();
 
     // Update dynamic data
@@ -680,7 +721,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     endGasReport();
 
     startGasReport("delete (dynamic) record on table with subscriber");
-    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
+    StoreCore.deleteRecord(tableId, keyTuple);
     endGasReport();
   }
 }

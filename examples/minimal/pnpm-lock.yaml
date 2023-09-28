@@ -320,6 +320,9 @@ importers:
       '@latticexyz/world':
         specifier: link:../../../../packages/world
         version: link:../../../../packages/world
+      '@latticexyz/world-modules':
+        specifier: link:../../../../packages/world-modules
+        version: link:../../../../packages/world-modules
       '@solidstate/contracts':
         specifier: ^0.0.52
         version: 0.0.52
@@ -1985,6 +1988,7 @@ packages:
   /esm@3.2.25:
     resolution: {integrity: sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==}
     engines: {node: '>=6'}
+    requiresBuild: true
     dev: false
     optional: true
 

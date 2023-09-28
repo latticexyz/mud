@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
@@ -22,7 +22,7 @@ contract NumberListSystem is System {
     }
 
     bytes32[] memory emptyKey;
-    StoreSwitch.pushToField(NumberListTableId, emptyKey, 0, EncodeArray.encode(list), NumberList.getFieldLayout());
+    StoreSwitch.pushToDynamicField(NumberListTableId, emptyKey, 0, EncodeArray.encode(list));
   }
 
   function pop() public {

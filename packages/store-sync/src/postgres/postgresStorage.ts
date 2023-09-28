@@ -1,4 +1,4 @@
-import { Hex, PublicClient, concatHex } from "viem";
+import { Hex, PublicClient, concatHex, size } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { eq, inArray } from "drizzle-orm";
 import { buildTable } from "./buildTable";
@@ -7,7 +7,7 @@ import { debug } from "./debug";
 import { buildInternalTables } from "./buildInternalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
-import { hexToTableId, spliceHex, tableIdToHex } from "@latticexyz/common";
+import { hexToResourceId, spliceHex } from "@latticexyz/common";
 import { setupTables } from "./setupTables";
 import { getTableKey } from "./getTableKey";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
@@ -40,15 +40,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
   async function postgresStorageAdapter({ blockNumber, logs }: StorageAdapterBlock): Promise<void> {
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
-    const newSqlTables = newTables.map((table) =>
-      buildTable({
-        address: table.address,
-        namespace: table.namespace,
-        name: table.name,
-        keySchema: table.keySchema,
-        valueSchema: table.valueSchema,
-      })
-    );
+    const newSqlTables = newTables.map(buildTable);
 
     cleanUp.push(await setupTables(database, newSqlTables));
 
@@ -59,12 +51,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           .values({
             schemaVersion,
             key: getTableKey(table),
-            address: table.address,
-            tableId: tableIdToHex(table.namespace, table.name),
-            namespace: table.namespace,
-            name: table.name,
-            keySchema: table.keySchema,
-            valueSchema: table.valueSchema,
+            ...table,
             lastUpdatedBlockNumber: blockNumber,
           })
           .onConflictDoNothing()
@@ -98,7 +85,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           (table) => getTableKey(table) === getTableKey({ address: log.address, tableId: log.args.tableId })
         );
         if (!table) {
-          const { namespace, name } = hexToTableId(log.args.tableId);
+          const { namespace, name } = hexToResourceId(log.args.tableId);
           debug(`table ${namespace}:${name} not found, skipping log`, log);
           continue;
         }
@@ -109,7 +96,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
         debug(log.eventName, log);
 
-        if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
+        if (log.eventName === "Store_SetRecord") {
           const value = decodeValueArgs(table.valueSchema, log.args);
           debug("upserting record", {
             namespace: table.namespace,
@@ -141,11 +128,11 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
               },
             })
             .execute();
-        } else if (log.eventName === "StoreSpliceStaticData") {
+        } else if (log.eventName === "Store_SpliceStaticData") {
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
           const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
           const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
-          const newStaticData = spliceHex(previousStaticData, log.args.start, log.args.deleteCount, log.args.data);
+          const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
           const newValue = decodeValueArgs(table.valueSchema, {
             staticData: newStaticData,
             encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
@@ -180,7 +167,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
               },
             })
             .execute();
-        } else if (log.eventName === "StoreSpliceDynamicData") {
+        } else if (log.eventName === "Store_SpliceDynamicData") {
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
           const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
           const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
@@ -224,7 +211,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
               },
             })
             .execute();
-        } else if (log.eventName === "StoreDeleteRecord") {
+        } else if (log.eventName === "Store_DeleteRecord") {
           // TODO: should we upsert so we at least have a DB record of when a thing was created/deleted within the same block?
           debug("deleting record", {
             namespace: table.namespace,

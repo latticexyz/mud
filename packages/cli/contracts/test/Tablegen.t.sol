@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import "forge-std/Test.sol";
 import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
+import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
 
-import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Ephemeral } from "../src/codegen/index.sol";
+import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Offchain, UserTyped, UserTypedData } from "../src/codegen/index.sol";
+import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "../src/types.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { Enum1, Enum2 } from "../src/codegen/common.sol";
 
@@ -140,12 +143,30 @@ contract TablegenTest is Test, StoreMock {
     assertEq(abi.encode(Singleton.getV4()), abi.encode([uint32(5)]));
     assertEq(Singleton.lengthV4(), 1);
     assertEq(Singleton.getItemV4(0), 5);
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 4, 4));
     assertEq(Singleton.getItemV4(1), 0);
   }
 
-  function testEphemeral() public {
-    Ephemeral.register();
+  function testOffchain() public {
+    Offchain.register();
 
-    Ephemeral.emitEphemeral("key", 123);
+    Offchain.set("key", 123);
+  }
+
+  function testUserTypes() public {
+    UserTyped.register();
+
+    TestTypeAddress k1 = TestTypeAddress.wrap(address(123));
+    TestTypeInt64 k2 = TestTypeInt64.wrap(-1);
+    TestTypeLibrary.TestTypeBool k3 = TestTypeLibrary.TestTypeBool.wrap(true);
+    TestTypeLibrary.TestTypeUint128 k4 = TestTypeLibrary.TestTypeUint128.wrap(123456);
+    ResourceId k5 = ResourceId.wrap("test");
+
+    UserTyped.setV1(k1, k2, k3, k4, k5, TestTypeAddress.wrap(address(this)));
+    assertEq(TestTypeAddress.unwrap(UserTyped.getV1(k1, k2, k3, k4, k5)), address(this));
+
+    UserTypedData memory data = UserTypedData(k1, k2, k3, k4, k5);
+    UserTyped.set(k1, k2, k3, k4, k5, data);
+    assertEq(abi.encode(UserTyped.get(k1, k2, k3, k4, k5)), abi.encode(data));
   }
 }

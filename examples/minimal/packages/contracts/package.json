@@ -24,6 +24,7 @@
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
     "@latticexyz/store": "link:../../../../packages/store",
     "@latticexyz/world": "link:../../../../packages/world",
+    "@latticexyz/world-modules": "link:../../../../packages/world-modules",
     "@solidstate/contracts": "^0.0.52",
     "@types/node": "^18.15.11",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",

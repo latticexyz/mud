@@ -34,9 +34,9 @@ uint256 value = CounterSingleton.get();
 
 Additional documentation on Table library generation can be found in the [`tablegen`](/store/config#store-config--tablegen-tool) section.
 
-### Ephemeral tables
+### Offchain tables
 
-Tables with the `ephemeral` property do not write to on-chain storage.
+Tables with the `offchainOnly` property do not write to on-chain storage.
 Instead, they simply emit events when records are set.
 They are useful for sending data to connected clients without the gas costs associated with a storage write.
 
@@ -52,25 +52,11 @@ export default mudConfig({
         amount: "uint32",
         receiver: "bytes32",
       },
-      ephemeral: true,
+      offchainOnly: true,
     },
   },
 });
 ```
-
-This will slightly change the generated code for the table. The `emitEphemeral` function is the main entrypoint:
-
-```solidity
-import { TradeExecuted, TradeExecutedData } from "./codegen/Tables.sol";
-
-// Emitting an ephemeral record
-TradeExecuted.emitEphemeral("0x1234", TradeExecutedData({
-  amount: 10,
-  receiver: "0x5678",
-}));
-```
-
-`get`, `set`, and `delete` functions are not generated for ephemeral tables.
 
 ### Storage hooks
 

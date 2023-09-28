@@ -1,25 +1,22 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { UNLIMITED_DELEGATION } from "./constants.sol";
-import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
+import { IDelegationControl } from "./IDelegationControl.sol";
 import { SystemCall } from "./SystemCall.sol";
 
-type Delegation is bytes32;
-
-using DelegationInstance for Delegation global;
-
-library DelegationInstance {
-  function exists(Delegation self) internal pure returns (bool) {
-    return Delegation.unwrap(self) != bytes32("");
+library Delegation {
+  function exists(ResourceId delegationControlId) internal pure returns (bool) {
+    return ResourceId.unwrap(delegationControlId) != bytes32("");
   }
 
-  function isUnlimited(Delegation self) internal pure returns (bool) {
-    return Delegation.unwrap(self) == UNLIMITED_DELEGATION;
+  function isUnlimited(ResourceId delegationControlId) internal pure returns (bool) {
+    return ResourceId.unwrap(delegationControlId) == ResourceId.unwrap(UNLIMITED_DELEGATION);
   }
 
-  function isLimited(Delegation self) internal pure returns (bool) {
-    return exists(self) && !isUnlimited(self);
+  function isLimited(ResourceId delegationControlId) internal pure returns (bool) {
+    return exists(delegationControlId) && !isUnlimited(delegationControlId);
   }
 
   /**
@@ -28,22 +25,22 @@ library DelegationInstance {
    * Note: verifying the delegation might have side effects in the delegation control contract.
    */
   function verify(
-    Delegation self,
+    ResourceId delegationControlId,
     address delegator,
     address delegatee,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes memory callData
   ) internal returns (bool) {
     // Early return if there is an unlimited delegation
-    if (isUnlimited(self)) return true;
+    if (isUnlimited(delegationControlId)) return true;
 
     // Early return if there is no valid delegation
-    if (!exists(self)) return false;
+    if (!exists(delegationControlId)) return false;
 
     // Call the delegation control contract to check if the delegator has granted access to the delegatee
     (bool success, bytes memory data) = SystemCall.call({
       caller: delegatee,
-      resourceSelector: Delegation.unwrap(self),
+      systemId: delegationControlId,
       callData: abi.encodeCall(IDelegationControl.verify, (delegator, systemId, callData)),
       value: 0
     });

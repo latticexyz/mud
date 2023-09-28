@@ -8,6 +8,7 @@ export const PATH_DEFAULTS = {
 export const DEFAULTS = {
   namespace: "",
   enums: {} as Record<string, never>,
+  userTypes: {} as Record<string, never>,
 } as const;
 
 export const TABLE_DEFAULTS = {
@@ -15,5 +16,5 @@ export const TABLE_DEFAULTS = {
   keySchema: { key: "bytes32" },
   tableIdArgument: false,
   storeArgument: true,
-  ephemeral: false,
+  offchainOnly: false,
 } as const;

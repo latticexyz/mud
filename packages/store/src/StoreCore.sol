@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { STORE_VERSION } from "./version.sol";
 import { Bytes } from "./Bytes.sol";
@@ -9,53 +9,48 @@ import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { StoreHooks, Tables, StoreHooksTableId } from "./codegen/index.sol";
+import { StoreHooks, Tables, TablesTableId, ResourceIds, StoreHooksTableId } from "./codegen/index.sol";
+import { _fieldLayout as TablesTableFieldLayout } from "./codegen/tables/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
-import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SET_FIELD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
+import { ResourceId, ResourceIdInstance } from "./ResourceId.sol";
+import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.sol";
 
+/**
+ * StoreCore includes implementations for all IStore methods.
+ * StoreCoreInternal includes helper methods used by multiple StoreCore methods.
+ * It's split into a separate library to make it clear that it's not intended to be outside StoreCore.
+ */
 library StoreCore {
+  using ResourceIdInstance for ResourceId;
+
   event HelloStore(bytes32 indexed version);
-  event StoreSetRecord(
-    bytes32 indexed tableId,
+  event Store_SetRecord(
+    ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
-    bytes32 encodedLengths,
+    PackedCounter encodedLengths,
     bytes dynamicData
   );
-  event StoreSpliceStaticData(
-    bytes32 indexed tableId,
+  event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
+  event Store_SpliceDynamicData(
+    ResourceId indexed tableId,
     bytes32[] keyTuple,
     uint48 start,
     uint40 deleteCount,
+    PackedCounter encodedLengths,
     bytes data
   );
-  event StoreSpliceDynamicData(
-    bytes32 indexed tableId,
-    bytes32[] keyTuple,
-    uint48 start,
-    uint40 deleteCount,
-    bytes data,
-    bytes32 encodedLengths
-  );
-  event StoreDeleteRecord(bytes32 indexed tableId, bytes32[] keyTuple);
-  event StoreEphemeralRecord(
-    bytes32 indexed tableId,
-    bytes32[] keyTuple,
-    bytes staticData,
-    bytes32 encodedLengths,
-    bytes dynamicData
-  );
+  event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
   /**
    * Intialize the store address to use in StoreSwitch.
    * Consumers must call this function in their constructor.
    */
   function initialize() internal {
-    emit HelloStore(STORE_VERSION);
-
     // StoreSwitch uses the storeAddress to decide where to write data to.
     // If StoreSwitch is called in the context of a Store contract (storeAddress == address(this)),
     // StoreSwitch uses internal methods to write data instead of external calls.
@@ -71,6 +66,7 @@ library StoreCore {
     // Register core tables
     Tables.register();
     StoreHooks.register();
+    ResourceIds.register();
   }
 
   /************************************************************************
@@ -80,54 +76,60 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Get the field layout for the given tableId
+   * Get the field layout for the given table ID.
    */
-  function getFieldLayout(bytes32 tableId) internal view returns (FieldLayout fieldLayout) {
-    fieldLayout = FieldLayout.wrap(Tables._getFieldLayout(tableId));
-    if (fieldLayout.isEmpty()) {
-      revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
+  function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout) {
+    // Explicit check for the tables table to solve the bootstraping issue
+    if (ResourceId.unwrap(tableId) == ResourceId.unwrap(TablesTableId)) {
+      return TablesTableFieldLayout;
     }
+    return
+      FieldLayout.wrap(
+        Storage.loadField({
+          storagePointer: StoreCoreInternal._getStaticDataLocation(TablesTableId, ResourceId.unwrap(tableId)),
+          length: 32,
+          offset: 0
+        })
+      );
   }
 
   /**
    * Get the key schema for the given tableId
    */
-  function getKeySchema(bytes32 tableId) internal view returns (Schema keySchema) {
-    keySchema = Schema.wrap(Tables._getKeySchema(tableId));
+  function getKeySchema(ResourceId tableId) internal view returns (Schema keySchema) {
+    keySchema = Tables._getKeySchema(tableId);
     // key schemas can be empty for singleton tables, so we can't depend on key schema for table check
-    if (!hasTable(tableId)) {
-      revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
+    if (!ResourceIds._getExists(tableId)) {
+      revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
   }
 
   /**
    * Get the schema for the given tableId
    */
-  function getValueSchema(bytes32 tableId) internal view returns (Schema valueSchema) {
-    valueSchema = Schema.wrap(Tables._getValueSchema(tableId));
+  function getValueSchema(ResourceId tableId) internal view returns (Schema valueSchema) {
+    valueSchema = Tables._getValueSchema(tableId);
     if (valueSchema.isEmpty()) {
-      revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
+      revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
-  }
-
-  /**
-   * Check if a table with the given tableId exists
-   */
-  function hasTable(bytes32 tableId) internal view returns (bool) {
-    return Tables._getFieldLayout(tableId) != bytes32(0);
   }
 
   /**
    * Register a new table the given config
    */
   function registerTable(
-    bytes32 tableId,
+    ResourceId tableId,
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
     string[] memory keyNames,
     string[] memory fieldNames
   ) internal {
+    // Verify the table ID is of type RESOURCE_TABLE
+    if (tableId.getType() != RESOURCE_TABLE && tableId.getType() != RESOURCE_OFFCHAIN_TABLE) {
+      revert IStoreErrors.Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
+    }
+
     // Verify the field layout is valid
     fieldLayout.validate({ allowEmpty: false });
 
@@ -137,33 +139,29 @@ library StoreCore {
 
     // Verify the number of key names matches the number of key schema types
     if (keyNames.length != keySchema.numFields()) {
-      revert IStoreErrors.StoreCore_InvalidKeyNamesLength(keySchema.numFields(), keyNames.length);
+      revert IStoreErrors.Store_InvalidKeyNamesLength(keySchema.numFields(), keyNames.length);
     }
 
     // Verify the number of value names
     if (fieldNames.length != fieldLayout.numFields()) {
-      revert IStoreErrors.StoreCore_InvalidFieldNamesLength(fieldLayout.numFields(), fieldNames.length);
+      revert IStoreErrors.Store_InvalidFieldNamesLength(fieldLayout.numFields(), fieldNames.length);
     }
 
     // Verify the number of value schema types
     if (valueSchema.numFields() != fieldLayout.numFields()) {
-      revert IStoreErrors.StoreCore_InvalidValueSchemaLength(fieldLayout.numFields(), valueSchema.numFields());
+      revert IStoreErrors.Store_InvalidValueSchemaLength(fieldLayout.numFields(), valueSchema.numFields());
     }
 
-    // Verify the field layout doesn't exist yet
-    if (hasTable(tableId)) {
-      revert IStoreErrors.StoreCore_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
+    // Verify there is no resource with this ID yet
+    if (ResourceIds._getExists(tableId)) {
+      revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
     }
 
     // Register the table metadata
-    Tables._set(
-      tableId,
-      FieldLayout.unwrap(fieldLayout),
-      Schema.unwrap(keySchema),
-      Schema.unwrap(valueSchema),
-      abi.encode(keyNames),
-      abi.encode(fieldNames)
-    );
+    Tables._set(tableId, fieldLayout, keySchema, valueSchema, abi.encode(keyNames), abi.encode(fieldNames));
+
+    // Register the table ID
+    ResourceIds._setExists(tableId, true);
   }
 
   /************************************************************************
@@ -175,14 +173,19 @@ library StoreCore {
   /*
    * Register hooks to be called when a record or field is set or deleted
    */
-  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
+  function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
+    // Hooks are only supported for tables, not for offchain tables
+    if (tableId.getType() != RESOURCE_TABLE) {
+      revert IStoreErrors.Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
+    }
+
     StoreHooks.push(tableId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
   }
 
   /**
    * Unregister a hook from the given tableId
    */
-  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) internal {
+  function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) internal {
     HookLib.filterListByAddress(StoreHooksTableId, tableId, address(hookAddress));
   }
 
@@ -193,24 +196,38 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Set full data record for the given tableId and key tuple and field layout
+   * Set full data record for the given table ID and key tuple and field layout.
+   * This overload loads the field layout from storage and is exposed externally on `IStore`.
    */
   function setRecord(
-    bytes32 tableId,
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData
+  ) internal {
+    setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, getFieldLayout(tableId));
+  }
+
+  /**
+   * Set full data record for the given table ID and key tuple and field layout.
+   * This overload allows passing in a FieldLayout and is not exposed externally on `IStore`.
+   */
+  function setRecord(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
     PackedCounter encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) internal {
-    // verify the value has the correct length for the tableId (based on the tableId's field layout)
-    // to prevent invalid data from being stored
-
-    // Verify static data length + dynamic data length matches the given data
-    StoreCoreInternal._validateDataLength(fieldLayout, staticData, encodedLengths, dynamicData);
-
     // Emit event to notify indexers
-    emit StoreSetRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
+    emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
+
+    // Early return if the table is an offchain table
+    if (tableId.getType() != RESOURCE_TABLE) {
+      return;
+    }
 
     // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks._get(tableId);
@@ -282,46 +299,147 @@ library StoreCore {
     }
   }
 
+  function spliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 start, bytes memory data) internal {
+    uint256 location = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
+
+    // Emit event to notify offchain indexers
+    emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
+
+    // Early return if the table is an offchain table
+    if (tableId.getType() != RESOURCE_TABLE) {
+      return;
+    }
+
+    // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = StoreHooks._get(tableId);
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(BEFORE_SPLICE_STATIC_DATA)) {
+        IStoreHook(hook.getAddress()).onBeforeSpliceStaticData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: start,
+          data: data
+        });
+      }
+    }
+
+    // Store the provided value in storage
+    Storage.store({ storagePointer: location, offset: start, data: data });
+
+    // Call onAfterSpliceStaticData hooks
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(AFTER_SPLICE_STATIC_DATA)) {
+        IStoreHook(hook.getAddress()).onAfterSpliceStaticData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: start,
+          data: data
+        });
+      }
+    }
+  }
+
+  function spliceDynamicData(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes memory data
+  ) internal {
+    StoreCoreInternal._spliceDynamicData({
+      tableId: tableId,
+      keyTuple: keyTuple,
+      dynamicFieldIndex: dynamicFieldIndex,
+      startWithinField: startWithinField,
+      deleteCount: deleteCount,
+      data: data,
+      previousEncodedLengths: StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple)
+    });
+  }
+
   /**
-   * Set data for a field in a table with the given tableId, key tuple and value field layout
+   * Set data for a field at the given index in a table with the given tableId, key tuple, loading the field layout from storage
+   */
+  function setField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, bytes memory data) internal {
+    setField(tableId, keyTuple, fieldIndex, data, getFieldLayout(tableId));
+  }
+
+  /**
+   * Set data for a field at the given index in a table with the given tableId, key tuple and value field layout
    */
   function setField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     bytes memory data,
     FieldLayout fieldLayout
   ) internal {
-    // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(BEFORE_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, keyTuple, fieldIndex, data, fieldLayout);
-      }
-    }
-
     if (fieldIndex < fieldLayout.numStaticFields()) {
-      StoreCoreInternal._setStaticField(tableId, keyTuple, fieldLayout, fieldIndex, data);
+      setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
     } else {
-      StoreCoreInternal._setDynamicField(tableId, keyTuple, fieldLayout, fieldIndex, data);
-    }
-
-    // Call onAfterSetField hooks (after modifying the state)
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(AFTER_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onAfterSetField(tableId, keyTuple, fieldIndex, data, fieldLayout);
-      }
+      setDynamicField(tableId, keyTuple, fieldIndex - uint8(fieldLayout.numStaticFields()), data);
     }
   }
 
+  function setStaticField(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex,
+    bytes memory data,
+    FieldLayout fieldLayout
+  ) internal {
+    spliceStaticData({
+      tableId: tableId,
+      keyTuple: keyTuple,
+      start: uint48(StoreCoreInternal._getStaticDataOffset(fieldLayout, fieldIndex)),
+      data: data
+    });
+  }
+
+  function setDynamicField(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes memory data
+  ) internal {
+    // Load the previous length of the field to set from storage to compute how much data to delete
+    PackedCounter previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    uint40 previousFieldLength = uint40(previousEncodedLengths.atIndex(dynamicFieldIndex));
+
+    StoreCoreInternal._spliceDynamicData({
+      tableId: tableId,
+      keyTuple: keyTuple,
+      dynamicFieldIndex: dynamicFieldIndex,
+      startWithinField: 0,
+      deleteCount: previousFieldLength,
+      data: data,
+      previousEncodedLengths: previousEncodedLengths
+    });
+  }
+
   /**
-   * Delete a record for the given tableId, key tuple and value field layout
+   * Delete a record for the given tableId, key tuple and value field layout.
+   * This overload loads the field layout from storage and is exposed externally on `IStore`.
    */
-  function deleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) internal {
+    deleteRecord(tableId, keyTuple, getFieldLayout(tableId));
+  }
+
+  /**
+   * Delete a record for the given tableId, key tuple and value field layout.
+   * This overload allows passing in a FieldLayout and is not exposed externally on `IStore`.
+   */
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
     // Emit event to notify indexers
-    emit StoreDeleteRecord(tableId, keyTuple);
+    emit Store_DeleteRecord(tableId, keyTuple);
+
+    // Early return if the table is an offchain table
+    if (tableId.getType() != RESOURCE_TABLE) {
+      return;
+    }
 
     // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks._get(tableId);
@@ -336,10 +454,11 @@ library StoreCore {
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
     Storage.store({ storagePointer: staticDataLocation, offset: 0, data: new bytes(fieldLayout.staticDataLength()) });
 
-    // If there are dynamic fields, delete the dynamic data length
+    // If there are dynamic fields, set the dynamic data length to 0.
+    // We don't need to delete the dynamic data because it will be overwritten when a new record is set.
     if (fieldLayout.numDynamicFields() > 0) {
       uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, keyTuple);
-      Storage.store({ storagePointer: dynamicDataLengthLocation, data: bytes32(0) });
+      Storage.zero({ storagePointer: dynamicDataLengthLocation, length: 32 });
     }
 
     // Call onAfterDeleteRecord hooks
@@ -352,160 +471,53 @@ library StoreCore {
   }
 
   /**
-   * Push data to a field in a table with the given tableId, keyTuple tuple and value field layout
+   * Push data to a field at the dynamic field index in a table with the given table ID and keyTuple tuple
    */
-  function pushToField(
-    bytes32 tableId,
+  function pushToDynamicField(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory dataToPush,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    bytes memory dataToPush
   ) internal {
-    if (fieldIndex < fieldLayout.numStaticFields()) {
-      revert IStoreErrors.StoreCore_NotDynamicField();
-    }
+    // Load the previous length of the field to set from storage to compute where to start to push
+    PackedCounter previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    uint40 previousFieldLength = uint40(previousEncodedLengths.atIndex(dynamicFieldIndex));
 
-    // TODO add push-specific hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
-    bytes memory fullData = abi.encodePacked(
-      getDynamicField(tableId, keyTuple, fieldIndex - uint8(fieldLayout.numStaticFields())),
-      dataToPush
-    );
-
-    // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(BEFORE_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
-      }
-    }
-
-    StoreCoreInternal._pushToDynamicField(tableId, keyTuple, fieldLayout, fieldIndex, dataToPush);
-
-    // Call onAfterSetField hooks (after modifying the state)
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(AFTER_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onAfterSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
-      }
-    }
+    // Splice the dynamic data
+    StoreCoreInternal._spliceDynamicData({
+      tableId: tableId,
+      keyTuple: keyTuple,
+      dynamicFieldIndex: dynamicFieldIndex,
+      startWithinField: uint40(previousFieldLength),
+      deleteCount: 0,
+      data: dataToPush,
+      previousEncodedLengths: previousEncodedLengths
+    });
   }
 
   /**
-   * Pop data from a field in a table with the given tableId, key tuple and value field layout
+   * Pop data from a field at the dynamic field index in a table with the given table ID and key tuple
    */
-  function popFromField(
-    bytes32 tableId,
+  function popFromDynamicField(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    uint256 byteLengthToPop,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    uint256 byteLengthToPop
   ) internal {
-    if (fieldIndex < fieldLayout.numStaticFields()) {
-      revert IStoreErrors.StoreCore_NotDynamicField();
-    }
+    // Load the previous length of the field to set from storage to compute where to start to push
+    PackedCounter previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    uint40 previousFieldLength = uint40(previousEncodedLengths.atIndex(dynamicFieldIndex));
 
-    // TODO add pop-specific hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
-    bytes memory fullData;
-    {
-      bytes memory oldData = getDynamicField(tableId, keyTuple, fieldIndex - uint8(fieldLayout.numStaticFields()));
-      fullData = SliceLib.getSubslice(oldData, 0, oldData.length - byteLengthToPop).toBytes();
-    }
-
-    // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(BEFORE_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
-      }
-    }
-
-    StoreCoreInternal._popFromDynamicField(tableId, keyTuple, fieldLayout, fieldIndex, byteLengthToPop);
-
-    // Call onAfterSetField hooks (after modifying the state)
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(AFTER_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onAfterSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
-      }
-    }
-  }
-
-  /**
-   * Update data in a field in a table with the given tableId, key tuple and value field layout
-   */
-  function updateInField(
-    bytes32 tableId,
-    bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    uint256 startByteIndex,
-    bytes memory dataToSet,
-    FieldLayout fieldLayout
-  ) internal {
-    if (fieldIndex < fieldLayout.numStaticFields()) {
-      revert IStoreErrors.StoreCore_NotDynamicField();
-    }
-
-    // index must be checked because it could be arbitrarily large
-    // (but dataToSet.length can be unchecked - it won't overflow into another slot due to gas costs and hashed slots)
-    if (startByteIndex > type(uint40).max) {
-      revert IStoreErrors.StoreCore_DataIndexOverflow(type(uint40).max, startByteIndex);
-    }
-
-    // TODO add setItem-specific hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
-    bytes memory fullData;
-    {
-      bytes memory oldData = getDynamicField(tableId, keyTuple, fieldIndex - uint8(fieldLayout.numStaticFields()));
-      fullData = abi.encodePacked(
-        SliceLib.getSubslice(oldData, 0, startByteIndex).toBytes(),
-        dataToSet,
-        SliceLib.getSubslice(oldData, startByteIndex + dataToSet.length, oldData.length).toBytes()
-      );
-    }
-
-    // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(BEFORE_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
-      }
-    }
-
-    StoreCoreInternal._setDynamicFieldItem(tableId, keyTuple, fieldLayout, fieldIndex, startByteIndex, dataToSet);
-
-    // Call onAfterSetField hooks (after modifying the state)
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(AFTER_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onAfterSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
-      }
-    }
-  }
-
-  /************************************************************************
-   *
-   *    EPHEMERAL SET DATA
-   *
-   ************************************************************************/
-
-  /**
-   * Emit the ephemeral event without modifying storage for the full data of the given tableId and key tuple
-   */
-  function emitEphemeralRecord(
-    bytes32 tableId,
-    bytes32[] memory keyTuple,
-    bytes memory staticData,
-    PackedCounter encodedLengths,
-    bytes memory dynamicData,
-    FieldLayout fieldLayout
-  ) internal {
-    // Verify static data length + dynamic data length matches the given data
-    StoreCoreInternal._validateDataLength(fieldLayout, staticData, encodedLengths, dynamicData);
-
-    // Emit event to notify indexers
-    emit StoreEphemeralRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
+    // Splice the dynamic data
+    StoreCoreInternal._spliceDynamicData({
+      tableId: tableId,
+      keyTuple: keyTuple,
+      dynamicFieldIndex: dynamicFieldIndex,
+      startWithinField: uint40(previousFieldLength - byteLengthToPop),
+      deleteCount: uint40(byteLengthToPop),
+      data: new bytes(0),
+      previousEncodedLengths: previousEncodedLengths
+    });
   }
 
   /************************************************************************
@@ -515,10 +527,20 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given value field layout
+   * Get full record (all fields, static and dynamic data) for the given table ID and key tuple, loading the field layout from storage
    */
   function getRecord(
-    bytes32 tableId,
+    ResourceId tableId,
+    bytes32[] memory keyTuple
+  ) internal view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
+    return getRecord(tableId, keyTuple, getFieldLayout(tableId));
+  }
+
+  /**
+   * Get full record (all fields, static and dynamic data) for the given table ID and key tuple, with the given field layout
+   */
+  function getRecord(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout
   ) internal view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
@@ -549,10 +571,21 @@ library StoreCore {
   }
 
   /**
-   * Get a single field from the given tableId and key tuple, with the given value field layout
+   * Get a single field from the given table ID and key tuple, loading the field layout from storage
    */
   function getField(
-    bytes32 tableId,
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex
+  ) internal view returns (bytes memory) {
+    return getField(tableId, keyTuple, fieldIndex, getFieldLayout(tableId));
+  }
+
+  /**
+   * Get a single field from the given table ID and key tuple, with the given value field layout
+   */
+  function getField(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -565,12 +598,12 @@ library StoreCore {
   }
 
   /**
-   * Get a single static field from the given tableId and key tuple, with the given value field layout.
+   * Get a single static field from the given table ID and key tuple, with the given value field layout.
    * Note: the field value is left-aligned in the returned bytes32, the rest of the word is not zeroed out.
    * Consumers are expected to truncate the returned value as needed.
    */
   function getStaticField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -586,10 +619,10 @@ library StoreCore {
   }
 
   /**
-   * Get a single dynamic field from the given tableId and key tuple, with the given value field layout
+   * Get a single dynamic field from the given table ID and key tuple, with the given value field layout
    */
   function getDynamicField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex
   ) internal view returns (bytes memory) {
@@ -604,10 +637,21 @@ library StoreCore {
   }
 
   /**
-   * Get the byte length of a single field from the given tableId and key tuple, with the given value field layout
+   * Get the byte length of a single field from the given table ID and key tuple
    */
   function getFieldLength(
-    bytes32 tableId,
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex
+  ) internal view returns (uint256) {
+    return getFieldLength(tableId, keyTuple, fieldIndex, getFieldLayout(tableId));
+  }
+
+  /**
+   * Get the byte length of a single field from the given table ID and key tuple, with the given value field layout
+   */
+  function getFieldLength(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -616,38 +660,50 @@ library StoreCore {
     if (fieldIndex < numStaticFields) {
       return fieldLayout.atIndex(fieldIndex);
     } else {
-      // Get the length and storage location of the dynamic field
-      uint8 dynamicFieldLayoutIndex = fieldIndex - numStaticFields;
-      return StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple).atIndex(dynamicFieldLayoutIndex);
+      return getDynamicFieldLength(tableId, keyTuple, fieldIndex - numStaticFields);
     }
   }
 
   /**
-   * Get a byte slice (including start, excluding end) of a single dynamic field from the given tableId and key tuple, with the given value field layout.
-   * The slice is unchecked and will return invalid data if `start`:`end` overflow.
+   * Get the byte length of a single dynamic field from the given table ID and key tuple
    */
-  function getFieldSlice(
-    bytes32 tableId,
+  function getDynamicFieldLength(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    FieldLayout fieldLayout,
+    uint8 dynamicFieldIndex
+  ) internal view returns (uint256) {
+    return StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple).atIndex(dynamicFieldIndex);
+  }
+
+  /**
+   * Get a byte slice (including start, excluding end) of a single dynamic field from the given table ID and key tuple, with the given value field layout.
+   */
+  function getDynamicFieldSlice(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
     uint256 start,
     uint256 end
   ) internal view returns (bytes memory) {
-    uint8 numStaticFields = uint8(fieldLayout.numStaticFields());
-    if (fieldIndex < fieldLayout.numStaticFields()) {
-      revert IStoreErrors.StoreCore_NotDynamicField();
+    // Verify the accessed data is within the bounds of the dynamic field.
+    // This is necessary because we don't delete the dynamic data when a record is deleted,
+    // but only decrease its length.
+    PackedCounter encodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    uint256 fieldLength = encodedLengths.atIndex(dynamicFieldIndex);
+    if (start >= fieldLength || end > fieldLength) {
+      revert IStoreErrors.Store_IndexOutOfBounds(fieldLength, start >= fieldLength ? start : end - 1);
     }
 
     // Get the length and storage location of the dynamic field
-    uint8 dynamicSchemaIndex = fieldIndex - numStaticFields;
-    uint256 location = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicSchemaIndex);
+    uint256 location = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
 
     return Storage.load({ storagePointer: location, length: end - start, offset: start });
   }
 }
 
 library StoreCoreInternal {
+  using ResourceIdInstance for ResourceId;
+
   bytes32 internal constant SLOT = keccak256("mud.store");
   bytes32 internal constant DYNMAIC_DATA_SLOT = keccak256("mud.store.dynamicData");
   bytes32 internal constant DYNAMIC_DATA_LENGTH_SLOT = keccak256("mud.store.dynamicDataLength");
@@ -658,196 +714,103 @@ library StoreCoreInternal {
    *
    ************************************************************************/
 
-  function _setStaticField(
-    bytes32 tableId,
+  function _spliceDynamicData(
+    ResourceId tableId,
     bytes32[] memory keyTuple,
-    FieldLayout fieldLayout,
-    uint8 fieldIndex,
-    bytes memory data
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes memory data,
+    PackedCounter previousEncodedLengths
   ) internal {
-    uint256 location = _getStaticDataLocation(tableId, keyTuple);
-    uint256 offset = _getStaticDataOffset(fieldLayout, fieldIndex);
+    // Splicing dynamic data is not supported for offchain tables, because it
+    // requires reading the previous encoded lengths from storage
+    if (tableId.getType() != RESOURCE_TABLE) {
+      revert IStoreErrors.Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
+    }
 
-    Storage.store({ storagePointer: location, offset: offset, data: data });
+    uint256 previousFieldLength = previousEncodedLengths.atIndex(dynamicFieldIndex);
+    uint256 updatedFieldLength = previousFieldLength - deleteCount + data.length;
 
-    // Emit event to notify indexers
-    emit StoreCore.StoreSpliceStaticData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      start: uint48(offset),
-      deleteCount: uint40(fieldLayout.atIndex(fieldIndex)),
-      data: data
-    });
-  }
+    // If the total length of the field is changed, the data has to be appended/removed at the end of the field.
+    // Otherwise offchain indexers would shift the data after inserted data, while onchain the data is truncated at the end.
+    if (previousFieldLength != updatedFieldLength && startWithinField + deleteCount != previousFieldLength) {
+      revert IStoreErrors.Store_InvalidSplice(startWithinField, deleteCount, uint40(previousFieldLength));
+    }
 
-  function _setDynamicField(
-    bytes32 tableId,
-    bytes32[] memory keyTuple,
-    FieldLayout fieldLayout,
-    uint8 fieldIndex,
-    bytes memory data
-  ) internal {
-    uint8 dynamicSchemaIndex = fieldIndex - uint8(fieldLayout.numStaticFields());
-
-    // Load dynamic data length from storage
-    uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(tableId, keyTuple);
-    PackedCounter encodedLengths = PackedCounter.wrap(Storage.load({ storagePointer: dynamicSchemaLengthSlot }));
+    // The start index can't be larger than the previous length of the field
+    if (startWithinField > previousFieldLength) {
+      revert IStoreErrors.Store_IndexOutOfBounds(previousFieldLength, startWithinField);
+    }
 
     // Update the encoded length
-    uint256 oldFieldLength = encodedLengths.atIndex(dynamicSchemaIndex);
-    encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, data.length);
+    PackedCounter updatedEncodedLengths = previousEncodedLengths.setAtIndex(dynamicFieldIndex, updatedFieldLength);
 
-    // Set the new lengths
-    Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: encodedLengths.unwrap() });
+    {
+      // Compute start index for the splice
+      uint256 start = startWithinField;
+      unchecked {
+        // (safe because it's a few uint40 values, which can't overflow uint48)
+        for (uint8 i; i < dynamicFieldIndex; i++) {
+          start += previousEncodedLengths.atIndex(i);
+        }
+      }
+
+      // Emit event to notify offchain indexers
+      emit StoreCore.Store_SpliceDynamicData({
+        tableId: tableId,
+        keyTuple: keyTuple,
+        start: uint48(start),
+        deleteCount: deleteCount,
+        encodedLengths: updatedEncodedLengths,
+        data: data
+      });
+    }
+
+    // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = StoreHooks._get(tableId);
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA)) {
+        IStoreHook(hook.getAddress()).onBeforeSpliceDynamicData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          dynamicFieldIndex: dynamicFieldIndex,
+          startWithinField: startWithinField,
+          deleteCount: deleteCount,
+          encodedLengths: updatedEncodedLengths,
+          data: data
+        });
+      }
+    }
+
+    // Store the updated encoded lengths in storage
+    if (previousFieldLength != updatedFieldLength) {
+      uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(tableId, keyTuple);
+      Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: updatedEncodedLengths.unwrap() });
+    }
 
     // Store the provided value in storage
-    uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, keyTuple, dynamicSchemaIndex);
-    Storage.store({ storagePointer: dynamicDataLocation, offset: 0, data: data });
-
-    // Compute start index for the splice event
-    uint256 start;
-    unchecked {
-      // (safe because it's a few uint40 values, which can't overflow uint48)
-      for (uint8 i; i < dynamicSchemaIndex; i++) {
-        start += encodedLengths.atIndex(i);
-      }
+    {
+      uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
+      Storage.store({ storagePointer: dynamicDataLocation, offset: startWithinField, data: data });
     }
 
-    // Emit event to notify indexers
-    emit StoreCore.StoreSpliceDynamicData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      start: uint48(start),
-      deleteCount: uint40(oldFieldLength),
-      data: data,
-      encodedLengths: encodedLengths.unwrap()
-    });
-  }
-
-  function _pushToDynamicField(
-    bytes32 tableId,
-    bytes32[] memory keyTuple,
-    FieldLayout fieldLayout,
-    uint8 fieldIndex,
-    bytes memory dataToPush
-  ) internal {
-    uint8 dynamicSchemaIndex = fieldIndex - uint8(fieldLayout.numStaticFields());
-
-    // Load dynamic data length from storage
-    uint256 dynamicDataLengthSlot = _getDynamicDataLengthLocation(tableId, keyTuple);
-    PackedCounter encodedLengths = PackedCounter.wrap(Storage.load({ storagePointer: dynamicDataLengthSlot }));
-
-    // Update the encoded length
-    uint256 oldFieldLength = encodedLengths.atIndex(dynamicSchemaIndex);
-    encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, oldFieldLength + dataToPush.length);
-
-    // Set the new length
-    Storage.store({ storagePointer: dynamicDataLengthSlot, data: encodedLengths.unwrap() });
-
-    // Append `dataToPush` to the end of the data in storage
-    _setPartialDynamicData(tableId, keyTuple, dynamicSchemaIndex, oldFieldLength, dataToPush);
-
-    // Compute start index for the splice event
-    uint256 start = oldFieldLength;
-    unchecked {
-      // (safe because it's a few uint40 values, which can't overflow uint48)
-      for (uint8 i; i < dynamicSchemaIndex; i++) {
-        start += encodedLengths.atIndex(i);
+    // Call onAfterSpliceDynamicData hooks
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(AFTER_SPLICE_DYNAMIC_DATA)) {
+        IStoreHook(hook.getAddress()).onAfterSpliceDynamicData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          dynamicFieldIndex: dynamicFieldIndex,
+          startWithinField: startWithinField,
+          deleteCount: deleteCount,
+          encodedLengths: updatedEncodedLengths,
+          data: data
+        });
       }
     }
-
-    // Emit event to notify indexers
-    emit StoreCore.StoreSpliceDynamicData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      start: uint48(start),
-      deleteCount: uint40(0),
-      data: dataToPush,
-      encodedLengths: encodedLengths.unwrap()
-    });
-  }
-
-  function _popFromDynamicField(
-    bytes32 tableId,
-    bytes32[] memory keyTuple,
-    FieldLayout fieldLayout,
-    uint8 fieldIndex,
-    uint256 byteLengthToPop
-  ) internal {
-    uint8 dynamicSchemaIndex = fieldIndex - uint8(fieldLayout.numStaticFields());
-
-    // Load dynamic data length from storage
-    uint256 dynamicDataLengthSlot = _getDynamicDataLengthLocation(tableId, keyTuple);
-    PackedCounter encodedLengths = PackedCounter.wrap(Storage.load({ storagePointer: dynamicDataLengthSlot }));
-
-    // Update the encoded length
-    uint256 oldFieldLength = encodedLengths.atIndex(dynamicSchemaIndex);
-    encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, oldFieldLength - byteLengthToPop);
-
-    // Set the new length
-    Storage.store({ storagePointer: dynamicDataLengthSlot, data: encodedLengths.unwrap() });
-
-    // Data can be left unchanged, push/set do not assume storage to be 0s
-
-    // Compute start index for the splice event
-    uint256 start;
-    unchecked {
-      // (safe because it's a few uint40 values, which can't overflow uint48)
-      start = oldFieldLength;
-      for (uint8 i; i < dynamicSchemaIndex; i++) {
-        start += encodedLengths.atIndex(i);
-      }
-      start -= byteLengthToPop;
-    }
-
-    // Emit event to notify indexers
-    emit StoreCore.StoreSpliceDynamicData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      start: uint48(start),
-      deleteCount: uint40(byteLengthToPop),
-      data: new bytes(0),
-      encodedLengths: encodedLengths.unwrap()
-    });
-  }
-
-  // startOffset is measured in bytes
-  function _setDynamicFieldItem(
-    bytes32 tableId,
-    bytes32[] memory keyTuple,
-    FieldLayout fieldLayout,
-    uint8 fieldIndex,
-    uint256 startByteIndex,
-    bytes memory dataToSet
-  ) internal {
-    uint8 dynamicSchemaIndex = fieldIndex - uint8(fieldLayout.numStaticFields());
-
-    // Load dynamic data length from storage
-    uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(tableId, keyTuple);
-    PackedCounter encodedLengths = PackedCounter.wrap(Storage.load({ storagePointer: dynamicSchemaLengthSlot }));
-
-    // Set `dataToSet` at the given index
-    _setPartialDynamicData(tableId, keyTuple, dynamicSchemaIndex, startByteIndex, dataToSet);
-
-    // Compute start index for the splice event
-    uint256 start;
-    unchecked {
-      // (safe because it's a few uint40 values, which can't overflow uint48)
-      start = startByteIndex;
-      for (uint8 i; i < dynamicSchemaIndex; i++) {
-        start += encodedLengths.atIndex(i);
-      }
-    }
-
-    // Emit event to notify indexers
-    emit StoreCore.StoreSpliceDynamicData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      start: uint48(start),
-      deleteCount: uint40(dataToSet.length),
-      data: dataToSet,
-      encodedLengths: encodedLengths.unwrap()
-    });
   }
 
   /************************************************************************
@@ -857,10 +820,10 @@ library StoreCoreInternal {
    ************************************************************************/
 
   /**
-   * Get full static data for the given tableId and key tuple, with the given static length
+   * Get full static data for the given table ID and key tuple, with the given static length
    */
   function _getStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint256 length
   ) internal view returns (bytes memory) {
@@ -872,11 +835,11 @@ library StoreCoreInternal {
   }
 
   /**
-   * Get a single static field from the given tableId and key tuple, with the given value field layout.
+   * Get a single static field from the given table ID and key tuple, with the given value field layout.
    * Returns dynamic bytes memory in the size of the field.
    */
   function _getStaticFieldBytes(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -897,33 +860,22 @@ library StoreCoreInternal {
    *
    ************************************************************************/
 
-  /**
-   * Verify static data length + dynamic data length matches the given data
-   * Returns the static and dynamic lengths
-   */
-  function _validateDataLength(
-    FieldLayout fieldLayout,
-    bytes memory staticData,
-    PackedCounter encodedLengths,
-    bytes memory dynamicData
-  ) internal pure {
-    if (fieldLayout.staticDataLength() != staticData.length) {
-      revert IStoreErrors.StoreCore_InvalidStaticDataLength(fieldLayout.staticDataLength(), staticData.length);
-    }
-    if (encodedLengths.total() != dynamicData.length) {
-      revert IStoreErrors.StoreCore_InvalidDynamicDataLength(encodedLengths.total(), dynamicData.length);
-    }
-  }
-
   /////////////////////////////////////////////////////////////////////////
   //    STATIC DATA
   /////////////////////////////////////////////////////////////////////////
 
   /**
-   * Compute the storage location based on tableId id and index tuple
+   * Compute the storage location based on tableId id and key tuple
    */
-  function _getStaticDataLocation(bytes32 tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
+  function _getStaticDataLocation(ResourceId tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
     return uint256(SLOT ^ keccak256(abi.encodePacked(tableId, keyTuple)));
+  }
+
+  /**
+   * Compute the storage location based on tableId id and key (equivalent to keyTuple = [key])
+   */
+  function _getStaticDataLocation(ResourceId tableId, bytes32 key) internal pure returns (uint256) {
+    return uint256(SLOT ^ keccak256(abi.encodePacked(tableId, key)));
   }
 
   /**
@@ -945,68 +897,31 @@ library StoreCoreInternal {
    * Compute the storage location based on tableId id and index tuple
    */
   function _getDynamicDataLocation(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex
+    uint8 dynamicFieldIndex
   ) internal pure returns (uint256) {
-    return uint256(DYNMAIC_DATA_SLOT ^ bytes1(fieldIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
+    return uint256(DYNMAIC_DATA_SLOT ^ bytes1(dynamicFieldIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
   }
 
   /**
    * Compute the storage location for the length of the dynamic data
    */
-  function _getDynamicDataLengthLocation(bytes32 tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
+  function _getDynamicDataLengthLocation(
+    ResourceId tableId,
+    bytes32[] memory keyTuple
+  ) internal pure returns (uint256) {
     return uint256(DYNAMIC_DATA_LENGTH_SLOT ^ keccak256(abi.encodePacked(tableId, keyTuple)));
   }
 
   /**
-   * Get the length of the dynamic data for the given value field layout and index
+   * Load the encoded dynamic data length from storage for the given table ID and key tuple
    */
   function _loadEncodedDynamicDataLength(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple
   ) internal view returns (PackedCounter) {
     // Load dynamic data length from storage
-    uint256 dynamicDataLengthSlot = _getDynamicDataLengthLocation(tableId, keyTuple);
-    return PackedCounter.wrap(Storage.load({ storagePointer: dynamicDataLengthSlot }));
-  }
-
-  /**
-   * Set the length of the dynamic data (in bytes) for the given value field layout and index
-   */
-  function _setDynamicDataLengthAtIndex(
-    bytes32 tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicSchemaIndex, // fieldIndex - numStaticFields
-    uint256 newLengthAtIndex
-  ) internal {
-    // Load dynamic data length from storage
-    uint256 dynamicDataLengthSlot = _getDynamicDataLengthLocation(tableId, keyTuple);
-    PackedCounter encodedLengths = PackedCounter.wrap(Storage.load({ storagePointer: dynamicDataLengthSlot }));
-
-    // Update the encoded lengths
-    encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, newLengthAtIndex);
-
-    // Set the new lengths
-    Storage.store({ storagePointer: dynamicDataLengthSlot, data: encodedLengths.unwrap() });
-  }
-
-  /**
-   * Modify a part of the dynamic field's data (without changing the field's length)
-   */
-  function _setPartialDynamicData(
-    bytes32 tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicSchemaIndex,
-    uint256 startByteIndex,
-    bytes memory partialData
-  ) internal {
-    uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, keyTuple, dynamicSchemaIndex);
-    // start index is in bytes, whereas storage slots are in 32-byte words
-    dynamicDataLocation += startByteIndex / 32;
-
-    // partial storage slot offset (there is no inherent offset, as each dynamic field starts at its own storage slot)
-    uint256 offset = startByteIndex % 32;
-    Storage.store({ storagePointer: dynamicDataLocation, offset: offset, data: partialData });
+    return PackedCounter.wrap(Storage.load({ storagePointer: _getDynamicDataLengthLocation(tableId, keyTuple) }));
   }
 }

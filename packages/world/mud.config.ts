@@ -1,19 +1,17 @@
 import { mudConfig } from "./ts/register";
 
 export default mudConfig({
-  worldImportPath: "../",
+  worldImportPath: "../../",
   worldgenDirectory: "interfaces",
   worldInterfaceName: "IBaseWorld",
-  codegenDirectory: "",
+  namespace: "world", // NOTE: this namespace is only used for tables, the core system is deployed in the root namespace.
+  userTypes: {
+    ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", internalType: "bytes32" },
+  },
   tables: {
-    /************************************************************************
-     *
-     *    CORE TABLES
-     *
-     ************************************************************************/
     NamespaceOwner: {
       keySchema: {
-        namespace: "bytes16",
+        namespaceId: "ResourceId",
       },
       valueSchema: {
         owner: "address",
@@ -21,7 +19,7 @@ export default mudConfig({
     },
     ResourceAccess: {
       keySchema: {
-        resourceSelector: "bytes32",
+        resourceId: "ResourceId",
         caller: "address",
       },
       valueSchema: {
@@ -37,33 +35,34 @@ export default mudConfig({
         moduleAddress: "address",
       },
     },
-    Delegations: {
+    UserDelegationControl: {
       keySchema: {
         delegator: "address",
         delegatee: "address",
       },
       valueSchema: {
-        delegationControlId: "bytes32",
+        delegationControlId: "ResourceId",
       },
     },
-    /************************************************************************
-     *
-     *    MODULE TABLES
-     *
-     ************************************************************************/
-    Balances: {
-      directory: "modules/core/tables",
+    NamespaceDelegationControl: {
       keySchema: {
-        namespace: "bytes16",
+        namespaceId: "ResourceId",
+      },
+      valueSchema: {
+        delegationControlId: "ResourceId",
+      },
+    },
+    Balances: {
+      keySchema: {
+        namespaceId: "ResourceId",
       },
       valueSchema: {
         balance: "uint256",
       },
     },
     Systems: {
-      directory: "modules/core/tables",
       keySchema: {
-        resourceSelector: "bytes32",
+        systemId: "ResourceId",
       },
       valueSchema: {
         system: "address",
@@ -72,130 +71,40 @@ export default mudConfig({
       dataStruct: false,
     },
     SystemRegistry: {
-      directory: "modules/core/tables",
       keySchema: {
         system: "address",
       },
       valueSchema: {
-        resourceSelector: "bytes32",
+        systemId: "ResourceId",
       },
     },
     SystemHooks: {
-      directory: "modules/core/tables",
       keySchema: {
-        resourceSelector: "bytes32",
+        systemId: "ResourceId",
       },
       valueSchema: "bytes21[]",
     },
-    ResourceType: {
-      directory: "modules/core/tables",
-      keySchema: {
-        resourceSelector: "bytes32",
-      },
-      valueSchema: {
-        resourceType: "Resource",
-      },
-    },
     FunctionSelectors: {
-      directory: "modules/core/tables",
       keySchema: {
         functionSelector: "bytes4",
       },
       valueSchema: {
-        resourceSelector: "bytes32",
+        systemId: "ResourceId",
         systemFunctionSelector: "bytes4",
       },
       dataStruct: false,
     },
-    KeysWithValue: {
-      directory: "modules/keyswithvalue/tables",
+    FunctionSignatures: {
       keySchema: {
-        valueHash: "bytes32",
+        functionSelector: "bytes4",
       },
       valueSchema: {
-        keysWithValue: "bytes32[]", // For now only supports 1 key per value
+        functionSignature: "string",
       },
-      tableIdArgument: true,
-    },
-    KeysInTable: {
-      directory: "modules/keysintable/tables",
-      keySchema: { sourceTable: "bytes32" },
-      valueSchema: {
-        keys0: "bytes32[]",
-        keys1: "bytes32[]",
-        keys2: "bytes32[]",
-        keys3: "bytes32[]",
-        keys4: "bytes32[]",
-      },
-    },
-    UsedKeysIndex: {
-      directory: "modules/keysintable/tables",
-      keySchema: {
-        sourceTable: "bytes32",
-        keysHash: "bytes32",
-      },
-      valueSchema: { has: "bool", index: "uint40" },
-      dataStruct: false,
-    },
-    UniqueEntity: {
-      directory: "modules/uniqueentity/tables",
-      keySchema: {},
-      valueSchema: "uint256",
-      tableIdArgument: true,
-      storeArgument: true,
-    },
-    CallboundDelegations: {
-      directory: "modules/std-delegations/tables",
-      keySchema: {
-        delegator: "address",
-        delegatee: "address",
-        resourceSelector: "bytes32",
-        callDataHash: "bytes32",
-      },
-      valueSchema: {
-        availableCalls: "uint256",
-      },
-    },
-    TimeboundDelegations: {
-      directory: "modules/std-delegations/tables",
-      keySchema: {
-        delegator: "address",
-        delegatee: "address",
-      },
-      valueSchema: {
-        maxTimestamp: "uint256",
-      },
-    },
-    /************************************************************************
-     *
-     *    TEST TABLES
-     *
-     ************************************************************************/
-    Bool: {
-      directory: "../test/tables",
-      keySchema: {},
-      valueSchema: {
-        value: "bool",
-      },
-      tableIdArgument: true,
-    },
-    AddressArray: {
-      directory: "../test/tables",
-      valueSchema: "address[]",
-      tableIdArgument: true,
+      offchainOnly: true,
     },
   },
-  enums: {
-    Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
-  },
-
   excludeSystems: [
-    // IUniqueEntitySystem is not part of the root namespace and
-    // installed separately by UniqueEntityModule.
-    // TODO: Move optional modules into a separate package
-    // (see https://github.com/latticexyz/mud/pull/584)
-    "UniqueEntitySystem",
-
     // Worldgen currently does not support systems inheriting logic
     // from other contracts, so all parts of CoreSystem are named
     // System too to be included in the IBaseWorld interface.
@@ -204,7 +113,5 @@ export default mudConfig({
     // TODO: add support for inheritance to worldgen
     // (see: https://github.com/latticexyz/mud/issues/631)
     "StoreRegistrationSystem",
-    // Similar overlap occurs for IEphemeralRecordSystem. IWorldEphemeral is included instead.
-    "EphemeralRecordSystem",
   ],
 });

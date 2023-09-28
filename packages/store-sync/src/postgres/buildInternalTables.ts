@@ -1,6 +1,6 @@
 import { integer, pgSchema, text } from "drizzle-orm/pg-core";
 import { transformSchemaName } from "./transformSchemaName";
-import { asAddress, asBigInt, asJson, asNumber } from "./columnTypes";
+import { asAddress, asBigInt, asHex, asJson, asNumber } from "./columnTypes";
 import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -19,7 +19,7 @@ export function buildInternalTables() {
       schemaVersion: integer("schema_version").primaryKey(),
       key: text("key").notNull().primaryKey(),
       address: asAddress("address").notNull(),
-      tableId: text("table_id").notNull(),
+      tableId: asHex("table_id").notNull(),
       namespace: text("namespace").notNull(),
       name: text("name").notNull(),
       keySchema: asJson<KeySchema>("key_schema").notNull(),

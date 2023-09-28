@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import "forge-std/Test.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
@@ -7,21 +7,25 @@ import { StoreCore, StoreCoreInternal } from "../src/StoreCore.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
-import { FieldLayout } from "../src/FieldLayout.sol";
+import { FieldLayout, FieldLayoutLib } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { Tables, TablesTableId } from "../src/codegen/index.sol";
+import { IStoreHook } from "../src/IStoreHook.sol";
+import { Tables, ResourceIds, TablesTableId } from "../src/codegen/index.sol";
+import { ResourceId, ResourceIdLib, ResourceIdInstance } from "../src/ResourceId.sol";
+import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
-import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SET_FIELD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "../src/storeHookTypes.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD, ALL, BEFORE_ALL, AFTER_ALL } from "../src/storeHookTypes.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
 import { RevertSubscriber } from "./RevertSubscriber.sol";
 import { EchoSubscriber } from "./EchoSubscriber.sol";
+import { setDynamicDataLengthAtIndex } from "./setDynamicDataLengthAtIndex.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -30,14 +34,33 @@ struct TestStruct {
 }
 
 contract StoreCoreTest is Test, StoreMock {
+  using ResourceIdInstance for ResourceId;
+
   TestStruct private testStruct;
   event HookCalled(bytes);
 
   mapping(uint256 => bytes) private testMapping;
   Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
   string[] defaultKeyNames = new string[](1);
+  ResourceId _tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some table" });
+  ResourceId _tableId2 = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some other table" });
 
-  function testRegisterAndGetFieldLayout() public {
+  function testGetStaticDataLocation() public {
+    ResourceId tableId = _tableId;
+    bytes32 key = "some key";
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+
+    // Expect the two methods to return the same value
+    assertEq(
+      StoreCoreInternal._getStaticDataLocation(tableId, keyTuple),
+      StoreCoreInternal._getStaticDataLocation(tableId, key)
+    );
+  }
+
+  function testRegisterTable() public {
+    ResourceId tableId = _tableId;
+
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     Schema keySchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16);
     Schema valueSchema = SchemaEncodeHelper.encode(
@@ -55,17 +78,15 @@ contract StoreCoreTest is Test, StoreMock {
     fieldNames[2] = "value3";
     fieldNames[3] = "value4";
 
-    bytes32 tableId = keccak256("some.tableId");
-
-    // Expect a StoreSetRecord event to be emitted
+    // Expect a Store_SetRecord event to be emitted
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32(tableId);
+    keyTuple[0] = ResourceId.unwrap(tableId);
     vm.expectEmit(true, true, true, true);
-    emit StoreSetRecord(
+    emit Store_SetRecord(
       TablesTableId,
       keyTuple,
-      Tables.encodeStatic(fieldLayout.unwrap(), keySchema.unwrap(), valueSchema.unwrap()),
-      Tables.encodeLengths(abi.encode(keyNames), abi.encode(fieldNames)).unwrap(),
+      Tables.encodeStatic(fieldLayout, keySchema, valueSchema),
+      Tables.encodeLengths(abi.encode(keyNames), abi.encode(fieldNames)),
       Tables.encodeDynamic(abi.encode(keyNames), abi.encode(fieldNames))
     );
     IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
@@ -79,13 +100,43 @@ contract StoreCoreTest is Test, StoreMock {
 
     bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(IStore(this), tableId);
     assertEq(loadedFieldNames, abi.encode(fieldNames));
+
+    // Expect the table ID to be registered
+    assertTrue(ResourceIds._getExists(tableId));
   }
 
-  function testFailRegisterInvalidFieldLayout() public {
+  function testRevertTableExists() public {
+    ResourceId tableId = _tableId;
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 0);
+    Schema keySchema = SchemaEncodeHelper.encode(SchemaType.UINT8);
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT8);
+    string[] memory keyNames = new string[](1);
+    string[] memory fieldNames = new string[](1);
+
+    IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
+
+    // Expect a revert when registering a table that already exists
+    vm.expectRevert(
+      abi.encodeWithSelector(IStoreErrors.Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
+    );
+    IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
+  }
+
+  function testRevertRegisterInvalidFieldLayout() public {
+    ResourceId tableId = _tableId;
+
     string[] memory keyNames = new string[](2);
     string[] memory fieldNames = new string[](4);
+    FieldLayout invalidFieldLayout = FieldLayout.wrap(keccak256("random bytes as value field layout"));
+
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        FieldLayoutLib.FieldLayoutLib_InvalidLength.selector,
+        invalidFieldLayout.numDynamicFields()
+      )
+    );
     IStore(this).registerTable(
-      keccak256("tableId"),
+      tableId,
       FieldLayout.wrap(keccak256("random bytes as value field layout")),
       Schema.wrap(keccak256("random bytes as key schema")),
       Schema.wrap(keccak256("random bytes as value schema")),
@@ -94,7 +145,32 @@ contract StoreCoreTest is Test, StoreMock {
     );
   }
 
+  function testRevertRegisterInvalidTableId() public {
+    bytes2 invalidType = "xx";
+    ResourceId invalidTableId = ResourceIdLib.encode({ typeId: invalidType, name: "somename" });
+
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IStoreErrors.Store_InvalidResourceType.selector,
+        RESOURCE_TABLE,
+        invalidTableId,
+        string(abi.encodePacked(invalidTableId))
+      )
+    );
+    IStore(this).registerTable(
+      invalidTableId,
+      FieldLayoutEncodeHelper.encode(1, 0),
+      SchemaEncodeHelper.encode(SchemaType.UINT8),
+      SchemaEncodeHelper.encode(SchemaType.UINT8),
+      new string[](1),
+      new string[](1)
+    );
+  }
+
   function testHasFieldLayoutAndSchema() public {
+    ResourceId tableId = _tableId;
+    ResourceId tableId2 = _tableId2;
+
     string[] memory keyNames = new string[](1);
     string[] memory fieldNames = new string[](4);
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
@@ -104,47 +180,31 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT8,
       SchemaType.UINT16
     );
-    bytes32 tableId = keccak256("some.tableId");
-    bytes32 tableId2 = keccak256("other.tableId");
     IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
-    assertTrue(StoreCore.hasTable(tableId));
-    assertFalse(StoreCore.hasTable(tableId2));
+    assertTrue(ResourceIds._getExists(tableId));
+    assertFalse(ResourceIds._getExists(tableId2));
 
-    IStore(this).getFieldLayout(tableId);
-    IStore(this).getValueSchema(tableId);
-    IStore(this).getKeySchema(tableId);
+    assertEq(FieldLayout.unwrap(IStore(this).getFieldLayout(tableId)), FieldLayout.unwrap(fieldLayout));
+    assertEq(Schema.unwrap(IStore(this).getValueSchema(tableId)), Schema.unwrap(valueSchema));
+    assertEq(Schema.unwrap(IStore(this).getKeySchema(tableId)), Schema.unwrap(defaultKeySchema));
 
-    vm.expectRevert(
-      abi.encodeWithSelector(
-        IStoreErrors.StoreCore_TableNotFound.selector,
-        tableId2,
-        string(abi.encodePacked(tableId2))
-      )
-    );
-    IStore(this).getFieldLayout(tableId2);
+    assertTrue(IStore(this).getFieldLayout(tableId2).isEmpty());
 
     vm.expectRevert(
-      abi.encodeWithSelector(
-        IStoreErrors.StoreCore_TableNotFound.selector,
-        tableId2,
-        string(abi.encodePacked(tableId2))
-      )
+      abi.encodeWithSelector(IStoreErrors.Store_TableNotFound.selector, tableId2, string(abi.encodePacked(tableId2)))
     );
     IStore(this).getValueSchema(tableId2);
 
     vm.expectRevert(
-      abi.encodeWithSelector(
-        IStoreErrors.StoreCore_TableNotFound.selector,
-        tableId2,
-        string(abi.encodePacked(tableId2))
-      )
+      abi.encodeWithSelector(IStoreErrors.Store_TableNotFound.selector, tableId2, string(abi.encodePacked(tableId2)))
     );
     IStore(this).getKeySchema(tableId2);
   }
 
   function testRegisterTableRevertNames() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 0);
     Schema keySchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
@@ -157,16 +217,16 @@ contract StoreCoreTest is Test, StoreMock {
     string[] memory oneName = new string[](1);
 
     // Register table with invalid key names
-    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidKeyNamesLength.selector, 4, 1));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_InvalidKeyNamesLength.selector, 4, 1));
     IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, oneName, oneName);
 
     // Register table with invalid value names
-    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidFieldNamesLength.selector, 1, 4));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_InvalidFieldNamesLength.selector, 1, 4));
     IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, fourNames, fourNames);
   }
 
   function testSetAndGetDynamicDataLength() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
 
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 4, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
@@ -185,7 +245,7 @@ contract StoreCoreTest is Test, StoreMock {
     keyTuple[0] = bytes32("some key");
 
     // Set dynamic data length of dynamic index 0
-    StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 10);
+    setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 10);
 
     PackedCounter encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     assertEq(encodedLength.atIndex(0), 10);
@@ -193,7 +253,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(encodedLength.total(), 10);
 
     // Set dynamic data length of dynamic index 1
-    StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 1, 99);
+    setDynamicDataLengthAtIndex(tableId, keyTuple, 1, 99);
 
     encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     assertEq(encodedLength.atIndex(0), 10);
@@ -201,7 +261,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(encodedLength.total(), 109);
 
     // Reduce dynamic data length of dynamic index 0 again
-    StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 5);
+    setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 5);
 
     encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     assertEq(encodedLength.atIndex(0), 5);
@@ -210,6 +270,8 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testSetAndGetStaticData() public {
+    ResourceId tableId = _tableId;
+
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(
@@ -219,7 +281,6 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT16
     );
 
-    bytes32 tableId = keccak256("some.tableId");
     IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
@@ -228,11 +289,11 @@ contract StoreCoreTest is Test, StoreMock {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = "some key";
 
-    // Expect a StoreSetRecord event to be emitted
+    // Expect a Store_SetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetRecord(tableId, keyTuple, staticData, bytes32(0), new bytes(0));
+    emit Store_SetRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
-    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get data
     (bytes memory loadedStaticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = IStore(this).getRecord(
@@ -246,32 +307,11 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(_dynamicData, "");
   }
 
-  function testFailSetAndGetStaticData() public {
-    // Register table
-    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
-    Schema valueSchema = SchemaEncodeHelper.encode(
-      SchemaType.UINT8,
-      SchemaType.UINT16,
-      SchemaType.UINT8,
-      SchemaType.UINT16
-    );
-    bytes32 tableId = keccak256("some.tableId");
-    IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
-
-    // Set data
-    bytes memory staticData = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
-
-    bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = "some key";
-
-    // This should fail because the data is not 6 bytes long
-    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
-  }
-
   function testSetAndGetStaticDataSpanningWords() public {
+    ResourceId tableId = _tableId;
+
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 0);
-    bytes32 tableId = keccak256("some.table");
     {
       Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT256);
       IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));
@@ -286,11 +326,11 @@ contract StoreCoreTest is Test, StoreMock {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = "some key";
 
-    // Expect a StoreSetRecord event to be emitted
+    // Expect a Store_SetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetRecord(tableId, keyTuple, staticData, bytes32(0), new bytes(0));
+    emit Store_SetRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
-    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get data
     (bytes memory loadedStaticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = IStore(this).getRecord(
@@ -305,7 +345,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testSetAndGetDynamicData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
@@ -350,12 +390,12 @@ contract StoreCoreTest is Test, StoreMock {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = bytes32("some key");
 
-    // Expect a StoreSetRecord event to be emitted
+    // Expect a Store_SetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetRecord(tableId, keyTuple, staticData, encodedDynamicLength.unwrap(), dynamicData);
+    emit Store_SetRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
 
     // Set data
-    IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData, fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
 
     // Get data
     (bytes memory loadedStaticData, PackedCounter loadedEncodedLengths, bytes memory loadedDynamicData) = IStore(this)
@@ -380,7 +420,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   struct SetAndGetData {
-    bytes32 tableId;
+    ResourceId tableId;
     FieldLayout fieldLayout;
     bytes16 firstDataBytes;
     bytes firstDataPacked;
@@ -391,8 +431,10 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testSetAndGetField() public {
+    ResourceId tableId = _tableId;
+
     SetAndGetData memory _data;
-    _data.tableId = keccak256("some.tableId");
+    _data.tableId = tableId;
 
     // Register table
     _data.fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 2);
@@ -413,6 +455,10 @@ contract StoreCoreTest is Test, StoreMock {
       );
     }
 
+    ////////////////
+    // Static data
+    ////////////////
+
     _data.firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
     // Create keyTuple
@@ -421,16 +467,12 @@ contract StoreCoreTest is Test, StoreMock {
 
     _data.firstDataPacked = abi.encodePacked(_data.firstDataBytes);
 
-    // Expect a StoreSpliceStaticData event to be emitted
+    // Expect a Store_SpliceStaticData event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceStaticData(_data.tableId, keyTuple, 0, uint40(_data.firstDataPacked.length), _data.firstDataPacked);
+    emit Store_SpliceStaticData(_data.tableId, keyTuple, 0, _data.firstDataPacked);
 
     // Set first field
     IStore(this).setField(_data.tableId, keyTuple, 0, _data.firstDataPacked, _data.fieldLayout);
-
-    ////////////////
-    // Static data
-    ////////////////
 
     // Get first field
     bytes memory loadedData = IStore(this).getField(_data.tableId, keyTuple, 0, _data.fieldLayout);
@@ -449,13 +491,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceStaticData(
-      _data.tableId,
-      keyTuple,
-      uint48(_data.firstDataPacked.length),
-      uint40(_data.secondDataPacked.length),
-      _data.secondDataPacked
-    );
+    emit Store_SpliceStaticData(_data.tableId, keyTuple, uint48(_data.firstDataPacked.length), _data.secondDataPacked);
 
     IStore(this).setField(_data.tableId, keyTuple, 1, _data.secondDataPacked, _data.fieldLayout);
 
@@ -505,13 +541,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicData(
+    emit Store_SpliceDynamicData(
       _data.tableId,
       keyTuple,
       uint48(0),
       0,
-      _data.thirdDataBytes,
-      PackedCounterLib.pack(_data.thirdDataBytes.length, 0).unwrap()
+      PackedCounterLib.pack(_data.thirdDataBytes.length, 0),
+      _data.thirdDataBytes
     );
 
     // Set third field
@@ -540,13 +576,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicData(
+    emit Store_SpliceDynamicData(
       _data.tableId,
       keyTuple,
       uint48(_data.thirdDataBytes.length),
       0,
-      _data.fourthDataBytes,
-      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.fourthDataBytes.length).unwrap()
+      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.fourthDataBytes.length),
+      _data.fourthDataBytes
     );
 
     // Set fourth field
@@ -585,13 +621,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicData(
+    emit Store_SpliceDynamicData(
       _data.tableId,
       keyTuple,
       uint48(_data.thirdDataBytes.length),
       uint40(_data.fourthDataBytes.length),
-      _data.thirdDataBytes,
-      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.thirdDataBytes.length).unwrap()
+      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.thirdDataBytes.length),
+      _data.thirdDataBytes
     );
 
     // Set fourth field
@@ -606,7 +642,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testDeleteData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
@@ -658,7 +694,7 @@ contract StoreCoreTest is Test, StoreMock {
     keyTuple[0] = bytes32("some key");
 
     // Set data
-    IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData, fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
 
     // Get data
     (bytes memory loadedStaticData, PackedCounter loadedEncodedLengths, bytes memory loadedDynamicData) = IStore(this)
@@ -666,12 +702,12 @@ contract StoreCoreTest is Test, StoreMock {
 
     assertEq(abi.encodePacked(loadedStaticData, loadedEncodedLengths, loadedDynamicData), data);
 
-    // Expect a StoreDeleteRecord event to be emitted
+    // Expect a Store_DeleteRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreDeleteRecord(tableId, keyTuple);
+    emit Store_DeleteRecord(tableId, keyTuple);
 
     // Delete data
-    IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);
+    IStore(this).deleteRecord(tableId, keyTuple);
 
     // Verify data is deleted
     (loadedStaticData, loadedEncodedLengths, loadedDynamicData) = IStore(this).getRecord(
@@ -684,8 +720,8 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(loadedDynamicData, "");
   }
 
-  struct TestPushToFieldData {
-    bytes32 tableId;
+  struct TestPushToDynamicFieldData {
+    ResourceId tableId;
     bytes32[] keyTuple;
     bytes32 firstDataBytes;
     bytes secondDataBytes;
@@ -697,10 +733,21 @@ contract StoreCoreTest is Test, StoreMock {
     bytes newThirdDataBytes;
   }
 
-  function testPushToField() public {
-    TestPushToFieldData memory data = TestPushToFieldData(0, new bytes32[](0), 0, "", "", "", "", "", "", "");
+  function testPushToDynamicField() public {
+    ResourceId tableId = _tableId;
 
-    data.tableId = keccak256("some.tableId");
+    TestPushToDynamicFieldData memory data = TestPushToDynamicFieldData(
+      tableId,
+      new bytes32[](0),
+      0,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    );
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
@@ -743,7 +790,7 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).setField(data.tableId, data.keyTuple, 0, abi.encodePacked(data.firstDataBytes), fieldLayout);
     IStore(this).setField(data.tableId, data.keyTuple, 1, data.secondDataBytes, fieldLayout);
     // Initialize a field with push
-    IStore(this).pushToField(data.tableId, data.keyTuple, 2, data.thirdDataBytes, fieldLayout);
+    IStore(this).pushToDynamicField(data.tableId, data.keyTuple, 1, data.thirdDataBytes);
 
     // Create data to push
     {
@@ -753,31 +800,31 @@ contract StoreCoreTest is Test, StoreMock {
     }
     data.newSecondDataBytes = abi.encodePacked(data.secondDataBytes, data.secondDataToPush);
 
-    // Expect a StoreSpliceDynamicData event to be emitted
+    // Expect a Store_SpliceDynamicData event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicData(
+    emit Store_SpliceDynamicData(
       data.tableId,
       data.keyTuple,
       uint48(data.secondDataBytes.length),
       0,
-      data.secondDataToPush,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length).unwrap()
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
+      data.secondDataToPush
     );
 
     // Push to second field
-    IStore(this).pushToField(data.tableId, data.keyTuple, 1, data.secondDataToPush, fieldLayout);
+    IStore(this).pushToDynamicField(data.tableId, data.keyTuple, 0, data.secondDataToPush);
 
     // Get second field
     data.loadedData = IStore(this).getField(data.tableId, data.keyTuple, 1, fieldLayout);
 
     // Verify loaded data is correct
-    assertEq(SliceLib.fromBytes(data.loadedData).decodeArray_uint32().length, 2 + 1);
-    assertEq(data.loadedData.length, data.newSecondDataBytes.length);
-    assertEq(data.loadedData, data.newSecondDataBytes);
+    assertEq(SliceLib.fromBytes(data.loadedData).decodeArray_uint32().length, 2 + 1, "1");
+    assertEq(data.loadedData.length, data.newSecondDataBytes.length, "2");
+    assertEq(data.loadedData, data.newSecondDataBytes, "3");
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(IStore(this).getField(data.tableId, data.keyTuple, 0, fieldLayout)), data.firstDataBytes);
-    assertEq(IStore(this).getField(data.tableId, data.keyTuple, 2, fieldLayout), data.thirdDataBytes);
+    assertEq(bytes32(IStore(this).getField(data.tableId, data.keyTuple, 0, fieldLayout)), data.firstDataBytes, "4");
+    assertEq(IStore(this).getField(data.tableId, data.keyTuple, 2, fieldLayout), data.thirdDataBytes, "5");
 
     // Create data to push
     {
@@ -798,33 +845,33 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicData(
+    emit Store_SpliceDynamicData(
       data.tableId,
       data.keyTuple,
       uint48(data.newSecondDataBytes.length + data.thirdDataBytes.length),
       0,
-      data.thirdDataToPush,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length).unwrap()
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
+      data.thirdDataToPush
     );
 
     // Push to third field
-    IStore(this).pushToField(data.tableId, data.keyTuple, 2, data.thirdDataToPush, fieldLayout);
+    IStore(this).pushToDynamicField(data.tableId, data.keyTuple, 1, data.thirdDataToPush);
 
     // Get third field
     data.loadedData = IStore(this).getField(data.tableId, data.keyTuple, 2, fieldLayout);
 
     // Verify loaded data is correct
-    assertEq(SliceLib.fromBytes(data.loadedData).decodeArray_uint32().length, 3 + 10);
-    assertEq(data.loadedData.length, data.newThirdDataBytes.length);
-    assertEq(data.loadedData, data.newThirdDataBytes);
+    assertEq(SliceLib.fromBytes(data.loadedData).decodeArray_uint32().length, 3 + 10, "6");
+    assertEq(data.loadedData.length, data.newThirdDataBytes.length, "7");
+    assertEq(data.loadedData, data.newThirdDataBytes, "8");
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(IStore(this).getField(data.tableId, data.keyTuple, 0, fieldLayout)), data.firstDataBytes);
-    assertEq(IStore(this).getField(data.tableId, data.keyTuple, 1, fieldLayout), data.newSecondDataBytes);
+    assertEq(bytes32(IStore(this).getField(data.tableId, data.keyTuple, 0, fieldLayout)), data.firstDataBytes, "9");
+    assertEq(IStore(this).getField(data.tableId, data.keyTuple, 1, fieldLayout), data.newSecondDataBytes, "10");
   }
 
-  struct TestUpdateInFieldData {
-    bytes32 tableId;
+  struct TestSpliceDynamicDataData {
+    ResourceId tableId;
     bytes32[] keyTuple;
     bytes32 firstDataBytes;
     uint32[] secondData;
@@ -838,9 +885,11 @@ contract StoreCoreTest is Test, StoreMock {
     bytes loadedData;
   }
 
-  function testUpdateInField() public {
-    TestUpdateInFieldData memory data = TestUpdateInFieldData(
-      0,
+  function testSpliceDynamicData() public {
+    ResourceId tableId = _tableId;
+
+    TestSpliceDynamicDataData memory data = TestSpliceDynamicDataData(
+      tableId,
       new bytes32[](0),
       0,
       new uint32[](0),
@@ -853,8 +902,6 @@ contract StoreCoreTest is Test, StoreMock {
       "",
       ""
     );
-
-    data.tableId = keccak256("some.tableId");
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
@@ -908,17 +955,24 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicData(
+    emit Store_SpliceDynamicData(
       data.tableId,
       data.keyTuple,
       uint48(4 * 1),
       4 * 1,
-      data.secondDataForUpdate,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length).unwrap()
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
+      data.secondDataForUpdate
     );
 
     // Update index 1 in second field (4 = byte length of uint32)
-    IStore(this).updateInField(data.tableId, data.keyTuple, 1, 4 * 1, data.secondDataForUpdate, fieldLayout);
+    IStore(this).spliceDynamicData(
+      data.tableId,
+      data.keyTuple,
+      0,
+      uint40(4 * 1),
+      uint40(data.secondDataForUpdate.length),
+      data.secondDataForUpdate
+    );
 
     // Get second field
     data.loadedData = IStore(this).getField(data.tableId, data.keyTuple, 1, fieldLayout);
@@ -953,17 +1007,24 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicData(
+    emit Store_SpliceDynamicData(
       data.tableId,
       data.keyTuple,
       uint48(data.newSecondDataBytes.length + 8 * 1),
       8 * 4,
-      data.thirdDataForUpdate,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length).unwrap()
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
+      data.thirdDataForUpdate
     );
 
     // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)
-    IStore(this).updateInField(data.tableId, data.keyTuple, 2, 8 * 1, data.thirdDataForUpdate, fieldLayout);
+    IStore(this).spliceDynamicData(
+      data.tableId,
+      data.keyTuple,
+      1,
+      uint40(8 * 1),
+      uint40(data.thirdDataForUpdate.length),
+      data.thirdDataForUpdate
+    );
 
     // Get third field
     data.loadedData = IStore(this).getField(data.tableId, data.keyTuple, 2, fieldLayout);
@@ -979,13 +1040,25 @@ contract StoreCoreTest is Test, StoreMock {
 
     // startByteIndex must not overflow
     vm.expectRevert(
-      abi.encodeWithSelector(IStoreErrors.StoreCore_DataIndexOverflow.selector, type(uint40).max, type(uint56).max)
+      abi.encodeWithSelector(
+        IStoreErrors.Store_IndexOutOfBounds.selector,
+        data.newThirdDataBytes.length,
+        uint40(type(uint56).max)
+      )
     );
-    IStore(this).updateInField(data.tableId, data.keyTuple, 2, type(uint56).max, data.thirdDataForUpdate, fieldLayout);
+    IStore(this).spliceDynamicData(
+      data.tableId,
+      data.keyTuple,
+      1,
+      uint40(type(uint56).max),
+      uint40(data.thirdDataForUpdate.length),
+      data.thirdDataForUpdate
+    );
   }
 
   function testAccessEmptyData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(4, 1);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
@@ -1007,12 +1080,14 @@ contract StoreCoreTest is Test, StoreMock {
     uint256 data3Length = IStore(this).getFieldLength(tableId, keyTuple, 1, fieldLayout);
     assertEq(data3Length, 0);
 
-    bytes memory data3Slice = IStore(this).getFieldSlice(tableId, keyTuple, 1, fieldLayout, 0, 0);
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 0));
+    bytes memory data3Slice = IStore(this).getDynamicFieldSlice(tableId, keyTuple, 0, 0, 0);
     assertEq(data3Slice.length, 0);
   }
 
   function testRegisterHook() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = "some key";
 
@@ -1031,11 +1106,11 @@ contract StoreCoreTest is Test, StoreMock {
       new string[](1)
     );
 
-    IStore(this).registerStoreHook(tableId, subscriber, BEFORE_SET_RECORD | BEFORE_SET_FIELD | BEFORE_DELETE_RECORD);
+    IStore(this).registerStoreHook(tableId, subscriber, BEFORE_ALL);
 
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
-    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get data from indexed table - the indexer should have mirrored the data there
     (bytes memory indexedData, , ) = IStore(this).getRecord(indexerTableId, keyTuple, fieldLayout);
@@ -1049,7 +1124,7 @@ contract StoreCoreTest is Test, StoreMock {
     (indexedData, , ) = IStore(this).getRecord(indexerTableId, keyTuple, fieldLayout);
     assertEq(keccak256(staticData), keccak256(indexedData));
 
-    IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);
+    IStore(this).deleteRecord(tableId, keyTuple);
 
     // Get data from indexed table - the indexer should have mirrored the data there
     (indexedData, , ) = IStore(this).getRecord(indexerTableId, keyTuple, fieldLayout);
@@ -1057,88 +1132,109 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testUnregisterHook() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = "some key";
 
     // Register table's value schema
-    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
-    IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 1);
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.STRING);
+    IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));
 
     // Create a RevertSubscriber and an EchoSubscriber
     RevertSubscriber revertSubscriber = new RevertSubscriber();
     EchoSubscriber echoSubscriber = new EchoSubscriber();
 
     // Register both subscribers
-    IStore(this).registerStoreHook(
-      tableId,
-      revertSubscriber,
-      BEFORE_SET_RECORD |
-        AFTER_SET_RECORD |
-        BEFORE_SET_FIELD |
-        AFTER_SET_FIELD |
-        BEFORE_DELETE_RECORD |
-        AFTER_DELETE_RECORD
-    );
+    IStore(this).registerStoreHook(tableId, revertSubscriber, ALL);
     // Register both subscribers
-    IStore(this).registerStoreHook(
-      tableId,
-      echoSubscriber,
-      BEFORE_SET_RECORD |
-        AFTER_SET_RECORD |
-        BEFORE_SET_FIELD |
-        AFTER_SET_FIELD |
-        BEFORE_DELETE_RECORD |
-        AFTER_DELETE_RECORD
-    );
+    IStore(this).registerStoreHook(tableId, echoSubscriber, ALL);
 
-    bytes memory data = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
+    bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
+    bytes memory dynamicData = abi.encodePacked(bytes("some string"));
+    PackedCounter encodedLengths = PackedCounterLib.pack(dynamicData.length);
 
     // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
     vm.expectRevert(bytes("onBeforeSetRecord"));
-    IStore(this).setRecord(tableId, keyTuple, data, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
 
-    // Expect a revert when the RevertSubscriber's onBeforeSetField hook is called
-    vm.expectRevert(bytes("onBeforeSetField"));
-    IStore(this).setField(tableId, keyTuple, 0, data, fieldLayout);
+    // Expect a revert when the RevertSubscriber's onBeforeSpliceStaticData hook is called
+    vm.expectRevert(bytes("onBeforeSpliceStaticData"));
+    IStore(this).setField(tableId, keyTuple, 0, staticData, fieldLayout);
+
+    // Expect a revert when the RevertSubscriber's hook onBeforeSpliceDynamicData is called
+    vm.expectRevert(bytes("onBeforeSpliceDynamicData"));
+    IStore(this).setField(tableId, keyTuple, 1, dynamicData, fieldLayout);
 
     // Expect a revert when the RevertSubscriber's onBeforeDeleteRecord hook is called
     vm.expectRevert(bytes("onBeforeDeleteRecord"));
-    IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);
+    IStore(this).deleteRecord(tableId, keyTuple);
 
     // Unregister the RevertSubscriber
     IStore(this).unregisterStoreHook(tableId, revertSubscriber);
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSetRecord hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, keyTuple, data, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onBeforeSetRecord,
+        (tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout)
+      )
+    );
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSetRecord hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, keyTuple, data, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onAfterSetRecord,
+        (tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout)
+      )
+    );
 
-    IStore(this).setRecord(tableId, keyTuple, data, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
 
-    // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSetField hook is called
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSpliceStaticData hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, keyTuple, uint8(0), data, fieldLayout));
+    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeSpliceStaticData, (tableId, keyTuple, 0, staticData)));
 
-    // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSetField hook is called
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSpliceStaticData hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, keyTuple, uint8(0), data, fieldLayout));
+    emit HookCalled(abi.encodeCall(IStoreHook.onAfterSpliceStaticData, (tableId, keyTuple, 0, staticData)));
 
-    IStore(this).setField(tableId, keyTuple, 0, data, fieldLayout);
+    IStore(this).setField(tableId, keyTuple, 0, staticData, fieldLayout);
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSpliceDynamicData hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onBeforeSpliceDynamicData,
+        (tableId, keyTuple, 0, 0, uint40(dynamicData.length), encodedLengths, dynamicData)
+      )
+    );
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSpliceDynamicData hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onAfterSpliceDynamicData,
+        (tableId, keyTuple, 0, 0, uint40(dynamicData.length), encodedLengths, dynamicData)
+      )
+    );
+
+    IStore(this).setField(tableId, keyTuple, 1, dynamicData, fieldLayout);
+
+    // TODO: add tests for hooks being called for all other dynamic operations
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeDeleteRecord hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, keyTuple, fieldLayout));
+    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeDeleteRecord, (tableId, keyTuple, fieldLayout)));
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterDeleteRecord hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, keyTuple, fieldLayout));
+    emit HookCalled(abi.encodeCall(IStoreHook.onAfterDeleteRecord, (tableId, keyTuple, fieldLayout)));
 
-    IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);
+    IStore(this).deleteRecord(tableId, keyTuple);
   }
 
   struct RecordData {
@@ -1148,7 +1244,8 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testHooksDynamicData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = "some key";
 
@@ -1167,7 +1264,7 @@ contract StoreCoreTest is Test, StoreMock {
       new string[](2)
     );
 
-    IStore(this).registerStoreHook(tableId, subscriber, BEFORE_SET_RECORD | BEFORE_SET_FIELD | BEFORE_DELETE_RECORD);
+    IStore(this).registerStoreHook(tableId, subscriber, BEFORE_ALL);
 
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;
@@ -1178,14 +1275,7 @@ contract StoreCoreTest is Test, StoreMock {
       dynamicData: arrayDataBytes
     });
 
-    IStore(this).setRecord(
-      tableId,
-      keyTuple,
-      recordData.staticData,
-      recordData.encodedLengths,
-      recordData.dynamicData,
-      fieldLayout
-    );
+    IStore(this).setRecord(tableId, keyTuple, recordData.staticData, recordData.encodedLengths, recordData.dynamicData);
 
     // Get data from indexed table - the indexer should have mirrored the data there
     RecordData memory loadedData;
@@ -1215,7 +1305,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(loadedData.encodedLengths.unwrap(), recordData.encodedLengths.unwrap());
     assertEq(loadedData.dynamicData, recordData.dynamicData);
 
-    IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);
+    IStore(this).deleteRecord(tableId, keyTuple);
 
     // Get data from indexed table - the indexer should have mirrored the data there
     (loadedData.staticData, loadedData.encodedLengths, loadedData.dynamicData) = IStore(this).getRecord(

@@ -1,7 +1,7 @@
 import path from "path";
 import { tablegen } from "@latticexyz/store/codegen";
 import { mudConfig } from "@latticexyz/world/register";
-import { getSrcDirectory } from "@latticexyz/common/foundry";
+import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
 import { logError } from "../src/utils/errors";
 
 // This config is used only for tests.
@@ -55,9 +55,25 @@ try {
         },
         dataStruct: false,
       },
-      Ephemeral: {
+      Offchain: {
         valueSchema: "uint256",
-        ephemeral: true,
+        offchainOnly: true,
+      },
+      UserTyped: {
+        keySchema: {
+          k1: "TestTypeAddress",
+          k2: "TestTypeInt64",
+          k3: "TestTypeBool",
+          k4: "TestTypeUint128",
+          k5: "ResourceId",
+        },
+        valueSchema: {
+          v1: "TestTypeAddress",
+          v2: "TestTypeInt64",
+          v3: "TestTypeBool",
+          v4: "TestTypeUint128",
+          v5: "ResourceId",
+        },
       },
     },
 
@@ -65,15 +81,24 @@ try {
       Enum1: ["E1", "E2", "E3"],
       Enum2: ["E1"],
     },
+
+    userTypes: {
+      TestTypeAddress: { filePath: "./contracts/src/types.sol", internalType: "address" },
+      TestTypeInt64: { filePath: "./contracts/src/types.sol", internalType: "int64" },
+      TestTypeBool: { filePath: "./contracts/src/types.sol", internalType: "bool" },
+      TestTypeUint128: { filePath: "./contracts/src/types.sol", internalType: "uint128" },
+      ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", internalType: "bytes32" },
+    },
   });
 } catch (error: unknown) {
   logError(error);
 }
 
 const srcDirectory = await getSrcDirectory();
+const remappings = await getRemappings();
 
 if (config !== undefined) {
-  tablegen(config, path.join(srcDirectory, config.codegenDirectory));
+  tablegen(config, path.join(srcDirectory, config.codegenDirectory), remappings);
 } else {
   process.exit(1);
 }

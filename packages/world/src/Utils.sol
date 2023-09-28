@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { ResourceSelector } from "./ResourceSelector.sol";
-import { SystemRegistry } from "./index.sol";
+import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
+import { SystemRegistry } from "./codegen/tables/SystemRegistry.sol";
 
 library Utils {
+  using WorldResourceIdInstance for ResourceId;
+
   /**
    * Get the namespace of this system.
    * Must be used within the context of a system (either directly, or within libraries called by a system).
@@ -17,8 +19,8 @@ library Utils {
     if (StoreSwitch.getStoreAddress() == address(this)) {
       return "";
     } else {
-      bytes32 resourceSelector = SystemRegistry.get(address(this));
-      return ResourceSelector.getNamespace(resourceSelector);
+      ResourceId systemId = SystemRegistry.get(address(this));
+      return systemId.getNamespace();
     }
   }
 }

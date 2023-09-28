@@ -11,5 +11,8 @@ describe("StoreUserConfig", () => {
   expectTypeOf<NonNullable<MUDUserConfig["enums"]>[string]>().toEqualTypeOf<
     NonNullable<NonNullable<z.input<typeof zStoreConfig>>["enums"]>[string]
   >();
+  expectTypeOf<NonNullable<MUDUserConfig["userTypes"]>[string]>().toEqualTypeOf<
+    NonNullable<NonNullable<z.input<typeof zStoreConfig>>["userTypes"]>[string]
+  >();
   // TODO If more nested schemas are added, provide separate tests for them
 });

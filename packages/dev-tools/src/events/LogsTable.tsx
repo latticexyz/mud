@@ -1,6 +1,6 @@
 import { StorageAdapterLog } from "@latticexyz/store-sync";
 import { EventIcon } from "./EventIcon";
-import { hexToTableId } from "@latticexyz/common";
+import { hexToResourceId } from "@latticexyz/common";
 
 // TODO: use react-table or similar for better perf with lots of logs
 
@@ -22,7 +22,7 @@ export function LogsTable({ logs }: Props) {
       </thead>
       <tbody className="font-mono text-xs">
         {logs.map((log) => {
-          const { namespace, name } = hexToTableId(log.args.tableId);
+          const { namespace, name } = hexToResourceId(log.args.tableId);
           return (
             <tr
               key={
@@ -44,22 +44,22 @@ export function LogsTable({ logs }: Props) {
               </td>
               <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
                 {/* TODO: decode these values if we can */}
-                {log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord"
+                {log.eventName === "Store_SetRecord"
                   ? JSON.stringify({
                       staticData: log.args.staticData,
                       encodedLengths: log.args.encodedLengths,
                       dynamicData: log.args.dynamicData,
                     })
                   : null}
-                {log.eventName === "StoreSpliceStaticData"
-                  ? JSON.stringify({ start: log.args.start, deleteCount: log.args.deleteCount, data: log.args.data })
+                {log.eventName === "Store_SpliceStaticData"
+                  ? JSON.stringify({ start: log.args.start, data: log.args.data })
                   : null}
-                {log.eventName === "StoreSpliceDynamicData"
+                {log.eventName === "Store_SpliceDynamicData"
                   ? JSON.stringify({
                       start: log.args.start,
                       deleteCount: log.args.deleteCount,
-                      data: log.args.data,
                       encodedLengths: log.args.encodedLengths,
+                      data: log.args.data,
                     })
                   : null}
               </td>
