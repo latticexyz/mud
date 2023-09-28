@@ -5,7 +5,7 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/s
 
 /**
  * @title World Resource Types
- * @notice Constants related to World Resource Types and Masks.
+ * @dev Constants related to World Resource Types and Masks.
  * @dev These constants are used to represent various resource types within the system.
  */
 
