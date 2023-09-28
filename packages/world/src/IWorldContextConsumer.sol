@@ -4,13 +4,12 @@ pragma solidity >=0.8.21;
 import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
 
 /**
- * @title World Context Consumer Interface
- * @dev This interface defines the functions a contract needs to consume the world context.
+ * @dev World Context Consumer Interface
+ * This interface defines the functions a contract needs to consume the world context.
  * It includes helper functions to retrieve the message sender, value, and world address.
  * Additionally, it integrates with the ERC-165 standard for interface detection.
  */
 
-// ERC-165 Interface ID (refer to https://eips.ethereum.org/EIPS/eip-165 for details)
 bytes4 constant WORLD_CONTEXT_CONSUMER_INTERFACE_ID = IWorldContextConsumer._msgSender.selector ^
   IWorldContextConsumer._msgValue.selector ^
   IWorldContextConsumer._world.selector ^
