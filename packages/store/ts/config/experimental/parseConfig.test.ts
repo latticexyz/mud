@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { parseConfig } from "./parseConfig";
-import { tableIdToHex } from "@latticexyz/common";
+import { resourceIdToHex } from "@latticexyz/common";
 
 describe("parseConfig", () => {
   it("outputs tables from config", () => {
@@ -26,7 +26,7 @@ describe("parseConfig", () => {
           type: "table",
           namespace: "",
           name: "Exists",
-          tableId: tableIdToHex("", "Exists"),
+          tableId: resourceIdToHex({ type: "table", namespace: "", name: "Exists" }),
           keySchema: {
             key: "bytes32",
           },
@@ -38,7 +38,7 @@ describe("parseConfig", () => {
           type: "table",
           namespace: "",
           name: "Position",
-          tableId: tableIdToHex("", "Position"),
+          tableId: resourceIdToHex({ type: "table", namespace: "", name: "Position" }),
           keySchema: {
             key: "bytes32",
           },
@@ -51,7 +51,7 @@ describe("parseConfig", () => {
           type: "offchainTable",
           namespace: "",
           name: "Messages",
-          tableId: tableIdToHex("", "Messages"),
+          tableId: resourceIdToHex({ type: "offchainTable", namespace: "", name: "Messages" }),
           keySchema: {
             key: "bytes32",
           },
@@ -101,7 +101,7 @@ describe("parseConfig", () => {
           type: "table",
           namespace: "DefaultNamespace",
           name: "Exists",
-          tableId: tableIdToHex("DefaultNamespace", "Exists"),
+          tableId: resourceIdToHex({ type: "table", namespace: "DefaultNamespace", name: "Exists" }),
           keySchema: {
             key: "bytes32",
           },
@@ -113,7 +113,7 @@ describe("parseConfig", () => {
           type: "table",
           namespace: "TableNamespace",
           name: "Position",
-          tableId: tableIdToHex("TableNamespace", "Position"),
+          tableId: resourceIdToHex({ type: "table", namespace: "TableNamespace", name: "Position" }),
           keySchema: {
             key: "bytes32",
           },
@@ -126,7 +126,7 @@ describe("parseConfig", () => {
           type: "table",
           namespace: "MyNamespace",
           name: "PlayerNames",
-          tableId: tableIdToHex("MyNamespace", "PlayerNames"),
+          tableId: resourceIdToHex({ type: "table", namespace: "MyNamespace", name: "PlayerNames" }),
           keySchema: {
             key: "bytes32",
           },

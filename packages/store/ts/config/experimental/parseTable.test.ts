@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { TableShapeInput, parseTable, tableInputShapeKeys } from "./parseTable";
-import { tableIdToHex } from "@latticexyz/common";
+import { resourceIdToHex } from "@latticexyz/common";
 
 describe("tableInputShapeKeys", () => {
   it("contains the same keys as TableShapeInput", () => {
@@ -16,7 +16,7 @@ describe("parseTable", () => {
       type: "table",
       namespace: "",
       name: "SomeTable",
-      tableId: tableIdToHex("", "SomeTable"),
+      tableId: resourceIdToHex({ type: "table", namespace: "", name: "SomeTable" }),
       keySchema: { key: "bytes32" },
       valueSchema: { value: "uint8" },
     } as const;
@@ -33,7 +33,7 @@ describe("parseTable", () => {
       type: "table",
       namespace: "",
       name: "SomeTable",
-      tableId: tableIdToHex("", "SomeTable"),
+      tableId: resourceIdToHex({ type: "table", namespace: "", name: "SomeTable" }),
       keySchema: { key: "bytes32" },
       valueSchema: { value: "uint8" },
     } as const;
@@ -50,7 +50,7 @@ describe("parseTable", () => {
       type: "table",
       namespace: "",
       name: "SomeTable",
-      tableId: tableIdToHex("", "SomeTable"),
+      tableId: resourceIdToHex({ type: "table", namespace: "", name: "SomeTable" }),
       keySchema: { key: "bytes32" },
       valueSchema: { value: "uint8" },
     } as const;
@@ -67,7 +67,7 @@ describe("parseTable", () => {
       type: "table",
       namespace: "",
       name: "SomeTable",
-      tableId: tableIdToHex("", "SomeTable"),
+      tableId: resourceIdToHex({ type: "table", namespace: "", name: "SomeTable" }),
       keySchema: { key: "bool" },
       valueSchema: { value: "uint8" },
     } as const;
@@ -87,7 +87,7 @@ describe("parseTable", () => {
       type: "table",
       namespace: "",
       name: "SomeTable",
-      tableId: tableIdToHex("", "SomeTable"),
+      tableId: resourceIdToHex({ type: "table", namespace: "", name: "SomeTable" }),
       keySchema: { x: "uint32", y: "uint32" },
       valueSchema: { value: "uint8" },
     } as const;
@@ -104,7 +104,7 @@ describe("parseTable", () => {
       type: "table",
       namespace: "",
       name: "SomeTable",
-      tableId: tableIdToHex("", "SomeTable"),
+      tableId: resourceIdToHex({ type: "table", namespace: "", name: "SomeTable" }),
       keySchema: { key: "bytes32" },
       valueSchema: { exists: "bool" },
     } as const;
@@ -121,7 +121,7 @@ describe("parseTable", () => {
       type: "table",
       namespace: "Namespace",
       name: "SomeTable",
-      tableId: tableIdToHex("Namespace", "SomeTable"),
+      tableId: resourceIdToHex({ type: "table", namespace: "Namespace", name: "SomeTable" }),
       keySchema: { key: "bytes32" },
       valueSchema: { value: "bytes32" },
     } as const;
@@ -142,7 +142,7 @@ describe("parseTable", () => {
       type: "table",
       namespace: "CustomNamespace",
       name: "SomeTable",
-      tableId: tableIdToHex("CustomNamespace", "SomeTable"),
+      tableId: resourceIdToHex({ type: "table", namespace: "CustomNamespace", name: "SomeTable" }),
       keySchema: { key: "bytes32" },
       valueSchema: { value: "string" },
     } as const;
@@ -159,7 +159,7 @@ describe("parseTable", () => {
       type: "offchainTable",
       namespace: "",
       name: "SomeTable",
-      tableId: tableIdToHex("", "SomeTable"),
+      tableId: resourceIdToHex({ type: "offchainTable", namespace: "", name: "SomeTable" }),
       keySchema: { key: "bytes32" },
       valueSchema: { value: "string" },
     } as const;

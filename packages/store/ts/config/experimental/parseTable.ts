@@ -3,7 +3,7 @@ import { isPlainObject } from "./common";
 import { ParseKeySchemaInput, ParseKeySchemaOutput, parseKeySchema } from "./parseKeySchema";
 import { ParseValueSchemaInput, ParseValueSchemaOutput, parseValueSchema } from "./parseValueSchema";
 import { assertExhaustive } from "@latticexyz/common/utils";
-import { tableIdToHex } from "@latticexyz/common";
+import { resourceIdToHex } from "@latticexyz/common";
 
 /** @internal */
 export type TableShapeInput = Readonly<{
@@ -66,7 +66,11 @@ export function parseTable<defaultNamespace extends string, name extends string,
           type: input.offchainOnly === true ? "offchainTable" : "table",
           namespace: input.namespace ?? defaultNamespace,
           name,
-          tableId: tableIdToHex(input.namespace ?? defaultNamespace, name),
+          tableId: resourceIdToHex({
+            type: input.offchainOnly === true ? "offchainTable" : "table",
+            namespace: input.namespace ?? defaultNamespace,
+            name,
+          }),
           keySchema: parseKeySchema(input.keySchema),
           valueSchema: parseValueSchema(input.valueSchema),
         }
