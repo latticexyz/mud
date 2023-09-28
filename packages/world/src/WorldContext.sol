@@ -129,7 +129,6 @@ library WorldContextProvider {
    * @param msgValue The amount of ether sent with the transaction.
    * @param target The address of the contract to call.
    * @param callData The calldata for the call.
-   * @return success A boolean indicating whether the call was successful or not.
    * @return data The returned data from the call.
    */
   function callWithContextOrRevert(
@@ -155,7 +154,6 @@ library WorldContextProvider {
    * @param msgValue The amount of ether sent with the transaction.
    * @param target The address of the contract to call.
    * @param callData The calldata for the call.
-   * @return success A boolean indicating whether the call was successful or not.
    * @return data The returned data from the call.
    */
   function delegatecallWithContextOrRevert(
