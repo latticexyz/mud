@@ -1,6 +1,8 @@
 import { keccak256, stringToBytes, slice } from "viem";
-import { ParamType } from "ethers/lib/utils.js";
 import { getContractData } from "../utils/getContractData";
+import { AbiParameter } from "abitype";
+
+type Param = AbiParameter & { components: any[] };
 
 export function loadFunctionSignatures(contractName: string, forgeOutDirectory: string): string[] {
   const { abi } = getContractData(contractName, forgeOutDirectory);
@@ -8,7 +10,17 @@ export function loadFunctionSignatures(contractName: string, forgeOutDirectory: 
   return abi
     .filter((item) => ["fallback", "function"].includes(item.type))
     .map((item) => {
-      return `${item.name}${parseComponents(item.inputs)}`;
+      let name: string;
+      let params: Param[];
+      if (item.type === "function") {
+        name = item.name;
+        params = item.inputs as Param[];
+      } else if (item.type === "fallback") {
+        name = "fallback";
+        params = [];
+      } else throw Error(`Incorrect function type: ${item.type}`);
+
+      return `${name}${parseComponents(params)}`;
     });
 }
 
@@ -21,7 +33,7 @@ export function toFunctionSelector(functionSignature: string): string {
 /**
  * Recursively turn (nested) structs in signatures into tuples
  */
-function parseComponents(params: ParamType[]): string {
+function parseComponents(params: Param[]): string {
   const components = params.map((param) => {
     const tupleMatch = param.type.match(/tuple(.*)/);
     if (tupleMatch) {
