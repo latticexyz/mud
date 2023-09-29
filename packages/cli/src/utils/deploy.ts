@@ -21,7 +21,6 @@ import { fastTxExecute } from "./utils/fastTxExecute";
 import { getContractData } from "./utils/getContractData";
 import { postDeploy } from "./utils/postDeploy";
 import { setInternalFeePerGas } from "./utils/setInternalFeePerGas";
-import { toBytes16 } from "./utils/toBytes16";
 import { ContractCode } from "./utils/types";
 import { resourceIdToHex } from "@latticexyz/common";
 
