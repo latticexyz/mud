@@ -11,6 +11,7 @@
     "build": "turbo run build",
     "clean": "turbo run clean",
     "dev": "turbo run dev --concurrency 100",
+    "dist-tag-rm": "pnpm recursive exec -- sh -c 'npm dist-tag rm $(cat package.json | jq -r \".name\") $TAG || true'",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "gas-report": "pnpm recursive run gas-report",
     "lint": "pnpm prettier:check && eslint . --ext .ts --ext .tsx",

@@ -19,12 +19,23 @@ import { Systems } from "./codegen/tables/Systems.sol";
 import { SystemHooks } from "./codegen/tables/SystemHooks.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
 
+/**
+ * @title SystemCall
+ * @dev The SystemCall library provides functions for interacting with systems using their unique Resource IDs.
+ * It ensures the necessary access control checks, handles system hooks, and performs system calls.
+ */
 library SystemCall {
   using WorldResourceIdInstance for ResourceId;
 
   /**
-   * Calls a system via its ID and perform access control checks.
-   * Does not revert if the call fails, but returns a `success` flag along with the returndata.
+   * @notice Calls a system identified by its Resource ID while ensuring necessary access controls.
+   * @dev This function does not revert if the system call fails. Instead, it returns a success flag.
+   * @param caller The address initiating the system call.
+   * @param value The amount of Ether to be sent with the call.
+   * @param systemId The unique Resource ID of the system being called.
+   * @param callData The calldata to be executed in the system.
+   * @return success A flag indicating whether the system call was successful.
+   * @return data The return data from the system call.
    */
   function call(
     address caller,
@@ -65,8 +76,14 @@ library SystemCall {
   }
 
   /**
-   * Calls a system via its ID, perform access control checks and trigger hooks registered for the system.
-   * Does not revert if the call fails, but returns a `success` flag along with the returndata.
+   * @notice Calls a system identified by its Resource ID, ensuring access controls, and triggers associated system hooks.
+   * @dev This function does not revert if the system call fails. Instead, it returns a success flag.
+   * @param caller The address initiating the system call.
+   * @param systemId The unique Resource ID of the system being called.
+   * @param callData The calldata to be executed in the system.
+   * @param value The amount of Ether to be sent with the call.
+   * @return success A flag indicating whether the system call was successful.
+   * @return data The return data from the system call.
    */
   function callWithHooks(
     address caller,
@@ -98,8 +115,12 @@ library SystemCall {
   }
 
   /**
-   * Calls a system via its ID, perform access control checks and trigger hooks registered for the system.
-   * Reverts if the call fails.
+   * @notice Calls a system identified by its Resource ID, ensures access controls, triggers associated system hooks, and reverts on failure.
+   * @param caller The address initiating the system call.
+   * @param systemId The unique Resource ID of the system being called.
+   * @param callData The calldata to be executed in the system.
+   * @param value The amount of Ether to be sent with the call.
+   * @return data The return data from the system call.
    */
   function callWithHooksOrRevert(
     address caller,
