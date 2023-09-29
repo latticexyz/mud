@@ -42,6 +42,10 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
    */
   address?: Address;
   /**
+   * Optional table IDs to filter indexer state and RPC state.
+   */
+  tableIds?: Hex[];
+  /**
    * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.
    */
   startBlock?: bigint;

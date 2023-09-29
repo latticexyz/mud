@@ -32,6 +32,7 @@ import { createIndexerClient } from "./trpc-indexer";
 import { SyncStep } from "./SyncStep";
 import { chunk, isDefined } from "@latticexyz/common/utils";
 import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
+import { internalTableIds } from "./internalTableIds";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -49,13 +50,15 @@ type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOpt
 export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>({
   storageAdapter,
   onProgress,
-  address,
   publicClient,
+  address,
+  tableIds = [],
   startBlock: initialStartBlock = 0n,
   maxBlockRange,
   initialState,
   indexerUrl,
 }: CreateStoreSyncOptions<TConfig>): Promise<SyncResult> {
+  const includedTableIds = new Set(tableIds.length ? [...internalTableIds, ...tableIds] : []);
   const initialState$ = defer(
     async (): Promise<
       | {
@@ -79,7 +82,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
       const indexer = createIndexerClient({ url: indexerUrl });
       const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
-      const result = await indexer.findAll.query({ chainId, address });
+      const result = await indexer.findAll.query({ chainId, address, tableIds: Array.from(includedTableIds) });
 
       onProgress?.({
         step: SyncStep.SNAPSHOT,

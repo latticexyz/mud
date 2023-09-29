@@ -87,29 +87,25 @@ We'd love your support in improving MUD! This monorepo includes all of MUD's sou
 The following steps are only necessary if you want to contribute to MUD. To use MUD in your project, install the [packages](#packages) from npm or [set up a new project with the MUD cli](#quickstart).
 !!!
 
-1. Install go (required to build [packages/services](packages/services/)): [https://go.dev/doc/install](https://go.dev/doc/install)
+1. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
 
-2. Install protobuf (required to build [packages/services](packages/services/)): [https://grpc.io/docs/protoc-installation/](https://grpc.io/docs/protoc-installation/)
+2. Install pnpm
 
-3. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
+   ```
+   npm install pnpm --global
+   ```
 
-4. Install pnpm
+3. Clone the MUD monorepo
 
-```bash
-npm install pnpm --global
-```
+   ```
+   git clone https://github.com/latticexyz/mud
+   ```
 
-5. Clone the MUD monorepo
+4. Install MUD dependencies and setup local environment
 
-```
-git clone https://github.com/latticexyz/mud
-```
-
-6. Install MUD dependencies and setup local environment
-
-```
-cd mud && pnpm install
-```
+   ```
+   cd mud && pnpm install && pnpm build
+   ```
 
 ### Pull requests
 
