@@ -32,8 +32,9 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
   }
 
   /**
-   * @notice Extracts the trusted msg.value value from the appended calldata.
-   * @return value The amount of trusted ether sent with the transaction.
+   * @notice Extract the `msg.value` from the context appended to the calldata.
+   * @return The `msg.value` in the call to the World contract before the World routed the
+   * call to the WorldContextConsumer contract.
    */
   function _msgValue() public pure returns (uint256 value) {
     assembly {
@@ -43,8 +44,8 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
   }
 
   /**
-   * @notice Retrieves the world's store address.
-   * @return The address of the store.
+   * @notice Get the address of the World contract that routed the call to this WorldContextConsumer.
+   * @return The address of the World contract that routed the call to this WorldContextConsumer.
    */
   function _world() public view returns (address) {
     return StoreSwitch.getStoreAddress();
@@ -71,7 +72,7 @@ library WorldContextProvider {
    * @notice Appends context values to the given calldata.
    * @param callData The original calldata.
    * @param msgSender The address of the transaction sender.
-   * @param msgValue The amount of ether sent with the transaction.
+   * @param msgValue The amount of ether sent with the original transaction.
    * @return The new calldata with context values appended.
    */
   function appendContext(
@@ -85,11 +86,11 @@ library WorldContextProvider {
   /**
    * @notice Makes a call to the target contract with context values appended to the calldata.
    * @param msgSender The address of the transaction sender.
-   * @param msgValue The amount of ether sent with the transaction.
+   * @param msgValue The amount of ether sent with the original transaction.
    * @param target The address of the contract to call.
    * @param callData The calldata for the call.
    * @return success A boolean indicating whether the call was successful or not.
-   * @return data The returned data from the call.
+   * @return data The abi encoded return data from the call.
    */
   function callWithContext(
     address msgSender,
@@ -105,11 +106,11 @@ library WorldContextProvider {
   /**
    * @notice Makes a delegatecall to the target contract with context values appended to the calldata.
    * @param msgSender The address of the transaction sender.
-   * @param msgValue The amount of ether sent with the transaction.
+   * @param msgValue The amount of ether sent with the original transaction.
    * @param target The address of the contract to call.
    * @param callData The calldata for the call.
    * @return success A boolean indicating whether the call was successful or not.
-   * @return data The returned data from the call.
+   * @return data The abi encoded return data from the call.
    */
   function delegatecallWithContext(
     address msgSender,
@@ -126,10 +127,10 @@ library WorldContextProvider {
    * @notice Makes a call to the target contract with context values appended to the calldata.
    * @dev Revert in the case of failure.
    * @param msgSender The address of the transaction sender.
-   * @param msgValue The amount of ether sent with the transaction.
+   * @param msgValue The amount of ether sent with the original transaction.
    * @param target The address of the contract to call.
    * @param callData The calldata for the call.
-   * @return data The returned data from the call.
+   * @return data The abi encoded return data from the call.
    */
   function callWithContextOrRevert(
     address msgSender,
@@ -151,7 +152,7 @@ library WorldContextProvider {
    * @notice Makes a delegatecall to the target contract with context values appended to the calldata.
    * @dev Revert in the case of failure.
    * @param msgSender The address of the transaction sender.
-   * @param msgValue The amount of ether sent with the transaction.
+   * @param msgValue The amount of ether sent with the original transaction.
    * @param target The address of the contract to call.
    * @param callData The calldata for the call.
    * @return data The returned data from the call.
