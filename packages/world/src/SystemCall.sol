@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { Hook } from "@latticexyz/store/src/Hook.sol";
 
@@ -11,13 +11,13 @@ import { WorldContextProvider } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "./systemHookTypes.sol";
 
-import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
-import { ISystemHook } from "./interfaces/ISystemHook.sol";
+import { IWorldErrors } from "./IWorldErrors.sol";
+import { ISystemHook } from "./ISystemHook.sol";
 
-import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
-import { Systems } from "./modules/core/tables/Systems.sol";
-import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
-import { Balances } from "./modules/core/tables/Balances.sol";
+import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
+import { Systems } from "./codegen/tables/Systems.sol";
+import { SystemHooks } from "./codegen/tables/SystemHooks.sol";
+import { Balances } from "./codegen/tables/Balances.sol";
 
 library SystemCall {
   using WorldResourceIdInstance for ResourceId;
@@ -33,10 +33,10 @@ library SystemCall {
     bytes memory callData
   ) internal returns (bool success, bytes memory data) {
     // Load the system data
-    (address systemAddress, bool publicAccess) = Systems._get(ResourceId.unwrap(systemId));
+    (address systemAddress, bool publicAccess) = Systems._get(systemId);
 
     // Check if the system exists
-    if (systemAddress == address(0)) revert IWorldErrors.ResourceNotFound(systemId, systemId.toString());
+    if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
 
     // Allow access if the system is public or the caller has access to the namespace or name
     if (!publicAccess) AccessControl.requireAccess(systemId, caller);
@@ -44,8 +44,8 @@ library SystemCall {
     // If the msg.value is non-zero, update the namespace's balance
     if (value > 0) {
       ResourceId namespaceId = systemId.getNamespaceId();
-      uint256 currentBalance = Balances._get(ResourceId.unwrap(namespaceId));
-      Balances._set(ResourceId.unwrap(namespaceId), currentBalance + value);
+      uint256 currentBalance = Balances._get(namespaceId);
+      Balances._set(namespaceId, currentBalance + value);
     }
 
     // Call the system and forward any return data
@@ -75,7 +75,7 @@ library SystemCall {
     uint256 value
   ) internal returns (bool success, bytes memory data) {
     // Get system hooks
-    bytes21[] memory hooks = SystemHooks._get(ResourceId.unwrap(systemId));
+    bytes21[] memory hooks = SystemHooks._get(systemId);
 
     // Call onBeforeCallSystem hooks (before calling the system)
     for (uint256 i; i < hooks.length; i++) {

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
-import { IModule } from "../../../interfaces/IModule.sol";
+import { IModule } from "../../../IModule.sol";
 import { System } from "../../../System.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { ResourceId, WorldResourceIdLib } from "../../../WorldResourceId.sol";
-import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { InstalledModules } from "../../../tables/InstalledModules.sol";
-import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
+import { InstalledModules } from "../../../codegen/tables/InstalledModules.sol";
+import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 
 /**
  * Granting and revoking access from/to resources.
@@ -22,7 +22,7 @@ contract AccessManagementSystem is System {
     AccessControl.requireOwner(resourceId, _msgSender());
 
     // Grant access to the given resource
-    ResourceAccess._set(ResourceId.unwrap(resourceId), grantee, true);
+    ResourceAccess._set(resourceId, grantee, true);
   }
 
   /**
@@ -34,7 +34,7 @@ contract AccessManagementSystem is System {
     AccessControl.requireOwner(resourceId, _msgSender());
 
     // Revoke access from the given resource
-    ResourceAccess._deleteRecord(ResourceId.unwrap(resourceId), grantee);
+    ResourceAccess._deleteRecord(resourceId, grantee);
   }
 
   /**
@@ -47,12 +47,12 @@ contract AccessManagementSystem is System {
     AccessControl.requireOwner(namespaceId, _msgSender());
 
     // Set namespace new owner
-    NamespaceOwner._set(ResourceId.unwrap(namespaceId), newOwner);
+    NamespaceOwner._set(namespaceId, newOwner);
 
     // Revoke access from old owner
-    ResourceAccess._deleteRecord(ResourceId.unwrap(namespaceId), _msgSender());
+    ResourceAccess._deleteRecord(namespaceId, _msgSender());
 
     // Grant access to new owner
-    ResourceAccess._set(ResourceId.unwrap(namespaceId), newOwner, true);
+    ResourceAccess._set(namespaceId, newOwner, true);
   }
 }

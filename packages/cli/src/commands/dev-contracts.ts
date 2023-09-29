@@ -1,5 +1,12 @@
 import type { CommandModule } from "yargs";
-import { anvil, forge, getRpcUrl, getScriptDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
+import {
+  anvil,
+  forge,
+  getRemappings,
+  getRpcUrl,
+  getScriptDirectory,
+  getSrcDirectory,
+} from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import chokidar from "chokidar";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
@@ -47,6 +54,7 @@ const commandModule: CommandModule<Options, Options> = {
     const configPath = args.configPath ?? (await resolveConfigPath(args.configPath));
     const srcDirectory = await getSrcDirectory();
     const scriptDirectory = await getScriptDirectory();
+    const remappings = await getRemappings();
     const initialConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
 
     // Initial run of all codegen steps before starting anvil
@@ -132,7 +140,7 @@ const commandModule: CommandModule<Options, Options> = {
       console.log(chalk.blue("mud.config.ts changed - regenerating tables and recs types"));
       // Run tablegen to generate tables based on the config
       const outPath = path.join(srcDirectory, config.codegenDirectory);
-      await tablegen(config, outPath);
+      await tablegen(config, outPath, remappings);
     }
 
     /** Codegen to run if contracts changed */

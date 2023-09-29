@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
-import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
+import { IWorldErrors } from "./IWorldErrors.sol";
 
-import { ResourceAccess } from "./tables/ResourceAccess.sol";
-import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
+import { ResourceAccess } from "./codegen/tables/ResourceAccess.sol";
+import { NamespaceOwner } from "./codegen/tables/NamespaceOwner.sol";
 
 library AccessControl {
   using WorldResourceIdInstance for ResourceId;
@@ -15,29 +15,28 @@ library AccessControl {
    */
   function hasAccess(ResourceId resourceId, address caller) internal view returns (bool) {
     return
-      address(this) == caller || // First check if the World is calling itself
-      ResourceAccess._get(ResourceId.unwrap(resourceId.getNamespaceId()), caller) || // Then check access based on the namespace
-      ResourceAccess._get(ResourceId.unwrap(resourceId), caller); // If caller has no namespace access, check access on the name
+      // First check access based on the namespace. If caller has no namespace access, check access on the resource.
+      ResourceAccess._get(resourceId.getNamespaceId(), caller) || ResourceAccess._get(resourceId, caller);
   }
 
   /**
-   * Check for access at the given namespace or name.
-   * Reverts with AccessDenied if the caller has no access.
+   * Check for access at the given namespace or resource.
+   * Reverts with World_AccessDenied if the caller has no access.
    */
   function requireAccess(ResourceId resourceId, address caller) internal view {
     // Check if the given caller has access to the given namespace or name
     if (!hasAccess(resourceId, caller)) {
-      revert IWorldErrors.AccessDenied(resourceId.toString(), caller);
+      revert IWorldErrors.World_AccessDenied(resourceId.toString(), caller);
     }
   }
 
   /**
    * Check for ownership of the namespace of the given resource ID.
-   * Reverts with AccessDenied if the check fails.
+   * Reverts with World_AccessDenied if the check fails.
    */
   function requireOwner(ResourceId resourceId, address caller) internal view {
-    if (NamespaceOwner._get(ResourceId.unwrap(resourceId.getNamespaceId())) != caller) {
-      revert IWorldErrors.AccessDenied(resourceId.toString(), caller);
+    if (NamespaceOwner._get(resourceId.getNamespaceId()) != caller) {
+      revert IWorldErrors.World_AccessDenied(resourceId.toString(), caller);
     }
   }
 }

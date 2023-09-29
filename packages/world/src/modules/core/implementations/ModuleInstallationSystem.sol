@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
-import { IModule, MODULE_INTERFACE_ID } from "../../../interfaces/IModule.sol";
+import { IModule, MODULE_INTERFACE_ID } from "../../../IModule.sol";
 import { System } from "../../../System.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { WorldContextProvider } from "../../../WorldContext.sol";
-import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { InstalledModules } from "../../../tables/InstalledModules.sol";
+import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
+import { InstalledModules } from "../../../codegen/tables/InstalledModules.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 
 /**

@@ -136,7 +136,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       const logs: StorageAdapterLog[] = tables.flatMap((table) =>
         table.records.map(
           (record): StorageAdapterLog => ({
-            eventName: "StoreSetRecord",
+            eventName: "Store_SetRecord",
             address: table.address,
             args: {
               tableId: table.tableId,

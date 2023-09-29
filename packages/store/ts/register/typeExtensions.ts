@@ -25,6 +25,7 @@ export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig>
     T,
     {
       enums: typeof DEFAULTS.enums;
+      userTypes: typeof DEFAULTS.userTypes;
       namespace: typeof DEFAULTS.namespace;
       storeImportPath: typeof PATH_DEFAULTS.storeImportPath;
       userTypesFilename: typeof PATH_DEFAULTS.userTypesFilename;

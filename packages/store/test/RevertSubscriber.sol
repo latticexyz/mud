@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { StoreHook } from "../src/StoreHook.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
@@ -29,11 +29,11 @@ contract RevertSubscriber is StoreHook {
     revert("onAfterSetRecord");
   }
 
-  function onBeforeSpliceStaticData(ResourceId, bytes32[] memory, uint48, uint40, bytes memory) public pure override {
+  function onBeforeSpliceStaticData(ResourceId, bytes32[] memory, uint48, bytes memory) public pure override {
     revert("onBeforeSpliceStaticData");
   }
 
-  function onAfterSpliceStaticData(ResourceId, bytes32[] memory, uint48, uint40, bytes memory) public pure override {
+  function onAfterSpliceStaticData(ResourceId, bytes32[] memory, uint48, bytes memory) public pure override {
     revert("onAfterSpliceStaticData");
   }
 
@@ -43,8 +43,8 @@ contract RevertSubscriber is StoreHook {
     uint8,
     uint40,
     uint40,
-    bytes memory,
-    PackedCounter
+    PackedCounter,
+    bytes memory
   ) public pure override {
     revert("onBeforeSpliceDynamicData");
   }
@@ -55,8 +55,8 @@ contract RevertSubscriber is StoreHook {
     uint8,
     uint40,
     uint40,
-    bytes memory,
-    PackedCounter
+    PackedCounter,
+    bytes memory
   ) public pure override {
     revert("onAfterSpliceDynamicData");
   }

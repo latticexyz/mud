@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
-import { SystemRegistry } from "./index.sol";
+import { SystemRegistry } from "./codegen/tables/SystemRegistry.sol";
 
 library Utils {
   using WorldResourceIdInstance for ResourceId;
@@ -19,7 +19,7 @@ library Utils {
     if (StoreSwitch.getStoreAddress() == address(this)) {
       return "";
     } else {
-      ResourceId systemId = ResourceId.wrap(SystemRegistry.get(address(this)));
+      ResourceId systemId = SystemRegistry.get(address(this));
       return systemId.getNamespace();
     }
   }

@@ -13,12 +13,12 @@ export function renderWorld(options: RenderWorldOptions) {
     interfaceName === "IBaseWorld"
       ? [
           { symbol: "IStore", path: `${storeImportPath}IStore.sol` },
-          { symbol: "IWorldKernel", path: `${worldImportPath}interfaces/IWorldKernel.sol` },
+          { symbol: "IWorldKernel", path: `${worldImportPath}IWorldKernel.sol` },
         ]
       : [
           {
             symbol: "IBaseWorld",
-            path: `${worldImportPath}interfaces/IBaseWorld.sol`,
+            path: `${worldImportPath}codegen/interfaces/IBaseWorld.sol`,
           },
         ];
   const importSymbols = [...baseImports, ...imports].map(({ symbol }) => symbol);

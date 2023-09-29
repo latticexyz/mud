@@ -44,22 +44,22 @@ export function LogsTable({ logs }: Props) {
               </td>
               <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
                 {/* TODO: decode these values if we can */}
-                {log.eventName === "StoreSetRecord"
+                {log.eventName === "Store_SetRecord"
                   ? JSON.stringify({
                       staticData: log.args.staticData,
                       encodedLengths: log.args.encodedLengths,
                       dynamicData: log.args.dynamicData,
                     })
                   : null}
-                {log.eventName === "StoreSpliceStaticData"
-                  ? JSON.stringify({ start: log.args.start, deleteCount: log.args.deleteCount, data: log.args.data })
+                {log.eventName === "Store_SpliceStaticData"
+                  ? JSON.stringify({ start: log.args.start, data: log.args.data })
                   : null}
-                {log.eventName === "StoreSpliceDynamicData"
+                {log.eventName === "Store_SpliceDynamicData"
                   ? JSON.stringify({
                       start: log.args.start,
                       deleteCount: log.args.deleteCount,
-                      data: log.args.data,
                       encodedLengths: log.args.encodedLengths,
+                      data: log.args.data,
                     })
                   : null}
               </td>

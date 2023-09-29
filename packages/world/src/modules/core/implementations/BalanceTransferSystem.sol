@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
 
@@ -8,9 +8,9 @@ import { revertWithBytes } from "../../../revertWithBytes.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
-import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
+import { IWorldErrors } from "../../../IWorldErrors.sol";
 
-import { Balances } from "../tables/Balances.sol";
+import { Balances } from "../../../codegen/tables/Balances.sol";
 
 contract BalanceTransferSystem is System, IWorldErrors {
   using ResourceIdInstance for ResourceId;
@@ -26,21 +26,21 @@ contract BalanceTransferSystem is System, IWorldErrors {
   ) public virtual {
     // Require the target ID to be a namespace ID
     if (toNamespaceId.getType() != RESOURCE_NAMESPACE) {
-      revert InvalidResourceType(RESOURCE_NAMESPACE, toNamespaceId, toNamespaceId.toString());
+      revert World_InvalidResourceType(RESOURCE_NAMESPACE, toNamespaceId, toNamespaceId.toString());
     }
 
     // Require caller to have access to the namespace
     AccessControl.requireAccess(fromNamespaceId, _msgSender());
 
     // Get current namespace balance
-    uint256 balance = Balances._get(ResourceId.unwrap(fromNamespaceId));
+    uint256 balance = Balances._get(fromNamespaceId);
 
     // Require the balance balance to be greater or equal to the amount to transfer
-    if (amount > balance) revert InsufficientBalance(balance, amount);
+    if (amount > balance) revert World_InsufficientBalance(balance, amount);
 
     // Update the balances
-    Balances._set(ResourceId.unwrap(fromNamespaceId), balance - amount);
-    Balances._set(ResourceId.unwrap(toNamespaceId), Balances._get(ResourceId.unwrap(toNamespaceId)) + amount);
+    Balances._set(fromNamespaceId, balance - amount);
+    Balances._set(toNamespaceId, Balances._get(toNamespaceId) + amount);
   }
 
   /**
@@ -51,13 +51,13 @@ contract BalanceTransferSystem is System, IWorldErrors {
     AccessControl.requireAccess(fromNamespaceId, _msgSender());
 
     // Get current namespace balance
-    uint256 balance = Balances._get(ResourceId.unwrap(fromNamespaceId));
+    uint256 balance = Balances._get(fromNamespaceId);
 
     // Require the balance balance to be greater or equal to the amount to transfer
-    if (amount > balance) revert InsufficientBalance(balance, amount);
+    if (amount > balance) revert World_InsufficientBalance(balance, amount);
 
     // Update the balances
-    Balances._set(ResourceId.unwrap(fromNamespaceId), balance - amount);
+    Balances._set(fromNamespaceId, balance - amount);
 
     // Transfer the balance to the given address, revert on failure
     (bool success, bytes memory data) = payable(toAddress).call{ value: amount }("");

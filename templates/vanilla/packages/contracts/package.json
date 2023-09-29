@@ -20,7 +20,8 @@
     "@latticexyz/cli": "link:../../../../packages/cli",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
     "@latticexyz/store": "link:../../../../packages/store",
-    "@latticexyz/world": "link:../../../../packages/world"
+    "@latticexyz/world": "link:../../../../packages/world",
+    "@latticexyz/world-modules": "link:../../../../packages/world-modules"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",

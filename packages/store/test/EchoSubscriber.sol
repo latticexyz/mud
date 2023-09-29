@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { PackedCounter } from "../src/PackedCounter.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
@@ -39,20 +39,18 @@ contract EchoSubscriber is StoreHook {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes memory data
   ) public override {
-    emit HookCalled(abi.encodeCall(this.onBeforeSpliceStaticData, (tableId, keyTuple, start, deleteCount, data)));
+    emit HookCalled(abi.encodeCall(this.onBeforeSpliceStaticData, (tableId, keyTuple, start, data)));
   }
 
   function onAfterSpliceStaticData(
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes memory data
   ) public override {
-    emit HookCalled(abi.encodeCall(this.onAfterSpliceStaticData, (tableId, keyTuple, start, deleteCount, data)));
+    emit HookCalled(abi.encodeCall(this.onAfterSpliceStaticData, (tableId, keyTuple, start, data)));
   }
 
   function onBeforeSpliceDynamicData(
@@ -61,13 +59,13 @@ contract EchoSubscriber is StoreHook {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    bytes memory data,
-    PackedCounter encodedLengths
+    PackedCounter encodedLengths,
+    bytes memory data
   ) public override {
     emit HookCalled(
       abi.encodeCall(
         this.onBeforeSpliceDynamicData,
-        (tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data, encodedLengths)
+        (tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, encodedLengths, data)
       )
     );
   }
@@ -78,13 +76,13 @@ contract EchoSubscriber is StoreHook {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    bytes memory data,
-    PackedCounter encodedLengths
+    PackedCounter encodedLengths,
+    bytes memory data
   ) public override {
     emit HookCalled(
       abi.encodeCall(
         this.onAfterSpliceDynamicData,
-        (tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data, encodedLengths)
+        (tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, encodedLengths, data)
       )
     );
   }

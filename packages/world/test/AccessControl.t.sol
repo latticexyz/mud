@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
 
-import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
+import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { World } from "../src/World.sol";
 import { AccessControl } from "../src/AccessControl.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
-import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
-import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
+import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 
 contract AccessControlTest is Test, GasReporter, StoreMock {
   using WorldResourceIdInstance for ResourceId;
@@ -31,8 +31,8 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
     _tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
     _namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
 
-    NamespaceOwner.set(namespace, address(this));
-    ResourceAccess.set(ResourceId.unwrap(_tableId), presetCaller, true);
+    NamespaceOwner.set(_namespaceId, address(this));
+    ResourceAccess.set(_tableId, presetCaller, true);
   }
 
   function testAccessControl() public {
@@ -47,7 +47,7 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
     assertFalse(hasAccess, "caller should not have access to the table");
 
     // Grant access to the namespace
-    ResourceAccess.set(ResourceId.unwrap(namespaceId), caller, true);
+    ResourceAccess.set(namespaceId, caller, true);
 
     // Check that the caller has access to the namespace or name
     startGasReport("AccessControl: hasAccess (warm, namespace only)");
@@ -56,7 +56,7 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
     assertTrue(hasAccess, "caller should have access to the namespace");
 
     // Revoke access to the namespace
-    ResourceAccess.set(ResourceId.unwrap(namespaceId), caller, false);
+    ResourceAccess.set(namespaceId, caller, false);
 
     // Check that the caller has no access to the namespace or name
     startGasReport("AccessControl: hasAccess (warm)");
@@ -65,13 +65,13 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
     assertFalse(hasAccess, "access to the namespace should have been revoked");
 
     // Grant access to the name
-    ResourceAccess.set(ResourceId.unwrap(tableId), caller, true);
+    ResourceAccess.set(tableId, caller, true);
 
     // Check that the caller has access to the name
     assertTrue(AccessControl.hasAccess(tableId, caller), "access to the table should have been granted");
 
     // Revoke access to the name
-    ResourceAccess.set(ResourceId.unwrap(tableId), caller, false);
+    ResourceAccess.set(tableId, caller, false);
 
     // Check that the caller has no access to the namespace or name
     assertFalse(AccessControl.hasAccess(tableId, caller), "access to the table should have been revoked");
@@ -88,6 +88,10 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
     AccessControl.requireAccess(tableId, presetCaller);
     endGasReport();
 
+    vm.prank(caller);
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, tableId.toString(), address(this))
+    );
     startGasReport("AccessControl: requireAccess (this address)");
     AccessControl.requireAccess(tableId, address(this));
     endGasReport();
@@ -96,7 +100,26 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
   function testRequireAccessRevert() public {
     ResourceId tableId = _tableId;
 
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.AccessDenied.selector, tableId.toString(), caller));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, tableId.toString(), caller));
     AccessControl.requireAccess(tableId, caller);
+  }
+
+  function testRequireOwner() public {
+    ResourceId tableId = _tableId;
+
+    startGasReport("AccessControl: requireOwner (cold)");
+    AccessControl.requireOwner(tableId, address(this));
+    endGasReport();
+
+    startGasReport("AccessControl: requireOwner (warm)");
+    AccessControl.requireOwner(tableId, address(this));
+    endGasReport();
+  }
+
+  function testRequireOwnerRevert() public {
+    ResourceId tableId = _tableId;
+
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, tableId.toString(), caller));
+    AccessControl.requireOwner(tableId, caller);
   }
 }

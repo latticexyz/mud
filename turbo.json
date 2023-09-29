@@ -3,16 +3,7 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [
-        "dist/**",
-        "out/**",
-        "build/**",
-        "bin/**",
-        "protoc/**",
-        "protobuf/**",
-        "src/mud-definitions/**",
-        ".parcel-cache/**"
-      ]
+      "outputs": ["dist/**", "out/**", "build/**", "bin/**"]
     },
     "create-mud#build": {
       "dependsOn": ["^build"],

@@ -27,4 +27,6 @@ const outputBaseDirectory = path.join(srcDir, mudConfig.codegenDirectory);
 if (clean) rmSync(path.join(outputBaseDirectory, mudConfig.worldgenDirectory), { recursive: true, force: true });
 
 // generate new interfaces
-await worldgen(mudConfig, existingContracts, outputBaseDirectory);
+// override the namespace to be the root namespace for generating the core system interface
+const rootMudConfig = { ...mudConfig, namespace: "" };
+await worldgen(rootMudConfig, existingContracts, outputBaseDirectory);

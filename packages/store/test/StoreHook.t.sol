@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -8,7 +8,7 @@ import { EchoSubscriber } from "./EchoSubscriber.sol";
 import { RevertSubscriber } from "./RevertSubscriber.sol";
 
 import { Hook, HookLib } from "../src/Hook.sol";
-import { IStoreHook } from "../src/IStore.sol";
+import { IStoreHook } from "../src/IStoreHook.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";

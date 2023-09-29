@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { Slice, SliceLib } from "../Slice.sol";
 
@@ -72,12 +72,6 @@ library TightCoder {
     uint256 arrayLength;
     unchecked {
       arrayLength = packedLength / elementSize;
-    }
-
-    // TODO temporary check to catch bugs, either remove it or use a custom error
-    // (see https://github.com/latticexyz/mud/issues/444)
-    if (packedLength % elementSize != 0) {
-      revert("unpackToArray: packedLength must be a multiple of elementSize");
     }
 
     /// @solidity memory-safe-assembly

@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
-import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { IStoreData } from "@latticexyz/store/src/IStore.sol";
+import { StoreData } from "@latticexyz/store/src/StoreData.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
@@ -21,22 +20,24 @@ import { revertWithBytes } from "./revertWithBytes.sol";
 import { Delegation } from "./Delegation.sol";
 import { requireInterface } from "./requireInterface.sol";
 
-import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
-import { InstalledModules } from "./tables/InstalledModules.sol";
-import { Delegations } from "./tables/Delegations.sol";
+import { NamespaceOwner } from "./codegen/tables/NamespaceOwner.sol";
+import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
+import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
+import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
 
-import { IModule, MODULE_INTERFACE_ID } from "./interfaces/IModule.sol";
-import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
-import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
+import { IModule, MODULE_INTERFACE_ID } from "./IModule.sol";
+import { IWorldKernel } from "./IWorldKernel.sol";
+import { IDelegationControl } from "./IDelegationControl.sol";
 
-import { Systems } from "./modules/core/tables/Systems.sol";
-import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
-import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
-import { Balances } from "./modules/core/tables/Balances.sol";
+import { Systems } from "./codegen/tables/Systems.sol";
+import { SystemHooks } from "./codegen/tables/SystemHooks.sol";
+import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
+import { Balances } from "./codegen/tables/Balances.sol";
 import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
-contract World is StoreRead, IStoreData, IWorldKernel {
+contract World is StoreData, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
+
   address public immutable creator;
 
   function worldVersion() public pure returns (bytes32) {
@@ -45,22 +46,31 @@ contract World is StoreRead, IStoreData, IWorldKernel {
 
   constructor() {
     creator = msg.sender;
-    StoreCore.initialize();
     emit HelloWorld(WORLD_VERSION);
+  }
+
+  /**
+   * Prevent the World from calling itself.
+   */
+  modifier requireNoCallback() {
+    if (msg.sender == address(this)) {
+      revert World_CallbackNotAllowed(msg.sig);
+    }
+    _;
   }
 
   /**
    * Allows the creator of the World to initialize the World once.
    */
-  function initialize(IModule coreModule) public {
+  function initialize(IModule coreModule) public requireNoCallback {
     // Only the initial creator of the World can initialize it
     if (msg.sender != creator) {
-      revert AccessDenied(ROOT_NAMESPACE_ID.toString(), msg.sender);
+      revert World_AccessDenied(ROOT_NAMESPACE_ID.toString(), msg.sender);
     }
 
     // The World can only be initialized once
     if (InstalledModules._get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
-      revert WorldAlreadyInitialized();
+      revert World_AlreadyInitialized();
     }
 
     // Initialize the World by installing the core module
@@ -72,7 +82,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Requires the caller to own the root namespace.
    * The module is delegatecalled and installed in the root namespace.
    */
-  function installRootModule(IModule module, bytes memory args) public {
+  function installRootModule(IModule module, bytes memory args) public requireNoCallback {
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
     _installRootModule(module, args);
   }
@@ -107,28 +117,26 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
-  ) public virtual {
+    bytes calldata dynamicData
+  ) public virtual requireNoCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
   }
 
   function spliceStaticData(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes calldata data
-  ) public virtual {
+  ) public virtual requireNoCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Splice the static data
-    StoreCore.spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+    StoreCore.spliceStaticData(tableId, keyTuple, start, data);
   }
 
   function spliceDynamicData(
@@ -138,7 +146,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint40 startWithinField,
     uint40 deleteCount,
     bytes calldata data
-  ) public virtual {
+  ) public virtual requireNoCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -154,9 +162,26 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
+    bytes calldata data
+  ) public virtual requireNoCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Set the field
+    StoreCore.setField(tableId, keyTuple, fieldIndex, data);
+  }
+
+  /**
+   * Write a field in the table at the given tableId.
+   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   */
+  function setField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
-  ) public virtual {
+  ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -165,70 +190,84 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   }
 
   /**
-   * Push data to the end of a field in the table at the given tableId.
+   * Write a static field in the table at the given tableId.
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
-  function pushToField(
+  function setStaticField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
-    bytes calldata dataToPush,
+    bytes calldata data,
     FieldLayout fieldLayout
-  ) public virtual {
+  ) public virtual requireNoCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Set the field
+    StoreCore.setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
+  }
+
+  /**
+   * Write a dynamic field in the table at the given tableId.
+   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   */
+  function setDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes calldata data
+  ) public virtual requireNoCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Set the field
+    StoreCore.setDynamicField(tableId, keyTuple, dynamicFieldIndex, data);
+  }
+
+  /**
+   * Push data to the end of a field in the table at the given tableId.
+   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   */
+  function pushToDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes calldata dataToPush
+  ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
+    StoreCore.pushToDynamicField(tableId, keyTuple, dynamicFieldIndex, dataToPush);
   }
 
   /**
    * Pop data from the end of a field in the table at the given tableId.
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
-  function popFromField(
+  function popFromDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    uint256 byteLengthToPop,
-    FieldLayout fieldLayout
-  ) public virtual {
+    uint8 dynamicFieldIndex,
+    uint256 byteLengthToPop
+  ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
-  }
-
-  /**
-   * Update data at `startByteIndex` of a field in the table at the given tableId.
-   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
-   */
-  function updateInField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    uint256 startByteIndex,
-    bytes calldata dataToSet,
-    FieldLayout fieldLayout
-  ) public virtual {
-    // Require access to namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
-
-    // Update data in the field
-    StoreCore.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+    StoreCore.popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
   }
 
   /**
    * Delete a record in the table at the given tableId.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple, FieldLayout fieldLayout) public virtual {
+  function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Delete the record
-    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
+    StoreCore.deleteRecord(tableId, keyTuple);
   }
 
   /************************************************************************
@@ -241,7 +280,10 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Call the system at the given system ID.
    * If the system is not public, the caller must have access to the namespace or name (encoded in the system ID).
    */
-  function call(ResourceId systemId, bytes memory callData) external payable virtual returns (bytes memory) {
+  function call(
+    ResourceId systemId,
+    bytes memory callData
+  ) external payable virtual requireNoCallback returns (bytes memory) {
     return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
   }
 
@@ -253,28 +295,35 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     address delegator,
     ResourceId systemId,
     bytes memory callData
-  ) external payable virtual returns (bytes memory) {
+  ) external payable virtual requireNoCallback returns (bytes memory) {
     // If the delegator is the caller, call the system directly
     if (delegator == msg.sender) {
       return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
     }
 
-    // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
-    Delegation explicitDelegation = Delegation.wrap(Delegations._get({ delegator: delegator, delegatee: msg.sender }));
+    // Check if there is an individual authorization for this caller to perform actions on behalf of the delegator
+    ResourceId individualDelegationId = UserDelegationControl._get({ delegator: delegator, delegatee: msg.sender });
 
-    if (explicitDelegation.verify(delegator, msg.sender, systemId, callData)) {
+    if (Delegation.verify(individualDelegationId, delegator, msg.sender, systemId, callData)) {
       // forward the call as `delegator`
       return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
     }
 
     // Check if the delegator has a fallback delegation control set
-    Delegation fallbackDelegation = Delegation.wrap(Delegations._get({ delegator: delegator, delegatee: address(0) }));
-    if (fallbackDelegation.verify(delegator, msg.sender, systemId, callData)) {
-      // forward the call with `from` as `msgSender`
+    ResourceId userFallbackDelegationId = UserDelegationControl._get({ delegator: delegator, delegatee: address(0) });
+    if (Delegation.verify(userFallbackDelegationId, delegator, msg.sender, systemId, callData)) {
+      // forward the call as `delegator`
       return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
     }
 
-    revert DelegationNotFound(delegator, msg.sender);
+    // Check if the namespace has a fallback delegation control set
+    ResourceId namespaceFallbackDelegationId = NamespaceDelegationControl._get(systemId.getNamespaceId());
+    if (Delegation.verify(namespaceFallbackDelegationId, delegator, msg.sender, systemId, callData)) {
+      // forward the call as `delegator`
+      return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
+    }
+
+    revert World_DelegationNotFound(delegator, msg.sender);
   }
 
   /************************************************************************
@@ -287,28 +336,23 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * ETH sent to the World without calldata is added to the root namespace's balance
    */
   receive() external payable {
-    uint256 rootBalance = Balances._get(ResourceId.unwrap(ROOT_NAMESPACE_ID));
-    Balances._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), rootBalance + msg.value);
+    uint256 rootBalance = Balances._get(ROOT_NAMESPACE_ID);
+    Balances._set(ROOT_NAMESPACE_ID, rootBalance + msg.value);
   }
 
   /**
    * Fallback function to call registered function selectors
    */
-  fallback() external payable {
-    (bytes32 systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
+  fallback() external payable requireNoCallback {
+    (ResourceId systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
-    if (systemId == 0) revert FunctionSelectorNotFound(msg.sig);
+    if (ResourceId.unwrap(systemId) == 0) revert World_FunctionSelectorNotFound(msg.sig);
 
     // Replace function selector in the calldata with the system function selector
     bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);
 
     // Call the function and forward the call data
-    bytes memory returnData = SystemCall.callWithHooksOrRevert(
-      msg.sender,
-      ResourceId.wrap(systemId),
-      callData,
-      msg.value
-    );
+    bytes memory returnData = SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
 
     // If the call was successful, return the return data
     assembly {

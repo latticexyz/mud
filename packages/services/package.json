@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/services",
-  "version": "2.0.0-next.8",
+  "version": "2.0.0-next.9",
   "description": "MUD services for enhanced interactions with on-chain ECS state",
   "repository": {
     "type": "git",
@@ -10,40 +10,21 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    "./ecs-relay": "./dist/ecs-relay.js",
-    "./ecs-snapshot": "./dist/ecs-snapshot.js",
-    "./ecs-stream": "./dist/ecs-stream.js",
-    "./faucet": "./dist/faucet.js",
-    "./mode": "./dist/mode.js"
+    "./faucet": "./dist/faucet.js"
   },
   "typesVersions": {
     "*": {
-      "ecs-relay": [
-        "./protobuf/ts/ecs-relay/ecs-relay.ts"
-      ],
-      "ecs-snapshot": [
-        "./protobuf/ts/ecs-snapshot/ecs-snapshot.ts"
-      ],
-      "ecs-stream": [
-        "./protobuf/ts/ecs-stream/ecs-stream.ts"
-      ],
       "faucet": [
         "./ts/faucet/index.ts"
-      ],
-      "mode": [
-        "./protobuf/ts/mode/mode.ts"
       ]
     }
   },
   "scripts": {
-    "build": "pnpm run build:go && pnpm run build:protobuf && pnpm run build:js",
-    "build:go": "make build",
+    "build": "pnpm run build:js",
     "build:js": "tsup",
-    "build:protobuf": "make protoc-ts && prettier --write protobuf/ts/**/*.ts",
     "dev": "tsup --watch",
-    "test": "pnpm run test:go",
-    "test:ci": "pnpm run test",
-    "test:go": "go test -v ./..."
+    "test": "echo 'no tests'",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "long": "^5.2.1",

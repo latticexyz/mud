@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "./IStoreHook.sol";
 import { ERC165_INTERFACE_ID } from "./IERC165.sol";
@@ -35,11 +35,11 @@ abstract contract StoreHook is IStoreHook {
     revert StoreHook_NotImplemented();
   }
 
-  function onBeforeSpliceStaticData(ResourceId, bytes32[] memory, uint48, uint40, bytes memory) public virtual {
+  function onBeforeSpliceStaticData(ResourceId, bytes32[] memory, uint48, bytes memory) public virtual {
     revert StoreHook_NotImplemented();
   }
 
-  function onAfterSpliceStaticData(ResourceId, bytes32[] memory, uint48, uint40, bytes memory) public virtual {
+  function onAfterSpliceStaticData(ResourceId, bytes32[] memory, uint48, bytes memory) public virtual {
     revert StoreHook_NotImplemented();
   }
 
@@ -49,8 +49,8 @@ abstract contract StoreHook is IStoreHook {
     uint8,
     uint40,
     uint40,
-    bytes memory,
-    PackedCounter
+    PackedCounter,
+    bytes memory
   ) public virtual {
     revert StoreHook_NotImplemented();
   }
@@ -61,8 +61,8 @@ abstract contract StoreHook is IStoreHook {
     uint8,
     uint40,
     uint40,
-    bytes memory,
-    PackedCounter
+    PackedCounter,
+    bytes memory
   ) public virtual {
     revert StoreHook_NotImplemented();
   }

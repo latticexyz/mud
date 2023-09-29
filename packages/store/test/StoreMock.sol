@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
-import { IStore, IStoreHook } from "../src/IStore.sol";
+import { IStore } from "../src/IStore.sol";
+import { IStoreHook } from "../src/IStoreHook.sol";
+import { StoreData } from "../src/StoreData.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { Schema } from "../src/Schema.sol";
@@ -12,7 +14,7 @@ import { ResourceId } from "../src/ResourceId.sol";
 /**
  * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
  */
-contract StoreMock is IStore, StoreRead {
+contract StoreMock is IStore, StoreData {
   constructor() {
     StoreCore.initialize();
     StoreCore.registerCoreTables();
@@ -24,10 +26,9 @@ contract StoreMock is IStore, StoreRead {
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
+    bytes calldata dynamicData
   ) public {
-    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
   }
 
   // Splice data in the static part of the record
@@ -35,10 +36,9 @@ contract StoreMock is IStore, StoreRead {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes calldata data
   ) public virtual {
-    StoreCore.spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+    StoreCore.spliceStaticData(tableId, keyTuple, start, data);
   }
 
   // Splice data in the dynamic part of the record
@@ -58,49 +58,66 @@ contract StoreMock is IStore, StoreRead {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
+    bytes calldata data
+  ) public virtual {
+    StoreCore.setField(tableId, keyTuple, fieldIndex, data);
+  }
+
+  // Set partial data at field index
+  function setField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
   ) public virtual {
     StoreCore.setField(tableId, keyTuple, fieldIndex, data, fieldLayout);
   }
 
-  // Push encoded items to the dynamic field at field index
-  function pushToField(
+  // Set partial data at field index
+  function setStaticField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
-    bytes calldata dataToPush,
+    bytes calldata data,
     FieldLayout fieldLayout
   ) public virtual {
-    StoreCore.pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
+    StoreCore.setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
+  }
+
+  // Set partial data at dynamic field index
+  function setDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes calldata data
+  ) public virtual {
+    StoreCore.setDynamicField(tableId, keyTuple, dynamicFieldIndex, data);
+  }
+
+  // Push encoded items to the dynamic field at field index
+  function pushToDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes calldata dataToPush
+  ) public virtual {
+    StoreCore.pushToDynamicField(tableId, keyTuple, dynamicFieldIndex, dataToPush);
   }
 
   // Pop byte length from the dynamic field at field index
-  function popFromField(
+  function popFromDynamicField(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    uint256 byteLengthToPop,
-    FieldLayout fieldLayout
+    uint8 dynamicFieldIndex,
+    uint256 byteLengthToPop
   ) public virtual {
-    StoreCore.popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
-  }
-
-  // Change encoded items within the dynamic field at field index
-  function updateInField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    uint256 startByteIndex,
-    bytes calldata dataToSet,
-    FieldLayout fieldLayout
-  ) public virtual {
-    StoreCore.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+    StoreCore.popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
   }
 
   // Set full record (including full dynamic data)
-  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public virtual {
-    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) public virtual {
+    StoreCore.deleteRecord(tableId, keyTuple);
   }
 
   function registerTable(

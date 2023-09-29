@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "2.0.0-next.8",
+  "version": "2.0.0-next.9",
   "description": "Command line interface for mud",
   "repository": {
     "type": "git",
@@ -20,8 +20,9 @@
     "build": "pnpm run build:js && pnpm run build:test-tables",
     "build:js": "tsup && chmod +x ./dist/mud.js",
     "build:test-tables": "tsx ./scripts/generate-test-tables.ts",
-    "clean": "pnpm run clean:js",
+    "clean": "pnpm run clean:js && pnpm run clean:test-tables",
     "clean:js": "rimraf dist",
+    "clean:test-tables": "rimraf src/codegen",
     "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
     "prepare": "mkdir -p ./dist && touch ./dist/mud.js",
@@ -43,6 +44,7 @@
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
+    "@latticexyz/world-modules": "workspace:*",
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
     "dotenv": "^16.0.3",

@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM, ALL } from "../src/systemHookTypes.sol";
-import { ISystemHook } from "../src/interfaces/ISystemHook.sol";
+import { ISystemHook } from "../src/ISystemHook.sol";
 
 contract SystemHookTest is Test, GasReporter {
   function testFuzzEncode(address hookAddress, bool enableBeforeCallSystem, bool enableAfterCallSystem) public {

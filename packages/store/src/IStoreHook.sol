@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { FieldLayout } from "./FieldLayout.sol";
 import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
@@ -42,7 +42,6 @@ interface IStoreHook is IERC165 {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes memory data
   ) external;
 
@@ -50,7 +49,6 @@ interface IStoreHook is IERC165 {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes memory data
   ) external;
 
@@ -60,8 +58,8 @@ interface IStoreHook is IERC165 {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    bytes memory data,
-    PackedCounter encodedLengths
+    PackedCounter encodedLengths,
+    bytes memory data
   ) external;
 
   function onAfterSpliceDynamicData(
@@ -70,8 +68,8 @@ interface IStoreHook is IERC165 {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    bytes memory data,
-    PackedCounter encodedLengths
+    PackedCounter encodedLengths,
+    bytes memory data
   ) external;
 
   function onBeforeDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;

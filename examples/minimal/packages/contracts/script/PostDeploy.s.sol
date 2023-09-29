@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
@@ -26,7 +26,7 @@ contract PostDeploy is Script {
       name: "ChatNamespaced"
     });
     IWorld(worldAddress).registerSystem(systemId, chatNamespacedSystem, true);
-    IWorld(worldAddress).registerFunctionSelector(systemId, "sendMessage", "(string)");
+    IWorld(worldAddress).registerFunctionSelector(systemId, "sendMessage(string)");
     // Grant this system access to MessageTable
     IWorld(worldAddress).grantAccess(MessageTableTableId, address(chatNamespacedSystem));
 

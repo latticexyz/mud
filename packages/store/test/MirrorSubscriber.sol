@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { IStore } from "../src/IStore.sol";
 import { StoreHook } from "../src/StoreHook.sol";
@@ -35,21 +35,20 @@ contract MirrorSubscriber is StoreHook {
     bytes memory staticData,
     PackedCounter encodedLengths,
     bytes memory dynamicData,
-    FieldLayout fieldLayout
+    FieldLayout
   ) public override {
     if (ResourceId.unwrap(tableId) != _tableId) revert("invalid table");
-    StoreSwitch.setRecord(indexerTableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    StoreSwitch.setRecord(indexerTableId, keyTuple, staticData, encodedLengths, dynamicData);
   }
 
   function onBeforeSpliceStaticData(
     ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
-    uint40 deleteCount,
     bytes memory data
   ) public override {
     if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
-    StoreSwitch.spliceStaticData(indexerTableId, keyTuple, start, deleteCount, data);
+    StoreSwitch.spliceStaticData(indexerTableId, keyTuple, start, data);
   }
 
   function onBeforeSpliceDynamicData(
@@ -58,32 +57,15 @@ contract MirrorSubscriber is StoreHook {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    bytes memory data,
-    PackedCounter
+    PackedCounter,
+    bytes memory data
   ) public override {
     if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
     StoreSwitch.spliceDynamicData(indexerTableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
   }
 
-  function onAfterSpliceDynamicData(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint40 startWithinField,
-    uint40 deleteCount,
-    bytes memory data,
-    PackedCounter
-  ) public override {
+  function onBeforeDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout) public override {
     if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
-    StoreSwitch.spliceDynamicData(indexerTableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
-  }
-
-  function onBeforeDeleteRecord(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    FieldLayout fieldLayout
-  ) public override {
-    if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
-    StoreSwitch.deleteRecord(indexerTableId, keyTuple, fieldLayout);
+    StoreSwitch.deleteRecord(indexerTableId, keyTuple);
   }
 }

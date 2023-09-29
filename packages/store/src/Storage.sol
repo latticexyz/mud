@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
-import { leftMask } from "./Utils.sol";
+import { leftMask } from "./leftMask.sol";
 import { Memory } from "./Memory.sol";
 
 library Storage {
@@ -95,6 +95,18 @@ library Storage {
             and(sload(storagePointer), not(mask))
           )
         )
+      }
+    }
+  }
+
+  function zero(uint256 storagePointer, uint256 length) internal {
+    // Ceil division to round up to the nearest word
+    uint256 limit = storagePointer + (length + 31) / 32;
+    while (storagePointer < limit) {
+      /// @solidity memory-safe-assembly
+      assembly {
+        sstore(storagePointer, 0)
+        storagePointer := add(storagePointer, 1)
       }
     }
   }

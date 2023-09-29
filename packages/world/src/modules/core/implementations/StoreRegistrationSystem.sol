@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
@@ -14,16 +14,17 @@ import { AccessControl } from "../../../AccessControl.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
 import { WorldContextProvider } from "../../../WorldContext.sol";
-import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
-import { SystemHooks } from "../tables/SystemHooks.sol";
-import { SystemRegistry } from "../tables/SystemRegistry.sol";
-import { Systems } from "../tables/Systems.sol";
-import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
+import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
+import { SystemHooks } from "../../../codegen/tables/SystemHooks.sol";
+import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
+import { Systems } from "../../../codegen/tables/Systems.sol";
+import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
 
-import { CORE_SYSTEM_NAME } from "../constants.sol";
+import { IWorldErrors } from "../../../IWorldErrors.sol";
+
+import { CORE_SYSTEM_ID } from "../constants.sol";
 
 import { WorldRegistrationSystem } from "./WorldRegistrationSystem.sol";
 
@@ -45,14 +46,15 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     string[] calldata fieldNames
   ) public virtual {
     // Require the name to not be the namespace's root name
-    if (tableId.getName() == ROOT_NAME) revert InvalidResourceId(tableId, tableId.toString());
+    if (tableId.getName() == ROOT_NAME) revert World_InvalidResourceId(tableId, tableId.toString());
 
     // If the namespace doesn't exist yet, register it
     ResourceId namespaceId = tableId.getNamespaceId();
-    if (!ResourceIds._getExists(ResourceId.unwrap(namespaceId))) {
+    if (!ResourceIds._getExists(namespaceId)) {
       // Since this is a root system, we're in the context of the World contract already,
       // so we can use delegatecall to register the namespace
-      (bool success, bytes memory data) = address(this).delegatecall(
+      (address coreSystemAddress, ) = Systems._get(CORE_SYSTEM_ID);
+      (bool success, bytes memory data) = coreSystemAddress.delegatecall(
         abi.encodeCall(WorldRegistrationSystem.registerNamespace, (namespaceId))
       );
       if (!success) revertWithBytes(data);
