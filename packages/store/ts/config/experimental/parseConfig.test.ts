@@ -136,6 +136,7 @@ describe("parseConfig", () => {
       },
     } as const;
 
+    // TODO: why is PlayerNames disappearing?
     expect(output).toStrictEqual(expectedOutput);
     expectTypeOf(output).toEqualTypeOf(expectedOutput);
     expectTypeOf(output).toMatchTypeOf(expectedOutput);

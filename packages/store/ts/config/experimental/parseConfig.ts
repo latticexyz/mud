@@ -15,11 +15,13 @@ export type ParseConfigOutput<
     : EmptyObject
 > = {
   // TODO: ensure that tables of the same name get replaced and are not a union
-  readonly tables: ParseTablesOutput<
-    input["namespace"] extends string ? input["namespace"] : "",
-    input["tables"] extends ParseTablesInput ? input["tables"] : EmptyObject
-  > &
-    ParseNamespacesOutput<namespaces>;
+  readonly tables: Prettify<
+    ParseTablesOutput<
+      input["namespace"] extends string ? input["namespace"] : "",
+      input["tables"] extends ParseTablesInput ? input["tables"] : EmptyObject
+    > &
+      ParseNamespacesOutput<namespaces>
+  >;
 };
 
 export function parseConfig<input extends ParseConfigInput>(input: input): Prettify<ParseConfigOutput<input>> {

@@ -27,7 +27,7 @@ describe("parseTable", () => {
   });
 
   it("outputs a table from valueSchema shorthand", () => {
-    const output = parseTable("", "SomeTable", { valueSchema: "uint8" });
+    const output = parseTable("", "SomeTable", { valueSchema: "uint8" } as const);
 
     const expectedOutput = {
       type: "table",
@@ -44,7 +44,7 @@ describe("parseTable", () => {
   });
 
   it("outputs a table with undefined keySchema", () => {
-    const output = parseTable("", "SomeTable", { keySchema: undefined, valueSchema: "uint8" });
+    const output = parseTable("", "SomeTable", { keySchema: undefined, valueSchema: "uint8" } as const);
 
     const expectedOutput = {
       type: "table",
@@ -61,7 +61,7 @@ describe("parseTable", () => {
   });
 
   it("outputs a table from keySchema shorthand", () => {
-    const output = parseTable("", "SomeTable", { keySchema: "bool", valueSchema: "uint8" });
+    const output = parseTable("", "SomeTable", { keySchema: "bool", valueSchema: "uint8" } as const);
 
     const expectedOutput = {
       type: "table",
@@ -81,7 +81,7 @@ describe("parseTable", () => {
     const output = parseTable("", "SomeTable", {
       keySchema: { x: "uint32", y: "uint32" },
       valueSchema: "uint8",
-    });
+    } as const);
 
     const expectedOutput = {
       type: "table",
@@ -98,7 +98,7 @@ describe("parseTable", () => {
   });
 
   it("outputs a table from valueSchema", () => {
-    const output = parseTable("", "SomeTable", { valueSchema: { exists: "bool" } });
+    const output = parseTable("", "SomeTable", { valueSchema: { exists: "bool" } } as const);
 
     const expectedOutput = {
       type: "table",
@@ -135,7 +135,6 @@ describe("parseTable", () => {
     const output = parseTable("Namespace", "SomeTable", {
       namespace: "CustomNamespace",
       valueSchema: "string",
-      // TODO: figure out if we can preserve namespace string literal type without as const requirement
     } as const);
 
     const expectedOutput = {
@@ -153,7 +152,7 @@ describe("parseTable", () => {
   });
 
   it("outputs an offchain table", () => {
-    const output = parseTable("", "SomeTable", { offchainOnly: true, valueSchema: "string" });
+    const output = parseTable("", "SomeTable", { offchainOnly: true, valueSchema: "string" } as const);
 
     const expectedOutput = {
       type: "offchainTable",

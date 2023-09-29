@@ -3,8 +3,8 @@ import { ParseNamespaceInput, ParseNamespaceOutput, parseNamespace } from "./par
 export type ParseNamespacesInput = { readonly [k: string]: ParseNamespaceInput };
 
 export type ParseNamespacesOutput<input extends ParseNamespacesInput> = {
-  readonly [namespace in keyof input & string]: ParseNamespaceOutput<namespace, input[namespace]>;
-}[keyof input & string]["tables"];
+  readonly [namespace in keyof input]: ParseNamespaceOutput<namespace & string, input[namespace]>;
+}[keyof input]["tables"];
 
 // TODO: rename to parseNamespacedTables
 export function parseNamespaces<input extends ParseNamespacesInput>(input: input): ParseNamespacesOutput<input> {

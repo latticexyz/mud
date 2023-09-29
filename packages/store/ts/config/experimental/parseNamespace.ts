@@ -9,7 +9,7 @@ export type ParseNamespaceInput = {
 export type ParseNamespaceOutput<namespace extends string, input extends ParseNamespaceInput> = {
   readonly tables: input["tables"] extends ParseTableInput
     ? {
-        readonly [name in keyof input["tables"] & string]: ParseTableOutput<namespace, name, input["tables"][name]>;
+        readonly [name in keyof input["tables"]]: ParseTableOutput<namespace, name & string, input["tables"][name]>;
       }
     : EmptyObject;
 };

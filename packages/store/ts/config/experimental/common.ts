@@ -15,11 +15,7 @@ export type Prettify<T> = {
  * type Result = Merge<{ foo: string }, { foo: number; bar: string }>
  * //   ^? type Result = { foo: number; bar: string }
  */
-export type Merge<Object1, Object2> = keyof Object2 extends never
-  ? Object1
-  : keyof Object1 extends never
-  ? Object2
-  : Omit<Object1, keyof Object2> & Object2;
+export type Merge<Object1, Object2> = Omit<Object1, keyof Object2> & Object2;
 
 /** @internal */
 export function isPlainObject(value: unknown): value is Record<string, unknown> {
