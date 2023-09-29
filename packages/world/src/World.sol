@@ -35,22 +35,30 @@ import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
 import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
+/**
+ * @title World Contract
+ * @dev This contract is the core "World" contract containing various methods for
+ * data manipulation, system calls, and dynamic function selector handling.
+ */
 contract World is StoreData, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
 
+  /// @notice Address of the contract's creator.
   address public immutable creator;
 
+  /// @return The current version of the world contract.
   function worldVersion() public pure returns (bytes32) {
     return WORLD_VERSION;
   }
 
+  /// @dev Event emitted when the World contract is created.
   constructor() {
     creator = msg.sender;
     emit HelloWorld(WORLD_VERSION);
   }
 
   /**
-   * Prevent the World from calling itself.
+   * @dev Prevents the World contract from calling itself.
    */
   modifier requireNoCallback() {
     if (msg.sender == address(this)) {
@@ -60,7 +68,9 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * Allows the creator of the World to initialize the World once.
+   * @notice Initializes the World by installing the core module.
+   * @param coreModule The core module to initialize the World with.
+   * @dev Only the initial creator can initialize. This can be done only once.
    */
   function initialize(IModule coreModule) public requireNoCallback {
     // Only the initial creator of the World can initialize it
@@ -78,15 +88,21 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * Install the given root module in the World.
-   * Requires the caller to own the root namespace.
-   * The module is delegatecalled and installed in the root namespace.
+   * @notice Installs a given root module in the World.
+   * @param module The module to be installed.
+   * @param args Arguments for module installation.
+   * @dev The caller must own the root namespace.
    */
   function installRootModule(IModule module, bytes memory args) public requireNoCallback {
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
     _installRootModule(module, args);
   }
 
+  /**
+   * @dev Internal function to install a root module.
+   * @param module The module to be installed.
+   * @param args Arguments for module installation.
+   */
   function _installRootModule(IModule module, bytes memory args) internal {
     // Require the provided address to implement the IModule interface
     requireInterface(address(module), MODULE_INTERFACE_ID);
@@ -109,8 +125,13 @@ contract World is StoreData, IWorldKernel {
    ************************************************************************/
 
   /**
-   * Write a record in the table at the given tableId.
-   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   * @notice Writes a record in the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param staticData Static data (fixed length fields) of the record.
+   * @param encodedLengths Encoded lengths of data.
+   * @param dynamicData Dynamic data (variable length fields) of the record.
+   * @dev Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
   function setRecord(
     ResourceId tableId,
@@ -126,6 +147,13 @@ contract World is StoreData, IWorldKernel {
     StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
   }
 
+  /**
+   * @notice Modifies static (fixed length) data in a record at the specified position.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param start Position from where the static data modification should start.
+   * @param data Data to splice into the static data of the record.
+   */
   function spliceStaticData(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
@@ -139,6 +167,15 @@ contract World is StoreData, IWorldKernel {
     StoreCore.spliceStaticData(tableId, keyTuple, start, data);
   }
 
+  /**
+   * @notice Modifies dynamic (variable length) data in a record for a specified field.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param dynamicFieldIndex Index of the dynamic field to modify.
+   * @param startWithinField Start position within the specified dynamic field.
+   * @param deleteCount Number of bytes to delete starting from the `startWithinField`.
+   * @param data Data to splice into the dynamic data of the field.
+   */
   function spliceDynamicData(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
@@ -155,8 +192,11 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * Write a field in the table at the given tableId.
-   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   * @notice Writes data into a specified field in the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param fieldIndex Index of the field to modify.
+   * @param data Data to write into the specified field.
    */
   function setField(
     ResourceId tableId,
@@ -172,8 +212,12 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * Write a field in the table at the given tableId.
-   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   * @notice Writes data into a specified field in the table, adhering to a specific layout.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param fieldIndex Index of the field to modify.
+   * @param data Data to write into the specified field.
+   * @param fieldLayout The layout to adhere to when modifying the field.
    */
   function setField(
     ResourceId tableId,
@@ -190,8 +234,13 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * Write a static field in the table at the given tableId.
-   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   * @notice Writes data into a static (fixed length) field in the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param fieldIndex Index of the static field to modify.
+   * @param data Data to write into the specified static field.
+   * @param fieldLayout The layout to adhere to when modifying the field.
+   * @dev Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
   function setStaticField(
     ResourceId tableId,
@@ -208,8 +257,11 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * Write a dynamic field in the table at the given tableId.
-   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   * @notice Writes data into a dynamic (varible length) field in the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param dynamicFieldIndex Index of the dynamic field to modify.
+   * @param data Data to write into the specified dynamic field.
    */
   function setDynamicField(
     ResourceId tableId,
@@ -225,8 +277,11 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * Push data to the end of a field in the table at the given tableId.
-   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   * @notice Appends data to the end of a dynamic (variable length) field in the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param dynamicFieldIndex Index of the dynamic field to append to.
+   * @param dataToPush Data to append to the specified dynamic field.
    */
   function pushToDynamicField(
     ResourceId tableId,
@@ -242,8 +297,11 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * Pop data from the end of a field in the table at the given tableId.
-   * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   * @notice Removes a specified amount of data from the end of a dynamic (variable length) field in the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param dynamicFieldIndex Index of the dynamic field to remove data from.
+   * @param byteLengthToPop The number of bytes to remove from the end of the dynamic field.
    */
   function popFromDynamicField(
     ResourceId tableId,
@@ -259,8 +317,10 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * Delete a record in the table at the given tableId.
-   * Requires the caller to have access to the namespace or name.
+   * @notice Deletes a record from the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record to delete.
+   * @dev Requires the caller to have access to the table's namespace or name.
    */
   function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple) public virtual requireNoCallback {
     // Require access to namespace or name
@@ -277,8 +337,11 @@ contract World is StoreData, IWorldKernel {
    ************************************************************************/
 
   /**
-   * Call the system at the given system ID.
-   * If the system is not public, the caller must have access to the namespace or name (encoded in the system ID).
+   * @notice Calls a system with a given system ID.
+   * @param systemId The ID of the system to be called.
+   * @param callData The data for the system call.
+   * @return Return data from the system call.
+   * @dev If system is private, caller must have appropriate access.
    */
   function call(
     ResourceId systemId,
@@ -288,8 +351,12 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * Call the system at the given system ID on behalf of the given delegator.
-   * If the system is not public, the delegator must have access to the namespace or name (encoded in the system ID).
+   * @notice Calls a system with a given system ID on behalf of the given delegator.
+   * @param delegator The address on whose behalf the system is called.
+   * @param systemId The ID of the system to be called.
+   * @param callData The ABI data for the system call.
+   * @return Return data from the system call.
+   * @dev If system is private, caller must have appropriate access.
    */
   function callFrom(
     address delegator,
@@ -333,7 +400,7 @@ contract World is StoreData, IWorldKernel {
    ************************************************************************/
 
   /**
-   * ETH sent to the World without calldata is added to the root namespace's balance
+   * @notice Accepts ETH and adds to the root namespace's balance.
    */
   receive() external payable {
     uint256 rootBalance = Balances._get(ROOT_NAMESPACE_ID);
@@ -341,7 +408,7 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * Fallback function to call registered function selectors
+   * @dev Fallback function to call registered function selectors.
    */
   fallback() external payable requireNoCallback {
     (ResourceId systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
