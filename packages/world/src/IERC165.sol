@@ -9,7 +9,7 @@ bytes4 constant ERC165_INTERFACE_ID = IERC165.supportsInterface.selector;
 /**
  * @title IERC165
  * @dev Interface for the ERC-165 standard as described in the EIP-165.
- * Allows for contracts to be interrogated for their support of an interface.
+ * Allows for contracts to be checked for their support of an interface.
  * See: https://eips.ethereum.org/EIPS/eip-165
  */
 interface IERC165 {
