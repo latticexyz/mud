@@ -3,7 +3,7 @@ pragma solidity >=0.8.21;
 
 /**
  * @title Shared Constants for EVM and Schema Handling
- * @dev This contract/module provides constants for better handling of EVM and Schema related functionalities.
+ * @dev This file provides constants for better handling of EVM and Schema related functionalities.
  */
 
 /* Shared constants */
