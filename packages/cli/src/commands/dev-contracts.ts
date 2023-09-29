@@ -47,6 +47,7 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   async handler(args) {
+    console.log(chalk.blue("<---------------TEST PRINT MUD----------------->"));
     // Initial cleanup
     await forge(["clean"]);
 

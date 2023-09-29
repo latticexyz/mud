@@ -1,0 +1,123 @@
+.
+├── CHANGELOG.md
+├── README.md
+├── contracts
+│   ├── src
+│   │   ├── codegen
+│   │   │   ├── common.sol
+│   │   │   ├── index.sol
+│   │   │   └── tables
+│   │   └── types.sol
+│   └── test
+│       └── Tablegen.t.sol
+├── directory_tree_cli.txt
+├── dist
+│   ├── chunk-TW3YGZ4D.js
+│   ├── chunk-TW3YGZ4D.js.map
+│   ├── index.js
+│   ├── index.js.map
+│   ├── mud.js
+│   └── mud.js.map
+├── foundry.toml
+├── node_modules
+│   ├── @ethersproject
+│   │   ├── abi -> ../../../../node_modules/.pnpm/@ethersproject+abi@5.7.0/node_modules/@ethersproject/abi
+│   │   └── providers -> ../../../../node_modules/.pnpm/@ethersproject+providers@5.7.2/node_modules/@ethersproject/providers
+│   ├── @improbable-eng
+│   │   ├── grpc-web -> ../../../../node_modules/.pnpm/@improbable-eng+grpc-web@0.15.0_google-protobuf@3.21.2/node_modules/@improbable-eng/grpc-web
+│   │   └── grpc-web-node-http-transport -> ../../../../node_modules/.pnpm/@improbable-eng+grpc-web-node-http-transport@0.15.0_@improbable-eng+grpc-web@0.15.0/node_modules/@improbable-eng/grpc-web-node-http-transport
+│   ├── @latticexyz
+│   │   ├── abi-ts -> ../../../abi-ts
+│   │   ├── common -> ../../../common
+│   │   ├── config -> ../../../config
+│   │   ├── gas-report -> ../../../gas-report
+│   │   ├── protocol-parser -> ../../../protocol-parser
+│   │   ├── schema-type -> ../../../schema-type
+│   │   ├── services -> ../../../services
+│   │   ├── store -> ../../../store
+│   │   ├── utils -> ../../../utils
+│   │   ├── world -> ../../../world
+│   │   └── world-modules -> ../../../world-modules
+│   ├── @types
+│   │   ├── ejs -> ../../../../node_modules/.pnpm/@types+ejs@3.1.1/node_modules/@types/ejs
+│   │   ├── glob -> ../../../../node_modules/.pnpm/@types+glob@7.2.0/node_modules/@types/glob
+│   │   ├── node -> ../../../../node_modules/.pnpm/@types+node@18.15.11/node_modules/@types/node
+│   │   ├── openurl -> ../../../../node_modules/.pnpm/@types+openurl@1.0.0/node_modules/@types/openurl
+│   │   ├── throttle-debounce -> ../../../../node_modules/.pnpm/@types+throttle-debounce@5.0.0/node_modules/@types/throttle-debounce
+│   │   └── yargs -> ../../../../node_modules/.pnpm/@types+yargs@17.0.23/node_modules/@types/yargs
+│   ├── chalk -> ../../../node_modules/.pnpm/chalk@5.2.0/node_modules/chalk
+│   ├── chokidar -> ../../../node_modules/.pnpm/chokidar@3.5.3/node_modules/chokidar
+│   ├── dotenv -> ../../../node_modules/.pnpm/dotenv@16.0.3/node_modules/dotenv
+│   ├── ds-test -> ../../../node_modules/.pnpm/github.com+dapphub+ds-test@e282159d5170298eb2455a6c05280ab5a73a4ef0/node_modules/ds-test
+│   ├── ejs -> ../../../node_modules/.pnpm/ejs@3.1.8/node_modules/ejs
+│   ├── ethers -> ../../../node_modules/.pnpm/ethers@5.7.2/node_modules/ethers
+│   ├── execa -> ../../../node_modules/.pnpm/execa@7.0.0/node_modules/execa
+│   ├── forge-std -> ../../../node_modules/.pnpm/github.com+foundry-rs+forge-std@74cfb77e308dd188d2f58864aaf44963ae6b88b1/node_modules/forge-std
+│   ├── glob -> ../../../node_modules/.pnpm/glob@8.0.3/node_modules/glob
+│   ├── nice-grpc-web -> ../../../node_modules/.pnpm/nice-grpc-web@2.0.1_google-protobuf@3.21.2/node_modules/nice-grpc-web
+│   ├── openurl -> ../../../node_modules/.pnpm/openurl@1.1.1/node_modules/openurl
+│   ├── path -> ../../../node_modules/.pnpm/path@0.12.7/node_modules/path
+│   ├── throttle-debounce -> ../../../node_modules/.pnpm/throttle-debounce@5.0.0/node_modules/throttle-debounce
+│   ├── tsup -> ../../../node_modules/.pnpm/tsup@6.7.0_postcss@8.4.23_typescript@5.1.6/node_modules/tsup
+│   ├── tsx -> ../../../node_modules/.pnpm/tsx@3.12.6/node_modules/tsx
+│   ├── typescript -> ../../../node_modules/.pnpm/typescript@5.1.6/node_modules/typescript
+│   ├── viem -> ../../../node_modules/.pnpm/viem@1.6.0_typescript@5.1.6_zod@3.21.4/node_modules/viem
+│   ├── vitest -> ../../../node_modules/.pnpm/vitest@0.31.4_jsdom@22.1.0/node_modules/vitest
+│   ├── yargs -> ../../../node_modules/.pnpm/yargs@17.7.1/node_modules/yargs
+│   ├── zod -> ../../../node_modules/.pnpm/zod@3.21.4/node_modules/zod
+│   └── zod-validation-error -> ../../../node_modules/.pnpm/zod-validation-error@1.3.0_zod@3.21.4/node_modules/zod-validation-error
+├── package.json
+├── remappings.txt
+├── scripts
+│   └── generate-test-tables.ts
+├── src
+│   ├── commands
+│   │   ├── deploy.ts
+│   │   ├── dev-contracts.ts
+│   │   ├── devnode.ts
+│   │   ├── faucet.ts
+│   │   ├── hello.ts
+│   │   ├── index.ts
+│   │   ├── set-version.ts
+│   │   ├── tablegen.ts
+│   │   ├── test.ts
+│   │   ├── trace.ts
+│   │   └── worldgen.ts
+│   ├── index.ts
+│   ├── modules.d.ts
+│   ├── mud.ts
+│   └── utils
+│       ├── deploy.ts
+│       ├── deployHandler.ts
+│       ├── errors.ts
+│       ├── getExistingContracts.ts
+│       ├── modules
+│       │   ├── constants.ts
+│       │   ├── getInstallModuleCallData.ts
+│       │   ├── getUserModules.ts
+│       │   └── types.ts
+│       ├── printMUD.ts
+│       ├── systems
+│       │   ├── getGrantAccessCallData.ts
+│       │   ├── getRegisterFunctionSelectorsCallData.ts
+│       │   ├── getRegisterSystemCallData.ts
+│       │   ├── types.ts
+│       │   └── utils.ts
+│       ├── tables
+│       │   ├── getRegisterTableCallData.ts
+│       │   ├── getTableIds.ts
+│       │   └── types.ts
+│       ├── utils
+│       │   ├── confirmNonce.ts
+│       │   ├── deployContract.ts
+│       │   ├── fastTxExecute.ts
+│       │   ├── getChainId.ts
+│       │   ├── getContractData.ts
+│       │   ├── postDeploy.ts
+│       │   ├── setInternalFeePerGas.ts
+│       │   └── types.ts
+│       └── world.ts
+├── tsconfig.json
+└── tsup.config.ts
+
+61 directories, 59 files

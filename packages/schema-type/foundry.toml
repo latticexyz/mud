@@ -1,15 +1,15 @@
 [profile.default]
-solc = "0.8.21"
+allow_paths = ["../../node_modules", "../../../../packages"]
+extra_output_files = [
+  "abi",
+  "evm.bytecode",
+]
 ffi = false
 fuzz_runs = 256
 optimizer = true
 optimizer_runs = 3000
-verbosity = 2
-allow_paths = ["../../node_modules"]
-src = "src/solidity"
 out = "out/solidity"
+solc = "0.8.21"
+src = "src/solidity"
 test = "test/solidity"
-extra_output_files = [
-  "abi",
-  "evm.bytecode"
-]
+verbosity = 2
