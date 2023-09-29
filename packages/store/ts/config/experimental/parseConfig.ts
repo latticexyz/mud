@@ -2,11 +2,11 @@ import { EmptyObject, Merge, Prettify } from "./common";
 import { ParseNamespacesInput, ParseNamespacesOutput, parseNamespaces } from "./parseNamespaces";
 import { ParseTablesInput, ParseTablesOutput, parseTables } from "./parseTables";
 
-export type ParseConfigInput = Readonly<{
-  namespace?: string;
-  tables?: ParseTablesInput;
-  namespaces?: ParseNamespacesInput;
-}>;
+export type ParseConfigInput = {
+  readonly namespace?: string;
+  readonly tables?: ParseTablesInput;
+  readonly namespaces?: ParseNamespacesInput;
+};
 
 export type ParseConfigOutput<
   input extends ParseConfigInput,

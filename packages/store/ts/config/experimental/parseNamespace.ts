@@ -3,16 +3,16 @@ import { ParseTableInput, ParseTableOutput, parseTable } from "./parseTable";
 
 export type ParseNamespaceInput = {
   // TODO: omit namespace from table input
-  tables?: Readonly<Record<string, ParseTableInput>>;
+  readonly tables?: { readonly [k: string]: ParseTableInput };
 };
 
-export type ParseNamespaceOutput<namespace extends string, input extends ParseNamespaceInput> = Readonly<{
-  tables: input["tables"] extends ParseTableInput
-    ? Readonly<{
-        [name in keyof input["tables"] & string]: ParseTableOutput<namespace, name, input["tables"][name]>;
-      }>
+export type ParseNamespaceOutput<namespace extends string, input extends ParseNamespaceInput> = {
+  readonly tables: input["tables"] extends ParseTableInput
+    ? {
+        readonly [name in keyof input["tables"] & string]: ParseTableOutput<namespace, name, input["tables"][name]>;
+      }
     : EmptyObject;
-}>;
+};
 
 export function parseNamespace<namespace extends string, input extends ParseNamespaceInput>(
   namespace: namespace,

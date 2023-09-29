@@ -1,14 +1,14 @@
 import { ParseTableInput, ParseTableOutput, parseTable } from "./parseTable";
 
-export type ParseTablesInput = Readonly<Record<string, ParseTableInput>>;
+export type ParseTablesInput = { readonly [k: string]: ParseTableInput };
 
-export type ParseTablesOutput<defaultNamespace extends string, input extends ParseTablesInput> = Readonly<{
-  [name in keyof input & string]: ParseTableOutput<
+export type ParseTablesOutput<defaultNamespace extends string, input extends ParseTablesInput> = {
+  readonly [name in keyof input & string]: ParseTableOutput<
     input["namespace"] extends string ? input["namespace"] : defaultNamespace,
     name,
     input[name]
   >;
-}>;
+};
 
 export function parseTables<defaultNamespace extends string, input extends ParseTablesInput>(
   defaultNamespace: defaultNamespace,

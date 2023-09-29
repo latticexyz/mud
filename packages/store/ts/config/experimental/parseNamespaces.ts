@@ -1,12 +1,10 @@
 import { ParseNamespaceInput, ParseNamespaceOutput, parseNamespace } from "./parseNamespace";
 
-export type ParseNamespacesInput = Readonly<Record<string, ParseNamespaceInput>>;
+export type ParseNamespacesInput = { readonly [k: string]: ParseNamespaceInput };
 
-export type ParseNamespacesOutput<input extends ParseNamespacesInput> = Readonly<
-  {
-    [namespace in keyof input & string]: ParseNamespaceOutput<namespace, input[namespace]>;
-  }[keyof input & string]["tables"]
->;
+export type ParseNamespacesOutput<input extends ParseNamespacesInput> = {
+  readonly [namespace in keyof input & string]: ParseNamespaceOutput<namespace, input[namespace]>;
+}[keyof input & string]["tables"];
 
 export function parseNamespaces<input extends ParseNamespacesInput>(input: input): ParseNamespacesOutput<input> {
   return Object.fromEntries(

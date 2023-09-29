@@ -6,12 +6,12 @@ import { assertExhaustive } from "@latticexyz/common/utils";
 import { resourceIdToHex } from "@latticexyz/common";
 
 /** @internal */
-export type TableShapeInput = Readonly<{
-  namespace?: string;
-  keySchema?: ParseKeySchemaInput;
-  valueSchema: ParseValueSchemaInput;
-  offchainOnly?: boolean;
-}>;
+export type TableShapeInput = {
+  readonly namespace?: string;
+  readonly keySchema?: ParseKeySchemaInput;
+  readonly valueSchema: ParseValueSchemaInput;
+  readonly offchainOnly?: boolean;
+};
 
 // TODO: add support for ParseValueSchemaInput instead of SchemaAbiType?
 //       requires an isValueSchemaInput helper that is distinct enough from isParseTableInputShape
@@ -24,20 +24,20 @@ export type ParseTableOutput<
 > = input extends SchemaAbiType
   ? ParseTableOutput<defaultNamespace, name, { valueSchema: input }>
   : input extends TableShapeInput
-  ? Readonly<{
-      type: input["offchainOnly"] extends true ? "offchainTable" : "table";
-      namespace: input["namespace"] extends string ? input["namespace"] : defaultNamespace;
-      name: name;
-      tableId: `0x${string}`;
-      keySchema: ParseKeySchemaOutput<
+  ? {
+      readonly type: input["offchainOnly"] extends true ? "offchainTable" : "table";
+      readonly namespace: input["namespace"] extends string ? input["namespace"] : defaultNamespace;
+      readonly name: name;
+      readonly tableId: `0x${string}`;
+      readonly keySchema: ParseKeySchemaOutput<
         input["keySchema"] extends ParseKeySchemaInput
           ? input["keySchema"]
           : never extends input["keySchema"]
           ? undefined
           : never
       >;
-      valueSchema: ParseValueSchemaOutput<input["valueSchema"]>;
-    }>
+      readonly valueSchema: ParseValueSchemaOutput<input["valueSchema"]>;
+    }
   : never;
 
 // TODO: is there a better way to check this aside from just looking at the shape/keys of the object?
