@@ -14,11 +14,11 @@ library Utils {
 
   /**
    * @notice Fetches the namespace of the current system.
-   * @dev This function determines the system's namespace based on its interaction with the store. If the system is a root system (direct call), it returns an empty string. Otherwise, it retrieves the namespace using the system's registry.
-   * This function must be used within the context of a system (either directly. or within libraries called by a system).
-   * @return Returns a bytes16 representation of the system's namespace. Returns an empty string for root systems.
+   * @dev This function determines the system's namespace based on its interaction with the store. If the system is a root system, it returns the root namespace (an empty string). Otherwise, it retrieves the namespace using the system's registry.
+   * This function must be used within the context of a system (either directly or within libraries called by a system).
+   * @return Returns a bytes14 representation of the system's namespace.
    */
-  function systemNamespace() internal view returns (bytes16) {
+  function systemNamespace() internal view returns (bytes14) {
     /**
      * Unlike systemNamespace, getting systemName is impossible for root systems,
      * because they're delegatecalled and the name isn't passed in calldata
