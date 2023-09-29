@@ -5,6 +5,10 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { SystemRegistry } from "./codegen/tables/SystemRegistry.sol";
 
+/**
+ * @notice Various utilities
+ * @dev These utilities are not used by MUD itself, they are for developers using MUD.
+ */
 library Utils {
   using WorldResourceIdInstance for ResourceId;
 
