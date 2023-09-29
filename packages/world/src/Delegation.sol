@@ -12,7 +12,7 @@ import { SystemCall } from "./SystemCall.sol";
  */
 library Delegation {
   /**
-   * @dev Check if a delegation control ID exists.
+   * @dev Check if a delegation control ID exists by comparing it to an empty `bytes32` value.
    * @param delegationControlId The ResourceId of the delegation control.
    * @return true if the delegation control ID exists, false otherwise.
    */
@@ -21,7 +21,7 @@ library Delegation {
   }
 
   /**
-   * @dev Check if a delegation is unlimited.
+   * @dev Check if a delegation is unlimited by comparing it to the constant for unlimited delegations.
    * @param delegationControlId The ResourceId of the delegation control.
    * @return true if the delegation is unlimited, false otherwise.
    */
@@ -45,7 +45,7 @@ library Delegation {
    * @param delegator The address of the delegator.
    * @param delegatee The address of the delegatee.
    * @param systemId The ResourceId of the system.
-   * @param callData The call data for the delegation.
+   * @param callData The call data of the call that is being delegated.
    * @return true if the delegation is exists and is valid, false otherwise.
    */
   function verify(
