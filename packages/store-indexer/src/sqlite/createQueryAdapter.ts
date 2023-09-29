@@ -4,7 +4,6 @@ import { buildTable, chainState, getTables } from "@latticexyz/store-sync/sqlite
 import { QueryAdapter } from "@latticexyz/store-sync/trpc-indexer";
 import { debug } from "../debug";
 import { getAddress } from "viem";
-import { internalTableIds } from "@latticexyz/store-sync";
 
 /**
  * Creates a storage adapter for the tRPC server/client to query data from SQLite.
@@ -15,10 +14,9 @@ import { internalTableIds } from "@latticexyz/store-sync";
 export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", any>): Promise<QueryAdapter> {
   const adapter: QueryAdapter = {
     async findAll({ chainId, address, tableIds = [] }) {
-      const includedTableIds = new Set(tableIds.length ? [...internalTableIds, ...tableIds] : []);
       const tables = getTables(database)
         .filter((table) => address == null || getAddress(address) === getAddress(table.address))
-        .filter((table) => !includedTableIds.size || includedTableIds.has(table.tableId));
+        .filter((table) => !tableIds.length || tableIds.includes(table.tableId));
 
       const tablesWithRecords = tables.map((table) => {
         const sqliteTable = buildTable(table);
