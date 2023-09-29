@@ -21,7 +21,7 @@ describe("parseKeySchema", () => {
   });
 
   it("returns a full key schema", () => {
-    const output = parseKeySchema({ x: "uint32", y: "uint32" });
+    const output = parseKeySchema({ x: "uint32", y: "uint32" } as const);
     const expectedOutput = { x: "uint32", y: "uint32" } as const;
     expect(output).toStrictEqual(output);
     expectTypeOf(output).toEqualTypeOf(expectedOutput);

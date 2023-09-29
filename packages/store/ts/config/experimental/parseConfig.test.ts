@@ -18,7 +18,7 @@ describe("parseConfig", () => {
           },
         },
       },
-    });
+    } as const);
 
     const expectedOutput = {
       tables: {

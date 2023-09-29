@@ -19,7 +19,7 @@ describe("parseValueSchema", () => {
   });
 
   it("returns a full value schema", () => {
-    const output = parseValueSchema({ x: "uint32", y: "uint32" });
+    const output = parseValueSchema({ x: "uint32", y: "uint32" } as const);
     const expectedOutput = { x: "uint32", y: "uint32" } as const;
     expect(output).toStrictEqual(output);
     expectTypeOf(output).toEqualTypeOf(expectedOutput);
