@@ -30,7 +30,12 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   tableIds,
   matchId,
 }: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
-  const { storageAdapter, components } = recsStorage({ world, config });
+  const { storageAdapter, components } = recsStorage({
+    world,
+    config,
+    shouldSkipUpdateStream: (): boolean =>
+      getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE,
+  });
 
   const storeSync = await createStoreSync({
     storageAdapter,
