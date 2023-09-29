@@ -33,7 +33,7 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
 
   /**
    * @notice Extract the `msg.value` from the context appended to the calldata.
-   * @return The `msg.value` in the call to the World contract before the World routed the
+   * @return value The `msg.value` in the call to the World contract before the World routed the
    * call to the WorldContextConsumer contract.
    */
   function _msgValue() public pure returns (uint256 value) {
