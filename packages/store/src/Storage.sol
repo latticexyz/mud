@@ -4,19 +4,38 @@ pragma solidity >=0.8.21;
 import { leftMask } from "./leftMask.sol";
 import { Memory } from "./Memory.sol";
 
+/**
+ * @title Storage Library
+ * @dev Provides functions for low-level storage manipulation, including storing and retrieving bytes.
+ */
 library Storage {
+  /**
+   * @notice Store a single word of data at a specific storage pointer.
+   * @param storagePointer The location to store the data.
+   * @param data The 32-byte word of data to store.
+   */
   function store(uint256 storagePointer, bytes32 data) internal {
     assembly {
       sstore(storagePointer, data)
     }
   }
 
+  /**
+   * @notice Store bytes of data at a specific storage pointer and offset.
+   * @param storagePointer The base storage location.
+   * @param offset Offset within the storage location.
+   * @param data Bytes to store.
+   */
   function store(uint256 storagePointer, uint256 offset, bytes memory data) internal {
     store(storagePointer, offset, Memory.dataPointer(data), data.length);
   }
 
   /**
-   * Stores raw bytes to storage at the given storagePointer and offset (keeping the rest of the word intact)
+   * @notice Stores raw bytes to storage at a given pointer, offset, and length, keeping the rest of the word intact.
+   * @param storagePointer The base storage location.
+   * @param offset Offset within the storage location.
+   * @param memoryPointer Pointer to the start of the data in memory.
+   * @param length Length of the data in bytes.
    */
   function store(uint256 storagePointer, uint256 offset, uint256 memoryPointer, uint256 length) internal {
     if (offset > 0) {
@@ -99,6 +118,11 @@ library Storage {
     }
   }
 
+  /**
+   * @notice Set multiple storage locations to zero.
+   * @param storagePointer The starting storage location.
+   * @param length The number of storage locations to set to zero.
+   */
   function zero(uint256 storagePointer, uint256 length) internal {
     // Ceil division to round up to the nearest word
     uint256 limit = storagePointer + (length + 31) / 32;
@@ -111,6 +135,11 @@ library Storage {
     }
   }
 
+  /**
+   * @notice Load a single word of data from a specific storage pointer.
+   * @param storagePointer The location to load the data from.
+   * @return word The loaded 32-byte word of data.
+   */
   function load(uint256 storagePointer) internal view returns (bytes32 word) {
     assembly {
       word := sload(storagePointer)
@@ -118,7 +147,11 @@ library Storage {
   }
 
   /**
-   * Load raw bytes from storage at the given storagePointer, offset, and length
+   * @notice Load raw bytes from storage at a given pointer, offset, and length.
+   * @param storagePointer The base storage location.
+   * @param length Length of the data in bytes.
+   * @param offset Offset within the storage location.
+   * @return result The loaded bytes of data.
    */
   function load(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes memory result) {
     uint256 memoryPointer;
@@ -141,7 +174,11 @@ library Storage {
   }
 
   /**
-   * Append raw bytes from storage at the given storagePointer, offset, and length to the given memoryPointer
+   * @notice Append raw bytes from storage at a given pointer, offset, and length to a specific memory pointer.
+   * @param storagePointer The base storage location.
+   * @param length Length of the data in bytes.
+   * @param offset Offset within the storage location.
+   * @param memoryPointer Pointer to the location in memory to append the data.
    */
   function load(uint256 storagePointer, uint256 length, uint256 offset, uint256 memoryPointer) internal view {
     if (offset > 0) {
@@ -223,11 +260,13 @@ library Storage {
   }
 
   /**
-   * Load up to 32 bytes from storage at the given storagePointer and offset.
-   * The return value is left-aligned, the bytes beyond the length are not zeroed out,
-   * and the caller is expected to truncate as needed.
-   * Since fields are tightly packed, they can span more than one slot.
+   * @notice Load up to 32 bytes from storage at a given pointer and offset.
+   * @dev Since fields are tightly packed, they can span more than one slot.
    * Since the they're max 32 bytes, they can span at most 2 slots.
+   * @param storagePointer The base storage location.
+   * @param length Length of the data in bytes.
+   * @param offset Offset within the storage location.
+   * @return result The loaded bytes, left-aligned bytes. Bytes beyond the length are zeroed.
    */
   function loadField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32 result) {
     if (offset >= 32) {
