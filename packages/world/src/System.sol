@@ -3,8 +3,12 @@ pragma solidity >=0.8.21;
 
 import { WorldContextConsumer } from "./WorldContext.sol";
 
-// For now System is just an alias for `WorldContextConsumer`,
-// but we might add more default functionality in the future.
-contract System is WorldContextConsumer {
+/**
+ * @title System
+ * @dev The System contract currently acts as an alias for `WorldContextConsumer`.
+ * This structure is chosen for potential extensions in the future, where default functionality might be added to the System.
+ */
 
+contract System is WorldContextConsumer {
+  // Currently, no additional functionality is added. Future enhancements can be introduced here.
 }
