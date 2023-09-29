@@ -19,28 +19,27 @@ bytes4 constant WORLD_CONTEXT_CONSUMER_INTERFACE_ID = IWorldContextConsumer._msg
  * @title WorldContextConsumer - Extracting trusted context values from appended calldata.
  * @notice This contract is designed to extract trusted context values (like msg.sender and msg.value)
  * from the appended calldata. It provides mechanisms similar to EIP-2771 (https://eips.ethereum.org/EIPS/eip-2771),
- * allowing any contract to be the trusted forwarder.
+ * but allowing any contract to be the trusted forwarder.
  * @dev This contract should only be used for contracts without their own storage, like Systems.
  */
 interface IWorldContextConsumer is IERC165 {
   /**
-   * @notice Get the original `msg.sender` of the transaction.
-   * @dev This function allows the retrieval of the original caller even after context changes.
-   * @return The address of the original transaction initiator.
+   * @notice Extract the `msg.sender` from the context appended to the calldata.
+   * @return The address of the `msg.sender` that called the World contract
+   * before the World routed the call to the WorldContextConsumer contract.
    */
   function _msgSender() external view returns (address);
 
   /**
-   * @notice Get the original `msg.value` of the transaction.
-   * @dev This function allows the retrieval of the original transaction value even after context changes.
-   * @return The value of the original transaction.
+   * @notice Extract the `msg.value` from the context appended to the calldata.
+   * @return The `msg.value` in the call to the World contract before the World routed the
+   * call to the WorldContextConsumer contract.
    */
   function _msgValue() external view returns (uint256);
 
   /**
-   * @notice Get the world's address.
-   * @dev This function returns the address of the world contract.
-   * @return The address of the world contract.
+   * @notice Get the address of the World contract that routed the call to this WorldContextConsumer.
+   * @return The address of the World contract that routed the call to this WorldContextConsumer.
    */
   function _world() external view returns (address);
 }

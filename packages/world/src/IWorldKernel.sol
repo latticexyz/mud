@@ -30,7 +30,7 @@ interface IWorldCall {
    * @param systemId The ID of the system to be called.
    * @param callData The data to pass with the call,
    * function selector (4 bytes) followed by the ABI encoded parameters.
-   * @return The return data from the called system.
+   * @return The abi encoded return data from the called system.
    */
   function call(ResourceId systemId, bytes memory callData) external payable returns (bytes memory);
 
@@ -41,7 +41,7 @@ interface IWorldCall {
    * @param systemId The ID of the system to be called.
    * @param callData The data to pass with the call,
    * function selector (4 bytes) followed by the ABI encoded parameters.
-   * @return The return data from the called system.
+   * @return The abi encoded return data from the called system.
    */
   function callFrom(
     address delegator,
@@ -78,7 +78,7 @@ interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors {
   /**
    * @notice Initializes the World.
    * @dev Can only be called once by the creator.
-   * @param coreModule The module to be set as the core module during initialization.
+   * @param coreModule The CoreModule to be installed during initialization.
    */
   function initialize(IModule coreModule) external;
 }

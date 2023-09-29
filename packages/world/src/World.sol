@@ -68,7 +68,7 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * @notice Initializes the World by the creator by installing the core module.
+   * @notice Initializes the World by installing the core module.
    * @param coreModule The core module to initialize the World with.
    * @dev Only the initial creator can initialize. This can be done only once.
    */

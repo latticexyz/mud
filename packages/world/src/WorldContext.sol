@@ -13,7 +13,7 @@ uint256 constant CONTEXT_BYTES = 20 + 32;
  * @title WorldContextConsumer - Extracting trusted context values from appended calldata.
  * @notice This contract is designed to extract trusted context values (like msg.sender and msg.value)
  * from the appended calldata. It provides mechanisms similar to EIP-2771 (https://eips.ethereum.org/EIPS/eip-2771),
- * allowing any contract to be the trusted forwarder.
+ * but allowing any contract to be the trusted forwarder.
  * @dev This contract should only be used for contracts without their own storage, like Systems.
  */
 abstract contract WorldContextConsumer is IWorldContextConsumer {

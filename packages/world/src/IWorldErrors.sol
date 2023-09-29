@@ -49,7 +49,8 @@ interface IWorldErrors {
   /// @param delegatee The address of the delegatee.
   error World_DelegationNotFound(address delegator, address delegatee);
 
-  /// @notice Raised when trying to create an unlimited delegation, which is not allowed.
+  /// @notice Raised when trying to create an unlimited delegation in a context where it is not allowed,
+  /// e.g. when registering a namespace fallback delegation.
   error World_UnlimitedDelegationNotAllowed();
 
   /// @notice Raised when there's an insufficient balance for a particular operation.
@@ -68,7 +69,7 @@ interface IWorldErrors {
   /// @param resourceIdString The string representation of the resource ID.
   error World_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
 
-  /// @notice Raised when a certain callback is not allowed.
+  /// @notice Raised when the World is calling itself via an external call.
   /// @param functionSelector The function selector of the disallowed callback.
   error World_CallbackNotAllowed(bytes4 functionSelector);
 }
