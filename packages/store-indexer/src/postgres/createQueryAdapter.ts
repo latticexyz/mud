@@ -4,6 +4,7 @@ import { buildTable, buildInternalTables, getTables } from "@latticexyz/store-sy
 import { QueryAdapter } from "@latticexyz/store-sync/trpc-indexer";
 import { debug } from "../debug";
 import { getAddress } from "viem";
+import { internalTableIds } from "@latticexyz/store-sync";
 
 /**
  * Creates a query adapter for the tRPC server/client to query data from Postgres.
@@ -13,11 +14,11 @@ import { getAddress } from "viem";
  */
 export async function createQueryAdapter(database: PgDatabase<any>): Promise<QueryAdapter> {
   const adapter: QueryAdapter = {
-    async findAll({ chainId, address, tableIds }) {
-      const internalTables = buildInternalTables();
+    async findAll({ chainId, address, tableIds = [] }) {
+      const includedTableIds = tableIds.length ? [...internalTableIds, ...tableIds] : [];
       const tables = (await getTables(database))
         .filter((table) => address == null || getAddress(address) === getAddress(table.address))
-        .filter((table) => tableIds == null || tableIds.includes(table.tableId));
+        .filter((table) => !includedTableIds.length || includedTableIds.includes(table.tableId));
 
       const tablesWithRecords = await Promise.all(
         tables.map(async (table) => {
@@ -33,6 +34,7 @@ export async function createQueryAdapter(database: PgDatabase<any>): Promise<Que
         })
       );
 
+      const internalTables = buildInternalTables();
       const metadata = await database
         .select()
         .from(internalTables.chain)
