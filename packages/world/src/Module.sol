@@ -7,8 +7,7 @@ import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
 
 /**
  * @title Module
- * @dev Abstract contract that implements the functionalities of IModule and is associated with a world context.
- * It also checks for interface support according to the ERC-165 standard.
+ * @dev Abstract contract that implements the ERC-165 supportsInterface function for IModule.
  */
 abstract contract Module is IModule, WorldContextConsumer {
   /**

@@ -34,7 +34,7 @@ interface IModule is IERC165 {
   /**
    * @notice Installs the module as a root module.
    * @dev This function is invoked by the World contract during `installRootModule` process.
-   * The module expects to be interfaced via the World contract and thus installs itself on the `msg.sender`.
+   * The module expects to be called via the World contract and thus installs itself on the `msg.sender`.
    * @param args Arguments that may be needed during the installation process.
    */
   function installRoot(bytes memory args) external;
@@ -42,7 +42,7 @@ interface IModule is IERC165 {
   /**
    * @notice Installs the module.
    * @dev This function is invoked by the World contract during `installModule` process.
-   * The module expects to be interfaced via the World contract and thus installs itself on the `msg.sender`.
+   * The module expects to be called via the World contract and thus installs itself on the `msg.sender`.
    * Logic might differ from `installRoot`, for example, this might accept namespace parameters.
    * @param args Arguments that may be needed during the installation process.
    */
