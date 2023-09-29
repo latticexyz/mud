@@ -155,7 +155,7 @@ library WorldContextProvider {
    * @param msgValue The amount of ether sent with the original transaction.
    * @param target The address of the contract to call.
    * @param callData The calldata for the call.
-   * @return data The returned data from the call.
+   * @return data The abi encoded return data from the call.
    */
   function delegatecallWithContextOrRevert(
     address msgSender,
