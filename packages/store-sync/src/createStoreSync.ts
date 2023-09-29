@@ -58,7 +58,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   initialState,
   indexerUrl,
 }: CreateStoreSyncOptions<TConfig>): Promise<SyncResult> {
-  const includedTableIds = tableIds.length ? [...internalTableIds, ...tableIds] : [];
+  const includedTableIds = new Set(tableIds.length ? [...internalTableIds, ...tableIds] : []);
   const initialState$ = defer(
     async (): Promise<
       | {
@@ -82,7 +82,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
       const indexer = createIndexerClient({ url: indexerUrl });
       const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
-      const result = await indexer.findAll.query({ chainId, address, tableIds });
+      const result = await indexer.findAll.query({ chainId, address, tableIds: Array.from(includedTableIds) });
 
       onProgress?.({
         step: SyncStep.SNAPSHOT,

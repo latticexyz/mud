@@ -15,10 +15,10 @@ import { internalTableIds } from "@latticexyz/store-sync";
 export async function createQueryAdapter(database: PgDatabase<any>): Promise<QueryAdapter> {
   const adapter: QueryAdapter = {
     async findAll({ chainId, address, tableIds = [] }) {
-      const includedTableIds = tableIds.length ? [...internalTableIds, ...tableIds] : [];
+      const includedTableIds = new Set(tableIds.length ? [...internalTableIds, ...tableIds] : []);
       const tables = (await getTables(database))
         .filter((table) => address == null || getAddress(address) === getAddress(table.address))
-        .filter((table) => !includedTableIds.length || includedTableIds.includes(table.tableId));
+        .filter((table) => !includedTableIds.size || includedTableIds.has(table.tableId));
 
       const tablesWithRecords = await Promise.all(
         tables.map(async (table) => {
