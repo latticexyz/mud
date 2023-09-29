@@ -16,7 +16,7 @@ library AccessControl {
 
   /**
    * @notice Checks if the caller has access to the given resource ID or its namespace.
-   * @param resourceId The resource ID or namespace ID to check access for.
+   * @param resourceId The resource ID to check access for.
    * @param caller The address of the caller.
    * @return true if the caller has access, false otherwise.
    */
