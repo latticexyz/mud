@@ -82,7 +82,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    * The hook must conform to the IStoreHook interface.
    * @param tableId The resource ID of the table for which the hook is being registered.
    * @param hookAddress The address of the storage hook contract.
-   * @param enabledHooksBitmap A bitmap indicating which hook functionalities are enabled.
+   * @param enabledHooksBitmap A bitmap indicating which hooks are enabled.
    */
 
   function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {

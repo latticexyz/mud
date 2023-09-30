@@ -24,5 +24,4 @@ contract CoreSystem is
   StoreRegistrationSystem,
   WorldRegistrationSystem
 {
-  // Currently, no additional functionality is added in this aggregate contract.
 }
