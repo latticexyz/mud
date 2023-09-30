@@ -14,6 +14,7 @@ import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
 import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { parseEnv } from "./parseEnv";
+import { streamHandler } from "./stream";
 
 const env = parseEnv(
   z.object({
@@ -98,6 +99,8 @@ server.register(fastifyTRPCPlugin<AppRouter>, {
     }),
   },
 });
+
+server.get("/stream/findAll", streamHandler);
 
 await server.listen({ host: env.HOST, port: env.PORT });
 console.log(`indexer server listening on http://${env.HOST}:${env.PORT}`);
