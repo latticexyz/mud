@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -11495,3 +11491,7 @@ packages:
     transitivePeerDependencies:
       - encoding
     dev: false
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false

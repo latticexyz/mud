@@ -5,6 +5,10 @@ import { RecsStorageAdapter, recsStorage } from "./recsStorage";
 import { createStoreSync } from "../createStoreSync";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
+import { Hex } from "viem";
+import { encodeEntity } from "./encodeEntity";
+import { decodeValue, valueSchemaToFieldLayoutHex } from "@latticexyz/protocol-parser";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   world: RecsWorld;
@@ -15,6 +19,7 @@ type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<
 type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult & {
   components: RecsStorageAdapter<TConfig>["components"];
   stopSync: () => void;
+  getResourceSelector: (functionSelector: Hex) => Promise<Hex>;
 };
 
 export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
@@ -59,9 +64,37 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
   world.registerDisposer(stopSync);
 
+  const getResourceSelector = async (functionSelector: Hex): Promise<Hex> => {
+    const entity = encodeEntity(components.FunctionSelectors.metadata.keySchema, {
+      functionSelector,
+    });
+
+    const selectors = getComponentValue(components.FunctionSelectors, entity);
+
+    // If we can't find selectors due to not being synced yet, we can try to read them from the world contract
+    if (!selectors) {
+      // TODO make fieldLayout a table metadata field
+      const encodedFieldLayout = valueSchemaToFieldLayoutHex(components.FunctionSelectors.metadata.valueSchema);
+
+      const [selectorRecord, ,] = await publicClient.readContract({
+        address: address as Hex,
+        abi: IBaseWorldAbi,
+        functionName: "getRecord",
+        args: [components.FunctionSelectors.id as Hex, [entity as Hex], encodedFieldLayout],
+      });
+
+      const decodedSelectors = decodeValue(components.FunctionSelectors.metadata.valueSchema, selectorRecord as Hex);
+
+      return decodedSelectors.resourceSelector;
+    }
+
+    return selectors.resourceSelector as Hex;
+  };
+
   return {
     ...storeSync,
     components,
     stopSync,
+    getResourceSelector,
   };
 }
