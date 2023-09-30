@@ -9,7 +9,8 @@ import { StoreCore } from "./StoreCore.sol";
 /**
  * @title Store Data Contract
  * @notice This contract integrates the core storage functionalities and provides an interface for data storage.
- * @dev This is an abstract contract and should be inherited by other contracts that need storage functionalities.
+ * @dev This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
+ * but not write methods.
  */
 abstract contract StoreData is IStoreData, StoreRead {
   /**

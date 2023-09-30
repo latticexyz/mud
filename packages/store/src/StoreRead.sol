@@ -75,6 +75,8 @@ contract StoreRead is IStoreRead {
 
   /**
    * @notice Retrieves data for a specified field in a record.
+   * @dev This overload loads the FieldLayout from storage. If the table's FieldLayout is known
+   * to the caller, it should be passed in to the other overload to avoid the storage read.
    * @param tableId The ID of the table.
    * @param keyTuple The tuple used as a key to fetch the field.
    * @param fieldIndex Index of the field to retrieve.
@@ -89,7 +91,7 @@ contract StoreRead is IStoreRead {
   }
 
   /**
-   * @notice Retrieves data for a specified field in a record, considering a field layout.
+   * @notice Retrieves data for a specified field in a record.
    * @param tableId The ID of the table.
    * @param keyTuple The tuple used as a key to fetch the field.
    * @param fieldIndex Index of the field to retrieve.
@@ -139,6 +141,8 @@ contract StoreRead is IStoreRead {
 
   /**
    * @notice Calculates the length of a specified field in a record.
+   * @dev This overload loads the FieldLayout from storage. If the table's FieldLayout is known
+   * to the caller, it should be passed in to the other overload to avoid the storage read.
    * @param tableId The ID of the table.
    * @param keyTuple The tuple used as a key.
    * @param fieldIndex Index of the field to measure.
@@ -153,7 +157,7 @@ contract StoreRead is IStoreRead {
   }
 
   /**
-   * @notice Calculates the length of a specified field in a record, considering a field layout.
+   * @notice Calculates the length of a specified field in a record.
    * @param tableId The ID of the table.
    * @param keyTuple The tuple used as a key.
    * @param fieldIndex Index of the field to measure.
