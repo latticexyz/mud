@@ -42,6 +42,12 @@ describe("encodeValueArgs", () => {
       badges: [42n],
     });
 
-    expect(result).toMatchInlineSnapshot();
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "dynamicData": "0x68656e7279000000000000000000000000000000000000000000000000000000000000002a",
+        "encodedLengths": "0x0000000000000000000000000000000000000020000000000500000000000025",
+        "staticData": "0x68656c6c6f00000000000000000000000000000000000000000000000000000001",
+      }
+    `);
   });
 });
