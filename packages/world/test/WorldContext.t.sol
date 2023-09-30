@@ -3,7 +3,7 @@ pragma solidity >=0.8.21;
 
 import "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { WorldContextProvider, WorldContextConsumer } from "../src/WorldContext.sol";
+import { WorldContextProviderLib, WorldContextConsumer } from "../src/WorldContext.sol";
 
 contract TestContextConsumer is WorldContextConsumer {
   event Context(bytes args, address msgSender, uint256 msgValue);
@@ -21,7 +21,7 @@ contract WorldContextTest is Test, GasReporter {
   function testFuzzAppendContext(bytes memory callData, address msgSender, uint256 msgValue) public {
     assertEq(
       keccak256(abi.encodePacked(callData, msgSender, msgValue)),
-      keccak256(WorldContextProvider.appendContext(callData, msgSender, msgValue))
+      keccak256(WorldContextProviderLib.appendContext(callData, msgSender, msgValue))
     );
   }
 
@@ -30,7 +30,7 @@ contract WorldContextTest is Test, GasReporter {
 
     vm.expectEmit(true, true, true, true);
     emit Context(args, msgSender, msgValue);
-    WorldContextProvider.callWithContextOrRevert({
+    WorldContextProviderLib.callWithContextOrRevert({
       msgSender: msgSender,
       msgValue: msgValue,
       target: address(consumer),
@@ -43,7 +43,7 @@ contract WorldContextTest is Test, GasReporter {
 
     vm.expectEmit(true, true, true, true);
     emit Context(args, msgSender, msgValue);
-    WorldContextProvider.delegatecallWithContextOrRevert({
+    WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: msgSender,
       msgValue: msgValue,
       target: address(consumer),

@@ -4,7 +4,7 @@ pragma solidity >=0.8.21;
 import { IModule, MODULE_INTERFACE_ID } from "../../../IModule.sol";
 import { System } from "../../../System.sol";
 import { AccessControl } from "../../../AccessControl.sol";
-import { WorldContextProvider } from "../../../WorldContext.sol";
+import { WorldContextProviderLib } from "../../../WorldContext.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { InstalledModules } from "../../../codegen/tables/InstalledModules.sol";
 import { requireInterface } from "../../../requireInterface.sol";
@@ -25,7 +25,7 @@ contract ModuleInstallationSystem is System {
     // Require the provided address to implement the IModule interface
     requireInterface(address(module), MODULE_INTERFACE_ID);
 
-    WorldContextProvider.callWithContextOrRevert({
+    WorldContextProviderLib.callWithContextOrRevert({
       msgSender: _msgSender(),
       msgValue: 0,
       target: address(module),

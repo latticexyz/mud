@@ -18,17 +18,12 @@ uint256 constant CONTEXT_BYTES = 20 + 32;
  */
 abstract contract WorldContextConsumer is IWorldContextConsumer {
   /**
-   * @notice Extracts the trusted msg.sender value from the appended calldata.
-   * @return sender The address of the trusted sender.
+   * @notice Extract the `msg.sender` from the context appended to the calldata.
+   * @return sender The `msg.sender` in the call to the World contract before the World routed the
+   * call to the WorldContextConsumer contract.
    */
   function _msgSender() public view returns (address sender) {
-    assembly {
-      // Load 32 bytes from calldata at position calldatasize() - context size,
-      // then shift left 96 bits (to right-align the address)
-      // 96 = 256 - 20 * 8
-      sender := shr(96, calldataload(sub(calldatasize(), CONTEXT_BYTES)))
-    }
-    if (sender == address(0)) sender = msg.sender;
+    return WorldContextConsumerLib._msgSender();
   }
 
   /**
@@ -37,10 +32,7 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
    * call to the WorldContextConsumer contract.
    */
   function _msgValue() public pure returns (uint256 value) {
-    assembly {
-      // Load 32 bytes from calldata at position calldatasize() - 32 bytes,
-      value := calldataload(sub(calldatasize(), 32))
-    }
+    return WorldContextConsumerLib._msgValue();
   }
 
   /**
@@ -62,12 +54,49 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
   }
 }
 
+library WorldContextConsumerLib {
+  /**
+   * @notice Extract the `msg.sender` from the context appended to the calldata.
+   * @return sender The `msg.sender` in the call to the World contract before the World routed the
+   * call to the WorldContextConsumer contract.
+   */
+  function _msgSender() internal view returns (address sender) {
+    assembly {
+      // Load 32 bytes from calldata at position calldatasize() - context size,
+      // then shift left 96 bits (to right-align the address)
+      // 96 = 256 - 20 * 8
+      sender := shr(96, calldataload(sub(calldatasize(), CONTEXT_BYTES)))
+    }
+    if (sender == address(0)) sender = msg.sender;
+  }
+
+  /**
+   * @notice Extract the `msg.value` from the context appended to the calldata.
+   * @return value The `msg.value` in the call to the World contract before the World routed the
+   * call to the WorldContextConsumer contract.
+   */
+  function _msgValue() internal pure returns (uint256 value) {
+    assembly {
+      // Load 32 bytes from calldata at position calldatasize() - 32 bytes,
+      value := calldataload(sub(calldatasize(), 32))
+    }
+  }
+
+  /**
+   * @notice Get the address of the World contract that routed the call to this WorldContextConsumer.
+   * @return The address of the World contract that routed the call to this WorldContextConsumer.
+   */
+  function _world() internal view returns (address) {
+    return StoreSwitch.getStoreAddress();
+  }
+}
+
 /**
- * @title WorldContextProvider - Utility functions to call contracts with context values appended to calldata.
+ * @title WorldContextProviderLib - Utility functions to call contracts with context values appended to calldata.
  * @notice This library provides functions to make calls or delegatecalls to other contracts,
  * appending the context values (like msg.sender and msg.value) to the calldata for WorldContextConsumer to consume.
  */
-library WorldContextProvider {
+library WorldContextProviderLib {
   /**
    * @notice Appends context values to the given calldata.
    * @param callData The original calldata.

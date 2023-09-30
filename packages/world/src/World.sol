@@ -15,7 +15,7 @@ import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { ROOT_NAMESPACE_ID, ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { SystemCall } from "./SystemCall.sol";
-import { WorldContextProvider } from "./WorldContext.sol";
+import { WorldContextProviderLib } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
 import { Delegation } from "./Delegation.sol";
 import { requireInterface } from "./requireInterface.sol";
@@ -107,7 +107,7 @@ contract World is StoreData, IWorldKernel {
     // Require the provided address to implement the IModule interface
     requireInterface(address(module), MODULE_INTERFACE_ID);
 
-    WorldContextProvider.delegatecallWithContextOrRevert({
+    WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: msg.sender,
       msgValue: 0,
       target: address(module),
