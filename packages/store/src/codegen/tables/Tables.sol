@@ -992,15 +992,12 @@ library Tables {
 
   /**
    * @notice Decode the tightly packed blob using this table's field layout.
-   *
-   * @dev Undefined behaviour for invalid blobs.
+   * @dev Returns the decoded data
+   * Undefined behaviour for invalid blobs.
    *
    * @param _staticData Encoded data for static fields. Only present if there are static fields.
    * @param _encodedLengths Counter data for encoded lengths. Only present if there are dynamic fields.
-   *
    * @param _dynamicData Encoded data for dynamic fields. Only present if there are dynamic fields.
-   *
-   * @return _table The decoded record.
    */
   function decode(
     bytes memory _staticData,

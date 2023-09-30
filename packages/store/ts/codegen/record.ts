@@ -235,8 +235,8 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
   result += `
     /**
      * @notice Decode the tightly packed blob using this table's field layout.
-     * 
-     * @dev Undefined behaviour for invalid blobs.
+     * @dev Returns the decoded data 
+     * Undefined behaviour for invalid blobs.
      * 
      * ${
        staticFields.length > 0
@@ -248,14 +248,11 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
          ? "@param _encodedLengths Counter data for encoded lengths. Only present if there are dynamic fields."
          : ""
      }
-     * 
      * ${
        dynamicFields.length > 0
          ? "@param _dynamicData Encoded data for dynamic fields. Only present if there are dynamic fields."
          : ""
      }
-     * 
-     * @return _table The decoded record.
      */
     function decode(
       bytes memory ${staticFields.length > 0 ? "_staticData" : ""},

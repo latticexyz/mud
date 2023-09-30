@@ -361,15 +361,12 @@ library Vector2 {
 
   /**
    * @notice Decode the tightly packed blob using this table's field layout.
-   *
-   * @dev Undefined behaviour for invalid blobs.
+   * @dev Returns the decoded data
+   * Undefined behaviour for invalid blobs.
    *
    * @param _staticData Encoded data for static fields. Only present if there are static fields.
    *
    *
-   *
-   *
-   * @return _table The decoded record.
    */
   function decode(
     bytes memory _staticData,
