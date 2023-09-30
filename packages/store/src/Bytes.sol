@@ -180,7 +180,6 @@ library Bytes {
 
   /**
    * @dev Extracts a single byte from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired byte.
    * @param data The bytes blob from which a byte is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes1 value from the specified position in the bytes blob.
@@ -210,7 +209,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 2-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 2-byte sequence.
    * @param data The bytes blob from which a 2-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes2 value from the specified position in the bytes blob.
@@ -240,7 +238,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 3-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 3-byte sequence.
    * @param data The bytes blob from which a 3-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes3 value from the specified position in the bytes blob.
@@ -255,7 +252,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 4-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 4-byte sequence.
    * @param data The bytes blob from which a 4-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes4 value from the specified position in the bytes blob.
@@ -285,7 +281,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 5-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 5-byte sequence.
    * @param data The bytes blob from which a 5-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes5 value from the specified position in the bytes blob.
@@ -315,7 +310,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 6-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 6-byte sequence.
    * @param data The bytes blob from which a 6-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes6 value from the specified position in the bytes blob.
@@ -330,7 +324,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 7-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 7-byte sequence.
    * @param data The bytes blob from which a 7-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes7 value from the specified position in the bytes blob.
@@ -345,7 +338,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 8-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 8-byte sequence.
    * @param data The bytes blob from which a 8-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes8 value from the specified position in the bytes blob.
@@ -360,7 +352,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 9-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 9-byte sequence.
    * @param data The bytes blob from which a 9-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes9 value from the specified position in the bytes blob.
@@ -375,7 +366,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 10-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 10-byte sequence.
    * @param data The bytes blob from which a 10-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes10 value from the specified position in the bytes blob.
@@ -390,7 +380,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 11-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 11-byte sequence.
    * @param data The bytes blob from which a 11-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes11 value from the specified position in the bytes blob.
@@ -405,7 +394,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 12-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 12-byte sequence.
    * @param data The bytes blob from which a 12-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes12 value from the specified position in the bytes blob.
@@ -420,7 +408,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 13-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 13-byte sequence.
    * @param data The bytes blob from which a 13-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes13 value from the specified position in the bytes blob.
@@ -435,7 +422,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 14-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 14-byte sequence.
    * @param data The bytes blob from which a 14-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes14 value from the specified position in the bytes blob.
@@ -450,7 +436,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 15-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 15-byte sequence.
    * @param data The bytes blob from which a 15-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes15 value from the specified position in the bytes blob.
@@ -465,7 +450,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 16-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 16-byte sequence.
    * @param data The bytes blob from which a 16-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes16 value from the specified position in the bytes blob.
@@ -480,7 +464,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 17-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 17-byte sequence.
    * @param data The bytes blob from which a 17-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes17 value from the specified position in the bytes blob.
@@ -495,7 +478,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 18-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 18-byte sequence.
    * @param data The bytes blob from which a 18-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes18 value from the specified position in the bytes blob.
@@ -510,7 +492,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 19-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 19-byte sequence.
    * @param data The bytes blob from which a 19-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes19 value from the specified position in the bytes blob.
@@ -525,7 +506,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 20-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 20-byte sequence.
    * @param data The bytes blob from which a 20-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes20 value from the specified position in the bytes blob.
@@ -540,7 +520,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 21-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 21-byte sequence.
    * @param data The bytes blob from which a 21-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes21 value from the specified position in the bytes blob.
@@ -555,7 +534,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 22-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 22-byte sequence.
    * @param data The bytes blob from which a 22-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes22 value from the specified position in the bytes blob.
@@ -570,7 +548,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 23-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 23-byte sequence.
    * @param data The bytes blob from which a 23-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes23 value from the specified position in the bytes blob.
@@ -585,7 +562,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 24-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 24-byte sequence.
    * @param data The bytes blob from which a 24-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes24 value from the specified position in the bytes blob.
@@ -600,7 +576,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 25-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 25-byte sequence.
    * @param data The bytes blob from which a 25-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes25 value from the specified position in the bytes blob.
@@ -615,7 +590,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 26-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 26-byte sequence.
    * @param data The bytes blob from which a 26-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes26 value from the specified position in the bytes blob.
@@ -630,7 +604,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 27-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 27-byte sequence.
    * @param data The bytes blob from which a 27-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes27 value from the specified position in the bytes blob.
@@ -645,7 +618,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 28-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 28-byte sequence.
    * @param data The bytes blob from which a 28-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes28 value from the specified position in the bytes blob.
@@ -660,7 +632,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 29-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 29-byte sequence.
    * @param data The bytes blob from which a 29-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes29 value from the specified position in the bytes blob.
@@ -675,7 +646,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 30-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 30-byte sequence.
    * @param data The bytes blob from which a 30-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes30 value from the specified position in the bytes blob.
@@ -690,7 +660,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 31-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 31-byte sequence.
    * @param data The bytes blob from which a 31-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes31 value from the specified position in the bytes blob.
@@ -705,7 +674,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 32-byte sequence from a bytes blob starting at a specific position.
-   * Uses inline assembly to efficiently extract the desired 32-byte sequence.
    * @param data The bytes blob from which a 32-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes32 value from the specified position in the bytes blob.
