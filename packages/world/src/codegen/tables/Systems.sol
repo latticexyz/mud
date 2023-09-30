@@ -34,16 +34,16 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 
 library Systems {
   /**
-   * @notice Get the table values' field layout
-   * @return _fieldLayout The field layout for the table
+   * @notice Get the table values' field layout.
+   * @return _fieldLayout The field layout for the table.
    */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
   }
 
   /**
-   * @notice Get the table's key schema
-   * @return _keySchema The key schema for the table
+   * @notice Get the table's key schema.
+   * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](1);
@@ -53,8 +53,8 @@ library Systems {
   }
 
   /**
-   * @notice Get the table's value schema
-   * @return _valueSchema The value schema for the table
+   * @notice Get the table's value schema.
+   * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](2);
@@ -65,8 +65,8 @@ library Systems {
   }
 
   /**
-   * @notice Get the table's key field names
-   * @return keyNames An array of strings with the names of key fields
+   * @notice Get the table's key field names.
+   * @return keyNames An array of strings with the names of key fields.
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
@@ -74,8 +74,8 @@ library Systems {
   }
 
   /**
-   * @notice Get the table's value field names
-   * @return fieldNames An array of strings with the names of value fields
+   * @notice Get the table's value field names.
+   * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](2);
@@ -84,21 +84,21 @@ library Systems {
   }
 
   /**
-   * @notice Register the table with its config
+   * @notice Register the table with its config.
    */
   function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /**
-   * @notice Register the table with its config
+   * @notice Register the table with its config.
    */
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /**
-   * @notice Register the table with its config (using the specified store)
+   * @notice Register the table with its config (using the specified store).
    */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -374,18 +374,18 @@ library Systems {
   }
 
   /**
-   * @notice Tightly pack static (fixed length) data using this table's schema
-   * @return The static data, encoded into a sequence of bytes
+   * @notice Tightly pack static (fixed length) data using this table's schema.
+   * @return The static data, encoded into a sequence of bytes.
    */
   function encodeStatic(address system, bool publicAccess) internal pure returns (bytes memory) {
     return abi.encodePacked(system, publicAccess);
   }
 
   /**
-   * @notice encode all of a record's fields
-   * @return The static (fixed length) data, encoded into a sequence of bytes
-   * @return The lengths of the dynamic fields (packed into a single bytes32 value)
-   * @return The dyanmic (variable length) data, encoded into a sequence of bytes
+   * @notice Encode all of a record's fields.
+   * @return The static (fixed length) data, encoded into a sequence of bytes.
+   * @return The lengths of the dynamic fields (packed into a single bytes32 value).
+   * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
    */
   function encode(address system, bool publicAccess) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(system, publicAccess);

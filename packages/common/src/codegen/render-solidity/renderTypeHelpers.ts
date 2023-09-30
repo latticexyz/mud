@@ -29,7 +29,7 @@ export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: Re
     result += `
     /**
      * @notice Cast a bool to a bytes32.
-     * @dev The boolean value is converted to a bytes32 value with 0 or 1 at the least significant bit.
+     * @dev The boolean value is casted to a bytes32 value with 0 or 1 at the least significant bit.
      */
     function _boolToBytes32(bool value) pure returns (bytes32 result) {
       assembly {

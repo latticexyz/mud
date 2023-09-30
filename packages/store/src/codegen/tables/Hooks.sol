@@ -29,16 +29,16 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 
 library Hooks {
   /**
-   * @notice Get the table values' field layout
-   * @return _fieldLayout The field layout for the table
+   * @notice Get the table values' field layout.
+   * @return _fieldLayout The field layout for the table.
    */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
   }
 
   /**
-   * @notice Get the table's key schema
-   * @return _keySchema The key schema for the table
+   * @notice Get the table's key schema.
+   * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](1);
@@ -48,8 +48,8 @@ library Hooks {
   }
 
   /**
-   * @notice Get the table's value schema
-   * @return _valueSchema The value schema for the table
+   * @notice Get the table's value schema.
+   * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](1);
@@ -59,8 +59,8 @@ library Hooks {
   }
 
   /**
-   * @notice Get the table's key field names
-   * @return keyNames An array of strings with the names of key fields
+   * @notice Get the table's key field names.
+   * @return keyNames An array of strings with the names of key fields.
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
@@ -68,8 +68,8 @@ library Hooks {
   }
 
   /**
-   * @notice Get the table's value field names
-   * @return fieldNames An array of strings with the names of value fields
+   * @notice Get the table's value field names.
+   * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
@@ -77,21 +77,21 @@ library Hooks {
   }
 
   /**
-   * @notice Register the table with its config
+   * @notice Register the table with its config.
    */
   function register(ResourceId _tableId) internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /**
-   * @notice Register the table with its config
+   * @notice Register the table with its config.
    */
   function _register(ResourceId _tableId) internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /**
-   * @notice Register the table with its config (using the specified store)
+   * @notice Register the table with its config (using the specified store).
    */
   function register(IStore _store, ResourceId _tableId) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -644,8 +644,8 @@ library Hooks {
   }
 
   /**
-   * @notice Tightly pack dynamic data lengths using this table's schema
-   * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value)
+   * @notice Tightly pack dynamic data lengths using this table's schema.
+   * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
   function encodeLengths(bytes21[] memory hooks) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
@@ -655,18 +655,18 @@ library Hooks {
   }
 
   /**
-   * @notice Tightly pack dynamic (variable length) data using this table's schema
-   * @return The dynamic data, encoded into a sequence of bytes
+   * @notice Tightly pack dynamic (variable length) data using this table's schema.
+   * @return The dynamic data, encoded into a sequence of bytes.
    */
   function encodeDynamic(bytes21[] memory hooks) internal pure returns (bytes memory) {
     return abi.encodePacked(EncodeArray.encode((hooks)));
   }
 
   /**
-   * @notice encode all of a record's fields
-   * @return The static (fixed length) data, encoded into a sequence of bytes
-   * @return The lengths of the dynamic fields (packed into a single bytes32 value)
-   * @return The dyanmic (variable length) data, encoded into a sequence of bytes
+   * @notice Encode all of a record's fields.
+   * @return The static (fixed length) data, encoded into a sequence of bytes.
+   * @return The lengths of the dynamic fields (packed into a single bytes32 value).
+   * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
    */
   function encode(bytes21[] memory hooks) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData;
