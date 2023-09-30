@@ -35,7 +35,7 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 library UserDelegationControl {
   /**
    * @notice Get the table values' field layout
-   * @return _fieldLayout the field layout for the table
+   * @return _fieldLayout The field layout for the table
    */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
@@ -43,7 +43,7 @@ library UserDelegationControl {
 
   /**
    * @notice Get the table's key schema
-   * @return _keySchema the key schema for the table
+   * @return _keySchema The key schema for the table
    */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](2);
@@ -55,7 +55,7 @@ library UserDelegationControl {
 
   /**
    * @notice Get the table's value schema
-   * @return _valueSchema the value schema for the table
+   * @return _valueSchema The value schema for the table
    */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](1);
@@ -66,7 +66,7 @@ library UserDelegationControl {
 
   /**
    * @notice Get the table's key field names
-   * @return keyNames an array of strings with the names of key fields
+   * @return keyNames An array of strings with the names of key fields
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](2);
@@ -76,29 +76,37 @@ library UserDelegationControl {
 
   /**
    * @notice Get the table's value field names
-   * @return fieldNames an array of strings with the names of value fields
+   * @return fieldNames An array of strings with the names of value fields
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
     fieldNames[0] = "delegationControlId";
   }
 
-  /// @notice Register the table with its config
+  /**
+   * @notice Register the table with its config
+   */
   function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /// @notice Register the table with its config
+  /**
+   * @notice Register the table with its config
+   */
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /// @notice Register the table with its config (using the specified store)
+  /**
+   * @notice Register the table with its config (using the specified store)
+   */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get delegationControlId */
+  /**
+   * @notice Get delegationControlId.
+   */
   function getDelegationControlId(
     address delegator,
     address delegatee
@@ -111,7 +119,9 @@ library UserDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Get delegationControlId */
+  /**
+   * @notice Get delegationControlId.
+   */
   function _getDelegationControlId(
     address delegator,
     address delegatee
@@ -124,7 +134,9 @@ library UserDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Get delegationControlId (using the specified store) */
+  /**
+   * @notice Get delegationControlId (using the specified store).
+   */
   function getDelegationControlId(
     IStore _store,
     address delegator,
@@ -138,7 +150,9 @@ library UserDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Get delegationControlId */
+  /**
+   * @notice Get delegationControlId.
+   */
   function get(address delegator, address delegatee) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -148,7 +162,9 @@ library UserDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Get delegationControlId */
+  /**
+   * @notice Get delegationControlId.
+   */
   function _get(address delegator, address delegatee) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -158,7 +174,9 @@ library UserDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Get delegationControlId (using the specified store) */
+  /**
+   * @notice Get delegationControlId (using the specified store).
+   */
   function get(
     IStore _store,
     address delegator,
@@ -172,7 +190,9 @@ library UserDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Set delegationControlId */
+  /**
+   * @notice Set delegationControlId.
+   */
   function setDelegationControlId(address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -187,7 +207,9 @@ library UserDelegationControl {
     );
   }
 
-  /** Set delegationControlId */
+  /**
+   * @notice Set delegationControlId.
+   */
   function _setDelegationControlId(address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -202,7 +224,9 @@ library UserDelegationControl {
     );
   }
 
-  /** Set delegationControlId (using the specified store) */
+  /**
+   * @notice Set delegationControlId (using the specified store).
+   */
   function setDelegationControlId(
     IStore _store,
     address delegator,
@@ -222,7 +246,9 @@ library UserDelegationControl {
     );
   }
 
-  /** Set delegationControlId */
+  /**
+   * @notice Set delegationControlId.
+   */
   function set(address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -237,7 +263,9 @@ library UserDelegationControl {
     );
   }
 
-  /** Set delegationControlId */
+  /**
+   * @notice Set delegationControlId.
+   */
   function _set(address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -252,7 +280,9 @@ library UserDelegationControl {
     );
   }
 
-  /** Set delegationControlId (using the specified store) */
+  /**
+   * @notice Set delegationControlId (using the specified store).
+   */
   function set(IStore _store, address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -267,7 +297,9 @@ library UserDelegationControl {
     );
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys.
+   */
   function deleteRecord(address delegator, address delegatee) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -276,7 +308,9 @@ library UserDelegationControl {
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(address delegator, address delegatee) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -285,7 +319,9 @@ library UserDelegationControl {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
-  /** Delete all data for given keys (using the specified store) */
+  /**
+   * @notice Delete all data for given keys (using the specified store).
+   */
   function deleteRecord(IStore _store, address delegator, address delegatee) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -304,9 +340,9 @@ library UserDelegationControl {
 
   /**
    * @notice encode all of a record's fields
-   * @return _staticData the static (fixed length) data, encoded into a sequence of bytes
-   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
-   * @return _dynamicData the dyanmic (variable length) data, encoded into a sequence of bytes
+   * @return The static (fixed length) data, encoded into a sequence of bytes
+   * @return The lengths of the dynamic fields (packed into a single bytes32 value)
+   * @return The dyanmic (variable length) data, encoded into a sequence of bytes
    */
   function encode(ResourceId delegationControlId) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(delegationControlId);
@@ -317,7 +353,9 @@ library UserDelegationControl {
     return (_staticData, _encodedLengths, _dynamicData);
   }
 
-  /// @notice Encode keys as a bytes32 array using this table's field layout
+  /**
+   * @notice Encode keys as a bytes32 array using this table's field layout
+   */
   function encodeKeyTuple(address delegator, address delegatee) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));

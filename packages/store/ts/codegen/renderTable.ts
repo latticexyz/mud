@@ -78,7 +78,7 @@ export function renderTable(options: RenderTableOptions) {
     library ${libraryName} {
       /**
        * @notice Get the table values' field layout
-       * @return _fieldLayout the field layout for the table
+       * @return _fieldLayout The field layout for the table
        */
       function getFieldLayout() internal pure returns (FieldLayout) {
         return _fieldLayout;
@@ -86,7 +86,7 @@ export function renderTable(options: RenderTableOptions) {
 
       /** 
        * @notice Get the table's key schema
-       * @return _keySchema the key schema for the table
+       * @return _keySchema The key schema for the table
        */
       function getKeySchema() internal pure returns (Schema) {
         SchemaType[] memory _keySchema = new SchemaType[](${keyTuple.length});
@@ -97,7 +97,7 @@ export function renderTable(options: RenderTableOptions) {
 
       /**
        * @notice Get the table's value schema
-       * @return _valueSchema the value schema for the table
+       * @return _valueSchema The value schema for the table
        */
       function getValueSchema() internal pure returns (Schema) {
         SchemaType[] memory _valueSchema = new SchemaType[](${fields.length});
@@ -108,7 +108,7 @@ export function renderTable(options: RenderTableOptions) {
 
       /**
        * @notice Get the table's key field names
-       * @return keyNames an array of strings with the names of key fields
+       * @return keyNames An array of strings with the names of key fields
        */
       function getKeyNames() internal pure returns (string[] memory keyNames) {
         keyNames = new string[](${keyTuple.length});
@@ -117,7 +117,7 @@ export function renderTable(options: RenderTableOptions) {
 
       /**
        * @notice Get the table's value field names
-       * @return fieldNames an array of strings with the names of value fields
+       * @return fieldNames An array of strings with the names of value fields
        */
       function getFieldNames() internal pure returns (string[] memory fieldNames) {
         fieldNames = new string[](${fields.length});
@@ -150,14 +150,16 @@ export function renderTable(options: RenderTableOptions) {
 
       /**
        * @notice encode all of a record's fields
-       * @return _staticData the static (fixed length) data, encoded into a sequence of bytes
-       * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
-       * @return _dynamicData the dyanmic (variable length) data, encoded into a sequence of bytes
+       * @return The static (fixed length) data, encoded into a sequence of bytes
+       * @return The lengths of the dynamic fields (packed into a single bytes32 value)
+       * @return The dyanmic (variable length) data, encoded into a sequence of bytes
        */
       function encode(${renderArguments(
         options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
-      )}) internal pure returns (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) {
+      )}) internal pure returns (bytes memory, PackedCounter, bytes memory) {
         ${renderRecordData(options)}
+
+        return (_staticData, _encodedLengths, _dynamicData);
       }
       
       /**
@@ -195,7 +197,7 @@ function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
   return `
     /**
      * @notice Tightly pack dynamic data lengths using this table's schema
-     * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
+     * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value)
      */
     function encodeLengths(${renderArguments(
       dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)

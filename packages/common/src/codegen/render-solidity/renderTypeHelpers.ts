@@ -16,7 +16,7 @@ export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: Re
      * @notice Cast a value to a bool.
      * @dev Boolean values are encoded as uint8 (1 = true, 0 = false), but Solidity doesn't allow casting between uint8 and bool.
      * @param value The uint8 value to convert.
-     * @return The boolean value.
+     * @return result The boolean value.
      */
     function _toBool(uint8 value) pure returns (bool result) {
       assembly {

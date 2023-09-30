@@ -44,7 +44,7 @@ struct UserTypedData {
 library UserTyped {
   /**
    * @notice Get the table values' field layout
-   * @return _fieldLayout the field layout for the table
+   * @return _fieldLayout The field layout for the table
    */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
@@ -52,7 +52,7 @@ library UserTyped {
 
   /**
    * @notice Get the table's key schema
-   * @return _keySchema the key schema for the table
+   * @return _keySchema The key schema for the table
    */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](5);
@@ -67,7 +67,7 @@ library UserTyped {
 
   /**
    * @notice Get the table's value schema
-   * @return _valueSchema the value schema for the table
+   * @return _valueSchema The value schema for the table
    */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](5);
@@ -82,7 +82,7 @@ library UserTyped {
 
   /**
    * @notice Get the table's key field names
-   * @return keyNames an array of strings with the names of key fields
+   * @return keyNames An array of strings with the names of key fields
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](5);
@@ -95,7 +95,7 @@ library UserTyped {
 
   /**
    * @notice Get the table's value field names
-   * @return fieldNames an array of strings with the names of value fields
+   * @return fieldNames An array of strings with the names of value fields
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](5);
@@ -106,22 +106,30 @@ library UserTyped {
     fieldNames[4] = "v5";
   }
 
-  /// @notice Register the table with its config
+  /**
+   * @notice Register the table with its config
+   */
   function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /// @notice Register the table with its config
+  /**
+   * @notice Register the table with its config
+   */
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /// @notice Register the table with its config (using the specified store)
+  /**
+   * @notice Register the table with its config (using the specified store)
+   */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get v1 */
+  /**
+   * @notice Get v1.
+   */
   function getV1(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -140,7 +148,9 @@ library UserTyped {
     return TestTypeAddress.wrap(address(bytes20(_blob)));
   }
 
-  /** Get v1 */
+  /**
+   * @notice Get v1.
+   */
   function _getV1(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -159,7 +169,9 @@ library UserTyped {
     return TestTypeAddress.wrap(address(bytes20(_blob)));
   }
 
-  /** Get v1 (using the specified store) */
+  /**
+   * @notice Get v1 (using the specified store).
+   */
   function getV1(
     IStore _store,
     TestTypeAddress k1,
@@ -179,7 +191,9 @@ library UserTyped {
     return TestTypeAddress.wrap(address(bytes20(_blob)));
   }
 
-  /** Set v1 */
+  /**
+   * @notice Set v1.
+   */
   function setV1(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -198,7 +212,9 @@ library UserTyped {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
   }
 
-  /** Set v1 */
+  /**
+   * @notice Set v1.
+   */
   function _setV1(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -217,7 +233,9 @@ library UserTyped {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
   }
 
-  /** Set v1 (using the specified store) */
+  /**
+   * @notice Set v1 (using the specified store).
+   */
   function setV1(
     IStore _store,
     TestTypeAddress k1,
@@ -237,7 +255,9 @@ library UserTyped {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
   }
 
-  /** Get v2 */
+  /**
+   * @notice Get v2.
+   */
   function getV2(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -256,7 +276,9 @@ library UserTyped {
     return TestTypeInt64.wrap(int64(uint64(bytes8(_blob))));
   }
 
-  /** Get v2 */
+  /**
+   * @notice Get v2.
+   */
   function _getV2(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -275,7 +297,9 @@ library UserTyped {
     return TestTypeInt64.wrap(int64(uint64(bytes8(_blob))));
   }
 
-  /** Get v2 (using the specified store) */
+  /**
+   * @notice Get v2 (using the specified store).
+   */
   function getV2(
     IStore _store,
     TestTypeAddress k1,
@@ -295,7 +319,9 @@ library UserTyped {
     return TestTypeInt64.wrap(int64(uint64(bytes8(_blob))));
   }
 
-  /** Set v2 */
+  /**
+   * @notice Set v2.
+   */
   function setV2(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -314,7 +340,9 @@ library UserTyped {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
   }
 
-  /** Set v2 */
+  /**
+   * @notice Set v2.
+   */
   function _setV2(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -333,7 +361,9 @@ library UserTyped {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
   }
 
-  /** Set v2 (using the specified store) */
+  /**
+   * @notice Set v2 (using the specified store).
+   */
   function setV2(
     IStore _store,
     TestTypeAddress k1,
@@ -353,7 +383,9 @@ library UserTyped {
     _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
   }
 
-  /** Get v3 */
+  /**
+   * @notice Get v3.
+   */
   function getV3(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -372,7 +404,9 @@ library UserTyped {
     return TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Get v3 */
+  /**
+   * @notice Get v3.
+   */
   function _getV3(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -391,7 +425,9 @@ library UserTyped {
     return TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Get v3 (using the specified store) */
+  /**
+   * @notice Get v3 (using the specified store).
+   */
   function getV3(
     IStore _store,
     TestTypeAddress k1,
@@ -411,7 +447,9 @@ library UserTyped {
     return TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Set v3 */
+  /**
+   * @notice Set v3.
+   */
   function setV3(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -436,7 +474,9 @@ library UserTyped {
     );
   }
 
-  /** Set v3 */
+  /**
+   * @notice Set v3.
+   */
   function _setV3(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -461,7 +501,9 @@ library UserTyped {
     );
   }
 
-  /** Set v3 (using the specified store) */
+  /**
+   * @notice Set v3 (using the specified store).
+   */
   function setV3(
     IStore _store,
     TestTypeAddress k1,
@@ -487,7 +529,9 @@ library UserTyped {
     );
   }
 
-  /** Get v4 */
+  /**
+   * @notice Get v4.
+   */
   function getV4(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -506,7 +550,9 @@ library UserTyped {
     return TestTypeLibrary.TestTypeUint128.wrap(uint128(bytes16(_blob)));
   }
 
-  /** Get v4 */
+  /**
+   * @notice Get v4.
+   */
   function _getV4(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -525,7 +571,9 @@ library UserTyped {
     return TestTypeLibrary.TestTypeUint128.wrap(uint128(bytes16(_blob)));
   }
 
-  /** Get v4 (using the specified store) */
+  /**
+   * @notice Get v4 (using the specified store).
+   */
   function getV4(
     IStore _store,
     TestTypeAddress k1,
@@ -545,7 +593,9 @@ library UserTyped {
     return TestTypeLibrary.TestTypeUint128.wrap(uint128(bytes16(_blob)));
   }
 
-  /** Set v4 */
+  /**
+   * @notice Set v4.
+   */
   function setV4(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -570,7 +620,9 @@ library UserTyped {
     );
   }
 
-  /** Set v4 */
+  /**
+   * @notice Set v4.
+   */
   function _setV4(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -595,7 +647,9 @@ library UserTyped {
     );
   }
 
-  /** Set v4 (using the specified store) */
+  /**
+   * @notice Set v4 (using the specified store).
+   */
   function setV4(
     IStore _store,
     TestTypeAddress k1,
@@ -621,7 +675,9 @@ library UserTyped {
     );
   }
 
-  /** Get v5 */
+  /**
+   * @notice Get v5.
+   */
   function getV5(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -640,7 +696,9 @@ library UserTyped {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Get v5 */
+  /**
+   * @notice Get v5.
+   */
   function _getV5(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -659,7 +717,9 @@ library UserTyped {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Get v5 (using the specified store) */
+  /**
+   * @notice Get v5 (using the specified store).
+   */
   function getV5(
     IStore _store,
     TestTypeAddress k1,
@@ -679,7 +739,9 @@ library UserTyped {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Set v5 */
+  /**
+   * @notice Set v5.
+   */
   function setV5(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -698,7 +760,9 @@ library UserTyped {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
   }
 
-  /** Set v5 */
+  /**
+   * @notice Set v5.
+   */
   function _setV5(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -717,7 +781,9 @@ library UserTyped {
     StoreCore.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
   }
 
-  /** Set v5 (using the specified store) */
+  /**
+   * @notice Set v5 (using the specified store).
+   */
   function setV5(
     IStore _store,
     TestTypeAddress k1,
@@ -737,7 +803,9 @@ library UserTyped {
     _store.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
   }
 
-  /** Get the full data */
+  /**
+   * @notice Get the full data.
+   */
   function get(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -760,7 +828,9 @@ library UserTyped {
     return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Get the full data */
+  /**
+   * @notice Get the full data.
+   */
   function _get(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -783,7 +853,9 @@ library UserTyped {
     return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Get the full data (using the specified store) */
+  /**
+   * @notice Get the full data (using the specified store).
+   */
   function get(
     IStore _store,
     TestTypeAddress k1,
@@ -807,7 +879,9 @@ library UserTyped {
     return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Set the full data using individual values */
+  /**
+   * @notice Set the full data using individual values.
+   */
   function set(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -835,7 +909,9 @@ library UserTyped {
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Set the full data using individual values */
+  /**
+   * @notice Set the full data using individual values.
+   */
   function _set(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -863,7 +939,9 @@ library UserTyped {
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
-  /** Set the full data using individual values (using the specified store) */
+  /**
+   * @notice Set the full data using individual values (using the specified store).
+   */
   function set(
     IStore _store,
     TestTypeAddress k1,
@@ -892,7 +970,9 @@ library UserTyped {
     _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Set the full data using the data struct */
+  /**
+   * @notice Set the full data using the data struct.
+   */
   function set(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -916,7 +996,9 @@ library UserTyped {
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Set the full data using the data struct */
+  /**
+   * @notice Set the full data using the data struct.
+   */
   function _set(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -940,7 +1022,9 @@ library UserTyped {
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
-  /** Set the full data using the data struct (using the specified store) */
+  /**
+   * @notice Set the full data using the data struct (using the specified store).
+   */
   function set(
     IStore _store,
     TestTypeAddress k1,
@@ -966,8 +1050,7 @@ library UserTyped {
   }
 
   /**
-   * Decode the tightly packed blob of static data using this table's field layout
-   * Undefined behaviour for invalid blobs
+   * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(
     bytes memory _blob
@@ -994,8 +1077,10 @@ library UserTyped {
   }
 
   /**
-   * Decode the tightly packed blob using this table's field layout.
-   * Undefined behaviour for invalid blobs.
+   * @notice Decode the tightly packed blobs using this table's field layout.
+   * @param _staticData Tightly packed static fields.
+   *
+   *
    */
   function decode(
     bytes memory _staticData,
@@ -1005,7 +1090,9 @@ library UserTyped {
     (_table.v1, _table.v2, _table.v3, _table.v4, _table.v5) = decodeStatic(_staticData);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys.
+   */
   function deleteRecord(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -1023,7 +1110,9 @@ library UserTyped {
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -1041,7 +1130,9 @@ library UserTyped {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
-  /** Delete all data for given keys (using the specified store) */
+  /**
+   * @notice Delete all data for given keys (using the specified store).
+   */
   function deleteRecord(
     IStore _store,
     TestTypeAddress k1,
@@ -1076,9 +1167,9 @@ library UserTyped {
 
   /**
    * @notice encode all of a record's fields
-   * @return _staticData the static (fixed length) data, encoded into a sequence of bytes
-   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
-   * @return _dynamicData the dyanmic (variable length) data, encoded into a sequence of bytes
+   * @return The static (fixed length) data, encoded into a sequence of bytes
+   * @return The lengths of the dynamic fields (packed into a single bytes32 value)
+   * @return The dyanmic (variable length) data, encoded into a sequence of bytes
    */
   function encode(
     TestTypeAddress v1,
@@ -1095,7 +1186,9 @@ library UserTyped {
     return (_staticData, _encodedLengths, _dynamicData);
   }
 
-  /// @notice Encode keys as a bytes32 array using this table's field layout
+  /**
+   * @notice Encode keys as a bytes32 array using this table's field layout
+   */
   function encodeKeyTuple(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -1114,12 +1207,22 @@ library UserTyped {
   }
 }
 
+/**
+ * @notice Cast a value to a bool.
+ * @dev Boolean values are encoded as uint8 (1 = true, 0 = false), but Solidity doesn't allow casting between uint8 and bool.
+ * @param value The uint8 value to convert.
+ * @return result The boolean value.
+ */
 function _toBool(uint8 value) pure returns (bool result) {
   assembly {
     result := value
   }
 }
 
+/**
+ * @notice Cast a bool to a bytes32.
+ * @dev The boolean value is converted to a bytes32 value with 0 or 1 at the least significant bit.
+ */
 function _boolToBytes32(bool value) pure returns (bytes32 result) {
   assembly {
     result := value

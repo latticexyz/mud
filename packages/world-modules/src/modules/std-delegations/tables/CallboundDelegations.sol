@@ -35,7 +35,7 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 library CallboundDelegations {
   /**
    * @notice Get the table values' field layout
-   * @return _fieldLayout the field layout for the table
+   * @return _fieldLayout The field layout for the table
    */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
@@ -43,7 +43,7 @@ library CallboundDelegations {
 
   /**
    * @notice Get the table's key schema
-   * @return _keySchema the key schema for the table
+   * @return _keySchema The key schema for the table
    */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](4);
@@ -57,7 +57,7 @@ library CallboundDelegations {
 
   /**
    * @notice Get the table's value schema
-   * @return _valueSchema the value schema for the table
+   * @return _valueSchema The value schema for the table
    */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](1);
@@ -68,7 +68,7 @@ library CallboundDelegations {
 
   /**
    * @notice Get the table's key field names
-   * @return keyNames an array of strings with the names of key fields
+   * @return keyNames An array of strings with the names of key fields
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](4);
@@ -80,29 +80,37 @@ library CallboundDelegations {
 
   /**
    * @notice Get the table's value field names
-   * @return fieldNames an array of strings with the names of value fields
+   * @return fieldNames An array of strings with the names of value fields
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
     fieldNames[0] = "availableCalls";
   }
 
-  /// @notice Register the table with its config
+  /**
+   * @notice Register the table with its config
+   */
   function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /// @notice Register the table with its config
+  /**
+   * @notice Register the table with its config
+   */
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /// @notice Register the table with its config (using the specified store)
+  /**
+   * @notice Register the table with its config (using the specified store)
+   */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get availableCalls */
+  /**
+   * @notice Get availableCalls.
+   */
   function getAvailableCalls(
     address delegator,
     address delegatee,
@@ -119,7 +127,9 @@ library CallboundDelegations {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get availableCalls */
+  /**
+   * @notice Get availableCalls.
+   */
   function _getAvailableCalls(
     address delegator,
     address delegatee,
@@ -136,7 +146,9 @@ library CallboundDelegations {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get availableCalls (using the specified store) */
+  /**
+   * @notice Get availableCalls (using the specified store).
+   */
   function getAvailableCalls(
     IStore _store,
     address delegator,
@@ -154,7 +166,9 @@ library CallboundDelegations {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get availableCalls */
+  /**
+   * @notice Get availableCalls.
+   */
   function get(
     address delegator,
     address delegatee,
@@ -171,7 +185,9 @@ library CallboundDelegations {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get availableCalls */
+  /**
+   * @notice Get availableCalls.
+   */
   function _get(
     address delegator,
     address delegatee,
@@ -188,7 +204,9 @@ library CallboundDelegations {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get availableCalls (using the specified store) */
+  /**
+   * @notice Get availableCalls (using the specified store).
+   */
   function get(
     IStore _store,
     address delegator,
@@ -206,7 +224,9 @@ library CallboundDelegations {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Set availableCalls */
+  /**
+   * @notice Set availableCalls.
+   */
   function setAvailableCalls(
     address delegator,
     address delegatee,
@@ -223,7 +243,9 @@ library CallboundDelegations {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
-  /** Set availableCalls */
+  /**
+   * @notice Set availableCalls.
+   */
   function _setAvailableCalls(
     address delegator,
     address delegatee,
@@ -240,7 +262,9 @@ library CallboundDelegations {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
-  /** Set availableCalls (using the specified store) */
+  /**
+   * @notice Set availableCalls (using the specified store).
+   */
   function setAvailableCalls(
     IStore _store,
     address delegator,
@@ -258,7 +282,9 @@ library CallboundDelegations {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
-  /** Set availableCalls */
+  /**
+   * @notice Set availableCalls.
+   */
   function set(
     address delegator,
     address delegatee,
@@ -275,7 +301,9 @@ library CallboundDelegations {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
-  /** Set availableCalls */
+  /**
+   * @notice Set availableCalls.
+   */
   function _set(
     address delegator,
     address delegatee,
@@ -292,7 +320,9 @@ library CallboundDelegations {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
-  /** Set availableCalls (using the specified store) */
+  /**
+   * @notice Set availableCalls (using the specified store).
+   */
   function set(
     IStore _store,
     address delegator,
@@ -310,7 +340,9 @@ library CallboundDelegations {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys.
+   */
   function deleteRecord(address delegator, address delegatee, ResourceId systemId, bytes32 callDataHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -321,7 +353,9 @@ library CallboundDelegations {
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(address delegator, address delegatee, ResourceId systemId, bytes32 callDataHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -332,7 +366,9 @@ library CallboundDelegations {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
-  /** Delete all data for given keys (using the specified store) */
+  /**
+   * @notice Delete all data for given keys (using the specified store).
+   */
   function deleteRecord(
     IStore _store,
     address delegator,
@@ -359,9 +395,9 @@ library CallboundDelegations {
 
   /**
    * @notice encode all of a record's fields
-   * @return _staticData the static (fixed length) data, encoded into a sequence of bytes
-   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
-   * @return _dynamicData the dyanmic (variable length) data, encoded into a sequence of bytes
+   * @return The static (fixed length) data, encoded into a sequence of bytes
+   * @return The lengths of the dynamic fields (packed into a single bytes32 value)
+   * @return The dyanmic (variable length) data, encoded into a sequence of bytes
    */
   function encode(uint256 availableCalls) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(availableCalls);
@@ -372,7 +408,9 @@ library CallboundDelegations {
     return (_staticData, _encodedLengths, _dynamicData);
   }
 
-  /// @notice Encode keys as a bytes32 array using this table's field layout
+  /**
+   * @notice Encode keys as a bytes32 array using this table's field layout
+   */
   function encodeKeyTuple(
     address delegator,
     address delegatee,
