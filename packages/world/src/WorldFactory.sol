@@ -28,11 +28,12 @@ contract WorldFactory is IWorldFactory {
   /**
    * @notice Deploys a new World instance, sets the CoreModule and transfers its ownership to the caller.
    * @dev Uses the Create2 for deterministic deployment.
+   * @return worldAddress The address of the newly deployed World contract.
    */
-  function deployWorld() public {
+  function deployWorld() public returns (address worldAddress) {
     // Deploy a new World and increase the WorldCount
     bytes memory bytecode = type(World).creationCode;
-    address worldAddress = Create2.deploy(bytecode, worldCount++);
+    worldAddress = Create2.deploy(bytecode, worldCount++);
     IBaseWorld world = IBaseWorld(worldAddress);
 
     // Initialize the World and transfer ownership to the caller
