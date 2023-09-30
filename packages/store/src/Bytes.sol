@@ -65,7 +65,6 @@ library Bytes {
 
   /**
    * @dev Sets a specific byte in a bytes32 value.
-   * Uses inline assembly to efficiently manipulate the byte at a specific index.
    * @param input The bytes32 data in which a specific byte is to be altered.
    * @param index The position of the byte to be altered. Index starts from the left.
    * @param overwrite The new byte value to be set at the specified index.
@@ -83,7 +82,6 @@ library Bytes {
 
   /**
    * @dev Sets a specific 2-byte sequence in a bytes32 variable.
-   * Uses inline assembly to efficiently manipulate 2 bytes at a specific index.
    * @param input The bytes32 data in which a specific 2-byte sequence is to be altered.
    * @param index The position of the 2-byte sequence to be altered. Index starts from the left.
    * @param overwrite The new 2-byte value to be set at the specified index.
@@ -101,7 +99,6 @@ library Bytes {
 
   /**
    * @dev Sets a specific 4-byte sequence in a bytes32 variable.
-   * Uses inline assembly to efficiently manipulate 4 bytes at a specific index.
    * @param input The bytes32 data in which a specific 4-byte sequence is to be altered.
    * @param index The position of the 4-byte sequence to be altered. Index starts from the left.
    * @param overwrite The new 4-byte value to be set at the specified index.
@@ -119,7 +116,6 @@ library Bytes {
 
   /**
    * @dev Sets a specific 4-byte sequence in a bytes blob at a given index.
-   * Uses inline assembly to efficiently manipulate 4 bytes in memory at the specified index.
    * @param input The bytes blob in which a specific 4-byte sequence is to be altered.
    * @param index The position within the bytes blob to start altering the 4-byte sequence. Index starts from the left.
    * @param overwrite The new 4-byte value to be set at the specified index.
@@ -138,7 +134,6 @@ library Bytes {
 
   /**
    * @dev Sets a specific 5-byte sequence in a bytes32 variable.
-   * Uses inline assembly to efficiently manipulate 5 bytes at a specific index.
    * @param input The bytes32 data in which a specific 5-byte sequence is to be altered.
    * @param index The position of the 5-byte sequence to be altered. Index starts from the left.
    * @param overwrite The new 5-byte value to be set at the specified index.
@@ -156,7 +151,6 @@ library Bytes {
 
   /**
    * @dev Sets a specific 7-byte sequence in a bytes32 variable.
-   * Uses inline assembly to efficiently manipulate 7 bytes at a specific index.
    * @param input The bytes32 data in which a specific 7-byte sequence is to be altered.
    * @param index The position of the 7-byte sequence to be altered. Index starts from the left.
    * @param overwrite The new 7-byte value to be set at the specified index.
