@@ -112,8 +112,8 @@ library StoreCore {
    * @return The field layout for the given table ID.
    */
   function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout) {
-    // Explicit check for the tables table to solve the bootstraping issue
-    // of the Tables table not having a field layout yet before it is registered
+    // Explicit check for the Tables table to solve the bootstraping issue
+    // of the Tables table not having a field layout before it is registered
     // since the field layout is stored in the Tables table.
     if (ResourceId.unwrap(tableId) == ResourceId.unwrap(TablesTableId)) {
       return TablesTableFieldLayout;

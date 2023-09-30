@@ -47,7 +47,7 @@ library Bytes {
    * field, which affects operations that access the length property.
    * @param input The bytes blob to modify.
    * @param length The new length to set.
-   * @return output Reference to the input bytes blob with modified length.
+   * @return Reference to the input bytes blob with modified length.
    */
   function setLength(bytes memory input, uint256 length) internal pure returns (bytes memory) {
     assembly {
@@ -175,7 +175,7 @@ library Bytes {
    * @dev Extracts a single byte from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a byte is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes1 value from the specified position in the bytes blob.
+   * @return The extracted bytes1 value from the specified position in the bytes blob.
    */
   function slice1(bytes memory data, uint256 start) internal pure returns (bytes1) {
     bytes1 output;
@@ -189,7 +189,7 @@ library Bytes {
    * @dev Extracts a single byte from a bytes32 value starting at a specific position.
    * @param data The bytes32 value from which a byte is to be extracted.
    * @param start The starting position within the bytes32 value for extraction.
-   * @return output The extracted bytes1 value from the specified position in the bytes32 value.
+   * @return The extracted bytes1 value from the specified position in the bytes32 value.
    */
   function slice1(bytes32 data, uint256 start) internal pure returns (bytes1) {
     bytes1 output;
@@ -203,7 +203,7 @@ library Bytes {
    * @dev Extracts a 2-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 2-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes2 value from the specified position in the bytes blob.
+   * @return The extracted bytes2 value from the specified position in the bytes blob.
    */
   function slice2(bytes memory data, uint256 start) internal pure returns (bytes2) {
     bytes2 output;
@@ -217,7 +217,7 @@ library Bytes {
    * @dev Extracts a 2-byte sequence from a bytes32 value starting at a specific position.
    * @param data The bytes32 value from which a 2-byte sequence is to be extracted.
    * @param start The starting position within the bytes32 value for extraction.
-   * @return output The extracted bytes2 value from the specified position in the bytes32 value.
+   * @return The extracted bytes2 value from the specified position in the bytes32 value.
    */
   function slice2(bytes32 data, uint256 start) internal pure returns (bytes2) {
     bytes2 output;
@@ -231,7 +231,7 @@ library Bytes {
    * @dev Extracts a 3-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 3-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes3 value from the specified position in the bytes blob.
+   * @return The extracted bytes3 value from the specified position in the bytes blob.
    */
   function slice3(bytes memory data, uint256 start) internal pure returns (bytes3) {
     bytes3 output;
@@ -245,7 +245,7 @@ library Bytes {
    * @dev Extracts a 4-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 4-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes4 value from the specified position in the bytes blob.
+   * @return The extracted bytes4 value from the specified position in the bytes blob.
    */
   function slice4(bytes memory data, uint256 start) internal pure returns (bytes4) {
     bytes4 output;
@@ -259,7 +259,7 @@ library Bytes {
    * @dev Extracts a 4-byte sequence from a bytes32 value starting at a specific position.
    * @param data The bytes32 value from which a 4-byte sequence is to be extracted.
    * @param start The starting position within the bytes32 value for extraction.
-   * @return output The extracted bytes4 value from the specified position in the bytes32 value.
+   * @return The extracted bytes4 value from the specified position in the bytes32 value.
    */
   function slice4(bytes32 data, uint256 start) internal pure returns (bytes4) {
     bytes2 output;
@@ -273,7 +273,7 @@ library Bytes {
    * @dev Extracts a 5-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 5-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes5 value from the specified position in the bytes blob.
+   * @return The extracted bytes5 value from the specified position in the bytes blob.
    */
   function slice5(bytes memory data, uint256 start) internal pure returns (bytes5) {
     bytes5 output;
@@ -287,7 +287,7 @@ library Bytes {
    * @dev Extracts a 5-byte sequence from a bytes32 value starting at a specific position.
    * @param data The bytes32 value from which a 5-byte sequence is to be extracted.
    * @param start The starting position within the bytes32 value for extraction.
-   * @return output The extracted bytes5 value from the specified position in the bytes32 value.
+   * @return The extracted bytes5 value from the specified position in the bytes32 value.
    */
   function slice5(bytes32 data, uint256 start) internal pure returns (bytes5) {
     bytes5 output;
@@ -301,7 +301,7 @@ library Bytes {
    * @dev Extracts a 6-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 6-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes6 value from the specified position in the bytes blob.
+   * @return The extracted bytes6 value from the specified position in the bytes blob.
    */
   function slice6(bytes memory data, uint256 start) internal pure returns (bytes6) {
     bytes6 output;
@@ -315,7 +315,7 @@ library Bytes {
    * @dev Extracts a 7-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 7-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes7 value from the specified position in the bytes blob.
+   * @return The extracted bytes7 value from the specified position in the bytes blob.
    */
   function slice7(bytes memory data, uint256 start) internal pure returns (bytes7) {
     bytes7 output;
@@ -329,7 +329,7 @@ library Bytes {
    * @dev Extracts a 8-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 8-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes8 value from the specified position in the bytes blob.
+   * @return The extracted bytes8 value from the specified position in the bytes blob.
    */
   function slice8(bytes memory data, uint256 start) internal pure returns (bytes8) {
     bytes8 output;
@@ -343,7 +343,7 @@ library Bytes {
    * @dev Extracts a 9-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 9-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes9 value from the specified position in the bytes blob.
+   * @return The extracted bytes9 value from the specified position in the bytes blob.
    */
   function slice9(bytes memory data, uint256 start) internal pure returns (bytes9) {
     bytes9 output;
@@ -357,7 +357,7 @@ library Bytes {
    * @dev Extracts a 10-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 10-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes10 value from the specified position in the bytes blob.
+   * @return The extracted bytes10 value from the specified position in the bytes blob.
    */
   function slice10(bytes memory data, uint256 start) internal pure returns (bytes10) {
     bytes10 output;
@@ -371,7 +371,7 @@ library Bytes {
    * @dev Extracts a 11-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 11-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes11 value from the specified position in the bytes blob.
+   * @return The extracted bytes11 value from the specified position in the bytes blob.
    */
   function slice11(bytes memory data, uint256 start) internal pure returns (bytes11) {
     bytes11 output;
@@ -385,7 +385,7 @@ library Bytes {
    * @dev Extracts a 12-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 12-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes12 value from the specified position in the bytes blob.
+   * @return The extracted bytes12 value from the specified position in the bytes blob.
    */
   function slice12(bytes memory data, uint256 start) internal pure returns (bytes12) {
     bytes12 output;
@@ -399,7 +399,7 @@ library Bytes {
    * @dev Extracts a 13-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 13-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes13 value from the specified position in the bytes blob.
+   * @return The extracted bytes13 value from the specified position in the bytes blob.
    */
   function slice13(bytes memory data, uint256 start) internal pure returns (bytes13) {
     bytes13 output;
@@ -413,7 +413,7 @@ library Bytes {
    * @dev Extracts a 14-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 14-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes14 value from the specified position in the bytes blob.
+   * @return The extracted bytes14 value from the specified position in the bytes blob.
    */
   function slice14(bytes memory data, uint256 start) internal pure returns (bytes14) {
     bytes14 output;
@@ -427,7 +427,7 @@ library Bytes {
    * @dev Extracts a 15-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 15-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes15 value from the specified position in the bytes blob.
+   * @return The extracted bytes15 value from the specified position in the bytes blob.
    */
   function slice15(bytes memory data, uint256 start) internal pure returns (bytes15) {
     bytes15 output;
@@ -441,7 +441,7 @@ library Bytes {
    * @dev Extracts a 16-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 16-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes16 value from the specified position in the bytes blob.
+   * @return The extracted bytes16 value from the specified position in the bytes blob.
    */
   function slice16(bytes memory data, uint256 start) internal pure returns (bytes16) {
     bytes16 output;
@@ -455,7 +455,7 @@ library Bytes {
    * @dev Extracts a 17-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 17-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes17 value from the specified position in the bytes blob.
+   * @return The extracted bytes17 value from the specified position in the bytes blob.
    */
   function slice17(bytes memory data, uint256 start) internal pure returns (bytes17) {
     bytes17 output;
@@ -469,7 +469,7 @@ library Bytes {
    * @dev Extracts a 18-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 18-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes18 value from the specified position in the bytes blob.
+   * @return The extracted bytes18 value from the specified position in the bytes blob.
    */
   function slice18(bytes memory data, uint256 start) internal pure returns (bytes18) {
     bytes18 output;
@@ -483,7 +483,7 @@ library Bytes {
    * @dev Extracts a 19-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 19-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes19 value from the specified position in the bytes blob.
+   * @return The extracted bytes19 value from the specified position in the bytes blob.
    */
   function slice19(bytes memory data, uint256 start) internal pure returns (bytes19) {
     bytes19 output;
@@ -497,7 +497,7 @@ library Bytes {
    * @dev Extracts a 20-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 20-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes20 value from the specified position in the bytes blob.
+   * @return The extracted bytes20 value from the specified position in the bytes blob.
    */
   function slice20(bytes memory data, uint256 start) internal pure returns (bytes20) {
     bytes20 output;
@@ -511,7 +511,7 @@ library Bytes {
    * @dev Extracts a 21-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 21-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes21 value from the specified position in the bytes blob.
+   * @return The extracted bytes21 value from the specified position in the bytes blob.
    */
   function slice21(bytes memory data, uint256 start) internal pure returns (bytes21) {
     bytes21 output;
@@ -525,7 +525,7 @@ library Bytes {
    * @dev Extracts a 22-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 22-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes22 value from the specified position in the bytes blob.
+   * @return The extracted bytes22 value from the specified position in the bytes blob.
    */
   function slice22(bytes memory data, uint256 start) internal pure returns (bytes22) {
     bytes22 output;
@@ -539,7 +539,7 @@ library Bytes {
    * @dev Extracts a 23-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 23-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes23 value from the specified position in the bytes blob.
+   * @return The extracted bytes23 value from the specified position in the bytes blob.
    */
   function slice23(bytes memory data, uint256 start) internal pure returns (bytes23) {
     bytes23 output;
@@ -553,7 +553,7 @@ library Bytes {
    * @dev Extracts a 24-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 24-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes24 value from the specified position in the bytes blob.
+   * @return The extracted bytes24 value from the specified position in the bytes blob.
    */
   function slice24(bytes memory data, uint256 start) internal pure returns (bytes24) {
     bytes24 output;
@@ -567,7 +567,7 @@ library Bytes {
    * @dev Extracts a 25-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 25-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes25 value from the specified position in the bytes blob.
+   * @return The extracted bytes25 value from the specified position in the bytes blob.
    */
   function slice25(bytes memory data, uint256 start) internal pure returns (bytes25) {
     bytes25 output;
@@ -581,7 +581,7 @@ library Bytes {
    * @dev Extracts a 26-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 26-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes26 value from the specified position in the bytes blob.
+   * @return The extracted bytes26 value from the specified position in the bytes blob.
    */
   function slice26(bytes memory data, uint256 start) internal pure returns (bytes26) {
     bytes26 output;
@@ -595,7 +595,7 @@ library Bytes {
    * @dev Extracts a 27-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 27-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes27 value from the specified position in the bytes blob.
+   * @return The extracted bytes27 value from the specified position in the bytes blob.
    */
   function slice27(bytes memory data, uint256 start) internal pure returns (bytes27) {
     bytes27 output;
@@ -609,7 +609,7 @@ library Bytes {
    * @dev Extracts a 28-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 28-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes28 value from the specified position in the bytes blob.
+   * @return The extracted bytes28 value from the specified position in the bytes blob.
    */
   function slice28(bytes memory data, uint256 start) internal pure returns (bytes28) {
     bytes28 output;
@@ -623,7 +623,7 @@ library Bytes {
    * @dev Extracts a 29-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 29-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes29 value from the specified position in the bytes blob.
+   * @return The extracted bytes29 value from the specified position in the bytes blob.
    */
   function slice29(bytes memory data, uint256 start) internal pure returns (bytes29) {
     bytes29 output;
@@ -637,7 +637,7 @@ library Bytes {
    * @dev Extracts a 30-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 30-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes30 value from the specified position in the bytes blob.
+   * @return The extracted bytes30 value from the specified position in the bytes blob.
    */
   function slice30(bytes memory data, uint256 start) internal pure returns (bytes30) {
     bytes30 output;
@@ -651,7 +651,7 @@ library Bytes {
    * @dev Extracts a 31-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 31-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes31 value from the specified position in the bytes blob.
+   * @return The extracted bytes31 value from the specified position in the bytes blob.
    */
   function slice31(bytes memory data, uint256 start) internal pure returns (bytes31) {
     bytes31 output;
@@ -665,7 +665,7 @@ library Bytes {
    * @dev Extracts a 32-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 32-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return output The extracted bytes32 value from the specified position in the bytes blob.
+   * @return The extracted bytes32 value from the specified position in the bytes blob.
    */
   function slice32(bytes memory data, uint256 start) internal pure returns (bytes32) {
     bytes32 output;
