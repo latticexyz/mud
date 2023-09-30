@@ -43,12 +43,18 @@ struct TablesData {
 }
 
 library Tables {
-  /** Get the table values' field layout */
+  /**
+   * @notice Get the table values' field layout
+   * @return _fieldLayout the field layout for the table
+   */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
   }
 
-  /** Get the table's key schema */
+  /**
+   * @notice Get the table's key schema
+   * @return _keySchema the key schema for the table
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](1);
     _keySchema[0] = SchemaType.BYTES32;
@@ -56,7 +62,7 @@ library Tables {
     return SchemaLib.encode(_keySchema);
   }
 
-  /** Get the table's value schema */
+  /// @notice Get the table's value schema
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](5);
     _valueSchema[0] = SchemaType.BYTES32;
@@ -68,13 +74,13 @@ library Tables {
     return SchemaLib.encode(_valueSchema);
   }
 
-  /** Get the table's key names */
+  /// @notice Get the table's key names
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
     keyNames[0] = "tableId";
   }
 
-  /** Get the table's field names */
+  /// @notice Get the table's field names
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](5);
     fieldNames[0] = "fieldLayout";
@@ -84,17 +90,17 @@ library Tables {
     fieldNames[4] = "abiEncodedFieldNames";
   }
 
-  /** Register the table with its config */
+  /// @notice Register the table with its config
   function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config */
+  /// @notice Register the table with its config
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config (using the specified store) */
+  /// @notice Register the table with its config (using the specified store)
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
@@ -911,7 +917,7 @@ library Tables {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Tightly pack static data using this table's schema */
+  /// @notice Tightly pack static data using this table's schema
   function encodeStatic(
     FieldLayout fieldLayout,
     Schema keySchema,
@@ -920,7 +926,7 @@ library Tables {
     return abi.encodePacked(fieldLayout, keySchema, valueSchema);
   }
 
-  /** Tightly pack dynamic data using this table's schema */
+  /// @notice Tightly pack dynamic data using this table's schema
   function encodeLengths(
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
@@ -931,7 +937,7 @@ library Tables {
     }
   }
 
-  /** Tightly pack dynamic data using this table's schema */
+  /// @notice Tightly pack dynamic data using this table's schema
   function encodeDynamic(
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
@@ -939,7 +945,7 @@ library Tables {
     return abi.encodePacked(bytes((abiEncodedKeyNames)), bytes((abiEncodedFieldNames)));
   }
 
-  /** Tightly pack full data using this table's field layout */
+  /// @notice Tightly pack full data using this table's field layout
   function encode(
     FieldLayout fieldLayout,
     Schema keySchema,
@@ -955,7 +961,7 @@ library Tables {
     return (_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Encode keys as a bytes32 array using this table's field layout */
+  /// @notice Encode keys as a bytes32 array using this table's field layout
   function encodeKeyTuple(ResourceId tableId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);

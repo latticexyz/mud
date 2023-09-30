@@ -33,12 +33,18 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 );
 
 library KeyEncoding {
-  /** Get the table values' field layout */
+  /**
+   * @notice Get the table values' field layout
+   * @return _fieldLayout the field layout for the table
+   */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
   }
 
-  /** Get the table's key schema */
+  /**
+   * @notice Get the table's key schema
+   * @return _keySchema the key schema for the table
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](6);
     _keySchema[0] = SchemaType.UINT256;
@@ -51,7 +57,7 @@ library KeyEncoding {
     return SchemaLib.encode(_keySchema);
   }
 
-  /** Get the table's value schema */
+  /// @notice Get the table's value schema
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](1);
     _valueSchema[0] = SchemaType.BOOL;
@@ -59,7 +65,7 @@ library KeyEncoding {
     return SchemaLib.encode(_valueSchema);
   }
 
-  /** Get the table's key names */
+  /// @notice Get the table's key names
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](6);
     keyNames[0] = "k1";
@@ -70,23 +76,23 @@ library KeyEncoding {
     keyNames[5] = "k6";
   }
 
-  /** Get the table's field names */
+  /// @notice Get the table's field names
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
     fieldNames[0] = "value";
   }
 
-  /** Register the table with its config */
+  /// @notice Register the table with its config
   function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config */
+  /// @notice Register the table with its config
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config (using the specified store) */
+  /// @notice Register the table with its config (using the specified store)
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
@@ -354,12 +360,12 @@ library KeyEncoding {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Tightly pack static data using this table's schema */
+  /// @notice Tightly pack static data using this table's schema
   function encodeStatic(bool value) internal pure returns (bytes memory) {
     return abi.encodePacked(value);
   }
 
-  /** Tightly pack full data using this table's field layout */
+  /// @notice Tightly pack full data using this table's field layout
   function encode(bool value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(value);
 
@@ -369,7 +375,7 @@ library KeyEncoding {
     return (_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Encode keys as a bytes32 array using this table's field layout */
+  /// @notice Encode keys as a bytes32 array using this table's field layout
   function encodeKeyTuple(
     uint256 k1,
     int32 k2,
