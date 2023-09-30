@@ -81,7 +81,9 @@ library NamespaceDelegationControl {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get delegationControlId */
+  /**
+   * @notice Get delegationControlId
+   */
   function getDelegationControlId(ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
@@ -90,7 +92,9 @@ library NamespaceDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Get delegationControlId */
+  /**
+   * @notice Get delegationControlId
+   */
   function _getDelegationControlId(ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
@@ -99,7 +103,9 @@ library NamespaceDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Get delegationControlId (using the specified store) */
+  /**
+   * @notice Get delegationControlId (using the specified store)
+   */
   function getDelegationControlId(
     IStore _store,
     ResourceId namespaceId
@@ -111,7 +117,9 @@ library NamespaceDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Get delegationControlId */
+  /**
+   * @notice Get delegationControlId
+   */
   function get(ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
@@ -120,7 +128,9 @@ library NamespaceDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Get delegationControlId */
+  /**
+   * @notice Get delegationControlId
+   */
   function _get(ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
@@ -129,7 +139,9 @@ library NamespaceDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Get delegationControlId (using the specified store) */
+  /**
+   * @notice Get delegationControlId (using the specified store)
+   */
   function get(IStore _store, ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
@@ -138,7 +150,9 @@ library NamespaceDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /** Set delegationControlId */
+  /**
+   * @notice Set delegationControlId
+   */
   function setDelegationControlId(ResourceId namespaceId, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
@@ -152,7 +166,9 @@ library NamespaceDelegationControl {
     );
   }
 
-  /** Set delegationControlId */
+  /**
+   * @notice Set delegationControlId
+   */
   function _setDelegationControlId(ResourceId namespaceId, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
@@ -166,7 +182,9 @@ library NamespaceDelegationControl {
     );
   }
 
-  /** Set delegationControlId (using the specified store) */
+  /**
+   * @notice Set delegationControlId (using the specified store)
+   */
   function setDelegationControlId(IStore _store, ResourceId namespaceId, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
@@ -180,7 +198,9 @@ library NamespaceDelegationControl {
     );
   }
 
-  /** Set delegationControlId */
+  /**
+   * @notice Set delegationControlId
+   */
   function set(ResourceId namespaceId, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
@@ -194,7 +214,9 @@ library NamespaceDelegationControl {
     );
   }
 
-  /** Set delegationControlId */
+  /**
+   * @notice Set delegationControlId
+   */
   function _set(ResourceId namespaceId, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
@@ -208,7 +230,9 @@ library NamespaceDelegationControl {
     );
   }
 
-  /** Set delegationControlId (using the specified store) */
+  /**
+   * @notice Set delegationControlId (using the specified store)
+   */
   function set(IStore _store, ResourceId namespaceId, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);

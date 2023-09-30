@@ -85,7 +85,9 @@ library Vector2 {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get x */
+  /**
+   * @notice Get x
+   */
   function getX(bytes32 key) internal view returns (uint32 x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -94,7 +96,9 @@ library Vector2 {
     return (uint32(bytes4(_blob)));
   }
 
-  /** Get x */
+  /**
+   * @notice Get x
+   */
   function _getX(bytes32 key) internal view returns (uint32 x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -103,7 +107,9 @@ library Vector2 {
     return (uint32(bytes4(_blob)));
   }
 
-  /** Get x (using the specified store) */
+  /**
+   * @notice Get x (using the specified store)
+   */
   function getX(IStore _store, bytes32 key) internal view returns (uint32 x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -112,7 +118,9 @@ library Vector2 {
     return (uint32(bytes4(_blob)));
   }
 
-  /** Set x */
+  /**
+   * @notice Set x
+   */
   function setX(bytes32 key, uint32 x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -120,7 +128,9 @@ library Vector2 {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((x)), _fieldLayout);
   }
 
-  /** Set x */
+  /**
+   * @notice Set x
+   */
   function _setX(bytes32 key, uint32 x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -128,7 +138,9 @@ library Vector2 {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((x)), _fieldLayout);
   }
 
-  /** Set x (using the specified store) */
+  /**
+   * @notice Set x (using the specified store)
+   */
   function setX(IStore _store, bytes32 key, uint32 x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -136,7 +148,9 @@ library Vector2 {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((x)), _fieldLayout);
   }
 
-  /** Get y */
+  /**
+   * @notice Get y
+   */
   function getY(bytes32 key) internal view returns (uint32 y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -145,7 +159,9 @@ library Vector2 {
     return (uint32(bytes4(_blob)));
   }
 
-  /** Get y */
+  /**
+   * @notice Get y
+   */
   function _getY(bytes32 key) internal view returns (uint32 y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -154,7 +170,9 @@ library Vector2 {
     return (uint32(bytes4(_blob)));
   }
 
-  /** Get y (using the specified store) */
+  /**
+   * @notice Get y (using the specified store)
+   */
   function getY(IStore _store, bytes32 key) internal view returns (uint32 y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -163,7 +181,9 @@ library Vector2 {
     return (uint32(bytes4(_blob)));
   }
 
-  /** Set y */
+  /**
+   * @notice Set y
+   */
   function setY(bytes32 key, uint32 y) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -171,7 +191,9 @@ library Vector2 {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((y)), _fieldLayout);
   }
 
-  /** Set y */
+  /**
+   * @notice Set y
+   */
   function _setY(bytes32 key, uint32 y) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -179,7 +201,9 @@ library Vector2 {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((y)), _fieldLayout);
   }
 
-  /** Set y (using the specified store) */
+  /**
+   * @notice Set y (using the specified store)
+   */
   function setY(IStore _store, bytes32 key, uint32 y) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;

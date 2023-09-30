@@ -71,7 +71,9 @@ library UniqueEntity {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get value */
+  /**
+   * @notice Get value
+   */
   function getValue(ResourceId _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -79,7 +81,9 @@ library UniqueEntity {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get value */
+  /**
+   * @notice Get value
+   */
   function _getValue(ResourceId _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -87,7 +91,9 @@ library UniqueEntity {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get value (using the specified store) */
+  /**
+   * @notice Get value (using the specified store)
+   */
   function getValue(IStore _store, ResourceId _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -95,7 +101,9 @@ library UniqueEntity {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get value */
+  /**
+   * @notice Get value
+   */
   function get(ResourceId _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -103,7 +111,9 @@ library UniqueEntity {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get value */
+  /**
+   * @notice Get value
+   */
   function _get(ResourceId _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -111,7 +121,9 @@ library UniqueEntity {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get value (using the specified store) */
+  /**
+   * @notice Get value (using the specified store)
+   */
   function get(IStore _store, ResourceId _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -119,42 +131,54 @@ library UniqueEntity {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Set value */
+  /**
+   * @notice Set value
+   */
   function setValue(ResourceId _tableId, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Set value */
+  /**
+   * @notice Set value
+   */
   function _setValue(ResourceId _tableId, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Set value (using the specified store) */
+  /**
+   * @notice Set value (using the specified store)
+   */
   function setValue(IStore _store, ResourceId _tableId, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Set value */
+  /**
+   * @notice Set value
+   */
   function set(ResourceId _tableId, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Set value */
+  /**
+   * @notice Set value
+   */
   function _set(ResourceId _tableId, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Set value (using the specified store) */
+  /**
+   * @notice Set value (using the specified store)
+   */
   function set(IStore _store, ResourceId _tableId, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 

@@ -78,7 +78,9 @@ library Offchain {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Set value */
+  /**
+   * @notice Set value
+   */
   function setValue(bytes32 key, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -86,7 +88,9 @@ library Offchain {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Set value */
+  /**
+   * @notice Set value
+   */
   function _setValue(bytes32 key, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -94,7 +98,9 @@ library Offchain {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Set value (using the specified store) */
+  /**
+   * @notice Set value (using the specified store)
+   */
   function setValue(IStore _store, bytes32 key, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;

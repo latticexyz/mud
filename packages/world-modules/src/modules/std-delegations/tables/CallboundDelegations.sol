@@ -87,7 +87,9 @@ library CallboundDelegations {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get availableCalls */
+  /**
+   * @notice Get availableCalls
+   */
   function getAvailableCalls(
     address delegator,
     address delegatee,
@@ -104,7 +106,9 @@ library CallboundDelegations {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get availableCalls */
+  /**
+   * @notice Get availableCalls
+   */
   function _getAvailableCalls(
     address delegator,
     address delegatee,
@@ -121,7 +125,9 @@ library CallboundDelegations {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get availableCalls (using the specified store) */
+  /**
+   * @notice Get availableCalls (using the specified store)
+   */
   function getAvailableCalls(
     IStore _store,
     address delegator,
@@ -139,7 +145,9 @@ library CallboundDelegations {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get availableCalls */
+  /**
+   * @notice Get availableCalls
+   */
   function get(
     address delegator,
     address delegatee,
@@ -156,7 +164,9 @@ library CallboundDelegations {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get availableCalls */
+  /**
+   * @notice Get availableCalls
+   */
   function _get(
     address delegator,
     address delegatee,
@@ -173,7 +183,9 @@ library CallboundDelegations {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get availableCalls (using the specified store) */
+  /**
+   * @notice Get availableCalls (using the specified store)
+   */
   function get(
     IStore _store,
     address delegator,
@@ -191,7 +203,9 @@ library CallboundDelegations {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Set availableCalls */
+  /**
+   * @notice Set availableCalls
+   */
   function setAvailableCalls(
     address delegator,
     address delegatee,
@@ -208,7 +222,9 @@ library CallboundDelegations {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
-  /** Set availableCalls */
+  /**
+   * @notice Set availableCalls
+   */
   function _setAvailableCalls(
     address delegator,
     address delegatee,
@@ -225,7 +241,9 @@ library CallboundDelegations {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
-  /** Set availableCalls (using the specified store) */
+  /**
+   * @notice Set availableCalls (using the specified store)
+   */
   function setAvailableCalls(
     IStore _store,
     address delegator,
@@ -243,7 +261,9 @@ library CallboundDelegations {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
-  /** Set availableCalls */
+  /**
+   * @notice Set availableCalls
+   */
   function set(
     address delegator,
     address delegatee,
@@ -260,7 +280,9 @@ library CallboundDelegations {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
-  /** Set availableCalls */
+  /**
+   * @notice Set availableCalls
+   */
   function _set(
     address delegator,
     address delegatee,
@@ -277,7 +299,9 @@ library CallboundDelegations {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
-  /** Set availableCalls (using the specified store) */
+  /**
+   * @notice Set availableCalls (using the specified store)
+   */
   function set(
     IStore _store,
     address delegator,

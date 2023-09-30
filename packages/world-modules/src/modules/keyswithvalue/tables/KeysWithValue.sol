@@ -73,7 +73,9 @@ library KeysWithValue {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get keysWithValue */
+  /**
+   * @notice Get keysWithValue
+   */
   function getKeysWithValue(
     ResourceId _tableId,
     bytes32 valueHash
@@ -85,7 +87,9 @@ library KeysWithValue {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Get keysWithValue */
+  /**
+   * @notice Get keysWithValue
+   */
   function _getKeysWithValue(
     ResourceId _tableId,
     bytes32 valueHash
@@ -97,7 +101,9 @@ library KeysWithValue {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Get keysWithValue (using the specified store) */
+  /**
+   * @notice Get keysWithValue (using the specified store)
+   */
   function getKeysWithValue(
     IStore _store,
     ResourceId _tableId,
@@ -110,7 +116,9 @@ library KeysWithValue {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Get keysWithValue */
+  /**
+   * @notice Get keysWithValue
+   */
   function get(ResourceId _tableId, bytes32 valueHash) internal view returns (bytes32[] memory keysWithValue) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -119,7 +127,9 @@ library KeysWithValue {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Get keysWithValue */
+  /**
+   * @notice Get keysWithValue
+   */
   function _get(ResourceId _tableId, bytes32 valueHash) internal view returns (bytes32[] memory keysWithValue) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -128,7 +138,9 @@ library KeysWithValue {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Get keysWithValue (using the specified store) */
+  /**
+   * @notice Get keysWithValue (using the specified store)
+   */
   function get(
     IStore _store,
     ResourceId _tableId,
@@ -141,7 +153,9 @@ library KeysWithValue {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Set keysWithValue */
+  /**
+   * @notice Set keysWithValue
+   */
   function setKeysWithValue(ResourceId _tableId, bytes32 valueHash, bytes32[] memory keysWithValue) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -149,7 +163,9 @@ library KeysWithValue {
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keysWithValue)));
   }
 
-  /** Set keysWithValue */
+  /**
+   * @notice Set keysWithValue
+   */
   function _setKeysWithValue(ResourceId _tableId, bytes32 valueHash, bytes32[] memory keysWithValue) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -157,7 +173,9 @@ library KeysWithValue {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keysWithValue)));
   }
 
-  /** Set keysWithValue (using the specified store) */
+  /**
+   * @notice Set keysWithValue (using the specified store)
+   */
   function setKeysWithValue(
     IStore _store,
     ResourceId _tableId,
@@ -170,7 +188,9 @@ library KeysWithValue {
     _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keysWithValue)));
   }
 
-  /** Set keysWithValue */
+  /**
+   * @notice Set keysWithValue
+   */
   function set(ResourceId _tableId, bytes32 valueHash, bytes32[] memory keysWithValue) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -178,7 +198,9 @@ library KeysWithValue {
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keysWithValue)));
   }
 
-  /** Set keysWithValue */
+  /**
+   * @notice Set keysWithValue
+   */
   function _set(ResourceId _tableId, bytes32 valueHash, bytes32[] memory keysWithValue) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -186,7 +208,9 @@ library KeysWithValue {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keysWithValue)));
   }
 
-  /** Set keysWithValue (using the specified store) */
+  /**
+   * @notice Set keysWithValue (using the specified store)
+   */
   function set(IStore _store, ResourceId _tableId, bytes32 valueHash, bytes32[] memory keysWithValue) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -194,7 +218,9 @@ library KeysWithValue {
     _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keysWithValue)));
   }
 
-  /** Get the length of keysWithValue */
+  /**
+   * @notice Get length of keysWithValue
+   */
   function lengthKeysWithValue(ResourceId _tableId, bytes32 valueHash) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -205,7 +231,9 @@ library KeysWithValue {
     }
   }
 
-  /** Get the length of keysWithValue */
+  /**
+   * @notice Get length of keysWithValue
+   */
   function _lengthKeysWithValue(ResourceId _tableId, bytes32 valueHash) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -216,7 +244,9 @@ library KeysWithValue {
     }
   }
 
-  /** Get the length of keysWithValue (using the specified store) */
+  /**
+   * @notice Get length of keysWithValue (using the specified store)
+   */
   function lengthKeysWithValue(IStore _store, ResourceId _tableId, bytes32 valueHash) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -227,7 +257,9 @@ library KeysWithValue {
     }
   }
 
-  /** Get the length of keysWithValue */
+  /**
+   * @notice Get length of keysWithValue
+   */
   function length(ResourceId _tableId, bytes32 valueHash) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -238,7 +270,9 @@ library KeysWithValue {
     }
   }
 
-  /** Get the length of keysWithValue */
+  /**
+   * @notice Get length of keysWithValue
+   */
   function _length(ResourceId _tableId, bytes32 valueHash) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -249,7 +283,9 @@ library KeysWithValue {
     }
   }
 
-  /** Get the length of keysWithValue (using the specified store) */
+  /**
+   * @notice Get length of keysWithValue (using the specified store)
+   */
   function length(IStore _store, ResourceId _tableId, bytes32 valueHash) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -261,8 +297,8 @@ library KeysWithValue {
   }
 
   /**
-   * Get an item of keysWithValue
-   * (unchecked, returns invalid data if index overflows)
+   * @notice Get an item of keysWithValue
+   * @dev (unchecked, returns invalid data if index overflows)
    */
   function getItemKeysWithValue(
     ResourceId _tableId,
@@ -279,8 +315,8 @@ library KeysWithValue {
   }
 
   /**
-   * Get an item of keysWithValue
-   * (unchecked, returns invalid data if index overflows)
+   * @notice Get an item of keysWithValue
+   * @dev (unchecked, returns invalid data if index overflows)
    */
   function _getItemKeysWithValue(
     ResourceId _tableId,
@@ -297,8 +333,8 @@ library KeysWithValue {
   }
 
   /**
-   * Get an item of keysWithValue (using the specified store)
-   * (unchecked, returns invalid data if index overflows)
+   * @notice Get an item of keysWithValue (using the specified store)
+   * @dev (unchecked, returns invalid data if index overflows)
    */
   function getItemKeysWithValue(
     IStore _store,
@@ -316,8 +352,8 @@ library KeysWithValue {
   }
 
   /**
-   * Get an item of keysWithValue
-   * (unchecked, returns invalid data if index overflows)
+   * @notice Get an item of keysWithValue
+   * @dev (unchecked, returns invalid data if index overflows)
    */
   function getItem(ResourceId _tableId, bytes32 valueHash, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -330,8 +366,8 @@ library KeysWithValue {
   }
 
   /**
-   * Get an item of keysWithValue
-   * (unchecked, returns invalid data if index overflows)
+   * @notice Get an item of keysWithValue
+   * @dev (unchecked, returns invalid data if index overflows)
    */
   function _getItem(ResourceId _tableId, bytes32 valueHash, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -344,8 +380,8 @@ library KeysWithValue {
   }
 
   /**
-   * Get an item of keysWithValue (using the specified store)
-   * (unchecked, returns invalid data if index overflows)
+   * @notice Get an item of keysWithValue (using the specified store)
+   * @dev (unchecked, returns invalid data if index overflows)
    */
   function getItem(
     IStore _store,
@@ -362,7 +398,9 @@ library KeysWithValue {
     }
   }
 
-  /** Push an element to keysWithValue */
+  /**
+   * @notice Push an element to keysWithValue
+   */
   function pushKeysWithValue(ResourceId _tableId, bytes32 valueHash, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -370,7 +408,9 @@ library KeysWithValue {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /** Push an element to keysWithValue */
+  /**
+   * @notice Push an element to keysWithValue
+   */
   function _pushKeysWithValue(ResourceId _tableId, bytes32 valueHash, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -378,7 +418,9 @@ library KeysWithValue {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /** Push an element to keysWithValue (using the specified store) */
+  /**
+   * @notice Push an element to keysWithValue (using the specified store)
+   */
   function pushKeysWithValue(IStore _store, ResourceId _tableId, bytes32 valueHash, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -386,7 +428,9 @@ library KeysWithValue {
     _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /** Push an element to keysWithValue */
+  /**
+   * @notice Push an element to keysWithValue
+   */
   function push(ResourceId _tableId, bytes32 valueHash, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -394,7 +438,9 @@ library KeysWithValue {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /** Push an element to keysWithValue */
+  /**
+   * @notice Push an element to keysWithValue
+   */
   function _push(ResourceId _tableId, bytes32 valueHash, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -402,7 +448,9 @@ library KeysWithValue {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /** Push an element to keysWithValue (using the specified store) */
+  /**
+   * @notice Push an element to keysWithValue (using the specified store)
+   */
   function push(IStore _store, ResourceId _tableId, bytes32 valueHash, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -410,7 +458,9 @@ library KeysWithValue {
     _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /** Pop an element from keysWithValue */
+  /**
+   * @notice Pop an element from keysWithValue
+   */
   function popKeysWithValue(ResourceId _tableId, bytes32 valueHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -418,7 +468,9 @@ library KeysWithValue {
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 32);
   }
 
-  /** Pop an element from keysWithValue */
+  /**
+   * @notice Pop an element from keysWithValue
+   */
   function _popKeysWithValue(ResourceId _tableId, bytes32 valueHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -426,7 +478,9 @@ library KeysWithValue {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 32);
   }
 
-  /** Pop an element from keysWithValue (using the specified store) */
+  /**
+   * @notice Pop an element from keysWithValue (using the specified store)
+   */
   function popKeysWithValue(IStore _store, ResourceId _tableId, bytes32 valueHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -434,7 +488,9 @@ library KeysWithValue {
     _store.popFromDynamicField(_tableId, _keyTuple, 0, 32);
   }
 
-  /** Pop an element from keysWithValue */
+  /**
+   * @notice Pop an element from keysWithValue
+   */
   function pop(ResourceId _tableId, bytes32 valueHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -442,7 +498,9 @@ library KeysWithValue {
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 32);
   }
 
-  /** Pop an element from keysWithValue */
+  /**
+   * @notice Pop an element from keysWithValue
+   */
   function _pop(ResourceId _tableId, bytes32 valueHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -450,7 +508,9 @@ library KeysWithValue {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 32);
   }
 
-  /** Pop an element from keysWithValue (using the specified store) */
+  /**
+   * @notice Pop an element from keysWithValue (using the specified store)
+   */
   function pop(IStore _store, ResourceId _tableId, bytes32 valueHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -459,8 +519,8 @@ library KeysWithValue {
   }
 
   /**
-   * Update an element of keysWithValue at `_index`
-   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * @notice Update an element of keysWithValue at `_index`
+   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateKeysWithValue(ResourceId _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -473,8 +533,8 @@ library KeysWithValue {
   }
 
   /**
-   * Update an element of keysWithValue at `_index`
-   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * @notice Update an element of keysWithValue at `_index`
+   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function _updateKeysWithValue(ResourceId _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -487,8 +547,8 @@ library KeysWithValue {
   }
 
   /**
-   * Update an element of keysWithValue (using the specified store) at `_index`
-   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * @notice Update an element of keysWithValue (using the specified store) at `_index`
+   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateKeysWithValue(
     IStore _store,
@@ -507,8 +567,8 @@ library KeysWithValue {
   }
 
   /**
-   * Update an element of keysWithValue at `_index`
-   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * @notice Update an element of keysWithValue at `_index`
+   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function update(ResourceId _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -521,8 +581,8 @@ library KeysWithValue {
   }
 
   /**
-   * Update an element of keysWithValue at `_index`
-   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * @notice Update an element of keysWithValue at `_index`
+   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function _update(ResourceId _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -535,8 +595,8 @@ library KeysWithValue {
   }
 
   /**
-   * Update an element of keysWithValue (using the specified store) at `_index`
-   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * @notice Update an element of keysWithValue (using the specified store) at `_index`
+   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function update(IStore _store, ResourceId _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
