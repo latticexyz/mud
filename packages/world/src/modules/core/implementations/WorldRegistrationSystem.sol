@@ -29,17 +29,15 @@ import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol
 import { FunctionSignatures } from "../../../codegen/tables/FunctionSignatures.sol";
 
 /**
- * @title WorldRegistrationSystem
- * @dev This contract provides functions related to registering resources other than tables in the World.
+ * Functions related to registering resources other than tables in the World.
+ * Registering tables is implemented in StoreRegistrationSystem.sol
  */
 contract WorldRegistrationSystem is System, IWorldErrors {
   using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
   /**
-   * @notice Registers a new namespace
-   * @dev Creates a new namespace resource with the given ID
-   * @param namespaceId The unique identifier for the new namespace
+   * Register a new namespace
    */
   function registerNamespace(ResourceId namespaceId) public virtual {
     // Require the provided namespace ID to have type RESOURCE_NAMESPACE
@@ -63,11 +61,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   }
 
   /**
-   * @notice Registers a new system hook
-   * @dev Adds a new hook for the system at the provided system ID
-   * @param systemId The ID of the system
-   * @param hookAddress The address of the hook being registered
-   * @param enabledHooksBitmap Bitmap indicating which hooks are enabled
+   * Register a hook for the system at the given system ID
    */
   function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) public virtual {
     // Require the provided address to implement the ISystemHook interface
@@ -81,10 +75,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   }
 
   /**
-   * @notice Unregisters a system hook
-   * @dev Removes a hook for the system at the provided system ID
-   * @param systemId The ID of the system
-   * @param hookAddress The address of the hook being unregistered
+   * Unregister the given hook for the system at the given system ID
    */
   function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) public virtual {
     // Require caller to own the namespace
@@ -95,17 +86,13 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   }
 
   /**
-   * @notice Registers a system
-   * @dev Registers or upgrades a system at the given ID
+   * Register the given system in the given namespace.
    * If the namespace doesn't exist yet, it is registered.
-   * The system is granted access to its namespace, so it can write to any
-   * table in the same namespace.
+   * The system is granted access to its namespace, so it can write to any table in the same namespace.
    * If publicAccess is true, no access control check is performed for calling the system.
-   * This function doesn't check whether a system already exists at the given selector,
+   *
+   * Note: this function doesn't check whether a system already exists at the given selector,
    * making it possible to upgrade systems.
-   * @param systemId The unique identifier for the system
-   * @param system The system being registered
-   * @param publicAccess Flag indicating if access control check is bypassed
    */
   function registerSystem(ResourceId systemId, WorldContextConsumer system, bool publicAccess) public virtual {
     // Require the provided system ID to have type RESOURCE_SYSTEM
@@ -162,11 +149,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   }
 
   /**
-   * @notice Registers a new World function selector
-   * @dev Creates a mapping between a World function and its associated system function
-   * @param systemId The system ID
-   * @param systemFunctionSignature The signature of the system function
-   * @return worldFunctionSelector The selector of the World function
+   * Register a World function selector for the given namespace, name and system function.
    */
   function registerFunctionSelector(
     ResourceId systemId,
@@ -201,12 +184,8 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   }
 
   /**
-   * @notice Registers a root World function selector
-   * @dev Creates a mapping for a root World function without namespace or name prefix
-   * @param systemId The system ID
-   * @param worldFunctionSignature The signature of the World function
-   * @param systemFunctionSelector The selector of the system function
-   * @return worldFunctionSelector The selector of the World function
+   * Register a root World function selector (without namespace / name prefix).
+   * Requires the caller to own the root namespace.
    */
   function registerRootFunctionSelector(
     ResourceId systemId,
@@ -232,11 +211,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   }
 
   /**
-   * @notice Registers a delegation for the caller
-   * @dev Creates a new delegation from the caller to the specified delegatee
-   * @param delegatee The address of the delegatee
-   * @param delegationControlId The ID controlling the delegation
-   * @param initCallData The initialization data for the delegation
+   * Register a delegation from the caller to the given delegatee.
    */
   function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData) public {
     // Store the delegation control contract address
@@ -262,13 +237,6 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     }
   }
 
-  /**
-   * @notice Registers a delegation for a namespace
-   * @dev Sets up a new delegation control for a specific namespace
-   * @param namespaceId The ID of the namespace
-   * @param delegationControlId The ID controlling the delegation
-   * @param initCallData The initialization data for the delegation
-   */
   function registerNamespaceDelegation(
     ResourceId namespaceId,
     ResourceId delegationControlId,

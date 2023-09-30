@@ -10,15 +10,12 @@ import { InstalledModules } from "../../../codegen/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 
 /**
- * @title Access Management System
- * @dev This contract manages the granting and revoking of access from/to resources.
+ * Granting and revoking access from/to resources.
  */
 contract AccessManagementSystem is System {
   /**
-   * @notice Grant access to the resource at the given resource ID.
-   * @dev Requires the caller to own the namespace.
-   * @param resourceId The ID of the resource to grant access to.
-   * @param grantee The address to which access should be granted.
+   * Grant access to the resource at the given resource ID.
+   * Requires the caller to own the namespace.
    */
   function grantAccess(ResourceId resourceId, address grantee) public virtual {
     // Require the caller to own the namespace
@@ -29,10 +26,8 @@ contract AccessManagementSystem is System {
   }
 
   /**
-   * @notice Revoke access from the resource at the given resource ID.
-   * @dev Requires the caller to own the namespace.
-   * @param resourceId The ID of the resource to revoke access from.
-   * @param grantee The address from which access should be revoked.
+   * Revoke access from the resource at the given resource ID.
+   * Requires the caller to own the namespace.
    */
   function revokeAccess(ResourceId resourceId, address grantee) public virtual {
     // Require the caller to own the namespace
@@ -43,10 +38,9 @@ contract AccessManagementSystem is System {
   }
 
   /**
-   * @notice Transfer ownership of the given namespace to newOwner and manages the access.
-   * @dev Requires the caller to own the namespace. Revoke ResourceAccess for previous owner and grant to newOwner.
-   * @param namespaceId The ID of the namespace to transfer ownership.
-   * @param newOwner The address to which ownership should be transferred.
+   * Transfer ownership of the given namespace to newOwner.
+   * Revoke ResourceAccess for previous owner and grant to newOwner.
+   * Requires the caller to own the namespace.
    */
   function transferOwnership(ResourceId namespaceId, address newOwner) public virtual {
     // Require the caller to own the namespace
