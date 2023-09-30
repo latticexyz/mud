@@ -4,15 +4,18 @@ pragma solidity >=0.8.21;
 import { Slice, SliceLib } from "../Slice.sol";
 
 /**
- * Low-level generic implementation of tight encoding for arrays, used by codegen.
- * This is the same as solidity's internal tight encoding for array data in storage.
+ * @title TightCoder
+ * @dev Provides low-level generic implementations of tight encoding and decoding for arrays.
+ * This is consistent with Solidity's internal tight encoding for array data in storage.
  */
 library TightCoder {
   /**
-   * Copies the array to a new bytes array, tightly packing it.
-   * elementSize is in bytes, leftPaddingBits is in bits.
-   * elementSize and leftPaddingBits must be correctly provided by the caller based on the array's element type.
-   * @return data a tightly packed array
+   * @dev Copies the array to a new bytes array, tightly packing its elements.
+   * @param array The array to encode.
+   * @param elementSize The size of each element in bytes.
+   * @param leftPaddingBits The number of bits to pad on the left for each element.
+   * @return data A tightly packed byte array.
+   * @notice elementSize and leftPaddingBits must be correctly provided by the caller based on the array's element type.
    */
   function encode(
     bytes32[] memory array,
@@ -56,10 +59,12 @@ library TightCoder {
   }
 
   /**
-   * Unpacks the slice to a new memory location and lays it out like a memory array.
-   * elementSize is in bytes, leftPaddingBits is in bits.
-   * elementSize and leftPaddingBits must be correctly provided by the caller based on the array's element type.
-   * @return array a generic array, needs to be casted to the expected type using assembly
+   * @notice Decodes a tightly packed byte slice into a bytes32 array.
+   * @param packedSlice The tightly packed data to be decoded.
+   * @param elementSize The size of each element in bytes.
+   * @param leftPaddingBits The number of padding bits on the left side of each element.
+   * @dev elementSize and leftPaddingBits must be correctly provided based on the desired output array's element type.
+   * @return array The resulting array of bytes32 elements from decoding the packed slice.
    */
   function decode(
     Slice packedSlice,
