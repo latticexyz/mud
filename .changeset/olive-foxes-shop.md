@@ -1,6 +1,6 @@
 ---
 "@latticexyz/world-modules": patch
-"@latticexyz/world": minor
+"@latticexyz/world": major
 ---
 
 We now expose a `WorldContextConsumerLib` library with the same functionality as the `WorldContextConsumer` contract, but the ability to be used inside of internal libraries.
