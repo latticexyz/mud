@@ -18,7 +18,6 @@ import { Hook, HookLib } from "./Hook.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
 import { ResourceId, ResourceIdInstance } from "./ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.sol";
-import { IStoreEvents } from "./IStoreEvents.sol";
 
 /**
  * @title StoreCore Library
@@ -300,7 +299,7 @@ library StoreCore {
     FieldLayout fieldLayout
   ) internal {
     // Emit event to notify indexers
-    emit IStoreEvents.Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
+    emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
 
     // Early return if the table is an offchain table
     if (tableId.getType() != RESOURCE_TABLE) {
