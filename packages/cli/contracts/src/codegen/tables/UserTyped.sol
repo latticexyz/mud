@@ -106,9 +106,7 @@ library UserTyped {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get v1
-   */
+  /** Get v1 */
   function getV1(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -127,9 +125,7 @@ library UserTyped {
     return TestTypeAddress.wrap(address(bytes20(_blob)));
   }
 
-  /**
-   * @notice Get v1
-   */
+  /** Get v1 */
   function _getV1(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -148,9 +144,7 @@ library UserTyped {
     return TestTypeAddress.wrap(address(bytes20(_blob)));
   }
 
-  /**
-   * @notice Get v1 (using the specified store)
-   */
+  /** Get v1 (using the specified store) */
   function getV1(
     IStore _store,
     TestTypeAddress k1,
@@ -170,9 +164,7 @@ library UserTyped {
     return TestTypeAddress.wrap(address(bytes20(_blob)));
   }
 
-  /**
-   * @notice Set v1
-   */
+  /** Set v1 */
   function setV1(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -191,9 +183,7 @@ library UserTyped {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
   }
 
-  /**
-   * @notice Set v1
-   */
+  /** Set v1 */
   function _setV1(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -212,9 +202,7 @@ library UserTyped {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
   }
 
-  /**
-   * @notice Set v1 (using the specified store)
-   */
+  /** Set v1 (using the specified store) */
   function setV1(
     IStore _store,
     TestTypeAddress k1,
@@ -234,9 +222,7 @@ library UserTyped {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
   }
 
-  /**
-   * @notice Get v2
-   */
+  /** Get v2 */
   function getV2(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -255,9 +241,7 @@ library UserTyped {
     return TestTypeInt64.wrap(int64(uint64(bytes8(_blob))));
   }
 
-  /**
-   * @notice Get v2
-   */
+  /** Get v2 */
   function _getV2(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -276,9 +260,7 @@ library UserTyped {
     return TestTypeInt64.wrap(int64(uint64(bytes8(_blob))));
   }
 
-  /**
-   * @notice Get v2 (using the specified store)
-   */
+  /** Get v2 (using the specified store) */
   function getV2(
     IStore _store,
     TestTypeAddress k1,
@@ -298,9 +280,7 @@ library UserTyped {
     return TestTypeInt64.wrap(int64(uint64(bytes8(_blob))));
   }
 
-  /**
-   * @notice Set v2
-   */
+  /** Set v2 */
   function setV2(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -319,9 +299,7 @@ library UserTyped {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
   }
 
-  /**
-   * @notice Set v2
-   */
+  /** Set v2 */
   function _setV2(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -340,9 +318,7 @@ library UserTyped {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
   }
 
-  /**
-   * @notice Set v2 (using the specified store)
-   */
+  /** Set v2 (using the specified store) */
   function setV2(
     IStore _store,
     TestTypeAddress k1,
@@ -362,9 +338,7 @@ library UserTyped {
     _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
   }
 
-  /**
-   * @notice Get v3
-   */
+  /** Get v3 */
   function getV3(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -383,9 +357,7 @@ library UserTyped {
     return TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get v3
-   */
+  /** Get v3 */
   function _getV3(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -404,9 +376,7 @@ library UserTyped {
     return TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get v3 (using the specified store)
-   */
+  /** Get v3 (using the specified store) */
   function getV3(
     IStore _store,
     TestTypeAddress k1,
@@ -426,9 +396,7 @@ library UserTyped {
     return TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Set v3
-   */
+  /** Set v3 */
   function setV3(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -453,9 +421,7 @@ library UserTyped {
     );
   }
 
-  /**
-   * @notice Set v3
-   */
+  /** Set v3 */
   function _setV3(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -480,9 +446,7 @@ library UserTyped {
     );
   }
 
-  /**
-   * @notice Set v3 (using the specified store)
-   */
+  /** Set v3 (using the specified store) */
   function setV3(
     IStore _store,
     TestTypeAddress k1,
@@ -508,9 +472,7 @@ library UserTyped {
     );
   }
 
-  /**
-   * @notice Get v4
-   */
+  /** Get v4 */
   function getV4(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -529,9 +491,7 @@ library UserTyped {
     return TestTypeLibrary.TestTypeUint128.wrap(uint128(bytes16(_blob)));
   }
 
-  /**
-   * @notice Get v4
-   */
+  /** Get v4 */
   function _getV4(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -550,9 +510,7 @@ library UserTyped {
     return TestTypeLibrary.TestTypeUint128.wrap(uint128(bytes16(_blob)));
   }
 
-  /**
-   * @notice Get v4 (using the specified store)
-   */
+  /** Get v4 (using the specified store) */
   function getV4(
     IStore _store,
     TestTypeAddress k1,
@@ -572,9 +530,7 @@ library UserTyped {
     return TestTypeLibrary.TestTypeUint128.wrap(uint128(bytes16(_blob)));
   }
 
-  /**
-   * @notice Set v4
-   */
+  /** Set v4 */
   function setV4(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -599,9 +555,7 @@ library UserTyped {
     );
   }
 
-  /**
-   * @notice Set v4
-   */
+  /** Set v4 */
   function _setV4(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -626,9 +580,7 @@ library UserTyped {
     );
   }
 
-  /**
-   * @notice Set v4 (using the specified store)
-   */
+  /** Set v4 (using the specified store) */
   function setV4(
     IStore _store,
     TestTypeAddress k1,
@@ -654,9 +606,7 @@ library UserTyped {
     );
   }
 
-  /**
-   * @notice Get v5
-   */
+  /** Get v5 */
   function getV5(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -675,9 +625,7 @@ library UserTyped {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /**
-   * @notice Get v5
-   */
+  /** Get v5 */
   function _getV5(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -696,9 +644,7 @@ library UserTyped {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /**
-   * @notice Get v5 (using the specified store)
-   */
+  /** Get v5 (using the specified store) */
   function getV5(
     IStore _store,
     TestTypeAddress k1,
@@ -718,9 +664,7 @@ library UserTyped {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /**
-   * @notice Set v5
-   */
+  /** Set v5 */
   function setV5(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -739,9 +683,7 @@ library UserTyped {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
   }
 
-  /**
-   * @notice Set v5
-   */
+  /** Set v5 */
   function _setV5(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -760,9 +702,7 @@ library UserTyped {
     StoreCore.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
   }
 
-  /**
-   * @notice Set v5 (using the specified store)
-   */
+  /** Set v5 (using the specified store) */
   function setV5(
     IStore _store,
     TestTypeAddress k1,

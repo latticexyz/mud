@@ -78,9 +78,7 @@ library TwoFields {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get value1
-   */
+  /** Get value1 */
   function getValue1(ResourceId _tableId) internal view returns (bool value1) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -88,9 +86,7 @@ library TwoFields {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value1
-   */
+  /** Get value1 */
   function _getValue1(ResourceId _tableId) internal view returns (bool value1) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -98,9 +94,7 @@ library TwoFields {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value1 (using the specified store)
-   */
+  /** Get value1 (using the specified store) */
   function getValue1(IStore _store, ResourceId _tableId) internal view returns (bool value1) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -108,36 +102,28 @@ library TwoFields {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Set value1
-   */
+  /** Set value1 */
   function setValue1(ResourceId _tableId, bool value1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value1
-   */
+  /** Set value1 */
   function _setValue1(ResourceId _tableId, bool value1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value1 (using the specified store)
-   */
+  /** Set value1 (using the specified store) */
   function setValue1(IStore _store, ResourceId _tableId, bool value1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
   }
 
-  /**
-   * @notice Get value2
-   */
+  /** Get value2 */
   function getValue2(ResourceId _tableId) internal view returns (bool value2) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -145,9 +131,7 @@ library TwoFields {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value2
-   */
+  /** Get value2 */
   function _getValue2(ResourceId _tableId) internal view returns (bool value2) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -155,9 +139,7 @@ library TwoFields {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value2 (using the specified store)
-   */
+  /** Get value2 (using the specified store) */
   function getValue2(IStore _store, ResourceId _tableId) internal view returns (bool value2) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -165,27 +147,21 @@ library TwoFields {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Set value2
-   */
+  /** Set value2 */
   function setValue2(ResourceId _tableId, bool value2) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value2
-   */
+  /** Set value2 */
   function _setValue2(ResourceId _tableId, bool value2) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value2 (using the specified store)
-   */
+  /** Set value2 (using the specified store) */
   function setValue2(IStore _store, ResourceId _tableId, bool value2) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 

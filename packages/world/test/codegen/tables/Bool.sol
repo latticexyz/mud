@@ -71,9 +71,7 @@ library Bool {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function getValue(ResourceId _tableId) internal view returns (bool value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -81,9 +79,7 @@ library Bool {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function _getValue(ResourceId _tableId) internal view returns (bool value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -91,9 +87,7 @@ library Bool {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value (using the specified store)
-   */
+  /** Get value (using the specified store) */
   function getValue(IStore _store, ResourceId _tableId) internal view returns (bool value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -101,9 +95,7 @@ library Bool {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function get(ResourceId _tableId) internal view returns (bool value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -111,9 +103,7 @@ library Bool {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function _get(ResourceId _tableId) internal view returns (bool value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -121,9 +111,7 @@ library Bool {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value (using the specified store)
-   */
+  /** Get value (using the specified store) */
   function get(IStore _store, ResourceId _tableId) internal view returns (bool value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -131,54 +119,42 @@ library Bool {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function setValue(ResourceId _tableId, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function _setValue(ResourceId _tableId, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value (using the specified store)
-   */
+  /** Set value (using the specified store) */
   function setValue(IStore _store, ResourceId _tableId, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function set(ResourceId _tableId, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function _set(ResourceId _tableId, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value (using the specified store)
-   */
+  /** Set value (using the specified store) */
   function set(IStore _store, ResourceId _tableId, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 

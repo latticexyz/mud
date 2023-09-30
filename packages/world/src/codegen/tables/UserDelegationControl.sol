@@ -83,9 +83,7 @@ library UserDelegationControl {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get delegationControlId
-   */
+  /** Get delegationControlId */
   function getDelegationControlId(
     address delegator,
     address delegatee
@@ -98,9 +96,7 @@ library UserDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /**
-   * @notice Get delegationControlId
-   */
+  /** Get delegationControlId */
   function _getDelegationControlId(
     address delegator,
     address delegatee
@@ -113,9 +109,7 @@ library UserDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /**
-   * @notice Get delegationControlId (using the specified store)
-   */
+  /** Get delegationControlId (using the specified store) */
   function getDelegationControlId(
     IStore _store,
     address delegator,
@@ -129,9 +123,7 @@ library UserDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /**
-   * @notice Get delegationControlId
-   */
+  /** Get delegationControlId */
   function get(address delegator, address delegatee) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -141,9 +133,7 @@ library UserDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /**
-   * @notice Get delegationControlId
-   */
+  /** Get delegationControlId */
   function _get(address delegator, address delegatee) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -153,9 +143,7 @@ library UserDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /**
-   * @notice Get delegationControlId (using the specified store)
-   */
+  /** Get delegationControlId (using the specified store) */
   function get(
     IStore _store,
     address delegator,
@@ -169,9 +157,7 @@ library UserDelegationControl {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /**
-   * @notice Set delegationControlId
-   */
+  /** Set delegationControlId */
   function setDelegationControlId(address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -186,9 +172,7 @@ library UserDelegationControl {
     );
   }
 
-  /**
-   * @notice Set delegationControlId
-   */
+  /** Set delegationControlId */
   function _setDelegationControlId(address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -203,9 +187,7 @@ library UserDelegationControl {
     );
   }
 
-  /**
-   * @notice Set delegationControlId (using the specified store)
-   */
+  /** Set delegationControlId (using the specified store) */
   function setDelegationControlId(
     IStore _store,
     address delegator,
@@ -225,9 +207,7 @@ library UserDelegationControl {
     );
   }
 
-  /**
-   * @notice Set delegationControlId
-   */
+  /** Set delegationControlId */
   function set(address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -242,9 +222,7 @@ library UserDelegationControl {
     );
   }
 
-  /**
-   * @notice Set delegationControlId
-   */
+  /** Set delegationControlId */
   function _set(address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
@@ -259,9 +237,7 @@ library UserDelegationControl {
     );
   }
 
-  /**
-   * @notice Set delegationControlId (using the specified store)
-   */
+  /** Set delegationControlId (using the specified store) */
   function set(IStore _store, address delegator, address delegatee, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));

@@ -85,9 +85,7 @@ library UsedKeysIndex {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get has
-   */
+  /** Get has */
   function getHas(ResourceId sourceTableId, bytes32 keysHash) internal view returns (bool has) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -97,9 +95,7 @@ library UsedKeysIndex {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get has
-   */
+  /** Get has */
   function _getHas(ResourceId sourceTableId, bytes32 keysHash) internal view returns (bool has) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -109,9 +105,7 @@ library UsedKeysIndex {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get has (using the specified store)
-   */
+  /** Get has (using the specified store) */
   function getHas(IStore _store, ResourceId sourceTableId, bytes32 keysHash) internal view returns (bool has) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -121,9 +115,7 @@ library UsedKeysIndex {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Set has
-   */
+  /** Set has */
   function setHas(ResourceId sourceTableId, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -132,9 +124,7 @@ library UsedKeysIndex {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
   }
 
-  /**
-   * @notice Set has
-   */
+  /** Set has */
   function _setHas(ResourceId sourceTableId, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -143,9 +133,7 @@ library UsedKeysIndex {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
   }
 
-  /**
-   * @notice Set has (using the specified store)
-   */
+  /** Set has (using the specified store) */
   function setHas(IStore _store, ResourceId sourceTableId, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -154,9 +142,7 @@ library UsedKeysIndex {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
   }
 
-  /**
-   * @notice Get index
-   */
+  /** Get index */
   function getIndex(ResourceId sourceTableId, bytes32 keysHash) internal view returns (uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -166,9 +152,7 @@ library UsedKeysIndex {
     return (uint40(bytes5(_blob)));
   }
 
-  /**
-   * @notice Get index
-   */
+  /** Get index */
   function _getIndex(ResourceId sourceTableId, bytes32 keysHash) internal view returns (uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -178,9 +162,7 @@ library UsedKeysIndex {
     return (uint40(bytes5(_blob)));
   }
 
-  /**
-   * @notice Get index (using the specified store)
-   */
+  /** Get index (using the specified store) */
   function getIndex(IStore _store, ResourceId sourceTableId, bytes32 keysHash) internal view returns (uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -190,9 +172,7 @@ library UsedKeysIndex {
     return (uint40(bytes5(_blob)));
   }
 
-  /**
-   * @notice Set index
-   */
+  /** Set index */
   function setIndex(ResourceId sourceTableId, bytes32 keysHash, uint40 index) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -201,9 +181,7 @@ library UsedKeysIndex {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
   }
 
-  /**
-   * @notice Set index
-   */
+  /** Set index */
   function _setIndex(ResourceId sourceTableId, bytes32 keysHash, uint40 index) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -212,9 +190,7 @@ library UsedKeysIndex {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
   }
 
-  /**
-   * @notice Set index (using the specified store)
-   */
+  /** Set index (using the specified store) */
   function setIndex(IStore _store, ResourceId sourceTableId, bytes32 keysHash, uint40 index) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);

@@ -78,9 +78,7 @@ library Callbacks {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function getValue(bytes32 key) internal view returns (bytes24[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -89,9 +87,7 @@ library Callbacks {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function _getValue(bytes32 key) internal view returns (bytes24[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -100,9 +96,7 @@ library Callbacks {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
   }
 
-  /**
-   * @notice Get value (using the specified store)
-   */
+  /** Get value (using the specified store) */
   function getValue(IStore _store, bytes32 key) internal view returns (bytes24[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -111,9 +105,7 @@ library Callbacks {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function get(bytes32 key) internal view returns (bytes24[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -122,9 +114,7 @@ library Callbacks {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function _get(bytes32 key) internal view returns (bytes24[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -133,9 +123,7 @@ library Callbacks {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
   }
 
-  /**
-   * @notice Get value (using the specified store)
-   */
+  /** Get value (using the specified store) */
   function get(IStore _store, bytes32 key) internal view returns (bytes24[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -144,9 +132,7 @@ library Callbacks {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function setValue(bytes32 key, bytes24[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -154,9 +140,7 @@ library Callbacks {
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function _setValue(bytes32 key, bytes24[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -164,9 +148,7 @@ library Callbacks {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
-  /**
-   * @notice Set value (using the specified store)
-   */
+  /** Set value (using the specified store) */
   function setValue(IStore _store, bytes32 key, bytes24[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -174,9 +156,7 @@ library Callbacks {
     _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function set(bytes32 key, bytes24[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -184,9 +164,7 @@ library Callbacks {
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function _set(bytes32 key, bytes24[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -194,9 +172,7 @@ library Callbacks {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
-  /**
-   * @notice Set value (using the specified store)
-   */
+  /** Set value (using the specified store) */
   function set(IStore _store, bytes32 key, bytes24[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -204,9 +180,7 @@ library Callbacks {
     _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
-  /**
-   * @notice Get length of value
-   */
+  /** Get the length of value */
   function lengthValue(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -217,9 +191,7 @@ library Callbacks {
     }
   }
 
-  /**
-   * @notice Get length of value
-   */
+  /** Get the length of value */
   function _lengthValue(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -230,9 +202,7 @@ library Callbacks {
     }
   }
 
-  /**
-   * @notice Get length of value (using the specified store)
-   */
+  /** Get the length of value (using the specified store) */
   function lengthValue(IStore _store, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -243,9 +213,7 @@ library Callbacks {
     }
   }
 
-  /**
-   * @notice Get length of value
-   */
+  /** Get the length of value */
   function length(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -256,9 +224,7 @@ library Callbacks {
     }
   }
 
-  /**
-   * @notice Get length of value
-   */
+  /** Get the length of value */
   function _length(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -269,9 +235,7 @@ library Callbacks {
     }
   }
 
-  /**
-   * @notice Get length of value (using the specified store)
-   */
+  /** Get the length of value (using the specified store) */
   function length(IStore _store, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -283,8 +247,8 @@ library Callbacks {
   }
 
   /**
-   * @notice Get an item of value
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemValue(bytes32 key, uint256 _index) internal view returns (bytes24) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -297,8 +261,8 @@ library Callbacks {
   }
 
   /**
-   * @notice Get an item of value
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
    */
   function _getItemValue(bytes32 key, uint256 _index) internal view returns (bytes24) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -311,8 +275,8 @@ library Callbacks {
   }
 
   /**
-   * @notice Get an item of value (using the specified store)
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of value (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemValue(IStore _store, bytes32 key, uint256 _index) internal view returns (bytes24) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -325,8 +289,8 @@ library Callbacks {
   }
 
   /**
-   * @notice Get an item of value
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItem(bytes32 key, uint256 _index) internal view returns (bytes24) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -339,8 +303,8 @@ library Callbacks {
   }
 
   /**
-   * @notice Get an item of value
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
    */
   function _getItem(bytes32 key, uint256 _index) internal view returns (bytes24) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -353,8 +317,8 @@ library Callbacks {
   }
 
   /**
-   * @notice Get an item of value (using the specified store)
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of value (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItem(IStore _store, bytes32 key, uint256 _index) internal view returns (bytes24) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -366,9 +330,7 @@ library Callbacks {
     }
   }
 
-  /**
-   * @notice Push an element to value
-   */
+  /** Push an element to value */
   function pushValue(bytes32 key, bytes24 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -376,9 +338,7 @@ library Callbacks {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to value
-   */
+  /** Push an element to value */
   function _pushValue(bytes32 key, bytes24 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -386,9 +346,7 @@ library Callbacks {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to value (using the specified store)
-   */
+  /** Push an element to value (using the specified store) */
   function pushValue(IStore _store, bytes32 key, bytes24 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -396,9 +354,7 @@ library Callbacks {
     _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to value
-   */
+  /** Push an element to value */
   function push(bytes32 key, bytes24 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -406,9 +362,7 @@ library Callbacks {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to value
-   */
+  /** Push an element to value */
   function _push(bytes32 key, bytes24 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -416,9 +370,7 @@ library Callbacks {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to value (using the specified store)
-   */
+  /** Push an element to value (using the specified store) */
   function push(IStore _store, bytes32 key, bytes24 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -426,9 +378,7 @@ library Callbacks {
     _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Pop an element from value
-   */
+  /** Pop an element from value */
   function popValue(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -436,9 +386,7 @@ library Callbacks {
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 24);
   }
 
-  /**
-   * @notice Pop an element from value
-   */
+  /** Pop an element from value */
   function _popValue(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -446,9 +394,7 @@ library Callbacks {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 24);
   }
 
-  /**
-   * @notice Pop an element from value (using the specified store)
-   */
+  /** Pop an element from value (using the specified store) */
   function popValue(IStore _store, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -456,9 +402,7 @@ library Callbacks {
     _store.popFromDynamicField(_tableId, _keyTuple, 0, 24);
   }
 
-  /**
-   * @notice Pop an element from value
-   */
+  /** Pop an element from value */
   function pop(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -466,9 +410,7 @@ library Callbacks {
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 24);
   }
 
-  /**
-   * @notice Pop an element from value
-   */
+  /** Pop an element from value */
   function _pop(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -476,9 +418,7 @@ library Callbacks {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 24);
   }
 
-  /**
-   * @notice Pop an element from value (using the specified store)
-   */
+  /** Pop an element from value (using the specified store) */
   function pop(IStore _store, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -487,8 +427,8 @@ library Callbacks {
   }
 
   /**
-   * @notice Update an element of value at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateValue(bytes32 key, uint256 _index, bytes24 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -501,8 +441,8 @@ library Callbacks {
   }
 
   /**
-   * @notice Update an element of value at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function _updateValue(bytes32 key, uint256 _index, bytes24 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -515,8 +455,8 @@ library Callbacks {
   }
 
   /**
-   * @notice Update an element of value (using the specified store) at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of value (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateValue(IStore _store, bytes32 key, uint256 _index, bytes24 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -529,8 +469,8 @@ library Callbacks {
   }
 
   /**
-   * @notice Update an element of value at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function update(bytes32 key, uint256 _index, bytes24 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -543,8 +483,8 @@ library Callbacks {
   }
 
   /**
-   * @notice Update an element of value at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function _update(bytes32 key, uint256 _index, bytes24 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -557,8 +497,8 @@ library Callbacks {
   }
 
   /**
-   * @notice Update an element of value (using the specified store) at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of value (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function update(IStore _store, bytes32 key, uint256 _index, bytes24 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);

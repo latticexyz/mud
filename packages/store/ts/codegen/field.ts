@@ -26,9 +26,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         renderWithStore(
           storeArgument,
           (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-            /**
-             * @notice Get ${field.name}${_commentSuffix}
-             */
+            /** Get ${field.name}${_commentSuffix} */
             function ${_methodNamePrefix}get${_methodNameSuffix}(${renderArguments([
             _typedStore,
             _typedTableId,
@@ -66,9 +64,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           : `_tableId, _keyTuple, ${schemaIndex}, ${encodeFieldSingle}, _fieldLayout`;
 
         return `
-          /**
-           * @notice Set ${field.name}${_commentSuffix} 
-           */        
+          /** Set ${field.name}${_commentSuffix} */
           function ${_methodNamePrefix}set${_methodNameSuffix}(${externalArguments}) internal {
             ${_keyTupleDefinition}
             ${_store}.${setFieldMethod}(${internalArguments});
@@ -86,9 +82,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           renderWithStore(
             storeArgument,
             (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-              /**
-               * @notice Get length of ${field.name}${_commentSuffix}
-               */              
+              /** Get the length of ${field.name}${_commentSuffix} */
               function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
               _typedStore,
               _typedTableId,
@@ -109,9 +103,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
             storeArgument,
             (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
               /**
-               * @notice Get an item of ${field.name}${_commentSuffix}
-               * @dev (unchecked, returns invalid data if index overflows)
-               */
+               * Get an item of ${field.name}${_commentSuffix}
+               * (unchecked, returns invalid data if index overflows)
+              */
               function ${_methodNamePrefix}getItem${_methodNameSuffix}(${renderArguments([
               _typedStore,
               _typedTableId,
@@ -139,9 +133,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         renderWithStore(
           storeArgument,
           (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-              /**
-               * @notice Push ${portionData.title} to ${field.name}${_commentSuffix}
-               */          
+              /** Push ${portionData.title} to ${field.name}${_commentSuffix} */
               function ${_methodNamePrefix}push${_methodNameSuffix}(${renderArguments([
             _typedStore,
             _typedTableId,
@@ -159,9 +151,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         renderWithStore(
           storeArgument,
           (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-            /**
-             * @notice Pop ${portionData.title} from ${field.name}${_commentSuffix}
-             */          
+            /** Pop ${portionData.title} from ${field.name}${_commentSuffix} */
             function ${_methodNamePrefix}pop${_methodNameSuffix}(${renderArguments([
             _typedStore,
             _typedTableId,
@@ -194,10 +184,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
           `;
 
           return `
-          /**
-           * @notice Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\`
-           * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
-           */
+            /**
+             * Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\`
+             * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+             */
             function ${_methodNamePrefix}update${_methodNameSuffix}(${externalArguments}) internal {
               ${_keyTupleDefinition}
               unchecked {

@@ -91,9 +91,7 @@ library KeyEncoding {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function getValue(
     uint256 k1,
     int32 k2,
@@ -114,9 +112,7 @@ library KeyEncoding {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function _getValue(
     uint256 k1,
     int32 k2,
@@ -137,9 +133,7 @@ library KeyEncoding {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value (using the specified store)
-   */
+  /** Get value (using the specified store) */
   function getValue(
     IStore _store,
     uint256 k1,
@@ -161,9 +155,7 @@ library KeyEncoding {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function get(
     uint256 k1,
     int32 k2,
@@ -184,9 +176,7 @@ library KeyEncoding {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function _get(
     uint256 k1,
     int32 k2,
@@ -207,9 +197,7 @@ library KeyEncoding {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get value (using the specified store)
-   */
+  /** Get value (using the specified store) */
   function get(
     IStore _store,
     uint256 k1,
@@ -231,9 +219,7 @@ library KeyEncoding {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function setValue(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -246,9 +232,7 @@ library KeyEncoding {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function _setValue(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -261,9 +245,7 @@ library KeyEncoding {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value (using the specified store)
-   */
+  /** Set value (using the specified store) */
   function setValue(
     IStore _store,
     uint256 k1,
@@ -285,9 +267,7 @@ library KeyEncoding {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function set(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -300,9 +280,7 @@ library KeyEncoding {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function _set(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -315,9 +293,7 @@ library KeyEncoding {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /**
-   * @notice Set value (using the specified store)
-   */
+  /** Set value (using the specified store) */
   function set(
     IStore _store,
     uint256 k1,

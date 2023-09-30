@@ -83,9 +83,7 @@ library Systems {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get system
-   */
+  /** Get system */
   function getSystem(ResourceId systemId) internal view returns (address system) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -94,9 +92,7 @@ library Systems {
     return (address(bytes20(_blob)));
   }
 
-  /**
-   * @notice Get system
-   */
+  /** Get system */
   function _getSystem(ResourceId systemId) internal view returns (address system) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -105,9 +101,7 @@ library Systems {
     return (address(bytes20(_blob)));
   }
 
-  /**
-   * @notice Get system (using the specified store)
-   */
+  /** Get system (using the specified store) */
   function getSystem(IStore _store, ResourceId systemId) internal view returns (address system) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -116,9 +110,7 @@ library Systems {
     return (address(bytes20(_blob)));
   }
 
-  /**
-   * @notice Set system
-   */
+  /** Set system */
   function setSystem(ResourceId systemId, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -126,9 +118,7 @@ library Systems {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
-  /**
-   * @notice Set system
-   */
+  /** Set system */
   function _setSystem(ResourceId systemId, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -136,9 +126,7 @@ library Systems {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
-  /**
-   * @notice Set system (using the specified store)
-   */
+  /** Set system (using the specified store) */
   function setSystem(IStore _store, ResourceId systemId, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -146,9 +134,7 @@ library Systems {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
-  /**
-   * @notice Get publicAccess
-   */
+  /** Get publicAccess */
   function getPublicAccess(ResourceId systemId) internal view returns (bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -157,9 +143,7 @@ library Systems {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get publicAccess
-   */
+  /** Get publicAccess */
   function _getPublicAccess(ResourceId systemId) internal view returns (bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -168,9 +152,7 @@ library Systems {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get publicAccess (using the specified store)
-   */
+  /** Get publicAccess (using the specified store) */
   function getPublicAccess(IStore _store, ResourceId systemId) internal view returns (bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -179,9 +161,7 @@ library Systems {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Set publicAccess
-   */
+  /** Set publicAccess */
   function setPublicAccess(ResourceId systemId, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -189,9 +169,7 @@ library Systems {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
   }
 
-  /**
-   * @notice Set publicAccess
-   */
+  /** Set publicAccess */
   function _setPublicAccess(ResourceId systemId, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -199,9 +177,7 @@ library Systems {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
   }
 
-  /**
-   * @notice Set publicAccess (using the specified store)
-   */
+  /** Set publicAccess (using the specified store) */
   function setPublicAccess(IStore _store, ResourceId systemId, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);

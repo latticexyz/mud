@@ -83,9 +83,7 @@ library FunctionSelectors {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get systemId
-   */
+  /** Get systemId */
   function getSystemId(bytes4 functionSelector) internal view returns (ResourceId systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -94,9 +92,7 @@ library FunctionSelectors {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /**
-   * @notice Get systemId
-   */
+  /** Get systemId */
   function _getSystemId(bytes4 functionSelector) internal view returns (ResourceId systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -105,9 +101,7 @@ library FunctionSelectors {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /**
-   * @notice Get systemId (using the specified store)
-   */
+  /** Get systemId (using the specified store) */
   function getSystemId(IStore _store, bytes4 functionSelector) internal view returns (ResourceId systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -116,9 +110,7 @@ library FunctionSelectors {
     return ResourceId.wrap(bytes32(_blob));
   }
 
-  /**
-   * @notice Set systemId
-   */
+  /** Set systemId */
   function setSystemId(bytes4 functionSelector, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -126,9 +118,7 @@ library FunctionSelectors {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
   }
 
-  /**
-   * @notice Set systemId
-   */
+  /** Set systemId */
   function _setSystemId(bytes4 functionSelector, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -136,9 +126,7 @@ library FunctionSelectors {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
   }
 
-  /**
-   * @notice Set systemId (using the specified store)
-   */
+  /** Set systemId (using the specified store) */
   function setSystemId(IStore _store, bytes4 functionSelector, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -146,9 +134,7 @@ library FunctionSelectors {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
   }
 
-  /**
-   * @notice Get systemFunctionSelector
-   */
+  /** Get systemFunctionSelector */
   function getSystemFunctionSelector(bytes4 functionSelector) internal view returns (bytes4 systemFunctionSelector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -157,9 +143,7 @@ library FunctionSelectors {
     return (bytes4(_blob));
   }
 
-  /**
-   * @notice Get systemFunctionSelector
-   */
+  /** Get systemFunctionSelector */
   function _getSystemFunctionSelector(bytes4 functionSelector) internal view returns (bytes4 systemFunctionSelector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -168,9 +152,7 @@ library FunctionSelectors {
     return (bytes4(_blob));
   }
 
-  /**
-   * @notice Get systemFunctionSelector (using the specified store)
-   */
+  /** Get systemFunctionSelector (using the specified store) */
   function getSystemFunctionSelector(
     IStore _store,
     bytes4 functionSelector
@@ -182,9 +164,7 @@ library FunctionSelectors {
     return (bytes4(_blob));
   }
 
-  /**
-   * @notice Set systemFunctionSelector
-   */
+  /** Set systemFunctionSelector */
   function setSystemFunctionSelector(bytes4 functionSelector, bytes4 systemFunctionSelector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -192,9 +172,7 @@ library FunctionSelectors {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((systemFunctionSelector)), _fieldLayout);
   }
 
-  /**
-   * @notice Set systemFunctionSelector
-   */
+  /** Set systemFunctionSelector */
   function _setSystemFunctionSelector(bytes4 functionSelector, bytes4 systemFunctionSelector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -202,9 +180,7 @@ library FunctionSelectors {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((systemFunctionSelector)), _fieldLayout);
   }
 
-  /**
-   * @notice Set systemFunctionSelector (using the specified store)
-   */
+  /** Set systemFunctionSelector (using the specified store) */
   function setSystemFunctionSelector(IStore _store, bytes4 functionSelector, bytes4 systemFunctionSelector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);

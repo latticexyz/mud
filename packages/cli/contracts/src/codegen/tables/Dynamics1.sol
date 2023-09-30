@@ -94,9 +94,7 @@ library Dynamics1 {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get staticB32
-   */
+  /** Get staticB32 */
   function getStaticB32(bytes32 key) internal view returns (bytes32[1] memory staticB32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -105,9 +103,7 @@ library Dynamics1 {
     return toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /**
-   * @notice Get staticB32
-   */
+  /** Get staticB32 */
   function _getStaticB32(bytes32 key) internal view returns (bytes32[1] memory staticB32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -116,9 +112,7 @@ library Dynamics1 {
     return toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /**
-   * @notice Get staticB32 (using the specified store)
-   */
+  /** Get staticB32 (using the specified store) */
   function getStaticB32(IStore _store, bytes32 key) internal view returns (bytes32[1] memory staticB32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -127,9 +121,7 @@ library Dynamics1 {
     return toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /**
-   * @notice Set staticB32
-   */
+  /** Set staticB32 */
   function setStaticB32(bytes32 key, bytes32[1] memory staticB32) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -137,9 +129,7 @@ library Dynamics1 {
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_bytes32_1(staticB32)));
   }
 
-  /**
-   * @notice Set staticB32
-   */
+  /** Set staticB32 */
   function _setStaticB32(bytes32 key, bytes32[1] memory staticB32) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -147,9 +137,7 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_bytes32_1(staticB32)));
   }
 
-  /**
-   * @notice Set staticB32 (using the specified store)
-   */
+  /** Set staticB32 (using the specified store) */
   function setStaticB32(IStore _store, bytes32 key, bytes32[1] memory staticB32) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -157,9 +145,7 @@ library Dynamics1 {
     _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_bytes32_1(staticB32)));
   }
 
-  /**
-   * @notice Get length of staticB32
-   */
+  /** Get the length of staticB32 */
   function lengthStaticB32(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -170,9 +156,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get length of staticB32
-   */
+  /** Get the length of staticB32 */
   function _lengthStaticB32(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -183,9 +167,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get length of staticB32 (using the specified store)
-   */
+  /** Get the length of staticB32 (using the specified store) */
   function lengthStaticB32(IStore _store, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -197,8 +179,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticB32
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticB32
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemStaticB32(bytes32 key, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -211,8 +193,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticB32
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticB32
+   * (unchecked, returns invalid data if index overflows)
    */
   function _getItemStaticB32(bytes32 key, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -225,8 +207,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticB32 (using the specified store)
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticB32 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemStaticB32(IStore _store, bytes32 key, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -238,9 +220,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Push an element to staticB32
-   */
+  /** Push an element to staticB32 */
   function pushStaticB32(bytes32 key, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -248,9 +228,7 @@ library Dynamics1 {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to staticB32
-   */
+  /** Push an element to staticB32 */
   function _pushStaticB32(bytes32 key, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -258,9 +236,7 @@ library Dynamics1 {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to staticB32 (using the specified store)
-   */
+  /** Push an element to staticB32 (using the specified store) */
   function pushStaticB32(IStore _store, bytes32 key, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -268,9 +244,7 @@ library Dynamics1 {
     _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Pop an element from staticB32
-   */
+  /** Pop an element from staticB32 */
   function popStaticB32(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -278,9 +252,7 @@ library Dynamics1 {
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 32);
   }
 
-  /**
-   * @notice Pop an element from staticB32
-   */
+  /** Pop an element from staticB32 */
   function _popStaticB32(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -288,9 +260,7 @@ library Dynamics1 {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 32);
   }
 
-  /**
-   * @notice Pop an element from staticB32 (using the specified store)
-   */
+  /** Pop an element from staticB32 (using the specified store) */
   function popStaticB32(IStore _store, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -299,8 +269,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticB32 at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticB32 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateStaticB32(bytes32 key, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -313,8 +283,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticB32 at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticB32 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function _updateStaticB32(bytes32 key, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -327,8 +297,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticB32 (using the specified store) at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticB32 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateStaticB32(IStore _store, bytes32 key, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -340,9 +310,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get staticI32
-   */
+  /** Get staticI32 */
   function getStaticI32(bytes32 key) internal view returns (int32[2] memory staticI32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -351,9 +319,7 @@ library Dynamics1 {
     return toStaticArray_int32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
   }
 
-  /**
-   * @notice Get staticI32
-   */
+  /** Get staticI32 */
   function _getStaticI32(bytes32 key) internal view returns (int32[2] memory staticI32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -362,9 +328,7 @@ library Dynamics1 {
     return toStaticArray_int32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
   }
 
-  /**
-   * @notice Get staticI32 (using the specified store)
-   */
+  /** Get staticI32 (using the specified store) */
   function getStaticI32(IStore _store, bytes32 key) internal view returns (int32[2] memory staticI32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -373,9 +337,7 @@ library Dynamics1 {
     return toStaticArray_int32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
   }
 
-  /**
-   * @notice Set staticI32
-   */
+  /** Set staticI32 */
   function setStaticI32(bytes32 key, int32[2] memory staticI32) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -383,9 +345,7 @@ library Dynamics1 {
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_int32_2(staticI32)));
   }
 
-  /**
-   * @notice Set staticI32
-   */
+  /** Set staticI32 */
   function _setStaticI32(bytes32 key, int32[2] memory staticI32) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -393,9 +353,7 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_int32_2(staticI32)));
   }
 
-  /**
-   * @notice Set staticI32 (using the specified store)
-   */
+  /** Set staticI32 (using the specified store) */
   function setStaticI32(IStore _store, bytes32 key, int32[2] memory staticI32) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -403,9 +361,7 @@ library Dynamics1 {
     _store.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_int32_2(staticI32)));
   }
 
-  /**
-   * @notice Get length of staticI32
-   */
+  /** Get the length of staticI32 */
   function lengthStaticI32(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -416,9 +372,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get length of staticI32
-   */
+  /** Get the length of staticI32 */
   function _lengthStaticI32(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -429,9 +383,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get length of staticI32 (using the specified store)
-   */
+  /** Get the length of staticI32 (using the specified store) */
   function lengthStaticI32(IStore _store, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -443,8 +395,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticI32
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticI32
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemStaticI32(bytes32 key, uint256 _index) internal view returns (int32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -457,8 +409,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticI32
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticI32
+   * (unchecked, returns invalid data if index overflows)
    */
   function _getItemStaticI32(bytes32 key, uint256 _index) internal view returns (int32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -471,8 +423,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticI32 (using the specified store)
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticI32 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemStaticI32(IStore _store, bytes32 key, uint256 _index) internal view returns (int32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -484,9 +436,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Push an element to staticI32
-   */
+  /** Push an element to staticI32 */
   function pushStaticI32(bytes32 key, int32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -494,9 +444,7 @@ library Dynamics1 {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to staticI32
-   */
+  /** Push an element to staticI32 */
   function _pushStaticI32(bytes32 key, int32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -504,9 +452,7 @@ library Dynamics1 {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to staticI32 (using the specified store)
-   */
+  /** Push an element to staticI32 (using the specified store) */
   function pushStaticI32(IStore _store, bytes32 key, int32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -514,9 +460,7 @@ library Dynamics1 {
     _store.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Pop an element from staticI32
-   */
+  /** Pop an element from staticI32 */
   function popStaticI32(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -524,9 +468,7 @@ library Dynamics1 {
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 4);
   }
 
-  /**
-   * @notice Pop an element from staticI32
-   */
+  /** Pop an element from staticI32 */
   function _popStaticI32(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -534,9 +476,7 @@ library Dynamics1 {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 4);
   }
 
-  /**
-   * @notice Pop an element from staticI32 (using the specified store)
-   */
+  /** Pop an element from staticI32 (using the specified store) */
   function popStaticI32(IStore _store, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -545,8 +485,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticI32 at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticI32 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateStaticI32(bytes32 key, uint256 _index, int32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -559,8 +499,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticI32 at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticI32 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function _updateStaticI32(bytes32 key, uint256 _index, int32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -573,8 +513,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticI32 (using the specified store) at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticI32 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateStaticI32(IStore _store, bytes32 key, uint256 _index, int32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -586,9 +526,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get staticU128
-   */
+  /** Get staticU128 */
   function getStaticU128(bytes32 key) internal view returns (uint128[3] memory staticU128) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -597,9 +535,7 @@ library Dynamics1 {
     return toStaticArray_uint128_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint128());
   }
 
-  /**
-   * @notice Get staticU128
-   */
+  /** Get staticU128 */
   function _getStaticU128(bytes32 key) internal view returns (uint128[3] memory staticU128) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -608,9 +544,7 @@ library Dynamics1 {
     return toStaticArray_uint128_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint128());
   }
 
-  /**
-   * @notice Get staticU128 (using the specified store)
-   */
+  /** Get staticU128 (using the specified store) */
   function getStaticU128(IStore _store, bytes32 key) internal view returns (uint128[3] memory staticU128) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -619,9 +553,7 @@ library Dynamics1 {
     return toStaticArray_uint128_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint128());
   }
 
-  /**
-   * @notice Set staticU128
-   */
+  /** Set staticU128 */
   function setStaticU128(bytes32 key, uint128[3] memory staticU128) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -629,9 +561,7 @@ library Dynamics1 {
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint128_3(staticU128)));
   }
 
-  /**
-   * @notice Set staticU128
-   */
+  /** Set staticU128 */
   function _setStaticU128(bytes32 key, uint128[3] memory staticU128) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -639,9 +569,7 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint128_3(staticU128)));
   }
 
-  /**
-   * @notice Set staticU128 (using the specified store)
-   */
+  /** Set staticU128 (using the specified store) */
   function setStaticU128(IStore _store, bytes32 key, uint128[3] memory staticU128) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -649,9 +577,7 @@ library Dynamics1 {
     _store.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint128_3(staticU128)));
   }
 
-  /**
-   * @notice Get length of staticU128
-   */
+  /** Get the length of staticU128 */
   function lengthStaticU128(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -662,9 +588,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get length of staticU128
-   */
+  /** Get the length of staticU128 */
   function _lengthStaticU128(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -675,9 +599,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get length of staticU128 (using the specified store)
-   */
+  /** Get the length of staticU128 (using the specified store) */
   function lengthStaticU128(IStore _store, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -689,8 +611,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticU128
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticU128
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemStaticU128(bytes32 key, uint256 _index) internal view returns (uint128) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -703,8 +625,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticU128
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticU128
+   * (unchecked, returns invalid data if index overflows)
    */
   function _getItemStaticU128(bytes32 key, uint256 _index) internal view returns (uint128) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -717,8 +639,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticU128 (using the specified store)
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticU128 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemStaticU128(IStore _store, bytes32 key, uint256 _index) internal view returns (uint128) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -730,9 +652,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Push an element to staticU128
-   */
+  /** Push an element to staticU128 */
   function pushStaticU128(bytes32 key, uint128 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -740,9 +660,7 @@ library Dynamics1 {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to staticU128
-   */
+  /** Push an element to staticU128 */
   function _pushStaticU128(bytes32 key, uint128 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -750,9 +668,7 @@ library Dynamics1 {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to staticU128 (using the specified store)
-   */
+  /** Push an element to staticU128 (using the specified store) */
   function pushStaticU128(IStore _store, bytes32 key, uint128 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -760,9 +676,7 @@ library Dynamics1 {
     _store.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Pop an element from staticU128
-   */
+  /** Pop an element from staticU128 */
   function popStaticU128(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -770,9 +684,7 @@ library Dynamics1 {
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 2, 16);
   }
 
-  /**
-   * @notice Pop an element from staticU128
-   */
+  /** Pop an element from staticU128 */
   function _popStaticU128(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -780,9 +692,7 @@ library Dynamics1 {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 2, 16);
   }
 
-  /**
-   * @notice Pop an element from staticU128 (using the specified store)
-   */
+  /** Pop an element from staticU128 (using the specified store) */
   function popStaticU128(IStore _store, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -791,8 +701,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticU128 at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticU128 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateStaticU128(bytes32 key, uint256 _index, uint128 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -805,8 +715,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticU128 at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticU128 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function _updateStaticU128(bytes32 key, uint256 _index, uint128 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -819,8 +729,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticU128 (using the specified store) at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticU128 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateStaticU128(IStore _store, bytes32 key, uint256 _index, uint128 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -832,9 +742,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get staticAddrs
-   */
+  /** Get staticAddrs */
   function getStaticAddrs(bytes32 key) internal view returns (address[4] memory staticAddrs) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -843,9 +751,7 @@ library Dynamics1 {
     return toStaticArray_address_4(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /**
-   * @notice Get staticAddrs
-   */
+  /** Get staticAddrs */
   function _getStaticAddrs(bytes32 key) internal view returns (address[4] memory staticAddrs) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -854,9 +760,7 @@ library Dynamics1 {
     return toStaticArray_address_4(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /**
-   * @notice Get staticAddrs (using the specified store)
-   */
+  /** Get staticAddrs (using the specified store) */
   function getStaticAddrs(IStore _store, bytes32 key) internal view returns (address[4] memory staticAddrs) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -865,9 +769,7 @@ library Dynamics1 {
     return toStaticArray_address_4(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /**
-   * @notice Set staticAddrs
-   */
+  /** Set staticAddrs */
   function setStaticAddrs(bytes32 key, address[4] memory staticAddrs) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -875,9 +777,7 @@ library Dynamics1 {
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 3, EncodeArray.encode(fromStaticArray_address_4(staticAddrs)));
   }
 
-  /**
-   * @notice Set staticAddrs
-   */
+  /** Set staticAddrs */
   function _setStaticAddrs(bytes32 key, address[4] memory staticAddrs) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -885,9 +785,7 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 3, EncodeArray.encode(fromStaticArray_address_4(staticAddrs)));
   }
 
-  /**
-   * @notice Set staticAddrs (using the specified store)
-   */
+  /** Set staticAddrs (using the specified store) */
   function setStaticAddrs(IStore _store, bytes32 key, address[4] memory staticAddrs) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -895,9 +793,7 @@ library Dynamics1 {
     _store.setDynamicField(_tableId, _keyTuple, 3, EncodeArray.encode(fromStaticArray_address_4(staticAddrs)));
   }
 
-  /**
-   * @notice Get length of staticAddrs
-   */
+  /** Get the length of staticAddrs */
   function lengthStaticAddrs(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -908,9 +804,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get length of staticAddrs
-   */
+  /** Get the length of staticAddrs */
   function _lengthStaticAddrs(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -921,9 +815,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get length of staticAddrs (using the specified store)
-   */
+  /** Get the length of staticAddrs (using the specified store) */
   function lengthStaticAddrs(IStore _store, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -935,8 +827,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticAddrs
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticAddrs
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemStaticAddrs(bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -949,8 +841,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticAddrs
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticAddrs
+   * (unchecked, returns invalid data if index overflows)
    */
   function _getItemStaticAddrs(bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -963,8 +855,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticAddrs (using the specified store)
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticAddrs (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemStaticAddrs(IStore _store, bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -976,9 +868,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Push an element to staticAddrs
-   */
+  /** Push an element to staticAddrs */
   function pushStaticAddrs(bytes32 key, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -986,9 +876,7 @@ library Dynamics1 {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to staticAddrs
-   */
+  /** Push an element to staticAddrs */
   function _pushStaticAddrs(bytes32 key, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -996,9 +884,7 @@ library Dynamics1 {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to staticAddrs (using the specified store)
-   */
+  /** Push an element to staticAddrs (using the specified store) */
   function pushStaticAddrs(IStore _store, bytes32 key, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1006,9 +892,7 @@ library Dynamics1 {
     _store.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Pop an element from staticAddrs
-   */
+  /** Pop an element from staticAddrs */
   function popStaticAddrs(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1016,9 +900,7 @@ library Dynamics1 {
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 3, 20);
   }
 
-  /**
-   * @notice Pop an element from staticAddrs
-   */
+  /** Pop an element from staticAddrs */
   function _popStaticAddrs(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1026,9 +908,7 @@ library Dynamics1 {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 3, 20);
   }
 
-  /**
-   * @notice Pop an element from staticAddrs (using the specified store)
-   */
+  /** Pop an element from staticAddrs (using the specified store) */
   function popStaticAddrs(IStore _store, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1037,8 +917,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticAddrs at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticAddrs at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateStaticAddrs(bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1051,8 +931,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticAddrs at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticAddrs at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function _updateStaticAddrs(bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1065,8 +945,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticAddrs (using the specified store) at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticAddrs (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateStaticAddrs(IStore _store, bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1078,9 +958,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get staticBools
-   */
+  /** Get staticBools */
   function getStaticBools(bytes32 key) internal view returns (bool[5] memory staticBools) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1089,9 +967,7 @@ library Dynamics1 {
     return toStaticArray_bool_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
   }
 
-  /**
-   * @notice Get staticBools
-   */
+  /** Get staticBools */
   function _getStaticBools(bytes32 key) internal view returns (bool[5] memory staticBools) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1100,9 +976,7 @@ library Dynamics1 {
     return toStaticArray_bool_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
   }
 
-  /**
-   * @notice Get staticBools (using the specified store)
-   */
+  /** Get staticBools (using the specified store) */
   function getStaticBools(IStore _store, bytes32 key) internal view returns (bool[5] memory staticBools) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1111,9 +985,7 @@ library Dynamics1 {
     return toStaticArray_bool_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
   }
 
-  /**
-   * @notice Set staticBools
-   */
+  /** Set staticBools */
   function setStaticBools(bytes32 key, bool[5] memory staticBools) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1121,9 +993,7 @@ library Dynamics1 {
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 4, EncodeArray.encode(fromStaticArray_bool_5(staticBools)));
   }
 
-  /**
-   * @notice Set staticBools
-   */
+  /** Set staticBools */
   function _setStaticBools(bytes32 key, bool[5] memory staticBools) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1131,9 +1001,7 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 4, EncodeArray.encode(fromStaticArray_bool_5(staticBools)));
   }
 
-  /**
-   * @notice Set staticBools (using the specified store)
-   */
+  /** Set staticBools (using the specified store) */
   function setStaticBools(IStore _store, bytes32 key, bool[5] memory staticBools) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1141,9 +1009,7 @@ library Dynamics1 {
     _store.setDynamicField(_tableId, _keyTuple, 4, EncodeArray.encode(fromStaticArray_bool_5(staticBools)));
   }
 
-  /**
-   * @notice Get length of staticBools
-   */
+  /** Get the length of staticBools */
   function lengthStaticBools(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1154,9 +1020,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get length of staticBools
-   */
+  /** Get the length of staticBools */
   function _lengthStaticBools(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1167,9 +1031,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Get length of staticBools (using the specified store)
-   */
+  /** Get the length of staticBools (using the specified store) */
   function lengthStaticBools(IStore _store, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1181,8 +1043,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticBools
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticBools
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemStaticBools(bytes32 key, uint256 _index) internal view returns (bool) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1195,8 +1057,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticBools
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticBools
+   * (unchecked, returns invalid data if index overflows)
    */
   function _getItemStaticBools(bytes32 key, uint256 _index) internal view returns (bool) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1209,8 +1071,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Get an item of staticBools (using the specified store)
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of staticBools (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemStaticBools(IStore _store, bytes32 key, uint256 _index) internal view returns (bool) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1222,9 +1084,7 @@ library Dynamics1 {
     }
   }
 
-  /**
-   * @notice Push an element to staticBools
-   */
+  /** Push an element to staticBools */
   function pushStaticBools(bytes32 key, bool _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1232,9 +1092,7 @@ library Dynamics1 {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to staticBools
-   */
+  /** Push an element to staticBools */
   function _pushStaticBools(bytes32 key, bool _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1242,9 +1100,7 @@ library Dynamics1 {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to staticBools (using the specified store)
-   */
+  /** Push an element to staticBools (using the specified store) */
   function pushStaticBools(IStore _store, bytes32 key, bool _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1252,9 +1108,7 @@ library Dynamics1 {
     _store.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Pop an element from staticBools
-   */
+  /** Pop an element from staticBools */
   function popStaticBools(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1262,9 +1116,7 @@ library Dynamics1 {
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 4, 1);
   }
 
-  /**
-   * @notice Pop an element from staticBools
-   */
+  /** Pop an element from staticBools */
   function _popStaticBools(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1272,9 +1124,7 @@ library Dynamics1 {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 4, 1);
   }
 
-  /**
-   * @notice Pop an element from staticBools (using the specified store)
-   */
+  /** Pop an element from staticBools (using the specified store) */
   function popStaticBools(IStore _store, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -1283,8 +1133,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticBools at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticBools at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateStaticBools(bytes32 key, uint256 _index, bool _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1297,8 +1147,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticBools at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticBools at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function _updateStaticBools(bytes32 key, uint256 _index, bool _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1311,8 +1161,8 @@ library Dynamics1 {
   }
 
   /**
-   * @notice Update an element of staticBools (using the specified store) at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of staticBools (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateStaticBools(IStore _store, bytes32 key, uint256 _index, bool _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);

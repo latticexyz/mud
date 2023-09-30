@@ -73,9 +73,7 @@ library AddressArray {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function getValue(ResourceId _tableId, bytes32 key) internal view returns (address[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -84,9 +82,7 @@ library AddressArray {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function _getValue(ResourceId _tableId, bytes32 key) internal view returns (address[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -95,9 +91,7 @@ library AddressArray {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /**
-   * @notice Get value (using the specified store)
-   */
+  /** Get value (using the specified store) */
   function getValue(IStore _store, ResourceId _tableId, bytes32 key) internal view returns (address[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -106,9 +100,7 @@ library AddressArray {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function get(ResourceId _tableId, bytes32 key) internal view returns (address[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -117,9 +109,7 @@ library AddressArray {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /**
-   * @notice Get value
-   */
+  /** Get value */
   function _get(ResourceId _tableId, bytes32 key) internal view returns (address[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -128,9 +118,7 @@ library AddressArray {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /**
-   * @notice Get value (using the specified store)
-   */
+  /** Get value (using the specified store) */
   function get(IStore _store, ResourceId _tableId, bytes32 key) internal view returns (address[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -139,9 +127,7 @@ library AddressArray {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function setValue(ResourceId _tableId, bytes32 key, address[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -149,9 +135,7 @@ library AddressArray {
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function _setValue(ResourceId _tableId, bytes32 key, address[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -159,9 +143,7 @@ library AddressArray {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
-  /**
-   * @notice Set value (using the specified store)
-   */
+  /** Set value (using the specified store) */
   function setValue(IStore _store, ResourceId _tableId, bytes32 key, address[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -169,9 +151,7 @@ library AddressArray {
     _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function set(ResourceId _tableId, bytes32 key, address[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -179,9 +159,7 @@ library AddressArray {
     StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
-  /**
-   * @notice Set value
-   */
+  /** Set value */
   function _set(ResourceId _tableId, bytes32 key, address[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -189,9 +167,7 @@ library AddressArray {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
-  /**
-   * @notice Set value (using the specified store)
-   */
+  /** Set value (using the specified store) */
   function set(IStore _store, ResourceId _tableId, bytes32 key, address[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -199,9 +175,7 @@ library AddressArray {
     _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
-  /**
-   * @notice Get length of value
-   */
+  /** Get the length of value */
   function lengthValue(ResourceId _tableId, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -212,9 +186,7 @@ library AddressArray {
     }
   }
 
-  /**
-   * @notice Get length of value
-   */
+  /** Get the length of value */
   function _lengthValue(ResourceId _tableId, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -225,9 +197,7 @@ library AddressArray {
     }
   }
 
-  /**
-   * @notice Get length of value (using the specified store)
-   */
+  /** Get the length of value (using the specified store) */
   function lengthValue(IStore _store, ResourceId _tableId, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -238,9 +208,7 @@ library AddressArray {
     }
   }
 
-  /**
-   * @notice Get length of value
-   */
+  /** Get the length of value */
   function length(ResourceId _tableId, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -251,9 +219,7 @@ library AddressArray {
     }
   }
 
-  /**
-   * @notice Get length of value
-   */
+  /** Get the length of value */
   function _length(ResourceId _tableId, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -264,9 +230,7 @@ library AddressArray {
     }
   }
 
-  /**
-   * @notice Get length of value (using the specified store)
-   */
+  /** Get the length of value (using the specified store) */
   function length(IStore _store, ResourceId _tableId, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -278,8 +242,8 @@ library AddressArray {
   }
 
   /**
-   * @notice Get an item of value
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemValue(ResourceId _tableId, bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -292,8 +256,8 @@ library AddressArray {
   }
 
   /**
-   * @notice Get an item of value
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
    */
   function _getItemValue(ResourceId _tableId, bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -306,8 +270,8 @@ library AddressArray {
   }
 
   /**
-   * @notice Get an item of value (using the specified store)
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of value (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItemValue(
     IStore _store,
@@ -325,8 +289,8 @@ library AddressArray {
   }
 
   /**
-   * @notice Get an item of value
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItem(ResourceId _tableId, bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -339,8 +303,8 @@ library AddressArray {
   }
 
   /**
-   * @notice Get an item of value
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
    */
   function _getItem(ResourceId _tableId, bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -353,8 +317,8 @@ library AddressArray {
   }
 
   /**
-   * @notice Get an item of value (using the specified store)
-   * @dev (unchecked, returns invalid data if index overflows)
+   * Get an item of value (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
    */
   function getItem(IStore _store, ResourceId _tableId, bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -366,9 +330,7 @@ library AddressArray {
     }
   }
 
-  /**
-   * @notice Push an element to value
-   */
+  /** Push an element to value */
   function pushValue(ResourceId _tableId, bytes32 key, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -376,9 +338,7 @@ library AddressArray {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to value
-   */
+  /** Push an element to value */
   function _pushValue(ResourceId _tableId, bytes32 key, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -386,9 +346,7 @@ library AddressArray {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to value (using the specified store)
-   */
+  /** Push an element to value (using the specified store) */
   function pushValue(IStore _store, ResourceId _tableId, bytes32 key, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -396,9 +354,7 @@ library AddressArray {
     _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to value
-   */
+  /** Push an element to value */
   function push(ResourceId _tableId, bytes32 key, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -406,9 +362,7 @@ library AddressArray {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to value
-   */
+  /** Push an element to value */
   function _push(ResourceId _tableId, bytes32 key, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -416,9 +370,7 @@ library AddressArray {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Push an element to value (using the specified store)
-   */
+  /** Push an element to value (using the specified store) */
   function push(IStore _store, ResourceId _tableId, bytes32 key, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -426,9 +378,7 @@ library AddressArray {
     _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
-  /**
-   * @notice Pop an element from value
-   */
+  /** Pop an element from value */
   function popValue(ResourceId _tableId, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -436,9 +386,7 @@ library AddressArray {
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 20);
   }
 
-  /**
-   * @notice Pop an element from value
-   */
+  /** Pop an element from value */
   function _popValue(ResourceId _tableId, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -446,9 +394,7 @@ library AddressArray {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 20);
   }
 
-  /**
-   * @notice Pop an element from value (using the specified store)
-   */
+  /** Pop an element from value (using the specified store) */
   function popValue(IStore _store, ResourceId _tableId, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -456,9 +402,7 @@ library AddressArray {
     _store.popFromDynamicField(_tableId, _keyTuple, 0, 20);
   }
 
-  /**
-   * @notice Pop an element from value
-   */
+  /** Pop an element from value */
   function pop(ResourceId _tableId, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -466,9 +410,7 @@ library AddressArray {
     StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 20);
   }
 
-  /**
-   * @notice Pop an element from value
-   */
+  /** Pop an element from value */
   function _pop(ResourceId _tableId, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -476,9 +418,7 @@ library AddressArray {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 20);
   }
 
-  /**
-   * @notice Pop an element from value (using the specified store)
-   */
+  /** Pop an element from value (using the specified store) */
   function pop(IStore _store, ResourceId _tableId, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -487,8 +427,8 @@ library AddressArray {
   }
 
   /**
-   * @notice Update an element of value at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateValue(ResourceId _tableId, bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -501,8 +441,8 @@ library AddressArray {
   }
 
   /**
-   * @notice Update an element of value at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function _updateValue(ResourceId _tableId, bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -515,8 +455,8 @@ library AddressArray {
   }
 
   /**
-   * @notice Update an element of value (using the specified store) at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of value (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function updateValue(IStore _store, ResourceId _tableId, bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -529,8 +469,8 @@ library AddressArray {
   }
 
   /**
-   * @notice Update an element of value at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function update(ResourceId _tableId, bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -543,8 +483,8 @@ library AddressArray {
   }
 
   /**
-   * @notice Update an element of value at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function _update(ResourceId _tableId, bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -557,8 +497,8 @@ library AddressArray {
   }
 
   /**
-   * @notice Update an element of value (using the specified store) at `_index`
-   * @dev (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   * Update an element of value (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
   function update(IStore _store, ResourceId _tableId, bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);

@@ -81,9 +81,7 @@ library ResourceIds {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get exists
-   */
+  /** Get exists */
   function getExists(ResourceId resourceId) internal view returns (bool exists) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(resourceId);
@@ -92,9 +90,7 @@ library ResourceIds {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get exists
-   */
+  /** Get exists */
   function _getExists(ResourceId resourceId) internal view returns (bool exists) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(resourceId);
@@ -103,9 +99,7 @@ library ResourceIds {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get exists (using the specified store)
-   */
+  /** Get exists (using the specified store) */
   function getExists(IStore _store, ResourceId resourceId) internal view returns (bool exists) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(resourceId);
@@ -114,9 +108,7 @@ library ResourceIds {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get exists
-   */
+  /** Get exists */
   function get(ResourceId resourceId) internal view returns (bool exists) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(resourceId);
@@ -125,9 +117,7 @@ library ResourceIds {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get exists
-   */
+  /** Get exists */
   function _get(ResourceId resourceId) internal view returns (bool exists) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(resourceId);
@@ -136,9 +126,7 @@ library ResourceIds {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get exists (using the specified store)
-   */
+  /** Get exists (using the specified store) */
   function get(IStore _store, ResourceId resourceId) internal view returns (bool exists) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(resourceId);
@@ -147,9 +135,7 @@ library ResourceIds {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Set exists
-   */
+  /** Set exists */
   function setExists(ResourceId resourceId, bool exists) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(resourceId);
@@ -157,9 +143,7 @@ library ResourceIds {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
   }
 
-  /**
-   * @notice Set exists
-   */
+  /** Set exists */
   function _setExists(ResourceId resourceId, bool exists) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(resourceId);
@@ -167,9 +151,7 @@ library ResourceIds {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
   }
 
-  /**
-   * @notice Set exists (using the specified store)
-   */
+  /** Set exists (using the specified store) */
   function setExists(IStore _store, ResourceId resourceId, bool exists) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(resourceId);
@@ -177,9 +159,7 @@ library ResourceIds {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
   }
 
-  /**
-   * @notice Set exists
-   */
+  /** Set exists */
   function set(ResourceId resourceId, bool exists) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(resourceId);
@@ -187,9 +167,7 @@ library ResourceIds {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
   }
 
-  /**
-   * @notice Set exists
-   */
+  /** Set exists */
   function _set(ResourceId resourceId, bool exists) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(resourceId);
@@ -197,9 +175,7 @@ library ResourceIds {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
   }
 
-  /**
-   * @notice Set exists (using the specified store)
-   */
+  /** Set exists (using the specified store) */
   function set(IStore _store, ResourceId resourceId, bool exists) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(resourceId);
