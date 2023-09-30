@@ -26,7 +26,7 @@ contract WorldFactory is IWorldFactory {
   }
 
   /**
-   * @notice Deploys a new World instance, sets the CoreModule and transfers its ownership to the caller.
+   * @notice Deploys a new World instance, installs the CoreModule and transfers ownership to the caller.
    * @dev Uses the Create2 for deterministic deployment.
    * @return worldAddress The address of the newly deployed World contract.
    */
