@@ -35,33 +35,47 @@ import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSyst
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
 /**
- * The CoreModule registers internal World tables, the CoreSystem, and its function selectors.
-
- * Note:
- * This module only supports `installRoot` (via `World.registerRootSystem`),
- * because it needs to install root tables, systems and function selectors.
+ * @title Core Module
+ * @notice Registers internal World tables, the CoreSystem, and its function selectors.
+ * @dev This module only supports `installRoot` because it installs root tables, systems and function selectors.
  */
+
 contract CoreModule is Module {
-  // Since the CoreSystem only exists once per World and writes to
-  // known tables, we can deploy it once and register it in multiple Worlds.
+  /**
+   * @dev Since the CoreSystem only exists once per World and writes to
+   * known tables, we can deploy it once and register it in multiple Worlds.
+   */
   address immutable coreSystem = address(new CoreSystem());
 
+  /**
+   * @notice Get the name of the module.
+   * @return Module name as bytes16.
+   */
   function getName() public pure returns (bytes16) {
     return CORE_MODULE_NAME;
   }
 
+  /**
+   * @notice Root installation of the module.
+   * @dev Registers core tables, systems, and function selectors in the World.
+   */
   function installRoot(bytes memory) public override {
     _registerCoreTables();
     _registerCoreSystem();
     _registerFunctionSelectors();
   }
 
+  /**
+   * @notice Non-root installation of the module.
+   * @dev Installation is only supported at root level, so this function will always revert.
+   */
   function install(bytes memory) public pure {
     revert Module_NonRootInstallNotSupported();
   }
 
   /**
-   * Register core tables in the World
+   * @notice Register core tables in the World.
+   * @dev This internal function registers various tables and sets initial permissions.
    */
   function _registerCoreTables() internal {
     StoreCore.registerCoreTables();
@@ -86,10 +100,10 @@ contract CoreModule is Module {
   }
 
   /**
-   * Register the CoreSystem in the World
+   * @notice Register the CoreSystem in the World.
+   * @dev Uses the CoreSystem's `registerSystem` implementation to register itself on the World.
    */
   function _registerCoreSystem() internal {
-    // Use the CoreSystem's `registerSystem` implementation to register itself on the World.
     WorldContextProvider.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
       msgValue: 0,
@@ -99,7 +113,8 @@ contract CoreModule is Module {
   }
 
   /**
-   * Register function selectors for all CoreSystem functions in the World
+   * @notice Register function selectors for all CoreSystem functions in the World.
+   * @dev Iterates through known function signatures and registers them.
    */
   function _registerFunctionSelectors() internal {
     string[19] memory functionSignatures = [

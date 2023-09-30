@@ -7,9 +7,16 @@ import { revertWithBytes } from "../../../revertWithBytes.sol";
 
 import { SystemCallData, SystemCallFromData } from "../types.sol";
 
+/**
+ * @title Batch Call System
+ * @dev A system contract that facilitates batching of calls to various systems in a single transaction.
+ */
 contract BatchCallSystem is System {
   /**
-   * Batch calls to multiple systems into a single transaction, return the array of return data.
+   * @notice Make batch calls to multiple systems into a single transaction.
+   * @dev Iterates through an array of system calls, executes them, and returns an array of return data.
+   * @param systemCalls An array of SystemCallData that contains systemId and callData for each call.
+   * @return returnDatas An array of bytes containing the return data for each system call.
    */
   function batchCall(SystemCallData[] calldata systemCalls) public returns (bytes[] memory returnDatas) {
     IBaseWorld world = IBaseWorld(_world());
@@ -26,7 +33,10 @@ contract BatchCallSystem is System {
   }
 
   /**
-   * Batch calls to multiple systems into a single transaction, return the array of return data.
+   * @notice Make batch calls from specific addresses to multiple systems in a single transaction.
+   * @dev Iterates through an array of system calls with specified 'from' addresses, executes them, and returns an array of return data.
+   * @param systemCalls An array of SystemCallFromData that contains from, systemId, and callData for each call.
+   * @return returnDatas An array of bytes containing the return data for each system call.
    */
   function batchCallFrom(SystemCallFromData[] calldata systemCalls) public returns (bytes[] memory returnDatas) {
     IBaseWorld world = IBaseWorld(_world());
