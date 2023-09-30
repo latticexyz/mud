@@ -181,7 +181,10 @@ library FunctionSignatures {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
-  /// @notice Tightly pack dynamic data using this table's schema
+  /**
+   * @notice Tightly pack dynamic data lengths using this table's schema
+   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
+   */
   function encodeLengths(string memory functionSignature) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
@@ -189,12 +192,14 @@ library FunctionSignatures {
     }
   }
 
-  /// @notice Tightly pack dynamic data using this table's schema
+  /**
+   * @notice Tightly pack dynamic data using this table's schema
+   * @return The dynamic data, encoded into a sequence of bytes
+   */
   function encodeDynamic(string memory functionSignature) internal pure returns (bytes memory) {
     return abi.encodePacked(bytes((functionSignature)));
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(string memory functionSignature) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData;
     PackedCounter _encodedLengths = encodeLengths(functionSignature);

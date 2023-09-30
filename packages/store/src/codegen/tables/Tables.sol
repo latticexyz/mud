@@ -935,7 +935,10 @@ library Tables {
     return abi.encodePacked(fieldLayout, keySchema, valueSchema);
   }
 
-  /// @notice Tightly pack dynamic data using this table's schema
+  /**
+   * @notice Tightly pack dynamic data lengths using this table's schema
+   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
+   */
   function encodeLengths(
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
@@ -946,7 +949,10 @@ library Tables {
     }
   }
 
-  /// @notice Tightly pack dynamic data using this table's schema
+  /**
+   * @notice Tightly pack dynamic data using this table's schema
+   * @return The dynamic data, encoded into a sequence of bytes
+   */
   function encodeDynamic(
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
@@ -954,7 +960,6 @@ library Tables {
     return abi.encodePacked(bytes((abiEncodedKeyNames)), bytes((abiEncodedFieldNames)));
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(
     FieldLayout fieldLayout,
     Schema keySchema,

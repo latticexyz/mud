@@ -975,7 +975,6 @@ library Statics {
     return abi.encodePacked(v1, v2, v3, v4, v5, v6);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(
     uint256 v1,
     int32 v2,

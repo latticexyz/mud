@@ -266,7 +266,6 @@ library NamespaceDelegationControl {
     return abi.encodePacked(delegationControlId);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(ResourceId delegationControlId) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(delegationControlId);
 

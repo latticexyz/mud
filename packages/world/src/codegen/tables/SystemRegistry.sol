@@ -227,7 +227,6 @@ library SystemRegistry {
     return abi.encodePacked(systemId);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(ResourceId systemId) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(systemId);
 

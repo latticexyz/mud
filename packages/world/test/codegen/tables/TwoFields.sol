@@ -339,7 +339,6 @@ library TwoFields {
     return abi.encodePacked(value1, value2);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(bool value1, bool value2) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(value1, value2);
 

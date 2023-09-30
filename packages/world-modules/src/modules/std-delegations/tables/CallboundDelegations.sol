@@ -354,7 +354,6 @@ library CallboundDelegations {
     return abi.encodePacked(availableCalls);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(uint256 availableCalls) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(availableCalls);
 

@@ -202,7 +202,6 @@ library UniqueEntity {
     return abi.encodePacked(value);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(uint256 value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(value);
 

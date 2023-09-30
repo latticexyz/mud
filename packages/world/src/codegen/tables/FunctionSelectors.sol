@@ -335,7 +335,6 @@ library FunctionSelectors {
     return abi.encodePacked(systemId, systemFunctionSelector);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(
     ResourceId systemId,
     bytes4 systemFunctionSelector

@@ -356,7 +356,6 @@ library UsedKeysIndex {
     return abi.encodePacked(has, index);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(bool has, uint40 index) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(has, index);
 

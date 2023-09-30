@@ -587,7 +587,10 @@ library KeysWithValue {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
-  /// @notice Tightly pack dynamic data using this table's schema
+  /**
+   * @notice Tightly pack dynamic data lengths using this table's schema
+   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
+   */
   function encodeLengths(bytes32[] memory keysWithValue) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
@@ -595,12 +598,14 @@ library KeysWithValue {
     }
   }
 
-  /// @notice Tightly pack dynamic data using this table's schema
+  /**
+   * @notice Tightly pack dynamic data using this table's schema
+   * @return The dynamic data, encoded into a sequence of bytes
+   */
   function encodeDynamic(bytes32[] memory keysWithValue) internal pure returns (bytes memory) {
     return abi.encodePacked(EncodeArray.encode((keysWithValue)));
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(bytes32[] memory keysWithValue) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData;
     PackedCounter _encodedLengths = encodeLengths(keysWithValue);

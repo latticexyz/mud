@@ -227,7 +227,6 @@ library NamespaceOwner {
     return abi.encodePacked(owner);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(address owner) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(owner);
 

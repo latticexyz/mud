@@ -877,7 +877,10 @@ library Singleton {
     return abi.encodePacked(v1);
   }
 
-  /// @notice Tightly pack dynamic data using this table's schema
+  /**
+   * @notice Tightly pack dynamic data lengths using this table's schema
+   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
+   */
   function encodeLengths(
     uint32[2] memory v2,
     uint32[2] memory v3,
@@ -889,7 +892,10 @@ library Singleton {
     }
   }
 
-  /// @notice Tightly pack dynamic data using this table's schema
+  /**
+   * @notice Tightly pack dynamic data using this table's schema
+   * @return The dynamic data, encoded into a sequence of bytes
+   */
   function encodeDynamic(
     uint32[2] memory v2,
     uint32[2] memory v3,
@@ -903,7 +909,6 @@ library Singleton {
       );
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(
     int256 v1,
     uint32[2] memory v2,

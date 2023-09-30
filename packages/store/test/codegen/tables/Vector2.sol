@@ -370,7 +370,6 @@ library Vector2 {
     return abi.encodePacked(x, y);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(uint32 x, uint32 y) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(x, y);
 

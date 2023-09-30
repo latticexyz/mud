@@ -227,7 +227,6 @@ library Balances {
     return abi.encodePacked(balance);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(uint256 balance) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(balance);
 

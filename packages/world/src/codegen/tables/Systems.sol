@@ -329,7 +329,6 @@ library Systems {
     return abi.encodePacked(system, publicAccess);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(address system, bool publicAccess) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(system, publicAccess);
 

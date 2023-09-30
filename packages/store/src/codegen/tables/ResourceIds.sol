@@ -227,7 +227,6 @@ library ResourceIds {
     return abi.encodePacked(exists);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(bool exists) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(exists);
 

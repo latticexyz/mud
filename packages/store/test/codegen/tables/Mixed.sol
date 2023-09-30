@@ -832,7 +832,10 @@ library Mixed {
     return abi.encodePacked(u32, u128);
   }
 
-  /// @notice Tightly pack dynamic data using this table's schema
+  /**
+   * @notice Tightly pack dynamic data lengths using this table's schema
+   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
+   */
   function encodeLengths(uint32[] memory a32, string memory s) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
@@ -840,12 +843,14 @@ library Mixed {
     }
   }
 
-  /// @notice Tightly pack dynamic data using this table's schema
+  /**
+   * @notice Tightly pack dynamic data using this table's schema
+   * @return The dynamic data, encoded into a sequence of bytes
+   */
   function encodeDynamic(uint32[] memory a32, string memory s) internal pure returns (bytes memory) {
     return abi.encodePacked(EncodeArray.encode((a32)), bytes((s)));
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(
     uint32 u32,
     uint128 u128,

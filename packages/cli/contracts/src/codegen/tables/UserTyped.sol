@@ -1071,7 +1071,6 @@ library UserTyped {
     return abi.encodePacked(v1, v2, v3, v4, v5);
   }
 
-  /// @notice Tightly pack full data using this table's field layout
   function encode(
     TestTypeAddress v1,
     TestTypeInt64 v2,

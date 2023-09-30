@@ -146,7 +146,7 @@ export function renderTable(options: RenderTableOptions) {
 
       ${renderEncodeDynamic(dynamicFields)}
 
-      /// @notice Tightly pack full data using this table's field layout
+
       function encode(${renderArguments(
         options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
       )}) internal pure returns (bytes memory, PackedCounter, bytes memory) {
@@ -183,7 +183,10 @@ function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length === 0) return "";
 
   return `
-    /// @notice Tightly pack dynamic data using this table's schema
+    /**
+     * @notice Tightly pack dynamic data lengths using this table's schema
+     * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
+     */
     function encodeLengths(${renderArguments(
       dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
     )}) internal pure returns (PackedCounter _encodedLengths) {
@@ -209,7 +212,10 @@ function renderEncodeDynamic(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length === 0) return "";
 
   return `
-    /// @notice Tightly pack dynamic data using this table's schema
+    /**
+     * @notice Tightly pack dynamic data using this table's schema
+     * @return The dynamic data, encoded into a sequence of bytes
+     */
     function encodeDynamic(${renderArguments(
       dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
     )}) internal pure returns (bytes memory) {
