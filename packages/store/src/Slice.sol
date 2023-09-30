@@ -23,7 +23,9 @@ library SliceLib {
   uint256 constant MASK_PTR = uint256(type(uint128).max) << 128;
 
   /**
-   * @dev Converts a bytes array to a slice (without copying data)
+   * @notice Converts a bytes array to a slice (without copying data)
+   * @param data The bytes array to be converted
+   * @return A new Slice representing the bytes array
    */
   function fromBytes(bytes memory data) internal pure returns (Slice) {
     uint256 _pointer;
@@ -36,15 +38,22 @@ library SliceLib {
   }
 
   /**
-   * @dev Subslice a bytes array using the given start index until the end of the array (without copying data)
+   * @notice Subslice a bytes array using the given start index until the end of the array (without copying data)
+   * @param data The bytes array to subslice
+   * @param start The start index for the subslice
+   * @return A new Slice representing the subslice
    */
   function getSubslice(bytes memory data, uint256 start) internal pure returns (Slice) {
     return getSubslice(data, start, data.length);
   }
 
   /**
-   * @dev Subslice a bytes array using the given indexes (without copying data)
-   * The start index is inclusive, the end index is exclusive
+   * @notice Subslice a bytes array using the given indexes (without copying data)
+   * @dev The start index is inclusive, the end index is exclusive
+   * @param data The bytes array to subslice
+   * @param start The start index for the subslice
+   * @param end The end index for the subslice
+   * @return A new Slice representing the subslice
    */
   function getSubslice(bytes memory data, uint256 start, uint256 end) internal pure returns (Slice) {
     // TODO this check helps catch bugs and can eventually be removed
@@ -68,22 +77,28 @@ library SliceLib {
  */
 library SliceInstance {
   /**
-   * @dev Returns the pointer to the start of a slice
+   * @notice Returns the pointer to the start of a slice
+   * @param self The slice whose pointer needs to be fetched
+   * @return The pointer to the start of the slice
    */
   function pointer(Slice self) internal pure returns (uint256) {
     return Slice.unwrap(self) >> 128;
   }
 
   /**
-   * @dev Returns the slice length in bytes
+   * @notice Returns the slice length in bytes
+   * @param self The slice whose length needs to be fetched
+   * @return The length of the slice
    */
   function length(Slice self) internal pure returns (uint256) {
     return Slice.unwrap(self) & SliceLib.MASK_LEN;
   }
 
   /**
-   * @dev Copies the slice to a new bytes array
-   * The slice will NOT point to the new bytes array
+   * @notice Converts a Slice to bytes
+   * @dev This function internally manages the conversion of a slice into a bytes format.
+   * @param self The Slice to be converted to bytes.
+   * @return data The bytes representation of the provided Slice.
    */
   function toBytes(Slice self) internal pure returns (bytes memory data) {
     uint256 fromPointer = pointer(self);
@@ -99,6 +114,12 @@ library SliceInstance {
     Memory.copy(fromPointer, toPointer, _length);
   }
 
+  /**
+   * @notice Converts a Slice to bytes32
+   * @dev This function converts a slice into a fixed-length bytes32. Uses inline assembly for the conversion.
+   * @param self The Slice to be converted to bytes32.
+   * @return result The bytes32 representation of the provided Slice.
+   */
   function toBytes32(Slice self) internal pure returns (bytes32 result) {
     uint256 memoryPointer = self.pointer();
     /// @solidity memory-safe-assembly

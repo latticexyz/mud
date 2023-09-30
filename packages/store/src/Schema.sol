@@ -5,23 +5,32 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 import { WORD_LAST_INDEX, BYTE_TO_BITS, MAX_TOTAL_FIELDS, MAX_DYNAMIC_FIELDS, LayoutOffsets } from "./constants.sol";
 
-// - 2 bytes static length of the schema
-// - 1 byte for number of static size fields
-// - 1 byte for number of dynamic size fields
-// - 28 bytes for 28 schema types (MAX_DYNAMIC_FIELDS allows us to pack the lengths into 1 word)
+/**
+ * @title Schema handling in Lattice
+ * @dev Defines and handles the encoding/decoding of Schemas which describe the layout of data structures.
+ * 2 bytes length of all the static (in size) fields in the schema
+ * 1 byte for number of static size fields
+ * 1 byte for number of dynamic size fields
+ * 28 bytes for 28 schema types (MAX_DYNAMIC_FIELDS allows us to pack the lengths into 1 word)
+ */
 type Schema is bytes32;
 
 using SchemaInstance for Schema global;
 
 /**
- * Static functions for Schema
+ * @dev Static utility functions for handling Schemas.
  */
 library SchemaLib {
+  /// @dev Error raised when the provided schema has an invalid length.
   error SchemaLib_InvalidLength(uint256 length);
+
+  /// @dev Error raised when a static type is placed after a dynamic type in a schema.
   error SchemaLib_StaticTypeAfterDynamicType();
 
   /**
-   * Encode the given schema into a single bytes32
+   * @notice Encodes a given schema into a single bytes32.
+   * @param _schema The list of SchemaTypes that constitute the schema.
+   * @return The encoded Schema.
    */
   function encode(SchemaType[] memory _schema) internal pure returns (Schema) {
     if (_schema.length > MAX_TOTAL_FIELDS) revert SchemaLib_InvalidLength(_schema.length);
@@ -77,18 +86,23 @@ library SchemaLib {
 }
 
 /**
- * Instance functions for Schema
+ * @dev Instance utility functions for handling a Schema instance.
  */
 library SchemaInstance {
   /**
-   * Get the length of the static data for the given schema
+   * @notice Get the length of static data for the given schema.
+   * @param schema The schema to inspect.
+   * @return The static data length.
    */
   function staticDataLength(Schema schema) internal pure returns (uint256) {
     return uint256(Schema.unwrap(schema)) >> LayoutOffsets.TOTAL_LENGTH;
   }
 
   /**
-   * Get the type of the data for the given schema at the given index
+   * @notice Get the SchemaType at a given index in the schema.
+   * @param schema The schema to inspect.
+   * @param index The index of the SchemaType to retrieve.
+   * @return The SchemaType at the given index.
    */
   function atIndex(Schema schema, uint256 index) internal pure returns (SchemaType) {
     unchecked {
@@ -97,21 +111,27 @@ library SchemaInstance {
   }
 
   /**
-   * Get the number of static fields for the given schema
+   * @notice Get the number of static (fixed length) fields in the schema.
+   * @param schema The schema to inspect.
+   * @return The number of static fields.
    */
   function numStaticFields(Schema schema) internal pure returns (uint256) {
     return uint8(uint256(schema.unwrap()) >> LayoutOffsets.NUM_STATIC_FIELDS);
   }
 
   /**
-   * Get the number of dynamic length fields for the given schema
+   * @notice Get the number of dynamic length fields in the schema.
+   * @param schema The schema to inspect.
+   * @return The number of dynamic length fields.
    */
   function numDynamicFields(Schema schema) internal pure returns (uint256) {
     return uint8(uint256(schema.unwrap()) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
   }
 
   /**
-   * Get the total number of fields for the given schema
+   * @notice Get the total number of fields in the schema.
+   * @param schema The schema to inspect.
+   * @return The total number of fields.
    */
   function numFields(Schema schema) internal pure returns (uint256) {
     unchecked {
@@ -122,12 +142,19 @@ library SchemaInstance {
   }
 
   /**
-   * Check if the given schema is empty
+   * @notice Checks if the provided schema is empty.
+   * @param schema The schema to check.
+   * @return true if the schema is empty, false otherwise.
    */
   function isEmpty(Schema schema) internal pure returns (bool) {
     return Schema.unwrap(schema) == bytes32(0);
   }
 
+  /**
+   * @notice Validates the given schema.
+   * @param schema The schema to validate.
+   * @param allowEmpty Determines if an empty schema is valid or not.
+   */
   function validate(Schema schema, bool allowEmpty) internal pure {
     // Schema must not be empty
     if (!allowEmpty && schema.isEmpty()) revert SchemaLib.SchemaLib_InvalidLength(0);
@@ -171,7 +198,9 @@ library SchemaInstance {
   }
 
   /**
-   * Unwrap the schema
+   * @notice Unwraps the schema to its underlying bytes32 representation.
+   * @param schema The schema to unwrap.
+   * @return The bytes32 representation of the schema.
    */
   function unwrap(Schema schema) internal pure returns (bytes32) {
     return Schema.unwrap(schema);
