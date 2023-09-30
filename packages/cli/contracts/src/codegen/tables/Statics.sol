@@ -1104,7 +1104,7 @@ library Statics {
   }
 
   /**
-   * @notice Encode keys as a bytes32 array using this table's field layout
+   * @notice Encode keys as a bytes32 array using this table's field layout.
    */
   function encodeKeyTuple(
     uint256 k1,

@@ -163,7 +163,7 @@ export function renderTable(options: RenderTableOptions) {
       }
       
       /**
-       * @notice Encode keys as a bytes32 array using this table's field layout
+       * @notice Encode keys as a bytes32 array using this table's field layout.
        */
       function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory) {
         ${_keyTupleDefinition}

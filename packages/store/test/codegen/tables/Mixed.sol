@@ -983,7 +983,7 @@ library Mixed {
   }
 
   /**
-   * @notice Encode keys as a bytes32 array using this table's field layout
+   * @notice Encode keys as a bytes32 array using this table's field layout.
    */
   function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);

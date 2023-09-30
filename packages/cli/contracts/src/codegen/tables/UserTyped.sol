@@ -1187,7 +1187,7 @@ library UserTyped {
   }
 
   /**
-   * @notice Encode keys as a bytes32 array using this table's field layout
+   * @notice Encode keys as a bytes32 array using this table's field layout.
    */
   function encodeKeyTuple(
     TestTypeAddress k1,
