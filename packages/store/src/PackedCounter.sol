@@ -161,7 +161,7 @@ library PackedCounterInstance {
 
   /**
    * @notice Set a counter at a specific index in a PackedCounter.
-   * @dev Updates a value at a specific index and returns the modified PackedCounter.
+   * @dev Updates a value at a specific index and updates the accumulator field.
    * @param packedCounter The packed counter to modify.
    * @param index The index to set.
    * @param newValueAtIndex The new value to set at the given index.
