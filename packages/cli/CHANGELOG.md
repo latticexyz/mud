@@ -1,5 +1,26 @@
 # Change Log
 
+## 2.0.0-next.10
+
+### Patch Changes
+
+- [#1663](https://github.com/latticexyz/mud/pull/1663) [`87235a21`](https://github.com/latticexyz/mud/commit/87235a21b28fc831b5fb7a1546835ef08bd51655) Thanks [@holic](https://github.com/holic)! - Fix table IDs for module install step of deploy
+
+- [#1619](https://github.com/latticexyz/mud/pull/1619) [`1d403962`](https://github.com/latticexyz/mud/commit/1d403962283c5b5f62410867be01f6adff277f41) Thanks [@alvrs](https://github.com/alvrs)! - We fixed a bug in the deploy script that would cause the deployment to fail if a non-root namespace was used in the config.
+
+- Updated dependencies [[`88b1a5a1`](https://github.com/latticexyz/mud/commit/88b1a5a191b4adadf190de51cd47a5b033b6fb29), [`7987c94d`](https://github.com/latticexyz/mud/commit/7987c94d61a2c759916a708774db9f3cf08edca8)]:
+  - @latticexyz/world-modules@2.0.0-next.10
+  - @latticexyz/world@2.0.0-next.10
+  - @latticexyz/abi-ts@2.0.0-next.10
+  - @latticexyz/common@2.0.0-next.10
+  - @latticexyz/config@2.0.0-next.10
+  - @latticexyz/gas-report@2.0.0-next.10
+  - @latticexyz/protocol-parser@2.0.0-next.10
+  - @latticexyz/schema-type@2.0.0-next.10
+  - @latticexyz/services@2.0.0-next.10
+  - @latticexyz/store@2.0.0-next.10
+  - @latticexyz/utils@2.0.0-next.10
+
 ## 2.0.0-next.9
 
 ### Major Changes

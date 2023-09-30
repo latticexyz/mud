@@ -1,3 +1,55 @@
+## Version 2.0.0-next.10
+
+### Major changes
+
+**[refactor(world): expose library for WorldContextConsumer (#1624)](https://github.com/latticexyz/mud/commit/88b1a5a191b4adadf190de51cd47a5b033b6fb29)** (@latticexyz/world-modules, @latticexyz/world)
+
+We now expose a `WorldContextConsumerLib` library with the same functionality as the `WorldContextConsumer` contract, but the ability to be used inside of internal libraries.
+We also renamed the `WorldContextProvider` library to `WorldContextProviderLib` for consistency.
+
+### Minor changes
+
+**[docs: changeset for indexer/store sync table IDs param (#1662)](https://github.com/latticexyz/mud/commit/4081493b84ab5c78a5147d4af8d41fc2d9e027a5)** (@latticexyz/store-indexer, @latticexyz/store-sync)
+
+Added a `tableIds` parameter to store sync methods and indexer to allow filtering data streams by table IDs. Store sync methods automatically include all internal table IDs from Store and World.
+
+```ts
+import { syncToRecs } from "@latticexyz/store-sync/recs";
+import { resourceIdToHex } from "@latticexyz/common";
+
+syncToRecs({
+  ...
+  tableIds: [resourceIdToHex(...)],
+});
+```
+
+```ts
+import { createIndexerClient } from "@latticexyz/store-sync/trpc-indexer";
+import { resourceIdToHex } from "@latticexyz/common";
+
+const client = createIndexerClient({ ... });
+client.findAll({
+  ...
+  tableIds: [resourceIdToHex(...)],
+});
+```
+
+**[feat(world): return world address from WorldFactory (#1675)](https://github.com/latticexyz/mud/commit/7987c94d61a2c759916a708774db9f3cf08edca8)** (@latticexyz/world)
+
+Return address of the newly created World from `WorldFactory.deployWorld`.
+
+### Patch changes
+
+**[fix(cli): fix table IDs for module install (#1663)](https://github.com/latticexyz/mud/commit/87235a21b28fc831b5fb7a1546835ef08bd51655)** (@latticexyz/cli)
+
+Fix table IDs for module install step of deploy
+
+**[fix(cli): register namespace with namespaceId (#1619)](https://github.com/latticexyz/mud/commit/1d403962283c5b5f62410867be01f6adff277f41)** (@latticexyz/cli)
+
+We fixed a bug in the deploy script that would cause the deployment to fail if a non-root namespace was used in the config.
+
+---
+
 ## Version 2.0.0-next.9
 
 ### Major changes
