@@ -43,7 +43,6 @@ library Bytes {
 
   /**
    * @dev Sets the length of a bytes blob in memory.
-   * Utilizes inline assembly to directly modify the length field of the bytes blob.
    * This function does not resize the memory allocation; it only changes the length
    * field, which affects operations that access the length property.
    * @param input The bytes blob to modify.
@@ -188,7 +187,6 @@ library Bytes {
 
   /**
    * @dev Extracts a single byte from a bytes32 value starting at a specific position.
-   * Uses inline assembly to efficiently shift and extract the desired byte.
    * @param data The bytes32 value from which a byte is to be extracted.
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes1 value from the specified position in the bytes32 value.
@@ -217,7 +215,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 2-byte sequence from a bytes32 value starting at a specific position.
-   * Uses inline assembly to efficiently shift and extract the desired byte.
    * @param data The bytes32 value from which a 2-byte sequence is to be extracted.
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes2 value from the specified position in the bytes32 value.
@@ -260,7 +257,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 4-byte sequence from a bytes32 value starting at a specific position.
-   * Uses inline assembly to efficiently shift and extract the desired byte.
    * @param data The bytes32 value from which a 4-byte sequence is to be extracted.
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes4 value from the specified position in the bytes32 value.
@@ -289,7 +285,6 @@ library Bytes {
 
   /**
    * @dev Extracts a 5-byte sequence from a bytes32 value starting at a specific position.
-   * Uses inline assembly to efficiently shift and extract the desired byte.
    * @param data The bytes32 value from which a 5-byte sequence is to be extracted.
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes5 value from the specified position in the bytes32 value.
