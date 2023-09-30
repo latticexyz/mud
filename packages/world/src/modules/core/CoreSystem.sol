@@ -11,8 +11,9 @@ import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSyst
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
 /**
- * The CoreSystem includes all World functionality that is externalized
- * from the World contract to keep the World contract's bytecode as lean as possible.
+ * @title Core System for World
+ * @notice This system aggregates all World functionalities externalized from the World contract, aiming to keep the World contract's bytecode lean.
+ * @dev Aggregates multiple system implementations for the World.
  */
 contract CoreSystem is
   IWorldErrors,
@@ -23,5 +24,5 @@ contract CoreSystem is
   StoreRegistrationSystem,
   WorldRegistrationSystem
 {
-
+  // Currently, no additional functionality is added in this aggregate contract.
 }

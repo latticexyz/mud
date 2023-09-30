@@ -42,12 +42,18 @@ struct StaticsData {
 }
 
 library Statics {
-  /** Get the table values' field layout */
+  /**
+   * @notice Get the table values' field layout.
+   * @return _fieldLayout The field layout for the table.
+   */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
   }
 
-  /** Get the table's key schema */
+  /**
+   * @notice Get the table's key schema.
+   * @return _keySchema The key schema for the table.
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](6);
     _keySchema[0] = SchemaType.UINT256;
@@ -60,7 +66,10 @@ library Statics {
     return SchemaLib.encode(_keySchema);
   }
 
-  /** Get the table's value schema */
+  /**
+   * @notice Get the table's value schema.
+   * @return _valueSchema The value schema for the table.
+   */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](6);
     _valueSchema[0] = SchemaType.UINT256;
@@ -73,7 +82,10 @@ library Statics {
     return SchemaLib.encode(_valueSchema);
   }
 
-  /** Get the table's key names */
+  /**
+   * @notice Get the table's key field names.
+   * @return keyNames An array of strings with the names of key fields.
+   */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](6);
     keyNames[0] = "k1";
@@ -84,7 +96,10 @@ library Statics {
     keyNames[5] = "k6";
   }
 
-  /** Get the table's field names */
+  /**
+   * @notice Get the table's value field names.
+   * @return fieldNames An array of strings with the names of value fields.
+   */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](6);
     fieldNames[0] = "v1";
@@ -95,22 +110,30 @@ library Statics {
     fieldNames[5] = "v6";
   }
 
-  /** Register the table with its config */
+  /**
+   * @notice Register the table with its config.
+   */
   function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config */
+  /**
+   * @notice Register the table with its config.
+   */
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config (using the specified store) */
+  /**
+   * @notice Register the table with its config (using the specified store).
+   */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get v1 */
+  /**
+   * @notice Get v1.
+   */
   function getV1(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (uint256 v1) {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -124,7 +147,9 @@ library Statics {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get v1 */
+  /**
+   * @notice Get v1.
+   */
   function _getV1(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (uint256 v1) {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -138,7 +163,9 @@ library Statics {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Get v1 (using the specified store) */
+  /**
+   * @notice Get v1 (using the specified store).
+   */
   function getV1(
     IStore _store,
     uint256 k1,
@@ -160,7 +187,9 @@ library Statics {
     return (uint256(bytes32(_blob)));
   }
 
-  /** Set v1 */
+  /**
+   * @notice Set v1.
+   */
   function setV1(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, uint256 v1) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -173,7 +202,9 @@ library Statics {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
   }
 
-  /** Set v1 */
+  /**
+   * @notice Set v1.
+   */
   function _setV1(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, uint256 v1) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -186,7 +217,9 @@ library Statics {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
   }
 
-  /** Set v1 (using the specified store) */
+  /**
+   * @notice Set v1 (using the specified store).
+   */
   function setV1(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, uint256 v1) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -199,7 +232,9 @@ library Statics {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
   }
 
-  /** Get v2 */
+  /**
+   * @notice Get v2.
+   */
   function getV2(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (int32 v2) {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -213,7 +248,9 @@ library Statics {
     return (int32(uint32(bytes4(_blob))));
   }
 
-  /** Get v2 */
+  /**
+   * @notice Get v2.
+   */
   function _getV2(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (int32 v2) {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -227,7 +264,9 @@ library Statics {
     return (int32(uint32(bytes4(_blob))));
   }
 
-  /** Get v2 (using the specified store) */
+  /**
+   * @notice Get v2 (using the specified store).
+   */
   function getV2(
     IStore _store,
     uint256 k1,
@@ -249,7 +288,9 @@ library Statics {
     return (int32(uint32(bytes4(_blob))));
   }
 
-  /** Set v2 */
+  /**
+   * @notice Set v2.
+   */
   function setV2(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, int32 v2) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -262,7 +303,9 @@ library Statics {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), _fieldLayout);
   }
 
-  /** Set v2 */
+  /**
+   * @notice Set v2.
+   */
   function _setV2(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, int32 v2) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -275,7 +318,9 @@ library Statics {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), _fieldLayout);
   }
 
-  /** Set v2 (using the specified store) */
+  /**
+   * @notice Set v2 (using the specified store).
+   */
   function setV2(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, int32 v2) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -288,7 +333,9 @@ library Statics {
     _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), _fieldLayout);
   }
 
-  /** Get v3 */
+  /**
+   * @notice Get v3.
+   */
   function getV3(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (bytes16 v3) {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -302,7 +349,9 @@ library Statics {
     return (bytes16(_blob));
   }
 
-  /** Get v3 */
+  /**
+   * @notice Get v3.
+   */
   function _getV3(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (bytes16 v3) {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -316,7 +365,9 @@ library Statics {
     return (bytes16(_blob));
   }
 
-  /** Get v3 (using the specified store) */
+  /**
+   * @notice Get v3 (using the specified store).
+   */
   function getV3(
     IStore _store,
     uint256 k1,
@@ -338,7 +389,9 @@ library Statics {
     return (bytes16(_blob));
   }
 
-  /** Set v3 */
+  /**
+   * @notice Set v3.
+   */
   function setV3(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, bytes16 v3) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -351,7 +404,9 @@ library Statics {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), _fieldLayout);
   }
 
-  /** Set v3 */
+  /**
+   * @notice Set v3.
+   */
   function _setV3(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, bytes16 v3) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -364,7 +419,9 @@ library Statics {
     StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), _fieldLayout);
   }
 
-  /** Set v3 (using the specified store) */
+  /**
+   * @notice Set v3 (using the specified store).
+   */
   function setV3(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, bytes16 v3) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -377,7 +434,9 @@ library Statics {
     _store.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), _fieldLayout);
   }
 
-  /** Get v4 */
+  /**
+   * @notice Get v4.
+   */
   function getV4(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (address v4) {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -391,7 +450,9 @@ library Statics {
     return (address(bytes20(_blob)));
   }
 
-  /** Get v4 */
+  /**
+   * @notice Get v4.
+   */
   function _getV4(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (address v4) {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -405,7 +466,9 @@ library Statics {
     return (address(bytes20(_blob)));
   }
 
-  /** Get v4 (using the specified store) */
+  /**
+   * @notice Get v4 (using the specified store).
+   */
   function getV4(
     IStore _store,
     uint256 k1,
@@ -427,7 +490,9 @@ library Statics {
     return (address(bytes20(_blob)));
   }
 
-  /** Set v4 */
+  /**
+   * @notice Set v4.
+   */
   function setV4(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, address v4) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -440,7 +505,9 @@ library Statics {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), _fieldLayout);
   }
 
-  /** Set v4 */
+  /**
+   * @notice Set v4.
+   */
   function _setV4(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, address v4) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -453,7 +520,9 @@ library Statics {
     StoreCore.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), _fieldLayout);
   }
 
-  /** Set v4 (using the specified store) */
+  /**
+   * @notice Set v4 (using the specified store).
+   */
   function setV4(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, address v4) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -466,7 +535,9 @@ library Statics {
     _store.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), _fieldLayout);
   }
 
-  /** Get v5 */
+  /**
+   * @notice Get v5.
+   */
   function getV5(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (bool v5) {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -480,7 +551,9 @@ library Statics {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Get v5 */
+  /**
+   * @notice Get v5.
+   */
   function _getV5(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (bool v5) {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -494,7 +567,9 @@ library Statics {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Get v5 (using the specified store) */
+  /**
+   * @notice Get v5 (using the specified store).
+   */
   function getV5(
     IStore _store,
     uint256 k1,
@@ -516,7 +591,9 @@ library Statics {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Set v5 */
+  /**
+   * @notice Set v5.
+   */
   function setV5(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, bool v5) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -529,7 +606,9 @@ library Statics {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), _fieldLayout);
   }
 
-  /** Set v5 */
+  /**
+   * @notice Set v5.
+   */
   function _setV5(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, bool v5) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -542,7 +621,9 @@ library Statics {
     StoreCore.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), _fieldLayout);
   }
 
-  /** Set v5 (using the specified store) */
+  /**
+   * @notice Set v5 (using the specified store).
+   */
   function setV5(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, bool v5) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -555,7 +636,9 @@ library Statics {
     _store.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), _fieldLayout);
   }
 
-  /** Get v6 */
+  /**
+   * @notice Get v6.
+   */
   function getV6(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (Enum1 v6) {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -569,7 +652,9 @@ library Statics {
     return Enum1(uint8(bytes1(_blob)));
   }
 
-  /** Get v6 */
+  /**
+   * @notice Get v6.
+   */
   function _getV6(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (Enum1 v6) {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -583,7 +668,9 @@ library Statics {
     return Enum1(uint8(bytes1(_blob)));
   }
 
-  /** Get v6 (using the specified store) */
+  /**
+   * @notice Get v6 (using the specified store).
+   */
   function getV6(
     IStore _store,
     uint256 k1,
@@ -605,7 +692,9 @@ library Statics {
     return Enum1(uint8(bytes1(_blob)));
   }
 
-  /** Set v6 */
+  /**
+   * @notice Set v6.
+   */
   function setV6(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, Enum1 v6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -618,7 +707,9 @@ library Statics {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), _fieldLayout);
   }
 
-  /** Set v6 */
+  /**
+   * @notice Set v6.
+   */
   function _setV6(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, Enum1 v6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -631,7 +722,9 @@ library Statics {
     StoreCore.setStaticField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), _fieldLayout);
   }
 
-  /** Set v6 (using the specified store) */
+  /**
+   * @notice Set v6 (using the specified store).
+   */
   function setV6(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, Enum1 v6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -644,7 +737,9 @@ library Statics {
     _store.setStaticField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), _fieldLayout);
   }
 
-  /** Get the full data */
+  /**
+   * @notice Get the full data.
+   */
   function get(
     uint256 k1,
     int32 k2,
@@ -669,7 +764,9 @@ library Statics {
     return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Get the full data */
+  /**
+   * @notice Get the full data.
+   */
   function _get(
     uint256 k1,
     int32 k2,
@@ -694,7 +791,9 @@ library Statics {
     return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Get the full data (using the specified store) */
+  /**
+   * @notice Get the full data (using the specified store).
+   */
   function get(
     IStore _store,
     uint256 k1,
@@ -720,7 +819,9 @@ library Statics {
     return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Set the full data using individual values */
+  /**
+   * @notice Set the full data using individual values.
+   */
   function set(
     uint256 k1,
     int32 k2,
@@ -751,7 +852,9 @@ library Statics {
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Set the full data using individual values */
+  /**
+   * @notice Set the full data using individual values.
+   */
   function _set(
     uint256 k1,
     int32 k2,
@@ -782,7 +885,9 @@ library Statics {
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
-  /** Set the full data using individual values (using the specified store) */
+  /**
+   * @notice Set the full data using individual values (using the specified store).
+   */
   function set(
     IStore _store,
     uint256 k1,
@@ -814,7 +919,9 @@ library Statics {
     _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Set the full data using the data struct */
+  /**
+   * @notice Set the full data using the data struct.
+   */
   function set(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, StaticsData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6);
 
@@ -832,7 +939,9 @@ library Statics {
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Set the full data using the data struct */
+  /**
+   * @notice Set the full data using the data struct.
+   */
   function _set(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, StaticsData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6);
 
@@ -850,7 +959,9 @@ library Statics {
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
-  /** Set the full data using the data struct (using the specified store) */
+  /**
+   * @notice Set the full data using the data struct (using the specified store).
+   */
   function set(
     IStore _store,
     uint256 k1,
@@ -878,8 +989,7 @@ library Statics {
   }
 
   /**
-   * Decode the tightly packed blob of static data using this table's field layout
-   * Undefined behaviour for invalid blobs
+   * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(
     bytes memory _blob
@@ -898,8 +1008,10 @@ library Statics {
   }
 
   /**
-   * Decode the tightly packed blob using this table's field layout.
-   * Undefined behaviour for invalid blobs.
+   * @notice Decode the tightly packed blobs using this table's field layout.
+   * @param _staticData Tightly packed static fields.
+   *
+   *
    */
   function decode(
     bytes memory _staticData,
@@ -909,7 +1021,9 @@ library Statics {
     (_table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6) = decodeStatic(_staticData);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys.
+   */
   function deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -922,7 +1036,9 @@ library Statics {
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -935,7 +1051,9 @@ library Statics {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
-  /** Delete all data for given keys (using the specified store) */
+  /**
+   * @notice Delete all data for given keys (using the specified store).
+   */
   function deleteRecord(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -948,7 +1066,10 @@ library Statics {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Tightly pack static data using this table's schema */
+  /**
+   * @notice Tightly pack static (fixed length) data using this table's schema.
+   * @return The static data, encoded into a sequence of bytes.
+   */
   function encodeStatic(
     uint256 v1,
     int32 v2,
@@ -960,7 +1081,12 @@ library Statics {
     return abi.encodePacked(v1, v2, v3, v4, v5, v6);
   }
 
-  /** Tightly pack full data using this table's field layout */
+  /**
+   * @notice Encode all of a record's fields.
+   * @return The static (fixed length) data, encoded into a sequence of bytes.
+   * @return The lengths of the dynamic fields (packed into a single bytes32 value).
+   * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
+   */
   function encode(
     uint256 v1,
     int32 v2,
@@ -977,7 +1103,9 @@ library Statics {
     return (_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Encode keys as a bytes32 array using this table's field layout */
+  /**
+   * @notice Encode keys as a bytes32 array using this table's field layout.
+   */
   function encodeKeyTuple(
     uint256 k1,
     int32 k2,
@@ -998,12 +1126,22 @@ library Statics {
   }
 }
 
+/**
+ * @notice Cast a value to a bool.
+ * @dev Boolean values are encoded as uint8 (1 = true, 0 = false), but Solidity doesn't allow casting between uint8 and bool.
+ * @param value The uint8 value to convert.
+ * @return result The boolean value.
+ */
 function _toBool(uint8 value) pure returns (bool result) {
   assembly {
     result := value
   }
 }
 
+/**
+ * @notice Cast a bool to a bytes32.
+ * @dev The boolean value is casted to a bytes32 value with 0 or 1 at the least significant bit.
+ */
 function _boolToBytes32(bool value) pure returns (bytes32 result) {
   assembly {
     result := value

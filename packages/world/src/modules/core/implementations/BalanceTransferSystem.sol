@@ -12,12 +12,20 @@ import { IWorldErrors } from "../../../IWorldErrors.sol";
 
 import { Balances } from "../../../codegen/tables/Balances.sol";
 
+/**
+ * @title Balance Transfer System
+ * @dev A system contract that facilitates balance transfers in the World and outside of the World.
+ */
 contract BalanceTransferSystem is System, IWorldErrors {
   using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
   /**
-   * Transfer balance to another namespace in the World
+   * @notice Transfer balance to another namespace in the World.
+   * @dev Requires the caller to have access to the source namespace and ensures the destination namespace type is valid.
+   * @param fromNamespaceId The source namespace from which the balance will be deducted.
+   * @param toNamespaceId The target namespace where the balance will be added.
+   * @param amount The amount to transfer.
    */
   function transferBalanceToNamespace(
     ResourceId fromNamespaceId,
@@ -44,7 +52,11 @@ contract BalanceTransferSystem is System, IWorldErrors {
   }
 
   /**
-   * Transfer balance out of the World
+   * @notice Transfer balance out of the World to a specific address.
+   * @dev Requires the caller to have access to the source namespace and ensures sufficient balance before transfer.
+   * @param fromNamespaceId The source namespace from which the balance will be deducted.
+   * @param toAddress The target address where the balance will be sent.
+   * @param amount The amount to transfer.
    */
   function transferBalanceToAddress(ResourceId fromNamespaceId, address toAddress, uint256 amount) public virtual {
     // Require caller to have access to the namespace

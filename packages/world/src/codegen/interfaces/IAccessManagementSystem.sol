@@ -5,6 +5,10 @@ pragma solidity >=0.8.21;
 
 import { ResourceId } from "./../../WorldResourceId.sol";
 
+/**
+ * @title IAccessManagementSystem
+ * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
+ */
 interface IAccessManagementSystem {
   function grantAccess(ResourceId resourceId, address grantee) external;
 

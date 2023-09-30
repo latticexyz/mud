@@ -9,9 +9,17 @@ type Hook is bytes21;
 
 using HookInstance for Hook global;
 
+/**
+ * @title HookLib
+ * @dev Library for encoding hooks and filtering hooks from a list by address.
+ */
 library HookLib {
   /**
-   * Encode enabled hooks into a bitmap with 1 bit per hook, and pack the bitmap with the store hook address into a bytes21 value
+   * @notice Packs the bitmap of enabled hooks with the hook address into a Hook value (bytes21).
+   * @dev The hook address is stored in the leftmost 20 bytes, and the bitmap is stored in the rightmost byte.
+   * @param hookAddress The address of the hook.
+   * @param encodedHooks The encoded hooks in a bitmap.
+   * @return A Hook type with packed hook address and bitmap.
    */
   function encode(address hookAddress, uint8 encodedHooks) internal pure returns (Hook) {
     // Move the address to the leftmost 20 bytes and the bitmap to the rightmost byte
@@ -19,7 +27,11 @@ library HookLib {
   }
 
   /**
-   * Filter the given hook from the hook list at the given key in the given hook table
+   * @notice Filter a hook from the hook list by its address.
+   * @dev This function writes the updated hook list to the table in place.
+   * @param hookTableId The resource ID of the hook table.
+   * @param tableWithHooks The resource ID of the table with hooks to filter.
+   * @param hookAddressToRemove The address of the hook to remove.
    */
   function filterListByAddress(
     ResourceId hookTableId,
@@ -53,16 +65,27 @@ library HookLib {
   }
 }
 
+/**
+ * @title HookInstance
+ * @dev Library for interacting with Hook instances.
+ **/
 library HookInstance {
   /**
-   * Check if the given hook type is enabled in the hook
+   * @notice Check if the given hook types are enabled in the hook.
+   * @dev We check multiple hook types at once by using a bitmap.
+   * @param self The Hook instance to check.
+   * @param hookTypes A bitmap of hook types to check.
+   * @return True if the hook types are enabled, false otherwise.
    */
   function isEnabled(Hook self, uint8 hookTypes) internal pure returns (bool) {
     return (getBitmap(self) & hookTypes) == hookTypes;
   }
 
   /**
-   * Get the hook's address
+   * @notice Get the address from the hook.
+   * @dev The address is stored in the leftmost 20 bytes.
+   * @param self The Hook instance to get the address from.
+   * @return The address contained in the Hook instance.
    */
   function getAddress(Hook self) internal pure returns (address) {
     // Extract the address from the leftmost 20 bytes
@@ -70,7 +93,10 @@ library HookInstance {
   }
 
   /**
-   * Get the store hook's bitmap
+   * @notice Get the bitmap from the hook.
+   * @dev The bitmap is stored in the rightmost byte.
+   * @param self The Hook instance to get the bitmap from.
+   * @return The bitmap contained in the Hook instance.
    */
   function getBitmap(Hook self) internal pure returns (uint8) {
     // Extract the bitmap from the rightmost bytes
