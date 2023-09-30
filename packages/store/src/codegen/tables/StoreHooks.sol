@@ -564,13 +564,19 @@ library StoreHooks {
   }
 
   /**
-   * @notice Tightly pack dynamic data using this table's schema
+   * @notice Tightly pack dynamic (variable length) data using this table's schema
    * @return The dynamic data, encoded into a sequence of bytes
    */
   function encodeDynamic(bytes21[] memory hooks) internal pure returns (bytes memory) {
     return abi.encodePacked(EncodeArray.encode((hooks)));
   }
 
+  /**
+   * @notice encode all of a record's fields
+   * @return _staticData the static (fixed length) data, encoded into a sequence of bytes
+   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
+   * @return _dynamicData the dyanmic (variable length) data, encoded into a sequence of bytes
+   */
   function encode(bytes21[] memory hooks) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData;
     PackedCounter _encodedLengths = encodeLengths(hooks);

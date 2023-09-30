@@ -330,11 +330,20 @@ library FunctionSelectors {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
-  /// @notice Tightly pack static data using this table's schema
+  /**
+   * @notice Tightly pack static (fixed length) data using this table's schema
+   * @return The static data, encoded into a sequence of bytes
+   */
   function encodeStatic(ResourceId systemId, bytes4 systemFunctionSelector) internal pure returns (bytes memory) {
     return abi.encodePacked(systemId, systemFunctionSelector);
   }
 
+  /**
+   * @notice encode all of a record's fields
+   * @return _staticData the static (fixed length) data, encoded into a sequence of bytes
+   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
+   * @return _dynamicData the dyanmic (variable length) data, encoded into a sequence of bytes
+   */
   function encode(
     ResourceId systemId,
     bytes4 systemFunctionSelector

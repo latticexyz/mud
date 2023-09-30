@@ -30,19 +30,28 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 );
 
 library MessageTable {
-  /** Get the table values' field layout */
+  /**
+   * @notice Get the table values' field layout
+   * @return _fieldLayout the field layout for the table
+   */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
   }
 
-  /** Get the table's key schema */
+  /**
+   * @notice Get the table's key schema
+   * @return _keySchema the key schema for the table
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](0);
 
     return SchemaLib.encode(_keySchema);
   }
 
-  /** Get the table's value schema */
+  /**
+   * @notice Get the table's value schema
+   * @return _valueSchema the value schema for the table
+   */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](1);
     _valueSchema[0] = SchemaType.STRING;
@@ -50,28 +59,34 @@ library MessageTable {
     return SchemaLib.encode(_valueSchema);
   }
 
-  /** Get the table's key names */
+  /**
+   * @notice Get the table's key field names
+   * @return keyNames an array of strings with the names of key fields
+   */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](0);
   }
 
-  /** Get the table's field names */
+  /**
+   * @notice Get the table's value field names
+   * @return fieldNames an array of strings with the names of value fields
+   */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
     fieldNames[0] = "value";
   }
 
-  /** Register the table with its config */
+  /// @notice Register the table with its config
   function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config */
+  /// @notice Register the table with its config
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config (using the specified store) */
+  /// @notice Register the table with its config (using the specified store)
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
@@ -158,7 +173,10 @@ library MessageTable {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Tightly pack dynamic data using this table's schema */
+  /**
+   * @notice Tightly pack dynamic data lengths using this table's schema
+   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
+   */
   function encodeLengths(string memory value) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
@@ -166,12 +184,20 @@ library MessageTable {
     }
   }
 
-  /** Tightly pack dynamic data using this table's schema */
+  /**
+   * @notice Tightly pack dynamic (variable length) data using this table's schema
+   * @return The dynamic data, encoded into a sequence of bytes
+   */
   function encodeDynamic(string memory value) internal pure returns (bytes memory) {
     return abi.encodePacked(bytes((value)));
   }
 
-  /** Tightly pack full data using this table's field layout */
+  /**
+   * @notice encode all of a record's fields
+   * @return _staticData the static (fixed length) data, encoded into a sequence of bytes
+   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
+   * @return _dynamicData the dyanmic (variable length) data, encoded into a sequence of bytes
+   */
   function encode(string memory value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData;
     PackedCounter _encodedLengths = encodeLengths(value);
@@ -180,7 +206,7 @@ library MessageTable {
     return (_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Encode keys as a bytes32 array using this table's field layout */
+  /// @notice Encode keys as a bytes32 array using this table's field layout
   function encodeKeyTuple() internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 

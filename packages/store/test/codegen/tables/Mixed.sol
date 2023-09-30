@@ -827,7 +827,10 @@ library Mixed {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
-  /// @notice Tightly pack static data using this table's schema
+  /**
+   * @notice Tightly pack static (fixed length) data using this table's schema
+   * @return The static data, encoded into a sequence of bytes
+   */
   function encodeStatic(uint32 u32, uint128 u128) internal pure returns (bytes memory) {
     return abi.encodePacked(u32, u128);
   }
@@ -844,13 +847,19 @@ library Mixed {
   }
 
   /**
-   * @notice Tightly pack dynamic data using this table's schema
+   * @notice Tightly pack dynamic (variable length) data using this table's schema
    * @return The dynamic data, encoded into a sequence of bytes
    */
   function encodeDynamic(uint32[] memory a32, string memory s) internal pure returns (bytes memory) {
     return abi.encodePacked(EncodeArray.encode((a32)), bytes((s)));
   }
 
+  /**
+   * @notice encode all of a record's fields
+   * @return _staticData the static (fixed length) data, encoded into a sequence of bytes
+   * @return _encodedLengths the lengths of the dynamic fields (packed into a single bytes32 value)
+   * @return _dynamicData the dyanmic (variable length) data, encoded into a sequence of bytes
+   */
   function encode(
     uint32 u32,
     uint128 u128,
