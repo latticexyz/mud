@@ -127,7 +127,9 @@ export function renderTable(options: RenderTableOptions) {
       ${renderWithStore(
         storeArgument,
         (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-          /// @notice Register the table with its config${_commentSuffix}
+          /**
+           * @notice Register the table with its config${_commentSuffix} 
+           */
           function ${_methodNamePrefix}register(${renderArguments([_typedStore, _typedTableId])}) internal {
             ${_store}.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
           }
@@ -160,7 +162,9 @@ export function renderTable(options: RenderTableOptions) {
         return (_staticData, _encodedLengths, _dynamicData);
       }
       
-      /// @notice Encode keys as a bytes32 array using this table's field layout
+      /**
+       * @notice Encode keys as a bytes32 array using this table's field layout
+       */
       function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory) {
         ${_keyTupleDefinition}
         return _keyTuple;
