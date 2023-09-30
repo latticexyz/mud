@@ -90,7 +90,7 @@ library SchemaLib {
  */
 library SchemaInstance {
   /**
-   * @notice Fetches the length of static data for the given schema.
+   * @notice Get the length of static data for the given schema.
    * @param schema The schema to inspect.
    * @return The static data length.
    */
@@ -99,7 +99,7 @@ library SchemaInstance {
   }
 
   /**
-   * @notice Fetches the SchemaType at a given index in the schema.
+   * @notice Get the SchemaType at a given index in the schema.
    * @param schema The schema to inspect.
    * @param index The index of the SchemaType to retrieve.
    * @return The SchemaType at the given index.
@@ -111,7 +111,7 @@ library SchemaInstance {
   }
 
   /**
-   * @notice Fetches the number of static (fixed length) fields in the schema.
+   * @notice Get the number of static (fixed length) fields in the schema.
    * @param schema The schema to inspect.
    * @return The number of static fields.
    */
@@ -120,7 +120,7 @@ library SchemaInstance {
   }
 
   /**
-   * @notice Fetches the number of dynamic length fields in the schema.
+   * @notice Get the number of dynamic length fields in the schema.
    * @param schema The schema to inspect.
    * @return The number of dynamic length fields.
    */
@@ -129,7 +129,7 @@ library SchemaInstance {
   }
 
   /**
-   * @notice Fetches the total number of fields in the schema.
+   * @notice Get the total number of fields in the schema.
    * @param schema The schema to inspect.
    * @return The total number of fields.
    */
