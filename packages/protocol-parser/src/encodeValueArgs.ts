@@ -1,4 +1,11 @@
-import { StaticPrimitiveType, DynamicPrimitiveType, isStaticAbiType, isDynamicAbiType } from "@latticexyz/schema-type";
+import {
+  StaticPrimitiveType,
+  DynamicPrimitiveType,
+  isStaticAbiType,
+  isDynamicAbiType,
+  StaticAbiType,
+  DynamicAbiType,
+} from "@latticexyz/schema-type";
 import { concatHex } from "viem";
 import { encodeField } from "./encodeField";
 import { SchemaToPrimitives, ValueArgs, ValueSchema } from "./common";
@@ -8,15 +15,17 @@ export function encodeValueArgs<TSchema extends ValueSchema>(
   valueSchema: TSchema,
   value: SchemaToPrimitives<TSchema>
 ): ValueArgs {
-  const staticFields = Object.values(valueSchema).filter(isStaticAbiType);
-  const dynamicFields = Object.values(valueSchema).filter(isDynamicAbiType);
+  const valueSchemaEntries = Object.entries(valueSchema);
+  const staticFields = valueSchemaEntries.filter(([, type]) => isStaticAbiType(type)) as [string, StaticAbiType][];
+  const dynamicFields = valueSchemaEntries.filter(([, type]) => isDynamicAbiType(type)) as [string, DynamicAbiType][];
+  // TODO: validate <=5 dynamic fields
+  // TODO: validate <=28 total fields
 
-  const values = Object.values(value);
-  const staticValues = values.slice(0, staticFields.length) as readonly StaticPrimitiveType[];
-  const dynamicValues = values.slice(staticFields.length) as readonly DynamicPrimitiveType[];
+  const encodedStaticValues = staticFields.map(([name, type]) => encodeField(type, value[name] as StaticPrimitiveType));
+  const encodedDynamicValues = dynamicFields.map(([name, type]) =>
+    encodeField(type, value[name] as DynamicPrimitiveType)
+  );
 
-  const encodedStaticValues = staticValues.map((value, i) => encodeField(staticFields[i], value));
-  const encodedDynamicValues = dynamicValues.map((value, i) => encodeField(dynamicFields[i], value));
   const encodedLengths = encodeLengths(encodedDynamicValues);
 
   return {
