@@ -48,7 +48,10 @@ library Singleton {
     return SchemaLib.encode(_keySchema);
   }
 
-  /// @notice Get the table's value schema
+  /**
+   * @notice Get the table's value schema
+   * @return _valueSchema the value schema for the table
+   */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](4);
     _valueSchema[0] = SchemaType.INT256;
@@ -59,12 +62,18 @@ library Singleton {
     return SchemaLib.encode(_valueSchema);
   }
 
-  /// @notice Get the table's key names
+  /**
+   * @notice Get the table's key field names
+   * @return keyNames an array of strings with the names of key fields
+   */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](0);
   }
 
-  /// @notice Get the table's field names
+  /**
+   * @notice Get the table's value field names
+   * @return fieldNames an array of strings with the names of value fields
+   */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](4);
     fieldNames[0] = "v1";
