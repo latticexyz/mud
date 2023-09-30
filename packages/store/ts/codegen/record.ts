@@ -18,7 +18,9 @@ export function renderRecordMethods(options: RenderTableOptions) {
     result += renderWithStore(
       storeArgument,
       (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-        /** Get the full data${_commentSuffix} */
+        /**
+         * @notice Get full data${_commentSuffix}
+         */
         function ${_methodNamePrefix}get(${renderArguments([
         _typedStore,
         _typedTableId,
@@ -51,7 +53,9 @@ export function renderRecordMethods(options: RenderTableOptions) {
         "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" + (_internal ? ", _fieldLayout" : "");
 
       return `
-        /** Set the full data using individual values${_commentSuffix} */
+        /**
+         * @notice Set the full data using individual values${_commentSuffix} 
+         */
         function ${_methodNamePrefix}set(${externalArguments}) internal {
           ${renderRecordData(options)}
 
@@ -78,7 +82,10 @@ export function renderRecordMethods(options: RenderTableOptions) {
           "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" + (_internal ? ", _fieldLayout" : "");
 
         return `
-          /** Set the full data using the data struct${_commentSuffix} */
+          /**
+           * @notice Set the full data using the data struct
+           * @param _table set the full data using the data struct${_commentSuffix}
+           */
           function ${_methodNamePrefix}set(${externalArguments}) internal {
             ${renderRecordData(options, "_table.")}
 
@@ -138,7 +145,9 @@ export function renderDeleteRecordMethods(options: RenderTableOptions) {
       const internalArguments = "_tableId, _keyTuple" + (_internal ? ", _fieldLayout" : "");
 
       return `
-      /** Delete all data for given keys${_commentSuffix} */
+      /**
+       * @notice Delete all data for given keys${_commentSuffix} 
+       */
       function ${_methodNamePrefix}deleteRecord(${externalArguments}) internal {
         ${_keyTupleDefinition}
         ${_store}.deleteRecord(${internalArguments});
@@ -169,8 +178,8 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
   if (staticFields.length > 0) {
     result += `
       /**
-       * Decode the tightly packed blob of static data using this table's field layout
-       * Undefined behaviour for invalid blobs
+       * @notice Decode the tightly packed blob of static data using this table's field layout
+       * @dev Undefined behaviour for invalid blobs
        */
       function decodeStatic(bytes memory _blob) internal pure returns (${renderArguments(
         staticFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
@@ -188,8 +197,8 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
   if (dynamicFields.length > 0) {
     result += `
       /**
-       * Decode the tightly packed blob of static data using this table's field layout
-       * Undefined behaviour for invalid blobs
+       * @notice Decode the tightly packed blob of static data using this table's field layout
+       * @dev Undefined behaviour for invalid blobs
        */
       function decodeDynamic(PackedCounter _encodedLengths, bytes memory _blob) internal pure returns (${renderArguments(
         dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
@@ -225,8 +234,28 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
 
   result += `
     /**
-     * Decode the tightly packed blob using this table's field layout.
-     * Undefined behaviour for invalid blobs.
+     * @notice Decode the tightly packed blob using this table's field layout.
+     * 
+     * @dev Undefined behaviour for invalid blobs.
+     * 
+     * ${
+       staticFields.length > 0
+         ? "@param _staticData Encoded data for static fields. Only present if there are static fields."
+         : ""
+     }
+     * ${
+       dynamicFields.length > 0
+         ? "@param _encodedLengths Counter data for encoded lengths. Only present if there are dynamic fields."
+         : ""
+     }
+     * 
+     * ${
+       dynamicFields.length > 0
+         ? "@param _dynamicData Encoded data for dynamic fields. Only present if there are dynamic fields."
+         : ""
+     }
+     * 
+     * @return _table The decoded record.
      */
     function decode(
       bytes memory ${staticFields.length > 0 ? "_staticData" : ""},

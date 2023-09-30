@@ -33,12 +33,12 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 );
 
 library KeyEncoding {
-  /** Get the table values' field layout */
+  /// @notice Get the table values' field layout
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
   }
 
-  /** Get the table's key schema */
+  /// @notice Get the table's key schema
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](6);
     _keySchema[0] = SchemaType.UINT256;
@@ -51,7 +51,7 @@ library KeyEncoding {
     return SchemaLib.encode(_keySchema);
   }
 
-  /** Get the table's value schema */
+  /// @notice Get the table's value schema
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](1);
     _valueSchema[0] = SchemaType.BOOL;
@@ -59,7 +59,7 @@ library KeyEncoding {
     return SchemaLib.encode(_valueSchema);
   }
 
-  /** Get the table's key names */
+  /// @notice Get the table's key names
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](6);
     keyNames[0] = "k1";
@@ -70,28 +70,30 @@ library KeyEncoding {
     keyNames[5] = "k6";
   }
 
-  /** Get the table's field names */
+  /// @notice Get the table's field names
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
     fieldNames[0] = "value";
   }
 
-  /** Register the table with its config */
+  /// @notice Register the table with its config
   function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config */
+  /// @notice Register the table with its config
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config (using the specified store) */
+  /// @notice Register the table with its config (using the specified store)
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get value */
+  /**
+   * @notice Get value
+   */
   function getValue(
     uint256 k1,
     int32 k2,
@@ -112,7 +114,9 @@ library KeyEncoding {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Get value */
+  /**
+   * @notice Get value
+   */
   function _getValue(
     uint256 k1,
     int32 k2,
@@ -133,7 +137,9 @@ library KeyEncoding {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Get value (using the specified store) */
+  /**
+   * @notice Get value (using the specified store)
+   */
   function getValue(
     IStore _store,
     uint256 k1,
@@ -155,7 +161,9 @@ library KeyEncoding {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Get value */
+  /**
+   * @notice Get value
+   */
   function get(
     uint256 k1,
     int32 k2,
@@ -176,7 +184,9 @@ library KeyEncoding {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Get value */
+  /**
+   * @notice Get value
+   */
   function _get(
     uint256 k1,
     int32 k2,
@@ -197,7 +207,9 @@ library KeyEncoding {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Get value (using the specified store) */
+  /**
+   * @notice Get value (using the specified store)
+   */
   function get(
     IStore _store,
     uint256 k1,
@@ -219,7 +231,9 @@ library KeyEncoding {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Set value */
+  /**
+   * @notice Set value
+   */
   function setValue(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -232,7 +246,9 @@ library KeyEncoding {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Set value */
+  /**
+   * @notice Set value
+   */
   function _setValue(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -245,7 +261,9 @@ library KeyEncoding {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Set value (using the specified store) */
+  /**
+   * @notice Set value (using the specified store)
+   */
   function setValue(
     IStore _store,
     uint256 k1,
@@ -267,7 +285,9 @@ library KeyEncoding {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Set value */
+  /**
+   * @notice Set value
+   */
   function set(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -280,7 +300,9 @@ library KeyEncoding {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Set value */
+  /**
+   * @notice Set value
+   */
   function _set(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -293,7 +315,9 @@ library KeyEncoding {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Set value (using the specified store) */
+  /**
+   * @notice Set value (using the specified store)
+   */
   function set(
     IStore _store,
     uint256 k1,
@@ -315,7 +339,9 @@ library KeyEncoding {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys
+   */
   function deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -328,7 +354,9 @@ library KeyEncoding {
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys
+   */
   function _deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -341,7 +369,9 @@ library KeyEncoding {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
-  /** Delete all data for given keys (using the specified store) */
+  /**
+   * @notice Delete all data for given keys (using the specified store)
+   */
   function deleteRecord(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -354,12 +384,12 @@ library KeyEncoding {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Tightly pack static data using this table's schema */
+  /// @notice Tightly pack static data using this table's schema
   function encodeStatic(bool value) internal pure returns (bytes memory) {
     return abi.encodePacked(value);
   }
 
-  /** Tightly pack full data using this table's field layout */
+  /// @notice Tightly pack full data using this table's field layout
   function encode(bool value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(value);
 
@@ -369,7 +399,7 @@ library KeyEncoding {
     return (_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Encode keys as a bytes32 array using this table's field layout */
+  /// @notice Encode keys as a bytes32 array using this table's field layout
   function encodeKeyTuple(
     uint256 k1,
     int32 k2,
