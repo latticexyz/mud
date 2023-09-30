@@ -1,5 +1,18 @@
 # @latticexyz/dev-tools
 
+## 2.0.0-next.10
+
+### Patch Changes
+
+- Updated dependencies [[`4081493b`](https://github.com/latticexyz/mud/commit/4081493b84ab5c78a5147d4af8d41fc2d9e027a5), [`88b1a5a1`](https://github.com/latticexyz/mud/commit/88b1a5a191b4adadf190de51cd47a5b033b6fb29), [`7987c94d`](https://github.com/latticexyz/mud/commit/7987c94d61a2c759916a708774db9f3cf08edca8)]:
+  - @latticexyz/store-sync@2.0.0-next.10
+  - @latticexyz/world@2.0.0-next.10
+  - @latticexyz/common@2.0.0-next.10
+  - @latticexyz/react@2.0.0-next.10
+  - @latticexyz/recs@2.0.0-next.10
+  - @latticexyz/store@2.0.0-next.10
+  - @latticexyz/utils@2.0.0-next.10
+
 ## 2.0.0-next.9
 
 ### Major Changes
