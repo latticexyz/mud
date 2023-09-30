@@ -692,7 +692,14 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Get full record (all fields, static and dynamic data) for the given table ID and key tuple, loading the field layout from storage
+   * @notice Get the full record (all fields, static and dynamic data) for the given table ID and key tuple.
+   * @dev This function internally calls another overload of `getRecord`, loading the field layout from storage.
+   * If the field layout is available to the caller, it is recommended to use the other overload to avoid an additional storage read.
+   * @param tableId The ID of the table to get the record from.
+   * @param keyTuple An array representing the composite key for the record.
+   * @return staticData The static data of the record.
+   * @return encodedLengths The encoded lengths of the dynamic data of the record.
+   * @return dynamicData The dynamic data of the record.
    */
   function getRecord(
     ResourceId tableId,
@@ -702,7 +709,13 @@ library StoreCore {
   }
 
   /**
-   * Get full record (all fields, static and dynamic data) for the given table ID and key tuple, with the given field layout
+   * @notice Get the full record (all fields, static and dynamic data) for the given table ID and key tuple, with the given field layout.
+   * @param tableId The ID of the table to get the record from.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param fieldLayout The field layout for the record.
+   * @return staticData The static data of the record.
+   * @return encodedLengths The encoded lengths of the dynamic data of the record.
+   * @return dynamicData The dynamic data of the record.
    */
   function getRecord(
     ResourceId tableId,
@@ -736,7 +749,12 @@ library StoreCore {
   }
 
   /**
-   * Get a single field from the given table ID and key tuple, loading the field layout from storage
+   * @notice Get a single field from the given table ID and key tuple.
+   * @dev This function internally calls another overload of `getField`, loading the field layout from storage.
+   * @param tableId The ID of the table to get the field from.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param fieldIndex The index of the field to get.
+   * @return The data of the field.
    */
   function getField(
     ResourceId tableId,
@@ -747,7 +765,12 @@ library StoreCore {
   }
 
   /**
-   * Get a single field from the given table ID and key tuple, with the given value field layout
+   * @notice Get a single field from the given table ID and key tuple, with the given field layout.
+   * @param tableId The ID of the table to get the field from.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param fieldIndex The index of the field to get.
+   * @param fieldLayout The field layout for the record.
+   * @return The data of the field.
    */
   function getField(
     ResourceId tableId,
@@ -763,9 +786,14 @@ library StoreCore {
   }
 
   /**
-   * Get a single static field from the given table ID and key tuple, with the given value field layout.
-   * Note: the field value is left-aligned in the returned bytes32, the rest of the word is not zeroed out.
+   * @notice Get a single static field from the given table ID and key tuple, with the given value field layout.
+   * @dev The field value is left-aligned in the returned bytes32, the rest of the word is not zeroed out.
    * Consumers are expected to truncate the returned value as needed.
+   * @param tableId The ID of the table to get the static field from.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param fieldIndex The index of the field to get.
+   * @param fieldLayout The field layout for the record.
+   * @return The data of the static field.
    */
   function getStaticField(
     ResourceId tableId,
@@ -784,7 +812,12 @@ library StoreCore {
   }
 
   /**
-   * Get a single dynamic field from the given table ID and key tuple, with the given value field layout
+   * @notice Get a single dynamic field from the given table ID and key tuple.
+   * @param tableId The ID of the table to get the dynamic field from.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param dynamicFieldIndex The index of the dynamic field to get, relative to the start of the dynamic fields.
+   * (Dynamic field index = field index - number of static fields)
+   * @return The data of the dynamic field.
    */
   function getDynamicField(
     ResourceId tableId,
@@ -802,7 +835,13 @@ library StoreCore {
   }
 
   /**
-   * Get the byte length of a single field from the given table ID and key tuple
+   * @notice Get the byte length of a single field from the given table ID and key tuple.
+   * @dev This function internally calls another overload of `getFieldLength`, loading the field layout from storage.
+   * If the field layout is available to the caller, it is recommended to use the other overload to avoid an additional storage read.
+   * @param tableId The ID of the table to get the field length from.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param fieldIndex The index of the field to get the length for.
+   * @return The byte length of the field.
    */
   function getFieldLength(
     ResourceId tableId,
@@ -813,7 +852,12 @@ library StoreCore {
   }
 
   /**
-   * Get the byte length of a single field from the given table ID and key tuple, with the given value field layout
+   * @notice Get the byte length of a single field from the given table ID and key tuple.
+   * @param tableId The ID of the table to get the field length from.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param fieldIndex The index of the field to get the length for.
+   * @param fieldLayout The field layout for the record.
+   * @return The byte length of the field.
    */
   function getFieldLength(
     ResourceId tableId,
@@ -830,7 +874,12 @@ library StoreCore {
   }
 
   /**
-   * Get the byte length of a single dynamic field from the given table ID and key tuple
+   * @notice Get the byte length of a single dynamic field from the given table ID and key tuple.
+   * @param tableId The ID of the table to get the dynamic field length from.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param dynamicFieldIndex The index of the dynamic field to get the length for, relative to the start of the dynamic fields.
+   * (Dynamic field index = field index - number of static fields)
+   * @return The byte length of the dynamic field.
    */
   function getDynamicFieldLength(
     ResourceId tableId,
@@ -841,7 +890,14 @@ library StoreCore {
   }
 
   /**
-   * Get a byte slice (including start, excluding end) of a single dynamic field from the given table ID and key tuple, with the given value field layout.
+   * @notice Get a byte slice (including start, excluding end) of a single dynamic field from the given table ID and key tuple.
+   * @param tableId The ID of the table to get the dynamic field slice from.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param dynamicFieldIndex The index of the dynamic field to get the slice from, relative to the start of the dynamic fields.
+   * (Dynamic field index = field index - number of static fields)
+   * @param start The start index within the dynamic field for the slice operation (inclusive).
+   * @param end The end index within the dynamic field for the slice operation (exclusive).
+   * @return The byte slice of the dynamic field.
    */
   function getDynamicFieldSlice(
     ResourceId tableId,
@@ -866,6 +922,11 @@ library StoreCore {
   }
 }
 
+/**
+ * @title StoreCoreInternal
+ * @dev This library contains internal functions used by StoreCore.
+ * They are not intended to be used directly by consumers of StoreCore.
+ */
 library StoreCoreInternal {
   using ResourceIdInstance for ResourceId;
 
@@ -879,6 +940,24 @@ library StoreCoreInternal {
    *
    ************************************************************************/
 
+  /**
+   * @notice Splice dynamic data in the store.
+   * @dev This function checks various conditions to ensure the operation is valid.
+   * It emits a `Store_SpliceDynamicData` event, calls `onBeforeSpliceDynamicData` hooks before actually modifying the storage,
+   * and calls `onAfterSpliceDynamicData` hooks after modifying the storage.
+   * It reverts with `Store_InvalidResourceType` if the table ID is not a table.
+   * (Splicing dynamic data is not supported for offchain tables, as it requires reading the previous encoded lengths from storage.)
+   * It reverts with `Store_InvalidSplice` if the splice total length of the field is changed but the splice is not at the end of the field.
+   * It reverts with `Store_IndexOutOfBounds` if the start index is larger than the previous length of the field.
+   * @param tableId The ID of the table to splice dynamic data.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param dynamicFieldIndex The index of the dynamic field to splice data, relative to the start of the dynamic fields.
+   * (Dynamic field index = field index - number of static fields)
+   * @param startWithinField The start index within the field for the splice operation.
+   * @param deleteCount The number of bytes to delete in the splice operation.
+   * @param data The data to insert into the dynamic data of the record at the start byte.
+   * @param previousEncodedLengths The previous encoded lengths of the dynamic data of the record.
+   */
   function _spliceDynamicData(
     ResourceId tableId,
     bytes32[] memory keyTuple,
@@ -985,7 +1064,11 @@ library StoreCoreInternal {
    ************************************************************************/
 
   /**
-   * Get full static data for the given table ID and key tuple, with the given static length
+   * @notice Get full static data for the given table ID and key tuple, with the given length in bytes.
+   * @param tableId The ID of the table to get the static data from.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param length The length of the static data to retrieve.
+   * @return The full static data of the specified length.
    */
   function _getStaticData(
     ResourceId tableId,
@@ -1000,8 +1083,12 @@ library StoreCoreInternal {
   }
 
   /**
-   * Get a single static field from the given table ID and key tuple, with the given value field layout.
-   * Returns dynamic bytes memory in the size of the field.
+   * @notice Get a single static field from the given table ID and key tuple, with the given value field layout.
+   * @param tableId The ID of the table to get the static field from.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param fieldIndex The index of the field to get.
+   * @param fieldLayout The field layout for the record.
+   * @return The static field data as dynamic bytes in the size of the field.
    */
   function _getStaticFieldBytes(
     ResourceId tableId,
@@ -1030,21 +1117,31 @@ library StoreCoreInternal {
   /////////////////////////////////////////////////////////////////////////
 
   /**
-   * Compute the storage location based on tableId id and key tuple
+   * @notice Compute the storage location based on table ID and key tuple.
+   * @param tableId The ID of the table.
+   * @param keyTuple An array representing the composite key for the record.
+   * @return The computed storage location based on table ID and key tuple.
    */
   function _getStaticDataLocation(ResourceId tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
     return uint256(SLOT ^ keccak256(abi.encodePacked(tableId, keyTuple)));
   }
 
   /**
-   * Compute the storage location based on tableId id and key (equivalent to keyTuple = [key])
+   * @notice Compute the storage location based on table ID and a single key.
+   * @param tableId The ID of the table.
+   * @param key The single key for the record.
+   * @return The computed storage location based on table ID and key.
    */
   function _getStaticDataLocation(ResourceId tableId, bytes32 key) internal pure returns (uint256) {
+    // keccak256(abi.encodePacked(tableId, key)) is equivalent to keccak256(abi.encodePacked(tableId, [key]))
     return uint256(SLOT ^ keccak256(abi.encodePacked(tableId, key)));
   }
 
   /**
-   * Get storage offset for the given value field layout and (static length) index
+   * @notice Get storage offset for the given value field layout and index.
+   * @param fieldLayout The field layout for the record.
+   * @param fieldIndex The index of the field to get the offset for.
+   * @return The storage offset for the specified field layout and index.
    */
   function _getStaticDataOffset(FieldLayout fieldLayout, uint8 fieldIndex) internal pure returns (uint256) {
     uint256 offset = 0;
@@ -1059,7 +1156,12 @@ library StoreCoreInternal {
   /////////////////////////////////////////////////////////////////////////
 
   /**
-   * Compute the storage location based on tableId id and index tuple
+   * @notice Compute the storage location based on table ID, key tuple, and dynamic field index.
+   * @param tableId The ID of the table.
+   * @param keyTuple An array representing the composite key for the record.
+   * @param dynamicFieldIndex The index of the dynamic field, relative to the start of the dynamic fields.
+   * (Dynamic field index = field index - number of static fields)
+   * @return The computed storage location based on table ID, key tuple, and dynamic field index.
    */
   function _getDynamicDataLocation(
     ResourceId tableId,
@@ -1070,7 +1172,10 @@ library StoreCoreInternal {
   }
 
   /**
-   * Compute the storage location for the length of the dynamic data
+   * @notice Compute the storage location for the length of the dynamic data based on table ID and key tuple.
+   * @param tableId The ID of the table.
+   * @param keyTuple An array representing the composite key for the record.
+   * @return The computed storage location for the length of the dynamic data based on table ID and key tuple.
    */
   function _getDynamicDataLengthLocation(
     ResourceId tableId,
@@ -1080,7 +1185,10 @@ library StoreCoreInternal {
   }
 
   /**
-   * Load the encoded dynamic data length from storage for the given table ID and key tuple
+   * @notice Load the encoded dynamic data length from storage for the given table ID and key tuple.
+   * @param tableId The ID of the table.
+   * @param keyTuple An array representing the composite key for the record.
+   * @return The loaded encoded dynamic data length from storage for the given table ID and key tuple.
    */
   function _loadEncodedDynamicDataLength(
     ResourceId tableId,
