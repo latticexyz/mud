@@ -5,6 +5,10 @@ pragma solidity >=0.8.21;
 
 import { SystemCallData, SystemCallFromData } from "./../../modules/core/types.sol";
 
+/**
+ * @title IBatchCallSystem
+ * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
+ */
 interface IBatchCallSystem {
   function batchCall(SystemCallData[] calldata systemCalls) external returns (bytes[] memory returnDatas);
 

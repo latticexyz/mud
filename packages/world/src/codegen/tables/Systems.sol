@@ -33,12 +33,18 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 );
 
 library Systems {
-  /** Get the table values' field layout */
+  /**
+   * @notice Get the table values' field layout.
+   * @return _fieldLayout The field layout for the table.
+   */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
   }
 
-  /** Get the table's key schema */
+  /**
+   * @notice Get the table's key schema.
+   * @return _keySchema The key schema for the table.
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](1);
     _keySchema[0] = SchemaType.BYTES32;
@@ -46,7 +52,10 @@ library Systems {
     return SchemaLib.encode(_keySchema);
   }
 
-  /** Get the table's value schema */
+  /**
+   * @notice Get the table's value schema.
+   * @return _valueSchema The value schema for the table.
+   */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](2);
     _valueSchema[0] = SchemaType.ADDRESS;
@@ -55,35 +64,49 @@ library Systems {
     return SchemaLib.encode(_valueSchema);
   }
 
-  /** Get the table's key names */
+  /**
+   * @notice Get the table's key field names.
+   * @return keyNames An array of strings with the names of key fields.
+   */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
     keyNames[0] = "systemId";
   }
 
-  /** Get the table's field names */
+  /**
+   * @notice Get the table's value field names.
+   * @return fieldNames An array of strings with the names of value fields.
+   */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](2);
     fieldNames[0] = "system";
     fieldNames[1] = "publicAccess";
   }
 
-  /** Register the table with its config */
+  /**
+   * @notice Register the table with its config.
+   */
   function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config */
+  /**
+   * @notice Register the table with its config.
+   */
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config (using the specified store) */
+  /**
+   * @notice Register the table with its config (using the specified store).
+   */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get system */
+  /**
+   * @notice Get system.
+   */
   function getSystem(ResourceId systemId) internal view returns (address system) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -92,7 +115,9 @@ library Systems {
     return (address(bytes20(_blob)));
   }
 
-  /** Get system */
+  /**
+   * @notice Get system.
+   */
   function _getSystem(ResourceId systemId) internal view returns (address system) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -101,7 +126,9 @@ library Systems {
     return (address(bytes20(_blob)));
   }
 
-  /** Get system (using the specified store) */
+  /**
+   * @notice Get system (using the specified store).
+   */
   function getSystem(IStore _store, ResourceId systemId) internal view returns (address system) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -110,7 +137,9 @@ library Systems {
     return (address(bytes20(_blob)));
   }
 
-  /** Set system */
+  /**
+   * @notice Set system.
+   */
   function setSystem(ResourceId systemId, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -118,7 +147,9 @@ library Systems {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
-  /** Set system */
+  /**
+   * @notice Set system.
+   */
   function _setSystem(ResourceId systemId, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -126,7 +157,9 @@ library Systems {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
-  /** Set system (using the specified store) */
+  /**
+   * @notice Set system (using the specified store).
+   */
   function setSystem(IStore _store, ResourceId systemId, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -134,7 +167,9 @@ library Systems {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
-  /** Get publicAccess */
+  /**
+   * @notice Get publicAccess.
+   */
   function getPublicAccess(ResourceId systemId) internal view returns (bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -143,7 +178,9 @@ library Systems {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Get publicAccess */
+  /**
+   * @notice Get publicAccess.
+   */
   function _getPublicAccess(ResourceId systemId) internal view returns (bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -152,7 +189,9 @@ library Systems {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Get publicAccess (using the specified store) */
+  /**
+   * @notice Get publicAccess (using the specified store).
+   */
   function getPublicAccess(IStore _store, ResourceId systemId) internal view returns (bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -161,7 +200,9 @@ library Systems {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /** Set publicAccess */
+  /**
+   * @notice Set publicAccess.
+   */
   function setPublicAccess(ResourceId systemId, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -169,7 +210,9 @@ library Systems {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
   }
 
-  /** Set publicAccess */
+  /**
+   * @notice Set publicAccess.
+   */
   function _setPublicAccess(ResourceId systemId, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -177,7 +220,9 @@ library Systems {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
   }
 
-  /** Set publicAccess (using the specified store) */
+  /**
+   * @notice Set publicAccess (using the specified store).
+   */
   function setPublicAccess(IStore _store, ResourceId systemId, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -185,7 +230,9 @@ library Systems {
     _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
   }
 
-  /** Get the full data */
+  /**
+   * @notice Get the full data.
+   */
   function get(ResourceId systemId) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -198,7 +245,9 @@ library Systems {
     return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Get the full data */
+  /**
+   * @notice Get the full data.
+   */
   function _get(ResourceId systemId) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -211,7 +260,9 @@ library Systems {
     return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Get the full data (using the specified store) */
+  /**
+   * @notice Get the full data (using the specified store).
+   */
   function get(IStore _store, ResourceId systemId) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -224,7 +275,9 @@ library Systems {
     return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Set the full data using individual values */
+  /**
+   * @notice Set the full data using individual values.
+   */
   function set(ResourceId systemId, address system, bool publicAccess) internal {
     bytes memory _staticData = encodeStatic(system, publicAccess);
 
@@ -237,7 +290,9 @@ library Systems {
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Set the full data using individual values */
+  /**
+   * @notice Set the full data using individual values.
+   */
   function _set(ResourceId systemId, address system, bool publicAccess) internal {
     bytes memory _staticData = encodeStatic(system, publicAccess);
 
@@ -250,7 +305,9 @@ library Systems {
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
-  /** Set the full data using individual values (using the specified store) */
+  /**
+   * @notice Set the full data using individual values (using the specified store).
+   */
   function set(IStore _store, ResourceId systemId, address system, bool publicAccess) internal {
     bytes memory _staticData = encodeStatic(system, publicAccess);
 
@@ -264,8 +321,7 @@ library Systems {
   }
 
   /**
-   * Decode the tightly packed blob of static data using this table's field layout
-   * Undefined behaviour for invalid blobs
+   * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (address system, bool publicAccess) {
     system = (address(Bytes.slice20(_blob, 0)));
@@ -274,8 +330,10 @@ library Systems {
   }
 
   /**
-   * Decode the tightly packed blob using this table's field layout.
-   * Undefined behaviour for invalid blobs.
+   * @notice Decode the tightly packed blobs using this table's field layout.
+   * @param _staticData Tightly packed static fields.
+   *
+   *
    */
   function decode(
     bytes memory _staticData,
@@ -285,7 +343,9 @@ library Systems {
     (system, publicAccess) = decodeStatic(_staticData);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys.
+   */
   function deleteRecord(ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -293,7 +353,9 @@ library Systems {
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -301,7 +363,9 @@ library Systems {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
-  /** Delete all data for given keys (using the specified store) */
+  /**
+   * @notice Delete all data for given keys (using the specified store).
+   */
   function deleteRecord(IStore _store, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -309,12 +373,20 @@ library Systems {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Tightly pack static data using this table's schema */
+  /**
+   * @notice Tightly pack static (fixed length) data using this table's schema.
+   * @return The static data, encoded into a sequence of bytes.
+   */
   function encodeStatic(address system, bool publicAccess) internal pure returns (bytes memory) {
     return abi.encodePacked(system, publicAccess);
   }
 
-  /** Tightly pack full data using this table's field layout */
+  /**
+   * @notice Encode all of a record's fields.
+   * @return The static (fixed length) data, encoded into a sequence of bytes.
+   * @return The lengths of the dynamic fields (packed into a single bytes32 value).
+   * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
+   */
   function encode(address system, bool publicAccess) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(system, publicAccess);
 
@@ -324,7 +396,9 @@ library Systems {
     return (_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Encode keys as a bytes32 array using this table's field layout */
+  /**
+   * @notice Encode keys as a bytes32 array using this table's field layout.
+   */
   function encodeKeyTuple(ResourceId systemId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
@@ -333,6 +407,12 @@ library Systems {
   }
 }
 
+/**
+ * @notice Cast a value to a bool.
+ * @dev Boolean values are encoded as uint8 (1 = true, 0 = false), but Solidity doesn't allow casting between uint8 and bool.
+ * @param value The uint8 value to convert.
+ * @return result The boolean value.
+ */
 function _toBool(uint8 value) pure returns (bool result) {
   assembly {
     result := value

@@ -30,12 +30,18 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 );
 
 library InstalledModules {
-  /** Get the table values' field layout */
+  /**
+   * @notice Get the table values' field layout.
+   * @return _fieldLayout The field layout for the table.
+   */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
   }
 
-  /** Get the table's key schema */
+  /**
+   * @notice Get the table's key schema.
+   * @return _keySchema The key schema for the table.
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](2);
     _keySchema[0] = SchemaType.BYTES16;
@@ -44,7 +50,10 @@ library InstalledModules {
     return SchemaLib.encode(_keySchema);
   }
 
-  /** Get the table's value schema */
+  /**
+   * @notice Get the table's value schema.
+   * @return _valueSchema The value schema for the table.
+   */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](1);
     _valueSchema[0] = SchemaType.ADDRESS;
@@ -52,35 +61,49 @@ library InstalledModules {
     return SchemaLib.encode(_valueSchema);
   }
 
-  /** Get the table's key names */
+  /**
+   * @notice Get the table's key field names.
+   * @return keyNames An array of strings with the names of key fields.
+   */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](2);
     keyNames[0] = "moduleName";
     keyNames[1] = "argumentsHash";
   }
 
-  /** Get the table's field names */
+  /**
+   * @notice Get the table's value field names.
+   * @return fieldNames An array of strings with the names of value fields.
+   */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
     fieldNames[0] = "moduleAddress";
   }
 
-  /** Register the table with its config */
+  /**
+   * @notice Register the table with its config.
+   */
   function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config */
+  /**
+   * @notice Register the table with its config.
+   */
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table with its config (using the specified store) */
+  /**
+   * @notice Register the table with its config (using the specified store).
+   */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get moduleAddress */
+  /**
+   * @notice Get moduleAddress.
+   */
   function getModuleAddress(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -90,7 +113,9 @@ library InstalledModules {
     return (address(bytes20(_blob)));
   }
 
-  /** Get moduleAddress */
+  /**
+   * @notice Get moduleAddress.
+   */
   function _getModuleAddress(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -100,7 +125,9 @@ library InstalledModules {
     return (address(bytes20(_blob)));
   }
 
-  /** Get moduleAddress (using the specified store) */
+  /**
+   * @notice Get moduleAddress (using the specified store).
+   */
   function getModuleAddress(
     IStore _store,
     bytes16 moduleName,
@@ -114,7 +141,9 @@ library InstalledModules {
     return (address(bytes20(_blob)));
   }
 
-  /** Get moduleAddress */
+  /**
+   * @notice Get moduleAddress.
+   */
   function get(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -124,7 +153,9 @@ library InstalledModules {
     return (address(bytes20(_blob)));
   }
 
-  /** Get moduleAddress */
+  /**
+   * @notice Get moduleAddress.
+   */
   function _get(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -134,7 +165,9 @@ library InstalledModules {
     return (address(bytes20(_blob)));
   }
 
-  /** Get moduleAddress (using the specified store) */
+  /**
+   * @notice Get moduleAddress (using the specified store).
+   */
   function get(IStore _store, bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -144,7 +177,9 @@ library InstalledModules {
     return (address(bytes20(_blob)));
   }
 
-  /** Set moduleAddress */
+  /**
+   * @notice Set moduleAddress.
+   */
   function setModuleAddress(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -153,7 +188,9 @@ library InstalledModules {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), _fieldLayout);
   }
 
-  /** Set moduleAddress */
+  /**
+   * @notice Set moduleAddress.
+   */
   function _setModuleAddress(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -162,7 +199,9 @@ library InstalledModules {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), _fieldLayout);
   }
 
-  /** Set moduleAddress (using the specified store) */
+  /**
+   * @notice Set moduleAddress (using the specified store).
+   */
   function setModuleAddress(IStore _store, bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -171,7 +210,9 @@ library InstalledModules {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), _fieldLayout);
   }
 
-  /** Set moduleAddress */
+  /**
+   * @notice Set moduleAddress.
+   */
   function set(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -180,7 +221,9 @@ library InstalledModules {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), _fieldLayout);
   }
 
-  /** Set moduleAddress */
+  /**
+   * @notice Set moduleAddress.
+   */
   function _set(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -189,7 +232,9 @@ library InstalledModules {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), _fieldLayout);
   }
 
-  /** Set moduleAddress (using the specified store) */
+  /**
+   * @notice Set moduleAddress (using the specified store).
+   */
   function set(IStore _store, bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -198,7 +243,9 @@ library InstalledModules {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), _fieldLayout);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys.
+   */
   function deleteRecord(bytes16 moduleName, bytes32 argumentsHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -207,7 +254,9 @@ library InstalledModules {
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Delete all data for given keys */
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(bytes16 moduleName, bytes32 argumentsHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -216,7 +265,9 @@ library InstalledModules {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
-  /** Delete all data for given keys (using the specified store) */
+  /**
+   * @notice Delete all data for given keys (using the specified store).
+   */
   function deleteRecord(IStore _store, bytes16 moduleName, bytes32 argumentsHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -225,12 +276,20 @@ library InstalledModules {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
-  /** Tightly pack static data using this table's schema */
+  /**
+   * @notice Tightly pack static (fixed length) data using this table's schema.
+   * @return The static data, encoded into a sequence of bytes.
+   */
   function encodeStatic(address moduleAddress) internal pure returns (bytes memory) {
     return abi.encodePacked(moduleAddress);
   }
 
-  /** Tightly pack full data using this table's field layout */
+  /**
+   * @notice Encode all of a record's fields.
+   * @return The static (fixed length) data, encoded into a sequence of bytes.
+   * @return The lengths of the dynamic fields (packed into a single bytes32 value).
+   * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
+   */
   function encode(address moduleAddress) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(moduleAddress);
 
@@ -240,7 +299,9 @@ library InstalledModules {
     return (_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Encode keys as a bytes32 array using this table's field layout */
+  /**
+   * @notice Encode keys as a bytes32 array using this table's field layout.
+   */
   function encodeKeyTuple(bytes16 moduleName, bytes32 argumentsHash) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);

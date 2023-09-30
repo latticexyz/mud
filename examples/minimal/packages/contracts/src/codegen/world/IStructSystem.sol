@@ -5,6 +5,10 @@ pragma solidity >=0.8.21;
 
 import { BytesStruct, StringStruct } from "./../../systems/structs.sol";
 
+/**
+ * @title IStructSystem
+ * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
+ */
 interface IStructSystem {
   function staticArrayBytesStruct(BytesStruct[1] memory) external;
 
