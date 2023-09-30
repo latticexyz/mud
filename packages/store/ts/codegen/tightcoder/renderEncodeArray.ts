@@ -6,6 +6,11 @@ export function renderEncodeArray() {
   return `
     ${renderedSolidityHeader}
     import { TightCoder } from "./TightCoder.sol";
+
+    /**
+     * @title EncodeArray
+     * @dev This library provides utilities for encoding arrays into tightly packed bytes representations.
+     */
     library EncodeArray {
       ${staticAbiTypes
         .map((staticAbiType) =>
