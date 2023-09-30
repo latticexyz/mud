@@ -15,36 +15,26 @@ import { WorldContextConsumer } from "./../../WorldContext.sol";
 interface IWorldRegistrationSystem {
   /**
    * @notice registerNamespace
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function registerNamespace(ResourceId namespaceId) external;
 
   /**
    * @notice registerSystemHook
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) external;
 
   /**
    * @notice unregisterSystemHook
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) external;
 
   /**
    * @notice registerSystem
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function registerSystem(ResourceId systemId, WorldContextConsumer system, bool publicAccess) external;
 
   /**
    * @notice registerFunctionSelector
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function registerFunctionSelector(
     ResourceId systemId,
@@ -53,8 +43,6 @@ interface IWorldRegistrationSystem {
 
   /**
    * @notice registerRootFunctionSelector
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function registerRootFunctionSelector(
     ResourceId systemId,
@@ -64,15 +52,11 @@ interface IWorldRegistrationSystem {
 
   /**
    * @notice registerDelegation
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData) external;
 
   /**
    * @notice registerNamespaceDelegation
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function registerNamespaceDelegation(
     ResourceId namespaceId,

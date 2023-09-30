@@ -13,8 +13,6 @@ import { IModule } from "./../../IModule.sol";
 interface IModuleInstallationSystem {
   /**
    * @notice installModule
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function installModule(IModule module, bytes memory args) external;
 }

@@ -13,15 +13,11 @@ import { SystemCallData, SystemCallFromData } from "./../../modules/core/types.s
 interface IBatchCallSystem {
   /**
    * @notice batchCall
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function batchCall(SystemCallData[] calldata systemCalls) external returns (bytes[] memory returnDatas);
 
   /**
    * @notice batchCallFrom
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function batchCallFrom(SystemCallFromData[] calldata systemCalls) external returns (bytes[] memory returnDatas);
 }

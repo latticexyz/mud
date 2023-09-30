@@ -13,22 +13,16 @@ import { ResourceId } from "./../../WorldResourceId.sol";
 interface IAccessManagementSystem {
   /**
    * @notice grantAccess
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function grantAccess(ResourceId resourceId, address grantee) external;
 
   /**
    * @notice revokeAccess
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function revokeAccess(ResourceId resourceId, address grantee) external;
 
   /**
    * @notice transferOwnership
-   * @dev External contracts or callers can use this function to increment a value in the system.
-   * Implementing contracts should ensure the integrity and logic of this function.
    */
   function transferOwnership(ResourceId namespaceId, address newOwner) external;
 }
