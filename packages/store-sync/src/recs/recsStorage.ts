@@ -24,6 +24,7 @@ import worldConfig from "@latticexyz/world/mud.config";
 export type RecsStorageOptions<TConfig extends StoreConfig = StoreConfig> = {
   world: RecsWorld;
   config: TConfig;
+  shouldSkipUpdateStream?: () => boolean;
 };
 
 export type RecsStorageAdapter<TConfig extends StoreConfig = StoreConfig> = {
@@ -38,6 +39,7 @@ export type RecsStorageAdapter<TConfig extends StoreConfig = StoreConfig> = {
 export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   world,
   config,
+  shouldSkipUpdateStream,
 }: RecsStorageOptions<TConfig>): RecsStorageAdapter<TConfig> {
   world.registerEntity({ id: singletonEntity });
 
@@ -52,7 +54,12 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
     async registerTables({ tables }) {
       for (const table of tables) {
         // TODO: check if table exists already and skip/warn?
-        setComponent(components.RegisteredTables, getTableEntity(table), { table });
+        setComponent(
+          components.RegisteredTables,
+          getTableEntity(table),
+          { table },
+          { skipUpdateStream: shouldSkipUpdateStream?.() }
+        );
       }
     },
     async getTables({ tables }) {
@@ -87,7 +94,9 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
 
         if (operation.type === "SetRecord") {
           debug("setting component", tableId, entity, operation.value);
-          setComponent(component, entity, operation.value as ComponentValue);
+          setComponent(component, entity, operation.value as ComponentValue, {
+            skipUpdateStream: shouldSkipUpdateStream?.(),
+          });
         } else if (operation.type === "SetField") {
           debug("updating component", tableId, entity, {
             [operation.fieldName]: operation.fieldValue,
@@ -96,11 +105,12 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
             component,
             entity,
             { [operation.fieldName]: operation.fieldValue } as ComponentValue,
-            schemaToDefaults(table.valueSchema) as ComponentValue
+            schemaToDefaults(table.valueSchema) as ComponentValue,
+            { skipUpdateStream: shouldSkipUpdateStream?.() }
           );
         } else if (operation.type === "DeleteRecord") {
           debug("deleting component", tableId, entity);
-          removeComponent(component, entity);
+          removeComponent(component, entity, { skipUpdateStream: shouldSkipUpdateStream?.() });
         }
       }
     },

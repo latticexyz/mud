@@ -16,12 +16,12 @@ export function createAppRouter() {
         z.object({
           chainId: z.number(),
           address: z.string().refine(isHex).optional(),
+          tableIds: z.array(z.string().refine(isHex)).optional(),
+          matchId: z.number().optional(),
         })
       )
-      .query(async (opts): ReturnType<QueryAdapter["findAll"]> => {
-        const { queryAdapter } = opts.ctx;
-        const { chainId, address } = opts.input;
-        return queryAdapter.findAll(chainId, address);
+      .query(async ({ ctx, input }): ReturnType<QueryAdapter["findAll"]> => {
+        return ctx.queryAdapter.findAll(input);
       }),
   });
 }
