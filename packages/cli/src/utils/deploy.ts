@@ -11,7 +11,8 @@ import { defaultModuleContracts } from "./modules/constants";
 import { getInstallModuleCallData } from "./modules/getInstallModuleCallData";
 import { getUserModules } from "./modules/getUserModules";
 import { getGrantAccessCallData } from "./systems/getGrantAccessCallData";
-import { getRegisterFunctionSelectorsCallData } from "./systems/getRegisterFunctionSelectorsCallData";
+import { getBatchCallCallData } from "./systems/getBatchCallCallData";
+import { getRegisterFunctionSelectorsFunctionData } from "./systems/getRegisterFunctionSelectorsFunctionData";
 import { getRegisterSystemCallData } from "./systems/getRegisterSystemCallData";
 import { getRegisterTableCallData } from "./tables/getRegisterTableCallData";
 import { getTableIds } from "./tables/getTableIds";
@@ -72,6 +73,8 @@ export async function deploy(
     disableTxWait,
     confirmations: disableTxWait ? 0 : 1,
   };
+  // The resource id of the core system
+  const coreSystemId = resourceIdToHex({ type: "system", namespace: "", name: "core" });
 
   // Get block number before deploying
   const blockNumber = Number(await cast(["block-number", "--rpc-url", rpc], { profile }));
@@ -187,16 +190,9 @@ export async function deploy(
       })
     )
   );
-  const functionCalls = Object.entries(resolvedConfig.systems).flatMap(([systemKey, system]) =>
-    getRegisterFunctionSelectorsCallData({
-      systemContractName: systemKey,
-      system,
-      namespace: mudConfig.namespace,
-      forgeOutDirectory,
-    })
-  );
+
   await Promise.all(
-    [...systemCalls, ...functionCalls].map((call) =>
+    [...systemCalls].map((call) =>
       fastTxExecute({
         ...txConfig,
         nonce: nonce++,
@@ -205,7 +201,42 @@ export async function deploy(
       })
     )
   );
-  console.log(chalk.green(`Systems and Functions registered`));
+  console.log(chalk.green(`Systems registered`));
+
+  const functionRegisterCalls = Object.entries(resolvedConfig.systems).flatMap(([systemKey, system]) =>
+    getRegisterFunctionSelectorsFunctionData({
+      systemContractName: systemKey,
+      system,
+      namespace: mudConfig.namespace,
+      forgeOutDirectory,
+      contract: worldContract,
+    })
+  );
+
+  // Batch function register calls to avoid hitting the block gas limit
+  // TODO: Make this configurable
+  const BATCH_SIZE = 20;
+  const iterations = Math.ceil(functionRegisterCalls.length / BATCH_SIZE);
+  const packedFunctionRegisterCalls = Array.from({ length: iterations }, (_, i) => {
+    const slicedFunctionRegisterCalls = functionRegisterCalls.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE);
+    return getBatchCallCallData({
+      systemId: coreSystemId,
+      batchCallData: slicedFunctionRegisterCalls,
+    });
+  });
+
+  await Promise.all(
+    [...packedFunctionRegisterCalls].map((call) =>
+      fastTxExecute({
+        ...txConfig,
+        nonce: nonce++,
+        contract: worldContract,
+        ...call,
+      })
+    )
+  );
+
+  console.log(chalk.green(`Functions registered`));
 
   // Wait for System access to be granted before installing modules
   const grantCalls = await getGrantAccessCallData({

@@ -1,17 +1,18 @@
 import { resourceIdToHex } from "@latticexyz/common";
 import { System } from "./types";
 import { loadFunctionSignatures, toFunctionSelector } from "./utils";
-import { CallData } from "../utils/types";
+import { ethers } from "ethers";
 
-export function getRegisterFunctionSelectorsCallData(input: {
+export function getRegisterFunctionSelectorsFunctionData(input: {
   systemContractName: string;
   system: System;
   namespace: string;
   forgeOutDirectory: string;
-}): CallData[] {
+  contract: ethers.Contract;
+}): string[] {
   // Register system at route
-  const callData: CallData[] = [];
-  const { systemContractName, namespace, forgeOutDirectory, system } = input;
+  const callData: string[] = [];
+  const { systemContractName, namespace, forgeOutDirectory, system, contract } = input;
 
   if (system.registerFunctionSelectors) {
     const baseSystemFunctionSignatures = loadFunctionSignatures("System", forgeOutDirectory);
@@ -22,11 +23,12 @@ export function getRegisterFunctionSelectorsCallData(input: {
     const isRoot = namespace === "";
     for (const systemFunctionSignature of systemFunctionSignatures) {
       callData.push(
-        getRegisterFunctionSelectorCallData({
+        getRegisterFunctionSelectorFunctionData({
           namespace,
           name: system.name,
           systemFunctionSignature,
           isRoot,
+          contract: contract,
         })
       );
     }
@@ -34,24 +36,28 @@ export function getRegisterFunctionSelectorsCallData(input: {
   return callData;
 }
 
-function getRegisterFunctionSelectorCallData(input: {
+function getRegisterFunctionSelectorFunctionData(input: {
   namespace: string;
   name: string;
   systemFunctionSignature: string;
   isRoot: boolean;
-}): CallData {
-  const { namespace, name, systemFunctionSignature, isRoot } = input;
-
+  contract: ethers.Contract;
+}): string {
+  const { namespace, name, systemFunctionSignature, isRoot, contract } = input;
+  const systemId = resourceIdToHex({ type: "system", namespace, name });
   if (isRoot) {
     const functionSelector = toFunctionSelector(systemFunctionSignature);
-    return {
-      func: "registerRootFunctionSelector",
-      args: [resourceIdToHex({ type: "system", namespace, name }), systemFunctionSignature, functionSelector],
-    };
+    const functionData = contract.interface.encodeFunctionData("registerRootFunctionSelector", [
+      systemId,
+      systemFunctionSignature,
+      functionSelector,
+    ]);
+    return functionData;
   } else {
-    return {
-      func: "registerFunctionSelector",
-      args: [resourceIdToHex({ type: "system", namespace, name }), systemFunctionSignature],
-    };
+    const functionData = contract.interface.encodeFunctionData("registerFunctionSelector", [
+      systemId,
+      systemFunctionSignature,
+    ]);
+    return functionData;
   }
 }
