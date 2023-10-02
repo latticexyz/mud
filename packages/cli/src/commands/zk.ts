@@ -1,10 +1,21 @@
 import type { CommandModule } from "yargs";
+import {
+  anvil,
+  forge,
+  getRemappings,
+  getRpcUrl,
+  getScriptDirectory,
+  getSrcDirectory,
+} from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { execa } from "execa";
+import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
+import { StoreConfig } from "@latticexyz/store";
+import { WorldConfig } from "@latticexyz/world";
 
 type Options = {
-  name: string | undefined;
-  upper: boolean | undefined;
+  rpc?: string;
+  configPath?: string;
 };
 
 const commandModule: CommandModule<Options, Options> = {
@@ -20,11 +31,17 @@ const commandModule: CommandModule<Options, Options> = {
       .positional("name", { type: "string", demandOption: true });
   },
 
-  async handler({ name }) {
-    const greeting = `Gm, ${name}!`;
-    console.log(greeting);
-
+  async handler(args) {
     console.log(chalk.blue("Building with zk"));
+
+    const srcDirectory = await getSrcDirectory();
+    const scriptDirectory = await getScriptDirectory();
+    const remappings = await getRemappings();
+
+    // console log the variables
+    console.log(chalk.blue("srcDirectory: ", srcDirectory));
+    console.log(chalk.blue("scriptDirectory: ", scriptDirectory));
+    console.log(chalk.blue("remappings: ", remappings));
 
     try {
       // Build with zk
