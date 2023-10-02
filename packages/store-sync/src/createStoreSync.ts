@@ -222,7 +222,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
             const processedBlocks = lastBlockNumberProcessed - startBlock;
             onProgress?.({
               step: SyncStep.RPC,
-              percentage: Number((processedBlocks * 1000n) / totalBlocks) / 1000,
+              percentage: Number((processedBlocks * 1000n) / totalBlocks) / 10,
               latestBlockNumber: endBlock,
               lastBlockNumberProcessed,
               message: "Hydrating from RPC",
