@@ -1,4 +1,4 @@
-import { concat, EMPTY, from, Observable } from "rxjs";
+import { concat, debounceTime, EMPTY, from, Observable } from "rxjs";
 import { getComponentEntities, removeComponent, setComponent } from "./Component";
 import { UpdateType } from "./constants";
 import { defineEnterQuery, defineExitQuery, defineQuery, defineUpdateQuery } from "./Query";
@@ -17,7 +17,7 @@ import { toUpdateStream } from "./utils";
  * @param system System function to run on updates of the `observable$`. System function gets passed the update events from the `observable$`.
  */
 export function defineRxSystem<T>(world: World, observable$: Observable<T>, system: (event: T) => void) {
-  const subscription = observable$.subscribe(system);
+  const subscription = observable$.pipe(debounceTime(10)).subscribe(system);
   world.registerDisposer(() => subscription?.unsubscribe());
 }
 

@@ -1,14 +1,16 @@
 import {
   Component,
+  ComponentUpdate,
   ComponentValue,
   defineQuery,
   Entity,
   getComponentValue,
   Has,
-  isComponentUpdate,
   Schema,
+  UpdateType,
 } from "@latticexyz/recs";
 import { useEffect, useState } from "react";
+import { debounceTime, filter } from "rxjs";
 
 export function useComponentValue<S extends Schema>(
   component: Component<S>,
@@ -34,12 +36,18 @@ export function useComponentValue<S extends Schema>(
     if (entity == null) return;
 
     const queryResult = defineQuery([Has(component)], { runOnInit: false });
-    const subscription = queryResult.update$.subscribe((update) => {
-      if (isComponentUpdate(update, component) && update.entity === entity) {
+    const subscription = queryResult.update$
+      .pipe(
+        filter(
+          (update): update is ComponentUpdate<S> & { type: UpdateType } =>
+            update.component === component && update.entity === entity
+        ),
+        debounceTime(10)
+      )
+      .subscribe((update) => {
         const [nextValue] = update.value;
         setValue(nextValue);
-      }
-    });
+      });
     return () => subscription.unsubscribe();
   }, [component, entity]);
 

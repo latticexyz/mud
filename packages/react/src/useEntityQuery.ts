@@ -2,7 +2,7 @@ import { defineQuery, QueryFragment } from "@latticexyz/recs";
 import { useEffect, useMemo, useState } from "react";
 import { useDeepMemo } from "./utils/useDeepMemo";
 import isEqual from "fast-deep-equal";
-import { distinctUntilChanged, map } from "rxjs";
+import { debounceTime, distinctUntilChanged, map } from "rxjs";
 
 // This does a little more rendering than is necessary when arguments change,
 // but at least it's giving correct results now. Will optimize later!
@@ -29,7 +29,7 @@ export function useEntityQuery(fragments: QueryFragment[], options?: { updateOnV
       // re-render only on entity array changes
       observable = observable.pipe(distinctUntilChanged((a, b) => isEqual(a, b)));
     }
-    const subscription = observable.subscribe((entities) => setEntities(entities));
+    const subscription = observable.pipe(debounceTime(10)).subscribe((entities) => setEntities(entities));
     return () => subscription.unsubscribe();
   }, [query, updateOnValueChange]);
 
