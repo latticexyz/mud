@@ -5,15 +5,15 @@
 ECS is a software architectural pattern used commonly in video game development. It is a data-oriented approach to game development that creates a clean break between data and logic. It does this through the separation of Entities, Components, and Systems:
 
 - **Entities** are the basic units of a game, and they can have any number of components.
+  In a typical MUD implementation each entity is assigned a unique 256 bit identifier that is used as a key to the component tables (see next item).
 - **Components** are small pieces of data that define an entity's behavior (such as position or health).
-  - (_We are currently working on an ECS plugin to make the concept of components more explicit in MUD, but for now, components on the contract side will be implemented as [tables](/store#stores-core-data-model)._)
+  In a typical MUD implementation components are implemented as tables.
+  The table key is the entity identifier, and the value is the data that defines an aspect of the entity such as position.
 - **Systems** are functions responsible for updating the game state and performing operations on entities and their components.
 
-## Using ECS in Emojimon
+## Scope of this project
 
-We will be using ECS mental models in conjunction with MUD to bring Emojimon to life. Before we get into the specifics of this, let's lay out the functionality of what we're about to build:
-
-### Scope of this project
+This is what the game needs to support:
 
 - Create a 2D map with three types of terrain: none, long grass, and boulders.
   - Long grass randomly generates encounters with Emojimon.
@@ -23,7 +23,7 @@ We will be using ECS mental models in conjunction with MUD to bring Emojimon to 
 
 ## Applying the ECS model
 
-You'll notice that in the scope above there are a few key interactions that we need to account for. Let's use a basic one to begin—**the interaction between a player moving and a boulder blocking its movement.**
+In the scope above there are a few key interactions that we need to account for. Let's use a basic one to as an example, **the interaction between a player moving and a boulder blocking its movement.**
 
 In the ECS model both the player and the boulder can be thought of as entities, both of which have components that give it certain properties. For example, the player may have a `movable` component and the boulder an `obstruction` component.
 
@@ -35,7 +35,7 @@ There is one last concept to understand before we begin—how to actually implem
 
 In MUD there are `tables` instead of components (MUD is a protocol for more than just onchain games, after all). However, for the sake of this tutorial, these can be mostly thought of interchangeably. In order to apply the ECS model for the example above one would create a `movable` table and an `obstruction` table then set both of their types to `boolean`.
 
-You would then create a system, `MoveSystem.sol`, and wire up the logic required to interact with the tables (i.e. components) accordingly.
+You would then create a system, `MoveSystem.sol`, and write up the logic required to interact with the tables (i.e. components) accordingly.
 
 That is all that is required! After this is done, simply call the systems from the client and vóila—you have movement.
 
