@@ -2,33 +2,36 @@
 
 ## Prerequisites
 
-1. git ([download](https://git-scm.com/downloads))
-2. foundry (forge, anvil, cast) ([download](https://book.getfoundry.sh/getting-started/installation), make sure to `foundryup` at least once)
-3. node.js (v17+) ([download](https://nodejs.org/en/download/))
-4. pnpm (`npm install pnpm --global` after installing node)
+- git ([download](https://git-scm.com/downloads))
+- foundry (forge, anvil, cast) ([download](https://book.getfoundry.sh/getting-started/installation), make sure to `foundryup` at least once)
+- node.js (v17+) ([download](https://nodejs.org/en/download/))
+- pnpm (`npm install pnpm --global` after installing node)
 
 ## Setup
 
 Most projects in MUD are started by running `pnpm create mud <project name>`, but for this tutorial we've included some initial code to get you up and running quicker. This includes React components and base TailwindCSS styles.
 
-To get started you can fork or clone from the [Emojimon starter kit repo](https://github.com/latticexyz/emojimon) or use the command below.
+1. Fork or clone from the [Emojimon starter kit repo](https://github.com/latticexyz/emojimon).
+   You can use the command below.
 
-```bash copy
-git clone https://github.com/latticexyz/emojimon.git
-```
+   ```bash copy
+   git clone https://github.com/latticexyz/emojimon.git
+   ```
 
-Afterwards, run the following commands to install the dependencies and start up MUD's services (anvil node, contracts deployer, and client):
+1. Install the dependencies and start up the MUD services (anvil node, contracts deployer, and client).
 
-```bash copy
-cd emojimon && pnpm install
-```
+   ```bash copy
+   cd emojimon && pnpm install && pnpm run dev
+   ```
 
-```bash copy
-pnpm run dev
-```
+   If all went well you should see this in your command line.
 
-If all went well you should see this in your command line.
+   ![A successful MUD deployment](../../quick-start-mud-cli.png)
 
-![A successful MUD deployment](../../quick-start-mud-cli.png)
+1. Open the game in your browser.
+   By default the game is at [http://localhost:3000](http://localhost:3000), but it could be on a different port if that port's taken.
 
-After deployment is successful, pop over to [http://localhost:3000](http://localhost:3000) and checkout your live app. At this point you can open up your code editor and get started!
+1. Click the map to spawn at a specific location and move using the arrow keys.
+   Note that on each block you can only move one space, and the block time on the anvil blockchain is one second.
+
+At this point you can open up your code editor and get started.
