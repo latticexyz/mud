@@ -1,4 +1,4 @@
 # suppress diffs for generated files
-**/pnpm-log.yaml linguist-generated=true
+**/pnpm-lock.yaml linguist-generated=true
 **/codegen/**/*.sol linguist-generated=true
 **/test-data/**/*.json linguist-generated=true
