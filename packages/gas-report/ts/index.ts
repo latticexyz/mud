@@ -205,13 +205,16 @@ function saveGasReport(gasReport: GasReport, path: string) {
 
 function readStdIn(): Promise<string> {
   return new Promise((resolve) => {
+    console.log("Waiting for stdin...");
     let data = "";
 
     process.stdin.on("data", (chunk) => {
+      console.log(chunk.toString());
       data += chunk;
     });
 
     process.stdin.on("end", () => {
+      console.log("Done waiting for stdin");
       resolve(data);
     });
   });
