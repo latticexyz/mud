@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@latticexyz/cli':
+        specifier: link:../../packages/cli
+        version: link:../../packages/cli
       '@typescript-eslint/eslint-plugin':
         specifier: 5.46.1
         version: 5.46.1(@typescript-eslint/parser@5.46.1)(eslint@8.29.0)(typescript@5.1.6)

@@ -6,6 +6,7 @@ import { MUDError } from "@latticexyz/common/errors";
 import { logError } from "../utils/errors";
 import localPackageJson from "../../package.json" assert { type: "json" };
 import glob from "glob";
+import { mudPackages } from "../mudPackages";
 
 type Options = {
   backup?: boolean;
@@ -16,8 +17,6 @@ type Options = {
   commit?: string;
   link?: string;
 };
-
-const MUD_PREFIX = "@latticexyz";
 
 const commandModule: CommandModule<Options, Options> = {
   command: "set-version",
@@ -114,34 +113,35 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
   let { mudVersion } = options;
 
   const packageJson = readPackageJson(filePath);
+  const mudPackageNames = Object.keys(mudPackages);
 
   // Find all MUD dependencies
   const mudDependencies: Record<string, string> = {};
-  for (const key in packageJson.dependencies) {
-    if (key.startsWith(MUD_PREFIX)) {
-      mudDependencies[key] = packageJson.dependencies[key];
+  for (const packageName in packageJson.dependencies) {
+    if (mudPackageNames.includes(packageName)) {
+      mudDependencies[packageName] = packageJson.dependencies[packageName];
     }
   }
 
   // Find all MUD devDependencies
   const mudDevDependencies: Record<string, string> = {};
-  for (const key in packageJson.devDependencies) {
-    if (key.startsWith(MUD_PREFIX)) {
-      mudDevDependencies[key] = packageJson.devDependencies[key];
+  for (const packageName in packageJson.devDependencies) {
+    if (mudPackageNames.includes(packageName)) {
+      mudDevDependencies[packageName] = packageJson.devDependencies[packageName];
     }
   }
 
   // Update the dependencies
-  for (const key in packageJson.dependencies) {
-    if (key.startsWith(MUD_PREFIX)) {
-      packageJson.dependencies[key] = resolveMudVersion(key, "dependencies");
+  for (const packageName in packageJson.dependencies) {
+    if (mudPackageNames.includes(packageName)) {
+      packageJson.dependencies[packageName] = resolveMudVersion(packageName, "dependencies");
     }
   }
 
   // Update the devDependencies
-  for (const key in packageJson.devDependencies) {
-    if (key.startsWith(MUD_PREFIX)) {
-      packageJson.devDependencies[key] = resolveMudVersion(key, "devDependencies");
+  for (const packageName in packageJson.devDependencies) {
+    if (mudPackageNames.includes(packageName)) {
+      packageJson.devDependencies[packageName] = resolveMudVersion(packageName, "devDependencies");
     }
   }
 
@@ -185,10 +185,9 @@ function logComparison(prev: Record<string, string>, curr: Record<string, string
 /**
  * Returns path of the package to link, given a path to a local MUD clone and a package
  */
-function resolveLinkPath(packageJsonPath: string, mudLinkPath: string, pkg: string) {
-  const pkgName = pkg.replace(MUD_PREFIX, "");
+function resolveLinkPath(packageJsonPath: string, mudLinkPath: string, packageName: string) {
   const packageJsonToRootPath = path.relative(path.dirname(packageJsonPath), process.cwd());
-  const linkPath = path.join(packageJsonToRootPath, mudLinkPath, "packages", pkgName);
+  const linkPath = path.join(packageJsonToRootPath, mudLinkPath, mudPackages[packageName].localPath);
   return "link:" + linkPath;
 }
 
