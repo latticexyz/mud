@@ -4,7 +4,7 @@ import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
-import { createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
+import { createBurnerAccount, getContract, transportObserver } from "@latticexyz/common";
 import mudConfig from "contracts/mud.config";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
@@ -26,7 +26,7 @@ export async function setupNetwork() {
     account: burnerAccount,
   });
 
-  const worldContract = createContract({
+  const worldContract = getContract({
     address: networkConfig.worldAddress as Hex,
     abi: IWorldAbi,
     publicClient,

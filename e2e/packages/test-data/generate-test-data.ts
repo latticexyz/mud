@@ -13,7 +13,7 @@ import {
   numberToHex,
 } from "viem";
 import { mudFoundry } from "@latticexyz/common/chains";
-import { createContract } from "@latticexyz/common";
+import { getContract } from "@latticexyz/common";
 import { storeEventsAbi } from "@latticexyz/store";
 import { privateKeyToAccount } from "viem/accounts";
 import IWorldAbi from "../contracts/out/IWorld.sol/IWorld.abi.json";
@@ -63,7 +63,7 @@ const walletClient = createWalletClient({
   account,
 });
 
-const worldContract = createContract({
+const worldContract = getContract({
   address: worldAddress,
   abi: IWorldAbi,
   publicClient,
