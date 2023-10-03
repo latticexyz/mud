@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 
 import { IUniqueEntitySystem } from "../../interfaces/IUniqueEntitySystem.sol";
+import { UniqueEntitySystem } from "./UniqueEntitySystem.sol";
+
+import { SystemSwitch } from "../../utils/SystemSwitch.sol";
+import { SYSTEM_ID } from "./constants.sol";
 
 /**
  * Increment and get an entity nonce.
@@ -13,8 +16,7 @@ import { IUniqueEntitySystem } from "../../interfaces/IUniqueEntitySystem.sol";
  * For usage outside of a World, use the overload that takes an explicit store argument.
  */
 function getUniqueEntity() returns (bytes32 uniqueEntity) {
-  address world = StoreSwitch.getStoreAddress();
-  return IUniqueEntitySystem(world).uniqueEntity_system_getUniqueEntity();
+  return abi.decode(SystemSwitch.call(SYSTEM_ID, abi.encodeCall(UniqueEntitySystem.getUniqueEntity, ())), (bytes32));
 }
 
 /**
