@@ -1,28 +1,30 @@
 import { CollapseCode } from "../../../components/CollapseCode";
 
-# 1. Players and movement
+# Players and movement
 
-**In this section, we will accomplish the following:**
+In this section, we will accomplish the following:
 
-1. Spawn in each unique wallet address as an entity with the `Player`, `Movable`, and `Position` components.
-2. Operate on a player's `Position` component with a system to create movement.
-3. Optimistically render player movement in the client.
+- Spawn in each unique wallet address as an entity with the `Player`, `Movable`, and `Position` components.
+- Operate on a player's `Position` component with a system to create movement.
+- Optimistically render player movement in the client.
 
-## 1.1. Create the components as tables
+## Create the components as tables
 
-To create tables in MUD we are going to navigate to the `mud.config.ts` file. You can define tables, their types, their schemas, and other types of information here. MUD then autogenerates all of the files needed to make sure your app knows these tables exist.
+To create tables in MUD we are going to edit the `mud.config.ts` file.
+You can define tables, their types, their schemas, and other types of information here.
+MUD then autogenerates all of the files needed to make sure your app knows these tables exist.
 
 We're going to start by defining three new tables:
 
-1. `Player: 'bool'` → determine which entities are players (e.g. distinct wallet addresses)
-2. `Movable: 'bool'` → determine whether or not an entity can move
-3. `Position: { valueSchema: { x: 'uint32', y: 'uint32' } }` → determine which position an entity is located on a 2D grid
+- `Player: 'bool'` - determine which entities are players (e.g. distinct wallet addresses).
+- `Movable: 'bool'` - determine whether or not an entity can move.
+- `Position: { valueSchema: { x: 'uint32', y: 'uint32' } }` - determine which position an entity is located on a 2D grid.
 
 The syntax is as follows:
 
 <CollapseCode>
 
-```tsx filename="mud.config.ts" {8-16} copy showLineNumbers
+```tsx filename="packages/contract/mud.config.ts" {8-16} copy showLineNumbers
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
@@ -45,9 +47,39 @@ export default mudConfig({
 
 </CollapseCode>
 
-## 1.2. Create the system and its methods
+<details>
+<summary>Explanation</summary>
 
-In MUD, a system can have an arbitrary number of methods inside of it. Since we will be moving players around on a 2D map, we started the codebase off by creating a system that will encompass all of the methods related to the map: `MapSystem.sol` in `src/systems`.
+```typescript
+    Movable: "bool",
+    Player: "bool",
+```
+
+When we do not specify a key schema for a table, MUD uses the default, a `uint256` value.
+The key in these cases is the entity ID for the entities being described.
+As in most cases in the Ethereum ecosystem, there is no distinction between zero (or in the case of boolean values, `false`) and nothing.
+So by default entites are neither `Movable` nor a `Player`.
+
+```typescript
+    Position: {
+      dataStruct: false,
+      valueSchema: {
+        x: "uint32",
+        y: "uint32",
+      },
+```
+
+The `Position` of an entity includes both an `x` coordinate and a `y` coordinate.
+When a table has multiple fields, we use `valueSchema` inside a structure to describe them instead of just using a string with the Solidity field type.
+
+</details>
+
+If after modifying the file you get an error on the `pnpm dev` process, restart it.
+
+## Create the map system and its methods
+
+In MUD, a system can have an arbitrary number of methods inside of it.
+Since we will be moving players around on a 2D map, we start the codebase off by creating a system that will encompass all of the methods related to the map: `MapSystem.sol` in `packages/contracts/src/systems`.
 
 ### Spawn method
 
@@ -57,7 +89,7 @@ To solve for these problems we can add the **spawn method**, which will assign t
 
 <CollapseCode>
 
-```solidity filename="MapSystem.sol" {4-5,8-15} copy showLineNumbers
+```solidity filename="packages/contract/src/systems/MapSystem.sol" {4-5,8-15} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
@@ -92,7 +124,7 @@ Next we’ll add the **move method** to `MapSystem.sol`. This will allow us to m
 
 <CollapseCode>
 
-```solidity filename="MapSystem.sol" {17-25} copy showLineNumbers
+```solidity filename="packages/contract/src/systems/MapSystem.sol" {17-25} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";

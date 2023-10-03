@@ -28,10 +28,29 @@ Most projects in MUD are started by running `pnpm create mud <project name>`, bu
 
    ![A successful MUD deployment](../../quick-start-mud-cli.png)
 
-1. Open the game in your browser.
+1. At this point you can play the game to see the finished game.
+   Open the game in your browser.
    By default the game is at [http://localhost:3000](http://localhost:3000), but it could be on a different port if that port's taken.
 
 1. Click the map to spawn at a specific location and move using the arrow keys.
    Note that on each block you can only move one space, and the block time on the anvil blockchain is one second.
 
-At this point you can open up your code editor and get started.
+1. Now that you've seen our end goal, reset the repository to [the starting snapshot](https://github.com/latticexyz/emojimon/commit/ad9afc55dc3f90bc64c9c04631696ebe96633252).
+
+```sh copy
+git reset --hard ad9afc55dc3f90bc64c9c04631696ebe96633252
+```
+
+After you do this, the game is just a green area where the map is going to be.
+
+<details>
+
+<summary>Code structure</summary>
+
+Except for a few utility files, most of the code is in two packages:
+
+- [`packages/contracts`](https://github.com/latticexyz/emojimon/tree/main/packages/contracts) contains the onchain part of the game.
+- [`packages/client`](https://github.com/latticexyz/emojimon/tree/main/packages/client) contains the offchain part of the game, the user interface.
+  The software runs on the user's browser, it is just served from a [vite](https://vitejs.dev/) server.
+
+</details>
