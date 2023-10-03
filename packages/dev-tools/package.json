@@ -30,14 +30,13 @@
     "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
-    "abitype": "0.9.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.0",
     "rxjs": "7.5.5",
     "tailwind-merge": "^1.12.0",
     "use-local-storage-state": "^18.3.2",
-    "viem": "1.6.0",
+    "viem": "1.14.0",
     "zustand": "^4.3.7"
   },
   "devDependencies": {

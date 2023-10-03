@@ -34,7 +34,7 @@
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
     "fastify": "^4.21.0",
-    "viem": "1.6.0",
+    "viem": "1.14.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {
