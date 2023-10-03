@@ -16,10 +16,6 @@ export const latticeTestnet = {
     },
   },
   blockExplorers: {
-    otterscan: {
-      name: "Otterscan",
-      url: "https://explorer.testnet-chain.linfra.xyz",
-    },
     default: {
       name: "Otterscan",
       url: "https://explorer.testnet-chain.linfra.xyz",
