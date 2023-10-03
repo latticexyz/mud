@@ -9,7 +9,7 @@ import {
   WriteContractParameters,
   WriteContractReturnType,
 } from "viem";
-import { simulateContract, writeContract as writeContract_ } from "viem/actions";
+import { simulateContract, writeContract as viem_writeContract } from "viem/actions";
 import pRetry from "p-retry";
 import { debug as parentDebug } from "./debug";
 import { getNonceManager } from "./getNonceManager";
@@ -92,7 +92,7 @@ export async function writeContract<
 
         const nonce = nonceManager.nextNonce();
         debug("calling write function with nonce", nonce, preparedWrite);
-        return await writeContract_(client, { nonce, ...preparedWrite });
+        return await viem_writeContract(client, { nonce, ...preparedWrite });
       },
       {
         retries: 3,
