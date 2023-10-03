@@ -94,7 +94,7 @@ export async function writeContract<
 
         const nonce = nonceManager.nextNonce();
         debug("calling write function with nonce", nonce, preparedWrite);
-        return await viem_writeContract(client, { nonce, ...preparedWrite });
+        return await viem_writeContract(client, { nonce, ...preparedWrite } as typeof preparedWrite);
       },
       {
         retries: 3,
