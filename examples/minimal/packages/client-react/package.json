@@ -32,7 +32,7 @@
     "react-dom": "^18.2.0",
     "rxjs": "7.5.5",
     "threads": "^1.7.0",
-    "viem": "1.6.0"
+    "viem": "1.14.0"
   },
   "devDependencies": {
     "@types/react": "18.2.22",
