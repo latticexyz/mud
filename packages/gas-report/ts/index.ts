@@ -4,6 +4,7 @@ import { execa } from "execa";
 import chalk from "chalk";
 import { table, getBorderCharacters } from "table";
 import stripAnsi from "strip-ansi";
+import toArray from "stream-to-array";
 
 /**
  * Print the gas report to the console, save it to a file and compare it to a previous gas report if provided.
@@ -106,8 +107,11 @@ async function runGasReport(options: Options): Promise<GasReport> {
   let logs: string;
   try {
     if (options.stdin) {
-      // Read the logs from stdin
-      logs = await readStdIn();
+      // Read the logs from stdin and pipe them to stdout for visibility
+      console.log("Waiting for stdin...");
+      process.stdin.pipe(process.stdout);
+      logs = (await toArray(process.stdin)).map((chunk) => chunk.toString()).join("\n");
+      console.log("Done reading stdin");
     } else {
       // Run the default test command to capture the logs
       const child = execa("forge", ["test", "-vvv"], {
@@ -201,18 +205,4 @@ function printGasReport(gasReport: GasReport, compare?: string) {
 function saveGasReport(gasReport: GasReport, path: string) {
   console.log(chalk.bold(`Saving gas report to ${path}`));
   writeFileSync(path, `${JSON.stringify(gasReport, null, 2)}\n`);
-}
-
-function readStdIn(): Promise<string> {
-  return new Promise((resolve) => {
-    let data = "";
-
-    process.stdin.on("data", (chunk) => {
-      data += chunk;
-    });
-
-    process.stdin.on("end", () => {
-      resolve(data);
-    });
-  });
 }
