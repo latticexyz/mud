@@ -38,6 +38,8 @@ export type GetContractOptions<
   onWrite?: WriteContractOptions["onWrite"];
 };
 
+// TODO: migrate away from this approach once we can hook into viem: https://github.com/wagmi-dev/viem/discussions/1230
+
 export function getContract<
   TTransport extends Transport,
   TAddress extends Address,

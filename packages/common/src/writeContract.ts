@@ -40,6 +40,8 @@ export type WriteContractOptions<
   onWrite?: (write: ContractWrite<TAbi, TFunctionName, TChain, TAccount, TChainOverride>) => void;
 };
 
+// TODO: migrate away from this approach once we can hook into viem's nonce management: https://github.com/wagmi-dev/viem/discussions/1230
+
 export async function writeContract<
   TChain extends Chain | undefined,
   TAccount extends Account | undefined,
