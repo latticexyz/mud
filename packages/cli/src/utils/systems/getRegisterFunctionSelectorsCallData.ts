@@ -1,7 +1,8 @@
 import { resourceIdToHex } from "@latticexyz/common";
 import { System } from "./types";
-import { loadFunctionSignatures, toFunctionSelector } from "./utils";
+import { loadFunctionSignatures } from "./utils";
 import { CallData } from "../utils/types";
+import { getFunctionSelector } from "viem";
 
 export function getRegisterFunctionSelectorsCallData(input: {
   systemContractName: string;
@@ -43,7 +44,7 @@ function getRegisterFunctionSelectorCallData(input: {
   const { namespace, name, systemFunctionSignature, isRoot } = input;
 
   if (isRoot) {
-    const functionSelector = toFunctionSelector(systemFunctionSignature);
+    const functionSelector = getFunctionSelector(systemFunctionSignature);
     return {
       func: "registerRootFunctionSelector",
       args: [resourceIdToHex({ type: "system", namespace, name }), systemFunctionSignature, functionSelector],

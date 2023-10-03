@@ -1,4 +1,3 @@
-import { keccak256, stringToBytes, slice } from "viem";
 import { getContractData } from "../utils/getContractData";
 import { AbiParameter } from "abitype";
 
@@ -24,12 +23,6 @@ export function loadFunctionSignatures(contractName: string, forgeOutDirectory: 
     });
 }
 
-// TODO: move this to utils as soon as utils are usable inside cli
-// (see https://github.com/latticexyz/mud/issues/499)
-export function toFunctionSelector(functionSignature: string): string {
-  return sigHash(functionSignature);
-}
-
 /**
  * Recursively turn (nested) structs in signatures into tuples
  */
@@ -45,10 +38,4 @@ function parseComponents(params: Param[]): string {
     }
   });
   return `(${components})`;
-}
-
-// TODO: move this to utils as soon as utils are usable inside cli
-// (see https://github.com/latticexyz/mud/issues/499)
-function sigHash(signature: string) {
-  return slice(keccak256(stringToBytes(signature)), 0, 4);
 }
