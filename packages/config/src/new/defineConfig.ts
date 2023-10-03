@@ -35,39 +35,60 @@ export function defineConfig<TConfigInput extends ConfigInput>(
   ) as TConfigInput & ConfigOutput<TConfigInput>;
 }
 
-//--------- Testing
+// --- Store config (to me moved to packages/store)
 
-interface PluginsConfigInput {
-  plugin1: PluginConfig;
-}
-
-interface ConfigInput {
+interface TableConfigInput {
   name: string;
 }
 
-interface PluginsConfigOutput {
-  plugin2: PluginConfig;
+interface TableConfigOutput {
+  name: string;
+}
+
+interface TablesConfigInput {
+  [key: string]: TableConfigInput;
+}
+
+interface TablesConfigOutput {
+  [key: string]: TableConfigOutput;
+}
+
+interface ConfigInput {
+  tables: TablesConfigInput;
 }
 
 interface ConfigOutput<TConfigInput extends ConfigInput> {
-  name: `${TConfigInput["name"]}-resolved`;
+  tables: TConfigInput["tables"] & TablesConfigOutput;
 }
 
+// -- World config (to be moved to packages/world)
+
+interface TableConfigOutput {
+  namespace: string;
+}
+
+interface ConfigInput {
+  namespace: string;
+}
+
+//--------- Testing
+
 const config = defineConfig({
-  name: "test",
-  plugins: {
-    plugin1: {
-      resolveConfig: (config) => ({
-        ...config,
-        name: `${config.name}-resolved`,
-        plugins: { plugin2: { resolveConfig: (c) => c as any } },
-      }),
+  namespace: "namespace",
+  tables: {
+    foo: {
+      name: "foo",
+      namespace: "subnamespace",
     },
   },
-});
+  plugins: {},
+} as const);
 
-config.name;
-//      ^?
+config.tables.foo.name;
+//                 ^?
 
-config.plugins.plugin2;
-//             ^?
+config.tables.foo.namespace;
+//                 ^?
+
+config.namespace;
+//     ^?
