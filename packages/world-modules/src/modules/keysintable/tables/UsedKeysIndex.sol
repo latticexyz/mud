@@ -33,18 +33,12 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 );
 
 library UsedKeysIndex {
-  /**
-   * @notice Get the table values' field layout.
-   * @return _fieldLayout The field layout for the table.
-   */
+  /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
   }
 
-  /**
-   * @notice Get the table's key schema.
-   * @return _keySchema The key schema for the table.
-   */
+  /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](2);
     _keySchema[0] = SchemaType.BYTES32;
@@ -53,10 +47,7 @@ library UsedKeysIndex {
     return SchemaLib.encode(_keySchema);
   }
 
-  /**
-   * @notice Get the table's value schema.
-   * @return _valueSchema The value schema for the table.
-   */
+  /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](2);
     _valueSchema[0] = SchemaType.BOOL;
@@ -65,50 +56,36 @@ library UsedKeysIndex {
     return SchemaLib.encode(_valueSchema);
   }
 
-  /**
-   * @notice Get the table's key field names.
-   * @return keyNames An array of strings with the names of key fields.
-   */
+  /** Get the table's key names */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](2);
     keyNames[0] = "sourceTableId";
     keyNames[1] = "keysHash";
   }
 
-  /**
-   * @notice Get the table's value field names.
-   * @return fieldNames An array of strings with the names of value fields.
-   */
+  /** Get the table's field names */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](2);
     fieldNames[0] = "has";
     fieldNames[1] = "index";
   }
 
-  /**
-   * @notice Register the table with its config.
-   */
+  /** Register the table with its config */
   function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Register the table with its config.
-   */
+  /** Register the table with its config */
   function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Register the table with its config (using the specified store).
-   */
+  /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /**
-   * @notice Get has.
-   */
+  /** Get has */
   function getHas(ResourceId sourceTableId, bytes32 keysHash) internal view returns (bool has) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -118,9 +95,7 @@ library UsedKeysIndex {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get has.
-   */
+  /** Get has */
   function _getHas(ResourceId sourceTableId, bytes32 keysHash) internal view returns (bool has) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -130,9 +105,7 @@ library UsedKeysIndex {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Get has (using the specified store).
-   */
+  /** Get has (using the specified store) */
   function getHas(IStore _store, ResourceId sourceTableId, bytes32 keysHash) internal view returns (bool has) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -142,9 +115,7 @@ library UsedKeysIndex {
     return (_toBool(uint8(bytes1(_blob))));
   }
 
-  /**
-   * @notice Set has.
-   */
+  /** Set has */
   function setHas(ResourceId sourceTableId, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -153,9 +124,7 @@ library UsedKeysIndex {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
   }
 
-  /**
-   * @notice Set has.
-   */
+  /** Set has */
   function _setHas(ResourceId sourceTableId, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -164,9 +133,7 @@ library UsedKeysIndex {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
   }
 
-  /**
-   * @notice Set has (using the specified store).
-   */
+  /** Set has (using the specified store) */
   function setHas(IStore _store, ResourceId sourceTableId, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -175,9 +142,7 @@ library UsedKeysIndex {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
   }
 
-  /**
-   * @notice Get index.
-   */
+  /** Get index */
   function getIndex(ResourceId sourceTableId, bytes32 keysHash) internal view returns (uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -187,9 +152,7 @@ library UsedKeysIndex {
     return (uint40(bytes5(_blob)));
   }
 
-  /**
-   * @notice Get index.
-   */
+  /** Get index */
   function _getIndex(ResourceId sourceTableId, bytes32 keysHash) internal view returns (uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -199,9 +162,7 @@ library UsedKeysIndex {
     return (uint40(bytes5(_blob)));
   }
 
-  /**
-   * @notice Get index (using the specified store).
-   */
+  /** Get index (using the specified store) */
   function getIndex(IStore _store, ResourceId sourceTableId, bytes32 keysHash) internal view returns (uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -211,9 +172,7 @@ library UsedKeysIndex {
     return (uint40(bytes5(_blob)));
   }
 
-  /**
-   * @notice Set index.
-   */
+  /** Set index */
   function setIndex(ResourceId sourceTableId, bytes32 keysHash, uint40 index) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -222,9 +181,7 @@ library UsedKeysIndex {
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
   }
 
-  /**
-   * @notice Set index.
-   */
+  /** Set index */
   function _setIndex(ResourceId sourceTableId, bytes32 keysHash, uint40 index) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -233,9 +190,7 @@ library UsedKeysIndex {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
   }
 
-  /**
-   * @notice Set index (using the specified store).
-   */
+  /** Set index (using the specified store) */
   function setIndex(IStore _store, ResourceId sourceTableId, bytes32 keysHash, uint40 index) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -244,9 +199,7 @@ library UsedKeysIndex {
     _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
   }
 
-  /**
-   * @notice Get the full data.
-   */
+  /** Get the full data */
   function get(ResourceId sourceTableId, bytes32 keysHash) internal view returns (bool has, uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -260,9 +213,7 @@ library UsedKeysIndex {
     return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /**
-   * @notice Get the full data.
-   */
+  /** Get the full data */
   function _get(ResourceId sourceTableId, bytes32 keysHash) internal view returns (bool has, uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -276,9 +227,7 @@ library UsedKeysIndex {
     return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /**
-   * @notice Get the full data (using the specified store).
-   */
+  /** Get the full data (using the specified store) */
   function get(
     IStore _store,
     ResourceId sourceTableId,
@@ -296,9 +245,7 @@ library UsedKeysIndex {
     return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /**
-   * @notice Set the full data using individual values.
-   */
+  /** Set the full data using individual values */
   function set(ResourceId sourceTableId, bytes32 keysHash, bool has, uint40 index) internal {
     bytes memory _staticData = encodeStatic(has, index);
 
@@ -312,9 +259,7 @@ library UsedKeysIndex {
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
-  /**
-   * @notice Set the full data using individual values.
-   */
+  /** Set the full data using individual values */
   function _set(ResourceId sourceTableId, bytes32 keysHash, bool has, uint40 index) internal {
     bytes memory _staticData = encodeStatic(has, index);
 
@@ -328,9 +273,7 @@ library UsedKeysIndex {
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
-  /**
-   * @notice Set the full data using individual values (using the specified store).
-   */
+  /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, ResourceId sourceTableId, bytes32 keysHash, bool has, uint40 index) internal {
     bytes memory _staticData = encodeStatic(has, index);
 
@@ -345,7 +288,8 @@ library UsedKeysIndex {
   }
 
   /**
-   * @notice Decode the tightly packed blob of static data using this table's field layout.
+   * Decode the tightly packed blob of static data using this table's field layout
+   * Undefined behaviour for invalid blobs
    */
   function decodeStatic(bytes memory _blob) internal pure returns (bool has, uint40 index) {
     has = (_toBool(uint8(Bytes.slice1(_blob, 0))));
@@ -354,10 +298,8 @@ library UsedKeysIndex {
   }
 
   /**
-   * @notice Decode the tightly packed blobs using this table's field layout.
-   * @param _staticData Tightly packed static fields.
-   *
-   *
+   * Decode the tightly packed blob using this table's field layout.
+   * Undefined behaviour for invalid blobs.
    */
   function decode(
     bytes memory _staticData,
@@ -367,9 +309,7 @@ library UsedKeysIndex {
     (has, index) = decodeStatic(_staticData);
   }
 
-  /**
-   * @notice Delete all data for given keys.
-   */
+  /** Delete all data for given keys */
   function deleteRecord(ResourceId sourceTableId, bytes32 keysHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -378,9 +318,7 @@ library UsedKeysIndex {
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
-  /**
-   * @notice Delete all data for given keys.
-   */
+  /** Delete all data for given keys */
   function _deleteRecord(ResourceId sourceTableId, bytes32 keysHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -389,9 +327,7 @@ library UsedKeysIndex {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
+  /** Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, ResourceId sourceTableId, bytes32 keysHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -400,20 +336,12 @@ library UsedKeysIndex {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
-  /**
-   * @notice Tightly pack static (fixed length) data using this table's schema.
-   * @return The static data, encoded into a sequence of bytes.
-   */
+  /** Tightly pack static data using this table's schema */
   function encodeStatic(bool has, uint40 index) internal pure returns (bytes memory) {
     return abi.encodePacked(has, index);
   }
 
-  /**
-   * @notice Encode all of a record's fields.
-   * @return The static (fixed length) data, encoded into a sequence of bytes.
-   * @return The lengths of the dynamic fields (packed into a single bytes32 value).
-   * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
-   */
+  /** Tightly pack full data using this table's field layout */
   function encode(bool has, uint40 index) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(has, index);
 
@@ -423,9 +351,7 @@ library UsedKeysIndex {
     return (_staticData, _encodedLengths, _dynamicData);
   }
 
-  /**
-   * @notice Encode keys as a bytes32 array using this table's field layout.
-   */
+  /** Encode keys as a bytes32 array using this table's field layout */
   function encodeKeyTuple(ResourceId sourceTableId, bytes32 keysHash) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
@@ -435,12 +361,6 @@ library UsedKeysIndex {
   }
 }
 
-/**
- * @notice Cast a value to a bool.
- * @dev Boolean values are encoded as uint8 (1 = true, 0 = false), but Solidity doesn't allow casting between uint8 and bool.
- * @param value The uint8 value to convert.
- * @return result The boolean value.
- */
 function _toBool(uint8 value) pure returns (bool result) {
   assembly {
     result := value

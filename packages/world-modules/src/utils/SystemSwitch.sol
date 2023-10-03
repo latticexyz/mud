@@ -34,9 +34,9 @@ library SystemSwitch {
    * Otherwise, the call is executed via an external call to the World contract.
    * @param systemId The unique Resource ID of the system being called.
    * @param callData The calldata to be executed in the system.
-   * @return data The return data from the system call.
+   * @return returnData The return data from the system call.
    */
-  function call(ResourceId systemId, bytes memory callData) internal returns (bytes memory data) {
+  function call(ResourceId systemId, bytes memory callData) internal returns (bytes memory returnData) {
     address worldAddress = WorldContextConsumerLib._world();
 
     // If we're in the World context, call the system directly via delegatecall
@@ -45,7 +45,8 @@ library SystemSwitch {
       // Check if the system exists
       if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
 
-      (bool success, bytes memory returnData) = WorldContextProviderLib.delegatecallWithContext({
+      bool success;
+      (success, returnData) = WorldContextProviderLib.delegatecallWithContext({
         msgSender: WorldContextConsumerLib._msgSender(),
         msgValue: WorldContextConsumerLib._msgValue(),
         target: systemAddress,
@@ -57,7 +58,7 @@ library SystemSwitch {
     }
 
     // Otherwise, call the system via world.call
-    data = IWorldKernel(worldAddress).call(systemId, callData);
+    returnData = IWorldKernel(worldAddress).call(systemId, callData);
   }
 
   /**
@@ -66,8 +67,9 @@ library SystemSwitch {
    * If the call is executed from the root context, the system is called directly via delegatecall.
    * Otherwise, the call is executed via an external call to the World contract.
    * @param callData The world function selector, and call data to be forwarded to the system.
+   * @return returnData The return data from the system call.
    */
-  function call(bytes memory callData) internal returns (bytes memory data) {
+  function call(bytes memory callData) internal returns (bytes memory returnData) {
     // Get the systemAddress and systemFunctionSelector from the worldFunctionSelector encoded in the calldata
     (ResourceId systemId, bytes4 systemFunctionSelector) = FunctionSelectors.get(bytes4(callData));
 
