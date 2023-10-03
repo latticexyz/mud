@@ -7,6 +7,8 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { World } from "@latticexyz/world/src/World.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
+import { System } from "@latticexyz/world/src/System.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
 import { UniqueEntityModule } from "../src/modules/uniqueentity/UniqueEntityModule.sol";
@@ -16,6 +18,13 @@ import { getUniqueEntity } from "../src/modules/uniqueentity/getUniqueEntity.sol
 import { NAMESPACE, TABLE_NAME } from "../src/modules/uniqueentity/constants.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+contract UniqueEntityTestSystem is System {
+  function echoUniqueEntity() public returns (bytes32) {
+    // Execute `getUniqueEntity` from the context of a World
+    return getUniqueEntity();
+  }
+}
 
 contract UniqueEntityModuleTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
@@ -90,5 +99,33 @@ contract UniqueEntityModuleTest is Test, GasReporter {
       )
     );
     UniqueEntity.set(world, tableId, 123);
+  }
+
+  function testAccessInWorldContext() public {
+    world.installModule(uniqueEntityModule, new bytes(0));
+
+    // Set up a system that calls `getUniqueEntity` from the context of a World
+    UniqueEntityTestSystem uniqueEntityTestSystem = new UniqueEntityTestSystem();
+    ResourceId uniqueEntityTestSystemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "somens",
+      name: "echoUniqueEntity"
+    });
+    world.registerSystem(uniqueEntityTestSystemId, uniqueEntityTestSystem, true);
+
+    // Execute `getUniqueEntity` from the context of a World
+    bytes32 uniqueEntity1 = abi.decode(
+      world.call(uniqueEntityTestSystemId, abi.encodeCall(UniqueEntityTestSystem.echoUniqueEntity, ())),
+      (bytes32)
+    );
+    bytes32 uniqueEntity2 = abi.decode(
+      world.call(uniqueEntityTestSystemId, abi.encodeCall(UniqueEntityTestSystem.echoUniqueEntity, ())),
+      (bytes32)
+    );
+    bytes32 uniqueEntity3 = getUniqueEntity(world);
+
+    // The next entity must be incremented
+    assertEq(uint256(uniqueEntity2), uint256(uniqueEntity1) + 1);
+    assertEq(uint256(uniqueEntity3), uint256(uniqueEntity2) + 1);
   }
 }

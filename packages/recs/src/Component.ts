@@ -18,6 +18,11 @@ import {
 import { isFullComponentValue, isIndexer } from "./utils";
 import { getEntityString, getEntitySymbol } from "./Entity";
 
+export type ComponentMutationOptions = {
+  /** Skip publishing this mutation to the component's update stream. Mostly used internally during initial hydration. */
+  skipUpdateStream?: boolean;
+};
+
 function getComponentName(component: Component<any, any, any>) {
   return (
     component.metadata?.componentName ??
@@ -80,7 +85,8 @@ export function defineComponent<S extends Schema, M extends Metadata, T = unknow
 export function setComponent<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
   entity: Entity,
-  value: ComponentValue<S, T>
+  value: ComponentValue<S, T>,
+  options: ComponentMutationOptions = {}
 ) {
   const entitySymbol = getEntitySymbol(entity);
   const prevValue = getComponentValue(component, entity);
@@ -109,7 +115,9 @@ export function setComponent<S extends Schema, T = unknown>(
       }
     }
   }
-  component.update$.next({ entity, value: [value, prevValue], component });
+  if (!options.skipUpdateStream) {
+    component.update$.next({ entity, value: [value, prevValue], component });
+  }
 }
 
 /**
@@ -132,16 +140,17 @@ export function updateComponent<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
   entity: Entity,
   value: Partial<ComponentValue<S, T>>,
-  initialValue?: ComponentValue<S, T>
+  initialValue?: ComponentValue<S, T>,
+  options: ComponentMutationOptions = {}
 ) {
   const currentValue = getComponentValue(component, entity);
   if (currentValue === undefined) {
     if (initialValue === undefined) {
       throw new Error(`Can't update component ${getComponentName(component)} without a current value or initial value`);
     }
-    setComponent(component, entity, { ...initialValue, ...value });
+    setComponent(component, entity, { ...initialValue, ...value }, options);
   } else {
-    setComponent(component, entity, { ...currentValue, ...value });
+    setComponent(component, entity, { ...currentValue, ...value }, options);
   }
 }
 
@@ -153,14 +162,17 @@ export function updateComponent<S extends Schema, T = unknown>(
  */
 export function removeComponent<S extends Schema, M extends Metadata, T = unknown>(
   component: Component<S, M, T>,
-  entity: Entity
+  entity: Entity,
+  options: ComponentMutationOptions = {}
 ) {
   const entitySymbol = getEntitySymbol(entity);
   const prevValue = getComponentValue(component, entity);
   for (const key of Object.keys(component.values)) {
     component.values[key].delete(entitySymbol);
   }
-  component.update$.next({ entity, value: [undefined, prevValue], component });
+  if (!options.skipUpdateStream) {
+    component.update$.next({ entity, value: [undefined, prevValue], component });
+  }
 }
 
 /**

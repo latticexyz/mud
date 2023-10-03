@@ -7,6 +7,12 @@ export function renderDecodeSlice() {
     ${renderedSolidityHeader}
     import { TightCoder } from "./TightCoder.sol";
     import { Slice } from "../Slice.sol";
+
+    /**
+     * @title DecodeSlice Library
+     * @notice A library for decoding slices of data into specific data types.
+     * @dev This library provides functions for decoding slices into arrays of basic uint types.
+     */
     library DecodeSlice {
       ${staticAbiTypes
         .map((staticAbiType) =>

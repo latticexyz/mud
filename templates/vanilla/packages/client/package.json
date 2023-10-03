@@ -21,7 +21,7 @@
     "@latticexyz/world": "link:../../../../packages/world",
     "contracts": "workspace:*",
     "rxjs": "7.5.5",
-    "viem": "1.6.0"
+    "viem": "1.14.0"
   },
   "devDependencies": {
     "vite": "^4.2.1",

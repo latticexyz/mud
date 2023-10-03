@@ -4,10 +4,10 @@ pragma solidity >=0.8.21;
 import { Hook } from "@latticexyz/store/src/Hook.sol";
 
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
-import { WorldContextProvider } from "./WorldContext.sol";
+import { WorldContextProviderLib } from "./WorldContext.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { ROOT_NAMESPACE } from "./constants.sol";
-import { WorldContextProvider } from "./WorldContext.sol";
+import { WorldContextProviderLib } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "./systemHookTypes.sol";
 
@@ -61,13 +61,13 @@ library SystemCall {
 
     // Call the system and forward any return data
     (success, data) = systemId.getNamespace() == ROOT_NAMESPACE // Use delegatecall for root systems (= registered in the root namespace)
-      ? WorldContextProvider.delegatecallWithContext({
+      ? WorldContextProviderLib.delegatecallWithContext({
         msgSender: caller,
         msgValue: value,
         target: systemAddress,
         callData: callData
       })
-      : WorldContextProvider.callWithContext({
+      : WorldContextProviderLib.callWithContext({
         msgSender: caller,
         msgValue: value,
         target: systemAddress,

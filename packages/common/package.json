@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/common",
-  "version": "2.0.0-next.9",
+  "version": "2.0.0-next.10",
   "description": "Common low level logic shared between packages",
   "repository": {
     "type": "git",
@@ -59,14 +59,13 @@
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
-    "abitype": "0.9.3",
     "chalk": "^5.2.0",
     "debug": "^4.3.4",
     "execa": "^7.0.0",
     "p-retry": "^5.1.2",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2",
-    "viem": "1.6.0"
+    "viem": "1.14.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

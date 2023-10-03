@@ -9,11 +9,58 @@ import { IWorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "./IW
 // The context size is 20 bytes for msg.sender, and 32 bytes for msg.value
 uint256 constant CONTEXT_BYTES = 20 + 32;
 
-// Similar to https://eips.ethereum.org/EIPS/eip-2771, but any contract can be the trusted forwarder.
-// This should only be used for contracts without own storage, like Systems.
+/**
+ * @title WorldContextConsumer - Extracting trusted context values from appended calldata.
+ * @notice This contract is designed to extract trusted context values (like msg.sender and msg.value)
+ * from the appended calldata. It provides mechanisms similar to EIP-2771 (https://eips.ethereum.org/EIPS/eip-2771),
+ * but allowing any contract to be the trusted forwarder.
+ * @dev This contract should only be used for contracts without their own storage, like Systems.
+ */
 abstract contract WorldContextConsumer is IWorldContextConsumer {
-  // Extract the trusted msg.sender value appended to the calldata
+  /**
+   * @notice Extract the `msg.sender` from the context appended to the calldata.
+   * @return sender The `msg.sender` in the call to the World contract before the World routed the
+   * call to the WorldContextConsumer contract.
+   */
   function _msgSender() public view returns (address sender) {
+    return WorldContextConsumerLib._msgSender();
+  }
+
+  /**
+   * @notice Extract the `msg.value` from the context appended to the calldata.
+   * @return value The `msg.value` in the call to the World contract before the World routed the
+   * call to the WorldContextConsumer contract.
+   */
+  function _msgValue() public pure returns (uint256 value) {
+    return WorldContextConsumerLib._msgValue();
+  }
+
+  /**
+   * @notice Get the address of the World contract that routed the call to this WorldContextConsumer.
+   * @return The address of the World contract that routed the call to this WorldContextConsumer.
+   */
+  function _world() public view returns (address) {
+    return StoreSwitch.getStoreAddress();
+  }
+
+  /**
+   * @notice Checks if an interface is supported by the contract.
+   * using ERC-165 supportsInterface (see https://eips.ethereum.org/EIPS/eip-165)
+   * @param interfaceId The ID of the interface in question.
+   * @return True if the interface is supported, false otherwise.
+   */
+  function supportsInterface(bytes4 interfaceId) public pure virtual returns (bool) {
+    return interfaceId == WORLD_CONTEXT_CONSUMER_INTERFACE_ID || interfaceId == ERC165_INTERFACE_ID;
+  }
+}
+
+library WorldContextConsumerLib {
+  /**
+   * @notice Extract the `msg.sender` from the context appended to the calldata.
+   * @return sender The `msg.sender` in the call to the World contract before the World routed the
+   * call to the WorldContextConsumer contract.
+   */
+  function _msgSender() internal view returns (address sender) {
     assembly {
       // Load 32 bytes from calldata at position calldatasize() - context size,
       // then shift left 96 bits (to right-align the address)
@@ -23,28 +70,40 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
     if (sender == address(0)) sender = msg.sender;
   }
 
-  // Extract the trusted msg.value value appended to the calldata
-  function _msgValue() public pure returns (uint256 value) {
+  /**
+   * @notice Extract the `msg.value` from the context appended to the calldata.
+   * @return value The `msg.value` in the call to the World contract before the World routed the
+   * call to the WorldContextConsumer contract.
+   */
+  function _msgValue() internal pure returns (uint256 value) {
     assembly {
       // Load 32 bytes from calldata at position calldatasize() - 32 bytes,
       value := calldataload(sub(calldatasize(), 32))
     }
   }
 
-  function _world() public view returns (address) {
+  /**
+   * @notice Get the address of the World contract that routed the call to this WorldContextConsumer.
+   * @return The address of the World contract that routed the call to this WorldContextConsumer.
+   */
+  function _world() internal view returns (address) {
     return StoreSwitch.getStoreAddress();
-  }
-
-  // ERC-165 supportsInterface (see https://eips.ethereum.org/EIPS/eip-165)
-  function supportsInterface(bytes4 interfaceId) public pure virtual returns (bool) {
-    return interfaceId == WORLD_CONTEXT_CONSUMER_INTERFACE_ID || interfaceId == ERC165_INTERFACE_ID;
   }
 }
 
 /**
- * Simple utility function to call a contract and append the msg.sender to the calldata (to be consumed by WorldContextConsumer)
+ * @title WorldContextProviderLib - Utility functions to call contracts with context values appended to calldata.
+ * @notice This library provides functions to make calls or delegatecalls to other contracts,
+ * appending the context values (like msg.sender and msg.value) to the calldata for WorldContextConsumer to consume.
  */
-library WorldContextProvider {
+library WorldContextProviderLib {
+  /**
+   * @notice Appends context values to the given calldata.
+   * @param callData The original calldata.
+   * @param msgSender The address of the transaction sender.
+   * @param msgValue The amount of ether sent with the original transaction.
+   * @return The new calldata with context values appended.
+   */
   function appendContext(
     bytes memory callData,
     address msgSender,
@@ -53,6 +112,15 @@ library WorldContextProvider {
     return abi.encodePacked(callData, msgSender, msgValue);
   }
 
+  /**
+   * @notice Makes a call to the target contract with context values appended to the calldata.
+   * @param msgSender The address of the transaction sender.
+   * @param msgValue The amount of ether sent with the original transaction.
+   * @param target The address of the contract to call.
+   * @param callData The calldata for the call.
+   * @return success A boolean indicating whether the call was successful or not.
+   * @return data The abi encoded return data from the call.
+   */
   function callWithContext(
     address msgSender,
     uint256 msgValue,
@@ -64,6 +132,15 @@ library WorldContextProvider {
     );
   }
 
+  /**
+   * @notice Makes a delegatecall to the target contract with context values appended to the calldata.
+   * @param msgSender The address of the transaction sender.
+   * @param msgValue The amount of ether sent with the original transaction.
+   * @param target The address of the contract to call.
+   * @param callData The calldata for the call.
+   * @return success A boolean indicating whether the call was successful or not.
+   * @return data The abi encoded return data from the call.
+   */
   function delegatecallWithContext(
     address msgSender,
     uint256 msgValue,
@@ -75,6 +152,15 @@ library WorldContextProvider {
     );
   }
 
+  /**
+   * @notice Makes a call to the target contract with context values appended to the calldata.
+   * @dev Revert in the case of failure.
+   * @param msgSender The address of the transaction sender.
+   * @param msgValue The amount of ether sent with the original transaction.
+   * @param target The address of the contract to call.
+   * @param callData The calldata for the call.
+   * @return data The abi encoded return data from the call.
+   */
   function callWithContextOrRevert(
     address msgSender,
     uint256 msgValue,
@@ -91,6 +177,15 @@ library WorldContextProvider {
     return _data;
   }
 
+  /**
+   * @notice Makes a delegatecall to the target contract with context values appended to the calldata.
+   * @dev Revert in the case of failure.
+   * @param msgSender The address of the transaction sender.
+   * @param msgValue The amount of ether sent with the original transaction.
+   * @param target The address of the contract to call.
+   * @param callData The calldata for the call.
+   * @return data The abi encoded return data from the call.
+   */
   function delegatecallWithContextOrRevert(
     address msgSender,
     uint256 msgValue,

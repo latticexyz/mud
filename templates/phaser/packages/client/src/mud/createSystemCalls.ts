@@ -24,7 +24,7 @@ export function createSystemCalls(
    *   SetupNetworkResult, as defined in setupNetwork.ts
    *
    * - Out of this parameter, we only care about two fields:
-   *   - worldContract (which comes from createContract, see
+   *   - worldContract (which comes from getContract, see
    *     https://github.com/latticexyz/mud/blob/26dabb34321eedff7a43f3fcb46da4f3f5ba3708/templates/phaser/packages/client/src/mud/setupNetwork.ts#L31).
    *   - waitForTransaction (which comes from syncToRecs, see
    *     https://github.com/latticexyz/mud/blob/26dabb34321eedff7a43f3fcb46da4f3f5ba3708/templates/phaser/packages/client/src/mud/setupNetwork.ts#L39).

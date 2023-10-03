@@ -26,7 +26,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
         renderWithStore(
           storeArgument,
           (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-            /** Get ${field.name}${_commentSuffix} */
+            /**
+             * @notice Get ${field.name}${_commentSuffix}.
+             */
             function ${_methodNamePrefix}get${_methodNameSuffix}(${renderArguments([
             _typedStore,
             _typedTableId,
@@ -64,7 +66,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
           : `_tableId, _keyTuple, ${schemaIndex}, ${encodeFieldSingle}, _fieldLayout`;
 
         return `
-          /** Set ${field.name}${_commentSuffix} */
+          /**
+           * @notice Set ${field.name}${_commentSuffix}.
+           */
           function ${_methodNamePrefix}set${_methodNameSuffix}(${externalArguments}) internal {
             ${_keyTupleDefinition}
             ${_store}.${setFieldMethod}(${internalArguments});
@@ -82,7 +86,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
           renderWithStore(
             storeArgument,
             (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-              /** Get the length of ${field.name}${_commentSuffix} */
+              /**
+               * @notice Get the length of ${field.name}${_commentSuffix}.
+               */
               function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
               _typedStore,
               _typedTableId,
@@ -103,8 +109,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
             storeArgument,
             (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
               /**
-               * Get an item of ${field.name}${_commentSuffix}
-               * (unchecked, returns invalid data if index overflows)
+               * @notice Get an item of ${field.name}${_commentSuffix}.
+               * @dev Reverts with Store_IndexOutOfBounds if \`_index\` is out of bounds for the array.
               */
               function ${_methodNamePrefix}getItem${_methodNameSuffix}(${renderArguments([
               _typedStore,
@@ -133,7 +139,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
         renderWithStore(
           storeArgument,
           (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-              /** Push ${portionData.title} to ${field.name}${_commentSuffix} */
+              /**
+               * @notice Push ${portionData.title} to ${field.name}${_commentSuffix}.
+               */
               function ${_methodNamePrefix}push${_methodNameSuffix}(${renderArguments([
             _typedStore,
             _typedTableId,
@@ -151,7 +159,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
         renderWithStore(
           storeArgument,
           (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-            /** Pop ${portionData.title} from ${field.name}${_commentSuffix} */
+            /**
+             * @notice Pop ${portionData.title} from ${field.name}${_commentSuffix}.
+             */
             function ${_methodNamePrefix}pop${_methodNameSuffix}(${renderArguments([
             _typedStore,
             _typedTableId,
@@ -185,8 +195,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
           return `
             /**
-             * Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\`
-             * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+             * @notice Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\`.
              */
             function ${_methodNamePrefix}update${_methodNameSuffix}(${externalArguments}) internal {
               ${_keyTupleDefinition}

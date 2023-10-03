@@ -1,3 +1,4 @@
-# suppress diffs for codegen in PRs
+# suppress diffs for generated files
+**/pnpm-lock.yaml linguist-generated=true
 **/codegen/**/*.sol linguist-generated=true
 **/test-data/**/*.json linguist-generated=true

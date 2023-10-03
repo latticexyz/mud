@@ -15,14 +15,17 @@ bytes16 constant ROOT_NAME_STRING = bytes16("ROOT_NAME");
 
 bytes32 constant NAMESPACE_MASK = bytes32(~bytes14("")) >> (TYPE_BITS);
 
+/**
+ * @title WorldResourceIdLib
+ * @notice A library for handling World Resource ID encoding and decoding.
+ */
 library WorldResourceIdLib {
   /**
-   * Create a 32-byte resource ID from a namespace, name and type.
-   *
-   * A resource ID is a 32-byte value that uniquely identifies a resource.
-   * The first 14 bytes represent the namespace,
-   * the next 16 bytes represent the name,
-   * the last 2 bytes represent the type.
+   * @notice Encode a resource ID.
+   * @param typeId The resource type ID.
+   * @param namespace The namespace of the resource.
+   * @param name The name of the resource.
+   * @return A 32-byte resource ID.
    */
   function encode(bytes2 typeId, bytes14 namespace, bytes16 name) internal pure returns (ResourceId) {
     return
@@ -32,14 +35,18 @@ library WorldResourceIdLib {
   }
 
   /**
-   * Create a 32-byte resource ID from a namespace.
+   * @notice Encode a namespace to resource ID.
+   * @param namespace The namespace to be encoded.
+   * @return A 32-byte resource ID with the namespace encoded.
    */
   function encodeNamespace(bytes14 namespace) internal pure returns (ResourceId) {
     return ResourceId.wrap(bytes32(RESOURCE_NAMESPACE) | (bytes32(namespace) >> (TYPE_BITS)));
   }
 
   /**
-   * Convert a padded string to a trimmed string (no trailing `null` ASCII characters)
+   * @notice Convert a padded string to a trimmed string.
+   * @param paddedString The input string with potential padding.
+   * @return A string without trailing null ASCII characters.
    */
   function toTrimmedString(bytes16 paddedString) internal pure returns (string memory) {
     uint256 length;
@@ -49,30 +56,42 @@ library WorldResourceIdLib {
   }
 }
 
+/**
+ * @title WorldResourceIdInstance
+ * @notice A library for handling instances of World Resource IDs.
+ */
 library WorldResourceIdInstance {
   /**
-   * Get the namespace of a resource ID.
+   * @notice Get the namespace from a resource ID.
+   * @param resourceId The resource ID.
+   * @return A 14-byte namespace.
    */
   function getNamespace(ResourceId resourceId) internal pure returns (bytes14) {
     return bytes14(ResourceId.unwrap(resourceId) << (TYPE_BITS));
   }
 
   /**
-   * Get the namespace resource ID corresponding to the namespace of a resource ID.
+   * @notice Get the namespace ID from a resource ID.
+   * @param resourceId The resource ID.
+   * @return A 32-byte namespace resource ID.
    */
   function getNamespaceId(ResourceId resourceId) internal pure returns (ResourceId) {
     return ResourceId.wrap((ResourceId.unwrap(resourceId) & NAMESPACE_MASK) | MASK_RESOURCE_NAMESPACE);
   }
 
   /**
-   * Get the name of a resource ID.
+   * @notice Get the name from a resource ID.
+   * @param resourceId The resource ID.
+   * @return A 16-byte name.
    */
   function getName(ResourceId resourceId) internal pure returns (bytes16) {
     return bytes16(ResourceId.unwrap(resourceId) << (TYPE_BITS + NAMESPACE_BITS));
   }
 
   /**
-   * Convert a resource ID to a string for more readable logs
+   * @notice Convert a resource ID to a string.
+   * @param resourceId The resource ID.
+   * @return A string representation of the resource ID.
    */
   function toString(ResourceId resourceId) internal pure returns (string memory) {
     bytes2 resourceType = ResourceIdInstance.getType(resourceId);

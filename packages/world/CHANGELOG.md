@@ -1,5 +1,24 @@
 # Change Log
 
+## 2.0.0-next.10
+
+### Major Changes
+
+- [#1624](https://github.com/latticexyz/mud/pull/1624) [`88b1a5a1`](https://github.com/latticexyz/mud/commit/88b1a5a191b4adadf190de51cd47a5b033b6fb29) Thanks [@alvrs](https://github.com/alvrs)! - We now expose a `WorldContextConsumerLib` library with the same functionality as the `WorldContextConsumer` contract, but the ability to be used inside of internal libraries.
+  We also renamed the `WorldContextProvider` library to `WorldContextProviderLib` for consistency.
+
+### Minor Changes
+
+- [#1675](https://github.com/latticexyz/mud/pull/1675) [`7987c94d`](https://github.com/latticexyz/mud/commit/7987c94d61a2c759916a708774db9f3cf08edca8) Thanks [@alvrs](https://github.com/alvrs)! - Return address of the newly created World from `WorldFactory.deployWorld`.
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.10
+  - @latticexyz/config@2.0.0-next.10
+  - @latticexyz/schema-type@2.0.0-next.10
+  - @latticexyz/store@2.0.0-next.10
+
 ## 2.0.0-next.9
 
 ### Major Changes

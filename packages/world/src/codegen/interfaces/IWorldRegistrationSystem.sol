@@ -7,6 +7,10 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ISystemHook } from "./../../ISystemHook.sol";
 import { WorldContextConsumer } from "./../../WorldContext.sol";
 
+/**
+ * @title IWorldRegistrationSystem
+ * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
+ */
 interface IWorldRegistrationSystem {
   function registerNamespace(ResourceId namespaceId) external;
 
