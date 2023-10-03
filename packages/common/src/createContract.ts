@@ -7,18 +7,13 @@ import {
   GetContractReturnType,
   Hex,
   PublicClient,
-  SimulateContractParameters,
   Transport,
   WalletClient,
   WriteContractParameters,
   getContract,
 } from "viem";
-import pRetry from "p-retry";
-import { createNonceManager } from "./createNonceManager";
-import { debug as parentDebug } from "./debug";
 import { UnionOmit } from "./type-utils/common";
-
-const debug = parentDebug.extend("createContract");
+import { WriteContractOptions, writeContract } from "./writeContract";
 
 // copied from viem because this isn't exported
 // TODO: import from viem?
@@ -81,88 +76,26 @@ export function createContract<
   }) as unknown as GetContractReturnType<Abi, PublicClient, WalletClient>;
 
   if (contract.write) {
-    let nextWriteId = 0;
-    const nonceManager = createNonceManager({
-      publicClient: publicClient as PublicClient,
-      address: walletClient.account.address,
-    });
-
-    // Replace write calls with our own proxy. Implemented ~the same as viem, but adds better handling of nonces (via queue + retries).
+    // Replace write calls with our own. Implemented ~the same as viem, but adds better handling of nonces (via queue + retries).
     contract.write = new Proxy(
       {},
       {
-        get(_, functionName: string): GetContractReturnType<Abi, PublicClient, WalletClient>["write"][string] {
-          async function prepareWrite(
-            options: WriteContractParameters
-          ): Promise<WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>> {
-            if (options.gas) {
-              debug("gas provided, skipping simulate", functionName, options);
-              return options as unknown as WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>;
-            }
-
-            debug("simulating write", functionName, options);
-            const { request } = await publicClient.simulateContract({
-              ...options,
-              account: options.account ?? walletClient.account,
-            } as unknown as SimulateContractParameters<TAbi, typeof functionName, TChain>);
-
-            return request as unknown as WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>;
-          }
-
-          async function write(options: WriteContractParameters): Promise<Hex> {
-            const preparedWrite = await prepareWrite(options);
-
-            return await pRetry(
-              async () => {
-                if (!nonceManager.hasNonce()) {
-                  await nonceManager.resetNonce();
-                }
-
-                const nonce = nonceManager.nextNonce();
-                debug("calling write function with nonce", nonce, preparedWrite);
-                return await walletClient.writeContract({
-                  nonce,
-                  ...preparedWrite,
-                });
-              },
-              {
-                retries: 3,
-                onFailedAttempt: async (error) => {
-                  // On nonce errors, reset the nonce and retry
-                  if (nonceManager.shouldResetNonce(error)) {
-                    debug("got nonce error, retrying", error);
-                    await nonceManager.resetNonce();
-                    return;
-                  }
-                  // TODO: prepareWrite again if there are gas errors?
-                  throw error;
-                },
-              }
-            );
-          }
-
-          return (...parameters) => {
-            const id = `${walletClient.chain.id}:${walletClient.account.address}:${nextWriteId++}`;
-            const { args, options } = <
-              {
-                args: unknown[];
-                options: UnionOmit<WriteContractParameters, "address" | "abi" | "functionName" | "args">;
-              }
-            >getFunctionParameters(parameters as any);
-
-            const request = {
-              address,
+        get(_, functionName: string) {
+          return (
+            ...parameters: [
+              args?: readonly unknown[],
+              options?: UnionOmit<WriteContractParameters, "abi" | "address" | "functionName" | "args">
+            ]
+          ) => {
+            const { args, options } = getFunctionParameters(parameters);
+            return writeContract(walletClient, {
               abi,
+              address,
               functionName,
               args,
               ...options,
-            };
-
-            const result = write(request);
-
-            onWrite?.({ id, request, result });
-
-            return result;
+              onWrite,
+            } as unknown as WriteContractOptions<TAbi, typeof functionName, TChain, TAccount>);
           };
         },
       }
