@@ -26,8 +26,8 @@ export async function deployContract(input: TxConfig & { nonce: number; contract
       throw new MUDError(
         `Error deploying ${contract.name}: invalid bytecode. Note that linking of public libraries is not supported yet, make sure none of your libraries use "external" functions.`
       );
-    } else if (error?.message.includes("getContractLimit")) {
-      throw new MUDError(`Error deploying ${contract.name}: getContractLimit exceeded.`);
+    } else if (error?.message.includes("CreateContractLimit")) {
+      throw new MUDError(`Error deploying ${contract.name}: CreateContractLimit exceeded.`);
     } else throw error;
   }
 }

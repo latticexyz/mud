@@ -14,4 +14,4 @@ export * from "./transportObserver";
 export * from "./writeContract";
 
 /** @deprecated use `getContract` instead */
-export { getContract } from "./getContract";
+export { createContract } from "./createContract";
