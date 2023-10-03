@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import path from "path";
 import type { CommandModule } from "yargs";
 import { MUDError } from "@latticexyz/common/errors";
@@ -17,7 +17,6 @@ type Options = {
   link?: string;
 };
 
-const BACKUP_FILE = ".mudbackup";
 const MUD_PREFIX = "@latticexyz";
 
 const commandModule: CommandModule<Options, Options> = {
@@ -27,12 +26,6 @@ const commandModule: CommandModule<Options, Options> = {
 
   builder(yargs) {
     return yargs.options({
-      backup: { type: "boolean", description: `Back up the current MUD versions to "${BACKUP_FILE}"` },
-      force: {
-        type: "boolean",
-        description: `Backup fails if a "${BACKUP_FILE}" file is found, unless --force is provided`,
-      },
-      restore: { type: "boolean", description: `Restore the previous MUD versions from "${BACKUP_FILE}"` },
       mudVersion: { alias: "v", type: "string", description: "Set MUD to the given version" },
       tag: {
         alias: "t",
@@ -117,26 +110,10 @@ async function resolveVersion(options: Options) {
 }
 
 function updatePackageJson(filePath: string, options: Options): { workspaces?: string[] } {
-  const { restore, force, link } = options;
-  let { backup, mudVersion } = options;
-
-  const backupFilePath = path.join(path.dirname(filePath), BACKUP_FILE);
-  const backupFileExists = existsSync(backupFilePath);
-
-  // Create a backup file for previous MUD versions by default if linking to local MUD
-  if (link && !backupFileExists) backup = true;
-
-  // If `backup` is true and force not set, check if a backup file already exists and throw an error if it does
-  if (backup && !force && backupFileExists) {
-    throw new MUDError(
-      `A backup file already exists at ${backupFilePath}.\nUse --force to overwrite it or --restore to restore it.`
-    );
-  }
+  const { link } = options;
+  let { mudVersion } = options;
 
   const packageJson = readPackageJson(filePath);
-
-  // Load .mudbackup if `restore` is true
-  const backupJson = restore ? readPackageJson(backupFilePath) : undefined;
 
   // Find all MUD dependencies
   const mudDependencies: Record<string, string> = {};
@@ -152,15 +129,6 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
     if (key.startsWith(MUD_PREFIX)) {
       mudDevDependencies[key] = packageJson.devDependencies[key];
     }
-  }
-
-  // Back up the current dependencies if `backup` is true
-  if (backup) {
-    writeFileSync(
-      backupFilePath,
-      JSON.stringify({ dependencies: mudDependencies, devDependencies: mudDevDependencies }, null, 2)
-    );
-    console.log(chalk.green(`Backed up MUD dependencies from ${filePath} to ${backupFilePath}`));
   }
 
   // Update the dependencies
@@ -184,17 +152,9 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
   logComparison(mudDependencies, packageJson.dependencies);
   logComparison(mudDevDependencies, packageJson.devDependencies);
 
-  // Remove the backup file if `restore` is true and `backup` is false
-  // because the old backup file is no longer needed
-  if (restore && !backup) {
-    rmSync(backupFilePath);
-    console.log(chalk.green(`Cleaned up ${backupFilePath}`));
-  }
-
   return packageJson;
 
   function resolveMudVersion(key: string, type: "dependencies" | "devDependencies") {
-    if (restore && backupJson) return backupJson[type][key];
     if (link) mudVersion = resolveLinkPath(filePath, link, key);
     if (!mudVersion) return packageJson[type][key];
     return mudVersion;
