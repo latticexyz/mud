@@ -4,6 +4,7 @@ import { MUDChain } from "./types";
 export const mudFoundry = {
   ...foundry,
   fees: {
-    defaultPriorityFee: 0n,
+    // This is intentionally defined as a function as a workaround for https://github.com/wagmi-dev/viem/pull/1280
+    defaultPriorityFee: () => 0n,
   },
 } as const satisfies MUDChain;
