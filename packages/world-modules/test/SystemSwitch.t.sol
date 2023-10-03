@@ -11,7 +11,7 @@ import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
 import { ResourceId, WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
-import { SystemSwitch } from "../src/modules/utils/SystemSwitch.sol";
+import { SystemSwitch } from "../src/utils/SystemSwitch.sol";
 
 contract EchoSystem is System {
   function msgSender() public view returns (address) {

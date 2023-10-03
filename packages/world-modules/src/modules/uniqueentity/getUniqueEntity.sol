@@ -4,8 +4,9 @@ pragma solidity >=0.8.21;
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 
 import { IUniqueEntitySystem } from "../../interfaces/IUniqueEntitySystem.sol";
+import { UniqueEntitySystem } from "./UniqueEntitySystem.sol";
 
-import { SystemSwitch } from "../utils/SystemSwitch.sol";
+import { SystemSwitch } from "../../utils/SystemSwitch.sol";
 import { SYSTEM_ID } from "./constants.sol";
 
 /**
@@ -15,7 +16,7 @@ import { SYSTEM_ID } from "./constants.sol";
  * For usage outside of a World, use the overload that takes an explicit store argument.
  */
 function getUniqueEntity() returns (bytes32 uniqueEntity) {
-  return abi.decode(SystemSwitch.call(SYSTEM_ID, new bytes(0)), (bytes32));
+  return abi.decode(SystemSwitch.call(SYSTEM_ID, abi.encodeCall(UniqueEntitySystem.getUniqueEntity, ())), (bytes32));
 }
 
 /**
