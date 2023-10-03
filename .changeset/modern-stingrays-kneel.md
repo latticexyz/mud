@@ -13,5 +13,7 @@ To bring back the developer experience of calling systems from other sysyems wit
 
 + // ...you can now use the `SystemSwitch` util.
 * // This works independent of whether used in a root system or non-root system.
-+ uint256 value = abi.decode(SystemSwitch.call(abi.encodeCall(IBaseWorld.callMySystem, ()), (uint256)); 
++ uint256 value = abi.decode(SystemSwitch.call(abi.encodeCall(IBaseWorld.callMySystem, ()), (uint256));
 ```
+
+Note that if you already know your system is always executed as non-root system, you can continue to use the approach of calling other systems via the `IBaseWorld(world)`.
