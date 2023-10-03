@@ -9,9 +9,9 @@ To bring back the developer experience of calling systems from other sysyems wit
 
 ```diff
 - // Instead of calling the system via an external call to world...
-- IBaseWorld(_world()).callMySystem();
+- uint256 value = IBaseWorld(_world()).callMySystem();
 
 + // ...you can now use the `SystemSwitch` util.
 * // This works independent of whether used in a root system or non-root system.
-+ SystemSwitch.call(abi.encodeCall(IBaseWorld.callMySystem, ()); 
++ uint256 value = abi.decode(SystemSwitch.call(abi.encodeCall(IBaseWorld.callMySystem, ()), (uint256)); 
 ```
