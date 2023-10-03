@@ -53,7 +53,7 @@ const commandModule: CommandModule<Options, Options> = {
     return yargs.options({
       save: { type: "string", desc: "Save the gas report to a file" },
       compare: { type: "string", desc: "Compare to an existing gas report" },
-      stdin: { type: "boolean", desc: "Parse the gas report from stdin instead of running an internal test command" },
+      stdin: { type: "boolean", desc: "Parse the gas report logs from stdin instead of running an internal test command" },
     });
   },
 
