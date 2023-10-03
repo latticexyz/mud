@@ -32,6 +32,7 @@ export function getRegisterFunctionSelectorsCallData(input: {
       );
     }
   }
+
   return callData;
 }
 

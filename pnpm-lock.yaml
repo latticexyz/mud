@@ -154,9 +154,6 @@ importers:
       '@latticexyz/world-modules':
         specifier: workspace:*
         version: link:../world-modules
-      abitype:
-        specifier: 0.9.3
-        version: 0.9.3(typescript@5.1.6)(zod@3.21.4)
       chalk:
         specifier: ^5.0.1
         version: 5.2.0
@@ -3633,21 +3630,6 @@ packages:
   /abind@1.0.5:
     resolution: {integrity: sha512-dbaEZphdPje0ihqSdWg36Sb8S20TuqQomiz2593oIx+enQ9Q4vDZRjIzhnkWltGRKVKqC28kTribkgRLBexWVQ==}
     engines: {node: '>=6', npm: '>=3'}
-    dev: false
-
-  /abitype@0.9.3(typescript@5.1.6)(zod@3.21.4):
-    resolution: {integrity: sha512-dz4qCQLurx97FQhnb/EIYTk/ldQ+oafEDUqC0VVIeQS1Q48/YWt/9YNfMmp9SLFqN41ktxny3c8aYxHjmFIB/w==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-      zod: ^3 >=3.19.1
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-      zod:
-        optional: true
-    dependencies:
-      typescript: 5.1.6
-      zod: 3.21.4
     dev: false
 
   /abitype@0.9.8(typescript@5.1.6)(zod@3.21.4):
