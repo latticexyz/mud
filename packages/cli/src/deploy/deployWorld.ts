@@ -4,17 +4,20 @@ import { ensureWorldFactory, worldFactory } from "./worldFactory";
 import WorldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
 import { isDefined } from "@latticexyz/common/utils";
 import { writeContract } from "@latticexyz/common";
+import { debug } from "./debug";
 
 export async function deployWorld(client: Client<Transport, Chain | undefined, Account>): Promise<Address> {
   await ensureWorldFactory(client);
 
+  debug("deploying world");
   const tx = await writeContract(client, {
     chain: client.chain ?? null,
     address: worldFactory,
     abi: WorldFactoryAbi,
     functionName: "deployWorld",
   });
-  console.log("deployed world at tx", tx);
+
+  debug("waiting for world deploy");
   const receipt = await waitForTransactionReceipt(client, { hash: tx });
   if (receipt.status !== "success") {
     console.error("world deploy failed", receipt);
@@ -39,5 +42,8 @@ export async function deployWorld(client: Client<Transport, Chain | undefined, A
     throw new Error("could not find WorldDeployed event");
   }
 
-  return deployEvent.args.newContract;
+  const worldAddress = deployEvent.args.newContract;
+  debug("got world address", worldAddress);
+
+  return worldAddress;
 }

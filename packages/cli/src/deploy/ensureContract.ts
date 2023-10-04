@@ -3,17 +3,22 @@ import { getBytecode } from "viem/actions";
 import { deployer } from "./deployer";
 import { salt } from "./common";
 import { sendTransaction } from "@latticexyz/common";
+import { debug } from "./debug";
 
 export async function ensureContract(
   client: Client<Transport, Chain | undefined, Account>,
-  bytecode: Hex
+  bytecode: Hex,
+  label = "contract"
 ): Promise<Hex[]> {
   const address = getCreate2Address({ from: deployer, salt, bytecode });
-  console.log("create2 address", address);
 
   const contractCode = await getBytecode(client, { address, blockTag: "pending" });
-  if (contractCode) return [];
+  if (contractCode) {
+    debug("found", label, "at", address);
+    return [];
+  }
 
+  debug("deploying", label, "at", address);
   return [
     await sendTransaction(client, {
       chain: client.chain ?? null,

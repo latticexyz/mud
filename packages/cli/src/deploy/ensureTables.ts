@@ -4,6 +4,7 @@ import { hasResource } from "./hasResource";
 import { writeContract } from "@latticexyz/common";
 import { worldAbi } from "./common";
 import { valueSchemaToFieldLayoutHex, keySchemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser";
+import { debug } from "./debug";
 
 export async function ensureTables({
   client,
@@ -14,6 +15,7 @@ export async function ensureTables({
   worldAddress: Address;
   tables: Table[];
 }): Promise<Hex[]> {
+  debug("checking tables");
   const tables = await Promise.all(
     Object.values(tables_).map(async (table) => ({
       ...table,
@@ -23,12 +25,12 @@ export async function ensureTables({
 
   const existingTables = tables.filter((table) => table.exists);
   if (existingTables.length > 0) {
-    console.log("existing tables", existingTables.map((table) => table.label).join(", "));
+    debug("existing tables", existingTables.map((table) => table.label).join(", "));
   }
 
   const missingTables = tables.filter((table) => !table.exists);
   if (missingTables.length > 0) {
-    console.log("registering tables", missingTables.map((table) => table.label).join(", "));
+    debug("registering tables", missingTables.map((table) => table.label).join(", "));
     return await Promise.all(
       missingTables.map((table) =>
         writeContract(client, {

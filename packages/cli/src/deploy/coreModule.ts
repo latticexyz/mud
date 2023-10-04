@@ -12,6 +12,5 @@ const bytecode = encodeDeployData({
 export const coreModule = getCreate2Address({ from: deployer, bytecode, salt });
 
 export async function ensureCoreModule(client: Client<Transport, Chain | undefined, Account>): Promise<Hex[]> {
-  console.log("ensuring core module");
-  return await ensureContract(client, bytecode);
+  return await ensureContract(client, bytecode, "core module");
 }

@@ -44,11 +44,11 @@ export async function writeContract<
     WriteContractParameters<TAbi, TFunctionName, TChain, TAccount, TChainOverride>
   > {
     if (request.gas) {
-      debug("gas provided, skipping simulate", request.address, request.functionName);
+      debug("gas provided, skipping simulate", request.functionName, request.address);
       return request;
     }
 
-    debug("simulating write", request.address, request.functionName);
+    debug("simulating", request.functionName, "at", request.address);
     const result = await simulateContract<TChain, TAbi, TFunctionName, TChainOverride>(client, {
       ...request,
       blockTag: "pending",
@@ -69,7 +69,7 @@ export async function writeContract<
           }
 
           const nonce = nonceManager.nextNonce();
-          debug("calling write function with nonce", nonce, preparedWrite.address, preparedWrite.functionName);
+          debug("calling", preparedWrite.functionName, "with nonce", nonce, "at", preparedWrite.address);
           return await viem_writeContract(client, { nonce, ...preparedWrite } as typeof preparedWrite);
         },
         {

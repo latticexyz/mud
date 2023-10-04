@@ -43,7 +43,7 @@ export async function sendTransaction<
       return request;
     }
 
-    debug("simulating request", request.to);
+    debug("simulating tx to", request.to);
     await call(client, {
       ...request,
       blockTag: "pending",
@@ -66,7 +66,7 @@ export async function sendTransaction<
           }
 
           const nonce = nonceManager.nextNonce();
-          debug("calling write function with nonce", nonce, preparedRequest.to);
+          debug("sending tx with nonce", nonce, "to", preparedRequest.to);
           return await viem_sendTransaction(client, { nonce, ...preparedRequest });
         },
         {

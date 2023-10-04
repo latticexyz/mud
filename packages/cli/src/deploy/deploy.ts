@@ -20,7 +20,6 @@ export async function deploy<configInput extends ConfigInput>({
   await ensureDeployer(client);
 
   const worldAddress = existingWorldAddress ?? (await deployWorld(client));
-  console.log("got world address", worldAddress);
 
   // TODO: detect world/store versions and throw if incompatible
 

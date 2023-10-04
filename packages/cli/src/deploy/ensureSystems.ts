@@ -5,6 +5,7 @@ import { System, salt, worldAbi } from "./common";
 import { deployer } from "./deployer";
 import { ensureContract } from "./ensureContract";
 import { identity } from "@latticexyz/common/utils";
+import { debug } from "./debug";
 
 export async function ensureSystems({
   client,
@@ -15,6 +16,7 @@ export async function ensureSystems({
   worldAddress: Address;
   systems: System[];
 }): Promise<Hex[]> {
+  debug("checking systems");
   const systems = await Promise.all(
     Object.values(systems_).map(async (system) => ({
       ...system,
@@ -25,13 +27,13 @@ export async function ensureSystems({
 
   const existing = systems.filter((system) => system.exists);
   if (existing.length > 0) {
-    console.log("existing systems", existing.map((system) => system.label).join(", "));
+    debug("existing systems", existing.map((system) => system.label).join(", "));
   }
 
   const missing = systems.filter((system) => !system.exists);
   if (missing.length > 0) {
     // TODO: deploy systems
-    console.log("registering systems", missing.map((system) => system.label).join(", "));
+    debug("registering systems", missing.map((system) => system.label).join(", "));
     const contractTxs = (await Promise.all(missing.map((system) => ensureContract(client, system.bytecode)))).flatMap(
       identity
     );

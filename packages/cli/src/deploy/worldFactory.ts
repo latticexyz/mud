@@ -15,7 +15,8 @@ const bytecode = encodeDeployData({
 export const worldFactory = getCreate2Address({ from: deployer, bytecode, salt });
 
 export async function ensureWorldFactory(client: Client<Transport, Chain | undefined, Account>): Promise<Hex[]> {
-  console.log("ensuring world factory");
   // WorldFactory deploy doesn't require a deployed CoreModule, so we can do them in parallel.
-  return (await Promise.all([ensureCoreModule(client), ensureContract(client, bytecode)])).flatMap(identity);
+  return (await Promise.all([ensureCoreModule(client), ensureContract(client, bytecode, "world factory")])).flatMap(
+    identity
+  );
 }
