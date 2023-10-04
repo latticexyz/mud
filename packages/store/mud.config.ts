@@ -48,4 +48,4 @@ export default mudConfig({
       tableIdArgument: true,
     },
   },
-});
+} as const);

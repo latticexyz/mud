@@ -4,6 +4,9 @@ import { DeployOptions } from "../utils/deployHandler";
 import { deploy } from "../deploy/deploy";
 import { createWalletClient, http, Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { loadConfig } from "@latticexyz/config/node";
+import { StoreConfig } from "@latticexyz/store";
+import { WorldConfig } from "@latticexyz/world";
 
 // TODO: redo options
 export const yDeployOptions = {
@@ -45,7 +48,8 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
         transport: http("http://127.0.0.1:8545"),
         account: privateKeyToAccount(process.env.PRIVATE_KEY as Hex),
       });
-      await deploy({ client });
+      const config = (await loadConfig()) as StoreConfig & WorldConfig;
+      await deploy({ client, config });
     } catch (error: any) {
       logError(error);
       process.exit(1);
