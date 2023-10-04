@@ -77,6 +77,7 @@ export async function writeContract<
     debug("simulating write", request);
     const result = await simulateContract<TChain, TAbi, TFunctionName, TChainOverride>(client, {
       ...request,
+      blockTag: "pending",
       account,
     } as unknown as SimulateContractParameters<TAbi, TFunctionName, TChain, TChainOverride>);
 

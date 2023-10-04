@@ -10,6 +10,7 @@ export async function getNonceManagerId({
   address: Hex;
   blockTag: BlockTag;
 }): Promise<string> {
+  // TODO: improve this so we don't have to call getChainId every time
   const chainId = client.chain?.id ?? (await getChainId(client));
   return `mud:createNonceManager:${chainId}:${getAddress(address)}:${blockTag}`;
 }

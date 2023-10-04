@@ -21,8 +21,8 @@ export type CreateNonceManagerResult = {
 
 export function createNonceManager({
   client,
-  address,
-  blockTag = "latest",
+  address, // TODO: rename to account?
+  blockTag = "pending",
   broadcastChannelName,
 }: CreateNonceManagerOptions): CreateNonceManagerResult {
   const nonceRef = { current: -1 };
