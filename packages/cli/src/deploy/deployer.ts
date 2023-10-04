@@ -1,6 +1,6 @@
 import { Account, Chain, Client, Transport } from "viem";
 import { getBytecode, sendRawTransaction, sendTransaction, waitForTransactionReceipt } from "viem/actions";
-import deployment from "./deterministic-deployment-proxy/deployment.json";
+import deployment from "./create2/deployment.json";
 import { debug } from "./debug";
 
 export const deployer = `0x${deployment.address}` as const;
