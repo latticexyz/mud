@@ -2,6 +2,8 @@ import type { CommandModule, Options } from "yargs";
 import { logError } from "../utils/errors";
 import { DeployOptions } from "../utils/deployHandler";
 import { deploy } from "../deploy/deploy";
+import { createWalletClient, http, Hex } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 
 // TODO: redo options
 export const yDeployOptions = {
@@ -39,7 +41,11 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
 
   async handler(args) {
     try {
-      await deploy();
+      const client = createWalletClient({
+        transport: http("http://127.0.0.1:8545"),
+        account: privateKeyToAccount(process.env.PRIVATE_KEY as Hex),
+      });
+      await deploy({ client });
     } catch (error: any) {
       logError(error);
       process.exit(1);

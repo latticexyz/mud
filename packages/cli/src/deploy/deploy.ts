@@ -1,13 +1,15 @@
-import { Hex, createWalletClient, http } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
+import { Account, Address, Chain, Client, Transport } from "viem";
 import { ensureDeployer } from "./deployer";
-import { ensureWorldFactory } from "./worldFactory";
+import { deployWorld } from "./deployWorld";
 
-export async function deploy(): Promise<void> {
-  const client = createWalletClient({
-    transport: http("http://127.0.0.1:8545"),
-    account: privateKeyToAccount(process.env.PRIVATE_KEY as Hex),
-  });
+type DeployOptions = {
+  client: Client<Transport, Chain | undefined, Account>;
+  worldAddress?: Address;
+};
+
+export async function deploy({ client, worldAddress: existingWorldAddress }: DeployOptions): Promise<void> {
   await ensureDeployer(client);
-  await ensureWorldFactory(client);
+
+  const worldAddress = existingWorldAddress ?? (await deployWorld(client));
+  console.log("got world address", worldAddress);
 }
