@@ -88,7 +88,7 @@ export async function deploy(
 
   // Filters any default modules from config
   const userModules = getUserModules(defaultModuleContracts, mudConfig.modules);
-  const userModuleContracts = Object.keys(userModules).map((name) => {
+  const userModuleContracts = userModules.map(({ name }) => {
     const { abi, bytecode } = getContractData(name, forgeOutDirectory);
     return {
       name,
