@@ -1,13 +1,12 @@
 import { Account, Address, Chain, Client, Transport } from "viem";
 import { getBytecode, sendRawTransaction, sendTransaction, waitForTransactionReceipt } from "viem/actions";
-import { deployer } from "./common";
 import deployment from "./deterministic-deployment-proxy/deployment.json";
 
-export async function createDeployer({
-  client,
-}: {
-  client: Client<Transport, Chain | undefined, Account>;
-}): Promise<Address> {
+export const deployer = `0x${deployment.address}` as const;
+
+export async function ensureDeployer(client: Client<Transport, Chain | undefined, Account>): Promise<Address> {
+  console.log("ensuring deployer");
+
   const bytecode = await getBytecode(client, { address: deployer });
 
   if (!bytecode) {

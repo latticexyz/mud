@@ -1,3 +1,3 @@
-import deterministicDeployer from "./deterministic-deployment-proxy/deployment.json";
+import { padHex } from "viem";
 
-export const deployer = `0x${deterministicDeployer.address}` as const;
+export const salt = padHex("0x", { size: 32 });
