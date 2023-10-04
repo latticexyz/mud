@@ -1,6 +1,5 @@
 import { Client, Transport, Chain, Account, Address, Hex } from "viem";
 import { Table } from "./configToTables";
-import { hasResource } from "./hasResource";
 import { writeContract } from "@latticexyz/common";
 import { worldAbi } from "./common";
 import { valueSchemaToFieldLayoutHex, keySchemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser";
@@ -9,26 +8,20 @@ import { debug } from "./debug";
 export async function ensureTables({
   client,
   worldAddress,
-  tables: tables_,
+  resourceIds,
+  tables,
 }: {
   client: Client<Transport, Chain | undefined, Account>;
   worldAddress: Address;
+  resourceIds: Hex[];
   tables: Table[];
 }): Promise<Hex[]> {
-  debug("checking tables");
-  const tables = await Promise.all(
-    Object.values(tables_).map(async (table) => ({
-      ...table,
-      exists: await hasResource(client, worldAddress, table.tableId),
-    }))
-  );
-
-  const existingTables = tables.filter((table) => table.exists);
+  const existingTables = tables.filter((table) => resourceIds.includes(table.tableId));
   if (existingTables.length > 0) {
     debug("existing tables", existingTables.map((table) => table.label).join(", "));
   }
 
-  const missingTables = tables.filter((table) => !table.exists);
+  const missingTables = tables.filter((table) => !resourceIds.includes(table.tableId));
   if (missingTables.length > 0) {
     debug("registering tables", missingTables.map((table) => table.label).join(", "));
     return await Promise.all(
@@ -37,6 +30,7 @@ export async function ensureTables({
           chain: client.chain ?? null,
           address: worldAddress,
           abi: worldAbi,
+          // TODO: replace with batchCall
           functionName: "registerTable",
           args: [
             table.tableId,

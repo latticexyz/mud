@@ -1,5 +1,4 @@
 import { Client, Transport, Chain, Account, Address, Hex, getCreate2Address } from "viem";
-import { hasResource } from "./hasResource";
 import { writeContract } from "@latticexyz/common";
 import { System, salt, worldAbi } from "./common";
 import { deployer } from "./deployer";
@@ -10,45 +9,42 @@ import { debug } from "./debug";
 export async function ensureSystems({
   client,
   worldAddress,
-  systems: systems_,
+  resourceIds,
+  systems,
 }: {
   client: Client<Transport, Chain | undefined, Account>;
   worldAddress: Address;
+  resourceIds: Hex[];
   systems: System[];
 }): Promise<Hex[]> {
-  debug("checking systems");
-  const systems = await Promise.all(
-    Object.values(systems_).map(async (system) => ({
-      ...system,
-      address: getCreate2Address({ from: deployer, bytecode: system.bytecode, salt }),
-      exists: await hasResource(client, worldAddress, system.systemId),
-    }))
-  );
-
-  const existing = systems.filter((system) => system.exists);
+  const existing = systems.filter((system) => resourceIds.includes(system.systemId));
   if (existing.length > 0) {
     debug("existing systems", existing.map((system) => system.label).join(", "));
+    // TODO: figure out if any need to be upgraded
   }
 
-  const missing = systems.filter((system) => !system.exists);
+  const missing = systems.filter((system) => !resourceIds.includes(system.systemId));
   if (missing.length > 0) {
-    // TODO: deploy systems
     debug("registering systems", missing.map((system) => system.label).join(", "));
     const contractTxs = (await Promise.all(missing.map((system) => ensureContract(client, system.bytecode)))).flatMap(
       identity
     );
     return await Promise.all([
       ...contractTxs,
-      ...missing.map((system) =>
-        writeContract(client, {
+      ...missing.map((system) => {
+        const systemAddress = getCreate2Address({ from: deployer, bytecode: system.bytecode, salt });
+        return writeContract(client, {
           chain: client.chain ?? null,
           address: worldAddress,
           abi: worldAbi,
+          // TODO: replace with batchCall
           functionName: "registerSystem",
-          args: [system.systemId, system.address, system.allowAll],
-        })
-      ),
+          args: [system.systemId, systemAddress, system.allowAll],
+        });
+      }),
     ]);
+    // TODO: access control
+    // TODO: function selectors
   }
 
   return [];

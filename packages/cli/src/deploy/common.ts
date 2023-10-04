@@ -1,4 +1,4 @@
-import { Hex, padHex } from "viem";
+import { Abi, Address, Hex, padHex } from "viem";
 import storeConfig from "@latticexyz/store/mud.config.js";
 import worldConfig from "@latticexyz/world/mud.config.js";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
@@ -13,8 +13,14 @@ export const worldTables = configToTables(worldConfig);
 
 export const worldAbi = IBaseWorldAbi;
 
+export type WorldDeploy = {
+  address: Address;
+  worldVersion: string;
+  storeVersion: string;
+  blockNumber: bigint;
+};
+
 export type System = {
-  bytecode: Hex;
   namespace: string;
   name: string;
   label: string;
@@ -22,6 +28,8 @@ export type System = {
   allowAll: boolean;
   allowedAddresses: Hex[];
   allowedSystemIds: string[];
+  bytecode: Hex;
+  abi: Abi;
 };
 
 export type ConfigInput = StoreConfig & WorldConfig;

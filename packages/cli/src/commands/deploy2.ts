@@ -2,7 +2,7 @@ import type { CommandModule, Options } from "yargs";
 import { logError } from "../utils/errors";
 import { DeployOptions } from "../utils/deployHandler";
 import { deploy } from "../deploy/deploy";
-import { createWalletClient, http, Hex } from "viem";
+import { createWalletClient, http, Hex, Abi } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
@@ -71,7 +71,6 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
           return [
             `${config.namespace}_${name}`,
             {
-              bytecode: contractData.bytecode as Hex,
               namespace: config.namespace,
               name,
               label: `${config.namespace}:${name}`,
@@ -81,6 +80,8 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
               allowedSystemIds: system.accessListSystems.map((systemName) =>
                 resourceIdToHex({ type: "system", namespace: config.namespace, name: systemName })
               ),
+              bytecode: contractData.bytecode,
+              abi: contractData.abi,
             },
           ] as const;
         })
