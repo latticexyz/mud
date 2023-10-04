@@ -5,7 +5,7 @@
 ECS is a software architectural pattern used commonly in video game development. It is a data-oriented approach to game development that creates a clean break between data and logic. It does this through the separation of Entities, Components, and Systems:
 
 - **Entities** are the basic units of a game, and they can have any number of components.
-  In a typical MUD implementation each entity is assigned a unique 256 bit identifier that is used as a key to the component tables (see next item).
+  In a typical MUD implementation each entity is assigned a unique 32 byte identifier that is used as a key to the component tables (see next item).
 - **Components** are small pieces of data that define an entity's behavior (such as position or health).
   In a typical MUD implementation components are implemented as tables.
   The table key is the entity identifier, and the value is the data that defines an aspect of the entity such as position.
@@ -35,7 +35,7 @@ There is one last concept to understand before we begin—how to actually implem
 
 In MUD there are tables instead of components (MUD is a general database protocol, not specific to onchain games).
 However, for the sake of this tutorial, these can be mostly thought of interchangeably.
-To apply the ECS model for the example above you'd use `uint256` as an entity identifier, and create both a `movable` table and an `obstruction` table, both of type `bool` (for boolean values).
+To apply the ECS model for the example above you'd use `bytes32` as an entity identifier, and create both a `movable` table and an `obstruction` table, both of type `bool` (for boolean values).
 
 You would then create a system, `MoveSystem.sol`, and write up the logic required to interact with the tables (i.e. components) accordingly.
 
