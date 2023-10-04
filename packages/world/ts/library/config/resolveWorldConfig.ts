@@ -40,14 +40,6 @@ export function resolveWorldConfig(config: StoreConfig & WorldConfig, existingCo
     };
   }, {});
 
-  // Table and system names must be unique (because they're both used for world selectors)
-  const tableNames = Object.values(config.tables).map(({ name }) => name);
-  const configuredSystemNames = Object.values(resolvedSystems).map(({ name }) => name);
-  const duplicateNames = getDuplicates([...tableNames, ...configuredSystemNames]);
-  if (duplicateNames.length > 0) {
-    throw new MUDError(`Table and system names must be unique: ${duplicateNames.join(", ")}`);
-  }
-
   return { systems: resolvedSystems };
 }
 
