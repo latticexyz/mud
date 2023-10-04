@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { MUDError } from "@latticexyz/common/errors";
 import { Address, Abi, Hex, WalletClient, PublicClient, Account, TransactionReceipt } from "viem";
+import { simulateContract, waitForTransactionReceipt, writeContract } from "viem/actions";
 
 export async function fastTx(input: {
   maxPriorityFeePerGas: bigint | undefined;
@@ -38,7 +39,7 @@ export async function fastTx(input: {
     if (gasPrice) gasSettings = { gasPrice };
     else if (maxFeePerGas && maxPriorityFeePerGas) gasSettings = { maxFeePerGas, maxPriorityFeePerGas };
     // Note - calling simulate with Viems internal nonce but writeContract with provided - this speeds things up
-    const { request } = await publicClient.simulateContract({
+    const { request } = await simulateContract(publicClient, {
       ...gasSettings,
       abi,
       functionName,
@@ -46,11 +47,15 @@ export async function fastTx(input: {
       address,
       args: args,
     });
-    const hash = await walletClient.writeContract({ ...request, nonce });
+    const hash = await writeContract(walletClient, {
+      ...request,
+      chain: request.chain ?? null,
+      nonce,
+    });
     console.log(chalk.gray(`executing transaction: ${func} with nonce ${nonce}`));
     if (confirmations === 0) return hash;
     else {
-      return publicClient.waitForTransactionReceipt({ confirmations, hash });
+      return waitForTransactionReceipt(publicClient, { confirmations, hash });
     }
   } catch (error: any) {
     if (debug) console.error(error.message);
