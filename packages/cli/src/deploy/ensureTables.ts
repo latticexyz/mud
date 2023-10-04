@@ -22,27 +22,32 @@ export async function ensureTables({
   );
 
   const existingTables = tables.filter((table) => table.exists);
-  console.log("found tables", existingTables.map((table) => table.label).join(", "));
+  if (existingTables.length > 0) {
+    console.log("existing tables", existingTables.map((table) => table.label).join(", "));
+  }
 
   const missingTables = tables.filter((table) => !table.exists);
-  console.log("registering missing tables", missingTables.map((table) => table.label).join(", "));
+  if (missingTables.length > 0) {
+    console.log("registering tables", missingTables.map((table) => table.label).join(", "));
+    return await Promise.all(
+      missingTables.map((table) =>
+        writeContract(client, {
+          chain: client.chain ?? null,
+          address: worldAddress,
+          abi: worldAbi,
+          functionName: "registerTable",
+          args: [
+            table.tableId,
+            valueSchemaToFieldLayoutHex(table.valueSchema),
+            keySchemaToHex(table.keySchema),
+            valueSchemaToHex(table.valueSchema),
+            Object.keys(table.keySchema),
+            Object.keys(table.valueSchema),
+          ],
+        })
+      )
+    );
+  }
 
-  return await Promise.all(
-    missingTables.map((table) =>
-      writeContract(client, {
-        chain: null,
-        address: worldAddress,
-        abi: worldAbi,
-        functionName: "registerTable",
-        args: [
-          table.tableId,
-          valueSchemaToFieldLayoutHex(table.valueSchema),
-          keySchemaToHex(table.keySchema),
-          valueSchemaToHex(table.valueSchema),
-          Object.keys(table.keySchema),
-          Object.keys(table.valueSchema),
-        ],
-      })
-    )
-  );
+  return [];
 }

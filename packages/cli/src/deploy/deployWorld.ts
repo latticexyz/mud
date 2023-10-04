@@ -1,14 +1,15 @@
 import { AbiEventSignatureNotFoundError, Account, Address, Chain, Client, Transport, decodeEventLog } from "viem";
-import { waitForTransactionReceipt, writeContract } from "viem/actions";
+import { waitForTransactionReceipt } from "viem/actions";
 import { ensureWorldFactory, worldFactory } from "./worldFactory";
 import WorldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
 import { isDefined } from "@latticexyz/common/utils";
+import { writeContract } from "@latticexyz/common";
 
 export async function deployWorld(client: Client<Transport, Chain | undefined, Account>): Promise<Address> {
   await ensureWorldFactory(client);
 
   const tx = await writeContract(client, {
-    chain: null,
+    chain: client.chain ?? null,
     address: worldFactory,
     abi: WorldFactoryAbi,
     functionName: "deployWorld",

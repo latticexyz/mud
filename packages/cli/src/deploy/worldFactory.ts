@@ -1,9 +1,10 @@
 import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json" assert { type: "json" };
-import { Client, Transport, Chain, Account, Address, Hex, parseAbi, getCreate2Address, encodeDeployData } from "viem";
+import { Client, Transport, Chain, Account, Hex, parseAbi, getCreate2Address, encodeDeployData } from "viem";
 import { coreModule, ensureCoreModule } from "./coreModule";
 import { ensureContract } from "./ensureContract";
 import { deployer } from "./deployer";
 import { salt } from "./common";
+import { identity } from "@latticexyz/common/utils";
 
 const bytecode = encodeDeployData({
   bytecode: worldFactoryBuild.bytecode.object as Hex,
@@ -13,8 +14,8 @@ const bytecode = encodeDeployData({
 
 export const worldFactory = getCreate2Address({ from: deployer, bytecode, salt });
 
-export async function ensureWorldFactory(client: Client<Transport, Chain | undefined, Account>): Promise<Address> {
-  await ensureCoreModule(client);
+export async function ensureWorldFactory(client: Client<Transport, Chain | undefined, Account>): Promise<Hex[]> {
   console.log("ensuring world factory");
-  return await ensureContract(client, bytecode);
+  // WorldFactory deploy doesn't require a deployed CoreModule, so we can do them in parallel.
+  return (await Promise.all([ensureCoreModule(client), ensureContract(client, bytecode)])).flatMap(identity);
 }

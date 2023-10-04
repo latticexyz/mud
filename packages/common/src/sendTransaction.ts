@@ -39,12 +39,12 @@ export async function sendTransaction<
 
   async function prepare(): Promise<SendTransactionParameters<TChain, TAccount, TChainOverride>> {
     if (request.gas) {
-      debug("gas provided, skipping simulate", request);
+      debug("gas provided, skipping simulate", request.to);
       return request;
     }
 
-    debug("simulating request", request);
-    const result = await call(client, {
+    debug("simulating request", request.to);
+    await call(client, {
       ...request,
       blockTag: "pending",
       account,
@@ -52,36 +52,37 @@ export async function sendTransaction<
 
     // TODO: estimate gas
 
-    console.log("simulated", request, result);
-
-    // return { ...request, data: result.data };
     return request;
   }
 
   const preparedRequest = await prepare();
 
-  return await pRetry(
-    async () => {
-      if (!nonceManager.hasNonce()) {
-        await nonceManager.resetNonce();
-      }
+  return await nonceManager.queue.add(
+    () =>
+      pRetry(
+        async () => {
+          if (!nonceManager.hasNonce()) {
+            await nonceManager.resetNonce();
+          }
 
-      const nonce = nonceManager.nextNonce();
-      debug("calling write function with nonce", nonce, preparedRequest);
-      return await viem_sendTransaction(client, { nonce, ...preparedRequest });
-    },
-    {
-      retries: 3,
-      onFailedAttempt: async (error) => {
-        // On nonce errors, reset the nonce and retry
-        if (nonceManager.shouldResetNonce(error)) {
-          debug("got nonce error, retrying", error);
-          await nonceManager.resetNonce();
-          return;
+          const nonce = nonceManager.nextNonce();
+          debug("calling write function with nonce", nonce, preparedRequest.to);
+          return await viem_sendTransaction(client, { nonce, ...preparedRequest });
+        },
+        {
+          retries: 3,
+          onFailedAttempt: async (error) => {
+            // On nonce errors, reset the nonce and retry
+            if (nonceManager.shouldResetNonce(error)) {
+              debug("got nonce error, retrying", error.message);
+              await nonceManager.resetNonce();
+              return;
+            }
+            // TODO: prepare again if there are gas errors?
+            throw error;
+          },
         }
-        // TODO: prepare again if there are gas errors?
-        throw error;
-      },
-    }
+      ),
+    { throwOnTimeout: true }
   );
 }

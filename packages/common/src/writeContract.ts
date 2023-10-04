@@ -44,11 +44,11 @@ export async function writeContract<
     WriteContractParameters<TAbi, TFunctionName, TChain, TAccount, TChainOverride>
   > {
     if (request.gas) {
-      debug("gas provided, skipping simulate", request);
+      debug("gas provided, skipping simulate", request.address, request.functionName);
       return request;
     }
 
-    debug("simulating write", request);
+    debug("simulating write", request.address, request.functionName);
     const result = await simulateContract<TChain, TAbi, TFunctionName, TChainOverride>(client, {
       ...request,
       blockTag: "pending",
@@ -60,28 +60,32 @@ export async function writeContract<
 
   const preparedWrite = await prepareWrite();
 
-  return await pRetry(
-    async () => {
-      if (!nonceManager.hasNonce()) {
-        await nonceManager.resetNonce();
-      }
+  return nonceManager.queue.add(
+    () =>
+      pRetry(
+        async () => {
+          if (!nonceManager.hasNonce()) {
+            await nonceManager.resetNonce();
+          }
 
-      const nonce = nonceManager.nextNonce();
-      debug("calling write function with nonce", nonce, preparedWrite);
-      return await viem_writeContract(client, { nonce, ...preparedWrite } as typeof preparedWrite);
-    },
-    {
-      retries: 3,
-      onFailedAttempt: async (error) => {
-        // On nonce errors, reset the nonce and retry
-        if (nonceManager.shouldResetNonce(error)) {
-          debug("got nonce error, retrying", error);
-          await nonceManager.resetNonce();
-          return;
+          const nonce = nonceManager.nextNonce();
+          debug("calling write function with nonce", nonce, preparedWrite.address, preparedWrite.functionName);
+          return await viem_writeContract(client, { nonce, ...preparedWrite } as typeof preparedWrite);
+        },
+        {
+          retries: 3,
+          onFailedAttempt: async (error) => {
+            // On nonce errors, reset the nonce and retry
+            if (nonceManager.shouldResetNonce(error)) {
+              debug("got nonce error, retrying", error.message);
+              await nonceManager.resetNonce();
+              return;
+            }
+            // TODO: prepareWrite again if there are gas errors?
+            throw error;
+          },
         }
-        // TODO: prepareWrite again if there are gas errors?
-        throw error;
-      },
-    }
+      ),
+    { throwOnTimeout: true }
   );
 }

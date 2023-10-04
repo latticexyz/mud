@@ -6,7 +6,15 @@ import { createWalletClient, http, Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
-import { WorldConfig } from "@latticexyz/world";
+import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
+import { getOutDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
+import { getExistingContracts } from "../utils/getExistingContracts";
+import { configToTables } from "../deploy/configToTables";
+import { System } from "../deploy/common";
+import { resourceIdToHex } from "@latticexyz/common";
+import glob from "glob";
+import { basename } from "path";
+import { getContractData } from "../utils/utils/getContractData";
 
 // TODO: redo options
 export const yDeployOptions = {
@@ -48,8 +56,42 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
         transport: http("http://127.0.0.1:8545"),
         account: privateKeyToAccount(process.env.PRIVATE_KEY as Hex),
       });
+
       const config = (await loadConfig()) as StoreConfig & WorldConfig;
-      await deploy({ client, config });
+
+      // TODO: should the config parser/loader help with resolving systems?
+      const srcDir = args?.srcDir ?? (await getSrcDirectory());
+      const outDir = await getOutDirectory(args.profile);
+      const contractNames = getExistingContracts(srcDir).map(({ basename }) => basename);
+      const resolvedConfig = resolveWorldConfig(config, contractNames);
+      const systems = Object.fromEntries<System>(
+        Object.entries(resolvedConfig.systems).map(([systemName, system]) => {
+          const name = system.name ?? systemName;
+          const contractData = getContractData(systemName, outDir);
+          return [
+            `${config.namespace}_${name}`,
+            {
+              bytecode: contractData.bytecode as Hex,
+              namespace: config.namespace,
+              name,
+              label: `${config.namespace}:${name}`,
+              systemId: resourceIdToHex({ type: "system", namespace: config.namespace, name: system.name }),
+              allowAll: system.openAccess,
+              allowedAddresses: system.accessListAddresses as Hex[],
+              allowedSystemIds: system.accessListSystems.map((systemName) =>
+                resourceIdToHex({ type: "system", namespace: config.namespace, name: systemName })
+              ),
+            },
+          ] as const;
+        })
+      );
+      await deploy({
+        client,
+        config: {
+          tables: configToTables(config),
+          systems,
+        },
+      });
     } catch (error: any) {
       logError(error);
       process.exit(1);
