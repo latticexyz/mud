@@ -9,6 +9,7 @@ export * from "./hexToResourceId";
 export * from "./readHex";
 export * from "./resourceIdToHex";
 export * from "./resourceTypes";
+export * from "./sendTransaction";
 export * from "./spliceHex";
 export * from "./transportObserver";
 export * from "./writeContract";

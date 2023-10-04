@@ -21,23 +21,10 @@ import { getContractData } from "./utils/getContractData";
 import { postDeploy } from "./utils/postDeploy";
 import { setInternalFeePerGas } from "./utils/setInternalFeePerGas";
 import { ContractCode } from "./utils/types";
-import {
-  Address,
-  Abi,
-  createPublicClient,
-  createWalletClient,
-  http,
-  Hex,
-  toHex,
-  Chain,
-  TransactionReceipt,
-} from "viem";
+import { Address, Abi, createPublicClient, createWalletClient, Hex, TransactionReceipt, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains";
-
-// If you are deploying to chains other than anvil or Lattice testnet, add them here
-export const supportedChains: MUDChain[] = [mudFoundry, latticeTestnet];
 import { resourceIdToHex } from "@latticexyz/common";
+import { waitForTransactionReceipt } from "viem/actions";
 
 export interface DeployConfig {
   profile?: string;
@@ -72,19 +59,21 @@ export async function deploy(
     transport: http(rpc),
     pollingInterval: pollInterval,
   });
-  const chainId = await publicClient.getChainId();
-  const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
-  const chain = supportedChains[chainIndex];
-  if (!chain) {
-    throw new Error(`Chain ${chainId} not found`);
-  }
   const account = privateKeyToAccount(privateKey as Hex);
   const walletClient = createWalletClient({
-    chain: chain as Chain,
-    account,
     transport: http(rpc),
+    pollingInterval: pollInterval,
+    account,
   });
   console.log("Deploying from", walletClient.account.address);
+
+  async function getContractAddress(tx: Hex): Promise<Address> {
+    const receipt = await waitForTransactionReceipt(publicClient, { hash: tx });
+    if (!receipt.contractAddress) {
+      throw new Error("No contract was deployed?");
+    }
+    return receipt.contractAddress;
+  }
 
   // Manual nonce handling to allow for faster sending of transactions without waiting for previous transactions
   let nonce = await publicClient.getTransactionCount({
@@ -103,15 +92,13 @@ export async function deploy(
   const worldPromise: Promise<string> = worldAddress
     ? Promise.resolve(worldAddress)
     : deployWorldContract({
-        walletClient,
-        publicClient,
+        client: walletClient,
         account,
         debug: Boolean(debug),
-        chain: chain as Chain,
         nonce: nonce++,
         worldContractName: mudConfig.worldContractName,
         forgeOutDirectory,
-      });
+      }).then(getContractAddress);
 
   // Filters any default modules from config
   const userModules = getUserModules(defaultModuleContracts, mudConfig.modules);
@@ -151,11 +138,9 @@ export async function deploy(
   const deployedContracts = contracts.reduce<Record<string, Promise<string>>>((acc, contract) => {
     acc[contract.name] = deployContract({
       contract,
-      walletClient,
-      publicClient,
+      client: walletClient,
       account,
       debug: Boolean(debug),
-      chain: chain as Chain,
       nonce: nonce++,
     });
     return acc;

@@ -1,35 +1,30 @@
 import chalk from "chalk";
 import { MUDError } from "@latticexyz/common/errors";
 import { ContractCode } from "./types";
-import { Abi, Hex, WalletClient, PublicClient, Account, Address, Chain } from "viem";
+import { Abi, Hex, Account, Address, encodeDeployData, Client } from "viem";
+import { sendTransaction } from "@latticexyz/common";
 
-export async function deployContract(input: {
+export async function deployContract(args: {
   contract: ContractCode;
-  walletClient: WalletClient;
-  publicClient: PublicClient;
+  client: Client;
   account: Account | Address;
   debug: boolean;
-  chain: Chain;
   nonce: number;
-}): Promise<string> {
-  const { debug, contract, publicClient, account, walletClient, chain, nonce } = input;
-
+}): Promise<Hex> {
+  const { debug, contract, account, client, nonce } = args;
   try {
-    const hash = await walletClient.deployContract({
-      account,
-      chain,
+    const calldata = encodeDeployData({
       abi: contract.abi as Abi,
       bytecode: typeof contract.bytecode === "string" ? (contract.bytecode as Hex) : (contract.bytecode.object as Hex),
-      nonce,
     });
-    if (!hash) throw new MUDError(`Error deploying ${contract.name}, no hash for deploy tx.`);
 
-    console.log(chalk.gray(`executing deployment of ${contract.name} ${nonce}`));
-    const receipt = await publicClient.waitForTransactionReceipt({ hash });
-    console.log(chalk.green("Deployed", contract.name, "to", receipt.contractAddress));
-    return receipt.contractAddress as string;
+    return await sendTransaction(client, {
+      chain: null,
+      account,
+      data: calldata,
+    });
   } catch (error: any) {
-    if (debug) console.error(error);
+    console.error(error);
     if (error?.message.includes("invalid bytecode")) {
       throw new MUDError(
         `Error deploying ${contract.name}: invalid bytecode. Note that linking of public libraries is not supported yet, make sure none of your libraries use "external" functions.`
@@ -39,7 +34,7 @@ export async function deployContract(input: {
     } else if (error?.message.includes("Nonce too high")) {
       const delayMs = 100;
       await new Promise((resolve) => setTimeout(resolve, delayMs));
-      return deployContract(input);
+      return deployContract(args);
     } else throw Error;
   }
 }

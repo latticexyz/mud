@@ -1,21 +1,25 @@
 import chalk from "chalk";
-import { WalletClient, PublicClient, Account, Address, Chain, Abi } from "viem";
+import { Account, Address, Abi, Client, Hex } from "viem";
 import WorldData from "@latticexyz/world/out/World.sol/World.json" assert { type: "json" };
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import { deployContract } from "./utils/deployContract";
 import { getContractData } from "./utils/getContractData";
 
-export async function deployWorldContract(ip: {
+export async function deployWorldContract({
+  worldContractName,
+  forgeOutDirectory,
+  client,
+  account,
+  debug,
+  nonce,
+}: {
   worldContractName: string | undefined;
   forgeOutDirectory: string;
-  walletClient: WalletClient;
-  publicClient: PublicClient;
+  client: Client;
   account: Account | Address;
   debug: boolean;
-  chain: Chain;
   nonce: number;
-}): Promise<string> {
-  const { worldContractName, forgeOutDirectory, walletClient, publicClient, account, debug, chain, nonce } = ip;
+}): Promise<Hex> {
   console.log(chalk.blue(`Deploying World`));
   const contractData = worldContractName
     ? {
@@ -25,11 +29,9 @@ export async function deployWorldContract(ip: {
     : { abi: IBaseWorldAbi as Abi, bytecode: WorldData.bytecode, name: "World" };
   return deployContract({
     contract: contractData,
-    walletClient,
-    publicClient,
+    client,
     account,
     debug: Boolean(debug),
-    chain,
     nonce,
   });
 }
