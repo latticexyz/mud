@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { WalletClient, PublicClient, Account, Address, Chain, Abi } from "viem";
+import { WalletClient, PublicClient, Account, Address, Abi } from "viem";
 import WorldData from "@latticexyz/world/out/World.sol/World.json" assert { type: "json" };
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import { deployContract } from "./utils/deployContract";
@@ -12,10 +12,9 @@ export async function deployWorldContract(ip: {
   publicClient: PublicClient;
   account: Account | Address;
   debug: boolean;
-  chain: Chain;
   nonce: number;
 }): Promise<string> {
-  const { worldContractName, forgeOutDirectory, walletClient, publicClient, account, debug, chain, nonce } = ip;
+  const { worldContractName, forgeOutDirectory, walletClient, publicClient, account, debug, nonce } = ip;
   console.log(chalk.blue(`Deploying World`));
   const contractData = worldContractName
     ? {
@@ -29,7 +28,6 @@ export async function deployWorldContract(ip: {
     publicClient,
     account,
     debug: Boolean(debug),
-    chain,
     nonce,
   });
 }

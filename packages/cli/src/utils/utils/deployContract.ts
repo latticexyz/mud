@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { MUDError } from "@latticexyz/common/errors";
 import { ContractCode } from "./types";
-import { Abi, Hex, WalletClient, PublicClient, Account, Address, Chain } from "viem";
+import { Abi, Hex, WalletClient, PublicClient, Account, Address } from "viem";
 
 export async function deployContract(input: {
   contract: ContractCode;
@@ -9,15 +9,14 @@ export async function deployContract(input: {
   publicClient: PublicClient;
   account: Account | Address;
   debug: boolean;
-  chain: Chain;
   nonce: number;
 }): Promise<string> {
-  const { debug, contract, publicClient, account, walletClient, chain, nonce } = input;
+  const { debug, contract, publicClient, account, walletClient, nonce } = input;
 
   try {
     const hash = await walletClient.deployContract({
+      chain: null,
       account,
-      chain,
       abi: contract.abi as Abi,
       bytecode: typeof contract.bytecode === "string" ? (contract.bytecode as Hex) : (contract.bytecode.object as Hex),
       nonce,

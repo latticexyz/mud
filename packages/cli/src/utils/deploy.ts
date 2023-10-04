@@ -21,22 +21,8 @@ import { getContractData } from "./utils/getContractData";
 import { postDeploy } from "./utils/postDeploy";
 import { setInternalFeePerGas } from "./utils/setInternalFeePerGas";
 import { ContractCode } from "./utils/types";
-import {
-  Address,
-  Abi,
-  createPublicClient,
-  createWalletClient,
-  http,
-  Hex,
-  toHex,
-  Chain,
-  TransactionReceipt,
-} from "viem";
+import { Address, Abi, createPublicClient, createWalletClient, http, Hex, TransactionReceipt } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains";
-
-// If you are deploying to chains other than anvil or Lattice testnet, add them here
-export const supportedChains: MUDChain[] = [mudFoundry, latticeTestnet];
 import { resourceIdToHex } from "@latticexyz/common";
 
 export interface DeployConfig {
@@ -72,17 +58,10 @@ export async function deploy(
     transport: http(rpc),
     pollingInterval: pollInterval,
   });
-  const chainId = await publicClient.getChainId();
-  const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
-  const chain = supportedChains[chainIndex];
-  if (!chain) {
-    throw new Error(`Chain ${chainId} not found`);
-  }
   const account = privateKeyToAccount(privateKey as Hex);
   const walletClient = createWalletClient({
-    chain: chain as Chain,
-    account,
     transport: http(rpc),
+    account,
   });
   console.log("Deploying from", walletClient.account.address);
 
@@ -107,7 +86,6 @@ export async function deploy(
         publicClient,
         account,
         debug: Boolean(debug),
-        chain: chain as Chain,
         nonce: nonce++,
         worldContractName: mudConfig.worldContractName,
         forgeOutDirectory,
@@ -155,7 +133,6 @@ export async function deploy(
       publicClient,
       account,
       debug: Boolean(debug),
-      chain: chain as Chain,
       nonce: nonce++,
     });
     return acc;
