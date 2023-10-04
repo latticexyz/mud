@@ -422,6 +422,14 @@ export function createClientComponents({ components }: SetupNetworkResult) {
 
 </CollapseCode>
 
+<details>
+
+<summary>Explanation</summary>
+
+[`overridableComponent`](https://github.com/latticexyz/mud/blob/main/packages/recs/src/Component.ts#L337-L465) means one that allows client-side code to override (locally) the values specified by onchain code.
+
+</details>
+
 Now we can update our `createSystemCalls.ts` methods to apply an optimistic update before we send the transaction and remove the optimistic update once the transaction completes.
 
 Copy the code below and replace the existing `createSystemCalls.ts` method.
@@ -525,6 +533,49 @@ export function createSystemCalls(
 ```
 
 </CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```ts
+const positionId = uuid();
+Position.addOverride(positionId, {
+  entity: playerEntity,
+  value: { x, y },
+});
+```
+
+Overrides have a number that allows for them to be deleted when no longer needed.
+
+```ts
+    try {
+      const tx = await worldContract.write.move([x, y]);
+      await waitForTransaction(tx);
+```
+
+This `try {}` block has two `await` commands.
+The program does not get past it until:
+
+1. The transaction is created and sent by `worldContract.write.move`, which is likely to include an [`eth_estimateGas`](https://docs.alchemy.com/reference/eth-estimategas) call (and therefore a round-trip to the blockchain node).
+1. The transaction is actually included in a block (that is the purpose of `waitForTransaction`).
+
+The purpose of the override is to optimistically render the player entity in a different place during that time period.
+
+The purpose of putting these calls in a `try {}` block is so that execution continues even if they throw an error.
+Even in the case of error, we need to remove the override.
+
+```ts
+    } finally {
+      Position.removeOverride(positionId);
+    }
+```
+
+Once the real data is updated, we no longer need the override.
+
+The code in the `spawn` function is similar, but it also overrides the `Player` component.
+
+</details>
 
 Try moving the player around with the keyboard now. It should feel much snappier!
 
