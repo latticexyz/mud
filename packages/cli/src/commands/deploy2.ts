@@ -16,6 +16,8 @@ import glob from "glob";
 import { basename } from "path";
 import { getContractData } from "../utils/utils/getContractData";
 import { deployer } from "../deploy/deployer";
+import { getRegisterFunctionSelectorsCallData } from "../utils/systems/getRegisterFunctionSelectorsCallData";
+import { loadFunctionSignatures } from "../utils/systems/utils";
 
 // TODO: redo options
 export const yDeployOptions = {
@@ -65,10 +67,17 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
       const outDir = await getOutDirectory(args.profile);
       const contractNames = getExistingContracts(srcDir).map(({ basename }) => basename);
       const resolvedConfig = resolveWorldConfig(config, contractNames);
+      const baseSystemFunctions = loadFunctionSignatures("System", outDir);
+
       const systems = Object.fromEntries<System>(
         Object.entries(resolvedConfig.systems).map(([systemName, system]) => {
           const name = system.name ?? systemName;
           const contractData = getContractData(systemName, outDir);
+
+          const systemFunctions = loadFunctionSignatures(systemName, outDir).filter(
+            (sig) => !baseSystemFunctions.includes(sig)
+          );
+
           return [
             `${config.namespace}_${name}`,
             {
@@ -83,12 +92,12 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
               bytecode: contractData.bytecode,
               abi: contractData.abi,
               address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
+              functionSignatures: systemFunctions,
             },
           ] as const;
         })
       );
       await deploy({
-        worldAddress: "0xb5abcf46c21be713d52814100fba24e2bfff9a7b",
         client,
         config: {
           tables: configToTables(config),

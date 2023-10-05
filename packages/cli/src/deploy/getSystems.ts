@@ -33,8 +33,9 @@ export async function getSystems({
         allowAll: publicAccess,
         allowedAddresses: [], // TODO
         allowedSystemIds: [], // TODO
-        bytecode: "0x", //TODO
+        bytecode: "0x", // TODO
         abi: [], // TODO
+        functionSignatures: [], // TODO
       };
     })
   );

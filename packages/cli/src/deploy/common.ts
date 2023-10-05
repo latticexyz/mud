@@ -36,6 +36,7 @@ export type System = {
   allowedSystemIds: string[];
   bytecode: Hex;
   abi: Abi;
+  functionSignatures: string[];
 };
 
 export type ConfigInput = StoreConfig & WorldConfig;

@@ -4,7 +4,6 @@ import { coreModule, ensureCoreModule } from "./coreModule";
 import { ensureContract } from "./ensureContract";
 import { deployer } from "./deployer";
 import { salt } from "./common";
-import { identity } from "@latticexyz/common/utils";
 
 const bytecode = encodeDeployData({
   bytecode: worldFactoryBuild.bytecode.object as Hex,
@@ -16,7 +15,5 @@ export const worldFactory = getCreate2Address({ from: deployer, bytecode, salt }
 
 export async function ensureWorldFactory(client: Client<Transport, Chain | undefined, Account>): Promise<Hex[]> {
   // WorldFactory deploy doesn't require a deployed CoreModule, so we can do them in parallel.
-  return (await Promise.all([ensureCoreModule(client), ensureContract(client, bytecode, "world factory")])).flatMap(
-    identity
-  );
+  return (await Promise.all([ensureCoreModule(client), ensureContract(client, bytecode, "world factory")])).flat();
 }

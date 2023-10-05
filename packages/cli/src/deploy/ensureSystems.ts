@@ -1,12 +1,11 @@
-import { Client, Transport, Chain, Account, Address, Hex, getCreate2Address, getAddress } from "viem";
+import { Client, Transport, Chain, Account, Hex, getAddress } from "viem";
 import { writeContract } from "@latticexyz/common";
-import { System, WorldDeploy, salt, worldAbi } from "./common";
-import { deployer } from "./deployer";
+import { System, WorldDeploy, worldAbi } from "./common";
 import { ensureContract } from "./ensureContract";
-import { identity } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { getSystems } from "./getSystems";
+import { ensureSystemFunctions } from "./ensureSystemFunctions";
 
 export async function ensureSystems({
   client,
@@ -50,25 +49,31 @@ export async function ensureSystems({
     debug("registering new systems", systemsToAdd.map(resourceLabel).join(", "));
   }
 
-  const contractTxs = (
-    await Promise.all(
-      missing.map((system) => ensureContract(client, system.bytecode, `${resourceLabel(system)} system`))
-    )
-  ).flatMap(identity);
-  return await Promise.all([
-    ...contractTxs,
-    ...missing.map((system) => {
-      const systemAddress = getCreate2Address({ from: deployer, bytecode: system.bytecode, salt });
-      return writeContract(client, {
+  // kick off contract deployments first, otherwise registering systems can fail
+  const contractTxs = await Promise.all(
+    missing.map((system) => ensureContract(client, system.bytecode, `${resourceLabel(system)} system`))
+  );
+
+  // then start registering systems
+  const registerTxs = await Promise.all(
+    missing.map((system) =>
+      writeContract(client, {
         chain: client.chain ?? null,
         address: worldDeploy.address,
         abi: worldAbi,
         // TODO: replace with batchCall
         functionName: "registerSystem",
-        args: [system.systemId, systemAddress, system.allowAll],
-      });
-    }),
-  ]);
-  // TODO: access control
-  // TODO: function selectors
+        args: [system.systemId, system.address, system.allowAll],
+      })
+    )
+  );
+
+  // then register system functions
+  const functionTxs = await Promise.all(
+    missing.map((system) => ensureSystemFunctions({ client, worldDeploy, system }))
+  );
+
+  const txs = [...contractTxs, ...registerTxs, ...functionTxs];
+
+  return (await Promise.all(txs)).flat();
 }
