@@ -1,3 +1,7 @@
+// Helper types (might be able to use some of these from type-fest or sth)
+// type First<TArray extends readonly unknown[]> = TArray extends readonly [infer T, ...unknown[]] ? T : never;
+// type Tail<TArray extends readonly unknown[]> = TArray extends readonly [unknown, ...infer T] ? T : never;
+
 interface ConfigInput {
   name: string;
 }
@@ -18,16 +22,17 @@ interface IPluginB<TConfigInput extends ConfigInput> extends MudPlugin<TConfigIn
 }
 
 type ExtractOutput<TMudPlugin extends MudPlugin<ConfigInput>> = TMudPlugin["output"];
-type First<TArr extends unknown[]> = TArr extends [infer First, ...infer Remaining] ? First : never;
 
-type CombinedOutput<TConfigInput extends ConfigInput, TPlugins extends unknown[]> = TPlugins extends never[]
+type CombinedOutput<
+  TConfigInput extends ConfigInput,
+  TPlugins extends readonly unknown[]
+> = TPlugins extends readonly never[]
   ? TConfigInput
-  : TPlugins extends [infer First, ...infer Remaining]
-  ? 1
-  : // ? FirstPlugin extends MudPlugin<TConfigInput>
-    // ? CombinedOutput<TConfigInput & ExtractOutput<FirstPlugin>, RemainingPlugins>
-    // : 1
-    TPlugins;
+  : TPlugins extends readonly [infer First, ...infer Tail]
+  ? First extends MudPlugin<TConfigInput>
+    ? CombinedOutput<TConfigInput & ExtractOutput<First>, Tail>
+    : never
+  : never;
 
 class PluginA<TConfigInput extends ConfigInput> implements IPluginA<TConfigInput> {
   input: TConfigInput;
@@ -51,18 +56,20 @@ class PluginB<TConfigInput extends ConfigInput> implements IPluginB<TConfigInput
 
 const config = { name: "hello" } as const satisfies ConfigInput;
 
-function defineConfig<TConfigInput extends ConfigInput, TPlugins extends MudPlugin<TConfigInput>[]>(
+function defineConfig<TConfigInput extends ConfigInput, TPlugins extends readonly MudPlugin<TConfigInput>[]>(
   configInput: TConfigInput,
   plugins: TPlugins
 ): CombinedOutput<TConfigInput, TPlugins> {
   return {} as CombinedOutput<TConfigInput, TPlugins>;
 }
 
-const plugins = [new PluginA(config), new PluginB(config)];
+const resolved = defineConfig(config, [new PluginA(config), new PluginB(config)] as const);
 
-const resolved = defineConfig(config, plugins);
+resolved.name;
+//        ^?
 
-type TFirst = First<typeof plugins>;
+resolved.resolvedA;
+//        ^?
 
-resolved;
-// ^?
+resolved.resolvedB;
+//        ^?
