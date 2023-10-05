@@ -6,6 +6,7 @@ import { Config, ConfigInput } from "./common";
 import { ensureSystems } from "./ensureSystems";
 import { waitForTransactionReceipt } from "viem/actions";
 import { getResourceIds } from "./getResourceIds";
+import { getWorldDeploy } from "./getWorldDeploy";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -20,13 +21,23 @@ export async function deploy<configInput extends ConfigInput>({
 }: DeployOptions<configInput>): Promise<void> {
   await ensureDeployer(client);
 
-  const worldAddress = existingWorldAddress ?? (await deployWorld(client));
-  const resourceIds = await getResourceIds(client, worldAddress);
+  const world = existingWorldAddress ? await getWorldDeploy(client, existingWorldAddress) : await deployWorld(client);
+  // TODO: check that world/store versions are compatible with our deploy
 
-  // TODO: detect world/store versions and throw if incompatible
+  const resourceIds = await getResourceIds(client, world.address);
 
-  const tableTxs = await ensureTables({ client, worldAddress, resourceIds, tables: Object.values(config.tables) });
-  const systemTxs = await ensureSystems({ client, worldAddress, resourceIds, systems: Object.values(config.systems) });
+  const tableTxs = await ensureTables({
+    client,
+    worldAddress: world.address,
+    resourceIds,
+    tables: Object.values(config.tables),
+  });
+  const systemTxs = await ensureSystems({
+    client,
+    worldAddress: world.address,
+    resourceIds,
+    systems: Object.values(config.systems),
+  });
 
   const receipts = await Promise.all(
     [...tableTxs, ...systemTxs].map((tx) => waitForTransactionReceipt(client, { hash: tx }))

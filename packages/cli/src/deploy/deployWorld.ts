@@ -1,12 +1,23 @@
-import { AbiEventSignatureNotFoundError, Account, Address, Chain, Client, Transport, decodeEventLog } from "viem";
+import {
+  AbiEventSignatureNotFoundError,
+  Account,
+  Address,
+  Chain,
+  Client,
+  Log,
+  Transport,
+  decodeEventLog,
+  formatLog,
+} from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { ensureWorldFactory, worldFactory } from "./worldFactory";
 import WorldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
-import { isDefined } from "@latticexyz/common/utils";
 import { writeContract } from "@latticexyz/common";
 import { debug } from "./debug";
+import { logsToWorldDeploy } from "./logsToWorldDeploy";
+import { WorldDeploy } from "./common";
 
-export async function deployWorld(client: Client<Transport, Chain | undefined, Account>): Promise<Address> {
+export async function deployWorld(client: Client<Transport, Chain | undefined, Account>): Promise<WorldDeploy> {
   await ensureWorldFactory(client);
 
   debug("deploying world");
@@ -24,26 +35,9 @@ export async function deployWorld(client: Client<Transport, Chain | undefined, A
     throw new Error("world deploy failed");
   }
 
-  const logs = receipt.logs
-    .map((log) => {
-      try {
-        return decodeEventLog({ abi: WorldFactoryAbi, topics: log.topics, data: log.data });
-      } catch (error: unknown) {
-        if (error instanceof AbiEventSignatureNotFoundError) {
-          return;
-        }
-        throw error;
-      }
-    })
-    .filter(isDefined);
+  // TODO: fix receipt log type in viem to not be pending
+  const deploy = logsToWorldDeploy(receipt.logs.map((log) => log as Log<bigint, number, false>));
+  debug("deployed world to", deploy.address, "at block", deploy.blockNumber);
 
-  const deployEvent = logs.find((log) => log.eventName === "WorldDeployed");
-  if (!deployEvent) {
-    throw new Error("could not find WorldDeployed event");
-  }
-
-  const worldAddress = deployEvent.args.newContract;
-  debug("got world address", worldAddress);
-
-  return worldAddress;
+  return deploy;
 }

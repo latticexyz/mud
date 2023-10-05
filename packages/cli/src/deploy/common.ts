@@ -13,6 +13,12 @@ export const worldTables = configToTables(worldConfig);
 
 export const worldAbi = IBaseWorldAbi;
 
+// TODO: add tests that these stay in sync with WorldFactory and IBaseWorld ABIs
+// TODO: move these to world package?
+export const worldDeployedEvent = "event WorldDeployed(address indexed newContract)";
+export const helloWorldEvent = "event HelloWorld(bytes32 indexed worldVersion)";
+export const helloStoreEvent = "event HelloStore(bytes32 indexed storeVersion)";
+
 export type WorldDeploy = {
   address: Address;
   worldVersion: string;

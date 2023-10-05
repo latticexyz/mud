@@ -1,7 +1,7 @@
 import { Client, Transport, Chain, Account, Address, parseAbiItem, Hex } from "viem";
 import { getLogs } from "viem/actions";
 import { getWorldDeploy } from "./getWorldDeploy";
-import { storeSpliceStaticData } from "@latticexyz/store";
+import { storeSpliceStaticDataEvent } from "@latticexyz/store";
 import { storeTables } from "./common";
 import { debug } from "./debug";
 
@@ -20,7 +20,7 @@ export async function getResourceIds(
     strict: true,
     fromBlock: worldDeploy.blockNumber,
     address: worldAddress,
-    event: parseAbiItem(storeSpliceStaticData),
+    event: parseAbiItem(storeSpliceStaticDataEvent),
     args: { tableId: storeTables.store_ResourceIds.tableId },
   });
 

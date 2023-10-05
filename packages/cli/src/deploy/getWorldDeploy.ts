@@ -1,7 +1,8 @@
 import { Client, Transport, Chain, Account, Address, getAddress, parseAbi, hexToString, trim } from "viem";
 import { getLogs } from "viem/actions";
-import { WorldDeploy } from "./common";
+import { WorldDeploy, helloStoreEvent, helloWorldEvent } from "./common";
 import { debug } from "./debug";
+import { logsToWorldDeploy } from "./logsToWorldDeploy";
 
 const deploys = new Map<Address, WorldDeploy>();
 
@@ -20,33 +21,12 @@ export async function getWorldDeploy(
   const logs = await getLogs(client, {
     strict: true,
     address,
-    events: parseAbi([
-      "event HelloWorld(bytes32 indexed worldVersion)",
-      "event HelloStore(bytes32 indexed storeVersion)",
-    ]),
+    events: parseAbi([helloWorldEvent, helloStoreEvent]),
   });
 
-  const { blockNumber, worldVersion, storeVersion } = logs.reduce<Partial<WorldDeploy>>(
-    (deploy, log) => ({
-      ...deploy,
-      blockNumber: log.blockNumber,
-      ...(log.eventName === "HelloWorld"
-        ? { worldVersion: hexToString(trim(log.args.worldVersion, { dir: "right" })) }
-        : null),
-      ...(log.eventName === "HelloStore"
-        ? { storeVersion: hexToString(trim(log.args.storeVersion, { dir: "right" })) }
-        : null),
-    }),
-    {}
-  );
-
-  if (blockNumber == null) throw new Error("could not find world deploy block number");
-  if (worldVersion == null) throw new Error("could not find world version");
-  if (storeVersion == null) throw new Error("could not find store version");
-
-  deploy = { address, blockNumber, worldVersion, storeVersion };
+  deploy = logsToWorldDeploy(logs);
   deploys.set(address, deploy);
-  debug("found world deploy", deploy);
+  debug("found world deploy for", address, "at block", deploy.blockNumber);
 
   return deploy;
 }
