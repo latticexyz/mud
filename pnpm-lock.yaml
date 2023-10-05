@@ -309,6 +309,9 @@ importers:
       find-up:
         specifier: ^6.3.0
         version: 6.3.0
+      type-fest:
+        specifier: ^2.14.0
+        version: 2.14.0
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -10757,7 +10760,6 @@ packages:
   /type-fest@2.14.0:
     resolution: {integrity: sha512-hQnTQkFjL5ik6HF2fTAM8ycbr94UbQXK364wF930VHb0dfBJ5JBP8qwrR8TaK9zwUEk7meruo2JAUDMwvuxd/w==}
     engines: {node: '>=12.20'}
-    dev: true
 
   /type@1.2.0:
     resolution: {integrity: sha512-+5nt5AAniqsCnu2cEQQdpzCAh33kVx8n0VoFidKpB1dVVLAN/F+bgVOqOJqOnEnrhp222clB5p3vUlD+1QAnfg==}
