@@ -7,7 +7,7 @@ import { debug } from "./debug";
 import { buildInternalTables } from "./buildInternalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
-import { hexToResourceId, spliceHex } from "@latticexyz/common";
+import { hexToResource, spliceHex } from "@latticexyz/common";
 import { setupTables } from "./setupTables";
 import { getTableKey } from "./getTableKey";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
@@ -85,7 +85,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           (table) => getTableKey(table) === getTableKey({ address: log.address, tableId: log.args.tableId })
         );
         if (!table) {
-          const { namespace, name } = hexToResourceId(log.args.tableId);
+          const { namespace, name } = hexToResource(log.args.tableId);
           debug(`table ${namespace}:${name} not found, skipping log`, log);
           continue;
         }

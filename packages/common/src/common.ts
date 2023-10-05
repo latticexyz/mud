@@ -1,7 +1,9 @@
+import { Hex } from "viem";
 import { ResourceType } from "./resourceTypes";
 
-export type ResourceId = {
+export type Resource = {
   namespace: string;
   name: string;
   type: ResourceType;
+  hex: Hex;
 };

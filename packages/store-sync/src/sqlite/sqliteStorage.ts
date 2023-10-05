@@ -12,7 +12,7 @@ import { schemaVersion } from "./schemaVersion";
 import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { hexToResourceId, spliceHex } from "@latticexyz/common";
+import { hexToResource, spliceHex } from "@latticexyz/common";
 import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
@@ -61,7 +61,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           logs.map((log) =>
             JSON.stringify({
               address: getAddress(log.address),
-              ...hexToResourceId(log.args.tableId),
+              ...hexToResource(log.args.tableId),
             })
           )
         )
@@ -87,7 +87,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           (table) => table.address === getAddress(log.address) && table.tableId === log.args.tableId
         );
         if (!table) {
-          const tableId = hexToResourceId(log.args.tableId);
+          const tableId = hexToResource(log.args.tableId);
           debug(`table ${tableId.namespace}:${tableId.name} not found, skipping log`, log);
           continue;
         }

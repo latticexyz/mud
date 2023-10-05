@@ -9,7 +9,7 @@ import { getTransaction } from "./getTransaction";
 import { getTransactionReceipt } from "./getTransactionReceipt";
 import { getTransactionResult } from "./getTransactionResult";
 import { ErrorTrace } from "../ErrorTrace";
-import { ContractWrite, hexToResourceId } from "@latticexyz/common";
+import { ContractWrite, hexToResource } from "@latticexyz/common";
 import { useDevToolsContext } from "../DevToolsContext";
 import { hexKeyTupleToEntity } from "@latticexyz/store-sync/recs";
 
@@ -145,7 +145,7 @@ export function WriteSummary({ write }: Props) {
             </thead>
             <tbody className="font-mono text-xs">
               {events.map(({ eventName, args }, i) => {
-                const table = hexToResourceId((args as any).tableId);
+                const table = hexToResource((args as any).tableId);
                 // TODO: dedupe this with logs table so we can get both rendering the same
                 return (
                   <tr key={i}>
