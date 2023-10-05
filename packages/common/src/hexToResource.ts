@@ -1,7 +1,7 @@
 import { Hex, hexToString, sliceHex } from "viem";
-import { ResourceId } from "./common";
+import { Resource } from "./common";
 import { ResourceType, resourceTypes } from "./resourceTypes";
-import { resourceTypeIds } from "./resourceIdToHex";
+import { resourceTypeIds } from "./resourceToHex";
 import { ReverseMap } from "./type-utils/common";
 
 const resourceTypeIdToType = Object.fromEntries(
@@ -16,7 +16,7 @@ function getResourceType(resourceTypeId: string): ResourceType | undefined {
   }
 }
 
-export function hexToResourceId(hex: Hex): ResourceId {
+export function hexToResource(hex: Hex): Resource {
   const resourceTypeId = hexToString(sliceHex(hex, 0, 2)).replace(/\0+$/, "");
   const type = getResourceType(resourceTypeId);
   const namespace = hexToString(sliceHex(hex, 2, 16)).replace(/\0+$/, "");
@@ -26,5 +26,5 @@ export function hexToResourceId(hex: Hex): ResourceId {
     throw new Error(`Unknown resource type: ${resourceTypeId}`);
   }
 
-  return { type, namespace, name };
+  return { type, namespace, name, hex };
 }
