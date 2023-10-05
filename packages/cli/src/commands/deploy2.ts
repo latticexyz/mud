@@ -11,7 +11,7 @@ import { getOutDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { configToTables } from "../deploy/configToTables";
 import { System } from "../deploy/common";
-import { resourceIdToHex } from "@latticexyz/common";
+import { resourceToHex } from "@latticexyz/common";
 import glob from "glob";
 import { basename } from "path";
 import { getContractData } from "../utils/utils/getContractData";
@@ -74,11 +74,11 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
               namespace: config.namespace,
               name,
               label: `${config.namespace}:${name}`,
-              systemId: resourceIdToHex({ type: "system", namespace: config.namespace, name: system.name }),
+              systemId: resourceToHex({ type: "system", namespace: config.namespace, name: system.name }),
               allowAll: system.openAccess,
               allowedAddresses: system.accessListAddresses as Hex[],
               allowedSystemIds: system.accessListSystems.map((systemName) =>
-                resourceIdToHex({ type: "system", namespace: config.namespace, name: systemName })
+                resourceToHex({ type: "system", namespace: config.namespace, name: systemName })
               ),
               bytecode: contractData.bytecode,
               abi: contractData.abi,

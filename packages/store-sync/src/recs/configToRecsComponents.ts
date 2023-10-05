@@ -1,6 +1,6 @@
 import { StoreConfig } from "@latticexyz/store";
 import { SchemaAbiType } from "@latticexyz/schema-type";
-import { resourceIdToHex } from "@latticexyz/common";
+import { resourceToHex } from "@latticexyz/common";
 import { World, defineComponent, Type } from "@latticexyz/recs";
 import { ConfigToRecsComponents } from "./common";
 import { schemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
@@ -27,7 +27,7 @@ export function configToRecsComponents<TConfig extends StoreConfig>(
         },
         {
           // TODO: support table namespaces https://github.com/latticexyz/mud/issues/994
-          id: resourceIdToHex({
+          id: resourceToHex({
             type: table.offchainOnly ? "offchainTable" : "table",
             namespace: config.namespace,
             name: tableName,

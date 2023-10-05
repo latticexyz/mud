@@ -21,20 +21,21 @@ export async function deploy<configInput extends ConfigInput>({
 }: DeployOptions<configInput>): Promise<void> {
   await ensureDeployer(client);
 
-  const world = existingWorldAddress ? await getWorldDeploy(client, existingWorldAddress) : await deployWorld(client);
+  const worldDeploy = existingWorldAddress
+    ? await getWorldDeploy(client, existingWorldAddress)
+    : await deployWorld(client);
   // TODO: check that world/store versions are compatible with our deploy
 
-  const resourceIds = await getResourceIds(client, world.address);
+  const resourceIds = await getResourceIds(client, worldDeploy);
 
   const tableTxs = await ensureTables({
     client,
-    worldAddress: world.address,
-    resourceIds,
+    worldDeploy,
     tables: Object.values(config.tables),
   });
   const systemTxs = await ensureSystems({
     client,
-    worldAddress: world.address,
+    worldDeploy,
     resourceIds,
     systems: Object.values(config.systems),
   });

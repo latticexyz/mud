@@ -1,6 +1,7 @@
-import { resourceIdToHex } from "@latticexyz/common";
+import { resourceToHex } from "@latticexyz/common";
 import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
-import { StoreConfig } from "@latticexyz/store";
+import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
+import { ResolvedSchema, StoreConfig, resolveUserTypes } from "@latticexyz/store";
 import { Hex } from "viem";
 
 // TODO: we shouldn't need this file once our config parsing returns nicely formed tables
@@ -16,10 +17,23 @@ export type Table<
 > = {
   namespace: config["namespace"];
   name: table["name"];
-  label: `${config["namespace"]}:${table["name"]}`;
   tableId: Hex;
-  keySchema: table["keySchema"] & KeySchema;
-  valueSchema: table["valueSchema"] & ValueSchema;
+  // TODO: support enums
+  keySchema: table["keySchema"] extends KeySchema<config["userTypes"]>
+    ? KeySchema & {
+        [k in keyof table["keySchema"]]: config["userTypes"][table["keySchema"][k]]["internalType"] extends StaticAbiType
+          ? config["userTypes"][table["keySchema"][k]]["internalType"]
+          : table["keySchema"][k];
+      }
+    : KeySchema;
+  // TODO: support enums
+  valueSchema: table["valueSchema"] extends ValueSchema<config["userTypes"]>
+    ? {
+        [k in keyof table["valueSchema"]]: config["userTypes"][table["valueSchema"][k]]["internalType"] extends SchemaAbiType
+          ? config["userTypes"][table["valueSchema"][k]]["internalType"]
+          : table["valueSchema"][k];
+      }
+    : ValueSchema;
 };
 
 export type Tables<config extends StoreConfig = StoreConfig> = {
@@ -33,14 +47,13 @@ export function configToTables<config extends StoreConfig>(config: config): Tabl
       {
         namespace: config.namespace,
         name: table.name,
-        label: `${config.namespace}:${table.name}`,
-        tableId: resourceIdToHex({
+        tableId: resourceToHex({
           type: table.offchainOnly ? "offchainTable" : "table",
           namespace: config.namespace,
           name: table.name,
         }),
-        keySchema: table.keySchema as KeySchema,
-        valueSchema: table.valueSchema as ValueSchema,
+        keySchema: resolveUserTypes(table.keySchema, config.userTypes) as any,
+        valueSchema: resolveUserTypes(table.valueSchema, config.userTypes) as any,
       } satisfies Table<config, config["tables"][keyof config["tables"]]>,
     ])
   ) as Tables<config>;

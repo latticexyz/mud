@@ -71,7 +71,7 @@ const zShorthandSchemaConfig = zFieldData.transform((fieldData) => {
 
 export const zSchemaConfig = zFullSchemaConfig.or(zShorthandSchemaConfig);
 
-type ResolvedSchema<TSchema extends Record<string, string>, TUserTypes extends Record<string, UserType>> = {
+export type ResolvedSchema<TSchema extends Record<string, string>, TUserTypes extends Record<string, UserType>> = {
   [key in keyof TSchema]: TSchema[key] extends keyof TUserTypes
     ? TUserTypes[TSchema[key]]["internalType"]
     : TSchema[key];
@@ -301,7 +301,7 @@ export type FullUserTypesConfig<UserTypeNames extends StringForUnion> = {
 
 const zUserTypeConfig = z.object({
   filePath: z.string(),
-  internalType: z.string(),
+  internalType: z.enum<AbiType, [AbiType, ...AbiType[]]>(AbiTypes as [AbiType, ...AbiType[]]),
 });
 
 export const zUserTypesConfig = z.object({

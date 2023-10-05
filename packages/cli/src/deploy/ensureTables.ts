@@ -1,34 +1,37 @@
 import { Client, Transport, Chain, Account, Address, Hex } from "viem";
 import { Table } from "./configToTables";
 import { writeContract } from "@latticexyz/common";
-import { worldAbi } from "./common";
+import { WorldDeploy, worldAbi } from "./common";
 import { valueSchemaToFieldLayoutHex, keySchemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser";
 import { debug } from "./debug";
+import { tableToLabel } from "./tableToLabel";
+import { getTables } from "./getTables";
 
 export async function ensureTables({
   client,
-  worldAddress,
-  resourceIds,
+  worldDeploy,
   tables,
 }: {
   client: Client<Transport, Chain | undefined, Account>;
-  worldAddress: Address;
+  worldDeploy: WorldDeploy;
   tables: Table[];
-  resourceIds: Hex[];
 }): Promise<Hex[]> {
-  const existingTables = tables.filter((table) => resourceIds.includes(table.tableId));
+  const worldTables = await getTables({ client, worldDeploy });
+  const worldTableIds = worldTables.map((table) => table.tableId);
+
+  const existingTables = tables.filter((table) => worldTableIds.includes(table.tableId));
   if (existingTables.length > 0) {
-    debug("existing tables", existingTables.map((table) => table.label).join(", "));
+    debug("existing tables", existingTables.map(tableToLabel).join(", "));
   }
 
-  const missingTables = tables.filter((table) => !resourceIds.includes(table.tableId));
+  const missingTables = tables.filter((table) => !worldTableIds.includes(table.tableId));
   if (missingTables.length > 0) {
-    debug("registering tables", missingTables.map((table) => table.label).join(", "));
+    debug("registering tables", missingTables.map(tableToLabel).join(", "));
     return await Promise.all(
       missingTables.map((table) =>
         writeContract(client, {
           chain: client.chain ?? null,
-          address: worldAddress,
+          address: worldDeploy.address,
           abi: worldAbi,
           // TODO: replace with batchCall
           functionName: "registerTable",

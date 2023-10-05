@@ -1,6 +1,6 @@
 import { Client, Transport, Chain, Account, Address, Hex, getCreate2Address } from "viem";
 import { writeContract } from "@latticexyz/common";
-import { System, salt, worldAbi } from "./common";
+import { System, WorldDeploy, salt, worldAbi } from "./common";
 import { deployer } from "./deployer";
 import { ensureContract } from "./ensureContract";
 import { identity } from "@latticexyz/common/utils";
@@ -8,12 +8,12 @@ import { debug } from "./debug";
 
 export async function ensureSystems({
   client,
-  worldAddress,
+  worldDeploy,
   resourceIds,
   systems,
 }: {
   client: Client<Transport, Chain | undefined, Account>;
-  worldAddress: Address;
+  worldDeploy: WorldDeploy;
   resourceIds: Hex[];
   systems: System[];
 }): Promise<Hex[]> {
@@ -35,7 +35,7 @@ export async function ensureSystems({
         const systemAddress = getCreate2Address({ from: deployer, bytecode: system.bytecode, salt });
         return writeContract(client, {
           chain: client.chain ?? null,
-          address: worldAddress,
+          address: worldDeploy.address,
           abi: worldAbi,
           // TODO: replace with batchCall
           functionName: "registerSystem",
