@@ -70,8 +70,7 @@ interface TablesConfigInput {
 }
 
 interface TablesConfigOutput<TConfigInput extends ConfigInput> {
-  // TODO: create a helper type to simplify these types of type drillings
-  [key: string]: TConfigInput["tables"][keyof TConfigInput["tables"]] & TableConfigOutput<TConfigInput>;
+  [key: string]: TableConfigOutput<TConfigInput>;
 }
 
 interface EnumsConfigInput {
@@ -140,8 +139,6 @@ type PrefixKeys<TRecord extends Record<string, unknown> | undefined, Prefix exte
       [key in keyof TRecord & string as `${Prefix}_${key}`]: TRecord[key];
     };
 
-type Keys<TRecord extends Record<string, unknown>> = TRecord extends Record<infer Keys, unknown> ? Keys : never;
-
 // From https://github.com/sindresorhus/type-fest/blob/113400b53a3b20eac75466b8e0ecc1bbb983e56f/source/union-to-intersection.d.ts#L46
 // TODO: import type-fest
 export type UnionToIntersection<Union> = // `extends unknown` is always going to be the case and is used to convert the
@@ -160,53 +157,21 @@ export type UnionToIntersection<Union> = // `extends unknown` is always going to
     ? Intersection
     : never;
 
-// From https://github.com/sindresorhus/type-fest/pull/686/files
-export type UnionToTuple<Tuple> = UnionToIntersection<Tuple extends never ? never : (_: Tuple) => Tuple> extends (
-  _: never
-) => infer LastTupleElement
-  ? [...UnionToTuple<Exclude<Tuple, LastTupleElement>>, LastTupleElement]
-  : [];
-
-type FlattenNamespacesConfig<
-  TNamespacesConfig extends NamespacesConfigInput,
-  TNamespaces extends unknown[] = UnionToTuple<keyof TNamespacesConfig>
-> = TNamespaces extends [infer TNamespace, ...infer TRemainingNamespaces]
-  ? TNamespace extends keyof TNamespacesConfig & string
-    ? TRemainingNamespaces extends never[]
-      ? PrefixKeys<TNamespacesConfig[TNamespace]["tables"], TNamespace>
-      : TRemainingNamespaces extends string[]
-      ? PrefixKeys<TNamespacesConfig[TNamespace]["tables"], TNamespace> &
-          FlattenNamespacesConfig<TNamespacesConfig, TRemainingNamespaces>
-      : never
-    : never
-  : never;
-
-const namespaces = {
-  namespace1: {
-    tables: {
-      table1: { name: "table1-name-1" },
-      table2: { name: "table2-name-1" },
-    },
-  },
-  namespace2: {
-    tables: {
-      table1: { name: "table1-name-2" },
-    },
-  },
-} as const satisfies NamespacesConfigInput;
-
-const flattened = {} as FlattenNamespacesConfig<typeof namespaces>;
-flattened.namespace1_table1.name;
-//                          ^?
-flattened.namespace2_table1.name;
-//                          ^?
-
-interface TablesConfigOutput<TConfigInput extends ConfigInput> {
-  tables: TConfigInput["tables"][keyof TConfigInput["tables"]] & TableConfigOutput<TConfigInput>;
-}
+type FlattenNamespacesConfig<TNamespacesConfig extends NamespacesConfigInput | undefined> =
+  TNamespacesConfig extends NamespacesConfigInput
+    ? UnionToIntersection<
+        {
+          [TNamespace in keyof TNamespacesConfig & string]: PrefixKeys<
+            TNamespacesConfig[TNamespace]["tables"],
+            TNamespace
+          >;
+        }[keyof TNamespacesConfig & string]
+      >
+    : never;
 
 interface ConfigOutput<TConfigInput extends ConfigInput> {
   namespaces: TConfigInput["namespaces"] & NamespacesConfigOutput;
+  tables: TConfigInput["tables"] & TablesConfigOutput<TConfigInput>;
 }
 
 //--------- Testing
@@ -216,12 +181,15 @@ const config = defineConfig({
     foo: {
       name: "foo",
     },
+    bar: {
+      name: "bar",
+    },
   },
   namespaces: {
     namespace1: {
       tables: {
         foo: {
-          name: "foo",
+          name: "namespaced_foo",
         },
       },
     },
@@ -231,3 +199,9 @@ const config = defineConfig({
 
 config.tables.foo.name;
 //                 ^?
+
+config.tables.bar.name;
+//                 ^?
+
+config.tables;
+//         ^?
