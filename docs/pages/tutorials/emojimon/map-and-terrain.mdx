@@ -162,13 +162,13 @@ contract PostDeploy is Script {
 
 </CollapseCode>
 
-**Note:** `pnpm dev` does not redeploy the contracts when you change this file, so you'll need to start it manually.
+**Note:** `pnpm dev` does not redeploy the contracts when you change this file, so you'll need to restart it manually.
 
 Now let’s render the terrain in the client via `GameBoard.tsx`.
 
 <CollapseCode>
 
-```tsx filename="packages/client/src/GameBoard.tsx" {5-7,12-13,31-46,51-53} copy showLineNumbers
+```tsx filename="packages/client/src/GameBoard.tsx" {5-7,12-13,31-46,51-52} copy showLineNumbers
 import { useComponentValue } from "@latticexyz/react";
 import { GameMap } from "./GameMap";
 import { useMUD } from "./MUDContext";
@@ -374,7 +374,7 @@ If the terrain is a boulder, specify the location and that it is an `Obstraction
 </details>
 
 Then let's use this function in the move method and spawn method in `MapSystem.sol`.
-Because we are changing `MapSystem.sol`, the `pnpm dev` process will redeploy the contracts, and run the updated script.
+Because we are changing `MapSystem.sol`, the `pnpm dev` process will redeploy the contracts, and run the updated `PostDeploy.s.sol` script.
 
 <CollapseCode>
 
@@ -400,12 +400,16 @@ contract MapSystem is System {
     Movable.set(player, true);
   }
 
-  function move(uint32 x, uint32 y) public {
+  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
     bytes32 player = addressToEntityKey(_msgSender());
     require(Movable.get(player), "cannot move");
 
     (uint32 fromX, uint32 fromY) = Position.get(player);
-    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
+    require(clientX == fromX && clientY == fromY, "client confused about location");
+
+    uint32 x = uint32(int32(fromX) + deltaX);
+    uint32 y = uint32(int32(fromY) + deltaY);
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
@@ -413,10 +417,8 @@ contract MapSystem is System {
     Position.set(player, x, y);
   }
 
-  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
-    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
-    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
-    return deltaX + deltaY;
+  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
+    return uint32(deltaX * deltaX + deltaY * deltaY);
   }
 }
 ```
@@ -479,7 +481,9 @@ export function createSystemCalls(
       return;
     }
 
-    await moveTo(playerPosition.x + deltaX, playerPosition.y + deltaY);
+    const tx = await worldContract.write.moveBy([playerPosition.x, playerPosition.y, deltaX, deltaY]);
+
+    await waitForTransaction(tx);
   };
 
   const spawn = async (x: number, y: number) => {
@@ -571,11 +575,12 @@ We'll address this by updating the `spawn` and `move` methods in `MapSystem.sol`
 
 <CollapseCode>
 
-```solidity filename="MapSystem.sol" {4,13-16,33-36} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {14-17,34-37} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
+
 import { System } from "@latticexyz/world/src/System.sol";
-import { MapConfig, Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 import { positionToEntityKey } from "../positionToEntityKey.sol";
 
@@ -629,17 +634,18 @@ Let’s go back to `createSystemCalls.ts` to make sure these are rendering optim
 
 <CollapseCode>
 
-```ts filename="createSystemCalls.ts" {10-11,13-19,25,30,64,74} copy showLineNumbers
+```ts filename="createSystemCalls.ts" {14-23,29,34-38,68,78-82} copy showLineNumbers
+qbzzt@Oris-MacBook-Pro emojimon % cat packages/client/src/mud/createSystemCalls.ts
 import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
-import { uuid, awaitStreamValue } from "@latticexyz/utils";
-import { MonsterCatchResult } from "../monsterCatchResult";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
+import { uuid } from "@latticexyz/utils";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
-  { playerEntity, singletonEntity, worldSend, txReduced$ }: SetupNetworkResult,
+  { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
   { MapConfig, Obstruction, Player, Position }: ClientComponents
 ) {
   const wrapPosition = (x: number, y: number) => {
@@ -647,7 +653,10 @@ export function createSystemCalls(
     if (!mapConfig) {
       throw new Error("mapConfig no yet loaded or initialized");
     }
-    return [(x + mapConfig.width) % mapConfig.width, (y + mapConfig.height) % mapConfig.height];
+    return [
+      (x + mapConfig.width) % mapConfig.width,
+      (y + mapConfig.height) % mapConfig.height,
+    ];
   };
 
   const isObstructed = (x: number, y: number) => {
@@ -672,8 +681,8 @@ export function createSystemCalls(
     });
 
     try {
-      const tx = await worldSend("move", [x, y]);
-      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+      const tx = await worldContract.write.move([x, y]);
+      await waitForTransaction(tx);
     } finally {
       Position.removeOverride(positionId);
     }
@@ -721,8 +730,8 @@ export function createSystemCalls(
     });
 
     try {
-      const tx = await worldSend("spawn", [x, y]);
-      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+      const tx = await worldContract.write.spawn([x, y]);
+      await waitForTransaction(tx);
     } finally {
       Position.removeOverride(positionId);
       Player.removeOverride(playerId);
@@ -740,7 +749,6 @@ export function createSystemCalls(
   };
 
   return {
-    moveTo,
     moveBy,
     spawn,
     throwBall,
