@@ -26,6 +26,14 @@ export type WorldDeploy = {
   blockNumber: bigint;
 };
 
+export type WorldFunction = {
+  signature: string;
+  selector: Hex;
+  systemId: Hex;
+  systemFunctionSignature: string;
+  systemFunctionSelector: Hex;
+};
+
 export type System = {
   address: Address;
   namespace: string;
@@ -36,7 +44,7 @@ export type System = {
   allowedSystemIds: string[];
   bytecode: Hex;
   abi: Abi;
-  functionSignatures: string[];
+  functions: WorldFunction[];
 };
 
 export type ConfigInput = StoreConfig & WorldConfig;

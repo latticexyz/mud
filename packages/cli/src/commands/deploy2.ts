@@ -2,7 +2,7 @@ import type { CommandModule, Options } from "yargs";
 import { logError } from "../utils/errors";
 import { DeployOptions } from "../utils/deployHandler";
 import { deploy } from "../deploy/deploy";
-import { createWalletClient, http, Hex, Abi, getCreate2Address } from "viem";
+import { createWalletClient, http, Hex, Abi, getCreate2Address, getFunctionSelector } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
@@ -10,7 +10,7 @@ import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import { getOutDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { configToTables } from "../deploy/configToTables";
-import { System, salt } from "../deploy/common";
+import { System, WorldFunction, salt } from "../deploy/common";
 import { resourceToHex } from "@latticexyz/common";
 import glob from "glob";
 import { basename } from "path";
@@ -71,28 +71,40 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
 
       const systems = Object.fromEntries<System>(
         Object.entries(resolvedConfig.systems).map(([systemName, system]) => {
+          const namespace = config.namespace;
           const name = system.name ?? systemName;
+          const systemId = resourceToHex({ type: "system", namespace, name });
           const contractData = getContractData(systemName, outDir);
 
-          const systemFunctions = loadFunctionSignatures(systemName, outDir).filter(
-            (sig) => !baseSystemFunctions.includes(sig)
-          );
+          const systemFunctions = loadFunctionSignatures(systemName, outDir)
+            .filter((sig) => !baseSystemFunctions.includes(sig))
+            .map((sig): WorldFunction => {
+              // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
+              const worldSignature = namespace === "" ? `${namespace}_${name}_${sig}` : sig;
+              return {
+                signature: worldSignature,
+                selector: getFunctionSelector(worldSignature),
+                systemId,
+                systemFunctionSignature: sig,
+                systemFunctionSelector: getFunctionSelector(sig),
+              };
+            });
 
           return [
-            `${config.namespace}_${name}`,
+            `${namespace}_${name}`,
             {
-              namespace: config.namespace,
+              namespace,
               name,
-              systemId: resourceToHex({ type: "system", namespace: config.namespace, name: system.name }),
+              systemId,
               allowAll: system.openAccess,
               allowedAddresses: system.accessListAddresses as Hex[],
-              allowedSystemIds: system.accessListSystems.map((systemName) =>
-                resourceToHex({ type: "system", namespace: config.namespace, name: systemName })
+              allowedSystemIds: system.accessListSystems.map((name) =>
+                resourceToHex({ type: "system", namespace, name })
               ),
               bytecode: contractData.bytecode,
               abi: contractData.abi,
               address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
-              functionSignatures: systemFunctions,
+              functions: systemFunctions,
             },
           ] as const;
         })

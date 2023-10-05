@@ -5,6 +5,7 @@ import { hexToResource } from "@latticexyz/common";
 import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
+import { getFunctions } from "./getFunctions";
 
 export async function getSystems({
   client,
@@ -14,6 +15,7 @@ export async function getSystems({
   worldDeploy: WorldDeploy;
 }): Promise<System[]> {
   const resourceIds = await getResourceIds({ client, worldDeploy });
+  const functions = await getFunctions({ client, worldDeploy });
   const systems = resourceIds.map(hexToResource).filter((resource) => resource.type === "system");
 
   debug("looking up systems", systems.map(resourceLabel).join(", "));
@@ -25,6 +27,7 @@ export async function getSystems({
         table: worldTables.world_Systems,
         key: { systemId: system.hex },
       });
+      const systemFunctions = functions.filter((func) => func.systemId === system.hex);
       return {
         address,
         namespace: system.namespace,
@@ -35,7 +38,7 @@ export async function getSystems({
         allowedSystemIds: [], // TODO
         bytecode: "0x", // TODO
         abi: [], // TODO
-        functionSignatures: [], // TODO
+        functions: systemFunctions,
       };
     })
   );
