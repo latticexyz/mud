@@ -18,7 +18,9 @@ interface ConfigInput {
 }
 
 // Attempt at combining resolve functions
-type ConfigResolver<TConfigInput extends ConfigInput, TConfigOutput> = (configInput: TConfigInput) => TConfigOutput;
+type ConfigResolver<TConfigInput extends ConfigInput, TConfigOutput = unknown> = (
+  configInput: TConfigInput
+) => TConfigOutput;
 
 type ConfigOutput<
   TConfigInput extends ConfigInput,
@@ -32,10 +34,10 @@ type ConfigOutput<
     : never
   : never;
 
-type ConfigOutputExplicit<TConfigInput extends ConfigInput> = ConfigOutput<
-  TConfigInput,
-  [typeof resolveA, typeof resolveB]
->;
+type ConfigOutputOneResolver<
+  TConfigInput extends ConfigInput,
+  TConfigResolver extends ConfigResolver<TConfigInput, unknown>
+> = TConfigResolver extends ConfigResolver<TConfigInput, infer TConfigOutput> ? TConfigOutput : never;
 
 // Attempt at combining output types
 type CombinedOutputs<
@@ -77,6 +79,11 @@ function resolveB<TConfigInput extends ConfigInput>(configInput: TConfigInput): 
 // --------- Usage tests
 
 const config = { name: "hello", tables: { table1: { name: "table1" } } } as const satisfies ConfigInput;
+
+///////// Explicit number of resolvers
+const explicitResolvedB = {} as ConfigOutputOneResolver<typeof config, ConfigResolver<typeof config>>;
+explicitResolvedB.resolvedA;
+//                ^?
 
 ////////// Merge by combining objects
 

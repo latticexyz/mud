@@ -171,7 +171,9 @@ type FlattenNamespacesConfig<TNamespacesConfig extends NamespacesConfigInput | u
 
 interface ConfigOutput<TConfigInput extends ConfigInput> {
   namespaces: TConfigInput["namespaces"] & NamespacesConfigOutput;
-  tables: TConfigInput["tables"] & TablesConfigOutput<TConfigInput>;
+  tables: TConfigInput["tables"] &
+    TablesConfigOutput<TConfigInput> &
+    FlattenNamespacesConfig<TConfigInput["namespaces"]>;
 }
 
 //--------- Testing

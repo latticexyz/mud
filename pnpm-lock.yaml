@@ -309,6 +309,9 @@ importers:
       find-up:
         specifier: ^6.3.0
         version: 6.3.0
+      free-types:
+        specifier: ^0.12.0
+        version: 0.12.0
       type-fest:
         specifier: ^2.14.0
         version: 2.14.0
@@ -6213,6 +6216,16 @@ packages:
   /fraction.js@4.2.0:
     resolution: {integrity: sha512-MhLuK+2gUcnZe8ZHlaaINnQLl0xRIGRfcGk2yl8xoQAfHrSsL3rYu6FCmBdkdbhc9EPlwyGHewaRsvwRMJtAlA==}
     dev: true
+
+  /free-types-core@0.8.5:
+    resolution: {integrity: sha512-RxAcBBmtAIpIRfWsMDKtaBW8cENHbRH3vrXT05IbpmSx6Mrm2FtRA6tHhHgWoXrrFnXe0SzAZOb/WyN2BNIZ3w==}
+    dev: false
+
+  /free-types@0.12.0:
+    resolution: {integrity: sha512-lLTvJNRfqTnqEoNHTnd2gz82yJINVdaX6bmSzMrtHc/+BxxP0CAPwcBgdJw4bKXWNuhCV9JtdCN83VNGUH0qKQ==}
+    dependencies:
+      free-types-core: 0.8.5
+    dev: false
 
   /fs-constants@1.0.0:
     resolution: {integrity: sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow==}
