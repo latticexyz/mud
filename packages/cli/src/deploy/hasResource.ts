@@ -3,7 +3,15 @@ import { storeTables, worldAbi } from "./common";
 import { Address, Client, Hex } from "viem";
 import { readContract } from "viem/actions";
 
-export async function hasResource(client: Client, worldAddress: Address, resourceId: Hex): Promise<boolean> {
+export async function hasResource({
+  client,
+  worldAddress,
+  resourceId,
+}: {
+  client: Client;
+  worldAddress: Address;
+  resourceId: Hex;
+}): Promise<boolean> {
   const [staticData, encodedLengths, dynamicData] = await readContract(client, {
     address: worldAddress,
     abi: worldAbi,

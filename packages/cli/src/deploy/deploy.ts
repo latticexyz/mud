@@ -26,8 +26,6 @@ export async function deploy<configInput extends ConfigInput>({
     : await deployWorld(client);
   // TODO: check that world/store versions are compatible with our deploy
 
-  const resourceIds = await getResourceIds(client, worldDeploy);
-
   const tableTxs = await ensureTables({
     client,
     worldDeploy,
@@ -36,7 +34,6 @@ export async function deploy<configInput extends ConfigInput>({
   const systemTxs = await ensureSystems({
     client,
     worldDeploy,
-    resourceIds,
     systems: Object.values(config.systems),
   });
 

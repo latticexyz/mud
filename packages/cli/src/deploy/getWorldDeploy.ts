@@ -1,4 +1,4 @@
-import { Client, Transport, Chain, Account, Address, getAddress, parseAbi, hexToString, trim } from "viem";
+import { Client, Address, getAddress, parseAbi } from "viem";
 import { getLogs } from "viem/actions";
 import { WorldDeploy, helloStoreEvent, helloWorldEvent } from "./common";
 import { debug } from "./debug";
@@ -6,10 +6,7 @@ import { logsToWorldDeploy } from "./logsToWorldDeploy";
 
 const deploys = new Map<Address, WorldDeploy>();
 
-export async function getWorldDeploy(
-  client: Client<Transport, Chain | undefined, Account>,
-  worldAddress: Address
-): Promise<WorldDeploy> {
+export async function getWorldDeploy(client: Client, worldAddress: Address): Promise<WorldDeploy> {
   const address = getAddress(worldAddress);
 
   let deploy = deploys.get(address);
@@ -22,6 +19,7 @@ export async function getWorldDeploy(
     strict: true,
     address,
     events: parseAbi([helloWorldEvent, helloStoreEvent]),
+    fromBlock: "earliest",
   });
 
   deploy = logsToWorldDeploy(logs);

@@ -1,10 +1,10 @@
-import { Client, Transport, Chain, Account, Address, Hex } from "viem";
+import { Client, Transport, Chain, Account, Hex } from "viem";
 import { Table } from "./configToTables";
 import { writeContract } from "@latticexyz/common";
 import { WorldDeploy, worldAbi } from "./common";
 import { valueSchemaToFieldLayoutHex, keySchemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser";
 import { debug } from "./debug";
-import { tableToLabel } from "./tableToLabel";
+import { resourceLabel } from "./resourceLabel";
 import { getTables } from "./getTables";
 
 export async function ensureTables({
@@ -21,12 +21,12 @@ export async function ensureTables({
 
   const existingTables = tables.filter((table) => worldTableIds.includes(table.tableId));
   if (existingTables.length > 0) {
-    debug("existing tables", existingTables.map(tableToLabel).join(", "));
+    debug("existing tables", existingTables.map(resourceLabel).join(", "));
   }
 
   const missingTables = tables.filter((table) => !worldTableIds.includes(table.tableId));
   if (missingTables.length > 0) {
-    debug("registering tables", missingTables.map(tableToLabel).join(", "));
+    debug("registering tables", missingTables.map(resourceLabel).join(", "));
     return await Promise.all(
       missingTables.map((table) =>
         writeContract(client, {

@@ -2,7 +2,7 @@ import type { CommandModule, Options } from "yargs";
 import { logError } from "../utils/errors";
 import { DeployOptions } from "../utils/deployHandler";
 import { deploy } from "../deploy/deploy";
-import { createWalletClient, http, Hex, Abi } from "viem";
+import { createWalletClient, http, Hex, Abi, getCreate2Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
@@ -10,11 +10,12 @@ import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import { getOutDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { configToTables } from "../deploy/configToTables";
-import { System } from "../deploy/common";
+import { System, salt } from "../deploy/common";
 import { resourceToHex } from "@latticexyz/common";
 import glob from "glob";
 import { basename } from "path";
 import { getContractData } from "../utils/utils/getContractData";
+import { deployer } from "../deploy/deployer";
 
 // TODO: redo options
 export const yDeployOptions = {
@@ -73,7 +74,6 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
             {
               namespace: config.namespace,
               name,
-              label: `${config.namespace}:${name}`,
               systemId: resourceToHex({ type: "system", namespace: config.namespace, name: system.name }),
               allowAll: system.openAccess,
               allowedAddresses: system.accessListAddresses as Hex[],
@@ -82,11 +82,13 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
               ),
               bytecode: contractData.bytecode,
               abi: contractData.abi,
+              address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
             },
           ] as const;
         })
       );
       await deploy({
+        worldAddress: "0xb5abcf46c21be713d52814100fba24e2bfff9a7b",
         client,
         config: {
           tables: configToTables(config),

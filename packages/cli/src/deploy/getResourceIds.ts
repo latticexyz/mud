@@ -1,13 +1,16 @@
-import { Client, Transport, Chain, Account, parseAbiItem, Hex } from "viem";
+import { Client, parseAbiItem, Hex } from "viem";
 import { getLogs } from "viem/actions";
 import { storeSpliceStaticDataEvent } from "@latticexyz/store";
 import { WorldDeploy, storeTables } from "./common";
 import { debug } from "./debug";
 
-export async function getResourceIds(
-  client: Client<Transport, Chain | undefined, Account>,
-  { address, blockNumber }: WorldDeploy
-): Promise<Hex[]> {
+export async function getResourceIds({
+  client,
+  worldDeploy: { address, blockNumber },
+}: {
+  client: Client;
+  worldDeploy: WorldDeploy;
+}): Promise<Hex[]> {
   // This assumes we only use `ResourceIds._setExists(true)`, which is true as of this writing.
   // TODO: PR to viem's getLogs to accept topics array so we can filter on all store events and quickly recreate this table's current state
 

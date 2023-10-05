@@ -1,4 +1,4 @@
-import { Client, Transport, Chain, Account, parseAbiItem, decodeAbiParameters, parseAbiParameters } from "viem";
+import { Client, parseAbiItem, decodeAbiParameters, parseAbiParameters } from "viem";
 import { Table } from "./configToTables";
 import { hexToResource } from "@latticexyz/common";
 import { WorldDeploy, storeTables } from "./common";
@@ -11,11 +11,12 @@ export async function getTables({
   client,
   worldDeploy,
 }: {
-  client: Client<Transport, Chain | undefined, Account>;
+  client: Client;
   worldDeploy: WorldDeploy;
 }): Promise<Table[]> {
   // This assumes we only use `Tables._set(...)`, which is true as of this writing.
   // TODO: PR to viem's getLogs to accept topics array so we can filter on all store events and quickly recreate this table's current state
+  // TODO: consider moving this to a batched getRecord for Tables table
 
   debug("looking up tables for", worldDeploy.address);
   const logs = await getLogs(client, {

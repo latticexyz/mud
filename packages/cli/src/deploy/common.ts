@@ -27,9 +27,9 @@ export type WorldDeploy = {
 };
 
 export type System = {
+  address: Address;
   namespace: string;
   name: string;
-  label: string;
   systemId: Hex;
   allowAll: boolean;
   allowedAddresses: Hex[];
