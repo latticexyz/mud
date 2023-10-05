@@ -11,66 +11,26 @@ interface ConfigInput {
   tables: TablesConfig;
 }
 
-interface MudPlugin<TConfigInput extends ConfigInput> {
-  input: unknown;
-  output: unknown;
-}
+// ---------
 
-type ExtractOutput<TMudPlugin extends MudPlugin<ConfigInput>> = TMudPlugin["output"];
+type ConfigResolver = <TConfigInput extends ConfigInput>(configInput: TConfigInput) => TConfigInput;
 
-type CombinedOutput<
-  TConfigInput extends ConfigInput,
-  TPlugins extends readonly unknown[]
-> = TPlugins extends readonly never[]
-  ? TConfigInput
-  : TPlugins extends readonly [infer First, ...infer Tail]
-  ? First extends MudPlugin<TConfigInput>
-    ? CombinedOutput<TConfigInput & ExtractOutput<First>, Tail>
-    : never
-  : never;
+// ----
 
-class PluginA<TConfigInput extends ConfigInput> {
-  input: TConfigInput;
-  output: TConfigInput & { resolvedA: `${TConfigInput["name"]}-A` } & { resolvedTables: TConfigInput["tables"] };
+type PluginA = <TConfigInput extends ConfigInput>(
+  configInput: TConfigInput
+) => TConfigInput & { resolvedA: `${TConfigInput["name"]}-A` };
 
-  constructor(config: TConfigInput) {
-    this.input = config;
-    this.output = { ...config, resolvedA: `${config.name}-A`, resolvedTables: config.tables };
-  }
-}
+type PluginB = <TConfigInput extends ConfigInput>(
+  configInput: TConfigInput
+) => TConfigInput & { resolvedB: `${TConfigInput["name"]}-B` };
 
-class PluginB<TConfigInput extends ConfigInput> {
-  input: TConfigInput;
-  output: TConfigInput & { resolvedB: `${TConfigInput["name"]}-B` } & {
-    tables: TConfigInput["tables"] & { pluginBTable: "test" };
-  };
+const config = { name: "name", tables: {} } as const satisfies ConfigInput;
 
-  constructor(config: TConfigInput) {
-    this.input = config;
-    this.output = { ...config, resolvedB: `${config.name}-B`, tables: { ...config.tables, pluginBTable: "test" } };
-  }
-}
+const pluginA = {} as PluginA;
+const pluginB = {} as PluginB;
 
-const config = { name: "hello", tables: { configTable: "configTable" } } as const satisfies ConfigInput;
+const resolved2 = pluginA(pluginB(config));
 
-function defineConfig<TConfigInput extends ConfigInput, TPlugins extends readonly MudPlugin<TConfigInput>[]>(
-  configInput: TConfigInput,
-  plugins: TPlugins
-): CombinedOutput<TConfigInput, TPlugins> {
-  return {} as CombinedOutput<TConfigInput, TPlugins>;
-}
-
-const resolved = defineConfig(config, [new PluginA(new PluginB(config).output), new PluginB(config)] as const);
-
-resolved.name;
+resolved2.resolvedA;
 //        ^?
-resolved.resolvedA;
-//        ^?
-resolved.resolvedB;
-//        ^?
-resolved.tables.configTable;
-//              ^?
-resolved.tables.pluginBTable;
-//              ^?
-resolved.resolvedTables;
-//       ^?
