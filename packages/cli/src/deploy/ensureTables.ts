@@ -13,8 +13,8 @@ export async function ensureTables({
 }: {
   client: Client<Transport, Chain | undefined, Account>;
   worldAddress: Address;
-  resourceIds: Hex[];
   tables: Table[];
+  resourceIds: Hex[];
 }): Promise<Hex[]> {
   const existingTables = tables.filter((table) => resourceIds.includes(table.tableId));
   if (existingTables.length > 0) {
