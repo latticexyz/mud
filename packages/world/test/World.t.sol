@@ -25,7 +25,7 @@ import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
-import { ROOT_NAMESPACE, ROOT_NAME, ROOT_NAMESPACE_ID, UNLIMITED_DELEGATION } from "../src/constants.sol";
+import { ROOT_NAMESPACE, ROOT_NAME, ROOT_NAMESPACE_ID, UNLIMITED_DELEGATION, WORLD_NAMESPACE_ID, STORE_NAMESPACE_ID } from "../src/constants.sol";
 import { RESOURCE_TABLE, RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "../src/worldResourceTypes.sol";
 import { WorldContextProviderLib, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
 import { SystemHook } from "../src/SystemHook.sol";
@@ -342,6 +342,35 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(IWorldErrors.World_ResourceAlreadyExists.selector, namespaceId, namespaceId.toString())
     );
     world.registerNamespace(namespaceId);
+  }
+
+  function testRegisterCoreNamespacesRevert() public {
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_ResourceAlreadyExists.selector,
+        ROOT_NAMESPACE_ID,
+        ROOT_NAMESPACE_ID.toString()
+      )
+    );
+    world.registerNamespace(ROOT_NAMESPACE_ID);
+
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_ResourceAlreadyExists.selector,
+        WORLD_NAMESPACE_ID,
+        WORLD_NAMESPACE_ID.toString()
+      )
+    );
+    world.registerNamespace(WORLD_NAMESPACE_ID);
+
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_ResourceAlreadyExists.selector,
+        STORE_NAMESPACE_ID,
+        STORE_NAMESPACE_ID.toString()
+      )
+    );
+    world.registerNamespace(STORE_NAMESPACE_ID);
   }
 
   function testRegisterNamespaceRevertInvalidType() public {
