@@ -1,5 +1,7 @@
 # @latticexyz/std-contracts
 
+## 2.0.0-next.11
+
 ## 2.0.0-next.10
 
 ## 2.0.0-next.9

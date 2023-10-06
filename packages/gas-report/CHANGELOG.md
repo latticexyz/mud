@@ -1,5 +1,22 @@
 # Change Log
 
+## 2.0.0-next.11
+
+### Minor Changes
+
+- 4385c5a4: Allow the `gas-report` CLI to parse logs via `stdin`, so it can be used with custom test commands (e.g. `mud test`).
+
+  Usage:
+
+  ```sh
+  # replace `forge test -vvv` with the custom test command
+  GAS_REPORTER_ENABLED=true forge test -vvv | pnpm gas-report --stdin
+  ```
+
+### Patch Changes
+
+- ba17bdab: Pass through `stdin` logs in `gas-report`. Since the script piping in logs to `gas-report` can be long-running, it is useful to see its logs to know if it's stalling.
+
 ## 2.0.0-next.10
 
 ## 2.0.0-next.9

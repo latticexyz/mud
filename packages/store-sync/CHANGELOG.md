@@ -1,5 +1,24 @@
 # @latticexyz/store-sync
 
+## 2.0.0-next.11
+
+### Patch Changes
+
+- 08d7c471: Export postgres column type helpers from `@latticexyz/store-sync`.
+- f99e8898: Bump viem to 1.14.0 and abitype to 0.9.8
+- Updated dependencies [16b13ea8]
+- Updated dependencies [430e6b29]
+- Updated dependencies [f99e8898]
+- Updated dependencies [d075f82f]
+- Updated dependencies [a2f41ade]
+  - @latticexyz/common@2.0.0-next.11
+  - @latticexyz/world@2.0.0-next.11
+  - @latticexyz/block-logs-stream@2.0.0-next.11
+  - @latticexyz/protocol-parser@2.0.0-next.11
+  - @latticexyz/schema-type@2.0.0-next.11
+  - @latticexyz/store@2.0.0-next.11
+  - @latticexyz/recs@2.0.0-next.11
+
 ## 2.0.0-next.10
 
 ### Minor Changes
