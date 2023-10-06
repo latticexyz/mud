@@ -33,13 +33,13 @@ Before continuing, try figuring out what components and systems would need to be
 
 Let's start by adding three new tables to `mud.config.ts`.
 
-- `Encounterable` → to determine whether or not an entity can engage in an encounter
-- `EncounterTrigger` → to determine whether or not an entity can trigger an encounter when moved on by a player.
-- `Encounter` → to associate a player with an encounter.
+- `Encounterable` can an entity can engage in an encounter
+- `EncounterTrigger` can an entity trigger an encounter when moved on by a player.
+- `Encounter` associate a player with an encounter.
 
 <CollapseCode>
 
-```ts filename="mud.config.ts" {8-19} copy showLineNumbers
+```ts filename="packages/contracts/mud.config.ts" {8-19} copy showLineNumbers
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
@@ -98,7 +98,7 @@ import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { EncounterTrigger, MapConfig, Obstruction, Position } from "../src/codegen/index.sol";
-import { TerrainType } from "../src/codegen/Types.sol";
+import { TerrainType } from "../src/codegen/common.sol";
 import { positionToEntityKey } from "../src/positionToEntityKey.sol";
 
 contract PostDeploy is Script {
