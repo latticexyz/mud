@@ -19,6 +19,7 @@ export async function getResourceIds({
     strict: true,
     address: worldDeploy.address,
     fromBlock: worldDeploy.fromBlock,
+    toBlock: worldDeploy.toBlock,
     event: parseAbiItem(storeSpliceStaticDataEvent),
     args: { tableId: storeTables.store_ResourceIds.tableId },
   });

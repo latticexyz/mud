@@ -19,6 +19,7 @@ export async function getFunctions({
   const logs = await getLogs(client, {
     strict: true,
     fromBlock: worldDeploy.fromBlock,
+    toBlock: worldDeploy.toBlock,
     address: worldDeploy.address,
     event: parseAbiItem(storeSetRecordEvent),
     args: { tableId: worldTables.world_FunctionSignatures.tableId },

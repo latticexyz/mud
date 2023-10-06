@@ -1,14 +1,4 @@
-import {
-  AbiEventSignatureNotFoundError,
-  Account,
-  Address,
-  Chain,
-  Client,
-  Log,
-  Transport,
-  decodeEventLog,
-  formatLog,
-} from "viem";
+import { Account, Chain, Client, Log, Transport } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { ensureWorldFactory, worldFactory } from "./ensureWorldFactory";
 import WorldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };

@@ -1,5 +1,5 @@
 import { Client, Transport, Chain, Account, Hex, getAddress } from "viem";
-import { hexToResource, writeContract } from "@latticexyz/common";
+import { writeContract } from "@latticexyz/common";
 import { System, WorldDeploy, worldAbi } from "./common";
 import { ensureContract } from "./ensureContract";
 import { debug } from "./debug";
@@ -73,7 +73,7 @@ export async function ensureSystems({
   ]);
 
   const existing = systems.filter((system) =>
-    worldSystems.find(
+    worldSystems.some(
       (worldSystem) =>
         worldSystem.systemId === system.systemId && getAddress(worldSystem.address) === getAddress(system.address)
     )
@@ -87,7 +87,7 @@ export async function ensureSystems({
   if (!missing.length) return [];
 
   const systemsToUpgrade = missing.filter((system) =>
-    worldSystems.find(
+    worldSystems.some(
       (worldSystem) =>
         worldSystem.systemId === system.systemId && getAddress(worldSystem.address) !== getAddress(system.address)
     )
@@ -97,7 +97,7 @@ export async function ensureSystems({
   }
 
   const systemsToAdd = missing.filter(
-    (system) => !worldSystems.find((worldSystem) => worldSystem.systemId === system.systemId)
+    (system) => !worldSystems.some((worldSystem) => worldSystem.systemId === system.systemId)
   );
   if (systemsToAdd.length) {
     debug("registering new systems", systemsToAdd.map(resourceLabel).join(", "));

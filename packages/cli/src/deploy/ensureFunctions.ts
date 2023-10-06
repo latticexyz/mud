@@ -1,6 +1,6 @@
-import { Client, Transport, Chain, Account, Hex, getFunctionSelector } from "viem";
+import { Client, Transport, Chain, Account, Hex } from "viem";
 import { hexToResource, writeContract } from "@latticexyz/common";
-import { System, WorldDeploy, WorldFunction, worldAbi } from "./common";
+import { WorldDeploy, WorldFunction, worldAbi } from "./common";
 import { debug } from "./debug";
 import { getFunctions } from "./getFunctions";
 

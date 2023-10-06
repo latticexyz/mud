@@ -21,6 +21,7 @@ export async function getResourceAccess({
   const logs = await getLogs(client, {
     strict: true,
     fromBlock: worldDeploy.fromBlock,
+    toBlock: worldDeploy.toBlock,
     address: worldDeploy.address,
     // our usage of `ResourceAccess._set(...)` emits a splice instead of set record
     // TODO: https://github.com/latticexyz/mud/issues/479

@@ -22,6 +22,7 @@ export async function getTables({
   const logs = await getLogs(client, {
     strict: true,
     fromBlock: worldDeploy.fromBlock,
+    toBlock: worldDeploy.toBlock,
     address: worldDeploy.address,
     event: parseAbiItem(storeSetRecordEvent),
     args: { tableId: storeTables.store_Tables.tableId },

@@ -5,10 +5,8 @@ import { ensureTables } from "./ensureTables";
 import { Config, ConfigInput } from "./common";
 import { ensureSystems } from "./ensureSystems";
 import { waitForTransactionReceipt } from "viem/actions";
-import { getResourceIds } from "./getResourceIds";
 import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
-import { getResourceAccess } from "./getResourceAccess";
 import { ensureModules } from "./ensureModules";
 
 type DeployOptions<configInput extends ConfigInput> = {
@@ -28,8 +26,6 @@ export async function deploy<configInput extends ConfigInput>({
     ? await getWorldDeploy(client, existingWorldAddress)
     : await deployWorld(client);
   // TODO: check that world/store versions are compatible with our deploy
-
-  // TODO: update RPC get calls to use `worldDeploy.toBlock` to align the block number everywhere
 
   // TODO: check if there are any namespaces we don't have access to before attempting to register things on them
   // TODO: check for and register namespaces? these are registered by default when registering tables/systems through the world
