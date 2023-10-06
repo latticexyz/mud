@@ -1,5 +1,29 @@
 # Change Log
 
+## 2.0.0-next.11
+
+### Minor Changes
+
+- d075f82f: - Moves contract write logic out of `createContract` into its own `writeContract` method so that it can be used outside of the contract instance, and for consistency with viem.
+
+  - Deprecates `createContract` in favor of `getContract` for consistency with viem.
+  - Reworks `createNonceManager`'s `BroadcastChannel` setup and moves out the notion of a "nonce manager ID" to `getNonceManagerId` so we can create an internal cache with `getNonceManager` for use in `writeContract`.
+
+  If you were using the `createNonceManager` before, you'll just need to rename `publicClient` argument to `client`:
+
+  ```diff
+    const publicClient = createPublicClient({ ... });
+  - const nonceManager = createNonceManager({ publicClient, ... });
+  + const nonceManager = createNonceManager({ client: publicClient, ... });
+  ```
+
+### Patch Changes
+
+- 16b13ea8: Adds viem workaround for zero base fee used by MUD's anvil config
+- f99e8898: Bump viem to 1.14.0 and abitype to 0.9.8
+- Updated dependencies [f99e8898]
+  - @latticexyz/schema-type@2.0.0-next.11
+
 ## 2.0.0-next.10
 
 ### Patch Changes

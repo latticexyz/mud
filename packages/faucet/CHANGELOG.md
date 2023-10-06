@@ -1,5 +1,11 @@
 # @latticexyz/faucet
 
+## 2.0.0-next.11
+
+### Patch Changes
+
+- f99e8898: Bump viem to 1.14.0 and abitype to 0.9.8
+
 ## 2.0.0-next.10
 
 ## 2.0.0-next.9

@@ -1,5 +1,19 @@
 # Change Log
 
+## 2.0.0-next.11
+
+### Patch Changes
+
+- 430e6b29: Register the `store` namespace in the `CoreModule`.
+  Since namespaces are a World concept, registering the Store's internal tables does not automatically register the Store's namespace, so we do this manually during initialization in the `CoreModule`.
+- Updated dependencies [16b13ea8]
+- Updated dependencies [f99e8898]
+- Updated dependencies [d075f82f]
+  - @latticexyz/common@2.0.0-next.11
+  - @latticexyz/schema-type@2.0.0-next.11
+  - @latticexyz/store@2.0.0-next.11
+  - @latticexyz/config@2.0.0-next.11
+
 ## 2.0.0-next.10
 
 ### Major Changes
