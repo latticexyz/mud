@@ -20,37 +20,47 @@ export const helloWorldEvent = "event HelloWorld(bytes32 indexed worldVersion)";
 export const helloStoreEvent = "event HelloStore(bytes32 indexed storeVersion)";
 
 export type WorldDeploy = {
-  address: Address;
-  worldVersion: string;
-  storeVersion: string;
+  readonly address: Address;
+  readonly worldVersion: string;
+  readonly storeVersion: string;
   /** Block number where the world was deployed */
-  fromBlock: bigint;
+  readonly fromBlock: bigint;
   /** Block number at the time of fetching world deploy, to keep further queries aligned to the same block number */
-  toBlock: bigint;
+  readonly toBlock: bigint;
 };
 
 export type WorldFunction = {
-  signature: string;
-  selector: Hex;
-  systemId: Hex;
-  systemFunctionSignature: string;
-  systemFunctionSelector: Hex;
+  readonly signature: string;
+  readonly selector: Hex;
+  readonly systemId: Hex;
+  readonly systemFunctionSignature: string;
+  readonly systemFunctionSelector: Hex;
 };
 
 export type System = {
-  address: Address;
-  namespace: string;
-  name: string;
-  systemId: Hex;
-  allowAll: boolean;
-  allowedAddresses: Hex[];
-  bytecode: Hex;
-  abi: Abi;
-  functions: WorldFunction[];
+  readonly namespace: string;
+  readonly name: string;
+  readonly systemId: Hex;
+  readonly allowAll: boolean;
+  readonly allowedAddresses: readonly Hex[];
+  readonly address: Address;
+  readonly bytecode: Hex;
+  readonly abi: Abi;
+  readonly functions: readonly WorldFunction[];
+};
+
+export type Module = {
+  readonly name: string;
+  readonly installAsRoot: boolean;
+  readonly installData: Hex; // TODO: figure out better naming for this
+  readonly address: Address;
+  readonly bytecode: Hex;
+  readonly abi: Abi;
 };
 
 export type ConfigInput = StoreConfig & WorldConfig;
 export type Config<config extends ConfigInput> = {
-  tables: Tables<config>;
-  systems: System[];
+  readonly tables: Tables<config>;
+  readonly systems: readonly System[];
+  readonly modules: readonly Module[];
 };

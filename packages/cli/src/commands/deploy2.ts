@@ -2,7 +2,18 @@ import type { CommandModule, Options } from "yargs";
 import { logError } from "../utils/errors";
 import { DeployOptions } from "../utils/deployHandler";
 import { deploy } from "../deploy/deploy";
-import { createWalletClient, http, Hex, Abi, getCreate2Address, getFunctionSelector, getAddress } from "viem";
+import {
+  createWalletClient,
+  http,
+  Hex,
+  Abi,
+  getCreate2Address,
+  getFunctionSelector,
+  getAddress,
+  hexToBytes,
+  encodeAbiParameters,
+  encodePacked,
+} from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
@@ -19,6 +30,7 @@ import { deployer } from "../deploy/ensureDeployer";
 import { getRegisterFunctionSelectorsCallData } from "../utils/systems/getRegisterFunctionSelectorsCallData";
 import { loadFunctionSignatures } from "../utils/systems/utils";
 import { resourceLabel } from "../deploy/resourceLabel";
+import { resolveWithContext } from "@latticexyz/config";
 
 // TODO: redo options
 export const yDeployOptions = {
@@ -57,7 +69,7 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
   async handler(args) {
     try {
       const client = createWalletClient({
-        transport: http("http://127.0.0.1:8545"),
+        transport: http(args.rpc ?? "http://127.0.0.1:8545"),
         account: privateKeyToAccount(process.env.PRIVATE_KEY as Hex),
       });
 
@@ -99,9 +111,9 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
           allowedSystemIds: system.accessListSystems.map((name) =>
             resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name })
           ),
+          address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
           bytecode: contractData.bytecode,
           abi: contractData.abi,
-          address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
           functions: systemFunctions,
         };
       });
@@ -128,12 +140,47 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
         };
       });
 
+      // ugh
+      const resolveContext = {
+        tableIds: Object.fromEntries(
+          Object.entries(config.tables).map(([tableName, table]) => [
+            tableName,
+            hexToBytes(
+              resourceToHex({
+                type: table.offchainOnly ? "offchainTable" : "table",
+                namespace: config.namespace,
+                name: table.name,
+              })
+            ),
+          ])
+        ),
+      };
+
+      const modules = config.modules.map((mod) => {
+        const contractData = getContractData(mod.name, outDir);
+        const installArgs = mod.args
+          .map((arg) => resolveWithContext(arg, resolveContext))
+          .map(({ type, value }) => encodePacked([type], [value]));
+        if (installArgs.length > 1) {
+          throw new Error(`${mod.name} module should only have 0-1 args, but had ${installArgs.length} args.`);
+        }
+        return {
+          name: mod.name,
+          installAsRoot: mod.root,
+          installData: installArgs.length === 0 ? "0x" : installArgs[0],
+          address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
+          bytecode: contractData.bytecode,
+          abi: contractData.abi,
+        };
+      });
+
       await deploy({
         worldAddress: args.worldAddress as Hex | undefined,
         client,
         config: {
           tables: configToTables(config),
           systems: systemsWithAccess,
+          modules,
         },
       });
     } catch (error: any) {

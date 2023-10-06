@@ -15,21 +15,21 @@ export type Table<
   config extends StoreConfig = StoreConfig,
   table extends config["tables"][keyof config["tables"]] = config["tables"][keyof config["tables"]]
 > = {
-  namespace: config["namespace"];
-  name: table["name"];
-  tableId: Hex;
+  readonly namespace: config["namespace"];
+  readonly name: table["name"];
+  readonly tableId: Hex;
   // TODO: support enums
-  keySchema: table["keySchema"] extends KeySchema<config["userTypes"]>
+  readonly keySchema: table["keySchema"] extends KeySchema<config["userTypes"]>
     ? KeySchema & {
-        [k in keyof table["keySchema"]]: config["userTypes"][table["keySchema"][k]]["internalType"] extends StaticAbiType
+        readonly [k in keyof table["keySchema"]]: config["userTypes"][table["keySchema"][k]]["internalType"] extends StaticAbiType
           ? config["userTypes"][table["keySchema"][k]]["internalType"]
           : table["keySchema"][k];
       }
     : KeySchema;
   // TODO: support enums
-  valueSchema: table["valueSchema"] extends ValueSchema<config["userTypes"]>
+  readonly valueSchema: table["valueSchema"] extends ValueSchema<config["userTypes"]>
     ? {
-        [k in keyof table["valueSchema"]]: config["userTypes"][table["valueSchema"][k]]["internalType"] extends SchemaAbiType
+        readonly [k in keyof table["valueSchema"]]: config["userTypes"][table["valueSchema"][k]]["internalType"] extends SchemaAbiType
           ? config["userTypes"][table["valueSchema"][k]]["internalType"]
           : table["valueSchema"][k];
       }
@@ -37,7 +37,7 @@ export type Table<
 };
 
 export type Tables<config extends StoreConfig = StoreConfig> = {
-  [k in keyof config["tables"] as TableKey<config, config["tables"][k]>]: Table<config, config["tables"][k]>;
+  readonly [k in keyof config["tables"] as TableKey<config, config["tables"][k]>]: Table<config, config["tables"][k]>;
 };
 
 export function configToTables<config extends StoreConfig>(config: config): Tables<config> {

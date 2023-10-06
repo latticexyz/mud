@@ -8,10 +8,10 @@ export default mudConfig({
       name: "increment",
       openAccess: true,
     },
-    // DoubleSystem: {
-    //   openAccess: false,
-    //   accessList: ["IncrementSystem"],
-    // },
+    DoubleSystem: {
+      openAccess: false,
+      accessList: ["IncrementSystem"],
+    },
   },
   excludeSystems: [
     // Until namespace overrides, this system must be manually deployed in PostDeploy

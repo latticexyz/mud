@@ -9,7 +9,7 @@ contract IncrementSystem is System {
 
   function increment() public returns (uint32) {
     uint32 counter = CounterTable.get();
-    uint32 newValue = counter + 1;
+    uint32 newValue = counter + 2;
     CounterTable.set(newValue);
     return newValue;
   }
