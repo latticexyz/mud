@@ -44,7 +44,6 @@ export type System = {
   systemId: Hex;
   allowAll: boolean;
   allowedAddresses: Hex[];
-  allowedSystemIds: string[];
   bytecode: Hex;
   abi: Abi;
   functions: WorldFunction[];
@@ -53,5 +52,5 @@ export type System = {
 export type ConfigInput = StoreConfig & WorldConfig;
 export type Config<config extends ConfigInput> = {
   tables: Tables<config>;
-  systems: Record<string, System>;
+  systems: System[];
 };

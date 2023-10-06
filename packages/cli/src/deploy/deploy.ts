@@ -8,6 +8,7 @@ import { waitForTransactionReceipt } from "viem/actions";
 import { getResourceIds } from "./getResourceIds";
 import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
+import { getResourceAccess } from "./getResourceAccess";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -29,6 +30,9 @@ export async function deploy<configInput extends ConfigInput>({
 
   // TODO: update RPC get calls to use `worldDeploy.toBlock` to align the block number everywhere
 
+  // TODO: check if there are any namespaces we don't have access to before attempting to register things on them
+  // TODO: check for and register namespaces? these are registered by default when registering tables/systems through the world
+
   const tableTxs = await ensureTables({
     client,
     worldDeploy,
@@ -44,6 +48,8 @@ export async function deploy<configInput extends ConfigInput>({
     worldDeploy,
     functions: Object.values(config.systems).flatMap((system) => system.functions),
   });
+
+  // TODO: install modules
 
   const receipts = await Promise.all(
     [...tableTxs, ...systemTxs, ...functionTxs].map((tx) => waitForTransactionReceipt(client, { hash: tx }))

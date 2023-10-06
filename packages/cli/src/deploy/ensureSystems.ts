@@ -1,10 +1,11 @@
 import { Client, Transport, Chain, Account, Hex, getAddress } from "viem";
-import { writeContract } from "@latticexyz/common";
+import { hexToResource, writeContract } from "@latticexyz/common";
 import { System, WorldDeploy, worldAbi } from "./common";
 import { ensureContract } from "./ensureContract";
 import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { getSystems } from "./getSystems";
+import { getResourceAccess } from "./getResourceAccess";
 
 export async function ensureSystems({
   client,
@@ -15,7 +16,61 @@ export async function ensureSystems({
   worldDeploy: WorldDeploy;
   systems: System[];
 }): Promise<Hex[]> {
-  const worldSystems = await getSystems({ client, worldDeploy });
+  const [worldSystems, worldAccess] = await Promise.all([
+    getSystems({ client, worldDeploy }),
+    getResourceAccess({ client, worldDeploy }),
+  ]);
+  const systemIds = systems.map((system) => system.systemId);
+  const currentAccess = worldAccess.filter(({ resourceId }) => systemIds.includes(resourceId));
+  const desiredAccess = systems.flatMap((system) =>
+    system.allowedAddresses.map((address) => ({ resourceId: system.systemId, address }))
+  );
+
+  const accessToAdd = desiredAccess.filter(
+    (access) =>
+      !currentAccess.some(
+        ({ resourceId, address }) =>
+          resourceId === access.resourceId && getAddress(address) === getAddress(access.address)
+      )
+  );
+
+  const accessToRemove = currentAccess.filter(
+    (access) =>
+      !desiredAccess.some(
+        ({ resourceId, address }) =>
+          resourceId === access.resourceId && getAddress(address) === getAddress(access.address)
+      )
+  );
+
+  // TODO: move each system access+registration to batch call to be atomic
+
+  if (accessToRemove.length) {
+    debug("revoking", accessToRemove.length, "access grants");
+  }
+  if (accessToAdd.length) {
+    debug("adding", accessToAdd.length, "access grants");
+  }
+
+  const accessTxs = await Promise.all([
+    ...accessToRemove.map((access) =>
+      writeContract(client, {
+        chain: client.chain ?? null,
+        address: worldDeploy.address,
+        abi: worldAbi,
+        functionName: "revokeAccess",
+        args: [access.resourceId, access.address],
+      })
+    ),
+    ...accessToAdd.map((access) =>
+      writeContract(client, {
+        chain: client.chain ?? null,
+        address: worldDeploy.address,
+        abi: worldAbi,
+        functionName: "grantAccess",
+        args: [access.resourceId, access.address],
+      })
+    ),
+  ]);
 
   const existing = systems.filter((system) =>
     worldSystems.find(
@@ -69,5 +124,5 @@ export async function ensureSystems({
     )
   );
 
-  return (await Promise.all([...contractTxs, ...registerTxs])).flat();
+  return (await Promise.all([...accessTxs, ...contractTxs, ...registerTxs])).flat();
 }

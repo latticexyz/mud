@@ -1,5 +1,4 @@
-import { getDuplicates, STORE_NAME_MAX_LENGTH, UnrecognizedSystemErrorFactory } from "@latticexyz/config";
-import { MUDError } from "@latticexyz/common/errors";
+import { STORE_NAME_MAX_LENGTH, UnrecognizedSystemErrorFactory } from "@latticexyz/config";
 import { StoreConfig } from "@latticexyz/store";
 import { SystemConfig, WorldConfig } from "./types";
 
