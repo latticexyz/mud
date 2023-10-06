@@ -5,7 +5,6 @@ import { ensureContract } from "./ensureContract";
 import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { getSystems } from "./getSystems";
-import { ensureSystemFunctions } from "./ensureSystemFunctions";
 
 export async function ensureSystems({
   client,
@@ -70,12 +69,5 @@ export async function ensureSystems({
     )
   );
 
-  // then register system functions
-  const functionTxs = await Promise.all(
-    missing.map((system) => ensureSystemFunctions({ client, worldDeploy, system }))
-  );
-
-  const txs = [...contractTxs, ...registerTxs, ...functionTxs];
-
-  return (await Promise.all(txs)).flat();
+  return (await Promise.all([...contractTxs, ...registerTxs])).flat();
 }

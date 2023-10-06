@@ -1,4 +1,4 @@
-import { Client, Hex, getFunctionSelector, parseAbiItem } from "viem";
+import { Client, getFunctionSelector, parseAbiItem } from "viem";
 import { WorldDeploy, WorldFunction, worldTables } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
@@ -6,8 +6,6 @@ import { getLogs } from "viem/actions";
 import { decodeValueArgs } from "@latticexyz/protocol-parser";
 import { getTableValue } from "./getTableValue";
 import { hexToResource } from "@latticexyz/common";
-
-console.log(worldTables);
 
 export async function getFunctions({
   client,
@@ -20,7 +18,7 @@ export async function getFunctions({
   debug("looking up function signatures for", worldDeploy.address);
   const logs = await getLogs(client, {
     strict: true,
-    fromBlock: worldDeploy.blockNumber,
+    fromBlock: worldDeploy.fromBlock,
     address: worldDeploy.address,
     event: parseAbiItem(storeSetRecordEvent),
     args: { tableId: worldTables.world_FunctionSignatures.tableId },

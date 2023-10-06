@@ -80,7 +80,7 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
             .filter((sig) => !baseSystemFunctions.includes(sig))
             .map((sig): WorldFunction => {
               // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
-              const worldSignature = namespace === "" ? `${namespace}_${name}_${sig}` : sig;
+              const worldSignature = namespace === "" ? sig : `${namespace}_${name}_${sig}`;
               return {
                 signature: worldSignature,
                 selector: getFunctionSelector(worldSignature),
@@ -110,6 +110,7 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
         })
       );
       await deploy({
+        worldAddress: args.worldAddress as Hex | undefined,
         client,
         config: {
           tables: configToTables(config),

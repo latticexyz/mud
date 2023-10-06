@@ -7,6 +7,7 @@ import { ensureSystems } from "./ensureSystems";
 import { waitForTransactionReceipt } from "viem/actions";
 import { getResourceIds } from "./getResourceIds";
 import { getWorldDeploy } from "./getWorldDeploy";
+import { ensureFunctions } from "./ensureFunctions";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -26,6 +27,8 @@ export async function deploy<configInput extends ConfigInput>({
     : await deployWorld(client);
   // TODO: check that world/store versions are compatible with our deploy
 
+  // TODO: update RPC get calls to use `worldDeploy.toBlock` to align the block number everywhere
+
   const tableTxs = await ensureTables({
     client,
     worldDeploy,
@@ -36,9 +39,13 @@ export async function deploy<configInput extends ConfigInput>({
     worldDeploy,
     systems: Object.values(config.systems),
   });
+  const functionTxs = await ensureFunctions({
+    client,
+    worldDeploy,
+    functions: Object.values(config.systems).flatMap((system) => system.functions),
+  });
 
   const receipts = await Promise.all(
-    [...tableTxs, ...systemTxs].map((tx) => waitForTransactionReceipt(client, { hash: tx }))
+    [...tableTxs, ...systemTxs, ...functionTxs].map((tx) => waitForTransactionReceipt(client, { hash: tx }))
   );
-  // console.log(config);
 }

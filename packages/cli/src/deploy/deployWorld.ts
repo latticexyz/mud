@@ -37,7 +37,7 @@ export async function deployWorld(client: Client<Transport, Chain | undefined, A
 
   // TODO: fix receipt log type in viem to not be pending
   const deploy = logsToWorldDeploy(receipt.logs.map((log) => log as Log<bigint, number, false>));
-  debug("deployed world to", deploy.address, "at block", deploy.blockNumber);
+  debug("deployed world to", deploy.address, "at block", deploy.fromBlock);
 
-  return deploy;
+  return { ...deploy, toBlock: deploy.fromBlock };
 }

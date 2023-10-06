@@ -23,7 +23,10 @@ export type WorldDeploy = {
   address: Address;
   worldVersion: string;
   storeVersion: string;
-  blockNumber: bigint;
+  /** Block number where the world was deployed */
+  fromBlock: bigint;
+  /** Block number at the time of fetching world deploy, to keep further queries aligned to the same block number */
+  toBlock: bigint;
 };
 
 export type WorldFunction = {
