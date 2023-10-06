@@ -17,20 +17,32 @@ type ConfigResolver = <TConfigInput extends ConfigInput>(configInput: TConfigInp
 
 // ----
 
-type PluginA = <TConfigInput extends ConfigInput>(
-  configInput: TConfigInput
-) => TConfigInput & { resolvedA: `${TConfigInput["name"]}-A` };
+type PluginAOutput<TConfigInput extends ConfigInput> = {
+  resolvedA: `${TConfigInput["name"]}-A`;
+};
 
-type PluginB = <TConfigInput extends ConfigInput>(
+const PluginA = (<TConfigInput extends ConfigInput>(
   configInput: TConfigInput
-) => TConfigInput & { resolvedB: `${TConfigInput["name"]}-B` };
+): TConfigInput & PluginAOutput<TConfigInput> => {
+  return { ...configInput, resolvedA: `${configInput.name}-A` };
+}) satisfies ConfigResolver;
+
+type PluginBOutput<TConfigInput extends ConfigInput> = {
+  resolvedB: `${TConfigInput["name"]}-B`;
+};
+
+const PluginB = (<TConfigInput extends ConfigInput>(
+  configInput: TConfigInput
+): PluginBOutput<TConfigInput> & TConfigInput => {
+  return { ...configInput, resolvedB: `${configInput.name}-B` };
+}) satisfies ConfigResolver;
 
 const config = { name: "name", tables: {} } as const satisfies ConfigInput;
 
-const pluginA = {} as PluginA;
-const pluginB = {} as PluginB;
+const resolved = PluginA(PluginB(config));
 
-const resolved2 = pluginA(pluginB(config));
-
-resolved2.resolvedA;
+resolved.resolvedA;
 //        ^?
+
+resolved.resolvedB;
+//       ^?
