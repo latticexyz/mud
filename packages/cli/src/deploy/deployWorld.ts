@@ -10,7 +10,7 @@ import {
   formatLog,
 } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
-import { ensureWorldFactory, worldFactory } from "./worldFactory";
+import { ensureWorldFactory, worldFactory } from "./ensureWorldFactory";
 import WorldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
 import { writeContract } from "@latticexyz/common";
 import { debug } from "./debug";

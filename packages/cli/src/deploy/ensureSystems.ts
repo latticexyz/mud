@@ -51,7 +51,9 @@ export async function ensureSystems({
 
   // kick off contract deployments first, otherwise registering systems can fail
   const contractTxs = await Promise.all(
-    missing.map((system) => ensureContract(client, system.bytecode, `${resourceLabel(system)} system`))
+    missing.map((system) =>
+      ensureContract({ client, bytecode: system.bytecode, label: `${resourceLabel(system)} system` })
+    )
   );
 
   // then start registering systems

@@ -1,15 +1,19 @@
 import { Client, Transport, Chain, Account, concatHex, getCreate2Address, Hex } from "viem";
 import { getBytecode } from "viem/actions";
-import { deployer } from "./deployer";
+import { deployer } from "./ensureDeployer";
 import { salt } from "./common";
 import { sendTransaction } from "@latticexyz/common";
 import { debug } from "./debug";
 
-export async function ensureContract(
-  client: Client<Transport, Chain | undefined, Account>,
-  bytecode: Hex,
-  label = "contract"
-): Promise<Hex[]> {
+export async function ensureContract({
+  client,
+  bytecode,
+  label = "contract",
+}: {
+  client: Client<Transport, Chain | undefined, Account>;
+  bytecode: Hex;
+  label?: string;
+}): Promise<Hex[]> {
   const address = getCreate2Address({ from: deployer, salt, bytecode });
 
   const contractCode = await getBytecode(client, { address, blockTag: "pending" });

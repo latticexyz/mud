@@ -15,7 +15,7 @@ import { resourceToHex } from "@latticexyz/common";
 import glob from "glob";
 import { basename } from "path";
 import { getContractData } from "../utils/utils/getContractData";
-import { deployer } from "../deploy/deployer";
+import { deployer } from "../deploy/ensureDeployer";
 import { getRegisterFunctionSelectorsCallData } from "../utils/systems/getRegisterFunctionSelectorsCallData";
 import { loadFunctionSignatures } from "../utils/systems/utils";
 

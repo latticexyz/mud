@@ -1,5 +1,5 @@
 import { Account, Address, Chain, Client, Transport } from "viem";
-import { ensureDeployer } from "./deployer";
+import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
 import { Config, ConfigInput } from "./common";

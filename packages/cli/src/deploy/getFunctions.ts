@@ -7,6 +7,8 @@ import { decodeValueArgs } from "@latticexyz/protocol-parser";
 import { getTableValue } from "./getTableValue";
 import { hexToResource } from "@latticexyz/common";
 
+console.log(worldTables);
+
 export async function getFunctions({
   client,
   worldDeploy,

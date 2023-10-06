@@ -42,8 +42,8 @@ export type Tables<config extends StoreConfig = StoreConfig> = {
 
 export function configToTables<config extends StoreConfig>(config: config): Tables<config> {
   return Object.fromEntries(
-    Object.values(config.tables).map((table) => [
-      `${config.namespace}_${table.name}` satisfies TableKey<config, config["tables"][keyof config["tables"]]>,
+    Object.entries(config.tables).map(([tableName, table]) => [
+      `${config.namespace}_${tableName}` satisfies TableKey<config, config["tables"][keyof config["tables"]]>,
       {
         namespace: config.namespace,
         name: table.name,

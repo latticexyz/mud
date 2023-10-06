@@ -38,6 +38,7 @@ export async function writeContract<
   const nonceManager = await getNonceManager({
     client,
     address: account.address,
+    blockTag: "pending",
   });
 
   async function prepareWrite(): Promise<
