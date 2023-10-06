@@ -90,14 +90,14 @@ First let's make sure the client is being initialized properly in `PostDeploy.s.
 
 <CollapseCode>
 
-```solidity filename="PostDeploy.s.sol" {7,61-64} copy showLineNumbers
+```solidity filename="packages/contracts/scripts/PostDeploy.s.sol" {7,61-64} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { EncounterTrigger, MapConfig, Obstruction, Position } from "../src/codegen/Tables.sol";
+import { EncounterTrigger, MapConfig, Obstruction, Position } from "../src/codegen/index.sol";
 import { TerrainType } from "../src/codegen/Types.sol";
 import { positionToEntityKey } from "../src/positionToEntityKey.sol";
 
@@ -171,11 +171,12 @@ Then let's update the `spawn` method in `MapSystem.sol` to include the `Encounte
 
 <CollapseCode>
 
-```solidity filename="MapSystem.sol" {4,24} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5-6,26} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
+
 import { System } from "@latticexyz/world/src/System.sol";
-import { Encounterable, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { Encounterable, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 import { positionToEntityKey } from "../positionToEntityKey.sol";
 
@@ -198,17 +199,21 @@ contract MapSystem is System {
     Encounterable.set(player, true);
   }
 
-  function move(uint32 x, uint32 y) public {
+  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
     bytes32 player = addressToEntityKey(_msgSender());
     require(Movable.get(player), "cannot move");
 
     (uint32 fromX, uint32 fromY) = Position.get(player);
-    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
+    require(clientX == fromX && clientY == fromY, "client confused about location");
 
     // Constrain position to map size, wrapping around if necessary
+    // Also, by adding width and height, avoid negative numbers,
+    // which uint32 does not support.
     (uint32 width, uint32 height, ) = MapConfig.get();
-    x = (x + width) % width;
-    y = (y + height) % height;
+
+    uint32 x = uint32(int32(fromX) + deltaX + int32(width)) % width;
+    uint32 y = uint32(int32(fromY) + deltaY + int32(height)) % height;
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
@@ -216,19 +221,17 @@ contract MapSystem is System {
     Position.set(player, x, y);
   }
 
-  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
-    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
-    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
-    return deltaX + deltaY;
+  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
+    return uint32(deltaX * deltaX + deltaY * deltaY);
   }
 }
 ```
 
 </CollapseCode>
 
-Now that tall grass is an encounter trigger, we can query for an encounter trigger as we move to a new position. We'll update the `MapSystem` to handle this and also stub out a `startEncounter` method for starting an encounter and spawning a monster.
+Now that tall grass is an encounter trigger, we can query for an encounter trigger as we move to a new position. We'll update the `MapSystem` to handle this.
 
-At this point we would ideally like to implement an element of randomness for triggering encounters in tall grass. However, due to the deterministic nature of blockchains and EVM applications, true randomness is not currently possible. **For the sake of this tutorial we will be leaving this as deterministic.**
+At this point we would ideally like to implement an element of randomness for triggering encounters in tall grass. However, due to the deterministic nature of blockchains and EVM applications, true randomness is not currently possible. _For the purpose of this tutorial we will be leaving this as deterministic._
 
 <Aside emoji="ℹ️">
   If you're interested in generating somewhat robust randomness in your application, you can look into [Chainlink
@@ -237,11 +240,12 @@ At this point we would ideally like to implement an element of randomness for tr
 
 <CollapseCode>
 
-```solidity filename="MapSystem.sol" {4,44-49,58-60} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5-6,26} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
+
 import { System } from "@latticexyz/world/src/System.sol";
-import { Encounterable, EncounterTrigger, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { Encounterable, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 import { positionToEntityKey } from "../positionToEntityKey.sol";
 
@@ -264,39 +268,30 @@ contract MapSystem is System {
     Encounterable.set(player, true);
   }
 
-  function move(uint32 x, uint32 y) public {
+  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
     bytes32 player = addressToEntityKey(_msgSender());
     require(Movable.get(player), "cannot move");
 
     (uint32 fromX, uint32 fromY) = Position.get(player);
-    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
+    require(clientX == fromX && clientY == fromY, "client confused about location");
 
     // Constrain position to map size, wrapping around if necessary
+    // Also, by adding width and height, avoid negative numbers,
+    // which uint32 does not support.
     (uint32 width, uint32 height, ) = MapConfig.get();
-    x = (x + width) % width;
-    y = (y + height) % height;
+
+    uint32 x = uint32(int32(fromX) + deltaX + int32(width)) % width;
+    uint32 y = uint32(int32(fromY) + deltaY + int32(height)) % height;
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
 
     Position.set(player, x, y);
-
-    if (Encounterable.get(player) && EncounterTrigger.get(position)) {
-      uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.difficulty)));
-      if (rand % 5 == 0) {
-        startEncounter(player);
-      }
-    }
   }
 
-  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
-    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
-    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
-    return deltaX + deltaY;
-  }
-
-  function startEncounter(bytes32 player) internal {
-    // TODO: spawn monster
+  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
+    return uint32(deltaX * deltaX + deltaY * deltaY);
   }
 }
 ```
@@ -307,11 +302,12 @@ Now that we have all of the encounter logic setup we just want to take the last 
 
 <CollapseCode>
 
-```solidity filename="MapSystem.sol" {4,31} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5-7,33} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
+
 import { System } from "@latticexyz/world/src/System.sol";
-import { Encounter, Encounterable, EncounterTrigger, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { Encounter, Encounterable, EncounterTrigger, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 import { positionToEntityKey } from "../positionToEntityKey.sol";
 
@@ -334,46 +330,38 @@ contract MapSystem is System {
     Encounterable.set(player, true);
   }
 
-  function move(uint32 x, uint32 y) public {
+  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
     bytes32 player = addressToEntityKey(_msgSender());
     require(Movable.get(player), "cannot move");
-
     require(!Encounter.getExists(player), "cannot move during an encounter");
 
     (uint32 fromX, uint32 fromY) = Position.get(player);
-    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
+    require(clientX == fromX && clientY == fromY, "client confused about location");
 
     // Constrain position to map size, wrapping around if necessary
+    // Also, by adding width and height, avoid negative numbers,
+    // which uint32 does not support.
     (uint32 width, uint32 height, ) = MapConfig.get();
-    x = (x + width) % width;
-    y = (y + height) % height;
+
+    uint32 x = uint32(int32(fromX) + deltaX + int32(width)) % width;
+    uint32 y = uint32(int32(fromY) + deltaY + int32(height)) % height;
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
 
     Position.set(player, x, y);
-
-    if (Encounterable.get(player) && EncounterTrigger.get(position)) {
-      uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.difficulty)));
-      if (rand % 5 == 0) {
-        startEncounter(player);
-      }
-    }
   }
 
-  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
-    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
-    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
-    return deltaX + deltaY;
-  }
-
-  function startEncounter(bytes32 player) internal {
-    // TODO: spawn monster
+  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
+    return uint32(deltaX * deltaX + deltaY * deltaY);
   }
 }
 ```
 
 </CollapseCode>
+
+GOON
 
 Let's also make sure these interactions are rendering optimistically like everything else. Let's update `createSystemCalls.ts` accordingly.
 
