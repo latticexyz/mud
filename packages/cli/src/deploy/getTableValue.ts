@@ -10,10 +10,10 @@ export async function getTableValue<table extends Table>({
   table,
   key,
 }: {
-  client: Client;
-  worldDeploy: WorldDeploy;
-  table: table;
-  key: SchemaToPrimitives<table["keySchema"]>;
+  readonly client: Client;
+  readonly worldDeploy: WorldDeploy;
+  readonly table: table;
+  readonly key: SchemaToPrimitives<table["keySchema"]>;
 }): Promise<SchemaToPrimitives<table["valueSchema"]>> {
   const [staticData, encodedLengths, dynamicData] = await readContract(client, {
     address: worldDeploy.address,

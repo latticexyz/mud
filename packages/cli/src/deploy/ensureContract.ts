@@ -10,10 +10,10 @@ export async function ensureContract({
   bytecode,
   label = "contract",
 }: {
-  client: Client<Transport, Chain | undefined, Account>;
-  bytecode: Hex;
-  label?: string;
-}): Promise<Hex[]> {
+  readonly client: Client<Transport, Chain | undefined, Account>;
+  readonly bytecode: Hex;
+  readonly label?: string;
+}): Promise<readonly Hex[]> {
   const address = getCreate2Address({ from: deployer, salt, bytecode });
 
   const contractCode = await getBytecode(client, { address, blockTag: "pending" });

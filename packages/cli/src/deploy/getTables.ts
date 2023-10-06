@@ -11,9 +11,9 @@ export async function getTables({
   client,
   worldDeploy,
 }: {
-  client: Client;
-  worldDeploy: WorldDeploy;
-}): Promise<Table[]> {
+  readonly client: Client;
+  readonly worldDeploy: WorldDeploy;
+}): Promise<readonly Table[]> {
   // This assumes we only use `Tables._set(...)`, which is true as of this writing.
   // TODO: PR to viem's getLogs to accept topics array so we can filter on all store events and quickly recreate this table's current state
   // TODO: consider moving this to a batched getRecord for Tables table

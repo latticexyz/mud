@@ -2,7 +2,7 @@ import { AbiEventSignatureNotFoundError, Log, decodeEventLog, hexToString, parse
 import { WorldDeploy, helloStoreEvent, helloWorldEvent } from "./common";
 import { isDefined } from "@latticexyz/common/utils";
 
-export function logsToWorldDeploy(logs: Log<bigint, number, false>[]): Omit<WorldDeploy, "toBlock"> {
+export function logsToWorldDeploy(logs: readonly Log<bigint, number, false>[]): Omit<WorldDeploy, "toBlock"> {
   const deployLogs = logs
     .map((log) => {
       try {

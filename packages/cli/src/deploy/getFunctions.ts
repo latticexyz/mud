@@ -11,9 +11,9 @@ export async function getFunctions({
   client,
   worldDeploy,
 }: {
-  client: Client;
-  worldDeploy: WorldDeploy;
-}): Promise<WorldFunction[]> {
+  readonly client: Client;
+  readonly worldDeploy: WorldDeploy;
+}): Promise<readonly WorldFunction[]> {
   // This assumes we only use `FunctionSelectors._set(...)`, which is true as of this writing.
   debug("looking up function signatures for", worldDeploy.address);
   const logs = await getLogs(client, {

@@ -12,10 +12,10 @@ export async function ensureTables({
   worldDeploy,
   tables,
 }: {
-  client: Client<Transport, Chain | undefined, Account>;
-  worldDeploy: WorldDeploy;
-  tables: Table[];
-}): Promise<Hex[]> {
+  readonly client: Client<Transport, Chain | undefined, Account>;
+  readonly worldDeploy: WorldDeploy;
+  readonly tables: Table[];
+}): Promise<readonly Hex[]> {
   const worldTables = await getTables({ client, worldDeploy });
   const worldTableIds = worldTables.map((table) => table.tableId);
 

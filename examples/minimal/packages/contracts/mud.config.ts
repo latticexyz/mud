@@ -41,12 +41,11 @@ export default mudConfig({
       valueSchema: { amount: "uint32" },
     },
   },
-  // KeysWithValue doesn't seem to like singleton keys
-  // modules: [
-  //   {
-  //     name: "KeysWithValueModule",
-  //     root: true,
-  //     args: [resolveTableId("CounterTable")],
-  //   },
-  // ],
+  modules: [
+    {
+      name: "KeysWithValueModule",
+      root: true,
+      args: [resolveTableId("Inventory")],
+    },
+  ],
 });

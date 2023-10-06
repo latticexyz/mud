@@ -20,7 +20,9 @@ const worldFactoryBytecode = encodeDeployData({
 
 export const worldFactory = getCreate2Address({ from: deployer, bytecode: worldFactoryBytecode, salt });
 
-export async function ensureWorldFactory(client: Client<Transport, Chain | undefined, Account>): Promise<Hex[]> {
+export async function ensureWorldFactory(
+  client: Client<Transport, Chain | undefined, Account>
+): Promise<readonly Hex[]> {
   // WorldFactory constructor doesn't call CoreModule, only sets its address, so we can do these in parallel since the address is deterministic
   return (
     await Promise.all([

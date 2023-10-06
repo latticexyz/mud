@@ -11,9 +11,9 @@ export async function getSystems({
   client,
   worldDeploy,
 }: {
-  client: Client;
-  worldDeploy: WorldDeploy;
-}): Promise<System[]> {
+  readonly client: Client;
+  readonly worldDeploy: WorldDeploy;
+}): Promise<readonly System[]> {
   const resourceIds = await getResourceIds({ client, worldDeploy });
   const functions = await getFunctions({ client, worldDeploy });
   const systems = resourceIds.map(hexToResource).filter((resource) => resource.type === "system");

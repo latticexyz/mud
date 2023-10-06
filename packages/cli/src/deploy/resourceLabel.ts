@@ -1,3 +1,3 @@
-export function resourceLabel({ namespace, name }: { namespace: string; name: string }): string {
+export function resourceLabel({ namespace, name }: { readonly namespace: string; readonly name: string }): string {
   return `${namespace}:${name}`;
 }

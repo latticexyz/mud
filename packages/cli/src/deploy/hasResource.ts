@@ -8,9 +8,9 @@ export async function hasResource({
   worldAddress,
   resourceId,
 }: {
-  client: Client;
-  worldAddress: Address;
-  resourceId: Hex;
+  readonly client: Client;
+  readonly worldAddress: Address;
+  readonly resourceId: Hex;
 }): Promise<boolean> {
   const [staticData, encodedLengths, dynamicData] = await readContract(client, {
     address: worldAddress,

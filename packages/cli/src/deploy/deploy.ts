@@ -9,6 +9,7 @@ import { getResourceIds } from "./getResourceIds";
 import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { getResourceAccess } from "./getResourceAccess";
+import { ensureModules } from "./ensureModules";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -48,10 +49,15 @@ export async function deploy<configInput extends ConfigInput>({
     worldDeploy,
     functions: Object.values(config.systems).flatMap((system) => system.functions),
   });
-
-  // TODO: install modules
+  const moduleTxs = await ensureModules({
+    client,
+    worldDeploy,
+    modules: config.modules,
+  });
 
   const receipts = await Promise.all(
-    [...tableTxs, ...systemTxs, ...functionTxs].map((tx) => waitForTransactionReceipt(client, { hash: tx }))
+    [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs].map((tx) =>
+      waitForTransactionReceipt(client, { hash: tx })
+    )
   );
 }

@@ -13,6 +13,7 @@ import {
   hexToBytes,
   encodeAbiParameters,
   encodePacked,
+  bytesToHex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
@@ -31,6 +32,10 @@ import { getRegisterFunctionSelectorsCallData } from "../utils/systems/getRegist
 import { loadFunctionSignatures } from "../utils/systems/utils";
 import { resourceLabel } from "../deploy/resourceLabel";
 import { resolveWithContext } from "@latticexyz/config";
+import { defaultModuleContracts } from "../utils/modules/constants";
+import { encodeField } from "@latticexyz/protocol-parser";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { SchemaTypeToPrimitiveType } from "@latticexyz/schema-type/deprecated";
 
 // TODO: redo options
 export const yDeployOptions = {
@@ -156,11 +161,21 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
         ),
       };
 
+      const defaultModules = defaultModuleContracts.map((mod) => ({
+        name: mod.name,
+        bytecode: (typeof mod.bytecode === "string" ? mod.bytecode : mod.bytecode.object) as Hex,
+        abi: mod.abi as Abi,
+      }));
+
       const modules = config.modules.map((mod) => {
-        const contractData = getContractData(mod.name, outDir);
+        const contractData =
+          defaultModules.find((defaultMod) => defaultMod.name === mod.name) ?? getContractData(mod.name, outDir);
         const installArgs = mod.args
           .map((arg) => resolveWithContext(arg, resolveContext))
-          .map(({ type, value }) => encodePacked([type], [value]));
+          .map((arg) => {
+            const value = arg.value instanceof Uint8Array ? bytesToHex(arg.value) : arg.value;
+            return encodeField(arg.type as SchemaAbiType, value as SchemaAbiTypeToPrimitiveType<SchemaAbiType>);
+          });
         if (installArgs.length > 1) {
           throw new Error(`${mod.name} module should only have 0-1 args, but had ${installArgs.length} args.`);
         }

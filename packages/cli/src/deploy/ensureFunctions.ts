@@ -9,10 +9,10 @@ export async function ensureFunctions({
   worldDeploy,
   functions,
 }: {
-  client: Client<Transport, Chain | undefined, Account>;
-  worldDeploy: WorldDeploy;
-  functions: WorldFunction[];
-}): Promise<Hex[]> {
+  readonly client: Client<Transport, Chain | undefined, Account>;
+  readonly worldDeploy: WorldDeploy;
+  readonly functions: readonly WorldFunction[];
+}): Promise<readonly Hex[]> {
   const worldFunctions = await getFunctions({ client, worldDeploy });
   const worldSelectorToFunction = Object.fromEntries(worldFunctions.map((func) => [func.selector, func]));
 

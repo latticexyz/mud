@@ -12,10 +12,10 @@ export async function ensureSystems({
   worldDeploy,
   systems,
 }: {
-  client: Client<Transport, Chain | undefined, Account>;
-  worldDeploy: WorldDeploy;
-  systems: System[];
-}): Promise<Hex[]> {
+  readonly client: Client<Transport, Chain | undefined, Account>;
+  readonly worldDeploy: WorldDeploy;
+  readonly systems: readonly System[];
+}): Promise<readonly Hex[]> {
   const [worldSystems, worldAccess] = await Promise.all([
     getSystems({ client, worldDeploy }),
     getResourceAccess({ client, worldDeploy }),

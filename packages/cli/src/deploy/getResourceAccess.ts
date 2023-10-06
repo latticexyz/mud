@@ -10,9 +10,9 @@ export async function getResourceAccess({
   client,
   worldDeploy,
 }: {
-  client: Client;
-  worldDeploy: WorldDeploy;
-}): Promise<{ resourceId: Hex; address: Address }[]> {
+  readonly client: Client;
+  readonly worldDeploy: WorldDeploy;
+}): Promise<readonly { readonly resourceId: Hex; readonly address: Address }[]> {
   // This assumes we only use `ResourceAccess._set(...)`, which is true as of this writing.
   // TODO: PR to viem's getLogs to accept topics array so we can filter on all store events and quickly recreate this table's current state
 
