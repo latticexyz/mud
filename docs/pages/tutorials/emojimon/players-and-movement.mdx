@@ -245,7 +245,7 @@ We’ll fill in the `moveBy` and `spawn` methods in our client’s `createSystem
 
 <CollapseCode>
 
-```tsx filename="packages/client/src/mud/createSystemCalls.ts" {10,13-46} copy showLineNumbers
+```tsx filename="packages/client/src/mud/createSystemCalls.ts" {10,12-46} copy showLineNumbers
 import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
 import { uuid } from "@latticexyz/utils";
 import { ClientComponents } from "./createClientComponents";
@@ -459,7 +459,6 @@ export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
   { Player, Position }: ClientComponents
 ) {
-
   const moveBy = async (deltaX: number, deltaY: number) => {
     if (!playerEntity) {
       throw new Error("no player");
@@ -481,8 +480,7 @@ export function createSystemCalls(
     });
 
     try {
-      const tx = await worldContract.write.moveBy([playerPosition.x playerPosition.y,
-        deltaX, deltaY]);
+      const tx = await worldContract.write.moveBy([playerPosition.x, playerPosition.y, deltaX, deltaY]);
       await waitForTransaction(tx);
     } finally {
       Position.removeOverride(positionId);
@@ -551,7 +549,7 @@ Overrides have an identifier that allows for them to be deleted when no longer n
 
 ```ts
     try {
-      const tx = await worldContract.write.moveBy([playerPosition.x playerPosition.y,
+      const tx = await worldContract.write.moveBy([playerPosition.x, playerPosition.y,
         deltaX, deltaY]);
       await waitForTransaction(tx);
 ```

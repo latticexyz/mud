@@ -1,18 +1,23 @@
 import { Aside } from "../../../components/Aside";
 import { CollapseCode } from "../../../components/CollapseCode";
 
-# 3. A wild Emojimon appears
+# A wild Emojimon appears
 
 To bring this all together we will now add the ability to generate encounters on tall grass in which the user can either capture the emojimon or flee the encounter.
 
-Adding encounters and all of their functionality will serve as a review of all the concepts we've learned so far: creating **tables** (i.e. components), creating and calling **systems**, **optimistic rendering** in the client, and client and contract **queries**.
+Adding encounters and all of their functionality will serve as a review of all the concepts we've learned so far:
 
-**In order to do so we will add the following features:**
+- Creating _tables_ (i.e. components),
+- Creating and calling _systems_,
+- _Optimistic rendering_ in the client
+- Client and contract _queries_.
+
+We will add the following features:
 
 1. Trigger encounters when players walk in tall grass
-2. Spawn monsters (i.e. emojimon) into the encounter
-3. Allow players to capture emojimon
-4. Allow players to flee encounters
+1. Spawn monsters (i.e. emojimon) into the encounter
+1. Allow players to capture emojimon
+1. Allow players to flee encounters
 
 <Aside emoji="💡">
   **ECS mental model**: In order to trigger encounters we need to recognize when a player (an entity that can enter
@@ -24,7 +29,7 @@ Adding encounters and all of their functionality will serve as a review of all t
 
 Before continuing, try figuring out what components and systems would need to be added to get the build all these features. You could even try building them—we've already taught you all that is needed (and you can view the gif in the [Introduction](/tutorials/emojimon) as a reference).
 
-## 3.1. Enable tall grass to trigger encounters
+## Enable tall grass to trigger encounters
 
 Let's start by adding three new tables to `mud.config.ts`.
 

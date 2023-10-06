@@ -378,7 +378,7 @@ Because we are changing `MapSystem.sol`, the `pnpm dev` process will redeploy th
 
 <CollapseCode>
 
-```solidity filename="packages/contracts/src/systems/MapSystem.sol" {7,14-15,29-30} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {7,14-15,30-34} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
@@ -429,7 +429,7 @@ Lastly, let's ensure these interactions are optimistically rendering in the `cre
 
 <CollapseCode>
 
-```ts filename="packages/client/src/mud/createSystemCalls.ts" {11,13-15,22-25,65-68} copy showLineNumbers
+```ts filename="packages/client/src/mud/createSystemCalls.ts" {11,13-15,31-32,60-61} copy showLineNumbers
 import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
@@ -446,30 +446,6 @@ export function createSystemCalls(
     return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
   };
 
-  const moveTo = async (x: number, y: number) => {
-    if (!playerEntity) {
-      throw new Error("no player");
-    }
-
-    if (isObstructed(x, y)) {
-      console.warn("cannot move to obstructed space");
-      return;
-    }
-
-    const positionId = uuid();
-    Position.addOverride(positionId, {
-      entity: playerEntity,
-      value: { x, y },
-    });
-
-    try {
-      const tx = await worldContract.write.move([x, y]);
-      await waitForTransaction(tx);
-    } finally {
-      Position.removeOverride(positionId);
-    }
-  };
-
   const moveBy = async (deltaX: number, deltaY: number) => {
     if (!playerEntity) {
       throw new Error("no player");
@@ -481,9 +457,23 @@ export function createSystemCalls(
       return;
     }
 
-    const tx = await worldContract.write.moveBy([playerPosition.x, playerPosition.y, deltaX, deltaY]);
+    const newX = playerPosition.x + deltaX;
+    const newY = playerPosition.y + deltaY;
 
-    await waitForTransaction(tx);
+    if (isObstructed(newX, newY)) throw new Error("cannot go into an obstructed space");
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x: newX, y: newY },
+    });
+
+    try {
+      const tx = await worldContract.write.moveBy([playerPosition.x, playerPosition.y, deltaX, deltaY]);
+      await waitForTransaction(tx);
+    } finally {
+      Position.removeOverride(positionId);
+    }
   };
 
   const spawn = async (x: number, y: number) => {
@@ -496,10 +486,7 @@ export function createSystemCalls(
       throw new Error("already spawned");
     }
 
-    if (isObstructed(x, y)) {
-      console.warn("cannot spawn on obstructed space");
-      return;
-    }
+    if (isObstructed(x, y)) throw new Error("cannot go into an obstructed space");
 
     const positionId = uuid();
     Position.addOverride(positionId, {
@@ -521,22 +508,9 @@ export function createSystemCalls(
     }
   };
 
-  const throwBall = async () => {
-    // TODO
-    return null as any;
-  };
-
-  const fleeEncounter = async () => {
-    // TODO
-    return null as any;
-  };
-
   return {
-    moveTo,
     moveBy,
     spawn,
-    throwBall,
-    fleeEncounter,
   };
 }
 ```
@@ -556,12 +530,15 @@ const isObstructed = (x: number, y: number) => {
 Here we run [a query](https://mud.dev/world/querying) that looks for all the entities that have `Obstruction` set to `true`, and whose entity ID is the one for the terrain in `(x,y)`.
 If there are any then this space is obstructed.
 
-Note that this function is not the most efficient possibility.
+This function is not the most efficient possibility.
 In theory we could have created a TypeScript version of [`positionToEntityKey`](https://github.com/latticexyz/emojimon/blob/main/packages/contracts/src/positionToEntityKey.sol#L4) and used that to check if the specific entity for the location where the player wishes to go is obstructed.
 
 While this could have been more efficient, it would have made future development harder.
 In the future we might have mobile obstructions, for example trolls that walk around the map randomly.
 If we use a query, then as soon as we provide those entites with `Obstruction` and `Position` they'll start obstructing the player.
+
+Processing power on the client is usually cheap and abundant, because most client devices spend most of their time waiting for input to act upon.
+The expensive resource we need to optimize for is processing on the blockchain, a.k.a. [gas](https://ethereum.org/en/developers/docs/gas/).
 
 </details>
 
@@ -571,11 +548,11 @@ Now if you try moving onto a tile with a boulder you’ll see that you can’t!
 
 You may notice two quirks of the way we've implemented movement so far—players can move off of the bounds of the map and they may move more than one space at a time by clicking. We're going to fix those with some changes to systems and methods.
 
-We'll address this by updating the `spawn` and `move` methods in `MapSystem.sol` to wrap the player coordinate around the map size.
+We'll address this by updating the `spawn` and `moveTo` methods in `MapSystem.sol` to wrap the player coordinate around the map size.
 
 <CollapseCode>
 
-```solidity filename="packages/contracts/src/systems/MapSystem.sol" {14-17,34-37} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {14-17,35-41} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
@@ -602,17 +579,21 @@ contract MapSystem is System {
     Movable.set(player, true);
   }
 
-  function move(uint32 x, uint32 y) public {
+  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
     bytes32 player = addressToEntityKey(_msgSender());
     require(Movable.get(player), "cannot move");
 
     (uint32 fromX, uint32 fromY) = Position.get(player);
-    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
+    require(clientX == fromX && clientY == fromY, "client confused about location");
 
     // Constrain position to map size, wrapping around if necessary
+    // Also, by adding width and height, avoid negative numbers,
+    // which uint32 does not support.
     (uint32 width, uint32 height, ) = MapConfig.get();
-    x = (x + width) % width;
-    y = (y + height) % height;
+
+    uint32 x = uint32(int32(fromX) + deltaX + int32(width)) % width;
+    uint32 y = uint32(int32(fromY) + deltaY + int32(height)) % height;
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
@@ -620,10 +601,8 @@ contract MapSystem is System {
     Position.set(player, x, y);
   }
 
-  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
-    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
-    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
-    return deltaX + deltaY;
+  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
+    return uint32(deltaX * deltaX + deltaY * deltaY);
   }
 }
 ```
@@ -634,8 +613,7 @@ Let’s go back to `createSystemCalls.ts` to make sure these are rendering optim
 
 <CollapseCode>
 
-```ts filename="createSystemCalls.ts" {14-23,29,34-38,68,78-82} copy showLineNumbers
-qbzzt@Oris-MacBook-Pro emojimon % cat packages/client/src/mud/createSystemCalls.ts
+```ts filename="createSystemCalls.ts" {13-22,39-41,62} copy showLineNumbers
 import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
@@ -653,39 +631,11 @@ export function createSystemCalls(
     if (!mapConfig) {
       throw new Error("mapConfig no yet loaded or initialized");
     }
-    return [
-      (x + mapConfig.width) % mapConfig.width,
-      (y + mapConfig.height) % mapConfig.height,
-    ];
+    return [(x + mapConfig.width) % mapConfig.width, (y + mapConfig.height) % mapConfig.height];
   };
 
   const isObstructed = (x: number, y: number) => {
     return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
-  };
-
-  const moveTo = async (inputX: number, inputY: number) => {
-    if (!playerEntity) {
-      throw new Error("no player");
-    }
-
-    const [x, y] = wrapPosition(inputX, inputY);
-    if (isObstructed(x, y)) {
-      console.warn("cannot move to obstructed space");
-      return;
-    }
-
-    const positionId = uuid();
-    Position.addOverride(positionId, {
-      entity: playerEntity,
-      value: { x, y },
-    });
-
-    try {
-      const tx = await worldContract.write.move([x, y]);
-      await waitForTransaction(tx);
-    } finally {
-      Position.removeOverride(positionId);
-    }
   };
 
   const moveBy = async (deltaX: number, deltaY: number) => {
@@ -699,10 +649,20 @@ export function createSystemCalls(
       return;
     }
 
-    await moveTo(playerPosition.x + deltaX, playerPosition.y + deltaY);
+    let newX = playerPosition.x + deltaX;
+    let newY = playerPosition.y + deltaY;
+    [newX, newY] = wrapPosition(newX, newY);
+
+    if (isObstructed(newX, newY)) throw new Error("cannot go into an obstructed space");
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x: newX, y: newY },
+    });
   };
 
-  const spawn = async (inputX: number, inputY: number) => {
+  const spawn = async (x: number, y: number) => {
     if (!playerEntity) {
       throw new Error("no player");
     }
@@ -712,7 +672,8 @@ export function createSystemCalls(
       throw new Error("already spawned");
     }
 
-    const [x, y] = wrapPosition(inputX, inputY);
+    [x, y] = wrapPosition(x, y);
+
     if (isObstructed(x, y)) {
       console.warn("cannot spawn on obstructed space");
       return;
@@ -738,21 +699,9 @@ export function createSystemCalls(
     }
   };
 
-  const throwBall = async () => {
-    // TODO
-    return null as any;
-  };
-
-  const fleeEncounter = async () => {
-    // TODO
-    return null as any;
-  };
-
   return {
     moveBy,
     spawn,
-    throwBall,
-    fleeEncounter,
   };
 }
 ```
