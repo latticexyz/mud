@@ -1,6 +1,8 @@
 import { CollapseCode } from "../../../components/CollapseCode";
 
-# 4. Make it multiplayer
+# Advanced features
+
+## Make it multiplayer
 
 You may not have realized it, but youâ€™ve just made a game that is almost completely ready to become massively multiplayer. MUD has handled all of the network code out-of-the-box and there is a naturally shared, accessible database via the blockchain.
 
@@ -8,15 +10,16 @@ By writing a simple query to find all players and render them in the client, weâ
 
 <CollapseCode>
 
-```tsx filename="GameBoard.tsx" {1,8,22-30,57} copy showLineNumbers
+```tsx filename="packages/client/src/GameBoard.tsx" {1,8,23-31,67} copy showLineNumbers
 import { useComponentValue, useEntityQuery } from "@latticexyz/react";
 import { GameMap } from "./GameMap";
 import { useMUD } from "./MUDContext";
 import { useKeyboardMovement } from "./useKeyboardMovement";
 import { hexToArray } from "@latticexyz/utils";
 import { TerrainType, terrainTypes } from "./terrainTypes";
-import { EncounterScreen } from "./EncounterScreen";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
 import { Entity, Has, getComponentValueStrict } from "@latticexyz/recs";
+import { EncounterScreen } from "./EncounterScreen";
 import { MonsterType, monsterTypes } from "./monsterTypes";
 
 export const GameBoard = () => {
@@ -24,7 +27,7 @@ export const GameBoard = () => {
 
   const {
     components: { Encounter, MapConfig, Monster, Player, Position },
-    network: { playerEntity, singletonEntity },
+    network: { playerEntity },
     systemCalls: { spawn },
   } = useMUD();
 
@@ -79,3 +82,7 @@ export const GameBoard = () => {
 </CollapseCode>
 
 All you have to do now is deploy to testnet!
+
+## Deploy to a blockchain
+
+You can deploy this game to a blockchain [the same way you'd deploy the template](/tutorials/minimal/deploy).

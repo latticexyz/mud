@@ -660,6 +660,14 @@ export function createSystemCalls(
       entity: playerEntity,
       value: { x: newX, y: newY },
     });
+
+    try {
+      const tx = await worldContract.write.spawn([x, y]);
+      await waitForTransaction(tx);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
   };
 
   const spawn = async (x: number, y: number) => {
