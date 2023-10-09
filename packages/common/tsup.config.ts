@@ -5,7 +5,6 @@ export default defineConfig({
     index: "src/index.ts",
     chains: "src/chains/index.ts",
     codegen: "src/codegen/index.ts",
-    deprecated: "src/deprecated/index.ts",
     errors: "src/errors/index.ts",
     foundry: "src/foundry/index.ts",
     "type-utils": "src/type-utils/index.ts",

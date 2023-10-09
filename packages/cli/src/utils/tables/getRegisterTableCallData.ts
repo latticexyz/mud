@@ -1,7 +1,7 @@
 import { encodeSchema, getStaticByteLength } from "@latticexyz/schema-type/deprecated";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
-import { resourceIdToHex } from "@latticexyz/common";
+import { resourceToHex } from "@latticexyz/common";
 import { Table } from "./types";
 import { fieldLayoutToHex } from "@latticexyz/protocol-parser";
 import { CallData } from "../utils/types";
@@ -38,7 +38,7 @@ export function getRegisterTableCallData(
     func: "registerTable",
     args: [
       // TODO: add support for table namespaces (https://github.com/latticexyz/mud/issues/994)
-      resourceIdToHex({ type: table.offchainOnly ? "offchainTable" : "table", namespace: storeConfig.namespace, name }),
+      resourceToHex({ type: table.offchainOnly ? "offchainTable" : "table", namespace: storeConfig.namespace, name }),
       fieldLayoutToHex(fieldLayout),
       encodeSchema(keyTypes),
       encodeSchema(schemaTypes),

@@ -1,6 +1,6 @@
 import { StorageAdapterLog } from "@latticexyz/store-sync";
 import { EventIcon } from "./EventIcon";
-import { hexToResourceId } from "@latticexyz/common";
+import { hexToResource } from "@latticexyz/common";
 
 // TODO: use react-table or similar for better perf with lots of logs
 
@@ -22,7 +22,7 @@ export function LogsTable({ logs }: Props) {
       </thead>
       <tbody className="font-mono text-xs">
         {logs.map((log) => {
-          const { namespace, name } = hexToResourceId(log.args.tableId);
+          const { namespace, name } = hexToResource(log.args.tableId);
           return (
             <tr
               key={

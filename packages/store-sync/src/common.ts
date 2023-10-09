@@ -2,7 +2,7 @@ import { Address, Block, Hex, Log, PublicClient } from "viem";
 import { StoreConfig, StoreEventsAbiItem, StoreEventsAbi, resolveUserTypes } from "@latticexyz/store";
 import storeConfig from "@latticexyz/store/mud.config";
 import { Observable } from "rxjs";
-import { resourceIdToHex } from "@latticexyz/common";
+import { resourceToHex } from "@latticexyz/common";
 import { UnionPick } from "@latticexyz/common/type-utils";
 import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser";
 
@@ -86,7 +86,7 @@ export const schemasTable = {
   valueSchema: resolveUserTypes(storeConfig.tables.Tables.valueSchema, storeConfig.userTypes),
 };
 
-export const schemasTableId = resourceIdToHex({
+export const schemasTableId = resourceToHex({
   type: schemasTable.offchainOnly ? "offchainTable" : "table",
   namespace: storeConfig.namespace,
   name: schemasTable.name,

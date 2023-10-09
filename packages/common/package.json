@@ -13,7 +13,6 @@
     ".": "./dist/index.js",
     "./chains": "./dist/chains.js",
     "./codegen": "./dist/codegen.js",
-    "./deprecated": "./dist/deprecated.js",
     "./errors": "./dist/errors.js",
     "./foundry": "./dist/foundry.js",
     "./type-utils": "./dist/type-utils.js",
@@ -29,9 +28,6 @@
       ],
       "codegen": [
         "./src/codegen/index.ts"
-      ],
-      "deprecated": [
-        "./src/deprecated/index.ts"
       ],
       "errors": [
         "./src/errors/index.ts"
