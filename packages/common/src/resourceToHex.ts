@@ -13,7 +13,7 @@ export const resourceTypeIds = {
   system: "sy",
 } as const satisfies Record<ResourceType, string>;
 
-export function resourceToHex(resource: Omit<Resource, "hex">): Hex {
+export function resourceToHex(resource: Omit<Resource, "resourceId">): Hex {
   const typeId = resourceTypeIds[resource.type];
   return concatHex([
     stringToHex(typeId, { size: 2 }),
