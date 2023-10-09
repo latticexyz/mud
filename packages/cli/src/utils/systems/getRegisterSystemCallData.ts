@@ -1,4 +1,4 @@
-import { resourceIdToHex } from "@latticexyz/common";
+import { resourceToHex } from "@latticexyz/common";
 import { System } from "./types";
 import { CallData } from "../utils/types";
 
@@ -12,6 +12,6 @@ export async function getRegisterSystemCallData(input: {
   const systemAddress = await systemContracts[systemKey];
   return {
     func: "registerSystem",
-    args: [resourceIdToHex({ type: "system", namespace, name: system.name }), systemAddress, system.openAccess],
+    args: [resourceToHex({ type: "system", namespace, name: system.name }), systemAddress, system.openAccess],
   };
 }
