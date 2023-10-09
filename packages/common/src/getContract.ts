@@ -5,6 +5,7 @@ import {
   Chain,
   GetContractParameters,
   GetContractReturnType,
+  Hex,
   PublicClient,
   Transport,
   WalletClient,
