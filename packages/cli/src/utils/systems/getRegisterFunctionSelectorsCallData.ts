@@ -1,4 +1,4 @@
-import { resourceIdToHex } from "@latticexyz/common";
+import { resourceToHex } from "@latticexyz/common";
 import { System } from "./types";
 import { loadFunctionSignatures, toFunctionSelector } from "./utils";
 import { CallData } from "../utils/types";
@@ -46,12 +46,12 @@ function getRegisterFunctionSelectorCallData(input: {
     const functionSelector = toFunctionSelector(systemFunctionSignature);
     return {
       func: "registerRootFunctionSelector",
-      args: [resourceIdToHex({ type: "system", namespace, name }), systemFunctionSignature, functionSelector],
+      args: [resourceToHex({ type: "system", namespace, name }), systemFunctionSignature, functionSelector],
     };
   } else {
     return {
       func: "registerFunctionSelector",
-      args: [resourceIdToHex({ type: "system", namespace, name }), systemFunctionSignature],
+      args: [resourceToHex({ type: "system", namespace, name }), systemFunctionSignature],
     };
   }
 }
