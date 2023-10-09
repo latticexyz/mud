@@ -35,6 +35,7 @@ export async function sendTransaction<
   const nonceManager = await getNonceManager({
     client,
     address: account.address,
+    blockTag: "pending",
   });
 
   async function prepare(): Promise<SendTransactionParameters<TChain, TAccount, TChainOverride>> {
