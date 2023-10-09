@@ -3,12 +3,11 @@ import {
   CallParameters,
   Chain,
   Client,
-  EstimateGasParameters,
   SendTransactionParameters,
   Transport,
   WriteContractReturnType,
 } from "viem";
-import { call, estimateGas, sendTransaction as viem_sendTransaction } from "viem/actions";
+import { call, sendTransaction as viem_sendTransaction } from "viem/actions";
 import pRetry from "p-retry";
 import { debug as parentDebug } from "./debug";
 import { getNonceManager } from "./getNonceManager";
@@ -46,13 +45,15 @@ export async function sendTransaction<
     }
 
     debug("simulating tx to", request.to);
-    const gas = await estimateGas(client, {
+    await call(client, {
       ...request,
       blockTag: "pending",
       account,
-    } as EstimateGasParameters<TChain>);
+    } as CallParameters<TChain>);
 
-    return { ...request, gas };
+    // TODO: estimate gas
+
+    return request;
   }
 
   const preparedRequest = await prepare();
