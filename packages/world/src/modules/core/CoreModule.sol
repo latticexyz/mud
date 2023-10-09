@@ -2,7 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { WorldContextProviderLib } from "../../WorldContext.sol";
-import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID, WORLD_NAMESPACE_ID } from "../../constants.sol";
+import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID, STORE_NAMESPACE_ID, WORLD_NAMESPACE_ID } from "../../constants.sol";
 import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
@@ -93,6 +93,10 @@ contract CoreModule is Module {
     ResourceIds._setExists(ROOT_NAMESPACE_ID, true);
     NamespaceOwner._set(ROOT_NAMESPACE_ID, _msgSender());
     ResourceAccess._set(ROOT_NAMESPACE_ID, _msgSender(), true);
+
+    ResourceIds._setExists(STORE_NAMESPACE_ID, true);
+    NamespaceOwner._set(STORE_NAMESPACE_ID, _msgSender());
+    ResourceAccess._set(STORE_NAMESPACE_ID, _msgSender(), true);
 
     ResourceIds._setExists(WORLD_NAMESPACE_ID, true);
     NamespaceOwner._set(WORLD_NAMESPACE_ID, _msgSender());

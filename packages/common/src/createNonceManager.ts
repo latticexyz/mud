@@ -18,7 +18,7 @@ export type CreateNonceManagerResult = {
   nextNonce: () => number;
   resetNonce: () => Promise<void>;
   shouldResetNonce: (error: unknown) => boolean;
-  queue: PQueue;
+  mempoolQueue: PQueue;
 };
 
 export function createNonceManager({
@@ -70,13 +70,13 @@ export function createNonceManager({
     );
   }
 
-  const queue = new PQueue({ concurrency: 1 });
+  const mempoolQueue = new PQueue({ concurrency: 1 });
 
   return {
     hasNonce,
     nextNonce,
     resetNonce,
     shouldResetNonce,
-    queue,
+    mempoolQueue,
   };
 }

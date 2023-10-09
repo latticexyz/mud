@@ -25,16 +25,17 @@ export async function sendTransaction<
   client: Client<Transport, TChain, TAccount>,
   request: SendTransactionParameters<TChain, TAccount, TChainOverride>
 ): Promise<WriteContractReturnType> {
-  const account_ = request.account ?? client.account;
-  if (!account_) {
+  const rawAccount = request.account ?? client.account;
+  if (!rawAccount) {
     // TODO: replace with viem AccountNotFoundError once its exported
     throw new Error("No account provided");
   }
-  const account = parseAccount(account_);
+  const account = parseAccount(rawAccount);
 
   const nonceManager = await getNonceManager({
     client,
     address: account.address,
+    blockTag: "pending",
   });
 
   async function prepare(): Promise<SendTransactionParameters<TChain, TAccount, TChainOverride>> {
@@ -57,7 +58,7 @@ export async function sendTransaction<
 
   const preparedRequest = await prepare();
 
-  return await nonceManager.queue.add(
+  return await nonceManager.mempoolQueue.add(
     () =>
       pRetry(
         async () => {

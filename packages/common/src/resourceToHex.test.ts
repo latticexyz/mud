@@ -15,6 +15,7 @@ describe("resourceToHex", () => {
         "hex": "0x74626e616d65737061636500000000006e616d65000000000000000000000000",
         "name": "name",
         "namespace": "namespace",
+        "resourceId": "0x74626e616d65737061636500000000006e616d65000000000000000000000000",
         "type": "table",
       }
     `);
@@ -32,6 +33,7 @@ describe("resourceToHex", () => {
         "hex": "0x6f746e616d65737061636500000000006e616d65000000000000000000000000",
         "name": "name",
         "namespace": "namespace",
+        "resourceId": "0x6f746e616d65737061636500000000006e616d65000000000000000000000000",
         "type": "offchainTable",
       }
     `);
@@ -49,6 +51,7 @@ describe("resourceToHex", () => {
         "hex": "0x746241566572794c6f6e674e616d65736e616d65000000000000000000000000",
         "name": "name",
         "namespace": "AVeryLongNames",
+        "resourceId": "0x746241566572794c6f6e674e616d65736e616d65000000000000000000000000",
         "type": "table",
       }
     `);
@@ -66,6 +69,7 @@ describe("resourceToHex", () => {
         "hex": "0x74626e616d6573706163650000000000416e556e6e65636573736172696c794c",
         "name": "AnUnnecessarilyL",
         "namespace": "namespace",
+        "resourceId": "0x74626e616d6573706163650000000000416e556e6e65636573736172696c794c",
         "type": "table",
       }
     `);

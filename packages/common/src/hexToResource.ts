@@ -26,5 +26,5 @@ export function hexToResource(hex: Hex): Resource {
     throw new Error(`Unknown resource type: ${resourceTypeId}`);
   }
 
-  return { type, namespace, name, hex };
+  return { resourceId: hex, type, namespace, name };
 }

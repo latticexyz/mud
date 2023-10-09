@@ -1,3 +1,87 @@
+## Version 2.0.0-next.11
+
+### Major changes
+
+**[feat(cli): remove backup/restore/force options from set-version (#1687)](https://github.com/latticexyz/mud/commit/3d0b3edb46b266fccb40e26e8243d7628bea8baf)** (@latticexyz/cli)
+
+Removes `.mudbackup` file handling and `--backup`, `--restore`, and `--force` options from `mud set-version` command.
+
+To revert to a previous MUD version, use `git diff` to find the version that you changed from and want to revert to and run `pnpm mud set-version <prior-version>` again.
+
+### Minor changes
+
+**[feat(world-modules): add SystemSwitch util (#1665)](https://github.com/latticexyz/mud/commit/9352648b19800f28b1d96ec448283808342a41f7)** (@latticexyz/world-modules)
+
+Since [#1564](https://github.com/latticexyz/mud/pull/1564) the World can no longer call itself via an external call.
+This made the developer experience of calling other systems via root systems worse, since calls from root systems are executed from the context of the World.
+The recommended approach is to use `delegatecall` to the system if in the context of a root system, and an external call via the World if in the context of a non-root system.
+To bring back the developer experience of calling systems from other sysyems without caring about the context in which the call is executed, we added the `SystemSwitch` util.
+
+```diff
+- // Instead of calling the system via an external call to world...
+- uint256 value = IBaseWorld(_world()).callMySystem();
+
++ // ...you can now use the `SystemSwitch` util.
++ // This works independent of whether used in a root system or non-root system.
++ uint256 value = abi.decode(SystemSwitch.call(abi.encodeCall(IBaseWorld.callMySystem, ()), (uint256));
+```
+
+Note that if you already know your system is always executed as non-root system, you can continue to use the approach of calling other systems via the `IBaseWorld(world)`.
+
+**[refactor(common): move `createContract`'s internal write logic to `writeContract` (#1693)](https://github.com/latticexyz/mud/commit/d075f82f30f4969a353e4ea29ca2a25a04810523)** (@latticexyz/common)
+
+- Moves contract write logic out of `createContract` into its own `writeContract` method so that it can be used outside of the contract instance, and for consistency with viem.
+- Deprecates `createContract` in favor of `getContract` for consistency with viem.
+- Reworks `createNonceManager`'s `BroadcastChannel` setup and moves out the notion of a "nonce manager ID" to `getNonceManagerId` so we can create an internal cache with `getNonceManager` for use in `writeContract`.
+
+If you were using the `createNonceManager` before, you'll just need to rename `publicClient` argument to `client`:
+
+```diff
+  const publicClient = createPublicClient({ ... });
+- const nonceManager = createNonceManager({ publicClient, ... });
++ const nonceManager = createNonceManager({ client: publicClient, ... });
+```
+
+**[feat(gas-reporter): allow gas-reporter to parse stdin (#1688)](https://github.com/latticexyz/mud/commit/4385c5a4c0e2d5550c041acc4386ae7fc1cb4b7e)** (@latticexyz/gas-report)
+
+Allow the `gas-report` CLI to parse logs via `stdin`, so it can be used with custom test commands (e.g. `mud test`).
+
+Usage:
+
+```sh
+# replace `forge test -vvv` with the custom test command
+GAS_REPORTER_ENABLED=true forge test -vvv | pnpm gas-report --stdin
+```
+
+### Patch changes
+
+**[feat(store-sync): export postgres column type helpers (#1699)](https://github.com/latticexyz/mud/commit/08d7c471f9a2f4d6c237641eea316313d010373c)** (@latticexyz/store-sync)
+
+Export postgres column type helpers from `@latticexyz/store-sync`.
+
+**[fix(common): workaround for zero base fee (#1689)](https://github.com/latticexyz/mud/commit/16b13ea8fc5e7f63ce08bc6baa2087cab9c8089f)** (@latticexyz/common)
+
+Adds viem workaround for zero base fee used by MUD's anvil config
+
+**[fix(world): register store namespace during initialization (#1712)](https://github.com/latticexyz/mud/commit/430e6b29a9207122d48e386925bdb9fc12c201b9)** (@latticexyz/world)
+
+Register the `store` namespace in the `CoreModule`.
+Since namespaces are a World concept, registering the Store's internal tables does not automatically register the Store's namespace, so we do this manually during initialization in the `CoreModule`.
+
+**[build: bump viem and abitype (#1684)](https://github.com/latticexyz/mud/commit/f99e889872e6881bf32bcb9a605b8b5c1b05fac4)** (@latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/dev-tools, @latticexyz/faucet, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, create-mud)
+
+Bump viem to 1.14.0 and abitype to 0.9.8
+
+**[feat(gas-report): add more logs to stdin piping (#1694)](https://github.com/latticexyz/mud/commit/ba17bdab5c8b2a3aa56e86722134174e2799ddfa)** (@latticexyz/gas-report)
+
+Pass through `stdin` logs in `gas-report`. Since the script piping in logs to `gas-report` can be long-running, it is useful to see its logs to know if it's stalling.
+
+**[fix(protocol-parser): allow arbitrary key order when encoding values (#1674)](https://github.com/latticexyz/mud/commit/a2f41ade977a5374c400ef8bfc2cb8c8698f185e)** (@latticexyz/protocol-parser)
+
+Allow arbitrary key order when encoding values
+
+---
+
 ## Version 2.0.0-next.10
 
 ### Major changes
