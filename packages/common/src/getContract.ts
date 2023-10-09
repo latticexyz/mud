@@ -5,6 +5,7 @@ import {
   Chain,
   GetContractParameters,
   GetContractReturnType,
+  Hex,
   PublicClient,
   Transport,
   WalletClient,
@@ -12,7 +13,7 @@ import {
   getContract as viem_getContract,
 } from "viem";
 import { UnionOmit } from "./type-utils/common";
-import { WriteContractOptions, writeContract } from "./writeContract";
+import { writeContract } from "./writeContract";
 
 // copied from viem because this isn't exported
 // TODO: import from viem?
@@ -26,6 +27,12 @@ function getFunctionParameters(values: [args?: readonly unknown[], options?: obj
   return { args, options };
 }
 
+export type ContractWrite = {
+  id: string;
+  request: WriteContractParameters;
+  result: Promise<Hex>;
+};
+
 export type GetContractOptions<
   TTransport extends Transport,
   TAddress extends Address,
@@ -35,7 +42,7 @@ export type GetContractOptions<
   TPublicClient extends PublicClient<TTransport, TChain>,
   TWalletClient extends WalletClient<TTransport, TChain, TAccount>
 > = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>> & {
-  onWrite?: WriteContractOptions["onWrite"];
+  onWrite?: (write: ContractWrite) => void;
 };
 
 // TODO: migrate away from this approach once we can hook into viem: https://github.com/wagmi-dev/viem/discussions/1230
@@ -72,6 +79,7 @@ export function getContract<
 
   if (contract.write) {
     // Replace write calls with our own. Implemented ~the same as viem, but adds better handling of nonces (via queue + retries).
+    let nextWriteId = 0;
     contract.write = new Proxy(
       {},
       {
@@ -83,14 +91,20 @@ export function getContract<
             ]
           ) => {
             const { args, options } = getFunctionParameters(parameters);
-            return writeContract(walletClient, {
+            const request = {
               abi,
               address,
               functionName,
               args,
               ...options,
               onWrite,
-            } as unknown as WriteContractOptions<TAbi, typeof functionName, TChain, TAccount>);
+            } as unknown as WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>;
+            const result = writeContract(walletClient, request);
+
+            const id = `${walletClient.chain.id}:${walletClient.account.address}:${nextWriteId++}`;
+            onWrite?.({ id, request: request as WriteContractParameters, result });
+
+            return result;
           };
         },
       }
