@@ -5,8 +5,8 @@ const nonceManagers = new Map<string, CreateNonceManagerResult>();
 
 export async function getNonceManager({
   client,
-  address,
-  blockTag = "latest",
+  address, // TODO: rename to account?
+  blockTag = "pending",
 }: CreateNonceManagerOptions): Promise<CreateNonceManagerResult> {
   const id = await getNonceManagerId({ client, address, blockTag });
 
