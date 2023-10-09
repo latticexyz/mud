@@ -8,10 +8,6 @@ export default mudConfig({
       name: "increment",
       openAccess: true,
     },
-    DoubleSystem: {
-      openAccess: false,
-      accessList: ["IncrementSystem"],
-    },
   },
   excludeSystems: [
     // Until namespace overrides, this system must be manually deployed in PostDeploy
@@ -41,11 +37,12 @@ export default mudConfig({
       valueSchema: { amount: "uint32" },
     },
   },
-  modules: [
-    {
-      name: "KeysWithValueModule",
-      root: true,
-      args: [resolveTableId("Inventory")],
-    },
-  ],
+  // KeysWithValue doesn't seem to like singleton keys
+  // modules: [
+  //   {
+  //     name: "KeysWithValueModule",
+  //     root: true,
+  //     args: [resolveTableId("CounterTable")],
+  //   },
+  // ],
 });
