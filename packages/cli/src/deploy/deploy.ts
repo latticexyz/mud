@@ -2,7 +2,7 @@ import { Account, Address, Chain, Client, Transport } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
-import { Config, ConfigInput } from "./common";
+import { Config, ConfigInput, WorldDeploy } from "./common";
 import { ensureSystems } from "./ensureSystems";
 import { waitForTransactionReceipt } from "viem/actions";
 import { getWorldDeploy } from "./getWorldDeploy";
@@ -19,7 +19,7 @@ export async function deploy<configInput extends ConfigInput>({
   client,
   config,
   worldAddress: existingWorldAddress,
-}: DeployOptions<configInput>): Promise<void> {
+}: DeployOptions<configInput>): Promise<WorldDeploy> {
   await ensureDeployer(client);
 
   const worldDeploy = existingWorldAddress
@@ -56,4 +56,8 @@ export async function deploy<configInput extends ConfigInput>({
       waitForTransactionReceipt(client, { hash: tx })
     )
   );
+
+  // TODO: throw if there was a revert? or attempt to re-run deploy?
+
+  return worldDeploy;
 }

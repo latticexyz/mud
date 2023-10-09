@@ -2,7 +2,7 @@ import type { CommandModule } from "yargs";
 import { anvil, forge, getRpcUrl } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { rmSync, writeFileSync } from "fs";
-import { yDeployOptions } from "./deploy";
+import { opts } from "./deploy";
 import { DeployOptions, deployHandler } from "../utils/deployHandler";
 
 type Options = DeployOptions & { port?: number; worldAddress?: string; forgeOptions?: string };
@@ -16,7 +16,7 @@ const commandModule: CommandModule<Options, Options> = {
 
   builder(yargs) {
     return yargs.options({
-      ...yDeployOptions,
+      ...opts,
       port: { type: "number", description: "Port to run internal node for fork testing on", default: 4242 },
       worldAddress: {
         type: "string",
