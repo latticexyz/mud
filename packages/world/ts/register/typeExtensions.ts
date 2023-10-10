@@ -1,8 +1,9 @@
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { MUDCoreUserConfig } from "@latticexyz/config";
-import { ExpandSystemsConfig, WorldConfig, WorldUserConfig, WORLD_DEFAULTS } from "../library";
 
 import "@latticexyz/store/register";
+import { WORLD_DEFAULTS } from "../config/defaults";
+import { WorldUserConfig, WorldConfig, ExpandSystemsConfig } from "../config/types";
 
 // Inject the plugin options into the core config.
 // Re-exporting an interface of an existing module merges them, adding new options to the interface.

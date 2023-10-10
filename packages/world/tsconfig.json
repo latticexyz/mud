@@ -15,6 +15,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["mud.config.ts", "ts"],
-  "exclude": ["ts/plugins"]
+  "include": ["mud.config.ts", "ts"]
 }
