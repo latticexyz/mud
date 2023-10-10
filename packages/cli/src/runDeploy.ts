@@ -90,7 +90,9 @@ in your contracts directory to use the default anvil private key.`
     client,
     config: resolvedConfig,
   });
-  await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile);
+  if (opts.worldAddress == null) {
+    await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile);
+  }
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
   if (opts.saveDeployment) {
