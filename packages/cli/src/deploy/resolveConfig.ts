@@ -89,7 +89,7 @@ export function resolveConfig<config extends ConfigInput>({
     };
   });
 
-  // ugh
+  // ugh (https://github.com/latticexyz/mud/issues/1668)
   const resolveContext = {
     tableIds: Object.fromEntries(
       Object.entries(config.tables).map(([tableName, table]) => [
