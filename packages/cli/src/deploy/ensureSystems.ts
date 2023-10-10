@@ -72,21 +72,21 @@ export async function ensureSystems({
     ),
   ]);
 
-  const existing = systems.filter((system) =>
+  const existingSystems = systems.filter((system) =>
     worldSystems.some(
       (worldSystem) =>
         worldSystem.systemId === system.systemId && getAddress(worldSystem.address) === getAddress(system.address)
     )
   );
-  if (existing.length) {
-    debug("existing systems", existing.map(resourceLabel).join(", "));
+  if (existingSystems.length) {
+    debug("existing systems", existingSystems.map(resourceLabel).join(", "));
   }
-  const existingSystemIds = existing.map((system) => system.systemId);
+  const existingSystemIds = existingSystems.map((system) => system.systemId);
 
-  const missing = systems.filter((system) => !existingSystemIds.includes(system.systemId));
-  if (!missing.length) return [];
+  const missingSystems = systems.filter((system) => !existingSystemIds.includes(system.systemId));
+  if (!missingSystems.length) return [];
 
-  const systemsToUpgrade = missing.filter((system) =>
+  const systemsToUpgrade = missingSystems.filter((system) =>
     worldSystems.some(
       (worldSystem) =>
         worldSystem.systemId === system.systemId && getAddress(worldSystem.address) !== getAddress(system.address)
@@ -96,7 +96,7 @@ export async function ensureSystems({
     debug("upgrading systems", systemsToUpgrade.map(resourceLabel).join(", "));
   }
 
-  const systemsToAdd = missing.filter(
+  const systemsToAdd = missingSystems.filter(
     (system) => !worldSystems.some((worldSystem) => worldSystem.systemId === system.systemId)
   );
   if (systemsToAdd.length) {
@@ -105,14 +105,14 @@ export async function ensureSystems({
 
   // kick off contract deployments first, otherwise registering systems can fail
   const contractTxs = await Promise.all(
-    missing.map((system) =>
+    missingSystems.map((system) =>
       ensureContract({ client, bytecode: system.bytecode, label: `${resourceLabel(system)} system` })
     )
   );
 
   // then start registering systems
   const registerTxs = await Promise.all(
-    missing.map((system) =>
+    missingSystems.map((system) =>
       writeContract(client, {
         chain: client.chain ?? null,
         address: worldDeploy.address,
