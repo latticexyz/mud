@@ -44,9 +44,8 @@ export async function ensureFunctions({
           chain: client.chain ?? null,
           address: worldDeploy.address,
           abi: worldAbi,
-          // TODO: replace with batchCall
+          // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
           functionName: "registerRootFunctionSelector",
-          // TODO: why do we have to specify the selector here?
           args: [func.systemId, func.systemFunctionSignature, func.systemFunctionSelector],
         });
       }
@@ -54,7 +53,7 @@ export async function ensureFunctions({
         chain: client.chain ?? null,
         address: worldDeploy.address,
         abi: worldAbi,
-        // TODO: replace with batchCall
+        // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
         functionName: "registerFunctionSelector",
         args: [func.systemId, func.systemFunctionSignature],
       });

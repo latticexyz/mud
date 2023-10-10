@@ -117,7 +117,7 @@ export async function ensureSystems({
         chain: client.chain ?? null,
         address: worldDeploy.address,
         abi: worldAbi,
-        // TODO: replace with batchCall
+        // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
         functionName: "registerSystem",
         args: [system.systemId, system.address, system.allowAll],
       })

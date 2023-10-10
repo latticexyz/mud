@@ -29,7 +29,7 @@ export async function ensureModules({
             chain: client.chain ?? null,
             address: worldDeploy.address,
             abi: worldAbi,
-            // TODO: replace with batchCall
+            // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
             functionName: "installRootModule",
             args: [mod.address, mod.installData],
           })
@@ -37,7 +37,7 @@ export async function ensureModules({
             chain: client.chain ?? null,
             address: worldDeploy.address,
             abi: worldAbi,
-            // TODO: replace with batchCall
+            // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
             functionName: "installModule",
             args: [mod.address, mod.installData],
           })
