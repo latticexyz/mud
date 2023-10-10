@@ -10,7 +10,7 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/ts/library/index.js",
+    ".": "./dist/ts/index.js",
     "./register": "./dist/ts/register/index.js",
     "./node": "./dist/ts/node/index.js",
     "./out/*": "./out/*",
@@ -19,7 +19,7 @@
   "typesVersions": {
     "*": {
       "index": [
-        "./ts/library/index.ts"
+        "./ts/index.ts"
       ],
       "register": [
         "./ts/register/index.ts"
@@ -50,6 +50,7 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
+    "abitype": "0.9.8",
     "zod": "^3.21.4"
   },
   "devDependencies": {

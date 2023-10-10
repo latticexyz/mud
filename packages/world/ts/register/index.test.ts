@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { mudConfig } from ".";
-import { resolveWorldConfig } from "../library";
+import { resolveWorldConfig } from "../config/resolveWorldConfig";
 
 test("resolveWorldConfig requires unique table and system names", () => {
   expect(() =>
