@@ -113,7 +113,8 @@ in your contracts directory to use the default anvil private key.`
     const deploys = existsSync(config.worldsFile) ? JSON.parse(readFileSync(config.worldsFile, "utf-8")) : {};
     deploys[chainId] = {
       address: deploymentInfo.worldAddress,
-      // We expect the worlds file to be committed and since local deployments are often a consistent address but different block number, we'll ignore the block number.
+      // We expect the worlds file to be committed and since local deployments are often
+      // a consistent address but different block number, we'll ignore the block number.
       blockNumber: localChains.includes(chainId) ? undefined : deploymentInfo.blockNumber,
     };
     writeFileSync(config.worldsFile, JSON.stringify(deploys, null, 2));
