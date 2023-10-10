@@ -6,6 +6,7 @@ import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { getFunctions } from "./getFunctions";
+import { getResourceAccess } from "./getResourceAccess";
 
 export async function getSystems({
   client,
@@ -13,9 +14,12 @@ export async function getSystems({
 }: {
   readonly client: Client;
   readonly worldDeploy: WorldDeploy;
-}): Promise<readonly System[]> {
-  const resourceIds = await getResourceIds({ client, worldDeploy });
-  const functions = await getFunctions({ client, worldDeploy });
+}): Promise<readonly Omit<System, "abi" | "bytecode">[]> {
+  const [resourceIds, functions, resourceAccess] = await Promise.all([
+    getResourceIds({ client, worldDeploy }),
+    getFunctions({ client, worldDeploy }),
+    getResourceAccess({ client, worldDeploy }),
+  ]);
   const systems = resourceIds.map(hexToResource).filter((resource) => resource.type === "system");
 
   debug("looking up systems", systems.map(resourceLabel).join(", "));
@@ -34,10 +38,9 @@ export async function getSystems({
         name: system.name,
         systemId: system.resourceId,
         allowAll: publicAccess,
-        allowedAddresses: [], // TODO
-        allowedSystemIds: [], // TODO
-        bytecode: "0x", // TODO
-        abi: [], // TODO
+        allowedAddresses: resourceAccess
+          .filter(({ resourceId }) => resourceId === system.resourceId)
+          .map(({ address }) => address),
         functions: systemFunctions,
       };
     })
