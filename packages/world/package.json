@@ -50,6 +50,7 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
+    "abitype": "0.9.8",
     "zod": "^3.21.4"
   },
   "devDependencies": {

@@ -986,6 +986,9 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
+      abitype:
+        specifier: 0.9.8
+        version: 0.9.8(typescript@5.1.6)(zod@3.21.4)
       zod:
         specifier: ^3.21.4
         version: 3.21.4
