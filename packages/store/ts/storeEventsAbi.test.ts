@@ -22,7 +22,9 @@ function normalizeAbiEvents(abiEvents: readonly AbiEvent[]) {
 describe("storeEventsAbi", () => {
   it("should match the store ABI", () => {
     const eventsDefined = normalizeAbiEvents(storeEventsAbi);
-    const eventsFromAbi = normalizeAbiEvents(IStoreAbi.filter((item) => item.type === "event") as readonly AbiEvent[]);
+    const eventsFromAbi = normalizeAbiEvents(
+      IStoreAbi.filter((item) => item.type === "event" && item.name !== "HelloStore") as readonly AbiEvent[]
+    );
 
     expect(eventsDefined).toMatchObject(eventsFromAbi);
   });

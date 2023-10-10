@@ -11,8 +11,8 @@ export const storeSpliceDynamicDataEvent =
 
 export const storeDeleteRecordEvent = "event Store_DeleteRecord(bytes32 indexed tableId, bytes32[] keyTuple)";
 
+// Store protocol events
 export const storeEvents = [
-  helloStoreEvent,
   storeSetRecordEvent,
   storeSpliceStaticDataEvent,
   storeSpliceDynamicDataEvent,
