@@ -18,23 +18,23 @@ contract PostDeploy is Script {
     // Start broadcasting transactions from the deployer account
     vm.startBroadcast(deployerPrivateKey);
 
-    // Manually deploy a system with another namespace
-    ChatNamespacedSystem chatNamespacedSystem = new ChatNamespacedSystem();
-    ResourceId systemId = WorldResourceIdLib.encode({
-      typeId: RESOURCE_SYSTEM,
-      namespace: "namespace",
-      name: "ChatNamespaced"
-    });
-    IWorld(worldAddress).registerSystem(systemId, chatNamespacedSystem, true);
-    IWorld(worldAddress).registerFunctionSelector(systemId, "sendMessage(string)");
-    // Grant this system access to MessageTable
-    IWorld(worldAddress).grantAccess(MessageTableTableId, address(chatNamespacedSystem));
+    // // Manually deploy a system with another namespace
+    // ChatNamespacedSystem chatNamespacedSystem = new ChatNamespacedSystem();
+    // ResourceId systemId = WorldResourceIdLib.encode({
+    //   typeId: RESOURCE_SYSTEM,
+    //   namespace: "namespace",
+    //   name: "ChatNamespaced"
+    // });
+    // IWorld(worldAddress).registerSystem(systemId, chatNamespacedSystem, true);
+    // IWorld(worldAddress).registerFunctionSelector(systemId, "sendMessage(string)");
+    // // Grant this system access to MessageTable
+    // IWorld(worldAddress).grantAccess(MessageTableTableId, address(chatNamespacedSystem));
 
-    // ------------------ EXAMPLES ------------------
+    // // ------------------ EXAMPLES ------------------
 
-    // Call increment on the world via the registered function selector
-    uint32 newValue = IWorld(worldAddress).increment();
-    console.log("Increment via IWorld:", newValue);
+    // // Call increment on the world via the registered function selector
+    // uint32 newValue = IWorld(worldAddress).increment();
+    // console.log("Increment via IWorld:", newValue);
 
     vm.stopBroadcast();
   }

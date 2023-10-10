@@ -25,14 +25,14 @@ export async function getSystems({
         client,
         worldDeploy,
         table: worldTables.world_Systems,
-        key: { systemId: system.hex },
+        key: { systemId: system.resourceId },
       });
-      const systemFunctions = functions.filter((func) => func.systemId === system.hex);
+      const systemFunctions = functions.filter((func) => func.systemId === system.resourceId);
       return {
         address,
         namespace: system.namespace,
         name: system.name,
-        systemId: system.hex,
+        systemId: system.resourceId,
         allowAll: publicAccess,
         allowedAddresses: [], // TODO
         allowedSystemIds: [], // TODO

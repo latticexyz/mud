@@ -1,70 +1,64 @@
-import type { CommandModule } from "yargs";
+import type { CommandModule, InferredOptionTypes, Options } from "yargs";
 import { anvil, forge, getRpcUrl } from "@latticexyz/common/foundry";
 import chalk from "chalk";
-import { rmSync, writeFileSync } from "fs";
-import { opts } from "./deploy";
-import { DeployOptions, deployHandler } from "../utils/deployHandler";
+import { deployOpts, runDeploy } from "../runDeploy";
 
-type Options = DeployOptions & { port?: number; worldAddress?: string; forgeOptions?: string };
+const testOpts = {
+  ...deployOpts,
+  port: { type: "number", description: "Port to run internal node for fork testing on", default: 4242 },
+  worldAddress: {
+    type: "string",
+    description:
+      "Address of an existing world contract. If provided, deployment is skipped and the RPC provided in the foundry.toml is used for fork testing.",
+  },
+  forgeOptions: { type: "string", description: "Options to pass to forge test" },
+} as const satisfies Record<string, Options>;
 
-const WORLD_ADDRESS_FILE = ".mudtest";
+type TestOptions = InferredOptionTypes<typeof testOpts>;
 
-const commandModule: CommandModule<Options, Options> = {
+const commandModule: CommandModule<typeof testOpts, TestOptions> = {
   command: "test",
 
   describe: "Run tests in MUD contracts",
 
   builder(yargs) {
-    return yargs.options({
-      ...opts,
-      port: { type: "number", description: "Port to run internal node for fork testing on", default: 4242 },
-      worldAddress: {
-        type: "string",
-        description:
-          "Address of an existing world contract. If provided, deployment is skipped and the RPC provided in the foundry.toml is used for fork testing.",
-      },
-      forgeOptions: { type: "string", description: "Options to pass to forge test" },
-    });
+    return yargs.options(testOpts);
   },
 
-  async handler(args) {
+  async handler(opts) {
     // Start an internal anvil process if no world address is provided
-    if (!args.worldAddress) {
-      const anvilArgs = ["--block-base-fee-per-gas", "0", "--port", String(args.port)];
+    if (!opts.worldAddress) {
+      const anvilArgs = ["--block-base-fee-per-gas", "0", "--port", String(opts.port)];
       anvil(anvilArgs);
     }
 
-    const forkRpc = args.worldAddress ? await getRpcUrl(args.profile) : `http://127.0.0.1:${args.port}`;
+    const forkRpc = opts.worldAddress ? await getRpcUrl(opts.profile) : `http://127.0.0.1:${opts.port}`;
 
     const worldAddress =
-      args.worldAddress ??
+      opts.worldAddress ??
       (
-        await deployHandler({
-          ...args,
+        await runDeploy({
+          ...opts,
           saveDeployment: false,
           rpc: forkRpc,
         })
-      ).worldAddress;
+      ).address;
 
     console.log(chalk.blue("World address", worldAddress));
 
-    // Create a temporary file to pass the world address to the tests
-    writeFileSync(WORLD_ADDRESS_FILE, worldAddress);
-
-    const userOptions = args.forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
+    const userOptions = opts.forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
     try {
       const testResult = await forge(["test", "--fork-url", forkRpc, ...userOptions], {
-        profile: args.profile,
+        profile: opts.profile,
+        env: {
+          WORLD_ADDRESS: worldAddress,
+        },
       });
       console.log(testResult);
     } catch (e) {
       console.error(e);
-      rmSync(WORLD_ADDRESS_FILE);
       process.exit(1);
     }
-
-    rmSync(WORLD_ADDRESS_FILE);
-    process.exit(0);
   },
 };
 
