@@ -16,22 +16,24 @@ export async function getWorldDeploy(client: Client, worldAddress: Address): Pro
 
   debug("looking up world deploy for", address);
 
-  const toBlock = await getBlockNumber(client);
+  const stateBlock = await getBlockNumber(client);
   const logs = await getLogs(client, {
     strict: true,
     address,
     events: parseAbi(worldDeployEvents),
+    // this may fail for certain RPC providers with block range limits
+    // if so, could potentially use our fetchLogs helper (which does pagination)
     fromBlock: "earliest",
-    toBlock,
+    toBlock: stateBlock,
   });
 
   deploy = {
     ...logsToWorldDeploy(logs),
-    toBlock,
+    stateBlock,
   };
   deploys.set(address, deploy);
 
-  debug("found world deploy for", address, "at block", deploy.fromBlock);
+  debug("found world deploy for", address, "at block", deploy.deployBlock);
 
   return deploy;
 }

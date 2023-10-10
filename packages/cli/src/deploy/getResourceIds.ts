@@ -18,8 +18,8 @@ export async function getResourceIds({
   const logs = await getLogs(client, {
     strict: true,
     address: worldDeploy.address,
-    fromBlock: worldDeploy.fromBlock,
-    toBlock: worldDeploy.toBlock,
+    fromBlock: worldDeploy.deployBlock,
+    toBlock: worldDeploy.stateBlock,
     event: parseAbiItem(storeSpliceStaticDataEvent),
     args: { tableId: storeTables.store_ResourceIds.tableId },
   });

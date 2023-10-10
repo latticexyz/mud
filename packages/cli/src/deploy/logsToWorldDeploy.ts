@@ -2,7 +2,7 @@ import { AbiEventSignatureNotFoundError, Log, decodeEventLog, hexToString, parse
 import { WorldDeploy, worldDeployEvents } from "./common";
 import { isDefined } from "@latticexyz/common/utils";
 
-export function logsToWorldDeploy(logs: readonly Log<bigint, number, false>[]): Omit<WorldDeploy, "toBlock"> {
+export function logsToWorldDeploy(logs: readonly Log<bigint, number, false>[]): Omit<WorldDeploy, "stateBlock"> {
   const deployLogs = logs
     .map((log) => {
       try {
@@ -25,11 +25,11 @@ export function logsToWorldDeploy(logs: readonly Log<bigint, number, false>[]): 
     .filter(isDefined);
 
   // TODO: should this test for/validate that only one of each of these events is present? and that the address/block number don't change between each?
-  const { address, fromBlock, worldVersion, storeVersion } = deployLogs.reduce<Partial<WorldDeploy>>(
+  const { address, deployBlock, worldVersion, storeVersion } = deployLogs.reduce<Partial<WorldDeploy>>(
     (deploy, log) => ({
       ...deploy,
       address: log.address,
-      fromBlock: log.blockNumber,
+      deployBlock: log.blockNumber,
       ...(log.eventName === "HelloWorld"
         ? { worldVersion: hexToString(trim(log.args.worldVersion, { dir: "right" })) }
         : null),
@@ -41,9 +41,9 @@ export function logsToWorldDeploy(logs: readonly Log<bigint, number, false>[]): 
   );
 
   if (address == null) throw new Error("could not find world address");
-  if (fromBlock == null) throw new Error("could not find world deploy block number");
+  if (deployBlock == null) throw new Error("could not find world deploy block number");
   if (worldVersion == null) throw new Error("could not find world version");
   if (storeVersion == null) throw new Error("could not find store version");
 
-  return { address, fromBlock, worldVersion, storeVersion };
+  return { address, deployBlock, worldVersion, storeVersion };
 }

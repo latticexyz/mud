@@ -18,8 +18,8 @@ export async function getFunctions({
   debug("looking up function signatures for", worldDeploy.address);
   const logs = await getLogs(client, {
     strict: true,
-    fromBlock: worldDeploy.fromBlock,
-    toBlock: worldDeploy.toBlock,
+    fromBlock: worldDeploy.deployBlock,
+    toBlock: worldDeploy.stateBlock,
     address: worldDeploy.address,
     event: parseAbiItem(storeSetRecordEvent),
     args: { tableId: worldTables.world_FunctionSignatures.tableId },

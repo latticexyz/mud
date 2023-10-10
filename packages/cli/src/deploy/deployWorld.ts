@@ -27,7 +27,7 @@ export async function deployWorld(client: Client<Transport, Chain | undefined, A
 
   // TODO: remove type casting once https://github.com/wagmi-dev/viem/pull/1330 is merged
   const deploy = logsToWorldDeploy(receipt.logs.map((log) => log as Log<bigint, number, false>));
-  debug("deployed world to", deploy.address, "at block", deploy.fromBlock);
+  debug("deployed world to", deploy.address, "at block", deploy.deployBlock);
 
-  return { ...deploy, toBlock: deploy.fromBlock };
+  return { ...deploy, stateBlock: deploy.deployBlock };
 }

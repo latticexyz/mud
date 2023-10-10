@@ -16,7 +16,7 @@ export async function getTableValue<table extends Table>({
   readonly key: SchemaToPrimitives<table["keySchema"]>;
 }): Promise<SchemaToPrimitives<table["valueSchema"]>> {
   const [staticData, encodedLengths, dynamicData] = await readContract(client, {
-    blockNumber: worldDeploy.toBlock,
+    blockNumber: worldDeploy.stateBlock,
     address: worldDeploy.address,
     abi: worldAbi,
     functionName: "getRecord",

@@ -21,8 +21,10 @@ export async function getTables({
   debug("looking up tables for", worldDeploy.address);
   const logs = await getLogs(client, {
     strict: true,
-    fromBlock: worldDeploy.fromBlock,
-    toBlock: worldDeploy.toBlock,
+    // this may fail for certain RPC providers with block range limits
+    // if so, could potentially use our fetchLogs helper (which does pagination)
+    fromBlock: worldDeploy.deployBlock,
+    toBlock: worldDeploy.stateBlock,
     address: worldDeploy.address,
     event: parseAbiItem(storeSetRecordEvent),
     args: { tableId: storeTables.store_Tables.tableId },
