@@ -48,13 +48,13 @@ const commandModule: CommandModule<Options, Options> = {
 
     const userOptions = args.forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
     try {
-      const testResult = await forge(["test", "--fork-url", forkRpc, ...userOptions], {
+      await forge(["test", "--fork-url", forkRpc, ...userOptions], {
         profile: args.profile,
         env: {
           WORLD_ADDRESS: worldAddress,
         },
       });
-      console.log(testResult);
+      process.exit(0);
     } catch (e) {
       console.error(e);
       process.exit(1);
