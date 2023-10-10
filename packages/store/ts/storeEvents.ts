@@ -1,3 +1,5 @@
+export const helloStoreEvent = "event HelloStore(bytes32 indexed storeVersion)";
+
 export const storeSetRecordEvent =
   "event Store_SetRecord(bytes32 indexed tableId, bytes32[] keyTuple, bytes staticData, bytes32 encodedLengths, bytes dynamicData)";
 
@@ -9,6 +11,7 @@ export const storeSpliceDynamicDataEvent =
 
 export const storeDeleteRecordEvent = "event Store_DeleteRecord(bytes32 indexed tableId, bytes32[] keyTuple)";
 
+// Store protocol events
 export const storeEvents = [
   storeSetRecordEvent,
   storeSpliceStaticDataEvent,
