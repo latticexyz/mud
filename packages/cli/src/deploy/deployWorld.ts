@@ -25,7 +25,7 @@ export async function deployWorld(client: Client<Transport, Chain | undefined, A
     throw new Error("world deploy failed");
   }
 
-  // TODO: fix receipt log type in viem to not be pending
+  // TODO: remove type casting once https://github.com/wagmi-dev/viem/pull/1330 is merged
   const deploy = logsToWorldDeploy(receipt.logs.map((log) => log as Log<bigint, number, false>));
   debug("deployed world to", deploy.address, "at block", deploy.fromBlock);
 
