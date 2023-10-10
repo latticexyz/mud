@@ -4,6 +4,7 @@ import { execa } from "execa";
 import chalk from "chalk";
 import { table, getBorderCharacters } from "table";
 import stripAnsi from "strip-ansi";
+import toArray from "stream-to-array";
 
 /**
  * Print the gas report to the console, save it to a file and compare it to a previous gas report if provided.
@@ -31,6 +32,7 @@ type Options = {
   path: string[];
   save?: string;
   compare?: string;
+  stdin?: boolean;
 };
 
 type GasReportEntry = {
@@ -52,13 +54,17 @@ const commandModule: CommandModule<Options, Options> = {
     return yargs.options({
       save: { type: "string", desc: "Save the gas report to a file" },
       compare: { type: "string", desc: "Compare to an existing gas report" },
+      stdin: {
+        type: "boolean",
+        desc: "Parse the gas report logs from stdin instead of running an internal test command",
+      },
     });
   },
 
-  async handler({ save, compare }) {
+  async handler(options) {
     let gasReport: GasReport;
     try {
-      gasReport = await runGasReport();
+      gasReport = await runGasReport(options);
     } catch (error) {
       console.error(error);
       setTimeout(() => process.exit());
@@ -66,6 +72,7 @@ const commandModule: CommandModule<Options, Options> = {
     }
 
     // If this gas report should be compared to an existing one, load the existing one
+    let { compare } = options;
     if (compare) {
       try {
         const compareGasReport: GasReport = JSON.parse(readFileSync(compare, "utf8"));
@@ -84,7 +91,7 @@ const commandModule: CommandModule<Options, Options> = {
     printGasReport(gasReport, compare);
 
     // Save gas report to file if requested
-    if (save) saveGasReport(gasReport, save);
+    if (options.save) saveGasReport(gasReport, options.save);
 
     process.exit(0);
   },
@@ -92,19 +99,27 @@ const commandModule: CommandModule<Options, Options> = {
 
 export default commandModule;
 
-async function runGasReport(): Promise<GasReport> {
+async function runGasReport(options: Options): Promise<GasReport> {
   console.log("Running gas report");
   const gasReport: GasReport = [];
 
   // Extract the logs from the child process
-  let stdout: string;
+  let logs: string;
   try {
-    // Run the generated file using forge
-    const child = execa("forge", ["test", "-vvv"], {
-      stdio: ["inherit", "pipe", "inherit"],
-      env: { GAS_REPORTER_ENABLED: "true" },
-    });
-    stdout = (await child).stdout;
+    if (options.stdin) {
+      // Read the logs from stdin and pipe them to stdout for visibility
+      console.log("Waiting for stdin...");
+      process.stdin.pipe(process.stdout);
+      logs = (await toArray(process.stdin)).map((chunk) => chunk.toString()).join("\n");
+      console.log("Done reading stdin");
+    } else {
+      // Run the default test command to capture the logs
+      const child = execa("forge", ["test", "-vvv"], {
+        stdio: ["inherit", "pipe", "inherit"],
+        env: { GAS_REPORTER_ENABLED: "true" },
+      });
+      logs = (await child).stdout;
+    }
   } catch (error: any) {
     console.log(error.stdout ?? error);
     console.log(chalk.red("\n-----------\nError while running the gas report (see above)"));
@@ -112,7 +127,7 @@ async function runGasReport(): Promise<GasReport> {
   }
 
   // Extract the gas reports from the logs
-  const lines = stdout.split("\n").map(stripAnsi);
+  const lines = logs.split("\n").map(stripAnsi);
   const gasReportPattern = /^\s*GAS REPORT: (\d+) (.*)$/;
   const testFunctionPattern = /^\[(?:PASS|FAIL).*\] (\w+)\(\)/;
   const testFilePattern = /^Running \d+ tests? for (.*):(.*)$/;

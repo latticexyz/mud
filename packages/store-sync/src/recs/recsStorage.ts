@@ -3,7 +3,7 @@ import { debug } from "./debug";
 import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, setComponent } from "@latticexyz/recs";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
-import { hexToResourceId, spliceHex } from "@latticexyz/common";
+import { hexToResource, spliceHex } from "@latticexyz/common";
 import { decodeValueArgs } from "@latticexyz/protocol-parser";
 import { Hex, size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
@@ -20,6 +20,7 @@ export type RecsStorageOptions<TConfig extends StoreConfig = StoreConfig> = {
   world: RecsWorld;
   // TODO: make config optional?
   config: TConfig;
+  shouldSkipUpdateStream?: () => boolean;
 };
 
 export type RecsStorageAdapter<TConfig extends StoreConfig = StoreConfig> = {
@@ -33,6 +34,7 @@ export type RecsStorageAdapter<TConfig extends StoreConfig = StoreConfig> = {
 export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   world,
   config,
+  shouldSkipUpdateStream,
 }: RecsStorageOptions<TConfig>): RecsStorageAdapter<TConfig> {
   world.registerEntity({ id: singletonEntity });
 
@@ -53,12 +55,17 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
           existingTable: getComponentValue(components.RegisteredTables, tableEntity)?.table,
         });
       } else {
-        setComponent(components.RegisteredTables, tableEntity, { table: newTable });
+        setComponent(
+          components.RegisteredTables,
+          tableEntity,
+          { table: newTable },
+          { skipUpdateStream: shouldSkipUpdateStream?.() }
+        );
       }
     }
 
     for (const log of logs) {
-      const { namespace, name } = hexToResourceId(log.args.tableId);
+      const { namespace, name } = hexToResource(log.args.tableId);
       const table = getComponentValue(
         components.RegisteredTables,
         getTableEntity({ address: log.address, namespace, name })
@@ -88,12 +95,17 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
           entity,
           value,
         });
-        setComponent(component, entity, {
-          ...value,
-          __staticData: log.args.staticData,
-          __encodedLengths: log.args.encodedLengths,
-          __dynamicData: log.args.dynamicData,
-        });
+        setComponent(
+          component,
+          entity,
+          {
+            ...value,
+            __staticData: log.args.staticData,
+            __encodedLengths: log.args.encodedLengths,
+            __dynamicData: log.args.dynamicData,
+          },
+          { skipUpdateStream: shouldSkipUpdateStream?.() }
+        );
       } else if (log.eventName === "Store_SpliceStaticData") {
         // TODO: add tests that this works when no record had been set before
         const previousValue = getComponentValue(component, entity);
@@ -113,10 +125,15 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
           previousValue,
           newValue,
         });
-        setComponent(component, entity, {
-          ...newValue,
-          __staticData: newStaticData,
-        });
+        setComponent(
+          component,
+          entity,
+          {
+            ...newValue,
+            __staticData: newStaticData,
+          },
+          { skipUpdateStream: shouldSkipUpdateStream?.() }
+        );
       } else if (log.eventName === "Store_SpliceDynamicData") {
         // TODO: add tests that this works when no record had been set before
         const previousValue = getComponentValue(component, entity);
@@ -137,18 +154,23 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
           previousValue,
           newValue,
         });
-        setComponent(component, entity, {
-          ...newValue,
-          __encodedLengths: log.args.encodedLengths,
-          __dynamicData: newDynamicData,
-        });
+        setComponent(
+          component,
+          entity,
+          {
+            ...newValue,
+            __encodedLengths: log.args.encodedLengths,
+            __dynamicData: newDynamicData,
+          },
+          { skipUpdateStream: shouldSkipUpdateStream?.() }
+        );
       } else if (log.eventName === "Store_DeleteRecord") {
         debug("deleting component", {
           namespace: table.namespace,
           name: table.name,
           entity,
         });
-        removeComponent(component, entity);
+        removeComponent(component, entity, { skipUpdateStream: shouldSkipUpdateStream?.() });
       }
     }
   }

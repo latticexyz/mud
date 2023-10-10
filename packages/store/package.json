@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.0-next.10",
+  "version": "2.0.0-next.11",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -54,7 +54,7 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "abitype": "0.9.3",
+    "abitype": "0.9.8",
     "zod": "^3.21.4"
   },
   "devDependencies": {

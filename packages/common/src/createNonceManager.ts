@@ -1,46 +1,47 @@
-import {
-  BaseError,
-  BlockTag,
-  Hex,
-  NonceTooHighError,
-  NonceTooLowError,
-  PublicClient,
-  TransactionExecutionError,
-} from "viem";
+import { BaseError, BlockTag, Client, Hex, NonceTooHighError, NonceTooLowError } from "viem";
 import { debug as parentDebug } from "./debug";
+import { getNonceManagerId } from "./getNonceManagerId";
+import { getTransactionCount } from "viem/actions";
+import PQueue from "p-queue";
 
 const debug = parentDebug.extend("createNonceManager");
 
-type CreateNonceManagerOptions = {
-  publicClient: PublicClient;
+export type CreateNonceManagerOptions = {
+  client: Client;
   address: Hex;
   blockTag?: BlockTag;
+  broadcastChannelName?: string;
 };
 
-type CreateNonceManagerResult = {
+export type CreateNonceManagerResult = {
   hasNonce: () => boolean;
   nextNonce: () => number;
   resetNonce: () => Promise<void>;
   shouldResetNonce: (error: unknown) => boolean;
+  mempoolQueue: PQueue;
 };
 
 export function createNonceManager({
-  publicClient,
-  address,
-  blockTag,
+  client,
+  address, // TODO: rename to account?
+  blockTag = "pending",
+  broadcastChannelName,
 }: CreateNonceManagerOptions): CreateNonceManagerResult {
   const nonceRef = { current: -1 };
-  const channel =
-    typeof BroadcastChannel !== "undefined"
-      ? // TODO: fetch chain ID or require it via types?
-        new BroadcastChannel(`mud:createNonceManager:${publicClient.chain?.id}:${address}`)
-      : null;
+  let channel: BroadcastChannel | null = null;
 
-  if (channel) {
-    channel.addEventListener("message", (event) => {
-      const nonce = JSON.parse(event.data);
-      debug("got nonce from broadcast channel", nonce);
-      nonceRef.current = nonce;
+  if (typeof BroadcastChannel !== "undefined") {
+    const channelName = broadcastChannelName
+      ? Promise.resolve(broadcastChannelName)
+      : getNonceManagerId({ client, address, blockTag });
+    channelName.then((name) => {
+      channel = new BroadcastChannel(name);
+      // TODO: emit some sort of "connected" event so other channels can broadcast current nonce
+      channel.addEventListener("message", (event) => {
+        const nonce = JSON.parse(event.data);
+        debug("got nonce from broadcast channel", nonce);
+        nonceRef.current = nonce;
+      });
     });
   }
 
@@ -56,7 +57,7 @@ export function createNonceManager({
   }
 
   async function resetNonce(): Promise<void> {
-    const nonce = await publicClient.getTransactionCount({ address, blockTag });
+    const nonce = await getTransactionCount(client, { address, blockTag });
     nonceRef.current = nonce;
     channel?.postMessage(JSON.stringify(nonceRef.current));
     debug("reset nonce to", nonceRef.current);
@@ -69,10 +70,13 @@ export function createNonceManager({
     );
   }
 
+  const mempoolQueue = new PQueue({ concurrency: 1 });
+
   return {
     hasNonce,
     nextNonce,
     resetNonce,
     shouldResetNonce,
+    mempoolQueue,
   };
 }

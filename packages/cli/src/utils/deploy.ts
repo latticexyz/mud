@@ -22,7 +22,7 @@ import { getContractData } from "./utils/getContractData";
 import { postDeploy } from "./utils/postDeploy";
 import { setInternalFeePerGas } from "./utils/setInternalFeePerGas";
 import { ContractCode } from "./utils/types";
-import { resourceIdToHex } from "@latticexyz/common";
+import { resourceToHex } from "@latticexyz/common";
 
 export interface DeployConfig {
   profile?: string;
@@ -88,7 +88,7 @@ export async function deploy(
 
   // Filters any default modules from config
   const userModules = getUserModules(defaultModuleContracts, mudConfig.modules);
-  const userModuleContracts = Object.keys(userModules).map((name) => {
+  const userModuleContracts = userModules.map(({ name }) => {
     const { abi, bytecode } = getContractData(name, forgeOutDirectory);
     return {
       name,
@@ -151,7 +151,7 @@ export async function deploy(
       nonce: nonce++,
       contract: worldContract,
       func: "registerNamespace",
-      args: [resourceIdToHex({ type: "namespace", namespace: mudConfig.namespace, name: "" })],
+      args: [resourceToHex({ type: "namespace", namespace: mudConfig.namespace, name: "" })],
     });
     console.log(chalk.green("Namespace registered"));
   }

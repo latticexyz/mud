@@ -1,5 +1,23 @@
 # @latticexyz/dev-tools
 
+## 2.0.0-next.11
+
+### Patch Changes
+
+- f99e8898: Bump viem to 1.14.0 and abitype to 0.9.8
+- Updated dependencies [08d7c471]
+- Updated dependencies [16b13ea8]
+- Updated dependencies [430e6b29]
+- Updated dependencies [f99e8898]
+- Updated dependencies [d075f82f]
+  - @latticexyz/store-sync@2.0.0-next.11
+  - @latticexyz/common@2.0.0-next.11
+  - @latticexyz/world@2.0.0-next.11
+  - @latticexyz/store@2.0.0-next.11
+  - @latticexyz/recs@2.0.0-next.11
+  - @latticexyz/react@2.0.0-next.11
+  - @latticexyz/utils@2.0.0-next.11
+
 ## 2.0.0-next.10
 
 ### Patch Changes

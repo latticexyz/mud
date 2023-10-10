@@ -1,5 +1,37 @@
 # Change Log
 
+## 2.0.0-next.11
+
+### Minor Changes
+
+- 9352648b: Since [#1564](https://github.com/latticexyz/mud/pull/1564) the World can no longer call itself via an external call.
+  This made the developer experience of calling other systems via root systems worse, since calls from root systems are executed from the context of the World.
+  The recommended approach is to use `delegatecall` to the system if in the context of a root system, and an external call via the World if in the context of a non-root system.
+  To bring back the developer experience of calling systems from other sysyems without caring about the context in which the call is executed, we added the `SystemSwitch` util.
+
+  ```diff
+  - // Instead of calling the system via an external call to world...
+  - uint256 value = IBaseWorld(_world()).callMySystem();
+
+  + // ...you can now use the `SystemSwitch` util.
+  + // This works independent of whether used in a root system or non-root system.
+  + uint256 value = abi.decode(SystemSwitch.call(abi.encodeCall(IBaseWorld.callMySystem, ()), (uint256));
+  ```
+
+  Note that if you already know your system is always executed as non-root system, you can continue to use the approach of calling other systems via the `IBaseWorld(world)`.
+
+### Patch Changes
+
+- Updated dependencies [16b13ea8]
+- Updated dependencies [430e6b29]
+- Updated dependencies [f99e8898]
+- Updated dependencies [d075f82f]
+  - @latticexyz/common@2.0.0-next.11
+  - @latticexyz/world@2.0.0-next.11
+  - @latticexyz/schema-type@2.0.0-next.11
+  - @latticexyz/store@2.0.0-next.11
+  - @latticexyz/config@2.0.0-next.11
+
 ## 2.0.0-next.10
 
 ### Patch Changes

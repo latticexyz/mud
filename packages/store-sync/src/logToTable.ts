@@ -1,7 +1,7 @@
 import { hexToSchema, decodeValue, ValueSchema } from "@latticexyz/protocol-parser";
 import { Hex, concatHex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { StorageAdapterLog, Table, schemasTable } from "./common";
-import { hexToResourceId } from "@latticexyz/common";
+import { hexToResource } from "@latticexyz/common";
 
 // TODO: add tableToLog
 
@@ -11,7 +11,7 @@ export function logToTable(log: StorageAdapterLog & { eventName: "Store_SetRecor
     console.warn("registerSchema event is expected to have only one key in key tuple, but got multiple", log);
   }
 
-  const table = hexToResourceId(tableId);
+  const table = hexToResource(tableId);
 
   const value = decodeValue(
     // TODO: remove cast when we have strong types for user types

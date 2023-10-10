@@ -1,5 +1,36 @@
 # Change Log
 
+## 2.0.0-next.11
+
+### Major Changes
+
+- 3d0b3edb: Removes `.mudbackup` file handling and `--backup`, `--restore`, and `--force` options from `mud set-version` command.
+
+  To revert to a previous MUD version, use `git diff` to find the version that you changed from and want to revert to and run `pnpm mud set-version <prior-version>` again.
+
+### Patch Changes
+
+- f99e8898: Bump viem to 1.14.0 and abitype to 0.9.8
+- Updated dependencies [16b13ea8]
+- Updated dependencies [430e6b29]
+- Updated dependencies [f99e8898]
+- Updated dependencies [9352648b]
+- Updated dependencies [ba17bdab]
+- Updated dependencies [d075f82f]
+- Updated dependencies [4385c5a4]
+- Updated dependencies [a2f41ade]
+  - @latticexyz/common@2.0.0-next.11
+  - @latticexyz/world@2.0.0-next.11
+  - @latticexyz/protocol-parser@2.0.0-next.11
+  - @latticexyz/schema-type@2.0.0-next.11
+  - @latticexyz/store@2.0.0-next.11
+  - @latticexyz/world-modules@2.0.0-next.11
+  - @latticexyz/gas-report@2.0.0-next.11
+  - @latticexyz/config@2.0.0-next.11
+  - @latticexyz/abi-ts@2.0.0-next.11
+  - @latticexyz/services@2.0.0-next.11
+  - @latticexyz/utils@2.0.0-next.11
+
 ## 2.0.0-next.10
 
 ### Patch Changes
