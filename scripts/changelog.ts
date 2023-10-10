@@ -63,9 +63,10 @@ async function appendChangelog() {
 async function renderChangelog() {
   const changes = await getChanges(INCLUDE_CHANGESETS);
   const version = await getVersion();
+  const date = new Date();
 
   return `## Version ${version}
-
+Release date: ${date.toDateString()}
 ${await renderChangelogItems("Major changes", changes.major)}
 ${await renderChangelogItems("Minor changes", changes.minor)}
 ${await renderChangelogItems("Patch changes", changes.patch)}
