@@ -1,1 +1,49 @@
 # Introduction
+
+`Store` is an alternative to Solidity's storage engine.
+It enforces a data model that can be mapped directly to a relational database,
+enables [automatic indexing](../services/indexer) by emitting events on each storage operation,
+and [packs data more tightly](./encoding) than Solidity's storage engine.
+
+## Data model
+
+Each piece of data in `Store` is stored as a _record_ in a _table_.
+You can think of tables in two ways, either as a relational database,
+or as a key-value store.
+
+- Each table is identified by a unique `ResourceId tableId`.
+- Each record in a table is identified by a unique `bytes32[] keyTuple`.
+  You can think of the key tuple as a composite key in a relational database,
+  or as a nested mapping in a key-value store.
+- Each table has a `ValueSchema` that defines the types of data stored in the table.
+  You can think of the value schema as the column types in a table in a relational database,
+  or the type of structs stored in a key-value store.
+
+## Reading and writing data
+
+The [`StoreCore`](./reference) library implements low level methods for reading and writing data
+in a `Store` contract and the [`IStore`](./reference) interface exposes some of these methods
+to external callers.
+
+Due to the lack of generics in Solidity, the only way to allow functions act on
+data of different types is to cast the data to raw "untyped" `bytes`.
+To improve the developer experience, `Store` automatically [generates
+a library for each table](./table-libraries) which acts as a type wrapper.
+These libraries provide getter and setter functions with strong types
+for the table's keys and values, encode them using the [Store encoding](./encoding)
+before passing them to the Store, and decode them before passing them back to the user.
+
+## Schema definition at runtime
+
+Unlike Solidity's storage engine,
+which requires the storage types to be known at compile time,
+`Store` allows new tables with new schemas to be registered after the `Store` contract has been deployed.
+This allows advanced use-cases like the [`World` protocol](../world/introduction).
+
+## Automatic indexing
+
+`Store` automatically emits events on every write operation,
+including when a new table is registered in the `Store` at runtime.
+These events allow [automatic indexers](../services/indexer) to replicate the onchain state of each
+table in each `Store` contract in a relational database for offchain use,
+without the need for custom integrations.
