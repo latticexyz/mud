@@ -61,3 +61,7 @@ export type Config<config extends ConfigInput> = {
   readonly systems: readonly System[];
   readonly modules: readonly Module[];
 };
+
+// Ideally, this should be an append-only list. Before adding more versions here, be sure to add backwards-compatible support for old Store/World versions.
+export const supportedStoreVersions = ["1.0.0-unaudited"];
+export const supportedWorldVersions = ["1.0.0-unaudited"];

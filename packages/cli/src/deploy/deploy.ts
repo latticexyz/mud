@@ -2,7 +2,7 @@ import { Account, Address, Chain, Client, Transport } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
-import { Config, ConfigInput, WorldDeploy } from "./common";
+import { Config, ConfigInput, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
 import { ensureSystems } from "./ensureSystems";
 import { waitForTransactionReceipt } from "viem/actions";
 import { getWorldDeploy } from "./getWorldDeploy";
@@ -26,10 +26,15 @@ export async function deploy<configInput extends ConfigInput>({
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
     : await deployWorld(client);
-  // TODO: check that world/store versions are compatible with our deploy
+
+  if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
+    throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);
+  }
+  if (!supportedWorldVersions.includes(worldDeploy.worldVersion)) {
+    throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
+  }
 
   // TODO: check if there are any namespaces we don't have access to before attempting to register things on them
-  // TODO: check for and register namespaces? these are registered by default when registering tables/systems through the world
 
   const tableTxs = await ensureTables({
     client,
