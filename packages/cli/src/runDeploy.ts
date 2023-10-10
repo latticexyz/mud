@@ -35,7 +35,10 @@ export const deployOptions = {
 
 export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
 
-/** Given some CLI arguments, finds and resolves a MUD config, foundry profile, and runs a deploy. This is used by the deploy, test, and dev-contracts CLI commands. */
+/**
+ * Given some CLI arguments, finds and resolves a MUD config, foundry profile, and runs a deploy.
+ * This is used by the deploy, test, and dev-contracts CLI commands.
+ */
 export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
