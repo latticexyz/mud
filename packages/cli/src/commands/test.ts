@@ -7,8 +7,6 @@ import { DeployOptions, deployHandler } from "../utils/deployHandler";
 
 type Options = DeployOptions & { port?: number; worldAddress?: string; forgeOptions?: string };
 
-const WORLD_ADDRESS_FILE = ".mudtest";
-
 const commandModule: CommandModule<Options, Options> = {
   command: "test",
 
@@ -48,23 +46,19 @@ const commandModule: CommandModule<Options, Options> = {
 
     console.log(chalk.blue("World address", worldAddress));
 
-    // Create a temporary file to pass the world address to the tests
-    writeFileSync(WORLD_ADDRESS_FILE, worldAddress);
-
     const userOptions = args.forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
     try {
-      const testResult = await forge(["test", "--fork-url", forkRpc, ...userOptions], {
+      await forge(["test", "--fork-url", forkRpc, ...userOptions], {
         profile: args.profile,
+        env: {
+          WORLD_ADDRESS: worldAddress,
+        },
       });
-      console.log(testResult);
+      process.exit(0);
     } catch (e) {
       console.error(e);
-      rmSync(WORLD_ADDRESS_FILE);
       process.exit(1);
     }
-
-    rmSync(WORLD_ADDRESS_FILE);
-    process.exit(0);
   },
 };
 

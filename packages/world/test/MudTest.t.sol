@@ -8,7 +8,7 @@ abstract contract MudTest is Test {
   address public worldAddress;
 
   function setUp() public virtual {
-    worldAddress = vm.parseAddress(vm.readFile(".mudtest"));
+    worldAddress = vm.envAddress("WORLD_ADDRESS");
     StoreSwitch.setStoreAddress(worldAddress);
   }
 }

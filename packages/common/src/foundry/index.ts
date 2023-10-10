@@ -84,9 +84,12 @@ export async function getRemappings(profile?: string): Promise<[string, string][
  * @param args The arguments to pass to forge
  * @param options { profile?: The foundry profile to use; silent?: If true, nothing will be logged to the console }
  */
-export async function forge(args: string[], options?: { profile?: string; silent?: boolean }): Promise<void> {
+export async function forge(
+  args: string[],
+  options?: { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv }
+): Promise<void> {
   const execOptions: Options<string> = {
-    env: { FOUNDRY_PROFILE: options?.profile },
+    env: { FOUNDRY_PROFILE: options?.profile, ...options?.env },
     stdout: "inherit",
     stderr: "pipe",
   };
