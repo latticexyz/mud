@@ -8,22 +8,22 @@ import path from "path";
 import { WorldConfig } from "@latticexyz/world";
 import { homedir } from "os";
 import { rmSync } from "fs";
-import { deployOpts, runDeploy } from "../runDeploy";
+import { deployOptions, runDeploy } from "../runDeploy";
 import { BehaviorSubject, debounceTime, exhaustMap } from "rxjs";
 import { Address } from "viem";
 
-const devOpts = {
-  rpc: deployOpts.rpc,
-  configPath: deployOpts.configPath,
+const devOptions = {
+  rpc: deployOptions.rpc,
+  configPath: deployOptions.configPath,
 };
 
-const commandModule: CommandModule<typeof devOpts, InferredOptionTypes<typeof devOpts>> = {
+const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof devOptions>> = {
   command: "dev-contracts",
 
   describe: "Start a development server for MUD contracts",
 
   builder(yargs) {
-    return yargs.options(devOpts);
+    return yargs.options(devOptions);
   },
 
   async handler(opts) {

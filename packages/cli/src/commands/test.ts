@@ -1,10 +1,10 @@
 import type { CommandModule, InferredOptionTypes, Options } from "yargs";
 import { anvil, forge, getRpcUrl } from "@latticexyz/common/foundry";
 import chalk from "chalk";
-import { deployOpts, runDeploy } from "../runDeploy";
+import { deployOptions, runDeploy } from "../runDeploy";
 
-const testOpts = {
-  ...deployOpts,
+const testOptions = {
+  ...deployOptions,
   port: { type: "number", description: "Port to run internal node for fork testing on", default: 4242 },
   worldAddress: {
     type: "string",
@@ -14,15 +14,15 @@ const testOpts = {
   forgeOptions: { type: "string", description: "Options to pass to forge test" },
 } as const satisfies Record<string, Options>;
 
-type TestOptions = InferredOptionTypes<typeof testOpts>;
+type TestOptions = InferredOptionTypes<typeof testOptions>;
 
-const commandModule: CommandModule<typeof testOpts, TestOptions> = {
+const commandModule: CommandModule<typeof testOptions, TestOptions> = {
   command: "test",
 
   describe: "Run tests in MUD contracts",
 
   builder(yargs) {
-    return yargs.options(testOpts);
+    return yargs.options(testOptions);
   },
 
   async handler(opts) {

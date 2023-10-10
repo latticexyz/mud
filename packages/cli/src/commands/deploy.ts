@@ -1,14 +1,14 @@
 import type { CommandModule } from "yargs";
 import { logError } from "../utils/errors";
-import { DeployOptions, deployOpts, runDeploy } from "../runDeploy";
+import { DeployOptions, deployOptions, runDeploy } from "../runDeploy";
 
-const commandModule: CommandModule<typeof deployOpts, DeployOptions> = {
+const commandModule: CommandModule<typeof deployOptions, DeployOptions> = {
   command: "deploy",
 
   describe: "Deploy MUD contracts",
 
   builder(yargs) {
-    return yargs.options(deployOpts);
+    return yargs.options(deployOptions);
   },
 
   async handler(opts) {

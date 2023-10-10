@@ -17,7 +17,7 @@ import { postDeploy } from "./utils/utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { tablegen } from "@latticexyz/store/codegen";
 
-export const deployOpts = {
+export const deployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
   clean: {
     type: "boolean",
@@ -33,7 +33,7 @@ export const deployOpts = {
   skipBuild: { type: "boolean", desc: "Skip rebuilding the contracts before deploying" },
 } as const satisfies Record<string, Options>;
 
-export type DeployOptions = InferredOptionTypes<typeof deployOpts>;
+export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
 
 /** Given some CLI arguments, finds and resolves a MUD config, foundry profile, and runs a deploy. This is used by the deploy, test, and dev-contracts CLI commands. */
 export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
