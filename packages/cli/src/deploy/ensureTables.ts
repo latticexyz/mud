@@ -14,7 +14,7 @@ export async function ensureTables({
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly worldDeploy: WorldDeploy;
-  readonly tables: Table[];
+  readonly tables: readonly Table[];
 }): Promise<readonly Hex[]> {
   const worldTables = await getTables({ client, worldDeploy });
   const worldTableIds = worldTables.map((table) => table.tableId);
