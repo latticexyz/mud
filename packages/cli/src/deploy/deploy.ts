@@ -18,7 +18,12 @@ type DeployOptions<configInput extends ConfigInput> = {
   worldAddress?: Address;
 };
 
-/** Given a viem client and MUD config, we attempt to introspect the world (or deploy a new one if no world address is provided) and do the minimal amount of work to make the world match the config (e.g. deploy new tables, replace systems, etc.) */
+/**
+ * Given a viem client and MUD config, we attempt to introspect the world
+ * (or deploy a new one if no world address is provided) and do the minimal
+ * amount of work to make the world match the config (e.g. deploy new tables,
+ * replace systems, etc.)
+ */
 export async function deploy<configInput extends ConfigInput>({
   client,
   config,
