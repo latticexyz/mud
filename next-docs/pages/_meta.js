@@ -1,8 +1,30 @@
 import worldPackageJson from "../../packages/world/package.json" assert { type: "json" };
 
 export default {
+  index: "Overview",
+  quickstart: "Quickstart",
+  introduction: "Introduction",
+  "protocol-vs-framework": "Protocol vs. Framework",
+  protocol: {
+    title: "Protocol",
+    type: "separator",
+  },
+  store: "Store",
+  world: "World",
+  framework: {
+    title: "Framework",
+    type: "separator",
+  },
+  cli: "Command Line Interface",
+  "state-synchronization": "State Synchronization",
+  "state-query": "State Query",
+  services: "Services",
+  plugins: "Plugins",
+  templates: "Templates",
+  guides: "Guides",
   changelog: "Changelog",
   retrospectives: "Retrospectives",
+  // --------------------
   version: {
     title: worldPackageJson.version,
     type: "menu",
