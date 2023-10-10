@@ -78,7 +78,7 @@ export async function ensureSystems({
         worldSystem.systemId === system.systemId && getAddress(worldSystem.address) === getAddress(system.address)
     )
   );
-  if (existing.length > 0) {
+  if (existing.length) {
     debug("existing systems", existing.map(resourceLabel).join(", "));
   }
   const existingSystemIds = existing.map((system) => system.systemId);

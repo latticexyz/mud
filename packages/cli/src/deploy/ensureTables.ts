@@ -20,12 +20,12 @@ export async function ensureTables({
   const worldTableIds = worldTables.map((table) => table.tableId);
 
   const existingTables = tables.filter((table) => worldTableIds.includes(table.tableId));
-  if (existingTables.length > 0) {
+  if (existingTables.length) {
     debug("existing tables", existingTables.map(resourceLabel).join(", "));
   }
 
   const missingTables = tables.filter((table) => !worldTableIds.includes(table.tableId));
-  if (missingTables.length > 0) {
+  if (missingTables.length) {
     debug("registering tables", missingTables.map(resourceLabel).join(", "));
     return await Promise.all(
       missingTables.map((table) =>
