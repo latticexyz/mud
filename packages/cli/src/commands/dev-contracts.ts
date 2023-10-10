@@ -66,7 +66,8 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
     let worldAddress: Address | undefined;
 
     const deploys$ = lastChange$.pipe(
-      debounceTime(100),
+      // debounce so that a large batch of file changes only triggers a deploy after it settles down, rather than the first change it sees (and then redeploying immediately after)
+      debounceTime(200),
       exhaustMap(async (lastChange) => {
         if (worldAddress) {
           console.log(chalk.blue("Change detected, rebuilding and running deploy..."));
