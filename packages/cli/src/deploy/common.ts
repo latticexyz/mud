@@ -3,8 +3,8 @@ import storeConfig from "@latticexyz/store/mud.config.js";
 import worldConfig from "@latticexyz/world/mud.config.js";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import { Tables, configToTables } from "./configToTables";
-import { StoreConfig } from "@latticexyz/store";
-import { WorldConfig } from "@latticexyz/world";
+import { StoreConfig, helloStoreEvent } from "@latticexyz/store";
+import { WorldConfig, helloWorldEvent } from "@latticexyz/world";
 
 export const salt = padHex("0x", { size: 32 });
 
@@ -12,13 +12,9 @@ export const salt = padHex("0x", { size: 32 });
 export const storeTables = configToTables(storeConfig);
 export const worldTables = configToTables(worldConfig);
 
-export const worldAbi = IBaseWorldAbi;
+export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
 
-// TODO: add tests that these stay in sync with WorldFactory and IBaseWorld ABIs
-// TODO: move these to world package?
-export const worldDeployedEvent = "event WorldDeployed(address indexed newContract)";
-export const helloWorldEvent = "event HelloWorld(bytes32 indexed worldVersion)";
-export const helloStoreEvent = "event HelloStore(bytes32 indexed storeVersion)";
+export const worldAbi = IBaseWorldAbi;
 
 export type WorldDeploy = {
   readonly address: Address;

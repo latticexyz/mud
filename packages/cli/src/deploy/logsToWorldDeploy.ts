@@ -1,5 +1,5 @@
 import { AbiEventSignatureNotFoundError, Log, decodeEventLog, hexToString, parseAbi, trim } from "viem";
-import { WorldDeploy, helloStoreEvent, helloWorldEvent } from "./common";
+import { WorldDeploy, worldDeployEvents } from "./common";
 import { isDefined } from "@latticexyz/common/utils";
 
 export function logsToWorldDeploy(logs: readonly Log<bigint, number, false>[]): Omit<WorldDeploy, "toBlock"> {
@@ -10,7 +10,7 @@ export function logsToWorldDeploy(logs: readonly Log<bigint, number, false>[]): 
           ...log,
           ...decodeEventLog({
             strict: true,
-            abi: parseAbi([helloWorldEvent, helloStoreEvent]),
+            abi: parseAbi(worldDeployEvents),
             topics: log.topics,
             data: log.data,
           }),

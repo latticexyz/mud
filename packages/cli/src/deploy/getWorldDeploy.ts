@@ -1,6 +1,6 @@
 import { Client, Address, getAddress, parseAbi } from "viem";
 import { getBlockNumber, getLogs } from "viem/actions";
-import { WorldDeploy, helloStoreEvent, helloWorldEvent } from "./common";
+import { WorldDeploy, worldDeployEvents } from "./common";
 import { debug } from "./debug";
 import { logsToWorldDeploy } from "./logsToWorldDeploy";
 
@@ -20,7 +20,7 @@ export async function getWorldDeploy(client: Client, worldAddress: Address): Pro
   const logs = await getLogs(client, {
     strict: true,
     address,
-    events: parseAbi([helloWorldEvent, helloStoreEvent]),
+    events: parseAbi(worldDeployEvents),
     fromBlock: "earliest",
     toBlock,
   });
