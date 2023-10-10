@@ -114,4 +114,4 @@ export default mudConfig({
     // (see: https://github.com/latticexyz/mud/issues/631)
     "StoreRegistrationSystem",
   ],
-} as const);
+});
