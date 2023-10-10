@@ -1,4 +1,4 @@
-import { BigNumber, ContractInterface, ethers } from "ethers";
+import { ContractInterface } from "ethers";
 
 export type CallData = {
   func: string;

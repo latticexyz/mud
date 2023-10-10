@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { ParamType } from "ethers/lib/utils.js";
 import { getContractData } from "../utils/getContractData";
 
@@ -10,12 +9,6 @@ export function loadFunctionSignatures(contractName: string, forgeOutDirectory: 
     .map((item) => {
       return `${item.name}${parseComponents(item.inputs)}`;
     });
-}
-
-// TODO: move this to utils as soon as utils are usable inside cli
-// (see https://github.com/latticexyz/mud/issues/499)
-export function toFunctionSelector(functionSignature: string): string {
-  return sigHash(functionSignature);
 }
 
 /**
@@ -33,10 +26,4 @@ function parseComponents(params: ParamType[]): string {
     }
   });
   return `(${components})`;
-}
-
-// TODO: move this to utils as soon as utils are usable inside cli
-// (see https://github.com/latticexyz/mud/issues/499)
-function sigHash(signature: string) {
-  return ethers.utils.hexDataSlice(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(signature)), 0, 4);
 }
