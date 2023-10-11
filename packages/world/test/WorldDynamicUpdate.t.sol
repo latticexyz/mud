@@ -48,6 +48,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
+    StoreSwitch.setStoreAddress(world);
 
     key = "testKey";
     keyTuple = new bytes32[](1);
@@ -85,7 +86,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
     FieldLayout fieldLayout = AddressArray.getFieldLayout();
 
     // Expect the data to be written
-    assertEq(AddressArray.get(world, tableId, key), initData);
+    assertEq(AddressArray.get(tableId, key), initData);
 
     // Pop 1 item
     uint256 byteLengthToPop = 20;
@@ -95,7 +96,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
     endGasReport();
 
     // Expect the data to be updated
-    address[] memory loadedData = AddressArray.get(world, tableId, key);
+    address[] memory loadedData = AddressArray.get(tableId, key);
     assertEq(loadedData.length, initData.length - 1);
     for (uint256 i; i < loadedData.length; i++) {
       assertEq(loadedData[i], initData[i]);
@@ -109,7 +110,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
     endGasReport();
 
     // Expect the data to be updated
-    loadedData = AddressArray.get(world, tableId, key);
+    loadedData = AddressArray.get(tableId, key);
     assertEq(loadedData.length, initData.length - 2);
     for (uint256 i; i < loadedData.length; i++) {
       assertEq(loadedData[i], initData[i]);
@@ -121,7 +122,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
     byteLengthToPop = 20 * 2;
     world.popFromDynamicField(tableId, keyTuple, 0, byteLengthToPop);
     // Expect the data to be updated
-    loadedData = AddressArray.get(world, tableId, key);
+    loadedData = AddressArray.get(tableId, key);
     assertEq(loadedData.length, initData.length - 2);
     for (uint256 i; i < loadedData.length; i++) {
       assertEq(loadedData[i], initData[i]);
@@ -141,7 +142,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
 
   function testSpliceDynamicData() public {
     // Expect the data to be written
-    assertEq(AddressArray.get(world, tableId, key), initData);
+    assertEq(AddressArray.get(tableId, key), initData);
 
     // Update index 0
     address[] memory dataForUpdate = new address[](1);
@@ -158,7 +159,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
 
     // Expect the data to be updated
     initData[0] = dataForUpdate[0];
-    assertEq(AddressArray.get(world, tableId, key), initData);
+    assertEq(AddressArray.get(tableId, key), initData);
 
     // Update index 1 via direct access
     world.spliceDynamicData(
@@ -172,7 +173,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
 
     // Expect the data to be updated
     initData[1] = dataForUpdate[0];
-    assertEq(AddressArray.get(world, tableId, key), initData);
+    assertEq(AddressArray.get(tableId, key), initData);
 
     // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), tableId);

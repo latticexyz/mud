@@ -36,6 +36,8 @@ contract WorldBalanceTest is Test, GasReporter {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
+    StoreSwitch.setStoreAddress(world);
+
     world.registerSystem(rootSystemId, rootSystem, true);
     world.registerSystem(nonRootSystemId, nonRootSystem, true);
 
@@ -47,8 +49,8 @@ contract WorldBalanceTest is Test, GasReporter {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
-    assertEq(Balances.get(world, namespaceId), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(namespaceId), 0);
 
     // Call a function on the root system with value via call
     vm.deal(caller, value);
@@ -57,7 +59,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(abi.decode(data, (uint256)), value);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Call a function on a non-root system with value via call
     vm.deal(caller, value);
@@ -66,18 +68,18 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(abi.decode(data, (uint256)), value);
 
     // Expect the non root namespace to have the value as balance
-    assertEq(Balances.get(world, namespaceId), value);
+    assertEq(Balances.get(namespaceId), value);
 
     // Expect the root namespace to still have the same balance as before
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
   }
 
   function testCallFromWithValue() public {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
-    assertEq(Balances.get(world, namespaceId), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(namespaceId), 0);
 
     // Call a function on the root system with value via callFrom
     vm.deal(caller, value);
@@ -86,7 +88,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(abi.decode(data, (uint256)), value);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Call a function on a non-root system with value via callFrom
     vm.deal(caller, value);
@@ -95,18 +97,18 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(abi.decode(data, (uint256)), value);
 
     // Expect the non root namespace to have the value as balance
-    assertEq(Balances.get(world, namespaceId), value);
+    assertEq(Balances.get(namespaceId), value);
 
     // Expect the root namespace to still have the same balance as before
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
   }
 
   function testFallbackWithValue() public {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
-    assertEq(Balances.get(world, namespaceId), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(namespaceId), 0);
 
     // Call a function on the root system with value via the registered root function selector
     vm.deal(caller, value);
@@ -116,7 +118,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(abi.decode(data, (uint256)), value);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Call a function on a non-root system with value
     vm.deal(caller, value);
@@ -126,17 +128,17 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(abi.decode(data, (uint256)), value);
 
     // Expect the non root namespace to have the value as balance
-    assertEq(Balances.get(world, namespaceId), value);
+    assertEq(Balances.get(namespaceId), value);
 
     // Expect the root namespace to still have the same balance as before
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
   }
 
   function testReceiveWithValue() public {
     uint256 value = 1 ether;
 
     // Expect the root to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
 
     // Send value to the world without calldata
     vm.deal(caller, value);
@@ -146,15 +148,15 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(data.length, 0);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
   }
 
   function testTransferBalanceToNamespace() public {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
-    assertEq(Balances.get(world, namespaceId), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(namespaceId), 0);
 
     // Send balance to root namespace
     vm.deal(caller, value);
@@ -164,24 +166,24 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(data.length, 0);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Transfer the balance to another namespace
     world.transferBalanceToNamespace(ROOT_NAMESPACE_ID, namespaceId, value);
 
     // Expect the root namespace to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
 
     // Expect the non root namespace to have the value as balance
-    assertEq(Balances.get(world, namespaceId), value);
+    assertEq(Balances.get(namespaceId), value);
   }
 
   function testTransferBalanceToNamespaceRevertInsufficientBalance() public {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
-    assertEq(Balances.get(world, namespaceId), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(namespaceId), 0);
 
     // Send balance to root namespace
     vm.deal(caller, value);
@@ -191,25 +193,25 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(data.length, 0);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Expect revert when attempting to transfer more than the balance
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InsufficientBalance.selector, value, value + 1));
     world.transferBalanceToNamespace(ROOT_NAMESPACE_ID, namespaceId, value + 1);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Expect the non root namespace to have no balance
-    assertEq(Balances.get(world, namespaceId), 0);
+    assertEq(Balances.get(namespaceId), 0);
   }
 
   function testTransferBalanceToNamespaceRevertAccessDenied() public {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
-    assertEq(Balances.get(world, namespaceId), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(namespaceId), 0);
 
     // Send balance to root namespace
     vm.deal(caller, value);
@@ -219,7 +221,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(data.length, 0);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Expect revert when attempting to transfer from a namespace without access
     vm.prank(caller);
@@ -229,17 +231,17 @@ contract WorldBalanceTest is Test, GasReporter {
     world.transferBalanceToNamespace(ROOT_NAMESPACE_ID, namespaceId, value);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Expect the non root namespace to have no balance
-    assertEq(Balances.get(world, namespaceId), 0);
+    assertEq(Balances.get(namespaceId), 0);
   }
 
   function testTransferBalanceToNamespaceRevertInvalidResourceType() public {
     uint256 value = 1 ether;
 
     // Expect the root namespace to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
 
     // Send balance to root namespace
     vm.deal(caller, value);
@@ -249,7 +251,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(data.length, 0);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Expect revert when attempting to transfer to an invalid namespace
     ResourceId invalidNamespace = WorldResourceIdLib.encode({ typeId: "xx", namespace: "something", name: "invalid" });
@@ -265,18 +267,18 @@ contract WorldBalanceTest is Test, GasReporter {
     world.transferBalanceToNamespace(ROOT_NAMESPACE_ID, invalidNamespace, value);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Expect the non root namespace to have no balance
-    assertEq(Balances.get(world, invalidNamespace), 0);
+    assertEq(Balances.get(invalidNamespace), 0);
   }
 
   function testTransferBalanceToAddress() public {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
-    assertEq(Balances.get(world, namespaceId), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(namespaceId), 0);
 
     // Send balance to root namespace
     vm.deal(caller, value);
@@ -286,7 +288,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(data.length, 0);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Expect the receiver to not have any balance
     address receiver = address(1234);
@@ -296,7 +298,7 @@ contract WorldBalanceTest is Test, GasReporter {
     world.transferBalanceToAddress(ROOT_NAMESPACE_ID, receiver, value);
 
     // Expect the root namespace to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
 
     // Expect the receiver to have value as balance
     assertEq(receiver.balance, value);
@@ -306,8 +308,8 @@ contract WorldBalanceTest is Test, GasReporter {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
-    assertEq(Balances.get(world, namespaceId), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(namespaceId), 0);
 
     // Send balance to root namespace
     vm.deal(caller, value);
@@ -317,7 +319,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(data.length, 0);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Expect the receiver to not have any balance
     address receiver = address(1234);
@@ -328,7 +330,7 @@ contract WorldBalanceTest is Test, GasReporter {
     world.transferBalanceToAddress(ROOT_NAMESPACE_ID, receiver, value + 1);
 
     // Expect the root namespace to have value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Expect the receiver to have no balance
     assertEq(receiver.balance, 0);
@@ -338,8 +340,8 @@ contract WorldBalanceTest is Test, GasReporter {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), 0);
-    assertEq(Balances.get(world, namespaceId), 0);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
+    assertEq(Balances.get(namespaceId), 0);
 
     // Send balance to root namespace
     vm.deal(caller, value);
@@ -349,7 +351,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(data.length, 0);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Expect the receiver to not have any balance
     address receiver = address(1234);
@@ -367,7 +369,7 @@ contract WorldBalanceTest is Test, GasReporter {
     world.transferBalanceToAddress(ROOT_NAMESPACE_ID, receiver, value);
 
     // Expect the root namespace to have the value as balance
-    assertEq(Balances.get(world, ROOT_NAMESPACE_ID), value);
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
 
     // Expect the receiver to have no balance
     assertEq(receiver.balance, 0);

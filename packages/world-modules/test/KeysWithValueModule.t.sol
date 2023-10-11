@@ -52,6 +52,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     sourceTableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
+    StoreSwitch.setStoreAddress(world);
     keyTuple1 = new bytes32[](1);
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
@@ -93,7 +94,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with this value from the target table
-    bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value)));
+    bytes32[] memory keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
@@ -109,7 +110,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value1), PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get the list of entities with value1 from the target table
-    bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value1)));
+    bytes32[] memory keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "1");
@@ -119,7 +120,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value1), PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value1)));
+    keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 2);
@@ -134,14 +135,14 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with value1 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value1)));
+    keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "5");
     assertEq(keysWithValue[0], key2, "6");
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value2)));
+    keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value2)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "7");
@@ -153,7 +154,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value2)));
+    keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value2)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 0, "9");
@@ -170,7 +171,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with value1 from the target table
-    bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
+    bytes32[] memory keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encode(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
@@ -184,13 +185,13 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with value1 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
+    keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encode(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 0);
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value2)));
+    keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encode(value2)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
