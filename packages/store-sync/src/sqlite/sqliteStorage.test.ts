@@ -64,7 +64,7 @@ describe("sqliteStorage", async () => {
         {
           "chainId": 31337,
           "lastError": null,
-          "lastUpdatedBlockNumber": 5n,
+          "lastUpdatedBlockNumber": 12n,
           "schemaVersion": 1,
         },
       ]
@@ -73,11 +73,11 @@ describe("sqliteStorage", async () => {
     expect(db.select().from(mudStoreTables).where(eq(mudStoreTables.name, "NumberList")).all()).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-          "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3____NumberList",
+          "address": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342",
+          "id": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342____NumberList",
           "keySchema": {},
           "lastError": null,
-          "lastUpdatedBlockNumber": 5n,
+          "lastUpdatedBlockNumber": 12n,
           "name": "NumberList",
           "namespace": "",
           "schemaVersion": 1,
@@ -93,11 +93,11 @@ describe("sqliteStorage", async () => {
     expect(tables).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-          "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3____NumberList",
+          "address": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342",
+          "id": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342____NumberList",
           "keySchema": {},
           "lastError": null,
-          "lastUpdatedBlockNumber": 5n,
+          "lastUpdatedBlockNumber": 12n,
           "name": "NumberList",
           "namespace": "",
           "schemaVersion": 1,
@@ -117,7 +117,7 @@ describe("sqliteStorage", async () => {
           "__encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
           "__isDeleted": false,
           "__key": "0x",
-          "__lastUpdatedBlockNumber": 5n,
+          "__lastUpdatedBlockNumber": 12n,
           "__staticData": null,
           "value": [
             420,
