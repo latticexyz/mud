@@ -19,7 +19,9 @@ export type FieldLayout = {
 };
 
 // TODO: helper to filter user types to StaticAbiType
-export type UserTypes = Record<string, { internalType: SchemaAbiType }>;
+export type UserTypes = Record<string, SchemaAbiType>;
+
+type StringLiteralUnion = string & Record<never, never>;
 
 export type KeySchema<userTypes extends UserTypes | undefined = undefined> = Record<
   string,

@@ -6,8 +6,34 @@ import { Hex } from "viem";
 
 // TODO: we shouldn't need this file once our config parsing returns nicely formed tables
 
-type UserTypes<config extends StoreConfig = StoreConfig> = config["userTypes"] & {
-  [k in keyof config["enums"]]: { internalType: "uint8" };
+type UserTypes<config extends StoreConfig = StoreConfig> = (config["userTypes"] extends Record<
+  string,
+  { readonly internalType: SchemaAbiType }
+>
+  ? {
+      readonly [k in keyof config["userTypes"]]: config["userTypes"][k]["internalType"];
+    }
+  : Record<never, never>) &
+  (config["enums"] extends Record<string, string[]>
+    ? {
+        readonly [k in keyof config["enums"]]: "uint8";
+      }
+    : Record<never, never>);
+
+type ResolveValueSchema<config extends StoreConfig, valueSchema extends ValueSchema<UserTypes<config>>> = {
+  readonly [k in keyof valueSchema & string]: config["userTypes"][k]["internalType"] extends SchemaAbiType
+    ? config["userTypes"][k]["internalType"]
+    : config["enums"][k] extends string[]
+    ? "uint8"
+    : valueSchema[k];
+};
+
+type ResolveKeySchema<config extends StoreConfig, keySchema extends KeySchema<UserTypes<config>>> = {
+  readonly [k in keyof keySchema & string]: config["userTypes"][k]["internalType"] extends StaticAbiType
+    ? config["userTypes"][k]["internalType"]
+    : config["enums"][k] extends string[]
+    ? "uint8"
+    : keySchema[k];
 };
 
 export type TableKey<
@@ -22,20 +48,8 @@ export type Table<
   readonly namespace: config["namespace"];
   readonly name: table["name"];
   readonly tableId: Hex;
-  readonly keySchema: table["keySchema"] extends KeySchema<UserTypes<config>>
-    ? KeySchema & {
-        readonly [k in keyof table["keySchema"]]: UserTypes<config>[table["keySchema"][k]]["internalType"] extends StaticAbiType
-          ? UserTypes<config>[table["keySchema"][k]]["internalType"]
-          : table["keySchema"][k];
-      }
-    : KeySchema;
-  readonly valueSchema: table["valueSchema"] extends ValueSchema<UserTypes<config>>
-    ? {
-        readonly [k in keyof table["valueSchema"]]: UserTypes<config>[table["valueSchema"][k]]["internalType"] extends SchemaAbiType
-          ? UserTypes<config>[table["valueSchema"][k]]["internalType"]
-          : table["valueSchema"][k];
-      }
-    : ValueSchema;
+  readonly keySchema: ResolveKeySchema<config, table["keySchema"]>;
+  readonly valueSchema: ResolveValueSchema<config, table["valueSchema"]>;
 };
 
 export type Tables<config extends StoreConfig = StoreConfig> = {
