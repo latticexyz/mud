@@ -7,6 +7,6 @@
 The following CLI arguments are now removed from these commands:
 
 - `--debug` (you can now adjust CLI output with `DEBUG` environment variable, e.g. `DEBUG=mud:*`)
-- `--priority-fee-multiplier` (now calculated automatically)
+- `--priorityFeeMultiplier` (now calculated automatically)
 - `--disableTxWait` (everything is now parallelized with smarter nonce management)
 - `--pollInterval` (we now lean on viem defaults and we don't wait/poll until the very end of the deploy)
