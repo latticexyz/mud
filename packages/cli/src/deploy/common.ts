@@ -22,7 +22,11 @@ export type WorldDeploy = {
   readonly storeVersion: string;
   /** Block number where the world was deployed */
   readonly deployBlock: bigint;
-  /** Block number at the time of fetching world deploy. We use this block number when requesting data from the chain to align chain state with the same block during the introspection steps of the deploy. */
+  /**
+   * Block number at the time of fetching world deploy.
+   * We use this block number when requesting data from the chain to align chain state
+   * with the same block during the introspection steps of the deploy.
+   */
   readonly stateBlock: bigint;
 };
 
