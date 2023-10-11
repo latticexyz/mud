@@ -10,3 +10,5 @@ The following CLI arguments are now removed from these commands:
 - `--priorityFeeMultiplier` (now calculated automatically)
 - `--disableTxWait` (everything is now parallelized with smarter nonce management)
 - `--pollInterval` (we now lean on viem defaults and we don't wait/poll until the very end of the deploy)
+
+Most deployment-in-progress logs are now behind a [debug](https://github.com/debug-js/debug) flag, which you can enable with a `DEBUG=mud:*` environment variable.
