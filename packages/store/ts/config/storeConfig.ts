@@ -23,7 +23,7 @@ import {
 } from "@latticexyz/config";
 import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 import { UserType } from "@latticexyz/common/codegen";
-import { SchemaAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType, schemaAbiTypes } from "@latticexyz/schema-type";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
@@ -301,7 +301,7 @@ export type FullUserTypesConfig<UserTypeNames extends StringForUnion> = {
 
 const zUserTypeConfig = z.object({
   filePath: z.string(),
-  internalType: z.enum<AbiType, [AbiType, ...AbiType[]]>(AbiTypes as [AbiType, ...AbiType[]]),
+  internalType: z.enum(schemaAbiTypes),
 });
 
 export const zUserTypesConfig = z.object({
