@@ -4,10 +4,18 @@ import { resourceToHex, hexToResource } from "@latticexyz/common";
 import { resolveWithContext } from "@latticexyz/config";
 import { encodeField } from "@latticexyz/protocol-parser";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
-import { getFunctionSelector, Hex, getCreate2Address, getAddress, hexToBytes, Abi, bytesToHex } from "viem";
+import {
+  getFunctionSelector,
+  Hex,
+  getCreate2Address,
+  getAddress,
+  hexToBytes,
+  Abi,
+  bytesToHex,
+  getFunctionSignature,
+} from "viem";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { defaultModuleContracts } from "../utils/modules/constants";
-import { loadFunctionSignatures } from "../utils/systems/utils";
 import { getContractData } from "../utils/utils/getContractData";
 import { configToTables } from "./configToTables";
 import { deployer } from "./ensureDeployer";
@@ -29,7 +37,10 @@ export function resolveConfig<config extends ConfigInput>({
   // TODO: should the config parser/loader help with resolving systems?
   const contractNames = getExistingContracts(forgeSourceDir).map(({ basename }) => basename);
   const resolvedConfig = resolveWorldConfig(config, contractNames);
-  const baseSystemFunctions = loadFunctionSignatures("System", forgeOutDir);
+  const baseSystemContractData = getContractData("System", forgeOutDir);
+  const baseSystemFunctions = baseSystemContractData.abi
+    .filter((item): item is typeof item & { type: "function" } => item.type === "function")
+    .map(getFunctionSignature);
 
   const systems = Object.entries(resolvedConfig.systems).map(([systemName, system]) => {
     const namespace = config.namespace;
@@ -37,7 +48,9 @@ export function resolveConfig<config extends ConfigInput>({
     const systemId = resourceToHex({ type: "system", namespace, name });
     const contractData = getContractData(systemName, forgeOutDir);
 
-    const systemFunctions = loadFunctionSignatures(systemName, forgeOutDir)
+    const systemFunctions = contractData.abi
+      .filter((item): item is typeof item & { type: "function" } => item.type === "function")
+      .map(getFunctionSignature)
       .filter((sig) => !baseSystemFunctions.includes(sig))
       .map((sig): WorldFunction => {
         // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
