@@ -93,13 +93,6 @@ library FunctionSignatures {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Set the full data using individual values.
    */
   function set(bytes4 functionSelector, string memory functionSignature) internal {
@@ -125,20 +118,6 @@ library FunctionSignatures {
     _keyTuple[0] = bytes32(functionSelector);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
-  }
-
-  /**
-   * @notice Set the full data using individual values (using the specified store).
-   */
-  function set(IStore _store, bytes4 functionSelector, string memory functionSignature) internal {
-    bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(functionSignature);
-    bytes memory _dynamicData = encodeDynamic(functionSignature);
-
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /**
@@ -188,16 +167,6 @@ library FunctionSignatures {
     _keyTuple[0] = bytes32(functionSelector);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, bytes4 functionSelector) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

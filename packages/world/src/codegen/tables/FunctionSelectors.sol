@@ -98,13 +98,6 @@ library FunctionSelectors {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get systemId.
    */
   function getSystemId(bytes4 functionSelector) internal view returns (ResourceId systemId) {
@@ -127,17 +120,6 @@ library FunctionSelectors {
   }
 
   /**
-   * @notice Get systemId (using the specified store).
-   */
-  function getSystemId(IStore _store, bytes4 functionSelector) internal view returns (ResourceId systemId) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return ResourceId.wrap(bytes32(_blob));
-  }
-
-  /**
    * @notice Set systemId.
    */
   function setSystemId(bytes4 functionSelector, ResourceId systemId) internal {
@@ -155,16 +137,6 @@ library FunctionSelectors {
     _keyTuple[0] = bytes32(functionSelector);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set systemId (using the specified store).
-   */
-  function setSystemId(IStore _store, bytes4 functionSelector, ResourceId systemId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
   }
 
   /**
@@ -190,20 +162,6 @@ library FunctionSelectors {
   }
 
   /**
-   * @notice Get systemFunctionSelector (using the specified store).
-   */
-  function getSystemFunctionSelector(
-    IStore _store,
-    bytes4 functionSelector
-  ) internal view returns (bytes4 systemFunctionSelector) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (bytes4(_blob));
-  }
-
-  /**
    * @notice Set systemFunctionSelector.
    */
   function setSystemFunctionSelector(bytes4 functionSelector, bytes4 systemFunctionSelector) internal {
@@ -221,16 +179,6 @@ library FunctionSelectors {
     _keyTuple[0] = bytes32(functionSelector);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((systemFunctionSelector)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set systemFunctionSelector (using the specified store).
-   */
-  function setSystemFunctionSelector(IStore _store, bytes4 functionSelector, bytes4 systemFunctionSelector) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((systemFunctionSelector)), _fieldLayout);
   }
 
   /**
@@ -256,24 +204,6 @@ library FunctionSelectors {
     _keyTuple[0] = bytes32(functionSelector);
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
-      _tableId,
-      _keyTuple,
-      _fieldLayout
-    );
-    return decode(_staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
-   * @notice Get the full data (using the specified store).
-   */
-  function get(
-    IStore _store,
-    bytes4 functionSelector
-  ) internal view returns (ResourceId systemId, bytes4 systemFunctionSelector) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -309,21 +239,6 @@ library FunctionSelectors {
     _keyTuple[0] = bytes32(functionSelector);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
-  }
-
-  /**
-   * @notice Set the full data using individual values (using the specified store).
-   */
-  function set(IStore _store, bytes4 functionSelector, ResourceId systemId, bytes4 systemFunctionSelector) internal {
-    bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
-
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
-
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /**
@@ -367,16 +282,6 @@ library FunctionSelectors {
     _keyTuple[0] = bytes32(functionSelector);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, bytes4 functionSelector) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**
