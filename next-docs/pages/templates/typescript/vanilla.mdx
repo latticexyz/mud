@@ -1,6 +1,6 @@
 # Vanilla
 
-The vanilla template uses standard HTML and JavaScript to communicate with the user.
+The vanilla template uses plain HTML and JavaScript for the web client.
 
 ## Onchain code
 
@@ -30,7 +30,7 @@ Import the script that runs most of the application.
 <div>Counter: <span id="counter">0</span></div>
 ```
 
-Create [an HTML span](https://www.w3schools.com/tags/tag_span.asp) that JavaScript code can update.
+Create [an HTML span](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span) that JavaScript code can update.
 This span will be updated every time the value of the counter changes.
 
 ```html
@@ -54,7 +54,7 @@ components.Counter.update$.subscribe((update) => {
 ```
 
 Specify a function to be called when the value of `Counter` changes.
-This function emits [a log message](https://www.w3schools.com/jsref/met_console_log.asp) and then updates the `counter` span.
+This function emits [a log message](https://developer.mozilla.org/en-US/docs/Web/API/console/log) and then updates the `counter` span.
 
 ```ts
 // Just for demonstration purposes: we create a global function that can be
