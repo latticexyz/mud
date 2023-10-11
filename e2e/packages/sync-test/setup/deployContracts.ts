@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { execa } from "execa";
 
 export function deployContracts(rpc: string) {
-  const deploymentProcess = execa("pnpm", ["mud", "deploy", "--rpc", rpc, "--disableTxWait"], {
+  const deploymentProcess = execa("pnpm", ["mud", "deploy", "--rpc", rpc], {
     cwd: "../contracts",
     stdio: "pipe",
   });
