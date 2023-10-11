@@ -98,11 +98,12 @@ in your contracts directory to use the default anvil private key.`
   }
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
+  const deploymentInfo = {
+    worldAddress: worldDeploy.address,
+    blockNumber: Number(worldDeploy.deployBlock),
+  };
+
   if (opts.saveDeployment) {
-    const deploymentInfo = {
-      worldAddress: worldDeploy.address,
-      blockNumber: Number(worldDeploy.fromBlock),
-    };
     const chainId = await getChainId(client);
     const deploysDir = path.join(config.deploysDirectory, chainId.toString());
     mkdirSync(deploysDir, { recursive: true });
@@ -123,6 +124,8 @@ in your contracts directory to use the default anvil private key.`
       chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${config.worldsFile} and ${deploysDir}): \n`))
     );
   }
+
+  console.log(deploymentInfo);
 
   return worldDeploy;
 }
