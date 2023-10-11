@@ -34,7 +34,7 @@ Added TS helpers for calling systems dynamically via the World.
     systemId: resourceToHex({ ... }),
     functionName: "registerDelegation",
     args: [ ... ],
-  }));
+  }]));
   ```
 
 - `encodeSystemCallsFrom` for `world.batchCallFrom`
@@ -43,5 +43,5 @@ Added TS helpers for calling systems dynamically via the World.
     systemId: resourceToHex({ ... }),
     functionName: "registerDelegation",
     args: [ ... ],
-  }));
+  }]));
   ```
