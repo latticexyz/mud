@@ -44,7 +44,11 @@ export function ComponentsPage() {
 
           <details ref={detailsRef} className="pointer-events-none select-none">
             <summary className="group pointer-events-auto cursor-pointer inline-flex">
-              <span className="inline-flex gap-2 px-3 py-2 items-center border-2 border-white/10 rounded group-hover:border-blue-700 group-hover:bg-blue-700 group-hover:text-white">
+              <span
+                className={
+                  "inline-flex gap-2 px-3 py-2 items-center border-2 border-white/10 rounded group-hover:border-blue-700 group-hover:bg-blue-700 group-hover:text-white"
+                }
+              >
                 {selectedComponent ? (
                   <span className="font-mono">{getComponentName(selectedComponent)}</span>
                 ) : (

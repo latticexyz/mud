@@ -49,7 +49,8 @@ export class SchemaStaticLengthMismatchError extends MUDError {
   override name = "SchemaStaticLengthMismatchError";
   constructor(schemaData: Hex, definedLength: number, summedLength: number) {
     super(
-      `Schema "${schemaData}" static data length (${definedLength}) did not match the summed length of all static fields (${summedLength}). Is \`staticAbiTypeToByteLength\` up to date with Solidity schema types?`
+      `Schema "${schemaData}" static data length (${definedLength}) did not match the summed length of all static fields (${summedLength}). ` +
+        `Is \`staticAbiTypeToByteLength\` up to date with Solidity schema types?`
     );
   }
 }

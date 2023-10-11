@@ -8,6 +8,6 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
-    "max-len": ["error", 80]
+    "max-len": ["error", { "code": 180, "comments": 180 }]
   }
 }
