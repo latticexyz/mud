@@ -22,6 +22,10 @@ const server = fastify({
 
 await server.register(import("@fastify/cors"));
 
+// k8s healthchecks
+server.get("/healthz", (req, res) => res.code(200).send());
+server.get("/readyz", (req, res) => res.code(200).send());
+
 // @see https://trpc.io/docs/server/adapters/fastify
 server.register(fastifyTRPCPlugin<AppRouter>, {
   prefix: "/trpc",
