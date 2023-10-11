@@ -29,5 +29,5 @@ export function encodeSystemCall<abi extends Abi, functionName extends string = 
       functionName,
       args,
     } as unknown as EncodeFunctionDataParameters<abi, functionName>),
-  ] as const;
+  ];
 }
