@@ -51,6 +51,7 @@
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "abitype": "0.9.8",
+    "viem": "1.14.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {
