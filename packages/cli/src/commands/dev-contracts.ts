@@ -1,176 +1,101 @@
-import type { CommandModule } from "yargs";
-import {
-  anvil,
-  forge,
-  getRemappings,
-  getRpcUrl,
-  getScriptDirectory,
-  getSrcDirectory,
-} from "@latticexyz/common/foundry";
+import type { CommandModule, InferredOptionTypes } from "yargs";
+import { anvil, getScriptDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import chokidar from "chokidar";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
-import { tablegen } from "@latticexyz/store/codegen";
 import path from "path";
-import { debounce } from "throttle-debounce";
-import { worldgenHandler } from "./worldgen";
 import { WorldConfig } from "@latticexyz/world";
 import { homedir } from "os";
 import { rmSync } from "fs";
-import { execa } from "execa";
-import { logError } from "../utils/errors";
-import { deployHandler } from "../utils/deployHandler";
-import { printMUD } from "../utils/printMUD";
+import { deployOptions, runDeploy } from "../runDeploy";
+import { BehaviorSubject, debounceTime, exhaustMap } from "rxjs";
+import { Address } from "viem";
 
-type Options = {
-  rpc?: string;
-  configPath?: string;
+const devOptions = {
+  rpc: deployOptions.rpc,
+  configPath: deployOptions.configPath,
 };
 
-const commandModule: CommandModule<Options, Options> = {
+const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof devOptions>> = {
   command: "dev-contracts",
 
   describe: "Start a development server for MUD contracts",
 
   builder(yargs) {
-    return yargs.options({
-      rpc: {
-        type: "string",
-        decs: "RPC endpoint of the development node. If none is provided, an anvil instance is spawned in the background on port 8545.",
-      },
-      configPath: {
-        type: "string",
-        decs: "Path to MUD config",
-      },
-    });
+    return yargs.options(devOptions);
   },
 
-  async handler(args) {
-    // Initial cleanup
-    await forge(["clean"]);
-
-    const rpc = args.rpc ?? (await getRpcUrl());
-    const configPath = args.configPath ?? (await resolveConfigPath(args.configPath));
-    const srcDirectory = await getSrcDirectory();
-    const scriptDirectory = await getScriptDirectory();
-    const remappings = await getRemappings();
+  async handler(opts) {
+    let rpc = opts.rpc;
+    const configPath = opts.configPath ?? (await resolveConfigPath(opts.configPath));
+    const srcDir = await getSrcDirectory();
+    const scriptDir = await getScriptDirectory();
     const initialConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
 
-    // Initial run of all codegen steps before starting anvil
-    // (so clients can wait for everything to be ready before starting)
-    await handleConfigChange(initialConfig);
-    await handleContractsChange(initialConfig);
-
     // Start an anvil instance in the background if no RPC url is provided
-    if (!args.rpc) {
+    if (!opts.rpc) {
+      // Clean anvil cache as 1s block times can fill up the disk
+      // - https://github.com/foundry-rs/foundry/issues/3623
+      // - https://github.com/foundry-rs/foundry/issues/4989
+      // - https://github.com/foundry-rs/foundry/issues/3699
+      // - https://github.com/foundry-rs/foundry/issues/3512
       console.log(chalk.gray("Cleaning devnode cache"));
       const userHomeDir = homedir();
       rmSync(path.join(userHomeDir, ".foundry", "anvil", "tmp"), { recursive: true, force: true });
 
       const anvilArgs = ["--block-time", "1", "--block-base-fee-per-gas", "0"];
       anvil(anvilArgs);
+      rpc = "http://127.0.0.1:8545";
     }
-
-    const changedSinceLastHandled = {
-      config: false,
-      contracts: false,
-    };
-
-    const changeInProgress = {
-      current: false,
-    };
 
     // Watch for changes
-    const configWatcher = chokidar.watch([configPath, srcDirectory]);
-    configWatcher.on("all", async (_, updatePath) => {
+    const lastChange$ = new BehaviorSubject<number>(Date.now());
+    chokidar.watch([configPath, srcDir, scriptDir]).on("all", async (_, updatePath) => {
       if (updatePath.includes(configPath)) {
-        changedSinceLastHandled.config = true;
-        // We trigger contract changes if the config changed here instead of
-        // listening to changes in the codegen directory to avoid an infinite loop
-        changedSinceLastHandled.contracts = true;
+        lastChange$.next(Date.now());
       }
-
-      if (updatePath.includes(srcDirectory) || updatePath.includes(scriptDirectory)) {
+      if (updatePath.includes(srcDir) || updatePath.includes(scriptDir)) {
         // Ignore changes to codegen files to avoid an infinite loop
-        if (updatePath.includes(initialConfig.codegenDirectory)) return;
-        changedSinceLastHandled.contracts = true;
+        if (!updatePath.includes(initialConfig.codegenDirectory)) {
+          lastChange$.next(Date.now());
+        }
       }
-
-      // Trigger debounced onChange
-      handleChange();
     });
 
-    const handleChange = debounce(100, async () => {
-      // Avoid handling changes multiple times in parallel
-      if (changeInProgress.current) return;
-      changeInProgress.current = true;
+    let worldAddress: Address | undefined;
 
-      // Reset dirty flags
-      const { config, contracts } = changedSinceLastHandled;
-      changedSinceLastHandled.config = false;
-      changedSinceLastHandled.contracts = false;
+    const deploys$ = lastChange$.pipe(
+      // debounce so that a large batch of file changes only triggers a deploy after it settles down, rather than the first change it sees (and then redeploying immediately after)
+      debounceTime(200),
+      exhaustMap(async (lastChange) => {
+        if (worldAddress) {
+          console.log(chalk.blue("Change detected, rebuilding and running deploy..."));
+        }
+        // TODO: handle errors
+        const deploy = await runDeploy({
+          configPath,
+          rpc,
+          clean: true,
+          skipBuild: false,
+          printConfig: false,
+          profile: undefined,
+          saveDeployment: true,
+          worldAddress,
+          srcDir,
+        });
+        worldAddress = deploy.address;
+        // if there were changes while we were deploying, trigger it again
+        if (lastChange < lastChange$.value) {
+          lastChange$.next(lastChange$.value);
+        } else {
+          console.log(chalk.gray("Watching for file changes..."));
+        }
+        return deploy;
+      })
+    );
 
-      try {
-        // Load latest config
-        const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
-
-        // Handle changes
-        if (config) await handleConfigChange(mudConfig);
-        if (contracts) await handleContractsChange(mudConfig);
-
-        await deploy();
-      } catch (error) {
-        console.error(chalk.red("MUD dev-contracts watcher failed to deploy config or contracts changes\n"));
-        logError(error);
-      }
-
-      changeInProgress.current = false;
-      if (changedSinceLastHandled.config || changedSinceLastHandled.contracts) {
-        console.log("Detected change while handling the previous change");
-        handleChange();
-      }
-
-      printMUD();
-      console.log("MUD watching for changes...");
-    });
-
-    /** Codegen to run if config changes */
-    async function handleConfigChange(config: StoreConfig & WorldConfig) {
-      console.log(chalk.blue("mud.config.ts changed - regenerating tables and recs types"));
-      // Run tablegen to generate tables based on the config
-      const outPath = path.join(srcDirectory, config.codegenDirectory);
-      await tablegen(config, outPath, remappings);
-    }
-
-    /** Codegen to run if contracts changed */
-    async function handleContractsChange(config: StoreConfig & WorldConfig) {
-      console.log(chalk.blue("contracts changed - regenerating interfaces and contract types"));
-
-      // Run worldgen to generate interfaces based on the systems
-      await worldgenHandler({ config, clean: true, srcDir: srcDirectory });
-
-      // Build the contracts
-      await forge(["build", "--skip", "test", "script"]);
-
-      // Generate TS type definitions for ABIs
-      await execa("mud", ["abi-ts"], { stdio: "inherit" });
-    }
-
-    /** Run after codegen if either mud config or contracts changed */
-    async function deploy() {
-      console.log(chalk.blue("redeploying World"));
-      await deployHandler({
-        configPath,
-        skipBuild: true,
-        priorityFeeMultiplier: 1,
-        disableTxWait: true,
-        pollInterval: 1000,
-        saveDeployment: true,
-        srcDir: srcDirectory,
-        rpc,
-      });
-    }
+    deploys$.subscribe();
   },
 };
 

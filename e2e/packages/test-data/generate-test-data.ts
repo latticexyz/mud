@@ -31,14 +31,13 @@ await anvil.start();
 const rpc = `http://${anvil.host}:${anvil.port}`;
 
 console.log("deploying world");
-const { stdout, stderr } = await execa(
-  "pnpm",
-  ["mud", "deploy", "--rpc", rpc, "--disableTxWait", "--saveDeployment", "false"],
-  {
-    cwd: "../contracts",
-    stdio: "pipe",
-  }
-);
+const { stdout, stderr } = await execa("pnpm", ["mud", "deploy", "--rpc", rpc, "--saveDeployment", "false"], {
+  cwd: "../contracts",
+  stdio: "pipe",
+  env: {
+    DEBUG: "mud:*",
+  },
+});
 if (stderr) console.error(stderr);
 if (stdout) console.log(stdout);
 
@@ -101,5 +100,7 @@ const logs = await publicClient.request({
 console.log("writing", logs.length, "logs to", logsFilename);
 await fs.writeFile(logsFilename, JSON.stringify(logs, null, 2));
 
-console.log("stopping anvil");
-await anvil.stop();
+// TODO: figure out why anvil doesn't stop immediately
+// console.log("stopping anvil");
+// await anvil.stop();
+process.exit(0);
