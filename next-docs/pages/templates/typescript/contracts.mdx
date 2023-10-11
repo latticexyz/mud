@@ -8,17 +8,16 @@ The onchain components can be divided into two types of functionality:
 - **Tables**, storing the data of the application.
 - **Systems**, business logic that can be called to read or modify data in the tables.
 
-## Data
+## Tables
 
-### The data schema
+### The table schema
 
 #### `mud.config.ts`
 
-The data schema is declared in `packages/contracts/mud.config.ts`.
+The table schema is declared in `packages/contracts/mud.config.ts`.
 [Read more details about the schema definition here](/cli/config).
 
-The data schema provided in the example is extremely simple (one singleton).
-To see more of how it works, lets add a second table:
+The table schema provided in the example is extremely simple (one singleton).
 
 ```ts filename="mud.config.ts" copy
 import { mudConfig } from "@latticexyz/world/register";
@@ -33,14 +32,14 @@ export default mudConfig({
 });
 ```
 
-There are two automatically generated files related to the data:
+There are two automatically generated files related to the tables:
 
 - `packages/contracts/src/codegen/index.sol`
 - `packages/contracts/src/codegen/tables/Counter.sol`
 
 <details>
 
-<summary>The automatically generated data files</summary>
+<summary>The automatically generated table files</summary>
 
 `index.sol`
 
@@ -83,7 +82,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 ```
 
-These are various definitions required for a mud table.
+These are various definitions required for a MUD table.
 You don't typically need to worry about them.
 
 ```solidity
@@ -402,9 +401,9 @@ Utility functions to encode a value.
 
 </details>
 
-## Logic
+## Systems
 
-The way mud works, onchain logic is implemented by one or more `System` contracts.
+The way MUD works, onchain logic is implemented by one or more `System` contracts.
 Those systems are always called by a central `World` contract.
 
 #### `IncrementSystem.sol`
