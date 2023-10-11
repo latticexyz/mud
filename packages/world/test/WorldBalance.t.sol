@@ -3,6 +3,7 @@ pragma solidity >=0.8.21;
 
 import "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
@@ -36,7 +37,7 @@ contract WorldBalanceTest is Test, GasReporter {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
-    StoreSwitch.setStoreAddress(world);
+    StoreSwitch.setStoreAddress(address(world));
 
     world.registerSystem(rootSystemId, rootSystem, true);
     world.registerSystem(nonRootSystemId, nonRootSystem, true);

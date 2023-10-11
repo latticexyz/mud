@@ -6,6 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
@@ -50,15 +51,17 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     sourceTableFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
     sourceTableSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
     sourceTableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
+    sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: sourceName });
+    targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
+
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
-    StoreSwitch.setStoreAddress(world);
+    StoreSwitch.setStoreAddress(address(world));
+
     keyTuple1 = new bytes32[](1);
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
     keyTuple2[0] = key2;
-    sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: sourceName });
-    targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
   }
 
   function _installKeysWithValueModule() internal {

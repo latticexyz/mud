@@ -4,6 +4,7 @@ pragma solidity >=0.8.21;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World } from "@latticexyz/world/src/World.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
@@ -36,7 +37,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
-    StoreSwitch.setStoreAddress(world);
+    StoreSwitch.setStoreAddress(address(world));
   }
 
   function testInstall() public {

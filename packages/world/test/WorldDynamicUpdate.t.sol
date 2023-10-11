@@ -48,7 +48,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
-    StoreSwitch.setStoreAddress(world);
+    StoreSwitch.setStoreAddress(address(world));
 
     key = "testKey";
     keyTuple = new bytes32[](1);

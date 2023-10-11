@@ -171,7 +171,7 @@ contract WorldTest is Test, GasReporter {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
-    StoreSwitch.setStoreAddress(world);
+    StoreSwitch.setStoreAddress(address(world));
 
     key = "testKey";
     keyTuple = new bytes32[](1);
@@ -197,6 +197,7 @@ contract WorldTest is Test, GasReporter {
     vm.expectEmit(true, true, true, true);
     emit HelloWorld(WORLD_VERSION);
     IBaseWorld newWorld = IBaseWorld(address(new World()));
+    StoreSwitch.setStoreAddress(address(newWorld));
 
     // Expect the creator to be the original deployer
     assertEq(newWorld.creator(), address(this));
@@ -250,23 +251,17 @@ contract WorldTest is Test, GasReporter {
     }
 
     // Should have registered the table data table (fka schema table)
-    assertEq(
-      FieldLayout.unwrap(Tables.getFieldLayout(newWorld, TablesTableId)),
-      FieldLayout.unwrap(Tables.getFieldLayout())
-    );
-    assertEq(Tables.getAbiEncodedKeyNames(newWorld, TablesTableId), abi.encode(Tables.getKeyNames()));
-    assertEq(Tables.getAbiEncodedFieldNames(newWorld, TablesTableId), abi.encode(Tables.getFieldNames()));
+    assertEq(FieldLayout.unwrap(Tables.getFieldLayout(TablesTableId)), FieldLayout.unwrap(Tables.getFieldLayout()));
+    assertEq(Tables.getAbiEncodedKeyNames(TablesTableId), abi.encode(Tables.getKeyNames()));
+    assertEq(Tables.getAbiEncodedFieldNames(TablesTableId), abi.encode(Tables.getFieldNames()));
 
     // Should have registered the namespace owner table
     assertEq(
-      FieldLayout.unwrap(Tables.getFieldLayout(newWorld, NamespaceOwnerTableId)),
+      FieldLayout.unwrap(Tables.getFieldLayout(NamespaceOwnerTableId)),
       FieldLayout.unwrap(NamespaceOwner.getFieldLayout())
     );
-    assertEq(Tables.getAbiEncodedKeyNames(newWorld, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));
-    assertEq(
-      Tables.getAbiEncodedFieldNames(newWorld, NamespaceOwnerTableId),
-      abi.encode(NamespaceOwner.getFieldNames())
-    );
+    assertEq(Tables.getAbiEncodedKeyNames(NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));
+    assertEq(Tables.getAbiEncodedFieldNames(NamespaceOwnerTableId), abi.encode(NamespaceOwner.getFieldNames()));
 
     // Expect it to not be possible to initialize the World again
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AlreadyInitialized.selector));
