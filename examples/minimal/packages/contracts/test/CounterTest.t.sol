@@ -9,13 +9,6 @@ import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { CounterTable, CounterTableTableId } from "../src/codegen/index.sol";
 
 contract CounterTest is MudTest {
-  IWorld world;
-
-  function setUp() public override {
-    super.setUp();
-    world = IWorld(worldAddress);
-  }
-
   function testWorldExists() public {
     uint256 codeSize;
     address addr = worldAddress;
@@ -31,7 +24,7 @@ contract CounterTest is MudTest {
     assertEq(counter, 1);
 
     // Expect the counter to be 2 after calling increment.
-    world.increment();
+    IWorld(worldAddress).increment();
     counter = CounterTable.get();
     assertEq(counter, 2);
   }
