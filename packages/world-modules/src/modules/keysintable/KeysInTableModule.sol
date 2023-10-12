@@ -38,6 +38,8 @@ contract KeysInTableModule is Module {
   }
 
   function installRoot(bytes memory args) public override {
+    // Naive check to ensure this is only installed once
+    // TODO: only revert if there's nothing to do
     if (InstalledModules.getModuleAddress(getName(), keccak256(args)) != address(0)) {
       revert Module_AlreadyInstalled();
     }
