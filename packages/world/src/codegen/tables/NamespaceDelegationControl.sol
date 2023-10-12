@@ -96,13 +96,6 @@ library NamespaceDelegationControl {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get delegationControlId.
    */
   function getDelegationControlId(ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
@@ -125,20 +118,6 @@ library NamespaceDelegationControl {
   }
 
   /**
-   * @notice Get delegationControlId (using the specified store).
-   */
-  function getDelegationControlId(
-    IStore _store,
-    ResourceId namespaceId
-  ) internal view returns (ResourceId delegationControlId) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return ResourceId.wrap(bytes32(_blob));
-  }
-
-  /**
    * @notice Get delegationControlId.
    */
   function get(ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
@@ -157,17 +136,6 @@ library NamespaceDelegationControl {
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return ResourceId.wrap(bytes32(_blob));
-  }
-
-  /**
-   * @notice Get delegationControlId (using the specified store).
-   */
-  function get(IStore _store, ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return ResourceId.wrap(bytes32(_blob));
   }
 
@@ -195,22 +163,6 @@ library NamespaceDelegationControl {
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreCore.setStaticField(
-      _tableId,
-      _keyTuple,
-      0,
-      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
-      _fieldLayout
-    );
-  }
-
-  /**
-   * @notice Set delegationControlId (using the specified store).
-   */
-  function setDelegationControlId(IStore _store, ResourceId namespaceId, ResourceId delegationControlId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
-
-    _store.setStaticField(
       _tableId,
       _keyTuple,
       0,
@@ -252,22 +204,6 @@ library NamespaceDelegationControl {
   }
 
   /**
-   * @notice Set delegationControlId (using the specified store).
-   */
-  function set(IStore _store, ResourceId namespaceId, ResourceId delegationControlId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
-
-    _store.setStaticField(
-      _tableId,
-      _keyTuple,
-      0,
-      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
-      _fieldLayout
-    );
-  }
-
-  /**
    * @notice Delete all data for given keys.
    */
   function deleteRecord(ResourceId namespaceId) internal {
@@ -285,16 +221,6 @@ library NamespaceDelegationControl {
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, ResourceId namespaceId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

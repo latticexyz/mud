@@ -97,13 +97,6 @@ library Inventory {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get amount.
    */
   function getAmount(address owner, uint32 item, uint32 itemVariant) internal view returns (uint32 amount) {
@@ -126,24 +119,6 @@ library Inventory {
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint32(bytes4(_blob)));
-  }
-
-  /**
-   * @notice Get amount (using the specified store).
-   */
-  function getAmount(
-    IStore _store,
-    address owner,
-    uint32 item,
-    uint32 itemVariant
-  ) internal view returns (uint32 amount) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(uint160(owner)));
-    _keyTuple[1] = bytes32(uint256(item));
-    _keyTuple[2] = bytes32(uint256(itemVariant));
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint32(bytes4(_blob)));
   }
 
@@ -174,19 +149,6 @@ library Inventory {
   }
 
   /**
-   * @notice Get amount (using the specified store).
-   */
-  function get(IStore _store, address owner, uint32 item, uint32 itemVariant) internal view returns (uint32 amount) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(uint160(owner)));
-    _keyTuple[1] = bytes32(uint256(item));
-    _keyTuple[2] = bytes32(uint256(itemVariant));
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint32(bytes4(_blob)));
-  }
-
-  /**
    * @notice Set amount.
    */
   function setAmount(address owner, uint32 item, uint32 itemVariant, uint32 amount) internal {
@@ -208,18 +170,6 @@ library Inventory {
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set amount (using the specified store).
-   */
-  function setAmount(IStore _store, address owner, uint32 item, uint32 itemVariant, uint32 amount) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(uint160(owner)));
-    _keyTuple[1] = bytes32(uint256(item));
-    _keyTuple[2] = bytes32(uint256(itemVariant));
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
   }
 
   /**
@@ -247,18 +197,6 @@ library Inventory {
   }
 
   /**
-   * @notice Set amount (using the specified store).
-   */
-  function set(IStore _store, address owner, uint32 item, uint32 itemVariant, uint32 amount) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(uint160(owner)));
-    _keyTuple[1] = bytes32(uint256(item));
-    _keyTuple[2] = bytes32(uint256(itemVariant));
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
-  }
-
-  /**
    * @notice Delete all data for given keys.
    */
   function deleteRecord(address owner, uint32 item, uint32 itemVariant) internal {
@@ -280,18 +218,6 @@ library Inventory {
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, address owner, uint32 item, uint32 itemVariant) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(uint160(owner)));
-    _keyTuple[1] = bytes32(uint256(item));
-    _keyTuple[2] = bytes32(uint256(itemVariant));
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

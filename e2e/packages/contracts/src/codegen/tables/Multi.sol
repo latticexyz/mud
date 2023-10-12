@@ -106,13 +106,6 @@ library Multi {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get num.
    */
   function getNum(uint32 a, bool b, uint256 c, int120 d) internal view returns (int256 num) {
@@ -141,20 +134,6 @@ library Multi {
   }
 
   /**
-   * @notice Get num (using the specified store).
-   */
-  function getNum(IStore _store, uint32 a, bool b, uint256 c, int120 d) internal view returns (int256 num) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
-    _keyTuple[0] = bytes32(uint256(a));
-    _keyTuple[1] = _boolToBytes32(b);
-    _keyTuple[2] = bytes32(uint256(c));
-    _keyTuple[3] = bytes32(uint256(int256(d)));
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (int256(uint256(bytes32(_blob))));
-  }
-
-  /**
    * @notice Set num.
    */
   function setNum(uint32 a, bool b, uint256 c, int120 d, int256 num) internal {
@@ -178,19 +157,6 @@ library Multi {
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((num)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set num (using the specified store).
-   */
-  function setNum(IStore _store, uint32 a, bool b, uint256 c, int120 d, int256 num) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
-    _keyTuple[0] = bytes32(uint256(a));
-    _keyTuple[1] = _boolToBytes32(b);
-    _keyTuple[2] = bytes32(uint256(c));
-    _keyTuple[3] = bytes32(uint256(int256(d)));
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((num)), _fieldLayout);
   }
 
   /**
@@ -222,20 +188,6 @@ library Multi {
   }
 
   /**
-   * @notice Get value (using the specified store).
-   */
-  function getValue(IStore _store, uint32 a, bool b, uint256 c, int120 d) internal view returns (bool value) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
-    _keyTuple[0] = bytes32(uint256(a));
-    _keyTuple[1] = _boolToBytes32(b);
-    _keyTuple[2] = bytes32(uint256(c));
-    _keyTuple[3] = bytes32(uint256(int256(d)));
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
-  }
-
-  /**
    * @notice Set value.
    */
   function setValue(uint32 a, bool b, uint256 c, int120 d, bool value) internal {
@@ -259,19 +211,6 @@ library Multi {
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set value (using the specified store).
-   */
-  function setValue(IStore _store, uint32 a, bool b, uint256 c, int120 d, bool value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
-    _keyTuple[0] = bytes32(uint256(a));
-    _keyTuple[1] = _boolToBytes32(b);
-    _keyTuple[2] = bytes32(uint256(c));
-    _keyTuple[3] = bytes32(uint256(int256(d)));
-
-    _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value)), _fieldLayout);
   }
 
   /**
@@ -303,24 +242,6 @@ library Multi {
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
-      _tableId,
-      _keyTuple,
-      _fieldLayout
-    );
-    return decode(_staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
-   * @notice Get the full data (using the specified store).
-   */
-  function get(IStore _store, uint32 a, bool b, uint256 c, int120 d) internal view returns (MultiData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
-    _keyTuple[0] = bytes32(uint256(a));
-    _keyTuple[1] = _boolToBytes32(b);
-    _keyTuple[2] = bytes32(uint256(c));
-    _keyTuple[3] = bytes32(uint256(int256(d)));
-
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -365,24 +286,6 @@ library Multi {
   }
 
   /**
-   * @notice Set the full data using individual values (using the specified store).
-   */
-  function set(IStore _store, uint32 a, bool b, uint256 c, int120 d, int256 num, bool value) internal {
-    bytes memory _staticData = encodeStatic(num, value);
-
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
-
-    bytes32[] memory _keyTuple = new bytes32[](4);
-    _keyTuple[0] = bytes32(uint256(a));
-    _keyTuple[1] = _boolToBytes32(b);
-    _keyTuple[2] = bytes32(uint256(c));
-    _keyTuple[3] = bytes32(uint256(int256(d)));
-
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
    * @notice Set the full data using the data struct.
    */
   function set(uint32 a, bool b, uint256 c, int120 d, MultiData memory _table) internal {
@@ -416,24 +319,6 @@ library Multi {
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
-  }
-
-  /**
-   * @notice Set the full data using the data struct (using the specified store).
-   */
-  function set(IStore _store, uint32 a, bool b, uint256 c, int120 d, MultiData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.num, _table.value);
-
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
-
-    bytes32[] memory _keyTuple = new bytes32[](4);
-    _keyTuple[0] = bytes32(uint256(a));
-    _keyTuple[1] = _boolToBytes32(b);
-    _keyTuple[2] = bytes32(uint256(c));
-    _keyTuple[3] = bytes32(uint256(int256(d)));
-
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /**
@@ -483,19 +368,6 @@ library Multi {
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, uint32 a, bool b, uint256 c, int120 d) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
-    _keyTuple[0] = bytes32(uint256(a));
-    _keyTuple[1] = _boolToBytes32(b);
-    _keyTuple[2] = bytes32(uint256(c));
-    _keyTuple[3] = bytes32(uint256(int256(d)));
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

@@ -96,13 +96,6 @@ library ResourceIds {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get exists.
    */
   function getExists(ResourceId resourceId) internal view returns (bool exists) {
@@ -121,17 +114,6 @@ library ResourceIds {
     _keyTuple[0] = ResourceId.unwrap(resourceId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
-  }
-
-  /**
-   * @notice Get exists (using the specified store).
-   */
-  function getExists(IStore _store, ResourceId resourceId) internal view returns (bool exists) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
@@ -158,17 +140,6 @@ library ResourceIds {
   }
 
   /**
-   * @notice Get exists (using the specified store).
-   */
-  function get(IStore _store, ResourceId resourceId) internal view returns (bool exists) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
-  }
-
-  /**
    * @notice Set exists.
    */
   function setExists(ResourceId resourceId, bool exists) internal {
@@ -186,16 +157,6 @@ library ResourceIds {
     _keyTuple[0] = ResourceId.unwrap(resourceId);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set exists (using the specified store).
-   */
-  function setExists(IStore _store, ResourceId resourceId, bool exists) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
   }
 
   /**
@@ -219,16 +180,6 @@ library ResourceIds {
   }
 
   /**
-   * @notice Set exists (using the specified store).
-   */
-  function set(IStore _store, ResourceId resourceId, bool exists) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((exists)), _fieldLayout);
-  }
-
-  /**
    * @notice Delete all data for given keys.
    */
   function deleteRecord(ResourceId resourceId) internal {
@@ -246,16 +197,6 @@ library ResourceIds {
     _keyTuple[0] = ResourceId.unwrap(resourceId);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, ResourceId resourceId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

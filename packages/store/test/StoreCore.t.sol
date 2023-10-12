@@ -95,10 +95,10 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(IStore(this).getValueSchema(tableId).unwrap(), valueSchema.unwrap());
     assertEq(IStore(this).getKeySchema(tableId).unwrap(), keySchema.unwrap());
 
-    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), tableId);
+    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(tableId);
     assertEq(loadedKeyNames, abi.encode(keyNames));
 
-    bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(IStore(this), tableId);
+    bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(tableId);
     assertEq(loadedFieldNames, abi.encode(fieldNames));
 
     // Expect the table ID to be registered
