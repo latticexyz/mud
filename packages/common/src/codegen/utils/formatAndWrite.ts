@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from "fs";
 import { dirname } from "path";
 import { formatSolidity, formatTypescript } from "./format";
+import { debug } from "../debug";
 
 export async function formatAndWriteSolidity(output: string, fullOutputPath: string, logPrefix: string): Promise<void> {
   const formattedOutput = await formatSolidity(output);
@@ -8,7 +9,7 @@ export async function formatAndWriteSolidity(output: string, fullOutputPath: str
   mkdirSync(dirname(fullOutputPath), { recursive: true });
 
   writeFileSync(fullOutputPath, formattedOutput);
-  console.log(`${logPrefix}: ${fullOutputPath}`);
+  debug(`${logPrefix}: ${fullOutputPath}`);
 }
 
 export async function formatAndWriteTypescript(
@@ -21,5 +22,5 @@ export async function formatAndWriteTypescript(
   mkdirSync(dirname(fullOutputPath), { recursive: true });
 
   writeFileSync(fullOutputPath, formattedOutput);
-  console.log(`${logPrefix}: ${fullOutputPath}`);
+  debug(`${logPrefix}: ${fullOutputPath}`);
 }
