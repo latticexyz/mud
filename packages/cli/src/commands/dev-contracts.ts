@@ -76,7 +76,6 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
         const deploy = await runDeploy({
           configPath,
           rpc,
-          clean: true,
           skipBuild: false,
           printConfig: false,
           profile: undefined,

@@ -1,5 +1,5 @@
 import path from "node:path";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
 import { createWalletClient, http, Hex } from "viem";
@@ -19,11 +19,6 @@ import { tablegen } from "@latticexyz/store/codegen";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
-  clean: {
-    type: "boolean",
-    desc: "Remove the build forge artifacts and cache directories before building",
-    default: false,
-  },
   printConfig: { type: "boolean", desc: "Print the resolved config" },
   profile: { type: "string", desc: "The foundry profile to use" },
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
@@ -57,10 +52,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       chalk.whiteBright(`\n Deploying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`)
     )
   );
-
-  if (opts.clean) {
-    await forge(["clean"], { profile });
-  }
 
   // Run forge build
   if (!opts.skipBuild) {
