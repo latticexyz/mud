@@ -6,9 +6,11 @@ import { Hex } from "viem";
 
 // TODO: we shouldn't need this file once our config parsing returns nicely formed tables
 
-type UserTypes<config extends StoreConfig = StoreConfig> = config["userTypes"] & {
-  [k in keyof config["enums"]]: { internalType: "uint8" };
-};
+type UserTypes<config extends StoreConfig = StoreConfig> = config["userTypes"];
+// TODO: fix strong enum types and avoid every schema getting `{ [k: string]: "uint8" }`
+// type UserTypes<config extends StoreConfig = StoreConfig> = config["userTypes"] & {
+//   [k in keyof config["enums"]]: { internalType: "uint8" };
+// };
 
 export type TableKey<
   config extends StoreConfig = StoreConfig,
