@@ -4,13 +4,13 @@ import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
 import { Config, ConfigInput, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
 import { ensureSystems } from "./ensureSystems";
-import { waitForTransactionReceipt } from "viem/actions";
+import { getTransactionReceipt, waitForTransactionReceipt } from "viem/actions";
 import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
 import { Table } from "./configToTables";
-import { getResourceIds } from "./getResourceIds";
 import { assertNamespaceOwner } from "./assertNamespaceOwner";
+import { debug } from "./debug";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -72,13 +72,19 @@ export async function deploy<configInput extends ConfigInput>({
     modules: config.modules,
   });
 
+  // TODO: return nonce with each call so we can sort by nonce
+  const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs];
+  // wait for last tx
+  debug("waiting for last transaction to confirm");
+  await waitForTransactionReceipt(client, { hash: txs[txs.length - 1] });
+
+  debug("fetching transaction receipts");
   const receipts = await Promise.all(
-    [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs].map((tx) =>
-      waitForTransactionReceipt(client, { hash: tx })
-    )
+    [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs].map((tx) => getTransactionReceipt(client, { hash: tx }))
   );
 
   // TODO: throw if there was a revert? or attempt to re-run deploy?
 
+  debug("deploy complete");
   return worldDeploy;
 }
