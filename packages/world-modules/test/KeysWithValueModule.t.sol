@@ -15,6 +15,7 @@ import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 
 import { World } from "@latticexyz/world/src/World.sol";
+import { IModule } from "@latticexyz/world/src/IModule.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance, NAME_BITS, TYPE_BITS } from "@latticexyz/world/src/WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
@@ -102,6 +103,12 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
     assertEq(keysWithValue[0], key1);
+  }
+
+  function testInstallTwice() public {
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+    vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
   }
 
   function testSetAndDeleteRecordHook() public {
