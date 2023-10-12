@@ -1,6 +1,6 @@
 # Three.js
 
-This template is for developers who use [Three.js](hhttps://threejs.org/).
+This template is for developers who use [Three.js](https://threejs.org/).
 
 ## Onchain code
 
@@ -64,13 +64,14 @@ contract MoveSystem is System {
 ```
 
 This is the only function that `MoveSystem` exposes.
-It lets a user move in game universe.
+It lets a user move in the game universe.
 
 ```solidity
     bytes32 entityId = bytes32(uint256(uint160((_msgSender()))));
 ```
 
-`_msgSender()` lets us know who called the world which received the call and then relayed it to the system.
+`_msgSender()` lets us know who called the `World` which received the call and then relayed it to the system.
+We cast it to a `bytes32` value to be able to use it as key in the `Position` table.
 
 ```solidity
     PositionData memory position = Position.get(entityId);
@@ -78,7 +79,7 @@ It lets a user move in game universe.
     require(distance(position, newPosition) == 1, "can only move to adjacent spaces");
 ```
 
-Use the `PositionData` structure to calculate the distance between the old position and the new one.
+Use the `PositionData` struct to calculate the distance between the old position and the new one.
 If this distance is more than one unit, fail.
 
 ```
@@ -87,7 +88,7 @@ If this distance is more than one unit, fail.
 }
 ```
 
-Otherwise, update the position for `entityId`, which is the address that called the world, to the new position.
+Otherwise, update the position for `entityId`, which is the address that called the `World`, to the new position.
 
 ## Offchain code
 
@@ -116,7 +117,7 @@ Get the MUD API information.
 useKeyboardMovement();
 ```
 
-Register the handler in `useKeyboardMovement.ts`
+Register the handler in `useKeyboardMovement.ts`.
 
 ```ts
 const playerPosition = useComponentValue(Position, playerEntity);
