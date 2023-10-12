@@ -1,9 +1,26 @@
 cache
 out
-docs
 _docs
 DOCS.md
 artifacts
 yarn-error.log
 API
 dist
+
+# Seems like this weird dance is needed to include selected files in the docs
+docs/*
+!docs/src
+docs/src/*
+!docs/src/src
+docs/src/src/*
+
+# Export the public API so it can be imported in the docs page
+!docs/src/src/StoreCore.sol
+!docs/src/src/IStore.sol
+!docs/src/src/IStoreData.sol
+!docs/src/src/IStoreErrors.sol
+!docs/src/src/IStoreEvents.sol
+!docs/src/src/IStoreHook.sol
+!docs/src/src/IStoreRead.sol
+!docs/src/src/IStoreRegistration.sol
+!docs/src/src/IStoreWrite.sol
