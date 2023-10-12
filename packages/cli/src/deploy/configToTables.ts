@@ -6,6 +6,12 @@ import { Hex } from "viem";
 
 // TODO: we shouldn't need this file once our config parsing returns nicely formed tables
 
+type UserTypes<config extends StoreConfig = StoreConfig> = config["userTypes"];
+// TODO: fix strong enum types and avoid every schema getting `{ [k: string]: "uint8" }`
+// type UserTypes<config extends StoreConfig = StoreConfig> = config["userTypes"] & {
+//   [k in keyof config["enums"]]: { internalType: "uint8" };
+// };
+
 export type TableKey<
   config extends StoreConfig = StoreConfig,
   table extends config["tables"][keyof config["tables"]] = config["tables"][keyof config["tables"]]
@@ -18,19 +24,17 @@ export type Table<
   readonly namespace: config["namespace"];
   readonly name: table["name"];
   readonly tableId: Hex;
-  // TODO: support enums
-  readonly keySchema: table["keySchema"] extends KeySchema<config["userTypes"]>
+  readonly keySchema: table["keySchema"] extends KeySchema<UserTypes<config>>
     ? KeySchema & {
-        readonly [k in keyof table["keySchema"]]: config["userTypes"][table["keySchema"][k]]["internalType"] extends StaticAbiType
-          ? config["userTypes"][table["keySchema"][k]]["internalType"]
+        readonly [k in keyof table["keySchema"]]: UserTypes<config>[table["keySchema"][k]]["internalType"] extends StaticAbiType
+          ? UserTypes<config>[table["keySchema"][k]]["internalType"]
           : table["keySchema"][k];
       }
     : KeySchema;
-  // TODO: support enums
-  readonly valueSchema: table["valueSchema"] extends ValueSchema<config["userTypes"]>
+  readonly valueSchema: table["valueSchema"] extends ValueSchema<UserTypes<config>>
     ? {
-        readonly [k in keyof table["valueSchema"]]: config["userTypes"][table["valueSchema"][k]]["internalType"] extends SchemaAbiType
-          ? config["userTypes"][table["valueSchema"][k]]["internalType"]
+        readonly [k in keyof table["valueSchema"]]: UserTypes<config>[table["valueSchema"][k]]["internalType"] extends SchemaAbiType
+          ? UserTypes<config>[table["valueSchema"][k]]["internalType"]
           : table["valueSchema"][k];
       }
     : ValueSchema;
@@ -41,6 +45,10 @@ export type Tables<config extends StoreConfig = StoreConfig> = {
 };
 
 export function configToTables<config extends StoreConfig>(config: config): Tables<config> {
+  const userTypes = {
+    ...config.userTypes,
+    ...Object.fromEntries(Object.entries(config.enums).map(([key]) => [key, { internalType: "uint8" }] as const)),
+  };
   return Object.fromEntries(
     Object.entries(config.tables).map(([tableName, table]) => [
       `${config.namespace}_${tableName}` satisfies TableKey<config, config["tables"][keyof config["tables"]]>,
@@ -52,8 +60,8 @@ export function configToTables<config extends StoreConfig>(config: config): Tabl
           namespace: config.namespace,
           name: table.name,
         }),
-        keySchema: resolveUserTypes(table.keySchema, config.userTypes) as any,
-        valueSchema: resolveUserTypes(table.valueSchema, config.userTypes) as any,
+        keySchema: resolveUserTypes(table.keySchema, userTypes) as any,
+        valueSchema: resolveUserTypes(table.valueSchema, userTypes) as any,
       } satisfies Table<config, config["tables"][keyof config["tables"]]>,
     ])
   ) as Tables<config>;
