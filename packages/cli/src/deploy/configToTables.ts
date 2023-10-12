@@ -22,20 +22,22 @@ export type Table<
   readonly namespace: config["namespace"];
   readonly name: table["name"];
   readonly tableId: Hex;
-  readonly keySchema: table["keySchema"] extends KeySchema<UserTypes<config>>
-    ? KeySchema & {
-        readonly [k in keyof table["keySchema"]]: UserTypes<config>[table["keySchema"][k]]["internalType"] extends StaticAbiType
-          ? UserTypes<config>[table["keySchema"][k]]["internalType"]
-          : table["keySchema"][k];
-      }
-    : KeySchema;
+  readonly keySchema: table["keySchema"] extends KeySchema<infer TUserTypes>
+    ? TUserTypes extends UserTypes<config>
+      ? {
+          readonly [k in keyof table["keySchema"]]: TUserTypes[table["keySchema"][k]]["internalType"] extends StaticAbiType
+            ? TUserTypes[table["keySchema"][k]]["internalType"]
+            : table["keySchema"][k];
+        }
+      : table["keySchema"]
+    : table["keySchema"];
   readonly valueSchema: table["valueSchema"] extends ValueSchema<UserTypes<config>>
     ? {
         readonly [k in keyof table["valueSchema"]]: UserTypes<config>[table["valueSchema"][k]]["internalType"] extends SchemaAbiType
           ? UserTypes<config>[table["valueSchema"][k]]["internalType"]
           : table["valueSchema"][k];
       }
-    : ValueSchema;
+    : table["valueSchema"];
 };
 
 export type Tables<config extends StoreConfig = StoreConfig> = {

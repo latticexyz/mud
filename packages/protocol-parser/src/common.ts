@@ -23,16 +23,24 @@ export type UserTypes = Record<string, { internalType: SchemaAbiType }>;
 
 export type KeySchema<userTypes extends UserTypes | undefined = undefined> = Record<
   string,
-  userTypes extends UserTypes ? StaticAbiType | keyof userTypes : StaticAbiType
+  undefined extends userTypes ? StaticAbiType : StaticAbiType | keyof userTypes
 >;
+
 export type ValueSchema<userTypes extends UserTypes | undefined = undefined> = Record<
   string,
-  userTypes extends UserTypes ? SchemaAbiType | keyof userTypes : SchemaAbiType
+  undefined extends userTypes ? SchemaAbiType : SchemaAbiType | keyof userTypes
 >;
 
 /** Map a table schema like `{ value: "uint256" }` to its primitive types like `{ value: bigint }` */
-export type SchemaToPrimitives<TSchema extends ValueSchema> = {
-  [key in keyof TSchema]: SchemaAbiTypeToPrimitiveType<TSchema[key]>;
+export type SchemaToPrimitives<
+  TSchema extends ValueSchema<TUserTypes>,
+  TUserTypes extends UserTypes | undefined = undefined
+> = {
+  [key in keyof TSchema & string]: TSchema[key] extends SchemaAbiType
+    ? SchemaAbiTypeToPrimitiveType<TSchema[key]>
+    : TSchema[key] extends keyof UserTypes
+    ? SchemaAbiTypeToPrimitiveType<UserTypes[TSchema[key]]["internalType"]>
+    : never;
 };
 
 export type TableRecord<TKeySchema extends KeySchema = KeySchema, TValueSchema extends ValueSchema = ValueSchema> = {

@@ -32,8 +32,11 @@ export async function getTables({
 
   // TODO: combine with store-sync logToTable and export from somewhere
   const tables = logs.map((log) => {
-    const { tableId } = decodeKey(storeTables.store_Tables.keySchema, log.args.keyTuple);
-    const { namespace, name } = hexToResource(tableId);
+    const { tableId } = decodeKey<
+      typeof storeTables.store_Tables.keySchema,
+      { ResourceId: { internalType: "bytes32" } }
+    >(storeTables.store_Tables.keySchema, log.args.keyTuple);
+    const { namespace, name } = hexToResource(tableId as Hex);
     const value = decodeValueArgs(storeTables.store_Tables.valueSchema, log.args);
 
     // TODO: migrate to better helper
