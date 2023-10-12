@@ -72,18 +72,14 @@ export async function deploy<configInput extends ConfigInput>({
     modules: config.modules,
   });
 
-  // TODO: return nonce with each call so we can sort by nonce
   const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs];
-  // wait for last tx
-  debug("waiting for last transaction to confirm");
-  await waitForTransactionReceipt(client, { hash: txs[txs.length - 1] });
 
-  debug("fetching transaction receipts");
-  const receipts = await Promise.all(
-    [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs].map((tx) => getTransactionReceipt(client, { hash: tx }))
-  );
-
-  // TODO: throw if there was a revert? or attempt to re-run deploy?
+  // wait for each tx separately/serially, because parallelizing results in RPC errors
+  debug("waiting for transactions to confirm");
+  for (const tx of txs) {
+    await waitForTransactionReceipt(client, { hash: tx });
+    // TODO: throw if there was a revert?
+  }
 
   debug("deploy complete");
   return worldDeploy;
