@@ -71,7 +71,8 @@ It lets a user move in the game universe.
 ```
 
 `_msgSender()` lets us know who called the `World` which received the call and then relayed it to the system.
-We cast it to a `bytes32` value to be able to use it as key in the `Position` table.
+The caller is an ethereum address, which is 20 bytes long.
+To turn it into a `bytes32` value, which is the key we use in the `Position` table, we need to cast the address `uint160` (20 bytes are 160 bits), then to `uint256`, and finally to `bytes32`.
 
 ```solidity
     PositionData memory position = Position.get(entityId);
