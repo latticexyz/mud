@@ -9,13 +9,6 @@ import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { Counter, CounterTableId } from "../src/codegen/index.sol";
 
 contract CounterTest is MudTest {
-  IWorld public world;
-
-  function setUp() public override {
-    super.setUp();
-    world = IWorld(worldAddress);
-  }
-
   function testWorldExists() public {
     uint256 codeSize;
     address addr = worldAddress;
@@ -27,12 +20,12 @@ contract CounterTest is MudTest {
 
   function testCounter() public {
     // Expect the counter to be 1 because it was incremented in the PostDeploy script.
-    uint32 counter = Counter.get(world);
+    uint32 counter = Counter.get();
     assertEq(counter, 1);
 
     // Expect the counter to be 2 after calling increment.
-    world.increment();
-    counter = Counter.get(world);
+    IWorld(worldAddress).increment();
+    counter = Counter.get();
     assertEq(counter, 2);
   }
 }

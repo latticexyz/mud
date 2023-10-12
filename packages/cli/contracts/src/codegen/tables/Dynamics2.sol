@@ -103,13 +103,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get u64.
    */
   function getU64(bytes32 key) internal view returns (uint64[] memory u64) {
@@ -128,17 +121,6 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
-    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint64());
-  }
-
-  /**
-   * @notice Get u64 (using the specified store).
-   */
-  function getU64(IStore _store, bytes32 key) internal view returns (uint64[] memory u64) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint64());
   }
 
@@ -163,16 +145,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Set u64 (using the specified store).
-   */
-  function setU64(IStore _store, bytes32 key, uint64[] memory u64) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((u64)));
-  }
-
-  /**
    * @notice Get the length of u64.
    */
   function lengthU64(bytes32 key) internal view returns (uint256) {
@@ -193,19 +165,6 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 8;
-    }
-  }
-
-  /**
-   * @notice Get the length of u64 (using the specified store).
-   */
-  function lengthU64(IStore _store, bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 8;
     }
@@ -240,20 +199,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Get an item of u64 (using the specified store).
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function getItemU64(IStore _store, bytes32 key, uint256 _index) internal view returns (uint64) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    unchecked {
-      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 8, (_index + 1) * 8);
-      return (uint64(bytes8(_blob)));
-    }
-  }
-
-  /**
    * @notice Push an element to u64.
    */
   function pushU64(bytes32 key, uint64 _element) internal {
@@ -274,16 +219,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Push an element to u64 (using the specified store).
-   */
-  function pushU64(IStore _store, bytes32 key, uint64 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
-  }
-
-  /**
    * @notice Pop an element from u64.
    */
   function popU64(bytes32 key) internal {
@@ -301,16 +236,6 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 8);
-  }
-
-  /**
-   * @notice Pop an element from u64 (using the specified store).
-   */
-  function popU64(IStore _store, bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.popFromDynamicField(_tableId, _keyTuple, 0, 8);
   }
 
   /**
@@ -340,19 +265,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Update an element of u64 (using the specified store) at `_index`.
-   */
-  function updateU64(IStore _store, bytes32 key, uint256 _index, uint64 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 8), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
    * @notice Get str.
    */
   function getStr(bytes32 key) internal view returns (string memory str) {
@@ -371,17 +283,6 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
-    return (string(_blob));
-  }
-
-  /**
-   * @notice Get str (using the specified store).
-   */
-  function getStr(IStore _store, bytes32 key) internal view returns (string memory str) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 1);
     return (string(_blob));
   }
 
@@ -406,16 +307,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Set str (using the specified store).
-   */
-  function setStr(IStore _store, bytes32 key, string memory str) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.setDynamicField(_tableId, _keyTuple, 1, bytes((str)));
-  }
-
-  /**
    * @notice Get the length of str.
    */
   function lengthStr(bytes32 key) internal view returns (uint256) {
@@ -436,19 +327,6 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
-    unchecked {
-      return _byteLength / 1;
-    }
-  }
-
-  /**
-   * @notice Get the length of str (using the specified store).
-   */
-  function lengthStr(IStore _store, bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 1);
     unchecked {
       return _byteLength / 1;
     }
@@ -483,20 +361,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Get an item of str (using the specified store).
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function getItemStr(IStore _store, bytes32 key, uint256 _index) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    unchecked {
-      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
-      return (string(_blob));
-    }
-  }
-
-  /**
    * @notice Push a slice to str.
    */
   function pushStr(bytes32 key, string memory _slice) internal {
@@ -517,16 +381,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Push a slice to str (using the specified store).
-   */
-  function pushStr(IStore _store, bytes32 key, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
-  }
-
-  /**
    * @notice Pop a slice from str.
    */
   function popStr(bytes32 key) internal {
@@ -544,16 +398,6 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 1);
-  }
-
-  /**
-   * @notice Pop a slice from str (using the specified store).
-   */
-  function popStr(IStore _store, bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.popFromDynamicField(_tableId, _keyTuple, 1, 1);
   }
 
   /**
@@ -583,19 +427,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Update a slice of str (using the specified store) at `_index`.
-   */
-  function updateStr(IStore _store, bytes32 key, uint256 _index, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    unchecked {
-      bytes memory _encoded = bytes((_slice));
-      _store.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
    * @notice Get b.
    */
   function getB(bytes32 key) internal view returns (bytes memory b) {
@@ -614,17 +445,6 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 2);
-    return (bytes(_blob));
-  }
-
-  /**
-   * @notice Get b (using the specified store).
-   */
-  function getB(IStore _store, bytes32 key) internal view returns (bytes memory b) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 2);
     return (bytes(_blob));
   }
 
@@ -649,16 +469,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Set b (using the specified store).
-   */
-  function setB(IStore _store, bytes32 key, bytes memory b) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.setDynamicField(_tableId, _keyTuple, 2, bytes((b)));
-  }
-
-  /**
    * @notice Get the length of b.
    */
   function lengthB(bytes32 key) internal view returns (uint256) {
@@ -679,19 +489,6 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 2);
-    unchecked {
-      return _byteLength / 1;
-    }
-  }
-
-  /**
-   * @notice Get the length of b (using the specified store).
-   */
-  function lengthB(IStore _store, bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 2);
     unchecked {
       return _byteLength / 1;
     }
@@ -726,20 +523,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Get an item of b (using the specified store).
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function getItemB(IStore _store, bytes32 key, uint256 _index) internal view returns (bytes memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    unchecked {
-      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 1, (_index + 1) * 1);
-      return (bytes(_blob));
-    }
-  }
-
-  /**
    * @notice Push a slice to b.
    */
   function pushB(bytes32 key, bytes memory _slice) internal {
@@ -760,16 +543,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Push a slice to b (using the specified store).
-   */
-  function pushB(IStore _store, bytes32 key, bytes memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.pushToDynamicField(_tableId, _keyTuple, 2, bytes((_slice)));
-  }
-
-  /**
    * @notice Pop a slice from b.
    */
   function popB(bytes32 key) internal {
@@ -787,16 +560,6 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 2, 1);
-  }
-
-  /**
-   * @notice Pop a slice from b (using the specified store).
-   */
-  function popB(IStore _store, bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.popFromDynamicField(_tableId, _keyTuple, 2, 1);
   }
 
   /**
@@ -826,19 +589,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Update a slice of b (using the specified store) at `_index`.
-   */
-  function updateB(IStore _store, bytes32 key, uint256 _index, bytes memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    unchecked {
-      bytes memory _encoded = bytes((_slice));
-      _store.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 1), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
    * @notice Get the full data.
    */
   function get(bytes32 key) internal view returns (Dynamics2Data memory _table) {
@@ -861,21 +611,6 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
-      _tableId,
-      _keyTuple,
-      _fieldLayout
-    );
-    return decode(_staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
-   * @notice Get the full data (using the specified store).
-   */
-  function get(IStore _store, bytes32 key) internal view returns (Dynamics2Data memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -912,20 +647,6 @@ library Dynamics2 {
   }
 
   /**
-   * @notice Set the full data using individual values (using the specified store).
-   */
-  function set(IStore _store, bytes32 key, uint64[] memory u64, string memory str, bytes memory b) internal {
-    bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(u64, str, b);
-    bytes memory _dynamicData = encodeDynamic(u64, str, b);
-
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
    * @notice Set the full data using the data struct.
    */
   function set(bytes32 key, Dynamics2Data memory _table) internal {
@@ -951,20 +672,6 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
-  }
-
-  /**
-   * @notice Set the full data using the data struct (using the specified store).
-   */
-  function set(IStore _store, bytes32 key, Dynamics2Data memory _table) internal {
-    bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(_table.u64, _table.str, _table.b);
-    bytes memory _dynamicData = encodeDynamic(_table.u64, _table.str, _table.b);
-
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /**
@@ -1026,16 +733,6 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

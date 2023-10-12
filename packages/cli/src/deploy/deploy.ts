@@ -4,13 +4,13 @@ import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
 import { Config, ConfigInput, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
 import { ensureSystems } from "./ensureSystems";
-import { waitForTransactionReceipt } from "viem/actions";
+import { getTransactionReceipt, waitForTransactionReceipt } from "viem/actions";
 import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
 import { Table } from "./configToTables";
-import { getResourceIds } from "./getResourceIds";
 import { assertNamespaceOwner } from "./assertNamespaceOwner";
+import { debug } from "./debug";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -72,13 +72,15 @@ export async function deploy<configInput extends ConfigInput>({
     modules: config.modules,
   });
 
-  const receipts = await Promise.all(
-    [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs].map((tx) =>
-      waitForTransactionReceipt(client, { hash: tx })
-    )
-  );
+  const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs];
 
-  // TODO: throw if there was a revert? or attempt to re-run deploy?
+  // wait for each tx separately/serially, because parallelizing results in RPC errors
+  debug("waiting for transactions to confirm");
+  for (const tx of txs) {
+    await waitForTransactionReceipt(client, { hash: tx });
+    // TODO: throw if there was a revert?
+  }
 
+  debug("deploy complete");
   return worldDeploy;
 }

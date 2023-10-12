@@ -3,6 +3,7 @@ import { writeContract } from "@latticexyz/common";
 import { Module, WorldDeploy, worldAbi } from "./common";
 import { ensureContract } from "./ensureContract";
 import { debug } from "./debug";
+import { uniqueBy } from "@latticexyz/common/utils";
 
 export async function ensureModules({
   client,
@@ -17,7 +18,9 @@ export async function ensureModules({
 
   // kick off contract deployments first, otherwise installing modules can fail
   const contractTxs = await Promise.all(
-    modules.map((mod) => ensureContract({ client, bytecode: mod.bytecode, label: `${mod.name} module` }))
+    uniqueBy(modules, (mod) => mod.address).map((mod) =>
+      ensureContract({ client, bytecode: mod.bytecode, label: `${mod.name} module` })
+    )
   );
 
   // then start installing modules

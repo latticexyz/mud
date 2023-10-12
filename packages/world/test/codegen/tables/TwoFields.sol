@@ -93,13 +93,6 @@ library TwoFields {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store, ResourceId _tableId) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get value1.
    */
   function getValue1(ResourceId _tableId) internal view returns (bool value1) {
@@ -120,16 +113,6 @@ library TwoFields {
   }
 
   /**
-   * @notice Get value1 (using the specified store).
-   */
-  function getValue1(IStore _store, ResourceId _tableId) internal view returns (bool value1) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
-  }
-
-  /**
    * @notice Set value1.
    */
   function setValue1(ResourceId _tableId, bool value1) internal {
@@ -145,15 +128,6 @@ library TwoFields {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set value1 (using the specified store).
-   */
-  function setValue1(IStore _store, ResourceId _tableId, bool value1) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
   }
 
   /**
@@ -177,16 +151,6 @@ library TwoFields {
   }
 
   /**
-   * @notice Get value2 (using the specified store).
-   */
-  function getValue2(IStore _store, ResourceId _tableId) internal view returns (bool value2) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
-  }
-
-  /**
    * @notice Set value2.
    */
   function setValue2(ResourceId _tableId, bool value2) internal {
@@ -202,15 +166,6 @@ library TwoFields {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set value2 (using the specified store).
-   */
-  function setValue2(IStore _store, ResourceId _tableId, bool value2) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
   }
 
   /**
@@ -234,20 +189,6 @@ library TwoFields {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
-      _tableId,
-      _keyTuple,
-      _fieldLayout
-    );
-    return decode(_staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
-   * @notice Get the full data (using the specified store).
-   */
-  function get(IStore _store, ResourceId _tableId) internal view returns (TwoFieldsData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -284,20 +225,6 @@ library TwoFields {
   }
 
   /**
-   * @notice Set the full data using individual values (using the specified store).
-   */
-  function set(IStore _store, ResourceId _tableId, bool value1, bool value2) internal {
-    bytes memory _staticData = encodeStatic(value1, value2);
-
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
-
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
    * @notice Set the full data using the data struct.
    */
   function set(ResourceId _tableId, TwoFieldsData memory _table) internal {
@@ -323,20 +250,6 @@ library TwoFields {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
-  }
-
-  /**
-   * @notice Set the full data using the data struct (using the specified store).
-   */
-  function set(IStore _store, ResourceId _tableId, TwoFieldsData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.value1, _table.value2);
-
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
-
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /**
@@ -378,15 +291,6 @@ library TwoFields {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, ResourceId _tableId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**
