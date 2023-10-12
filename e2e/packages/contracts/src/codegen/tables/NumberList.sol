@@ -91,13 +91,6 @@ library NumberList {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get value.
    */
   function getValue() internal view returns (uint32[] memory value) {
@@ -114,16 +107,6 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
-    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
-  }
-
-  /**
-   * @notice Get value (using the specified store).
-   */
-  function getValue(IStore _store) internal view returns (uint32[] memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -148,16 +131,6 @@ library NumberList {
   }
 
   /**
-   * @notice Get value (using the specified store).
-   */
-  function get(IStore _store) internal view returns (uint32[] memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
-    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
-  }
-
-  /**
    * @notice Set value.
    */
   function setValue(uint32[] memory value) internal {
@@ -176,15 +149,6 @@ library NumberList {
   }
 
   /**
-   * @notice Set value (using the specified store).
-   */
-  function setValue(IStore _store, uint32[] memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
-  }
-
-  /**
    * @notice Set value.
    */
   function set(uint32[] memory value) internal {
@@ -200,15 +164,6 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
-  }
-
-  /**
-   * @notice Set value (using the specified store).
-   */
-  function set(IStore _store, uint32[] memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((value)));
   }
 
   /**
@@ -236,18 +191,6 @@ library NumberList {
   }
 
   /**
-   * @notice Get the length of value (using the specified store).
-   */
-  function lengthValue(IStore _store) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 4;
-    }
-  }
-
-  /**
    * @notice Get the length of value.
    */
   function length() internal view returns (uint256) {
@@ -266,18 +209,6 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 4;
-    }
-  }
-
-  /**
-   * @notice Get the length of value (using the specified store).
-   */
-  function length(IStore _store) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 4;
     }
@@ -310,19 +241,6 @@ library NumberList {
   }
 
   /**
-   * @notice Get an item of value (using the specified store).
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function getItemValue(IStore _store, uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
-      return (uint32(bytes4(_blob)));
-    }
-  }
-
-  /**
    * @notice Get an item of value.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
@@ -349,19 +267,6 @@ library NumberList {
   }
 
   /**
-   * @notice Get an item of value (using the specified store).
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function getItem(IStore _store, uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
-      return (uint32(bytes4(_blob)));
-    }
-  }
-
-  /**
    * @notice Push an element to value.
    */
   function pushValue(uint32 _element) internal {
@@ -377,15 +282,6 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Push an element to value (using the specified store).
-   */
-  function pushValue(IStore _store, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /**
@@ -407,15 +303,6 @@ library NumberList {
   }
 
   /**
-   * @notice Push an element to value (using the specified store).
-   */
-  function push(IStore _store, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
-  }
-
-  /**
    * @notice Pop an element from value.
    */
   function popValue() internal {
@@ -434,15 +321,6 @@ library NumberList {
   }
 
   /**
-   * @notice Pop an element from value (using the specified store).
-   */
-  function popValue(IStore _store) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.popFromDynamicField(_tableId, _keyTuple, 0, 4);
-  }
-
-  /**
    * @notice Pop an element from value.
    */
   function pop() internal {
@@ -458,15 +336,6 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 4);
-  }
-
-  /**
-   * @notice Pop an element from value (using the specified store).
-   */
-  function pop(IStore _store) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.popFromDynamicField(_tableId, _keyTuple, 0, 4);
   }
 
   /**
@@ -490,18 +359,6 @@ library NumberList {
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
       StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
-   * @notice Update an element of value (using the specified store) at `_index`.
-   */
-  function updateValue(IStore _store, uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -530,18 +387,6 @@ library NumberList {
   }
 
   /**
-   * @notice Update an element of value (using the specified store) at `_index`.
-   */
-  function update(IStore _store, uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
    * @notice Delete all data for given keys.
    */
   function deleteRecord() internal {
@@ -557,15 +402,6 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

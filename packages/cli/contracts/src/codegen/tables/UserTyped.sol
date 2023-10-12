@@ -121,13 +121,6 @@ library UserTyped {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get v1.
    */
   function getV1(
@@ -166,28 +159,6 @@ library UserTyped {
     _keyTuple[4] = ResourceId.unwrap(k5);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return TestTypeAddress.wrap(address(bytes20(_blob)));
-  }
-
-  /**
-   * @notice Get v1 (using the specified store).
-   */
-  function getV1(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5
-  ) internal view returns (TestTypeAddress v1) {
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return TestTypeAddress.wrap(address(bytes20(_blob)));
   }
 
@@ -234,28 +205,6 @@ library UserTyped {
   }
 
   /**
-   * @notice Set v1 (using the specified store).
-   */
-  function setV1(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5,
-    TestTypeAddress v1
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
-  }
-
-  /**
    * @notice Get v2.
    */
   function getV2(
@@ -294,28 +243,6 @@ library UserTyped {
     _keyTuple[4] = ResourceId.unwrap(k5);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return TestTypeInt64.wrap(int64(uint64(bytes8(_blob))));
-  }
-
-  /**
-   * @notice Get v2 (using the specified store).
-   */
-  function getV2(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5
-  ) internal view returns (TestTypeInt64 v2) {
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return TestTypeInt64.wrap(int64(uint64(bytes8(_blob))));
   }
 
@@ -362,28 +289,6 @@ library UserTyped {
   }
 
   /**
-   * @notice Set v2 (using the specified store).
-   */
-  function setV2(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5,
-    TestTypeInt64 v2
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
-  }
-
-  /**
    * @notice Get v3.
    */
   function getV3(
@@ -422,28 +327,6 @@ library UserTyped {
     _keyTuple[4] = ResourceId.unwrap(k5);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
-    return TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(bytes1(_blob))));
-  }
-
-  /**
-   * @notice Get v3 (using the specified store).
-   */
-  function getV3(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5
-  ) internal view returns (TestTypeLibrary.TestTypeBool v3) {
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
     return TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(bytes1(_blob))));
   }
 
@@ -502,34 +385,6 @@ library UserTyped {
   }
 
   /**
-   * @notice Set v3 (using the specified store).
-   */
-  function setV3(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5,
-    TestTypeLibrary.TestTypeBool v3
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    _store.setStaticField(
-      _tableId,
-      _keyTuple,
-      2,
-      abi.encodePacked(TestTypeLibrary.TestTypeBool.unwrap(v3)),
-      _fieldLayout
-    );
-  }
-
-  /**
    * @notice Get v4.
    */
   function getV4(
@@ -568,28 +423,6 @@ library UserTyped {
     _keyTuple[4] = ResourceId.unwrap(k5);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
-    return TestTypeLibrary.TestTypeUint128.wrap(uint128(bytes16(_blob)));
-  }
-
-  /**
-   * @notice Get v4 (using the specified store).
-   */
-  function getV4(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5
-  ) internal view returns (TestTypeLibrary.TestTypeUint128 v4) {
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
     return TestTypeLibrary.TestTypeUint128.wrap(uint128(bytes16(_blob)));
   }
 
@@ -648,34 +481,6 @@ library UserTyped {
   }
 
   /**
-   * @notice Set v4 (using the specified store).
-   */
-  function setV4(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5,
-    TestTypeLibrary.TestTypeUint128 v4
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    _store.setStaticField(
-      _tableId,
-      _keyTuple,
-      3,
-      abi.encodePacked(TestTypeLibrary.TestTypeUint128.unwrap(v4)),
-      _fieldLayout
-    );
-  }
-
-  /**
    * @notice Get v5.
    */
   function getV5(
@@ -714,28 +519,6 @@ library UserTyped {
     _keyTuple[4] = ResourceId.unwrap(k5);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
-    return ResourceId.wrap(bytes32(_blob));
-  }
-
-  /**
-   * @notice Get v5 (using the specified store).
-   */
-  function getV5(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5
-  ) internal view returns (ResourceId v5) {
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
     return ResourceId.wrap(bytes32(_blob));
   }
 
@@ -779,28 +562,6 @@ library UserTyped {
     _keyTuple[4] = ResourceId.unwrap(k5);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set v5 (using the specified store).
-   */
-  function setV5(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5,
-    ResourceId v5
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    _store.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
   }
 
   /**
@@ -854,32 +615,6 @@ library UserTyped {
   }
 
   /**
-   * @notice Get the full data (using the specified store).
-   */
-  function get(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5
-  ) internal view returns (UserTypedData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
-      _tableId,
-      _keyTuple,
-      _fieldLayout
-    );
-    return decode(_staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
    * @notice Set the full data using individual values.
    */
   function set(
@@ -940,37 +675,6 @@ library UserTyped {
   }
 
   /**
-   * @notice Set the full data using individual values (using the specified store).
-   */
-  function set(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5,
-    TestTypeAddress v1,
-    TestTypeInt64 v2,
-    TestTypeLibrary.TestTypeBool v3,
-    TestTypeLibrary.TestTypeUint128 v4,
-    ResourceId v5
-  ) internal {
-    bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5);
-
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
-
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
    * @notice Set the full data using the data struct.
    */
   function set(
@@ -1020,33 +724,6 @@ library UserTyped {
     _keyTuple[4] = ResourceId.unwrap(k5);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
-  }
-
-  /**
-   * @notice Set the full data using the data struct (using the specified store).
-   */
-  function set(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5,
-    UserTypedData memory _table
-  ) internal {
-    bytes memory _staticData = encodeStatic(_table.v1, _table.v2, _table.v3, _table.v4, _table.v5);
-
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
-
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /**
@@ -1128,27 +805,6 @@ library UserTyped {
     _keyTuple[4] = ResourceId.unwrap(k5);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(
-    IStore _store,
-    TestTypeAddress k1,
-    TestTypeInt64 k2,
-    TestTypeLibrary.TestTypeBool k3,
-    TestTypeLibrary.TestTypeUint128 k4,
-    ResourceId k5
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](5);
-    _keyTuple[0] = bytes32(uint256(uint160(TestTypeAddress.unwrap(k1))));
-    _keyTuple[1] = bytes32(uint256(int256(TestTypeInt64.unwrap(k2))));
-    _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
-    _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
-    _keyTuple[4] = ResourceId.unwrap(k5);
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

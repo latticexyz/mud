@@ -106,13 +106,6 @@ library KeyEncoding {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get value.
    */
   function getValue(
@@ -155,30 +148,6 @@ library KeyEncoding {
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
-  }
-
-  /**
-   * @notice Get value (using the specified store).
-   */
-  function getValue(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    ExampleEnum k6
-  ) internal view returns (bool value) {
-    bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
@@ -229,30 +198,6 @@ library KeyEncoding {
   }
 
   /**
-   * @notice Get value (using the specified store).
-   */
-  function get(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    ExampleEnum k6
-  ) internal view returns (bool value) {
-    bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
-  }
-
-  /**
    * @notice Set value.
    */
   function setValue(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6, bool value) internal {
@@ -280,30 +225,6 @@ library KeyEncoding {
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set value (using the specified store).
-   */
-  function setValue(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    ExampleEnum k6,
-    bool value
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /**
@@ -337,30 +258,6 @@ library KeyEncoding {
   }
 
   /**
-   * @notice Set value (using the specified store).
-   */
-  function set(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    ExampleEnum k6,
-    bool value
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
-  }
-
-  /**
    * @notice Delete all data for given keys.
    */
   function deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6) internal {
@@ -388,21 +285,6 @@ library KeyEncoding {
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6) internal {
-    bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

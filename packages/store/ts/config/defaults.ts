@@ -15,6 +15,6 @@ export const TABLE_DEFAULTS = {
   directory: "tables",
   keySchema: { key: "bytes32" },
   tableIdArgument: false,
-  storeArgument: true,
+  storeArgument: false,
   offchainOnly: false,
 } as const;

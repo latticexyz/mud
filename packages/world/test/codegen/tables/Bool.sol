@@ -86,13 +86,6 @@ library Bool {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store, ResourceId _tableId) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get value.
    */
   function getValue(ResourceId _tableId) internal view returns (bool value) {
@@ -109,16 +102,6 @@ library Bool {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
-  }
-
-  /**
-   * @notice Get value (using the specified store).
-   */
-  function getValue(IStore _store, ResourceId _tableId) internal view returns (bool value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
@@ -143,16 +126,6 @@ library Bool {
   }
 
   /**
-   * @notice Get value (using the specified store).
-   */
-  function get(IStore _store, ResourceId _tableId) internal view returns (bool value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
-  }
-
-  /**
    * @notice Set value.
    */
   function setValue(ResourceId _tableId, bool value) internal {
@@ -168,15 +141,6 @@ library Bool {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set value (using the specified store).
-   */
-  function setValue(IStore _store, ResourceId _tableId, bool value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /**
@@ -198,15 +162,6 @@ library Bool {
   }
 
   /**
-   * @notice Set value (using the specified store).
-   */
-  function set(IStore _store, ResourceId _tableId, bool value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
-  }
-
-  /**
    * @notice Delete all data for given keys.
    */
   function deleteRecord(ResourceId _tableId) internal {
@@ -222,15 +177,6 @@ library Bool {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, ResourceId _tableId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

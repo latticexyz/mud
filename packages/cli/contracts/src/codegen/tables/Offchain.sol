@@ -93,13 +93,6 @@ library Offchain {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Set value.
    */
   function setValue(bytes32 key, uint256 value) internal {
@@ -117,16 +110,6 @@ library Offchain {
     _keyTuple[0] = key;
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set value (using the specified store).
-   */
-  function setValue(IStore _store, bytes32 key, uint256 value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /**
@@ -157,21 +140,6 @@ library Offchain {
     _keyTuple[0] = key;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
-  }
-
-  /**
-   * @notice Set the full data using individual values (using the specified store).
-   */
-  function set(IStore _store, bytes32 key, uint256 value) internal {
-    bytes memory _staticData = encodeStatic(value);
-
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
-
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
 
   /**
@@ -209,16 +177,6 @@ library Offchain {
     _keyTuple[0] = key;
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

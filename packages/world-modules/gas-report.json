@@ -69,7 +69,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testGetKeysWithValueGas",
     "name": "Get list of keys with a given value",
-    "gasUsed": 5635
+    "gasUsed": 5665
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
