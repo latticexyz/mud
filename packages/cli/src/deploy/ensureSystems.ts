@@ -6,6 +6,7 @@ import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { getSystems } from "./getSystems";
 import { getResourceAccess } from "./getResourceAccess";
+import { uniqueBy } from "@latticexyz/common/utils";
 
 export async function ensureSystems({
   client,
@@ -105,7 +106,7 @@ export async function ensureSystems({
 
   // kick off contract deployments first, otherwise registering systems can fail
   const contractTxs = await Promise.all(
-    missingSystems.map((system) =>
+    uniqueBy(missingSystems, (system) => system.address).map((system) =>
       ensureContract({ client, bytecode: system.bytecode, label: `${resourceLabel(system)} system` })
     )
   );
