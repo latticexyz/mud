@@ -298,10 +298,6 @@ export type UserTypesConfig<UserTypeNames extends StringForUnion = StringForUnio
       userTypes: Record<UserTypeNames, UserType>;
     };
 
-export type FullUserTypesConfig<UserTypeNames extends StringForUnion> = {
-  userTypes: Record<UserTypeNames, string>;
-};
-
 const zUserTypeConfig = z.object({
   filePath: z.string(),
   internalType: z.enum(schemaAbiTypes),
