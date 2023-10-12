@@ -22,6 +22,7 @@ export default mudConfig({
         keysWithValue: "bytes32[]", // For now only supports 1 key per value
       },
       tableIdArgument: true,
+      storeArgument: true,
     },
     KeysInTable: {
       directory: "modules/keysintable/tables",
@@ -33,6 +34,7 @@ export default mudConfig({
         keys3: "bytes32[]",
         keys4: "bytes32[]",
       },
+      storeArgument: true,
     },
     UsedKeysIndex: {
       directory: "modules/keysintable/tables",
@@ -42,6 +44,7 @@ export default mudConfig({
       },
       valueSchema: { has: "bool", index: "uint40" },
       dataStruct: false,
+      storeArgument: true,
     },
     UniqueEntity: {
       directory: "modules/uniqueentity/tables",
