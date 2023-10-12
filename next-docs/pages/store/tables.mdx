@@ -63,8 +63,8 @@ Internally the composite key is always handled as `bytes32[]`,
 but the key schema allows [offchain indexers](../services/indexer) to create properly typed composite key columns,
 and allows MUD to generate [typed table libraries](./table-libraries).
 
-The key schema can contain up to 28 static data types.
-Note that no dynamic data types (e.g. arrays, `bytes` or `string`) are supported
+The key schema can contain up to 28 static (fixed length) data types.
+Note that no dynamic (variable length) data types (e.g. arrays, `bytes` or `string`) are supported
 in the key schema.
 
 ```solidity copy
