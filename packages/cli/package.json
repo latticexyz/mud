@@ -55,6 +55,7 @@
     "glob": "^8.0.3",
     "nice-grpc-web": "^2.0.1",
     "openurl": "^1.1.1",
+    "p-retry": "^5.1.2",
     "path": "^0.12.7",
     "rxjs": "7.5.5",
     "throttle-debounce": "^5.0.0",

@@ -4,13 +4,16 @@ import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
 import { Config, ConfigInput, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
 import { ensureSystems } from "./ensureSystems";
-import { getTransactionReceipt, waitForTransactionReceipt } from "viem/actions";
+import { waitForTransactionReceipt } from "viem/actions";
 import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
 import { Table } from "./configToTables";
 import { assertNamespaceOwner } from "./assertNamespaceOwner";
 import { debug } from "./debug";
+import { resourceLabel } from "./resourceLabel";
+import { ensureContract } from "./ensureContract";
+import { uniqueBy } from "@latticexyz/common/utils";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -51,6 +54,27 @@ export async function deploy<configInput extends ConfigInput>({
     resourceIds: [...tables.map((table) => table.tableId), ...systems.map((system) => system.systemId)],
   });
 
+  // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
+  const contractTxs = (
+    await Promise.all([
+      ...uniqueBy(systems, (system) => system.address).map((system) =>
+        ensureContract({ client, bytecode: system.bytecode, label: `${resourceLabel(system)} system` })
+      ),
+      ...uniqueBy(config.modules, (mod) => mod.address).map((mod) =>
+        ensureContract({ client, bytecode: mod.bytecode, label: `${mod.name} module` })
+      ),
+    ])
+  ).flat();
+
+  if (contractTxs.length) {
+    debug("waiting for contracts");
+    // wait for each tx separately/serially, because parallelizing results in RPC errors
+    for (const tx of contractTxs) {
+      await waitForTransactionReceipt(client, { hash: tx });
+      // TODO: throw if there was a revert?
+    }
+  }
+
   const tableTxs = await ensureTables({
     client,
     worldDeploy,
@@ -75,7 +99,7 @@ export async function deploy<configInput extends ConfigInput>({
   const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs];
 
   // wait for each tx separately/serially, because parallelizing results in RPC errors
-  debug("waiting for transactions to confirm");
+  debug("waiting for all transactions to confirm");
   for (const tx of txs) {
     await waitForTransactionReceipt(client, { hash: tx });
     // TODO: throw if there was a revert?
