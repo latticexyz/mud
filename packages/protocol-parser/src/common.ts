@@ -18,8 +18,17 @@ export type FieldLayout = {
   readonly numDynamicFields: number;
 };
 
-export type KeySchema = Record<string, StaticAbiType>;
-export type ValueSchema = Record<string, SchemaAbiType>;
+// TODO: helper to filter user types to StaticAbiType
+export type UserTypes = Record<string, { internalType: SchemaAbiType }>;
+
+export type KeySchema<userTypes extends UserTypes | undefined = undefined> = Record<
+  string,
+  userTypes extends UserTypes ? StaticAbiType | keyof userTypes : StaticAbiType
+>;
+export type ValueSchema<userTypes extends UserTypes | undefined = undefined> = Record<
+  string,
+  userTypes extends UserTypes ? SchemaAbiType | keyof userTypes : SchemaAbiType
+>;
 
 /** Map a table schema like `{ value: "uint256" }` to its primitive types like `{ value: bigint }` */
 export type SchemaToPrimitives<TSchema extends ValueSchema> = {

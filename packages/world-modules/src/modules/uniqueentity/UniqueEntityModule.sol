@@ -2,6 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
+import { InstalledModules } from "@latticexyz/world/src/codegen/index.sol";
 
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { WorldContextConsumer } from "@latticexyz/world/src/WorldContext.sol";
@@ -25,7 +26,13 @@ contract UniqueEntityModule is Module {
     return MODULE_NAME;
   }
 
-  function installRoot(bytes memory) public {
+  function installRoot(bytes memory args) public {
+    // Naive check to ensure this is only installed once
+    // TODO: only revert if there's nothing to do
+    if (InstalledModules.getModuleAddress(getName(), keccak256(args)) != address(0)) {
+      revert Module_AlreadyInstalled();
+    }
+
     IBaseWorld world = IBaseWorld(_world());
 
     // Register table
@@ -44,11 +51,17 @@ contract UniqueEntityModule is Module {
     if (!success) revertWithBytes(data);
   }
 
-  function install(bytes memory) public {
+  function install(bytes memory args) public {
+    // Naive check to ensure this is only installed once
+    // TODO: only revert if there's nothing to do
+    if (InstalledModules.getModuleAddress(getName(), keccak256(args)) != address(0)) {
+      revert Module_AlreadyInstalled();
+    }
+
     IBaseWorld world = IBaseWorld(_world());
 
     // Register table
-    UniqueEntity.register(world, TABLE_ID);
+    UniqueEntity.register(TABLE_ID);
 
     // Register system
     world.registerSystem(SYSTEM_ID, uniqueEntitySystem, true);

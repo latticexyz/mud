@@ -3,6 +3,7 @@ pragma solidity >=0.8.21;
 
 import { IStore } from "../src/IStore.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
+import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { StoreData } from "../src/StoreData.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
@@ -18,6 +19,7 @@ contract StoreMock is IStore, StoreData {
   constructor() {
     StoreCore.initialize();
     StoreCore.registerCoreTables();
+    StoreSwitch.setStoreAddress(address(this));
   }
 
   // Set full record (including full dynamic data)

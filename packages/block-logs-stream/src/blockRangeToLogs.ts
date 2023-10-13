@@ -31,7 +31,9 @@ export type BlockRangeToLogsResult<TAbiEvents extends readonly AbiEvent[]> = Ope
 >;
 
 /**
- * Takes in an observable of `Observable<{ startBlock: bigint, endBlock: bigint }>` and uses a viem `publicClient` to get logs for the contract `address` and matching `events` and emits the logs as they are fetched.
+ * Takes in an observable of `Observable<{ startBlock: bigint, endBlock: bigint }>`
+ * and uses a viem `publicClient` to get logs for the contract `address` and
+ * matching `events` and emits the logs as they are fetched.
  *
  * @param {BlockRangeToLogsOptions<AbiEvent[]>} options See `BlockRangeToLogsOptions`.
  * @returns {BlockRangeToLogsResult<AbiEvent[]>} An operator function that transforms a stream of block ranges into a stream of fetched logs.

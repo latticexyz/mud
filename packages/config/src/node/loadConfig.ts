@@ -6,6 +6,8 @@ import { rmSync } from "fs";
 import { pathToFileURL } from "url";
 import os from "os";
 
+// TODO: explore using https://www.npmjs.com/package/ts-import instead
+
 // In order of preference files are checked
 const configFiles = ["mud.config.js", "mud.config.mjs", "mud.config.ts", "mud.config.mts"];
 const TEMP_CONFIG = "mud.config.temp.mjs";

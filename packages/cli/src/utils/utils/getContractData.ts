@@ -1,16 +1,13 @@
 import { readFileSync } from "fs";
 import path from "path";
-import { Fragment } from "ethers/lib/utils.js";
 import { MUDError } from "@latticexyz/common/errors";
+import { Abi, Hex } from "viem";
 
 /**
  * Load the contract's abi and bytecode from the file system
  * @param contractName: Name of the contract to load
  */
-export function getContractData(
-  contractName: string,
-  forgeOutDirectory: string
-): { bytecode: string; abi: Fragment[] } {
+export function getContractData(contractName: string, forgeOutDirectory: string): { bytecode: Hex; abi: Abi } {
   let data: any;
   const contractDataPath = path.join(forgeOutDirectory, contractName + ".sol", contractName + ".json");
   try {

@@ -4,7 +4,9 @@ pragma solidity >=0.8.21;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World } from "@latticexyz/world/src/World.sol";
+import { IModule } from "@latticexyz/world/src/IModule.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { System } from "@latticexyz/world/src/System.sol";
@@ -36,6 +38,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
+    StoreSwitch.setStoreAddress(address(world));
   }
 
   function testInstall() public {
@@ -50,10 +53,16 @@ contract UniqueEntityModuleTest is Test, GasReporter {
     endGasReport();
 
     // Table must have the same entity set
-    assertEq(UniqueEntity.get(world, tableId), uniqueEntity);
+    assertEq(UniqueEntity.get(tableId), uniqueEntity);
     // The next entity must be incremented
     assertEq(uint256(getUniqueEntity(world)), uniqueEntity + 1);
-    assertEq(UniqueEntity.get(world, tableId), uniqueEntity + 1);
+    assertEq(UniqueEntity.get(tableId), uniqueEntity + 1);
+  }
+
+  function testInstallTwice() public {
+    world.installModule(uniqueEntityModule, new bytes(0));
+    vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
+    world.installModule(uniqueEntityModule, new bytes(0));
   }
 
   function testInstallRoot() public {
@@ -68,10 +77,16 @@ contract UniqueEntityModuleTest is Test, GasReporter {
     endGasReport();
 
     // Table must have the same entity set
-    assertEq(UniqueEntity.get(world, tableId), uniqueEntity);
+    assertEq(UniqueEntity.get(tableId), uniqueEntity);
     // The next entity must be incremented
     assertEq(uint256(getUniqueEntity(world)), uniqueEntity + 1);
-    assertEq(UniqueEntity.get(world, tableId), uniqueEntity + 1);
+    assertEq(UniqueEntity.get(tableId), uniqueEntity + 1);
+  }
+
+  function testInstallRootTwice() public {
+    world.installRootModule(uniqueEntityModule, new bytes(0));
+    vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
+    world.installRootModule(uniqueEntityModule, new bytes(0));
   }
 
   function testPublicAccess() public {
@@ -85,10 +100,10 @@ contract UniqueEntityModuleTest is Test, GasReporter {
     uint256 uniqueEntity = uint256(getUniqueEntity(world));
 
     // Table must have the same entity set
-    assertEq(UniqueEntity.get(world, tableId), uniqueEntity);
+    assertEq(UniqueEntity.get(tableId), uniqueEntity);
     // The next entity must be incremented
     assertEq(uint256(getUniqueEntity(world)), uniqueEntity + 1);
-    assertEq(UniqueEntity.get(world, tableId), uniqueEntity + 1);
+    assertEq(UniqueEntity.get(tableId), uniqueEntity + 1);
 
     // But changing the table directly isn't allowed
     vm.expectRevert(

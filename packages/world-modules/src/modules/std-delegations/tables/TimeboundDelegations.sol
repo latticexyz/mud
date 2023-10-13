@@ -95,13 +95,6 @@ library TimeboundDelegations {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get maxTimestamp.
    */
   function getMaxTimestamp(address delegator, address delegatee) internal view returns (uint256 maxTimestamp) {
@@ -122,22 +115,6 @@ library TimeboundDelegations {
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint256(bytes32(_blob)));
-  }
-
-  /**
-   * @notice Get maxTimestamp (using the specified store).
-   */
-  function getMaxTimestamp(
-    IStore _store,
-    address delegator,
-    address delegatee
-  ) internal view returns (uint256 maxTimestamp) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
-    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
 
@@ -166,18 +143,6 @@ library TimeboundDelegations {
   }
 
   /**
-   * @notice Get maxTimestamp (using the specified store).
-   */
-  function get(IStore _store, address delegator, address delegatee) internal view returns (uint256 maxTimestamp) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
-    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint256(bytes32(_blob)));
-  }
-
-  /**
    * @notice Set maxTimestamp.
    */
   function setMaxTimestamp(address delegator, address delegatee, uint256 maxTimestamp) internal {
@@ -197,17 +162,6 @@ library TimeboundDelegations {
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set maxTimestamp (using the specified store).
-   */
-  function setMaxTimestamp(IStore _store, address delegator, address delegatee, uint256 maxTimestamp) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
-    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
   }
 
   /**
@@ -233,17 +187,6 @@ library TimeboundDelegations {
   }
 
   /**
-   * @notice Set maxTimestamp (using the specified store).
-   */
-  function set(IStore _store, address delegator, address delegatee, uint256 maxTimestamp) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
-    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
-
-    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), _fieldLayout);
-  }
-
-  /**
    * @notice Delete all data for given keys.
    */
   function deleteRecord(address delegator, address delegatee) internal {
@@ -263,17 +206,6 @@ library TimeboundDelegations {
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, address delegator, address delegatee) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
-    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**
