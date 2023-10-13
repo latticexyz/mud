@@ -10,7 +10,7 @@ import prettierOptions from "../.prettierrc.js";
 
 const DOCS_ROOT = "next-docs/pages";
 
-// Mapping from output file to array of input files
+// Config for API docs input/output and filter/processing
 const PUBLIC_APIS: PublicApis = {
   "store/reference/store-core.mdx": {
     inputFiles: [
