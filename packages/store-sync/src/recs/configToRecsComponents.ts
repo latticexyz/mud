@@ -21,10 +21,15 @@ export function configToRecsComponents<TConfig extends StoreConfig>(
           ])
         ),
         {
-          id: tableIdToHex(config.namespace, tableName),
+          id: tableIdToHex(
+            table.registerAsRoot === undefined || !table.registerAsRoot ? config.namespace : "",
+            tableName
+          ),
           metadata: {
             componentName: tableName,
-            tableName: `${config.namespace}:${tableName}`,
+            tableName: `${
+              table.registerAsRoot === undefined || !table.registerAsRoot ? config.namespace : ""
+            }:${tableName}`,
             keySchema: table.keySchema,
             valueSchema: table.schema,
           },
