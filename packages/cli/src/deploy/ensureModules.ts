@@ -3,7 +3,8 @@ import { writeContract } from "@latticexyz/common";
 import { Module, WorldDeploy, worldAbi } from "./common";
 import { ensureContract } from "./ensureContract";
 import { debug } from "./debug";
-import { uniqueBy } from "@latticexyz/common/utils";
+import { uniqueBy, wait } from "@latticexyz/common/utils";
+import pRetry from "p-retry";
 
 export async function ensureModules({
   client,
@@ -28,22 +29,44 @@ export async function ensureModules({
   const installTxs = await Promise.all(
     modules.map((mod) =>
       mod.installAsRoot
-        ? writeContract(client, {
-            chain: client.chain ?? null,
-            address: worldDeploy.address,
-            abi: worldAbi,
-            // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-            functionName: "installRootModule",
-            args: [mod.address, mod.installData],
-          })
-        : writeContract(client, {
-            chain: client.chain ?? null,
-            address: worldDeploy.address,
-            abi: worldAbi,
-            // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-            functionName: "installModule",
-            args: [mod.address, mod.installData],
-          })
+        ? pRetry(
+            () =>
+              writeContract(client, {
+                chain: client.chain ?? null,
+                address: worldDeploy.address,
+                abi: worldAbi,
+                // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
+                functionName: "installRootModule",
+                args: [mod.address, mod.installData],
+              }),
+            {
+              retries: 3,
+              onFailedAttempt: async (error) => {
+                const delay = error.attemptNumber * 500;
+                debug(`failed to install root module ${mod.name}, retrying in ${delay}ms...`);
+                await wait(delay);
+              },
+            }
+          )
+        : pRetry(
+            () =>
+              writeContract(client, {
+                chain: client.chain ?? null,
+                address: worldDeploy.address,
+                abi: worldAbi,
+                // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
+                functionName: "installModule",
+                args: [mod.address, mod.installData],
+              }),
+            {
+              retries: 3,
+              onFailedAttempt: async (error) => {
+                const delay = error.attemptNumber * 500;
+                debug(`failed to install module ${mod.name}, retrying in ${delay}ms...`);
+                await wait(delay);
+              },
+            }
+          )
     )
   );
 

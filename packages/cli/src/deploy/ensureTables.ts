@@ -6,6 +6,8 @@ import { valueSchemaToFieldLayoutHex, keySchemaToHex, valueSchemaToHex } from "@
 import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { getTables } from "./getTables";
+import pRetry from "p-retry";
+import { wait } from "@latticexyz/common/utils";
 
 export async function ensureTables({
   client,
@@ -29,21 +31,32 @@ export async function ensureTables({
     debug("registering tables", missingTables.map(resourceLabel).join(", "));
     return await Promise.all(
       missingTables.map((table) =>
-        writeContract(client, {
-          chain: client.chain ?? null,
-          address: worldDeploy.address,
-          abi: worldAbi,
-          // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-          functionName: "registerTable",
-          args: [
-            table.tableId,
-            valueSchemaToFieldLayoutHex(table.valueSchema),
-            keySchemaToHex(table.keySchema),
-            valueSchemaToHex(table.valueSchema),
-            Object.keys(table.keySchema),
-            Object.keys(table.valueSchema),
-          ],
-        })
+        pRetry(
+          () =>
+            writeContract(client, {
+              chain: client.chain ?? null,
+              address: worldDeploy.address,
+              abi: worldAbi,
+              // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
+              functionName: "registerTable",
+              args: [
+                table.tableId,
+                valueSchemaToFieldLayoutHex(table.valueSchema),
+                keySchemaToHex(table.keySchema),
+                valueSchemaToHex(table.valueSchema),
+                Object.keys(table.keySchema),
+                Object.keys(table.valueSchema),
+              ],
+            }),
+          {
+            retries: 3,
+            onFailedAttempt: async (error) => {
+              const delay = error.attemptNumber * 500;
+              debug(`failed to register table ${resourceLabel(table)}, retrying in ${delay}ms...`);
+              await wait(delay);
+            },
+          }
+        )
       )
     );
   }
