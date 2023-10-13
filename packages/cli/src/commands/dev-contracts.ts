@@ -15,6 +15,7 @@ import { Address } from "viem";
 const devOptions = {
   rpc: deployOptions.rpc,
   configPath: deployOptions.configPath,
+  alwaysRunPostDeploy: deployOptions.alwaysRunPostDeploy,
 };
 
 const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof devOptions>> = {
@@ -74,6 +75,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
         }
         // TODO: handle errors
         const deploy = await runDeploy({
+          ...opts,
           configPath,
           rpc,
           skipBuild: false,
