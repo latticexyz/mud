@@ -1,9 +1,8 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
 import { writeContract } from "@latticexyz/common";
 import { Module, WorldDeploy, worldAbi } from "./common";
-import { ensureContract } from "./ensureContract";
 import { debug } from "./debug";
-import { uniqueBy, wait } from "@latticexyz/common/utils";
+import { wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
 
 export async function ensureModules({
@@ -17,14 +16,6 @@ export async function ensureModules({
 }): Promise<readonly Hex[]> {
   if (!modules.length) return [];
 
-  // kick off contract deployments first, otherwise installing modules can fail
-  const contractTxs = await Promise.all(
-    uniqueBy(modules, (mod) => mod.address).map((mod) =>
-      ensureContract({ client, bytecode: mod.bytecode, label: `${mod.name} module` })
-    )
-  );
-
-  // then start installing modules
   debug("installing modules:", modules.map((mod) => mod.name).join(", "));
   const installTxs = await Promise.all(
     modules.map((mod) =>
@@ -70,5 +61,5 @@ export async function ensureModules({
     )
   );
 
-  return (await Promise.all([...contractTxs, ...installTxs])).flat();
+  return await Promise.all(installTxs);
 }
