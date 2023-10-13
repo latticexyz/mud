@@ -3,6 +3,8 @@ import { hexToResource, writeContract } from "@latticexyz/common";
 import { WorldDeploy, WorldFunction, worldAbi } from "./common";
 import { debug } from "./debug";
 import { getFunctions } from "./getFunctions";
+import pRetry from "p-retry";
+import { wait } from "@latticexyz/common/utils";
 
 export async function ensureFunctions({
   client,
@@ -40,23 +42,45 @@ export async function ensureFunctions({
     toAdd.map((func) => {
       const { namespace } = hexToResource(func.systemId);
       if (namespace === "") {
-        return writeContract(client, {
-          chain: client.chain ?? null,
-          address: worldDeploy.address,
-          abi: worldAbi,
-          // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-          functionName: "registerRootFunctionSelector",
-          args: [func.systemId, func.systemFunctionSignature, func.systemFunctionSelector],
-        });
+        return pRetry(
+          () =>
+            writeContract(client, {
+              chain: client.chain ?? null,
+              address: worldDeploy.address,
+              abi: worldAbi,
+              // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
+              functionName: "registerRootFunctionSelector",
+              args: [func.systemId, func.systemFunctionSignature, func.systemFunctionSelector],
+            }),
+          {
+            retries: 3,
+            onFailedAttempt: async (error) => {
+              const delay = error.attemptNumber * 500;
+              debug(`failed to register function ${func.signature}, retrying in ${delay}ms...`);
+              await wait(delay);
+            },
+          }
+        );
       }
-      return writeContract(client, {
-        chain: client.chain ?? null,
-        address: worldDeploy.address,
-        abi: worldAbi,
-        // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-        functionName: "registerFunctionSelector",
-        args: [func.systemId, func.systemFunctionSignature],
-      });
+      return pRetry(
+        () =>
+          writeContract(client, {
+            chain: client.chain ?? null,
+            address: worldDeploy.address,
+            abi: worldAbi,
+            // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
+            functionName: "registerFunctionSelector",
+            args: [func.systemId, func.systemFunctionSignature],
+          }),
+        {
+          retries: 3,
+          onFailedAttempt: async (error) => {
+            const delay = error.attemptNumber * 500;
+            debug(`failed to register function ${func.signature}, retrying in ${delay}ms...`);
+            await wait(delay);
+          },
+        }
+      );
     })
   );
 }
