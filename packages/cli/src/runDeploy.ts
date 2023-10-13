@@ -26,6 +26,10 @@ export const deployOptions = {
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   skipBuild: { type: "boolean", desc: "Skip rebuilding the contracts before deploying" },
+  alwaysPostDeploy: {
+    type: "boolean",
+    desc: "Always run PostDeploy.s.sol after each deploy (including during upgrades). By default, PostDeploy.s.sol is only run once after a new world is deployed.",
+  },
 } as const satisfies Record<string, Options>;
 
 export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
@@ -84,7 +88,7 @@ in your contracts directory to use the default anvil private key.`
     client,
     config: resolvedConfig,
   });
-  if (opts.worldAddress == null) {
+  if (opts.worldAddress == null || opts.alwaysPostDeploy) {
     await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile);
   }
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
