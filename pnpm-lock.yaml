@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@commitlint/types':
+        specifier: ^17.4.4
+        version: 17.4.4
     devDependencies:
       '@changesets/cli':
         specifier: ^2.26.1
@@ -1661,6 +1665,13 @@ packages:
       human-id: 1.0.2
       prettier: 2.8.4
     dev: true
+
+  /@commitlint/types@17.4.4:
+    resolution: {integrity: sha512-amRN8tRLYOsxRr6mTnGGGvB5EmW/4DDjLMgiwK3CCVEmN6Sr/6xePGEpWaspKkckILuUORCwe6VfDBw6uj4axQ==}
+    engines: {node: '>=v14'}
+    dependencies:
+      chalk: 4.1.2
+    dev: false
 
   /@esbuild-kit/cjs-loader@2.4.2:
     resolution: {integrity: sha512-BDXFbYOJzT/NBEtp71cvsrGPwGAMGRB/349rwKuoxNSiKjPraNNnlK6MIIabViCjqZugu6j+xeMDlEkWdHHJSg==}
