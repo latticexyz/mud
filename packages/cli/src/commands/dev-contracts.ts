@@ -15,7 +15,7 @@ import { Address } from "viem";
 const devOptions = {
   rpc: deployOptions.rpc,
   configPath: deployOptions.configPath,
-  alwaysPostDeploy: deployOptions.alwaysPostDeploy,
+  alwaysRunPostDeploy: deployOptions.alwaysRunPostDeploy,
 };
 
 const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof devOptions>> = {
