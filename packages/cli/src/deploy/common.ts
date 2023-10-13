@@ -38,25 +38,25 @@ export type WorldFunction = {
   readonly systemFunctionSelector: Hex;
 };
 
-export type System = {
+export type DeterministicContract = {
+  readonly address: Address;
+  readonly bytecode: Hex;
+  readonly abi: Abi;
+};
+
+export type System = DeterministicContract & {
   readonly namespace: string;
   readonly name: string;
   readonly systemId: Hex;
   readonly allowAll: boolean;
   readonly allowedAddresses: readonly Hex[];
-  readonly address: Address;
-  readonly bytecode: Hex;
-  readonly abi: Abi;
   readonly functions: readonly WorldFunction[];
 };
 
-export type Module = {
+export type Module = DeterministicContract & {
   readonly name: string;
   readonly installAsRoot: boolean;
   readonly installData: Hex; // TODO: figure out better naming for this
-  readonly address: Address;
-  readonly bytecode: Hex;
-  readonly abi: Abi;
 };
 
 export type ConfigInput = StoreConfig & WorldConfig;
