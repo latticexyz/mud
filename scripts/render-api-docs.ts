@@ -6,6 +6,7 @@ import { execa } from "execa";
 import prettier from "prettier";
 import { readFileSync, readdirSync, writeFileSync } from "fs";
 import path from "path";
+import prettierOptions from "../.prettierrc.js";
 
 const DOCS_ROOT = "next-docs/pages";
 
@@ -128,7 +129,7 @@ function getDocsPath(sourceFilePath: string) {
 }
 
 function formatMarkdown(content: string) {
-  return prettier.format(content, { parser: "markdown" });
+  return prettier.format(content, { parser: "markdown", ...prettierOptions });
 }
 
 /**
