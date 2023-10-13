@@ -21,7 +21,7 @@ const PUBLIC_APIS: PublicApis = {
     ],
     processContent: (content) => {
       content = formatHeadings(content);
-      content = replaceGithubLinks(content);
+      content = fixGithubLinks(content);
       return content;
     },
   },
@@ -37,7 +37,7 @@ const PUBLIC_APIS: PublicApis = {
     ],
     processContent: (content) => {
       content = formatHeadings(content);
-      content = replaceGithubLinks(content);
+      content = fixGithubLinks(content);
       return content
         .replace("/src/IStoreData.sol/interface.IStoreData.md", "#istoredata")
         .replace("/src/IStoreRegistration.sol/interface.IStoreRegistration.md", "#istoreregistration")
@@ -55,7 +55,7 @@ const PUBLIC_APIS: PublicApis = {
     ],
     processContent: (content) => {
       content = formatHeadings(content);
-      content = replaceGithubLinks(content);
+      content = fixGithubLinks(content);
       return content.replace(`**Inherits:**\n[IERC165](/src/IERC165.sol/interface.IERC165.md)`, "");
     },
   },
@@ -67,14 +67,9 @@ function formatHeadings(content: string) {
   return content.replace(h2, "### ").replace(h1, "## ");
 }
 
-function replaceGithubLinks(content: string) {
-  // Find all internal Github links
+function fixGithubLinks(content: string) {
   const pattern = /https:\/\/github.com\/latticexyz\/mud\/blob\/[^/]+\/(.*)/g;
-
-  // Replace with links to `main`
   const replacement = "https://github.com/latticexyz/mud/blob/main/packages/store/$1";
-
-  // Use the replace function
   return content.replace(pattern, replacement);
 }
 
