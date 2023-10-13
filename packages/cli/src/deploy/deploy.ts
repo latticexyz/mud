@@ -2,14 +2,7 @@ import { Account, Address, Chain, Client, Transport } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
-import {
-  Config,
-  ConfigInput,
-  DeterministicContract,
-  WorldDeploy,
-  supportedStoreVersions,
-  supportedWorldVersions,
-} from "./common";
+import { Config, ConfigInput, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
 import { ensureSystems } from "./ensureSystems";
 import { waitForTransactionReceipt } from "viem/actions";
 import { getWorldDeploy } from "./getWorldDeploy";
