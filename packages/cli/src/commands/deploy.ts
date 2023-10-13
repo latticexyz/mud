@@ -1,43 +1,20 @@
-import type { CommandModule, Options } from "yargs";
+import type { CommandModule } from "yargs";
 import { logError } from "../utils/errors";
-import { DeployOptions, deployHandler } from "../utils/deployHandler";
+import { DeployOptions, deployOptions, runDeploy } from "../runDeploy";
 
-export const yDeployOptions = {
-  configPath: { type: "string", desc: "Path to the config file" },
-  clean: { type: "boolean", desc: "Remove the build forge artifacts and cache directories before building" },
-  printConfig: { type: "boolean", desc: "Print the resolved config" },
-  profile: { type: "string", desc: "The foundry profile to use" },
-  debug: { type: "boolean", desc: "Print debug logs, like full error messages" },
-  priorityFeeMultiplier: {
-    type: "number",
-    desc: "Multiply the estimated priority fee by the provided factor",
-    default: 1,
-  },
-  saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
-  rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
-  worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
-  srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
-  disableTxWait: { type: "boolean", desc: "Disable waiting for transactions to be confirmed.", default: false },
-  pollInterval: {
-    type: "number",
-    desc: "Interval in miliseconds to use to poll for transaction receipts / block inclusion",
-    default: 1000,
-  },
-  skipBuild: { type: "boolean", desc: "Skip rebuilding the contracts before deploying" },
-} satisfies Record<keyof DeployOptions, Options>;
-
-const commandModule: CommandModule<DeployOptions, DeployOptions> = {
+const commandModule: CommandModule<typeof deployOptions, DeployOptions> = {
   command: "deploy",
 
   describe: "Deploy MUD contracts",
 
   builder(yargs) {
-    return yargs.options(yDeployOptions);
+    return yargs.options(deployOptions);
   },
 
-  async handler(args) {
+  async handler(opts) {
+    // Wrap in try/catch, because yargs seems to swallow errors
     try {
-      await deployHandler(args);
+      await runDeploy(opts);
     } catch (error: any) {
       logError(error);
       process.exit(1);

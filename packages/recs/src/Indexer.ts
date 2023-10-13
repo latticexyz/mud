@@ -7,7 +7,8 @@ import { Component, ComponentValue, Entity, EntitySymbol, Indexer, Metadata, Sch
  *
  * @remarks
  * An indexed component keeps a "reverse mapping" from {@link ComponentValue} to the Set of {@link createEntity Entities} with this value.
- * This adds a performance overhead to modifying component values and a memory overhead since in the worst case there is one Set per entity (if every entity has a different component value).
+ * This adds a performance overhead to modifying component values and a memory overhead since in the worst case there is one
+ * Set per entity (if every entity has a different component value).
  * In return the performance for querying for entities with a given component value is close to O(1) (instead of O(#entities) in a regular non-indexed component).
  * As a rule of thumb only components that are added to many entities and are queried with {@link HasValue} a lot should be indexed (eg. the Position component).
  *

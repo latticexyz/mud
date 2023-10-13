@@ -23,7 +23,7 @@ import {
 } from "@latticexyz/config";
 import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 import { UserType } from "@latticexyz/common/codegen";
-import { SchemaAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType, schemaAbiTypes } from "@latticexyz/schema-type";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
@@ -71,7 +71,10 @@ const zShorthandSchemaConfig = zFieldData.transform((fieldData) => {
 
 export const zSchemaConfig = zFullSchemaConfig.or(zShorthandSchemaConfig);
 
-type ResolvedSchema<TSchema extends Record<string, string>, TUserTypes extends Record<string, UserType>> = {
+export type ResolvedSchema<
+  TSchema extends Record<string, string>,
+  TUserTypes extends Record<string, Pick<UserType, "internalType">>
+> = {
   [key in keyof TSchema]: TSchema[key] extends keyof TUserTypes
     ? TUserTypes[TSchema[key]]["internalType"]
     : TSchema[key];
@@ -79,10 +82,10 @@ type ResolvedSchema<TSchema extends Record<string, string>, TUserTypes extends R
 
 // TODO: add strong types to UserTypes config and use them here
 // (see https://github.com/latticexyz/mud/pull/1588)
-export function resolveUserTypes<TSchema extends Record<string, string>, TUserTypes extends Record<string, UserType>>(
-  schema: TSchema,
-  userTypes: TUserTypes
-): ResolvedSchema<TSchema, TUserTypes> {
+export function resolveUserTypes<
+  TSchema extends Record<string, string>,
+  TUserTypes extends Record<string, Pick<UserType, "internalType">>
+>(schema: TSchema, userTypes: TUserTypes): ResolvedSchema<TSchema, TUserTypes> {
   const resolvedSchema: Record<string, SchemaAbiType> = {};
   for (const [key, value] of Object.entries(schema)) {
     resolvedSchema[key] = (userTypes[value]?.internalType as SchemaAbiType) ?? value;
@@ -295,13 +298,9 @@ export type UserTypesConfig<UserTypeNames extends StringForUnion = StringForUnio
       userTypes: Record<UserTypeNames, UserType>;
     };
 
-export type FullUserTypesConfig<UserTypeNames extends StringForUnion> = {
-  userTypes: Record<UserTypeNames, string>;
-};
-
 const zUserTypeConfig = z.object({
   filePath: z.string(),
-  internalType: z.string(),
+  internalType: z.enum(schemaAbiTypes),
 });
 
 export const zUserTypesConfig = z.object({

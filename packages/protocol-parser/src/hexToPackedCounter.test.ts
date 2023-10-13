@@ -28,6 +28,7 @@ describe("hexToPackedCounter", () => {
     expect(() =>
       hexToPackedCounter("0x0000000000000000000000000000400000000020000000002000000000000040")
     ).toThrowErrorMatchingInlineSnapshot(
+      // eslint-disable-next-line max-len
       '"PackedCounter \\"0x0000000000000000000000000000400000000020000000002000000000000040\\" total bytes length (64) did not match the summed length of all field byte lengths (128)."'
     );
   });

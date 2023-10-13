@@ -56,7 +56,7 @@ describe("postgresStorage", async () => {
         {
           "chainId": 31337,
           "lastError": null,
-          "lastUpdatedBlockNumber": 5n,
+          "lastUpdatedBlockNumber": 12n,
           "schemaVersion": 1,
         },
       ]
@@ -70,11 +70,11 @@ describe("postgresStorage", async () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-          "key": "0x5FbDB2315678afecb367f032d93F642f64180aa3::NumberList",
+          "address": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342",
+          "key": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342::NumberList",
           "keySchema": {},
           "lastError": null,
-          "lastUpdatedBlockNumber": 5n,
+          "lastUpdatedBlockNumber": 12n,
           "name": "NumberList",
           "namespace": "",
           "schemaVersion": 1,
@@ -90,11 +90,11 @@ describe("postgresStorage", async () => {
     expect(tables).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-          "key": "0x5FbDB2315678afecb367f032d93F642f64180aa3::NumberList",
+          "address": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342",
+          "key": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342::NumberList",
           "keySchema": {},
           "lastError": null,
-          "lastUpdatedBlockNumber": 5n,
+          "lastUpdatedBlockNumber": 12n,
           "name": "NumberList",
           "namespace": "",
           "schemaVersion": 1,
@@ -114,7 +114,7 @@ describe("postgresStorage", async () => {
           "__encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
           "__isDeleted": false,
           "__key": "0x",
-          "__lastUpdatedBlockNumber": 5n,
+          "__lastUpdatedBlockNumber": 12n,
           "__staticData": null,
           "value": [
             420,

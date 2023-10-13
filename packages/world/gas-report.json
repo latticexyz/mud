@@ -117,7 +117,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 637399
+    "gasUsed": 637367
   },
   {
     "file": "test/World.t.sol",
@@ -129,13 +129,13 @@
     "file": "test/World.t.sol",
     "test": "testSetRecord",
     "name": "Write data to the table",
-    "gasUsed": 36896
+    "gasUsed": 39039
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (cold)",
-    "gasUsed": 23602
+    "gasUsed": 25602
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
@@ -147,7 +147,7 @@
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (cold)",
-    "gasUsed": 23953
+    "gasUsed": 25953
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",

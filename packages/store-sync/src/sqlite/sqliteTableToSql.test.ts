@@ -15,6 +15,7 @@ describe("sqliteTableToSql", () => {
     const sql = sqliteTableToSql(table);
 
     expect(sql).toMatchInlineSnapshot(
+      // eslint-disable-next-line max-len
       '"create table if not exists \\"some table\\" (\\"x\\" integer not null, \\"y\\" integer not null, \\"name\\" text default \'\' not null, \\"block_number\\" blob default \'1000\' not null, constraint \\"some table__primaryKey\\" primary key (\\"x\\", \\"y\\"))"'
     );
   });

@@ -11,7 +11,8 @@ import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.j
 import worldConfig from "@latticexyz/world/mud.config.js";
 import { resourceToHex } from "@latticexyz/common";
 import { getExistingContracts } from "../utils/getExistingContracts";
-import { getChainId } from "../utils/utils/getChainId";
+import { createClient, http } from "viem";
+import { getChainId } from "viem/actions";
 
 // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
 const systemsTableId = resourceToHex({
@@ -103,7 +104,8 @@ export default commandModule;
 
 async function getWorldAddress(worldsFile: string, rpc: string) {
   if (existsSync(worldsFile)) {
-    const chainId = await getChainId(rpc);
+    const client = createClient({ transport: http(rpc) });
+    const chainId = await getChainId(client);
     const deploys = JSON.parse(readFileSync(worldsFile, "utf-8"));
 
     if (!deploys[chainId]) {

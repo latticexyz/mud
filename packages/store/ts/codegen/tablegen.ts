@@ -4,23 +4,34 @@ import { getTableOptions } from "./tableOptions";
 import { renderTable } from "./renderTable";
 import { renderTypesFromConfig } from "./renderTypesFromConfig";
 import { renderTableIndex } from "./renderTableIndex";
-import { rmSync } from "fs";
+import { rm } from "fs/promises";
 import { StoreConfig } from "../config";
 
 export async function tablegen(config: StoreConfig, outputBaseDirectory: string, remappings: [string, string][]) {
   const solidityUserTypes = loadAndExtractUserTypes(config.userTypes, outputBaseDirectory, remappings);
   const allTableOptions = getTableOptions(config, solidityUserTypes);
 
-  const uniqueTableDirectories = new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath)));
-  for (const tableDir of uniqueTableDirectories) {
-    rmSync(path.join(outputBaseDirectory, tableDir), { recursive: true, force: true });
-  }
+  const uniqueTableDirectories = Array.from(new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath))));
+  await Promise.all(
+    uniqueTableDirectories.map(async (tableDir) => {
+      await rm(path.join(outputBaseDirectory, tableDir), { recursive: true, force: true });
+    })
+  );
 
   // write tables to files
-  for (const { outputPath, renderOptions } of allTableOptions) {
-    const fullOutputPath = path.join(outputBaseDirectory, outputPath);
-    const output = renderTable(renderOptions);
-    await formatAndWriteSolidity(output, fullOutputPath, "Generated table");
+  await Promise.all(
+    allTableOptions.map(async ({ outputPath, renderOptions }) => {
+      const fullOutputPath = path.join(outputBaseDirectory, outputPath);
+      const output = renderTable(renderOptions);
+      await formatAndWriteSolidity(output, fullOutputPath, "Generated table");
+    })
+  );
+
+  // write table index
+  if (allTableOptions.length > 0) {
+    const fullOutputPath = path.join(outputBaseDirectory, config.codegenIndexFilename);
+    const output = renderTableIndex(allTableOptions);
+    await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
   }
 
   // write types to file
@@ -29,8 +40,4 @@ export async function tablegen(config: StoreConfig, outputBaseDirectory: string,
     const output = renderTypesFromConfig(config);
     await formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
   }
-
-  const fullOutputPath = path.join(outputBaseDirectory, config.codegenIndexFilename);
-  const output = renderTableIndex(allTableOptions);
-  await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
 }

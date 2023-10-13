@@ -98,13 +98,6 @@ library UserDelegationControl {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get delegationControlId.
    */
   function getDelegationControlId(
@@ -135,22 +128,6 @@ library UserDelegationControl {
   }
 
   /**
-   * @notice Get delegationControlId (using the specified store).
-   */
-  function getDelegationControlId(
-    IStore _store,
-    address delegator,
-    address delegatee
-  ) internal view returns (ResourceId delegationControlId) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
-    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return ResourceId.wrap(bytes32(_blob));
-  }
-
-  /**
    * @notice Get delegationControlId.
    */
   function get(address delegator, address delegatee) internal view returns (ResourceId delegationControlId) {
@@ -171,22 +148,6 @@ library UserDelegationControl {
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return ResourceId.wrap(bytes32(_blob));
-  }
-
-  /**
-   * @notice Get delegationControlId (using the specified store).
-   */
-  function get(
-    IStore _store,
-    address delegator,
-    address delegatee
-  ) internal view returns (ResourceId delegationControlId) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
-    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
-
-    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return ResourceId.wrap(bytes32(_blob));
   }
 
@@ -216,28 +177,6 @@ library UserDelegationControl {
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     StoreCore.setStaticField(
-      _tableId,
-      _keyTuple,
-      0,
-      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
-      _fieldLayout
-    );
-  }
-
-  /**
-   * @notice Set delegationControlId (using the specified store).
-   */
-  function setDelegationControlId(
-    IStore _store,
-    address delegator,
-    address delegatee,
-    ResourceId delegationControlId
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
-    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
-
-    _store.setStaticField(
       _tableId,
       _keyTuple,
       0,
@@ -281,23 +220,6 @@ library UserDelegationControl {
   }
 
   /**
-   * @notice Set delegationControlId (using the specified store).
-   */
-  function set(IStore _store, address delegator, address delegatee, ResourceId delegationControlId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
-    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
-
-    _store.setStaticField(
-      _tableId,
-      _keyTuple,
-      0,
-      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
-      _fieldLayout
-    );
-  }
-
-  /**
    * @notice Delete all data for given keys.
    */
   function deleteRecord(address delegator, address delegatee) internal {
@@ -317,17 +239,6 @@ library UserDelegationControl {
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, address delegator, address delegatee) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
-    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

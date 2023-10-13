@@ -91,13 +91,6 @@ library Hooks {
   }
 
   /**
-   * @notice Register the table with its config (using the specified store).
-   */
-  function register(IStore _store, ResourceId _tableId) internal {
-    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
    * @notice Get hooks.
    */
   function getHooks(ResourceId _tableId, ResourceId resourceId) internal view returns (bytes21[] memory hooks) {
@@ -116,21 +109,6 @@ library Hooks {
     _keyTuple[0] = ResourceId.unwrap(resourceId);
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
-    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
-  }
-
-  /**
-   * @notice Get hooks (using the specified store).
-   */
-  function getHooks(
-    IStore _store,
-    ResourceId _tableId,
-    ResourceId resourceId
-  ) internal view returns (bytes21[] memory hooks) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
   }
 
@@ -157,21 +135,6 @@ library Hooks {
   }
 
   /**
-   * @notice Get hooks (using the specified store).
-   */
-  function get(
-    IStore _store,
-    ResourceId _tableId,
-    ResourceId resourceId
-  ) internal view returns (bytes21[] memory hooks) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
-    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
-  }
-
-  /**
    * @notice Set hooks.
    */
   function setHooks(ResourceId _tableId, ResourceId resourceId, bytes21[] memory hooks) internal {
@@ -192,16 +155,6 @@ library Hooks {
   }
 
   /**
-   * @notice Set hooks (using the specified store).
-   */
-  function setHooks(IStore _store, ResourceId _tableId, ResourceId resourceId, bytes21[] memory hooks) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((hooks)));
-  }
-
-  /**
    * @notice Set hooks.
    */
   function set(ResourceId _tableId, ResourceId resourceId, bytes21[] memory hooks) internal {
@@ -219,16 +172,6 @@ library Hooks {
     _keyTuple[0] = ResourceId.unwrap(resourceId);
 
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((hooks)));
-  }
-
-  /**
-   * @notice Set hooks (using the specified store).
-   */
-  function set(IStore _store, ResourceId _tableId, ResourceId resourceId, bytes21[] memory hooks) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((hooks)));
   }
 
   /**
@@ -258,19 +201,6 @@ library Hooks {
   }
 
   /**
-   * @notice Get the length of hooks (using the specified store).
-   */
-  function lengthHooks(IStore _store, ResourceId _tableId, ResourceId resourceId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 21;
-    }
-  }
-
-  /**
    * @notice Get the length of hooks.
    */
   function length(ResourceId _tableId, ResourceId resourceId) internal view returns (uint256) {
@@ -291,19 +221,6 @@ library Hooks {
     _keyTuple[0] = ResourceId.unwrap(resourceId);
 
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 21;
-    }
-  }
-
-  /**
-   * @notice Get the length of hooks (using the specified store).
-   */
-  function length(IStore _store, ResourceId _tableId, ResourceId resourceId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 21;
     }
@@ -338,25 +255,6 @@ library Hooks {
   }
 
   /**
-   * @notice Get an item of hooks (using the specified store).
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function getItemHooks(
-    IStore _store,
-    ResourceId _tableId,
-    ResourceId resourceId,
-    uint256 _index
-  ) internal view returns (bytes21) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    unchecked {
-      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 21, (_index + 1) * 21);
-      return (bytes21(_blob));
-    }
-  }
-
-  /**
    * @notice Get an item of hooks.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
@@ -385,25 +283,6 @@ library Hooks {
   }
 
   /**
-   * @notice Get an item of hooks (using the specified store).
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function getItem(
-    IStore _store,
-    ResourceId _tableId,
-    ResourceId resourceId,
-    uint256 _index
-  ) internal view returns (bytes21) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    unchecked {
-      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 21, (_index + 1) * 21);
-      return (bytes21(_blob));
-    }
-  }
-
-  /**
    * @notice Push an element to hooks.
    */
   function pushHooks(ResourceId _tableId, ResourceId resourceId, bytes21 _element) internal {
@@ -421,16 +300,6 @@ library Hooks {
     _keyTuple[0] = ResourceId.unwrap(resourceId);
 
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Push an element to hooks (using the specified store).
-   */
-  function pushHooks(IStore _store, ResourceId _tableId, ResourceId resourceId, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
   /**
@@ -454,16 +323,6 @@ library Hooks {
   }
 
   /**
-   * @notice Push an element to hooks (using the specified store).
-   */
-  function push(IStore _store, ResourceId _tableId, ResourceId resourceId, bytes21 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
-  }
-
-  /**
    * @notice Pop an element from hooks.
    */
   function popHooks(ResourceId _tableId, ResourceId resourceId) internal {
@@ -484,16 +343,6 @@ library Hooks {
   }
 
   /**
-   * @notice Pop an element from hooks (using the specified store).
-   */
-  function popHooks(IStore _store, ResourceId _tableId, ResourceId resourceId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    _store.popFromDynamicField(_tableId, _keyTuple, 0, 21);
-  }
-
-  /**
    * @notice Pop an element from hooks.
    */
   function pop(ResourceId _tableId, ResourceId resourceId) internal {
@@ -511,16 +360,6 @@ library Hooks {
     _keyTuple[0] = ResourceId.unwrap(resourceId);
 
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 21);
-  }
-
-  /**
-   * @notice Pop an element from hooks (using the specified store).
-   */
-  function pop(IStore _store, ResourceId _tableId, ResourceId resourceId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    _store.popFromDynamicField(_tableId, _keyTuple, 0, 21);
   }
 
   /**
@@ -546,25 +385,6 @@ library Hooks {
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
       StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 21), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
-   * @notice Update an element of hooks (using the specified store) at `_index`.
-   */
-  function updateHooks(
-    IStore _store,
-    ResourceId _tableId,
-    ResourceId resourceId,
-    uint256 _index,
-    bytes21 _element
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 21), uint40(_encoded.length), _encoded);
     }
   }
 
@@ -595,25 +415,6 @@ library Hooks {
   }
 
   /**
-   * @notice Update an element of hooks (using the specified store) at `_index`.
-   */
-  function update(
-    IStore _store,
-    ResourceId _tableId,
-    ResourceId resourceId,
-    uint256 _index,
-    bytes21 _element
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 21), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
    * @notice Delete all data for given keys.
    */
   function deleteRecord(ResourceId _tableId, ResourceId resourceId) internal {
@@ -631,16 +432,6 @@ library Hooks {
     _keyTuple[0] = ResourceId.unwrap(resourceId);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /**
-   * @notice Delete all data for given keys (using the specified store).
-   */
-  function deleteRecord(IStore _store, ResourceId _tableId, ResourceId resourceId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(resourceId);
-
-    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /**

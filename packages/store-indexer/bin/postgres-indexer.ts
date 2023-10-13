@@ -80,6 +80,7 @@ const { latestBlockNumber$, storedBlockLogs$ } = await createStoreSync({
 
 storedBlockLogs$.subscribe();
 
+let isCaughtUp = false;
 combineLatest([latestBlockNumber$, storedBlockLogs$])
   .pipe(
     filter(
@@ -88,6 +89,7 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
     first()
   )
   .subscribe(() => {
+    isCaughtUp = true;
     console.log("all caught up");
   });
 
@@ -97,6 +99,10 @@ const server = fastify({
 });
 
 await server.register(import("@fastify/cors"));
+
+// k8s healthchecks
+server.get("/healthz", (req, res) => res.code(200).send());
+server.get("/readyz", (req, res) => (isCaughtUp ? res.code(200).send("ready") : res.code(424).send("backfilling")));
 
 // @see https://trpc.io/docs/server/adapters/fastify
 server.register(fastifyTRPCPlugin<AppRouter>, {

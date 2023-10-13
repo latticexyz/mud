@@ -6,6 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
@@ -14,6 +15,7 @@ import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 
 import { World } from "@latticexyz/world/src/World.sol";
+import { IModule } from "@latticexyz/world/src/IModule.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance, NAME_BITS, TYPE_BITS } from "@latticexyz/world/src/WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
@@ -50,14 +52,17 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     sourceTableFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
     sourceTableSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
     sourceTableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
+    sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: sourceName });
+    targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
+
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
+    StoreSwitch.setStoreAddress(address(world));
+
     keyTuple1 = new bytes32[](1);
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
     keyTuple2[0] = key2;
-    sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: sourceName });
-    targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
   }
 
   function _installKeysWithValueModule() internal {
@@ -93,11 +98,17 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with this value from the target table
-    bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value)));
+    bytes32[] memory keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
     assertEq(keysWithValue[0], key1);
+  }
+
+  function testInstallTwice() public {
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+    vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
   }
 
   function testSetAndDeleteRecordHook() public {
@@ -109,7 +120,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value1), PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get the list of entities with value1 from the target table
-    bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value1)));
+    bytes32[] memory keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "1");
@@ -119,7 +130,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value1), PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value1)));
+    keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 2);
@@ -134,14 +145,14 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with value1 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value1)));
+    keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "5");
     assertEq(keysWithValue[0], key2, "6");
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value2)));
+    keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value2)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "7");
@@ -153,7 +164,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value2)));
+    keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value2)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 0, "9");
@@ -170,7 +181,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with value1 from the target table
-    bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
+    bytes32[] memory keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encode(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
@@ -184,13 +195,13 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with value1 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
+    keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encode(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 0);
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value2)));
+    keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encode(value2)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);

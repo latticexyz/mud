@@ -23,6 +23,7 @@ interface IModule is IERC165 {
   /// @dev Errors to represent non-support of specific installation types.
   error Module_RootInstallNotSupported();
   error Module_NonRootInstallNotSupported();
+  error Module_AlreadyInstalled();
 
   /**
    * @notice Return the name of the module.

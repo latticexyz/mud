@@ -1,7 +1,7 @@
 import type { CommandModule } from "yargs";
 import { readFileSync, writeFileSync } from "fs";
 import glob from "glob";
-import path from "path";
+import { debug } from "./debug";
 
 type Options = {
   input: string;
@@ -34,14 +34,14 @@ const commandModule: CommandModule<Options, Options> = {
     for (const jsonFilename of files) {
       const json = readFileSync(jsonFilename, "utf8").trim();
       if (json === "[]") {
-        console.log("Skipping empty ABI file", jsonFilename);
+        debug("Skipping empty ABI file", jsonFilename);
         continue;
       }
 
       const ts = `declare const abi: ${json}; export default abi;\n`;
       const tsFilename = `${jsonFilename}.d.ts`;
 
-      console.log("Writing", tsFilename);
+      debug("Writing", tsFilename);
       writeFileSync(tsFilename, ts);
     }
 

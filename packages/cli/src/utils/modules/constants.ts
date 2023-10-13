@@ -1,10 +1,9 @@
 import KeysWithValueModuleData from "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
 import KeysInTableModuleData from "@latticexyz/world-modules/out/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
 import UniqueEntityModuleData from "@latticexyz/world-modules/out/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
-import { ContractCode } from "../utils/types";
 
 // These modules are always deployed
-export const defaultModuleContracts: ContractCode[] = [
+export const defaultModuleContracts = [
   {
     name: "KeysWithValueModule",
     abi: KeysWithValueModuleData.abi,
