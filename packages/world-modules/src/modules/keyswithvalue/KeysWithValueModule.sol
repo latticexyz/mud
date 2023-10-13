@@ -5,6 +5,7 @@ import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA,
 import { Module } from "@latticexyz/world/src/Module.sol";
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
+import { InstalledModules } from "@latticexyz/world/src/codegen/index.sol";
 
 import { WorldContextConsumer } from "@latticexyz/world/src/WorldContext.sol";
 import { ResourceId, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
@@ -38,6 +39,12 @@ contract KeysWithValueModule is Module {
   }
 
   function installRoot(bytes memory args) public {
+    // Naive check to ensure this is only installed once
+    // TODO: only revert if there's nothing to do
+    if (InstalledModules.getModuleAddress(getName(), keccak256(args)) != address(0)) {
+      revert Module_AlreadyInstalled();
+    }
+
     // Extract source table id from args
     ResourceId sourceTableId = ResourceId.wrap(abi.decode(args, (bytes32)));
     ResourceId targetTableSelector = getTargetTableId(MODULE_NAMESPACE, sourceTableId);

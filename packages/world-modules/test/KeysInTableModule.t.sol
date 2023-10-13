@@ -12,6 +12,7 @@ import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.so
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { World } from "@latticexyz/world/src/World.sol";
+import { IModule } from "@latticexyz/world/src/IModule.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
@@ -161,7 +162,13 @@ contract KeysInTableModuleTest is Test, GasReporter {
     assertEq(keysInTable[0][0], key1);
   }
 
-  function testInstallTwice(bytes32 keyA, bytes32 keyB, uint256 value1, uint256 value2) public {
+  function testInstallTwice() public {
+    world.installRootModule(keysInTableModule, abi.encode(tableId));
+    vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
+    world.installRootModule(keysInTableModule, abi.encode(tableId));
+  }
+
+  function testInstallMultiple(bytes32 keyA, bytes32 keyB, uint256 value1, uint256 value2) public {
     _installKeysInTableModule();
 
     bytes32[] memory keyTuple = new bytes32[](1);
