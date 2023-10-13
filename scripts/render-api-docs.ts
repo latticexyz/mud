@@ -9,46 +9,64 @@ import path from "path";
 
 const DOCS_ROOT = "next-docs/pages";
 
-type File = {
-  fileName: string;
-  fileContent: string;
-};
-
-type Input = {
-  source: string;
-  filterFiles?: (fileName: string) => boolean;
-  processContent?: (input: File) => File;
-};
-
-type PublicApis = {
-  [outputFile: string]: Input[];
-};
-
 // Mapping from output file to array of input files
 const PUBLIC_APIS: PublicApis = {
-  "store/reference/store-core.mdx": [
-    {
-      source: "store/src/StoreCore.sol",
-      filterFiles: (fileName) => !fileName.includes("StoreCoreInternal"),
-      processContent: replaceGithubLinks,
+  "store/reference/store-core.mdx": {
+    inputFiles: [
+      {
+        source: "store/src/StoreCore.sol",
+        filterFiles: (fileName) => !fileName.includes("StoreCoreInternal"),
+      },
+    ],
+    processContent: (content) => {
+      content = formatHeadings(content);
+      content = replaceGithubLinks(content);
+      return content;
     },
-  ],
-  "store/reference/store.mdx": [
-    { source: "store/src/IStore.sol", processContent: replaceGithubLinks },
-    { source: "store/src/IStoreData.sol", processContent: replaceGithubLinks },
-    { source: "store/src/IStoreErrors.sol", processContent: replaceGithubLinks },
-    { source: "store/src/IStoreEvents.sol", processContent: replaceGithubLinks },
-    { source: "store/src/IStoreRead.sol", processContent: replaceGithubLinks },
-    { source: "store/src/IStoreRegistration.sol", processContent: replaceGithubLinks },
-  ],
-  "store/reference/store-hook.mdx": [{ source: "store/src/IStoreHook.sol", processContent: replaceGithubLinks }],
+  },
+  "store/reference/store.mdx": {
+    inputFiles: [
+      { source: "store/src/IStore.sol" },
+      { source: "store/src/IStoreEvents.sol" },
+      { source: "store/src/IStoreErrors.sol" },
+      { source: "store/src/IStoreData.sol" },
+      { source: "store/src/IStoreRead.sol" },
+      { source: "store/src/IStoreWrite.sol" },
+      { source: "store/src/IStoreRegistration.sol" },
+    ],
+    processContent: (content) => {
+      content = formatHeadings(content);
+      content = replaceGithubLinks(content);
+      return content
+        .replace("/src/IStoreData.sol/interface.IStoreData.md", "#istoredata")
+        .replace("/src/IStoreRegistration.sol/interface.IStoreRegistration.md", "#istoreregistration")
+        .replace("/src/IStoreRead.sol/interface.IStoreRead.md", "#istoreread")
+        .replace("/src/IStoreWrite.sol/interface.IStoreWrite.md", "#istorewrite")
+        .replace("/src/IStoreEvents.sol/interface.IStoreEvents.md", "#istoreevents")
+        .replace("/src/IStoreErrors.sol/interface.IStoreErrors.md", "#istoreerrors");
+    },
+  },
+  "store/reference/store-hook.mdx": {
+    inputFiles: [
+      {
+        source: "store/src/IStoreHook.sol",
+      },
+    ],
+    processContent: (content) => {
+      content = formatHeadings(content);
+      content = replaceGithubLinks(content);
+      return content.replace(`**Inherits:**\n[IERC165](/src/IERC165.sol/interface.IERC165.md)`, "");
+    },
+  },
 };
 
-function identity<T>(input: T): T {
-  return input;
+function formatHeadings(content: string) {
+  const h1 = /^# (?=.+)/gm;
+  const h2 = /^## (?=.+)/gm;
+  return content.replace(h2, "### ").replace(h1, "## ");
 }
 
-function replaceGithubLinks({ fileName, fileContent }: File) {
+function replaceGithubLinks(content: string) {
   // Find all internal Github links
   const pattern = /https:\/\/github.com\/latticexyz\/mud\/blob\/[^/]+\/(.*)/g;
 
@@ -56,13 +74,31 @@ function replaceGithubLinks({ fileName, fileContent }: File) {
   const replacement = "https://github.com/latticexyz/mud/blob/main/packages/store/$1";
 
   // Use the replace function
-  return { fileName, fileContent: fileContent.replace(pattern, replacement) };
+  return content.replace(pattern, replacement);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// SHOULDN'T HAVE TO TOUCH CODE BELOW THIS
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+type Input = {
+  source: string;
+  filterFiles?: (fileName: string) => boolean;
+};
+
+type PublicApis = {
+  [outputFile: string]: { inputFiles: Input[]; processContent?: (content: string) => string };
+};
+
+function identity<T>(input: T): T {
+  return input;
 }
 
 function getPackages() {
   return [
     ...new Set(
       Object.values(PUBLIC_APIS)
+        .map(({ inputFiles }) => inputFiles)
         .flat()
         .map((input) => input.source.split("/")[0])
     ),
@@ -99,25 +135,22 @@ function formatMarkdown(content: string) {
  * Write output files from array of input files
  */
 async function renderDocs() {
-  for (const [outputFile, inputFiles] of Object.entries(PUBLIC_APIS)) {
+  for (const [outputFile, { inputFiles, processContent = identity }] of Object.entries(PUBLIC_APIS)) {
     // Concat all input files for this output file
     const content =
       `[//]: # (This file is autogenerated, do not change manually)\n\n` +
-      inputFiles
-        .map((input) => {
-          const docsPath = getDocsPath(input.source);
-          const docsFiles = readdirSync(docsPath);
-          return docsFiles
-            .filter(input.filterFiles ?? identity)
-            .map((fileName) => ({
-              fileName,
-              fileContent: readFileSync(path.join(docsPath, fileName), { encoding: "utf8" }),
-            }))
-            .map(input.processContent ?? identity)
-            .map(({ fileContent }) => fileContent);
-        })
-        .flat()
-        .join("\n");
+      processContent(
+        inputFiles
+          .map((input) => {
+            const docsPath = getDocsPath(input.source);
+            const docsFiles = readdirSync(docsPath);
+            return docsFiles
+              .filter(input.filterFiles ?? identity)
+              .map((fileName) => readFileSync(path.join(docsPath, fileName), { encoding: "utf8" }));
+          })
+          .flat()
+          .join("\n")
+      );
 
     // Write the output file
     writeFileSync(path.join(DOCS_ROOT, outputFile), formatMarkdown(content));
