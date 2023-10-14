@@ -237,7 +237,7 @@ This exclamation point tells the compiler that it's OK, there will be a real val
   const entity = encodeEntity(History.metadata.keySchema, { counterValue });
 ```
 
-`encodeEntity` creates a key in the format that MUD uses, which is based on [ABI argument encoding](https://docs.soliditylang.org/en/latest/abi-spec.html#argument-encoding).
+`encodeEntity` creates an entity key with the [encoding that MUD uses](/store/encoding).
 
 ```typescript
 const { blockNumber, time } = getComponentValueStrict(History, entity);
@@ -259,7 +259,7 @@ Update the value in the HTML table.
 
 Solidity uses [Unix time](https://en.wikipedia.org/wiki/Unix_time).
 JavaScript uses a similar system, but it measures times in milliseconds.
-So to get a readable date, we take the time (which is a [`BigInt`](https://www.w3schools.com/js/js_bigint.asp)), multiply it by a thousand, and then convert it to a [`Date`](https://www.w3schools.com/jsref/jsref_obj_date.asp) object.
+So to get a readable date, we take the time (which is a [`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)), multiply it by a thousand, and then convert it to a [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object.
 
 </details>
 
@@ -311,7 +311,7 @@ So to get a readable date, we take the time (which is a [`BigInt`](https://www.w
 </h2>
 ```
 
-This is the [input field](https://www.w3schools.com/tags/tag_select.asp) that lets the user select which counter value they'd like to get information about.
+This is the [input field](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select) that lets the user select which counter value they'd like to get information about.
 The `id` attribute is used by `packages/client/src/index.ts` to set the options.
 The `onInput` attribute is the JavaScript code to execute when the value changes.
 
@@ -319,7 +319,7 @@ The `onInput` attribute is the JavaScript code to execute when the value changes
 <table border></table>
 ```
 
-A standard [HTML table](https://www.w3schools.com/html/html_tables.asp).
+A standard [HTML table](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table).
 
 ```html
 <tr>

@@ -142,7 +142,7 @@ In this case, the vanilla getting started front end.
         const decrement = async () => {
         ```
 
-        This function involves sending a transaction, which is a slow process, so it needs to be [asynchronous](https://www.w3schools.com/js/js_async.asp).
+        This function involves sending a transaction, which is a slow process, so it needs to be [asynchronous](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function).
 
         ```typescript
           const tx = await worldContract.write.decrement();
@@ -154,7 +154,7 @@ In this case, the vanilla getting started front end.
           await waitForTransaction(tx);
         ```
 
-        Await until we receive confirmation that the transaction has been added to a block.
+        Await until the transaction has been included in a block and the corresponding state has been synchronized with the client.
 
         ```typescript
             return getComponentValue(Counter, singletonEntity)
