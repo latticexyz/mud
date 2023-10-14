@@ -159,9 +159,9 @@ The directions here apply to the `vanilla` client template, if you use anything 
    components.Counter.update$.subscribe((update) => {
      const [nextValue, prevValue] = update.value;
      console.log("Counter updated", update, { nextValue, prevValue });
-     document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+     document.getElementById("counter")!.innerHTML = nextValue?.value ?? "unset";
 
-     let options: String = "";
+     let options = "";
      for (let i = 1; i <= nextValue?.value; i++) {
        options += `<option value="${i}">${i}</option>`;
      }
@@ -205,12 +205,10 @@ The directions here apply to the `vanilla` client template, if you use anything 
 <summary>Explanation</summary>
 
 ```typescript
-let options: String = "";
+let options = "";
 ```
 
 Create `options` as an empty string.
-This is the way you define a variable in TypeScript: `let <variable name>: <type>`.
-Here we initialize it to the empty string.
 
 ```typescript
 for (let i = 1; i <= nextValue?.value; i++) {
