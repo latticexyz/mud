@@ -1,4 +1,9 @@
 export default {
   config: "Config",
-  reference: "Reference",
+  tablegen: "mud tablegen",
+  worldgen: "mud worldgen",
+  test: "mud test",
+  deploy: "mud deploy",
+  "dev-contracts": "mud dev-contracts",
+  trace: "mud trace",
 };
