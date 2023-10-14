@@ -1,8 +1,9 @@
-import { Client, Transport, Chain, Account, Hex } from "viem";
+import { Client, Transport, Chain, Account, Hex, BaseError } from "viem";
 import { writeContract } from "@latticexyz/common";
 import { Module, WorldDeploy, worldAbi } from "./common";
-import { ensureContract } from "./ensureContract";
 import { debug } from "./debug";
+import { isDefined, wait } from "@latticexyz/common/utils";
+import pRetry from "p-retry";
 
 export async function ensureModules({
   client,
@@ -15,34 +16,48 @@ export async function ensureModules({
 }): Promise<readonly Hex[]> {
   if (!modules.length) return [];
 
-  // kick off contract deployments first, otherwise installing modules can fail
-  const contractTxs = await Promise.all(
-    modules.map((mod) => ensureContract({ client, bytecode: mod.bytecode, label: `${mod.name} module` }))
-  );
-
-  // then start installing modules
   debug("installing modules:", modules.map((mod) => mod.name).join(", "));
-  const installTxs = await Promise.all(
-    modules.map((mod) =>
-      mod.installAsRoot
-        ? writeContract(client, {
-            chain: client.chain ?? null,
-            address: worldDeploy.address,
-            abi: worldAbi,
-            // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-            functionName: "installRootModule",
-            args: [mod.address, mod.installData],
-          })
-        : writeContract(client, {
-            chain: client.chain ?? null,
-            address: worldDeploy.address,
-            abi: worldAbi,
-            // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-            functionName: "installModule",
-            args: [mod.address, mod.installData],
-          })
+  return (
+    await Promise.all(
+      modules.map((mod) =>
+        pRetry(
+          async () => {
+            try {
+              return mod.installAsRoot
+                ? await writeContract(client, {
+                    chain: client.chain ?? null,
+                    address: worldDeploy.address,
+                    abi: worldAbi,
+                    // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
+                    functionName: "installRootModule",
+                    args: [mod.address, mod.installData],
+                  })
+                : await writeContract(client, {
+                    chain: client.chain ?? null,
+                    address: worldDeploy.address,
+                    abi: worldAbi,
+                    // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
+                    functionName: "installModule",
+                    args: [mod.address, mod.installData],
+                  });
+            } catch (error) {
+              if (error instanceof BaseError && error.message.includes("Module_AlreadyInstalled")) {
+                debug(`module ${mod.name} already installed`);
+                return;
+              }
+              throw error;
+            }
+          },
+          {
+            retries: 3,
+            onFailedAttempt: async (error) => {
+              const delay = error.attemptNumber * 500;
+              debug(`failed to install module ${mod.name}, retrying in ${delay}ms...`);
+              await wait(delay);
+            },
+          }
+        )
+      )
     )
-  );
-
-  return (await Promise.all([...contractTxs, ...installTxs])).flat();
+  ).filter(isDefined);
 }

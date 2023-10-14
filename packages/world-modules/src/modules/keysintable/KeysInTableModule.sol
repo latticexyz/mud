@@ -7,6 +7,7 @@ import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.so
 import { Module } from "@latticexyz/world/src/Module.sol";
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
+import { InstalledModules } from "@latticexyz/world/src/codegen/index.sol";
 
 import { ResourceId, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
@@ -37,6 +38,12 @@ contract KeysInTableModule is Module {
   }
 
   function installRoot(bytes memory args) public override {
+    // Naive check to ensure this is only installed once
+    // TODO: only revert if there's nothing to do
+    if (InstalledModules.getModuleAddress(getName(), keccak256(args)) != address(0)) {
+      revert Module_AlreadyInstalled();
+    }
+
     // Extract source table id from args
     ResourceId sourceTableId = ResourceId.wrap(abi.decode(args, (bytes32)));
 

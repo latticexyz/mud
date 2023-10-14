@@ -71,7 +71,10 @@ const zShorthandSchemaConfig = zFieldData.transform((fieldData) => {
 
 export const zSchemaConfig = zFullSchemaConfig.or(zShorthandSchemaConfig);
 
-export type ResolvedSchema<TSchema extends Record<string, string>, TUserTypes extends Record<string, UserType>> = {
+export type ResolvedSchema<
+  TSchema extends Record<string, string>,
+  TUserTypes extends Record<string, Pick<UserType, "internalType">>
+> = {
   [key in keyof TSchema]: TSchema[key] extends keyof TUserTypes
     ? TUserTypes[TSchema[key]]["internalType"]
     : TSchema[key];
@@ -79,10 +82,10 @@ export type ResolvedSchema<TSchema extends Record<string, string>, TUserTypes ex
 
 // TODO: add strong types to UserTypes config and use them here
 // (see https://github.com/latticexyz/mud/pull/1588)
-export function resolveUserTypes<TSchema extends Record<string, string>, TUserTypes extends Record<string, UserType>>(
-  schema: TSchema,
-  userTypes: TUserTypes
-): ResolvedSchema<TSchema, TUserTypes> {
+export function resolveUserTypes<
+  TSchema extends Record<string, string>,
+  TUserTypes extends Record<string, Pick<UserType, "internalType">>
+>(schema: TSchema, userTypes: TUserTypes): ResolvedSchema<TSchema, TUserTypes> {
   const resolvedSchema: Record<string, SchemaAbiType> = {};
   for (const [key, value] of Object.entries(schema)) {
     resolvedSchema[key] = (userTypes[value]?.internalType as SchemaAbiType) ?? value;
@@ -294,10 +297,6 @@ export type UserTypesConfig<UserTypeNames extends StringForUnion = StringForUnio
        */
       userTypes: Record<UserTypeNames, UserType>;
     };
-
-export type FullUserTypesConfig<UserTypeNames extends StringForUnion> = {
-  userTypes: Record<UserTypeNames, string>;
-};
 
 const zUserTypeConfig = z.object({
   filePath: z.string(),
