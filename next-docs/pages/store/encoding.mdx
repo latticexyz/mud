@@ -1,5 +1,21 @@
 # Encoding
 
+`Store` uses a custom encoding scheme to store data in the most compact way possible.
+It is comparable to `abi.encodePacked`, but with some notable differences:
+
+- **Array elements are tightly packed**, without any padding.
+  This might cause some elements to wrap around two storage slots, but saves a lot of space.
+  For example, an `address[3]` array will only use 2 storage slots in MUD instead of 3 in Solidity,
+  leading to a 33% reduction in storage costs.
+- **Array lengths are packed into a single slot**.
+  Since table are limited to up to 5 dynamic field, and the length of each field is limited to `2**40`,
+  we can pack the lengths of all dynamic length fields of a table into a single storage slot.
+  Compared to Solidity, this saves ~1 storage slot per dynamic length element.
+
+This encoding scheme greatly reduces gas for storage operations on dynamic length fields and for emitting events.
+Compared to the Solidity default of `abi.encode` for emitting events, it reduces the data size by ~80% (depending on the table schema).
+Note that since the encoding happens at runtime and does not have access to compiler internals, there is some overhead for encoding and decoding that is not present in Solidity.
+
 ## Schema
 
 ## FieldLayout
