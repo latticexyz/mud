@@ -4,5 +4,5 @@ export default {
   vanilla: "Vanilla",
   react: "React",
   phaser: "Phaser",
-  three: "Three",
+  three: "Three.js",
 };
