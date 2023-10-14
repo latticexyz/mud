@@ -29,3 +29,10 @@ jobs:
 
       - name: Outdated files, run `pnpm build` and commit them
         uses: ./.github/actions/require-empty-diff
+
+      - name: Build API docs
+        shell: bash
+        run: pnpm docs:generate:api
+
+      - name: Outdated files, run `pnpm docs:generate:api` and commit them
+        uses: ./.github/actions/require-empty-diff
