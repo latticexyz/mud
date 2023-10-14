@@ -1,12 +1,12 @@
 import { Client, Transport, Chain, Account, Hex, getAddress } from "viem";
 import { writeContract } from "@latticexyz/common";
 import { System, WorldDeploy, worldAbi } from "./common";
-import { ensureContract } from "./ensureContract";
 import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { getSystems } from "./getSystems";
 import { getResourceAccess } from "./getResourceAccess";
-import { uniqueBy } from "@latticexyz/common/utils";
+import { wait } from "@latticexyz/common/utils";
+import pRetry from "p-retry";
 
 export async function ensureSystems({
   client,
@@ -52,26 +52,48 @@ export async function ensureSystems({
     debug("adding", accessToAdd.length, "access grants");
   }
 
-  const accessTxs = await Promise.all([
+  const accessTxs = [
     ...accessToRemove.map((access) =>
-      writeContract(client, {
-        chain: client.chain ?? null,
-        address: worldDeploy.address,
-        abi: worldAbi,
-        functionName: "revokeAccess",
-        args: [access.resourceId, access.address],
-      })
+      pRetry(
+        () =>
+          writeContract(client, {
+            chain: client.chain ?? null,
+            address: worldDeploy.address,
+            abi: worldAbi,
+            functionName: "revokeAccess",
+            args: [access.resourceId, access.address],
+          }),
+        {
+          retries: 3,
+          onFailedAttempt: async (error) => {
+            const delay = error.attemptNumber * 500;
+            debug(`failed to revoke access, retrying in ${delay}ms...`);
+            await wait(delay);
+          },
+        }
+      )
     ),
     ...accessToAdd.map((access) =>
-      writeContract(client, {
-        chain: client.chain ?? null,
-        address: worldDeploy.address,
-        abi: worldAbi,
-        functionName: "grantAccess",
-        args: [access.resourceId, access.address],
-      })
+      pRetry(
+        () =>
+          writeContract(client, {
+            chain: client.chain ?? null,
+            address: worldDeploy.address,
+            abi: worldAbi,
+            functionName: "grantAccess",
+            args: [access.resourceId, access.address],
+          }),
+        {
+          retries: 3,
+          onFailedAttempt: async (error) => {
+            const delay = error.attemptNumber * 500;
+            debug(`failed to grant access, retrying in ${delay}ms...`);
+            await wait(delay);
+          },
+        }
+      )
     ),
-  ]);
+  ];
 
   const existingSystems = systems.filter((system) =>
     worldSystems.some(
@@ -104,26 +126,27 @@ export async function ensureSystems({
     debug("registering new systems", systemsToAdd.map(resourceLabel).join(", "));
   }
 
-  // kick off contract deployments first, otherwise registering systems can fail
-  const contractTxs = await Promise.all(
-    uniqueBy(missingSystems, (system) => system.address).map((system) =>
-      ensureContract({ client, bytecode: system.bytecode, label: `${resourceLabel(system)} system` })
+  const registerTxs = missingSystems.map((system) =>
+    pRetry(
+      () =>
+        writeContract(client, {
+          chain: client.chain ?? null,
+          address: worldDeploy.address,
+          abi: worldAbi,
+          // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
+          functionName: "registerSystem",
+          args: [system.systemId, system.address, system.allowAll],
+        }),
+      {
+        retries: 3,
+        onFailedAttempt: async (error) => {
+          const delay = error.attemptNumber * 500;
+          debug(`failed to register system ${resourceLabel(system)}, retrying in ${delay}ms...`);
+          await wait(delay);
+        },
+      }
     )
   );
 
-  // then start registering systems
-  const registerTxs = await Promise.all(
-    missingSystems.map((system) =>
-      writeContract(client, {
-        chain: client.chain ?? null,
-        address: worldDeploy.address,
-        abi: worldAbi,
-        // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-        functionName: "registerSystem",
-        args: [system.systemId, system.address, system.allowAll],
-      })
-    )
-  );
-
-  return (await Promise.all([...accessTxs, ...contractTxs, ...registerTxs])).flat();
+  return await Promise.all([...accessTxs, ...registerTxs]);
 }

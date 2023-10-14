@@ -193,6 +193,9 @@ importers:
       openurl:
         specifier: ^1.1.1
         version: 1.1.1
+      p-retry:
+        specifier: ^5.1.2
+        version: 5.1.2
       path:
         specifier: ^0.12.7
         version: 0.12.7

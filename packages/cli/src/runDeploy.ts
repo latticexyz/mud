@@ -19,11 +19,6 @@ import { tablegen } from "@latticexyz/store/codegen";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
-  clean: {
-    type: "boolean",
-    desc: "Remove the build forge artifacts and cache directories before building",
-    default: false,
-  },
   printConfig: { type: "boolean", desc: "Print the resolved config" },
   profile: { type: "string", desc: "The foundry profile to use" },
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
@@ -31,6 +26,10 @@ export const deployOptions = {
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   skipBuild: { type: "boolean", desc: "Skip rebuilding the contracts before deploying" },
+  alwaysRunPostDeploy: {
+    type: "boolean",
+    desc: "Always run PostDeploy.s.sol after each deploy (including during upgrades). By default, PostDeploy.s.sol is only run once after a new world is deployed.",
+  },
 } as const satisfies Record<string, Options>;
 
 export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
@@ -57,10 +56,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       chalk.whiteBright(`\n Deploying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`)
     )
   );
-
-  if (opts.clean) {
-    await forge(["clean"], { profile });
-  }
 
   // Run forge build
   if (!opts.skipBuild) {
@@ -93,7 +88,7 @@ in your contracts directory to use the default anvil private key.`
     client,
     config: resolvedConfig,
   });
-  if (opts.worldAddress == null) {
+  if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile);
   }
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
