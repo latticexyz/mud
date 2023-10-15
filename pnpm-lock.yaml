@@ -964,9 +964,6 @@ importers:
 
   packages/utils:
     dependencies:
-      ethers:
-        specifier: ^5.7.2
-        version: 5.7.2
       mobx:
         specifier: ^6.7.0
         version: 6.9.0
