@@ -7,15 +7,18 @@ import { debug } from "./debug";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
 
+export type Contract = {
+  bytecode: Hex;
+  label?: string;
+};
+
 export async function ensureContract({
   client,
   bytecode,
   label = "contract",
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
-  readonly bytecode: Hex;
-  readonly label?: string;
-}): Promise<readonly Hex[]> {
+} & Contract): Promise<readonly Hex[]> {
   const address = getCreate2Address({ from: deployer, salt, bytecode });
 
   const contractCode = await getBytecode(client, { address, blockTag: "pending" });
