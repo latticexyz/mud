@@ -1,6 +1,6 @@
 # Encoding
 
-`Store` uses a custom encoding scheme to store data in the most compact way possible.
+`Store` uses a custom encoding scheme to store data more compactly than Solidity.
 It is comparable to `abi.encodePacked`, but with some notable differences:
 
 - **Array elements are tightly packed**, without any padding.
@@ -8,24 +8,74 @@ It is comparable to `abi.encodePacked`, but with some notable differences:
   For example, an `address[3]` array will only use 2 storage slots in MUD instead of 3 in Solidity,
   leading to a 33% reduction in storage costs.
 - **Array lengths are packed into a single slot**.
-  Since table are limited to up to 5 dynamic field, and the length of each field is limited to `2**40`,
+  Since table are limited to up to 5 dynamic field, and the length of each field is limited to `2**40` (~1 trillion),
   we can pack the lengths of all dynamic length fields of a table into a single storage slot.
   Compared to Solidity, this saves ~1 storage slot per dynamic length element.
 
 This encoding scheme greatly reduces gas for storage operations on dynamic length fields and for emitting events.
-Compared to the Solidity default of `abi.encode` for emitting events, it reduces the data size by ~80% (depending on the table schema).
-Note that since the encoding happens at runtime and does not have access to compiler internals, there is some overhead for encoding and decoding that is not present in Solidity.
+**For events it reduces the payload size by ~80%** compared to the Solidity default of `abi.encode` (depending on the table schema).
+Note that since the encoding happens at runtime and does not have access to compiler internals, there is some overhead for encoding and decoding that is not present in vanilla Solidity.
 
 ## Schema
 
-## FieldLayout
+## Static length data
 
-## Static data
+Static length data is encoded in the same way as `abi.encodePacked`, so each element only uses as much space as required by its data type.
+For example, a `bytes1` element takes 1 byte of space, instead of being padded to 32 bytes with `abi.encode`.
 
-## PackedCounter
+```
+// Example: encoded static data of a table with a uint64 and a uint40 field
+0x 0000000000000001 0000000002
+   |--------------| |--------|
+   0x00........0x07 0x08..0x0B
+   |--------------| |--------|
+   | First        | | Second |
+   | Field        | | Field  |
+   |--------------| |--------|
+   | 1            | | 2      |
 
-## Dynamic data
+```
+
+## Dynamic length data
+
+### Encoded lengths (`PackedCounter`)
+
+Tables can have up to five dynamic length fields, each of which has a maximum size of `2**40` (~1 trillion) bytes.
+This makes it possible to pack the lengths of all dynamic length fields of a table in a single `bytes32` word, instead of prefixing each dynamic length field with 32 bytes to store its length.
+
+The data structure to store the lengths of all dynamic length fields is called `PackedCounter`.
+
+```
+// Example: PackedCounter with 5 fields
+0x 0000000000000F 0000000001 0000000002 0000000003 0000000004 0000000005
+   |------------| |--------| |--------| |--------| |--------| |--------|
+   0x00......0x06 0x07..0x0B 0x0C..0x10 0x11..0x15 0x16..0x1A 0x1B..0x1F
+   |------------| |--------| |--------| |--------| |--------| |--------|
+   | Total      | | First  | | Second | | Third  | | Fourth | | Fifth  |
+   | length     | | length | | length | | length | | length | | length |
+   |------------| |--------| |--------| |--------| |--------| |--------|
+   | 15         | | 1      | | 2      | | 3      | | 4      | | 5      |
+```
+
+### Dynamic length data encoding
+
+Elements of dynamic length fields are tightly packed in storage and events.
+This is comparable to Solidity's storage layout, except there is no guarantee for elements to be aligned with storage slots, which allows arrays to be packed more tightly and without padding.
+For example, an `address[3]` array will only use 2 storage slots in MUD instead of 3 in Solidity.
+(For context: Solidity only packs elements of arrays if each element is smaller than 16 bytes, and applies padding to guarantee alignment with storage slots.)
+
+## Field layout
 
 ## Storage layout
 
 ## Events
+
+Data emitted as part of events uses the same encoding for [static length data](#static-length-data), [encoded lengths](#encoded-lengths-packedcounter) and [dynamic length data](#dynamic-length-data-encoding) as described above.
+
+Unlike the [layout in storage](#storage-layout), where each dynamic length data field is stored in its own storage location, in events all data of dynamic length fields is concatenated to a single `bytes` blob.
+The encoded lengths emitted as part of the event contain the information required to slice up this concatenated `bytes` blob into the individual fields.
+
+This encoding reduces the event payload size by ~80% compared to default Solidity events, depending on the table schema.
+(For context: Solidity uses `abi.encode` to encode the event payload, which pads each static length field to 32 bytes, and pads each item of dynamic length fields to 32 bytes.)
+
+More details on the Store event signatures can be found in the [API reference](/store/reference/store-core#events).
