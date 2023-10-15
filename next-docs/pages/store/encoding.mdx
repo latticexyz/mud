@@ -342,6 +342,38 @@ Example: `FieldLayout` with 3 fields (`uint64`, `uint40`, `address[]`).
 
 ## Storage layout
 
+The data of each row of each table is stored in its own location in storage.
+
+The location of the [static length data](#static-length-data) is determined by a hash of the table ID and the key tuple.
+Since data is tightly packed, fields may wrap around two storage slots.
+
+```solidity
+function _getStaticDataLocation(ResourceId tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
+  return uint256(SLOT ^ keccak256(abi.encodePacked(tableId, keyTuple)));
+}
+```
+
+The [encoded lengths](#encoded-lengths-packedcounter) of all dynamic length fields is stored in a single storage slot, which is determined by a hash of the table ID and the key tuple.
+
+```solidity
+function _getDynamicDataLengthLocation(ResourceId tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
+  return uint256(DYNAMIC_DATA_LENGTH_SLOT ^ keccak256(abi.encodePacked(tableId, keyTuple)));
+}
+```
+
+The data for each [dynamic length field](#dynamic-length-data-encoding) is stored in its own location in storage, which is determined by a hash of the table ID, the key tuple, and the field index.
+This allows changing the length of a dynamic length field without having to move the data of other fields.
+
+```solidity
+function _getDynamicDataLocation(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex
+) internal pure returns (uint256) {
+  return uint256(DYNMAIC_DATA_SLOT ^ bytes1(dynamicFieldIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
+}
+```
+
 ## Events
 
 Data emitted as part of events uses the same encoding for [static length data](#static-length-data), [encoded lengths](#encoded-lengths-packedcounter) and [dynamic length data](#dynamic-length-data-encoding) as described above.
