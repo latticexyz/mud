@@ -5,14 +5,14 @@ import { deployer } from "./ensureDeployer";
 import { salt } from "./common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 
-const coreModuleBytecode = encodeDeployData({
+export const coreModuleBytecode = encodeDeployData({
   bytecode: coreModuleBuild.bytecode.object as Hex,
   abi: [],
 });
 
-const coreModule = getCreate2Address({ from: deployer, bytecode: coreModuleBytecode, salt });
+export const coreModule = getCreate2Address({ from: deployer, bytecode: coreModuleBytecode, salt });
 
-const worldFactoryBytecode = encodeDeployData({
+export const worldFactoryBytecode = encodeDeployData({
   bytecode: worldFactoryBuild.bytecode.object as Hex,
   abi: parseAbi(["constructor(address)"]),
   args: [coreModule],

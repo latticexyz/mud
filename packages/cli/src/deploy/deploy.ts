@@ -15,6 +15,7 @@ import { resourceLabel } from "./resourceLabel";
 import { ensureContract } from "./ensureContract";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
+import { coreModuleBytecode, worldFactoryBytecode } from "./ensureWorldFactory";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -35,6 +36,26 @@ export async function deploy<configInput extends ConfigInput>({
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   await ensureDeployer(client);
 
+  const tables = Object.values(config.tables) as Table[];
+  const systems = Object.values(config.systems);
+
+  // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
+  await ensureContractsDeployed({
+    client,
+    contracts: [
+      { bytecode: coreModuleBytecode, label: "core module" },
+      { bytecode: worldFactoryBytecode, label: "world factory" },
+      ...uniqueBy(systems, (system) => system.address).map((system) => ({
+        bytecode: system.bytecode,
+        label: `${resourceLabel(system)} system`,
+      })),
+      ...uniqueBy(config.modules, (mod) => mod.address).map((mod) => ({
+        bytecode: mod.bytecode,
+        label: `${mod.name} module`,
+      })),
+    ],
+  });
+
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
     : await deployWorld(client);
@@ -46,28 +67,10 @@ export async function deploy<configInput extends ConfigInput>({
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
 
-  const tables = Object.values(config.tables) as Table[];
-  const systems = Object.values(config.systems);
-
   await assertNamespaceOwner({
     client,
     worldDeploy,
     resourceIds: [...tables.map((table) => table.tableId), ...systems.map((system) => system.systemId)],
-  });
-
-  // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
-  await ensureContractsDeployed({
-    client,
-    contracts: [
-      ...uniqueBy(systems, (system) => system.address).map((system) => ({
-        bytecode: system.bytecode,
-        label: `${resourceLabel(system)} system`,
-      })),
-      ...uniqueBy(config.modules, (mod) => mod.address).map((mod) => ({
-        bytecode: mod.bytecode,
-        label: `${mod.name} module`,
-      })),
-    ],
   });
 
   const tableTxs = await ensureTables({
