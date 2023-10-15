@@ -30,8 +30,6 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@ethersproject/abi": "^5.7.0",
-    "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
     "@latticexyz/abi-ts": "workspace:*",
@@ -50,7 +48,6 @@
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
     "ejs": "^3.1.8",
-    "ethers": "^5.7.2",
     "execa": "^7.0.0",
     "glob": "^8.0.3",
     "nice-grpc-web": "^2.0.1",

@@ -1,8 +1,6 @@
 import { Abi, Address, Hex, padHex } from "viem";
 import storeConfig from "@latticexyz/store/mud.config.js";
 import worldConfig from "@latticexyz/world/mud.config.js";
-import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
-import IModuleAbi from "@latticexyz/world-modules/out/IModule.sol/IModule.abi.json" assert { type: "json" };
 import { Tables, configToTables } from "./configToTables";
 import { StoreConfig, helloStoreEvent } from "@latticexyz/store";
 import { WorldConfig, helloWorldEvent } from "@latticexyz/world";
@@ -14,8 +12,6 @@ export const storeTables = configToTables(storeConfig);
 export const worldTables = configToTables(worldConfig);
 
 export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
-
-export const worldAbi = [...IBaseWorldAbi, ...IModuleAbi] as const;
 
 export type WorldDeploy = {
   readonly address: Address;

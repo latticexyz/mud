@@ -1,9 +1,10 @@
 import { Client, Transport, Chain, Account, Hex, BaseError } from "viem";
 import { writeContract } from "@latticexyz/common";
-import { Module, WorldDeploy, worldAbi } from "./common";
+import { Module, WorldDeploy } from "./common";
 import { debug } from "./debug";
 import { isDefined, wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
+import { worldAbi } from "../common";
 
 export async function ensureModules({
   client,
