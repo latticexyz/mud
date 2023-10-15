@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Client, Transport } from "viem";
+import { Account, Address, Chain, Client, Transport, getAddress } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
@@ -34,10 +34,10 @@ export async function deploy<configInput extends ConfigInput>({
   config,
   worldAddress: existingWorldAddress,
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
-  await ensureDeployer(client);
-
   const tables = Object.values(config.tables) as Table[];
   const systems = Object.values(config.systems);
+
+  await ensureDeployer(client);
 
   // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
   await ensureContractsDeployed({
@@ -45,11 +45,11 @@ export async function deploy<configInput extends ConfigInput>({
     contracts: [
       { bytecode: coreModuleBytecode, label: "core module" },
       { bytecode: worldFactoryBytecode, label: "world factory" },
-      ...uniqueBy(systems, (system) => system.address).map((system) => ({
+      ...uniqueBy(systems, (system) => getAddress(system.address)).map((system) => ({
         bytecode: system.bytecode,
         label: `${resourceLabel(system)} system`,
       })),
-      ...uniqueBy(config.modules, (mod) => mod.address).map((mod) => ({
+      ...uniqueBy(config.modules, (mod) => getAddress(mod.address)).map((mod) => ({
         bytecode: mod.bytecode,
         label: `${mod.name} module`,
       })),
