@@ -1,8 +1,8 @@
-import type { UserConfig } from '@commitlint/types';
+import type { UserConfig } from "@commitlint/types";
 
-const Configuration: UserConfig = {
-    extends: ["@commitlint/config-conventional"],
-    ignores: [(commit) => commit.startsWith("Revert ")]
+const config: UserConfig = {
+  extends: ["@commitlint/config-conventional"],
+  ignores: [(commit) => commit.startsWith("Revert ")],
 };
 
-module.exports = Configuration;
+export default config;
