@@ -3,7 +3,7 @@ export default {
   tables: "Tables",
   "table-libraries": "Table Libraries",
   encoding: "Encoding",
-  "table-hooks": "Table Hooks",
+  "store-hooks": "Store Hooks",
   reference: "Reference",
   "table-intro": { display: "hidden" }, // imported
 };
