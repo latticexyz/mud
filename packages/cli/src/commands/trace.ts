@@ -1,18 +1,17 @@
 import { existsSync, readFileSync } from "fs";
 import type { CommandModule } from "yargs";
-import { ethers } from "ethers";
 
 import { loadConfig } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
 import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
-import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import worldConfig from "@latticexyz/world/mud.config.js";
 import { resourceToHex } from "@latticexyz/common";
 import { getExistingContracts } from "../utils/getExistingContracts";
-import { createClient, http } from "viem";
-import { getChainId } from "viem/actions";
+import { Hex, createClient, http } from "viem";
+import { getChainId, readContract } from "viem/actions";
+import { worldAbi } from "../common";
 
 // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
 const systemsTableId = resourceToHex({
@@ -20,6 +19,20 @@ const systemsTableId = resourceToHex({
   namespace: worldConfig.namespace,
   name: worldConfig.tables.Systems.name,
 });
+
+function getWorldAddress(worldsFile: string, chainId: number) {
+  if (!existsSync(worldsFile)) {
+    throw new MUDError(`Missing file "${worldsFile}`);
+  }
+
+  const deploys = JSON.parse(readFileSync(worldsFile, "utf-8"));
+
+  if (!deploys[chainId]) {
+    throw new MUDError(`Missing chain ID ${chainId} in "${worldsFile}"`);
+  }
+
+  return deploys[chainId].address as string;
+}
 
 type Options = {
   tx: string;
@@ -66,26 +79,27 @@ const commandModule: CommandModule<Options, Options> = {
       existingContracts.map(({ basename }) => basename)
     );
 
-    // Get worldAddress either from args or from worldsFile
-    const worldAddress = args.worldAddress ?? (await getWorldAddress(mudConfig.worldsFile, rpc));
+    const client = createClient({ transport: http(rpc) });
+    const chainId = await getChainId(client);
 
-    // Create World contract instance from deployed address
-    const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
-    const WorldContract = new ethers.Contract(worldAddress, IBaseWorldAbi, provider);
+    // Get worldAddress either from args or from worldsFile
+    const worldAddress = (args.worldAddress ?? getWorldAddress(mudConfig.worldsFile, chainId)) as Hex;
 
     // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
     const namespace = mudConfig.namespace;
-    const names = Object.values(resolvedConfig.systems).map(({ name }) => name);
+    const systemNames = Object.values(resolvedConfig.systems).map(({ name }) => name);
 
-    // Fetch system table field layout from chain
-    const systemTableFieldLayout = await WorldContract.getFieldLayout(systemsTableId);
-    const labels: { name: string; address: string }[] = [];
-    for (const name of names) {
-      const systemSelector = resourceToHex({ type: "system", namespace, name });
-      // Get the first field of `Systems` table (the table maps system name to its address and other data)
-      const address = await WorldContract.getField(systemsTableId, [systemSelector], 0, systemTableFieldLayout);
-      labels.push({ name, address });
-    }
+    const labels = await Promise.all(
+      systemNames.map(async (name) => ({
+        name,
+        address: await readContract(client, {
+          abi: worldAbi,
+          address: worldAddress,
+          functionName: "getField",
+          args: [systemsTableId, [resourceToHex({ type: "system", namespace, name })], 0],
+        }),
+      }))
+    );
 
     const result = await cast([
       "run",
@@ -101,18 +115,3 @@ const commandModule: CommandModule<Options, Options> = {
 };
 
 export default commandModule;
-
-async function getWorldAddress(worldsFile: string, rpc: string) {
-  if (existsSync(worldsFile)) {
-    const client = createClient({ transport: http(rpc) });
-    const chainId = await getChainId(client);
-    const deploys = JSON.parse(readFileSync(worldsFile, "utf-8"));
-
-    if (!deploys[chainId]) {
-      throw new MUDError(`chainId ${chainId} is missing in worldsFile "${worldsFile}"`);
-    }
-    return deploys[chainId].address as string;
-  } else {
-    throw new MUDError("worldAddress is not specified and worldsFile is missing");
-  }
-}

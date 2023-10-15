@@ -118,12 +118,6 @@ importers:
 
   packages/cli:
     dependencies:
-      '@ethersproject/abi':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@ethersproject/providers':
-        specifier: ^5.7.2
-        version: 5.7.2
       '@improbable-eng/grpc-web':
         specifier: ^0.15.0
         version: 0.15.0(google-protobuf@3.21.2)
@@ -178,9 +172,6 @@ importers:
       ejs:
         specifier: ^3.1.8
         version: 3.1.8
-      ethers:
-        specifier: ^5.7.2
-        version: 5.7.2
       execa:
         specifier: ^7.0.0
         version: 7.0.0
