@@ -61,7 +61,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   if (!opts.skipBuild) {
     const outPath = path.join(srcDir, config.codegenDirectory);
     await tablegen(config, outPath, remappings);
-    await forge(["build", "--skip", "test", "script"], { profile });
+    await forge(["build"], { profile });
     await execa("mud", ["abi-ts"], { stdio: "inherit" });
   }
 

@@ -15,8 +15,8 @@
   },
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",
-    "build:abi": "forge build --skip test script",
-    "build:abi-ts": "abi-ts && prettier --write '**/*.abi.json.d.ts'",
+    "build:abi": "forge build",
+    "build:abi-ts": "abi-ts",
     "build:js": "tsup",
     "build:mud": "tsx ./ts/scripts/tablegen.ts && tsx ./ts/scripts/worldgen.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
