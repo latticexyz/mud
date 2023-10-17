@@ -35,9 +35,6 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
     address owner = _msgSender();
     _transfer(balanceTableId, metadataTableId, owner, to, value);
 
-    // TODO: move this to the proxy
-    emit Transfer(owner, to, value);
-
     return true;
   }
 
@@ -65,9 +62,6 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
   function approve(ResourceId allowanceTableId, address spender, uint256 value) public virtual returns (bool) {
     address owner = _msgSender();
     _approve(allowanceTableId, owner, spender, value);
-
-    // TODO: move this to the proxy
-    emit Approval(owner, spender, value);
 
     return true;
   }
@@ -99,9 +93,6 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
     address spender = _msgSender();
     _spendAllowance(allowanceTableId, from, spender, value);
     _transfer(balanceTableId, metadataTableId, from, to, value);
-
-    // TODO: move this to the proxy
-    emit Transfer(from, to, value);
 
     return true;
   }
