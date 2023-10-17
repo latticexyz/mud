@@ -33,18 +33,24 @@ These environment variables need to be provided to the indexer to work:
 
 To run the indexer directly on your computer:
 
-1. Create a `.env` file with the environment variables.
-   For example, if you are running the template with `pnpm dev` locally, you might use this file:
+1. Build the MUD repository, [as per the directions](/contribute).
 
-   ```bash filename=".env"
-   RPC_HTTP_URL=http://localhost:8545
+1. Start a `World` to index.
+   An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
+
+1. Run the indexer from the build MUD repository.
+   For example, to start the indexer with SQLite, use these commands.
+
+   ```bash copy
+   cd packages/store-indexer
+   export RPC_HTTP_URL=http://localhost:8545
+   pnpm start:sqlite
    ```
 
-1. Install the indexer
+   Alternatively, you can start the indexer for the local blockchain using `pnpm start:sqlite:local`, in which case you don't need to specify `RPC_HTTP_URL`.
 
-   ```bash
-
-   ```
+**Note:** The `anvil.db` is persistent if you stop and restart the indexer.
+If that is not the desired behavior (for example, because you restarted the blockchain itself), delete it before starting the indexer.
 
 ### Docker
 
@@ -150,3 +156,13 @@ The command to start the indexer in PostgreSQL mode is `pnpm start:postgres`.
    ```sql copy
    DROP OWNED BY root;
    ```
+
+### Verification
+
+To verify that the indexer runs correctly ensure you have [`jq`](https://jqlang.github.io/jq/) installed and run
+
+```bash copy
+curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
+```
+
+## Resetting the database
