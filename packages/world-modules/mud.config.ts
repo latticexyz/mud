@@ -127,6 +127,16 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
+    ERC20Registry: {
+      directory: "modules/erc20/tables",
+      keySchema: {
+        namespaceId: "ResourceId",
+      },
+      valueSchema: {
+        erc20Address: "address",
+      },
+      tableIdArgument: true,
+    },
   },
 
   excludeSystems: ["UniqueEntitySystem"],

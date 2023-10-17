@@ -10,21 +10,27 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IERC20System {
-  function name(ResourceId tableId) external view returns (string memory);
+  function transfer(
+    ResourceId balanceTableId,
+    ResourceId metadataTableId,
+    address to,
+    uint256 value
+  ) external returns (bool);
 
-  function symbol(ResourceId tableId) external view returns (string memory);
+  function allowance(ResourceId allowanceTableId, address owner, address spender) external view returns (uint256);
 
-  function decimals(ResourceId tableId) external view returns (uint8);
+  function approve(ResourceId allowanceTableId, address spender, uint256 value) external returns (bool);
 
-  function totalSupply(ResourceId tableId) external view returns (uint256);
+  function transferFrom(
+    ResourceId allowanceTableId,
+    ResourceId balanceTableId,
+    ResourceId metadataTableId,
+    address from,
+    address to,
+    uint256 value
+  ) external returns (bool);
 
-  function balanceOf(ResourceId tableId, address account) external view returns (uint256);
+  function mint(ResourceId balanceTableId, ResourceId metadataTableId, address account, uint256 value) external;
 
-  function transfer(ResourceId tableId, address to, uint256 value) external returns (bool);
-
-  function allowance(ResourceId tableId, address owner, address spender) external view returns (uint256);
-
-  function approve(ResourceId tableId, address spender, uint256 value) external returns (bool);
-
-  function transferFrom(ResourceId tableId, address from, address to, uint256 value) external returns (bool);
+  function burn(ResourceId balanceTableId, ResourceId metadataTableId, address account, uint256 value) external;
 }

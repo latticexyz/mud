@@ -12,3 +12,4 @@ import { TimeboundDelegations, TimeboundDelegationsTableId } from "./modules/std
 import { Balances } from "./modules/erc20/tables/Balances.sol";
 import { Allowances } from "./modules/erc20/tables/Allowances.sol";
 import { Metadata, MetadataData } from "./modules/erc20/tables/Metadata.sol";
+import { ERC20Registry } from "./modules/erc20/tables/ERC20Registry.sol";

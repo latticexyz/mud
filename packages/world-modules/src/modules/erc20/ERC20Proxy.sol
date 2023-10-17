@@ -14,27 +14,29 @@ import { Balances } from "./tables/Balances.sol";
 import { IERC20 } from "./IERC20.sol";
 import { IERC20Errors } from "./IERC20Errors.sol";
 import { ERC20System } from "./ERC20System.sol";
-import { ERC20_SYSTEM_ID } from "./constants.sol";
 
 contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
   using SliceInstance for Slice;
   error ERC20Proxy_NotAuthorized();
 
   IBaseWorld private immutable world;
-  ResourceId public immutable balanceTableId;
+  ResourceId public immutable erc20SystemId;
   ResourceId public immutable allowanceTableId;
+  ResourceId public immutable balanceTableId;
   ResourceId public immutable metadataTableId;
 
   constructor(
     IBaseWorld _world,
-    ResourceId _balanceTableId,
+    ResourceId _erc20SystemId,
     ResourceId _allowanceTableId,
+    ResourceId _balanceTableId,
     ResourceId _metadataTableId
   ) {
     StoreSwitch.setStoreAddress(address(_world));
     world = _world;
-    balanceTableId = _balanceTableId;
+    erc20SystemId = _erc20SystemId;
     allowanceTableId = _allowanceTableId;
+    balanceTableId = _balanceTableId;
     metadataTableId = _metadataTableId;
   }
 
@@ -107,7 +109,7 @@ contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
       abi.decode(
         world.callFrom(
           msg.sender,
-          ERC20_SYSTEM_ID,
+          erc20SystemId,
           abi.encodeCall(ERC20System.transfer, (balanceTableId, metadataTableId, to, value))
         ),
         (bool)
@@ -134,7 +136,7 @@ contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
       abi.decode(
         world.callFrom(
           msg.sender,
-          ERC20_SYSTEM_ID,
+          erc20SystemId,
           abi.encodeCall(ERC20System.approve, (allowanceTableId, spender, value))
         ),
         (bool)
@@ -155,7 +157,7 @@ contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
       abi.decode(
         world.callFrom(
           msg.sender,
-          ERC20_SYSTEM_ID,
+          erc20SystemId,
           abi.encodeCall(ERC20System.transferFrom, (allowanceTableId, balanceTableId, metadataTableId, from, to, value))
         ),
         (bool)
@@ -171,7 +173,7 @@ contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
    */
   function onAfterCallSystem(address msgSender, ResourceId systemId, bytes calldata callData) external override {
     if (msg.sender != address(world)) revert ERC20Proxy_NotAuthorized();
-    if (ResourceId.unwrap(systemId) != ResourceId.unwrap(ERC20_SYSTEM_ID)) return;
+    if (ResourceId.unwrap(systemId) != ResourceId.unwrap(erc20SystemId)) return;
 
     bytes4 functionSelector = bytes4(callData);
     bytes memory args = SliceLib.getSubslice(callData, 4).toBytes();
