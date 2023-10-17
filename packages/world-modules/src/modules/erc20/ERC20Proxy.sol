@@ -2,16 +2,43 @@
 pragma solidity >=0.8.21;
 
 import { SystemHook } from "@latticexyz/world/src/SystemHook.sol";
+import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+import { Allowances } from "./tables/Allowances.sol";
+import { Metadata } from "./tables/Metadata.sol";
+import { Balances } from "./tables/Balances.sol";
+
 import { IERC20 } from "./IERC20.sol";
 import { IERC20Errors } from "./IERC20Errors.sol";
+import { ERC20System } from "./ERC20System.sol";
+import { ERC20_SYSTEM_ID } from "./constants.sol";
 
 contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
+  IBaseWorld private immutable world;
+  ResourceId public immutable balanceTableId;
+  ResourceId public immutable allowanceTableId;
+  ResourceId public immutable metadataTableId;
+
+  constructor(
+    IBaseWorld _world,
+    ResourceId _balanceTableId,
+    ResourceId _allowanceTableId,
+    ResourceId _metadataTableId
+  ) {
+    StoreSwitch.setStoreAddress(address(_world));
+    world = _world;
+    balanceTableId = _balanceTableId;
+    allowanceTableId = _allowanceTableId;
+    metadataTableId = _metadataTableId;
+  }
+
   /**
    * @dev Returns the name of the token.
    */
   function name() public view virtual returns (string memory) {
-    revert("not implemented");
+    return Metadata.getName(metadataTableId);
   }
 
   /**
@@ -19,7 +46,7 @@ contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
    * name.
    */
   function symbol() public view virtual returns (string memory) {
-    revert("not implemented");
+    return Metadata.getSymbol(metadataTableId);
   }
 
   /**
@@ -36,32 +63,21 @@ contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
    * {IERC20-balanceOf} and {IERC20-transfer}.
    */
   function decimals() public view virtual returns (uint8) {
-    revert("not implemented");
+    return Metadata.getDecimals(metadataTableId);
   }
 
   /**
    * @dev Returns the value of tokens in existence.
    */
   function totalSupply() external view returns (uint256) {
-    revert("not implemented");
+    return Metadata.getTotalSupply(metadataTableId);
   }
 
   /**
    * @dev Returns the value of tokens owned by `account`.
    */
   function balanceOf(address account) external view returns (uint256) {
-    revert("not implemented");
-  }
-
-  /**
-   * @dev Moves a `value` amount of tokens from the caller's account to `to`.
-   *
-   * Returns a boolean value indicating whether the operation succeeded.
-   *
-   * Emits a {Transfer} event.
-   */
-  function transfer(address to, uint256 value) external returns (bool) {
-    revert("not implemented");
+    return Balances.get(balanceTableId, account);
   }
 
   /**
@@ -72,7 +88,26 @@ contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
    * This value changes when {approve} or {transferFrom} are called.
    */
   function allowance(address owner, address spender) external view returns (uint256) {
-    revert("not implemented");
+    return Allowances.get(allowanceTableId, owner, spender);
+  }
+
+  /**
+   * @dev Moves a `value` amount of tokens from the caller's account to `to`.
+   *
+   * Returns a boolean value indicating whether the operation succeeded.
+   *
+   * Emits a {Transfer} event.
+   */
+  function transfer(address to, uint256 value) external returns (bool) {
+    return
+      abi.decode(
+        world.callFrom(
+          msg.sender,
+          ERC20_SYSTEM_ID,
+          abi.encodeCall(ERC20System.transfer, (balanceTableId, metadataTableId, to, value))
+        ),
+        (bool)
+      );
   }
 
   /**
@@ -91,7 +126,15 @@ contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
    * Emits an {Approval} event.
    */
   function approve(address spender, uint256 value) external returns (bool) {
-    revert("not implemented");
+    return
+      abi.decode(
+        world.callFrom(
+          msg.sender,
+          ERC20_SYSTEM_ID,
+          abi.encodeCall(ERC20System.approve, (allowanceTableId, spender, value))
+        ),
+        (bool)
+      );
   }
 
   /**
@@ -104,7 +147,15 @@ contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
    * Emits a {Transfer} event.
    */
   function transferFrom(address from, address to, uint256 value) external returns (bool) {
-    revert("not implemented");
+    return
+      abi.decode(
+        world.callFrom(
+          msg.sender,
+          ERC20_SYSTEM_ID,
+          abi.encodeCall(ERC20System.transferFrom, (allowanceTableId, balanceTableId, metadataTableId, from, to, value))
+        ),
+        (bool)
+      );
   }
 
   function onBeforeCallSystem(address msgSender, ResourceId systemId, bytes memory callData) external override {

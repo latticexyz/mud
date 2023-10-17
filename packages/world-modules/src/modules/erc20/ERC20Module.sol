@@ -7,6 +7,7 @@ import { MODULE_NAME } from "./constants.sol";
 /**
  * TODO:
  * - Set up namespace delegation for the ERC20Proxy: it needs to be able to use callFrom on behalf of everyone in the namespace
+ * - ERC20System needs to be given access to the namespace of the ERC20Proxy, otherwise the writes won't work
  */
 
 contract ERC20Module is Module {
