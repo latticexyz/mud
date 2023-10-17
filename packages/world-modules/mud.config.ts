@@ -10,7 +10,7 @@ export default mudConfig({
   tables: {
     /************************************************************************
      *
-     *    MODULE TABLES
+     *    KEYS WITH VALUE MODULE
      *
      ************************************************************************/
     KeysWithValue: {
@@ -24,6 +24,11 @@ export default mudConfig({
       tableIdArgument: true,
       storeArgument: true,
     },
+    /************************************************************************
+     *
+     *    KEYS IN TABLE MODULE
+     *
+     ************************************************************************/
     KeysInTable: {
       directory: "modules/keysintable/tables",
       keySchema: { sourceTableId: "ResourceId" },
@@ -46,6 +51,11 @@ export default mudConfig({
       dataStruct: false,
       storeArgument: true,
     },
+    /************************************************************************
+     *
+     *    UNIQUE ENTITY MODULE
+     *
+     ************************************************************************/
     UniqueEntity: {
       directory: "modules/uniqueentity/tables",
       keySchema: {},
@@ -53,6 +63,11 @@ export default mudConfig({
       tableIdArgument: true,
       storeArgument: true,
     },
+    /************************************************************************
+     *
+     *    STD DELEGATIONS MODULE
+     *
+     ************************************************************************/
     CallboundDelegations: {
       directory: "modules/std-delegations/tables",
       keySchema: {
@@ -75,6 +90,37 @@ export default mudConfig({
         maxTimestamp: "uint256",
       },
     },
+    /************************************************************************
+     *
+     *    ERC20 MODULE
+     *
+     ************************************************************************/
+    Balances: {
+      keySchema: {
+        account: "address",
+      },
+      valueSchema: {
+        value: "uint256",
+      },
+    },
+    Allowances: {
+      keySchema: {
+        account: "address",
+        spender: "address",
+      },
+      valueSchema: {
+        value: "uint256",
+      },
+    },
+    Metadata: {
+      keySchema: {},
+      valueSchema: {
+        totalSupply: "uint256",
+        name: "string",
+        symbol: "string",
+      },
+    },
   },
+
   excludeSystems: ["UniqueEntitySystem"],
 });

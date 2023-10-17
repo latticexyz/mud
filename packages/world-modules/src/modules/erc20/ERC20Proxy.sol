@@ -1,35 +1,24 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC20/IERC20.sol)
-
 pragma solidity >=0.8.21;
 
-/**
- * @dev Interface of the ERC20 standard as defined in the EIP.
- */
-interface IERC20 {
-  /**
-   * @dev Emitted when `value` tokens are moved from one account (`from`) to
-   * another (`to`).
-   *
-   * Note that `value` may be zero.
-   */
-  event Transfer(address indexed from, address indexed to, uint256 value);
+import { SystemHook } from "@latticexyz/world/src/SystemHook.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { IERC20 } from "./IERC20.sol";
 
-  /**
-   * @dev Emitted when the allowance of a `spender` for an `owner` is set by
-   * a call to {approve}. `value` is the new allowance.
-   */
-  event Approval(address indexed owner, address indexed spender, uint256 value);
-
+contract ERC20Proxy is IERC20, SystemHook {
   /**
    * @dev Returns the value of tokens in existence.
    */
-  function totalSupply() external view returns (uint256);
+  function totalSupply() external view returns (uint256) {
+    revert("not implemented");
+  }
 
   /**
    * @dev Returns the value of tokens owned by `account`.
    */
-  function balanceOf(address account) external view returns (uint256);
+  function balanceOf(address account) external view returns (uint256) {
+    revert("not implemented");
+  }
 
   /**
    * @dev Moves a `value` amount of tokens from the caller's account to `to`.
@@ -38,7 +27,9 @@ interface IERC20 {
    *
    * Emits a {Transfer} event.
    */
-  function transfer(address to, uint256 value) external returns (bool);
+  function transfer(address to, uint256 value) external returns (bool) {
+    revert("not implemented");
+  }
 
   /**
    * @dev Returns the remaining number of tokens that `spender` will be
@@ -47,7 +38,9 @@ interface IERC20 {
    *
    * This value changes when {approve} or {transferFrom} are called.
    */
-  function allowance(address owner, address spender) external view returns (uint256);
+  function allowance(address owner, address spender) external view returns (uint256) {
+    revert("not implemented");
+  }
 
   /**
    * @dev Sets a `value` amount of tokens as the allowance of `spender` over the
@@ -64,7 +57,9 @@ interface IERC20 {
    *
    * Emits an {Approval} event.
    */
-  function approve(address spender, uint256 value) external returns (bool);
+  function approve(address spender, uint256 value) external returns (bool) {
+    revert("not implemented");
+  }
 
   /**
    * @dev Moves a `value` amount of tokens from `from` to `to` using the
@@ -75,5 +70,15 @@ interface IERC20 {
    *
    * Emits a {Transfer} event.
    */
-  function transferFrom(address from, address to, uint256 value) external returns (bool);
+  function transferFrom(address from, address to, uint256 value) external returns (bool) {
+    revert("not implemented");
+  }
+
+  function onBeforeCallSystem(address msgSender, ResourceId systemId, bytes memory callData) external override {
+    revert("not implemented");
+  }
+
+  function onAfterCallSystem(address msgSender, ResourceId systemId, bytes memory callData) external override {
+    revert("not implemented");
+  }
 }
