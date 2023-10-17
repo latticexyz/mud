@@ -17,7 +17,7 @@ import { Subject, share } from "rxjs";
  * our tables and other config options. We use this to generate
  * things like RECS components and get back strong types for them.
  *
- * See https://mud.dev/tutorials/walkthrough/minimal-onchain#mudconfigts
+ * See https://mud.dev/templates/typescript/contracts#mudconfigts
  * for the source of this information.
  */
 import mudConfig from "contracts/mud.config";
