@@ -5,6 +5,7 @@ import { SystemHook } from "@latticexyz/world/src/SystemHook.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { Slice, SliceLib, SliceInstance } from "@latticexyz/store/src/Slice.sol";
 
 import { Allowances } from "./tables/Allowances.sol";
 import { Metadata } from "./tables/Metadata.sol";
@@ -16,6 +17,9 @@ import { ERC20System } from "./ERC20System.sol";
 import { ERC20_SYSTEM_ID } from "./constants.sol";
 
 contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
+  using SliceInstance for Slice;
+  error ERC20Proxy_NotAuthorized();
+
   IBaseWorld private immutable world;
   ResourceId public immutable balanceTableId;
   ResourceId public immutable allowanceTableId;
@@ -158,11 +162,32 @@ contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
       );
   }
 
-  function onBeforeCallSystem(address msgSender, ResourceId systemId, bytes memory callData) external override {
-    revert("not implemented");
+  function onBeforeCallSystem(address, ResourceId, bytes memory) external pure override {
+    revert SystemHook_NotImplemented();
   }
 
-  function onAfterCallSystem(address msgSender, ResourceId systemId, bytes memory callData) external override {
-    revert("not implemented");
+  /**
+   * Emit events for ERC20 transfers and approvals
+   */
+  function onAfterCallSystem(address msgSender, ResourceId systemId, bytes calldata callData) external override {
+    if (msg.sender != address(world)) revert ERC20Proxy_NotAuthorized();
+    if (ResourceId.unwrap(systemId) != ResourceId.unwrap(ERC20_SYSTEM_ID)) return;
+
+    bytes4 functionSelector = bytes4(callData);
+    bytes memory args = SliceLib.getSubslice(callData, 4).toBytes();
+
+    // Emit Transfer event on transfer call
+    if (functionSelector == IERC20.transfer.selector) {
+      (address to, uint256 value) = abi.decode(args, (address, uint256));
+      emit Transfer(msgSender, to, value);
+      // Emit Transfer event on transferFrom call
+    } else if (functionSelector == IERC20.transferFrom.selector) {
+      (address from, address to, uint256 value) = abi.decode(args, (address, address, uint256));
+      emit Transfer(from, to, value);
+      // Emit Approval event on approve call
+    } else if (functionSelector == IERC20.approve.selector) {
+      (address spender, uint256 value) = abi.decode(args, (address, uint256));
+      emit Approval(msgSender, spender, value);
+    }
   }
 }
