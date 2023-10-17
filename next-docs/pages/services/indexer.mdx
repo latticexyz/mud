@@ -20,13 +20,13 @@ This can also quickly accelerate the need to run a set of dedicated nodes just t
 
 These environment variables need to be provided to the indexer to work:
 
-| Type                          | Variable        | Meaning                                                                                                  | Sample value (using `anvil` running on the host) |
-| ----------------------------- | --------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| Needed                        | RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              | http://host.docker.internal:8545                 |
+| Type                          | Variable        | Meaning                                                                                                  | Sample value (using `anvil` running on the host)          |
+| ----------------------------- | --------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Needed                        | RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              | http://host.docker.internal:8545 (when running in Docker) |
 | Optional                      | RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
-| Optional                      | START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                |
-| Optional                      | DEBUG=mud:\*    | Turn on debugging                                                                                        |                                                  |
-| Optional, only for SQLite     | SQLITE_FILENAME | Name of database                                                                                         | `anvil.db`                                       |
+| Optional                      | START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                         |
+| Optional                      | DEBUG=mud:\*    | Turn on debugging                                                                                        |                                                           |
+| Optional, only for SQLite     | SQLITE_FILENAME | Name of database                                                                                         | `anvil.db`                                                |
 | Optional, only for PostgreSQL | DATABASE_URL    | URL for the database, of the form `postgres://<host>/<database>`                                         |
 
 ### Running directly
