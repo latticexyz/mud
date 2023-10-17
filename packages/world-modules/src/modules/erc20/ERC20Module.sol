@@ -4,6 +4,11 @@ pragma solidity >=0.8.21;
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { MODULE_NAME } from "./constants.sol";
 
+/**
+ * TODO:
+ * - Set up namespace delegation for the ERC20Proxy: it needs to be able to use callFrom on behalf of everyone in the namespace
+ */
+
 contract ERC20Module is Module {
   function getName() public pure override returns (bytes16) {
     return MODULE_NAME;
