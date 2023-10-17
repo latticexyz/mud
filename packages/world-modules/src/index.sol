@@ -9,3 +9,6 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./modules/keysintable/table
 import { UniqueEntity } from "./modules/uniqueentity/tables/UniqueEntity.sol";
 import { CallboundDelegations, CallboundDelegationsTableId } from "./modules/std-delegations/tables/CallboundDelegations.sol";
 import { TimeboundDelegations, TimeboundDelegationsTableId } from "./modules/std-delegations/tables/TimeboundDelegations.sol";
+import { Balances, BalancesTableId } from "./modules/erc20/tables/Balances.sol";
+import { Allowances, AllowancesTableId } from "./modules/erc20/tables/Allowances.sol";
+import { Metadata, MetadataData, MetadataTableId } from "./modules/erc20/tables/Metadata.sol";

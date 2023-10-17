@@ -96,6 +96,7 @@ export default mudConfig({
      *
      ************************************************************************/
     Balances: {
+      directory: "modules/erc20/tables",
       keySchema: {
         account: "address",
       },
@@ -104,6 +105,7 @@ export default mudConfig({
       },
     },
     Allowances: {
+      directory: "modules/erc20/tables",
       keySchema: {
         account: "address",
         spender: "address",
@@ -113,6 +115,7 @@ export default mudConfig({
       },
     },
     Metadata: {
+      directory: "modules/erc20/tables",
       keySchema: {},
       valueSchema: {
         totalSupply: "uint256",
