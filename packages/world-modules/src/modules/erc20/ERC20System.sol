@@ -101,6 +101,10 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
   function approve(ResourceId tableId, address spender, uint256 value) public virtual returns (bool) {
     address owner = _msgSender();
     _approve(tableId, owner, spender, value);
+
+    // TODO: move this to the proxy
+    emit Approval(owner, spender, value);
+
     return true;
   }
 
@@ -149,6 +153,28 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
 
     // TODO: move this to the proxy
     emit Transfer(address(0), account, value);
+  }
+
+  /**
+   * @dev Destroys a `value` amount of tokens from `account`, lowering the total supply.
+   * Relies on the `_update` mechanism.
+   *
+   * Emits a {Transfer} event with `to` set to the zero address.
+   *
+   * NOTE: This function is not virtual, {_update} should be overridden instead
+   */
+  function burn(ResourceId tableId, address account, uint256 value) public {
+    // Require the caller to own the namespace
+    AccessControlLib.requireOwner(tableId, _msgSender());
+
+    if (account == address(0)) {
+      revert ERC20InvalidSender(address(0));
+    }
+
+    _update(tableId, account, address(0), value);
+
+    // TODO: move this to the proxy
+    emit Transfer(account, address(0), value);
   }
 
   /**
@@ -207,70 +233,14 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
   }
 
   /**
-   * @dev Destroys a `value` amount of tokens from `account`, lowering the total supply.
-   * Relies on the `_update` mechanism.
-   *
-   * Emits a {Transfer} event with `to` set to the zero address.
-   *
-   * NOTE: This function is not virtual, {_update} should be overridden instead
-   */
-  function burn(ResourceId tableId, address account, uint256 value) public {
-    // Require the caller to own the namespace
-    AccessControlLib.requireOwner(tableId, _msgSender());
-
-    if (account == address(0)) {
-      revert ERC20InvalidSender(address(0));
-    }
-
-    _update(tableId, account, address(0), value);
-
-    // TODO: move this to the proxy
-    emit Transfer(account, address(0), value);
-  }
-
-  /**
-   * @dev Sets `value` as the allowance of `spender` over the `owner` s tokens.
-   *
-   * This internal function is equivalent to `approve`, and can be used to
-   * e.g. set automatic allowances for certain subsystems, etc.
-   *
-   * Emits an {Approval} event.
+   * @dev Sets `value` as the allowance of `spender` over the `owner`s tokens.
    *
    * Requirements:
    *
    * - `owner` cannot be the zero address.
    * - `spender` cannot be the zero address.
-   *
-   * Overrides to this logic should be done to the variant with an additional `bool emitEvent` argument.
    */
-  function _approve(ResourceId tableId, address owner, address spender, uint256 value) internal {
-    _approve(tableId, owner, spender, value, true);
-  }
-
-  /**
-   * @dev Variant of {_approve} with an optional flag to enable or disable the {Approval} event.
-   *
-   * By default (when calling {_approve}) the flag is set to true. On the other hand, approval changes made by
-   * `_spendAllowance` during the `transferFrom` operation set the flag to false. This saves gas by not emitting any
-   * `Approval` event during `transferFrom` operations.
-   *
-   * Anyone who wishes to continue emitting `Approval` events on the`transferFrom` operation can force the flag to
-   * true using the following override:
-   * ```
-   * function _approve(address owner, address spender, uint256 value, bool) internal virtual override {
-   *     super._approve(owner, spender, value, true);
-   * }
-   * ```
-   *
-   * Requirements are the same as {_approve}.
-   */
-  function _approve(
-    ResourceId tableId,
-    address owner,
-    address spender,
-    uint256 value,
-    bool emitEvent
-  ) internal virtual {
+  function _approve(ResourceId tableId, address owner, address spender, uint256 value) internal virtual {
     if (owner == address(0)) {
       revert ERC20InvalidApprover(address(0));
     }
@@ -278,10 +248,6 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
       revert ERC20InvalidSpender(address(0));
     }
     Allowances.set(tableId, owner, spender, value);
-    if (emitEvent) {
-      // TODO: move this to the proxy
-      emit Approval(owner, spender, value);
-    }
   }
 
   /**
@@ -299,7 +265,7 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
         revert ERC20InsufficientAllowance(spender, currentAllowance, value);
       }
       unchecked {
-        _approve(tableId, owner, spender, currentAllowance - value, false);
+        _approve(tableId, owner, spender, currentAllowance - value);
       }
     }
   }
