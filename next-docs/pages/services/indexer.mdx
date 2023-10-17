@@ -18,52 +18,7 @@ This can also quickly accelerate the need to run a set of dedicated nodes just t
 
 ## Installation
 
-### Running the indexer locally (on the host)
-
-These are the steps to install and start the MUD indexer.
-They are written under the assumption you are using `anvil` for your test chain, which is what the getting started package's `pnpm dev` does.
-
-1. Build the repository [as explained here](contribute#local-development-setup).
-
-1. Ensure you have [`jq`](https://jqlang.github.io/jq/) installed.
-
-1. Run a test world.
-   The easiest way to do this is to follow [these directions](tutorials/minimal#getting-the-initial-version) in a separate command line window.
-
-   **Note**: While MUD v2 is in alpha, there might be breaking changes between pre-release versions.
-   To ensure your World is compatible with your indexer, make sure both are running the same MUD version.
-   To create a project with the MUD version on the `main` branch, use `mud@main` instead of ~`mud@next`~.
-
-   ```sh copy
-   pnpm create mud@main project-name
-   ```
-
-1. Start the indexer.
-
-   ```sh copy
-   cd packages/store-indexer
-   pnpm start:sqlite:local
-   ```
-
-   Note: If you have already ran the MUD indexer, and then restarted the blockchain, make sure to delete the old database:
-
-   ```sh copy
-   rm anvil.db
-   ```
-
-1. Run this command (in a separate command line window) as a sanity check to verify the indexer is working correctly:
-
-   ```sh copy
-   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
-   ```
-
-   The result should be nicely formatted (and long) JSON output.
-
-### Running the indexer on Docker
-
-The indexer Docker image is available [on github](https://github.com/latticexyz/mud/pkgs/container/store-indexer).
-
-These environment variables need to be provided to the docker indexer to work:
+These environment variables need to be provided to the indexer to work:
 
 | Type                          | Variable        | Meaning                                                                                                  | Sample value (using `anvil` running on the host) |
 | ----------------------------- | --------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
@@ -74,13 +29,36 @@ These environment variables need to be provided to the docker indexer to work:
 | Optional, only for SQLite     | SQLITE_FILENAME | Name of database                                                                                         | `anvil.db`                                       |
 | Optional, only for PostgreSQL | DATABASE_URL    | URL for the database, of the form `postgres://<host>/<database>`                                         |
 
-There are several ways to provide those environment variables to `docker run`:
+### Running directly
+
+To run the indexer directly on your computer:
+
+1. Create a `.env` file with the environment variables.
+   For example, if you are running the template with `pnpm dev` locally, you might use this file:
+
+   ```bash filename=".env"
+   RPC_HTTP_URL=http://localhost:8545
+   ```
+
+1. Install the indexer
+
+   ```bash
+
+   ```
+
+### Docker
+
+The indexer Docker image is available [on github](https://github.com/latticexyz/mud/pkgs/container/store-indexer).
+
+There are several ways to provide the environment variables to `docker run`:
 
 - On the command line you can specify `-e <variable>=<value>`.
   You specify this after the `docker run`, but before the name of the image.
 - You can also write all the environment variables in a file and specify it using `--env-file`.
   You specify this after the `docker run`, but before the name of the image.
 - Both [Docker Compose](https://docs.docker.com/compose/) and [Kubernetes](https://kubernetes.io/) have their own mechanisms for starting docker containers with environment variables.
+
+The easiest way to test the indexer is to [run the template as a world]() in a separate command-line window.
 
 #### SQLite
 
@@ -119,6 +97,12 @@ We can solve this with [volumes](https://docs.docker.com/storage/volumes/):
       pnpm start:sqlite
    ```
 
+1. Run this command to test next indexer.
+
+   ```sh copy
+   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
+   ```
+
 1. You can stop the docker container and restart it, or start a separate container using the same database.
 
 1. When you are done, you have to delete the docker containers that used it before you can delete the volume.
@@ -136,7 +120,7 @@ We can solve this with [volumes](https://docs.docker.com/storage/volumes/):
 
 The command to start the indexer in PostgreSQL mode is `pnpm start:postgres`.
 
-1. The docker instance identifies to PostgreSQL as `root`.
+1. The docker instance identifies itself to PostgreSQL as `root`.
    To give this user permissions on the database, enter `psql` and run this command.
 
    ```sql copy
@@ -166,354 +150,3 @@ The command to start the indexer in PostgreSQL mode is `pnpm start:postgres`.
    ```sql copy
    DROP OWNED BY root;
    ```
-
-## Data access and interpretation
-
-### Using the indexer with TypeScript
-
-You can see [an example of an indexer client in the MUD repo](https://github.com/latticexyz/mud/tree/main/examples/indexer-client).
-To execute it:
-
-1. Download and build the example.
-
-   ```sh copy
-   git clone https://@github.com/latticexyz/mud.git
-   cd mud/examples/indexer-client
-   pnpm install
-   ```
-
-1. Run the example.
-
-   ```sh copy
-   pnpm read-indexer
-   ```
-
-If your indexer is indexing [the minimal template](/tutorials/minimal), the expected output should be similar to:
-
-```
-Block number: 2042
-Tables: schema,Hooks,StoreMetadata,NamespaceOwner,InstalledModules,ResourceAccess,Systems,FunctionSelector,SystemHooks,SystemRegistry,ResourceType,Counter
-Information about Counter
-{
-  id: '0x5FbDB2315678afecb367f032d93F642f64180aa3____Counter',
-  address: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-  tableId: '0x00000000000000000000000000000000436f756e746572000000000000000000',
-  namespace: '',
-  name: 'Counter',
-  keySchema: {},
-  valueSchema: { value: 'uint32' },
-  lastUpdatedBlockNumber: 2042n,
-  records: [ { key: {}, value: [Object] } ]
-}
-The actual value: 2
-```
-
-#### Detailed explanation
-
-```ts
-import { createIndexerClient } from "@latticexyz/store-sync/trpc-indexer";
-const indexer = createIndexerClient({
-  url: "http://127.0.0.1:3001/trpc",
-});
-```
-
-Create an indexer client. The URL, `http://127.0.0.1/3001/trpc`, is the one for the indexer you run on the local computer.
-If the indexer is elsewhere, modify the URL as appropriate.
-
-```ts
-const result = await indexer.findAll.query({
-  chainId: 31337,
-  address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-});
-```
-
-Connect to the indexer.
-The `chainId` value is for a sanity check, to ensure we are connecting to the correct indexer.
-The `address` parameter is the address of the `World` contract whose information we are reading.
-The same indexer can read from multiple `World` objects, as long as they are on the same blockchain.
-
-```ts
-console.log(`Block number: ${result.blockNumber}`);
-```
-
-The `result` has two fields:
-
-- `blockNumber`, the data is correct as of that block (it could change later).
-- `tables`, the tables of the `World` we are reading.
-
-```ts
-console.log(`Tables: ${result.tables.map((t) => t.name)}`);
-```
-
-Use [`map`](https://www.tutorialspoint.com/typescript/typescript_array_map.htm) to get the names of the tables.
-
-```ts
-const counterTable = result.tables.filter((t) => t.name == "Counter")[0];
-```
-
-Use [`filter`](https://www.tutorialspoint.com/typescript/typescript_array_filter.htm) to get the `Counter` table, assuming there is at least one.
-
-```ts
-console.log("Information about Counter");
-console.log(counterTable);
-```
-
-Log the information we have about the table.
-It contains these fields:
-
-| Field                  | Meaning                                                                               |
-| ---------------------- | ------------------------------------------------------------------------------------- |
-| id                     | Iinternal ID for uniqueness in the context of SQL                                     |
-| address                | `World` address                                                                       |
-| tableId                | `bytes32` hex encoded table ID (a concat of `bytes16(namespace)` and `bytes16(name)`) |
-| namespace              | Table's namespace                                                                     |
-| name                   | Table's name                                                                          |
-| keySchema              | Schema of the table key                                                               |
-| valueSchema            | Schema of the table value                                                             |
-| lastUpdatedBlockNumber | Block number for which the data is correct                                            |
-| records                | Actual table data                                                                     |
-
-```ts
-console.log(`The actual value: ${counterTable.records[0].value.value}`);
-```
-
-The actual value in `Counter`, which is in the first (and only) record.
-Every record has two fields:
-
-- `key`
-- `value`
-
-Both `key` and `value` can have multiple fields inside them, one for each field in the appropriate schema.
-In the case of `Counter` there is nothing in the `key`, but `value` has a single field, also called `value`.
-So the counter value is `value.value` of the record.
-
-### Using HTTP
-
-<WarningBox
-  title="URLs and parameters may vary"
-  message={
-    <>
-      <p>
-        The parameters, especially the URL, may change as we adjust our tRPC configuration.
-
-        If you can use the TypeScript methods, those are more stable.
-      </p>
-    </>
-
-}
-/>
-
-The indexer is built on top of [tRPC](https://trpc.io/), which is primarily designed to be used between [TypeScript](https://www.typescriptlang.org/) programs.
-As a result, the data format is more complicated than REST APIs.
-
-For queries, the indexer expects to get two parameters in a [query string](https://en.wikipedia.org/wiki/Query_string):
-
-- `batch`, the batch identifier.
-  This parameter can contain any string, as long as it is present.
-
-- `input`, the actual query.
-  This query is a [URLEncoded](https://en.wikipedia.org/wiki/Query_string#URL_encoding) [JSON](https://en.wikipedia.org/wiki/JSON) object.
-  To play with possible object values, you can use [this online calculator](https://www.urlencoder.org/).
-
-  For example, the input object used in the sanity check above is:
-
-  ```json
-  {
-    "0": {
-      "json": {
-        "chainId": 31337,
-        "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-      }
-    }
-  }
-  ```
-
-  An HTTP request can include multiple queries, so the query object includes a numbered key (or numbered keys) with the actual queries.
-  Also, in the future other formats than JSON might be supported, so each query specifies what format it uses.
-
-The one type of query currently supported is `findAll`. It gives you all the information stored on the specific world in the indexer.
-The query is available at path `/findAll` and have two parameters:
-
-- `chainId`: The chain ID of the blockchain to query.
-- `address`: The address of the `World`.
-  Based on the paramters in the development environment, `pnpm dev` uses the address in the sanity check.
-
-To understand the result, it is easiest to look at it inside Node.
-
-1. Read the result and enter `node`:
-
-   ```sh copy
-   curl 'http://localhost:3001/findAll?batch=wd&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' > res.json
-   node
-   ```
-
-1. Read the result into a JavaScript object.
-
-   ```javascript copy
-   res = JSON.parse(fs.readFileSync("res.json"));
-   ```
-
-1. `res` is actually a list of results, which only has one item because we only had one key in the query.
-   This item has one key, `record`, whose value also has only one key, `data`.
-   Run these commands to verify the statements above and then cut `res` to the actual result.
-
-   ```javascript copy
-   res.length;
-   Object.keys(res[0]);
-   Object.keys(res[0].result);
-   res = res[0].result.data;
-   ```
-
-1. Inside the result there are two fields:
-
-   - `meta`, the [metadata](https://en.wikipedia.org/wiki/Metadata).
-     In the case of JSON the field names are part of the data, so this primarily contains data types.
-   - `json`, the data read from the `World`.
-     This field itself is divided into two values:
-     - `blockNumber`, the block number in which these query results apply.
-     - `tables`, a list of the tables in the `World` and their data.
-
-   You can use [the `filter` function](https://www.w3schools.com/jsref/jsref_filter.asp) to get a specific table.
-   In this case, we are getting the `Counter` table.
-
-   ```javascript copy
-   counterTable = res.json.tables.filter((t) => t.name === "Counter")[0];
-   ```
-
-1. Finally, to get the actual record with the counter value, use:
-
-   ```javascript copy
-   counterTable.records[0].value.value;
-   ```
-
-## Debugging
-
-[See here](/reference#mud-server-components).
-
-## Indexing other blockchains
-
-To index a different blockchain, you specify these environment variables:
-
-| Variable                | Value                                                                                                    |
-| ----------------------- | -------------------------------------------------------------------------------------------------------- |
-| RPC_HTTP_URL            | The URL to access the blockchain using HTTP                                                              |
-| RPC_WS_URL              | The URL to access the blockchain using WebSocket                                                         |
-| START_BLOCK<sup>1</sup> | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
-| SQLITE_FILENAME         | `<blockchain name>.db`                                                                                   |
-
-(1) This value is optional, but highly recommended in chains where the world was deployed after a large number of blocks had already passed.
-
-After you do that, start the indexer with this command:
-
-```sh copy
-pnpm start:sqlite
-```
-
-Note that in your queries you need to specify the correct chainId for the chain you are indexing.
-
-## Using the indexer with PostgreSQL
-
-To run the indexer with [PostgreSQL](https://www.postgresql.org/), follow these steps:
-
-1. Download and install [PostgreSQL](https://www.postgresql.org/download/).
-
-1. To use the default setting (local PostgreSQL, using the `postgres` database, indexing the local `anvil` chain), run:
-
-   ```sh copy
-   pnpm start:postgres:local
-   ```
-
-   Otherwise, set these environment variables:
-
-   | Variable                 | Value                                                                                                    |
-   | ------------------------ | -------------------------------------------------------------------------------------------------------- |
-   | CHAIN_ID                 | ChainID for the chain you index                                                                          |
-   | RPC_HTTP_URL<sup>1</sup> | The URL to access the blockchain using HTTP                                                              |
-   | RPC_WS_URL<sup>1</sup>   | The URL to access the blockchain using WebSocket                                                         |
-   | START_BLOCK<sup>2</sup>  | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
-   | DATABASE_URL             | URL for the database, of the form `postgres://<host>/<database>`                                         |
-
-   (1) Not necessary in the case of a Lattice testnet.
-
-   (2) This value is optional, but highly recommended in chains where the world was deployed after a large number of blocks had already passed for performance reasons.
-
-   And then run:
-
-   ```sh copy
-   pnpm start:postgres
-   ```
-
-### Reading information from PostgreSQL
-
-You can now use [`psql`](https://www.postgresql.org/docs/current/app-psql.html) to view the indexer information.
-
-Note: This example uses [the template](http://localhost:3000/tutorials/minimal).
-If you are indexing a different `World`, change the world address and use the name of a table you have rather than `Counter`.
-
-1. Get the list of schemas to verify `__mud_internal` is there.
-
-   ```sql copy
-   \dn
-   ```
-
-1. Get the list of relations in the schema.
-
-   ```sql copy
-   \dt __mud_internal.*
-   ```
-
-   You should get two tables, `chain` and `tables`.
-
-1. Get the list of chains being indexed.
-
-   ```sql copy
-   SELECT * FROM __mud_internal.chain;
-   ```
-
-1. The `tables` table is a lot bigger, so first get the list of columns within the table.
-
-   ```sql copy
-   \d+ __mud_internal.tables
-   ```
-
-1. Get the list of MUD table names.
-
-   ```sql copy
-   SELECT name FROM __mud_internal.tables;
-   ```
-
-1. Get the key and value schemas for `Counter`.
-
-   ```sql copy
-   SELECT key_schema, value_schema FROM __mud_internal.tables WHERE name='Counter';
-   ```
-
-1. The schema for a world is `<address>__`.
-   Get the list of tables for a specific world.
-
-   ```sql copy
-   \dt "0x5FbDB2315678afecb367f032d93F642f64180aa3__".*
-   ```
-
-1. Specify the world schema is the default.
-
-   ```sql copy
-   SET search_path TO "0x5FbDB2315678afecb367f032d93F642f64180aa3__";
-   ```
-
-1. Get the value of the counter.
-
-   ```sql copy
-   SELECT * FROM "Counter";
-   ```
-
-### Deleting the PostgreSQL data
-
-PostgreSQL is a persistent data storage.
-This means that if you restart the blockchain without manually deleting the data, your indexer will use old data and provide incorrect results.
-
-To avoid this, enter `psql` and run this command:
-
-```sql copy
-DROP OWNED BY <your user name>;
-```
