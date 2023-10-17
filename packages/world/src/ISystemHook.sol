@@ -20,6 +20,9 @@ bytes4 constant SYSTEM_HOOK_INTERFACE_ID = ISystemHook.onBeforeCallSystem.select
  * This interface adheres to the ERC-165 standard for determining interface support.
  */
 interface ISystemHook is IERC165 {
+  /// @notice Error emitted when a function is not implemented.
+  error SystemHook_NotImplemented();
+
   /**
    * @notice Executes before a system call.
    * @dev Provides the ability to add custom logic or checks before a system is invoked.
