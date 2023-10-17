@@ -20,11 +20,6 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Allowances")))
-);
-ResourceId constant AllowancesTableId = _tableId;
-
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0020010020000000000000000000000000000000000000000000000000000000
 );
@@ -83,21 +78,21 @@ library Allowances {
   /**
    * @notice Register the table with its config.
    */
-  function register() internal {
+  function register(ResourceId _tableId) internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /**
    * @notice Register the table with its config.
    */
-  function _register() internal {
+  function _register(ResourceId _tableId) internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /**
    * @notice Get value.
    */
-  function getValue(address account, address spender) internal view returns (uint256 value) {
+  function getValue(ResourceId _tableId, address account, address spender) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(account)));
     _keyTuple[1] = bytes32(uint256(uint160(spender)));
@@ -109,7 +104,7 @@ library Allowances {
   /**
    * @notice Get value.
    */
-  function _getValue(address account, address spender) internal view returns (uint256 value) {
+  function _getValue(ResourceId _tableId, address account, address spender) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(account)));
     _keyTuple[1] = bytes32(uint256(uint160(spender)));
@@ -121,7 +116,7 @@ library Allowances {
   /**
    * @notice Get value.
    */
-  function get(address account, address spender) internal view returns (uint256 value) {
+  function get(ResourceId _tableId, address account, address spender) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(account)));
     _keyTuple[1] = bytes32(uint256(uint160(spender)));
@@ -133,7 +128,7 @@ library Allowances {
   /**
    * @notice Get value.
    */
-  function _get(address account, address spender) internal view returns (uint256 value) {
+  function _get(ResourceId _tableId, address account, address spender) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(account)));
     _keyTuple[1] = bytes32(uint256(uint160(spender)));
@@ -145,7 +140,7 @@ library Allowances {
   /**
    * @notice Set value.
    */
-  function setValue(address account, address spender, uint256 value) internal {
+  function setValue(ResourceId _tableId, address account, address spender, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(account)));
     _keyTuple[1] = bytes32(uint256(uint160(spender)));
@@ -156,7 +151,7 @@ library Allowances {
   /**
    * @notice Set value.
    */
-  function _setValue(address account, address spender, uint256 value) internal {
+  function _setValue(ResourceId _tableId, address account, address spender, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(account)));
     _keyTuple[1] = bytes32(uint256(uint160(spender)));
@@ -167,7 +162,7 @@ library Allowances {
   /**
    * @notice Set value.
    */
-  function set(address account, address spender, uint256 value) internal {
+  function set(ResourceId _tableId, address account, address spender, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(account)));
     _keyTuple[1] = bytes32(uint256(uint160(spender)));
@@ -178,7 +173,7 @@ library Allowances {
   /**
    * @notice Set value.
    */
-  function _set(address account, address spender, uint256 value) internal {
+  function _set(ResourceId _tableId, address account, address spender, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(account)));
     _keyTuple[1] = bytes32(uint256(uint160(spender)));
@@ -189,7 +184,7 @@ library Allowances {
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(address account, address spender) internal {
+  function deleteRecord(ResourceId _tableId, address account, address spender) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(account)));
     _keyTuple[1] = bytes32(uint256(uint160(spender)));
@@ -200,7 +195,7 @@ library Allowances {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(address account, address spender) internal {
+  function _deleteRecord(ResourceId _tableId, address account, address spender) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(account)));
     _keyTuple[1] = bytes32(uint256(uint160(spender)));

@@ -103,6 +103,7 @@ export default mudConfig({
       valueSchema: {
         value: "uint256",
       },
+      tableIdArgument: true,
     },
     Allowances: {
       directory: "modules/erc20/tables",
@@ -113,15 +114,18 @@ export default mudConfig({
       valueSchema: {
         value: "uint256",
       },
+      tableIdArgument: true,
     },
     Metadata: {
       directory: "modules/erc20/tables",
       keySchema: {},
       valueSchema: {
         totalSupply: "uint256",
+        decimals: "uint8",
         name: "string",
         symbol: "string",
       },
+      tableIdArgument: true,
     },
   },
 
