@@ -3,6 +3,11 @@ pragma solidity >=0.8.21;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { System } from "@latticexyz/world/src/System.sol";
+import { WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
+
+import { AccessControlLib } from "../../utils/AccessControlLib.sol";
+
 import { IERC20Errors } from "./IERC20Errors.sol";
 import { IERC20Events } from "./IERC20Events.sol";
 
@@ -11,6 +16,8 @@ import { Balances } from "./tables/Balances.sol";
 import { Metadata } from "./tables/Metadata.sol";
 
 contract ERC20System is System, IERC20Errors, IERC20Events {
+  using WorldResourceIdInstance for ResourceId;
+
   /**
    * @dev Returns the name of the token.
    */
@@ -67,6 +74,10 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
   function transfer(ResourceId tableId, address to, uint256 value) public virtual returns (bool) {
     address owner = _msgSender();
     _transfer(tableId, owner, to, value);
+
+    // TODO: move this to the proxy
+    emit Transfer(owner, to, value);
+
     return true;
   }
 
@@ -113,7 +124,31 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
     address spender = _msgSender();
     _spendAllowance(tableId, from, spender, value);
     _transfer(tableId, from, to, value);
+
+    // TODO: move this to the proxy
+    emit Transfer(from, to, value);
+
     return true;
+  }
+
+  /**
+   * @dev Creates a `value` amount of tokens and assigns them to `account`, by transferring it from address(0).
+   * Relies on the `_update` mechanism
+   *
+   * Emits a {Transfer} event with `from` set to the zero address.
+   */
+  function mint(ResourceId tableId, address account, uint256 value) public {
+    // Require the caller to own the namespace
+    AccessControlLib.requireOwner(tableId, _msgSender());
+
+    if (account == address(0)) {
+      revert ERC20InvalidReceiver(address(0));
+    }
+
+    _update(tableId, address(0), account, value);
+
+    // TODO: move this to the proxy
+    emit Transfer(address(0), account, value);
   }
 
   /**
@@ -169,24 +204,6 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
         Balances.set(tableId, to, Balances.get(tableId, to) + value);
       }
     }
-
-    // TODO: move this to the proxy
-    emit Transfer(from, to, value);
-  }
-
-  /**
-   * @dev Creates a `value` amount of tokens and assigns them to `account`, by transferring it from address(0).
-   * Relies on the `_update` mechanism
-   *
-   * Emits a {Transfer} event with `from` set to the zero address.
-   *
-   * NOTE: This function is not virtual, {_update} should be overridden instead.
-   */
-  function _mint(ResourceId tableId, address account, uint256 value) internal {
-    if (account == address(0)) {
-      revert ERC20InvalidReceiver(address(0));
-    }
-    _update(tableId, address(0), account, value);
   }
 
   /**
@@ -197,11 +214,18 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
    *
    * NOTE: This function is not virtual, {_update} should be overridden instead
    */
-  function _burn(ResourceId tableId, address account, uint256 value) internal {
+  function burn(ResourceId tableId, address account, uint256 value) public {
+    // Require the caller to own the namespace
+    AccessControlLib.requireOwner(tableId, _msgSender());
+
     if (account == address(0)) {
       revert ERC20InvalidSender(address(0));
     }
+
     _update(tableId, account, address(0), value);
+
+    // TODO: move this to the proxy
+    emit Transfer(account, address(0), value);
   }
 
   /**
