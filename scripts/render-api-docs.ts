@@ -48,16 +48,19 @@ const PUBLIC_APIS: PublicApis = {
     },
   },
   "store/reference/store-hook.mdx": {
-    inputFiles: [
-      {
-        source: "store/src/IStoreHook.sol",
-      },
-    ],
+    inputFiles: [{ source: "store/src/IStoreHook.sol" }],
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content);
       return content.replace(`**Inherits:**\n[IERC165](/src/IERC165.sol/interface.IERC165.md)`, "");
     },
+  },
+  "world/reference/world.mdx": {
+    inputFiles: [
+      { source: "world/src/codegen/interfaces/IBaseWorld.sol" },
+      { source: "world/src/IWorldKernel.sol" },
+      { source: "world/src/modules/core/implementations/AccessManagementSystem.sol" },
+    ],
   },
 };
 
