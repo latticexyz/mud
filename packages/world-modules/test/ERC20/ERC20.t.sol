@@ -11,6 +11,7 @@ import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { ERC20Module } from "../../src/modules/erc20/ERC20Module.sol";
 import { MetadataData } from "../../src/modules/erc20/tables/Metadata.sol";
@@ -22,7 +23,7 @@ import { IERC20Errors } from "../../src/modules/erc20/IERC20Errors.sol";
 
 bytes14 constant TEST_NAMESPACE = "myerc20";
 
-contract ERC20Test is Test, IERC20Events, IERC20Errors {
+contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
   IBaseWorld world;
   ERC20Module erc20Module;
   ERC20Proxy token;
@@ -78,7 +79,9 @@ contract ERC20Test is Test, IERC20Events, IERC20Errors {
   function testMint() public {
     vm.expectEmit(true, true, true, true);
     emit Transfer(address(0), address(0xBEEF), 1e18);
+    startGasReport("mint");
     token.mint(address(0xBEEF), 1e18);
+    endGasReport();
 
     assertEq(token.totalSupply(), 1e18);
     assertEq(token.balanceOf(address(0xBEEF)), 1e18);
@@ -89,7 +92,9 @@ contract ERC20Test is Test, IERC20Events, IERC20Errors {
 
     vm.expectEmit(true, true, true, true);
     emit Transfer(address(0xBEEF), address(0), 0.9e18);
+    startGasReport("burn");
     token.burn(address(0xBEEF), 0.9e18);
+    endGasReport();
 
     assertEq(token.totalSupply(), 1e18 - 0.9e18);
     assertEq(token.balanceOf(address(0xBEEF)), 0.1e18);
@@ -98,7 +103,10 @@ contract ERC20Test is Test, IERC20Events, IERC20Errors {
   function testApprove() public {
     vm.expectEmit(true, true, true, true);
     emit Approval(address(this), address(0xBEEF), 1e18);
-    assertTrue(token.approve(address(0xBEEF), 1e18));
+    startGasReport("approve");
+    bool success = token.approve(address(0xBEEF), 1e18);
+    endGasReport();
+    assertTrue(success);
 
     assertEq(token.allowance(address(this), address(0xBEEF)), 1e18);
   }
@@ -108,7 +116,10 @@ contract ERC20Test is Test, IERC20Events, IERC20Errors {
 
     vm.expectEmit(true, true, true, true);
     emit Transfer(address(this), address(0xBEEF), 1e18);
-    assertTrue(token.transfer(address(0xBEEF), 1e18));
+    startGasReport("transfer");
+    bool success = token.transfer(address(0xBEEF), 1e18);
+    endGasReport();
+    assertTrue(success);
     assertEq(token.totalSupply(), 1e18);
 
     assertEq(token.balanceOf(address(this)), 0);
@@ -125,7 +136,10 @@ contract ERC20Test is Test, IERC20Events, IERC20Errors {
 
     vm.expectEmit(true, true, true, true);
     emit Transfer(from, address(0xBEEF), 1e18);
-    assertTrue(token.transferFrom(from, address(0xBEEF), 1e18));
+    startGasReport("transferFrom");
+    bool success = token.transferFrom(from, address(0xBEEF), 1e18);
+    endGasReport();
+    assertTrue(success);
     assertEq(token.totalSupply(), 1e18);
 
     assertEq(token.allowance(from, address(this)), 0);
