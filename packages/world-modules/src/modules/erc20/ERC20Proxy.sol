@@ -12,10 +12,11 @@ import { Metadata } from "./tables/Metadata.sol";
 import { Balances } from "./tables/Balances.sol";
 
 import { IERC20 } from "./IERC20.sol";
+import { IERC20Mintable } from "./IERC20Mintable.sol";
 import { IERC20Errors } from "./IERC20Errors.sol";
 import { ERC20System } from "./ERC20System.sol";
 
-contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
+contract ERC20Proxy is IERC20Mintable, IERC20Errors, SystemHook {
   using SliceInstance for Slice;
   error ERC20Proxy_NotAuthorized();
 
@@ -164,6 +165,32 @@ contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
       );
   }
 
+  /**
+   * @dev Creates a `value` amount of tokens and assigns them to `account`, by transferring it from address(0).
+   *
+   * Emits a {Transfer} event with `from` set to the zero address.
+   */
+  function mint(address account, uint256 value) public {
+    world.callFrom(
+      msg.sender,
+      erc20SystemId,
+      abi.encodeCall(ERC20System.mint, (balanceTableId, metadataTableId, account, value))
+    );
+  }
+
+  /**
+   * @dev Destroys a `value` amount of tokens from `account`, lowering the total supply.
+   *
+   * Emits a {Transfer} event with `to` set to the zero address.
+   */
+  function burn(address account, uint256 value) public {
+    world.callFrom(
+      msg.sender,
+      erc20SystemId,
+      abi.encodeCall(ERC20System.burn, (balanceTableId, metadataTableId, account, value))
+    );
+  }
+
   function onBeforeCallSystem(address, ResourceId, bytes memory) external pure override {
     revert SystemHook_NotImplemented();
   }
@@ -182,10 +209,22 @@ contract ERC20Proxy is IERC20, IERC20Errors, SystemHook {
     if (functionSelector == IERC20.transfer.selector) {
       (address to, uint256 value) = abi.decode(args, (address, uint256));
       emit Transfer(msgSender, to, value);
+
       // Emit Transfer event on transferFrom call
     } else if (functionSelector == IERC20.transferFrom.selector) {
       (address from, address to, uint256 value) = abi.decode(args, (address, address, uint256));
       emit Transfer(from, to, value);
+
+      // Emit Transfer event on mint call
+    } else if (functionSelector == IERC20Mintable.mint.selector) {
+      (address account, uint256 value) = abi.decode(args, (address, uint256));
+      emit Transfer(address(0), account, value);
+
+      // Emit Transfer event on burn call
+    } else if (functionSelector == IERC20Mintable.burn.selector) {
+      (address account, uint256 value) = abi.decode(args, (address, uint256));
+      emit Transfer(account, address(0), value);
+
       // Emit Approval event on approve call
     } else if (functionSelector == IERC20.approve.selector) {
       (address spender, uint256 value) = abi.decode(args, (address, uint256));

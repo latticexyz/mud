@@ -15,7 +15,7 @@ import { ERC20Proxy } from "./ERC20Proxy.sol";
 import { ERC20Registry } from "./tables/ERC20Registry.sol";
 import { Balances } from "./tables/Balances.sol";
 import { Allowances } from "./tables/Allowances.sol";
-import { Metadata } from "./tables/Metadata.sol";
+import { Metadata, MetadataData } from "./tables/Metadata.sol";
 import { ERC20DelegationControl } from "./ERC20DelegationControl.sol";
 
 /**
@@ -35,7 +35,7 @@ contract ERC20Module is Module {
   }
 
   function install(bytes memory args) public {
-    bytes14 namespace = abi.decode(args, (bytes14));
+    (bytes14 namespace, MetadataData memory metadata) = abi.decode(args, (bytes14, MetadataData));
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
 
     IBaseWorld world = IBaseWorld(_world());
@@ -66,6 +66,9 @@ contract ERC20Module is Module {
     Allowances.register(allowancesTableId);
     Balances.register(balancesTableId);
     Metadata.register(metadataTableId);
+
+    // Set the metadata
+    Metadata.set(metadataTableId, metadata);
 
     // Create the ERC20System
     ERC20System erc20System = new ERC20System();

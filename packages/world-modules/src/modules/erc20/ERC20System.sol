@@ -112,9 +112,6 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
     }
 
     _update(balanceTableId, metadataTableId, address(0), account, value);
-
-    // TODO: move this to the proxy
-    emit Transfer(address(0), account, value);
   }
 
   /**
@@ -134,9 +131,6 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
     }
 
     _update(balanceTableId, metadataTableId, account, address(0), value);
-
-    // TODO: move this to the proxy
-    emit Transfer(account, address(0), value);
   }
 
   /**
