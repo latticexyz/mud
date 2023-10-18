@@ -50,6 +50,11 @@ contract ERC20Module is Module {
   }
 
   function install(bytes memory args) public {
+    // Require the module to not be installed with these args yet
+    if (InstalledModules.get(MODULE_NAME, keccak256(args)) != address(0)) {
+      revert Module_AlreadyInstalled();
+    }
+
     // Extract args
     (bytes14 namespace, MetadataData memory metadata) = abi.decode(args, (bytes14, MetadataData));
 
