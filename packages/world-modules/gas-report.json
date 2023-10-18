@@ -1,5 +1,35 @@
 [
   {
+    "file": "test/ERC20.t.sol",
+    "test": "testApprove",
+    "name": "approve",
+    "gasUsed": 114450
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testBurn",
+    "name": "burn",
+    "gasUsed": 75963
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testMint",
+    "name": "mint",
+    "gasUsed": 161802
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTransfer",
+    "name": "transfer",
+    "gasUsed": 93069
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTransferFrom",
+    "name": "transferFrom",
+    "gasUsed": 130371
+  },
+  {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallComposite",
     "name": "install keys in table module",
