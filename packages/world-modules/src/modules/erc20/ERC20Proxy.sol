@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
+import { console } from "forge-std/console.sol";
 import { SystemHook } from "@latticexyz/world/src/SystemHook.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
@@ -206,28 +207,31 @@ contract ERC20Proxy is IERC20Mintable, IERC20Errors, SystemHook {
     bytes memory args = SliceLib.getSubslice(callData, 4).toBytes();
 
     // Emit Transfer event on transfer call
-    if (functionSelector == IERC20.transfer.selector) {
-      (address to, uint256 value) = abi.decode(args, (address, uint256));
+    if (functionSelector == ERC20System.transfer.selector) {
+      (, , address to, uint256 value) = abi.decode(args, (bytes32, bytes32, address, uint256));
       emit Transfer(msgSender, to, value);
 
       // Emit Transfer event on transferFrom call
-    } else if (functionSelector == IERC20.transferFrom.selector) {
-      (address from, address to, uint256 value) = abi.decode(args, (address, address, uint256));
+    } else if (functionSelector == ERC20System.transferFrom.selector) {
+      (, , , address from, address to, uint256 value) = abi.decode(
+        args,
+        (bytes32, bytes32, bytes32, address, address, uint256)
+      );
       emit Transfer(from, to, value);
 
       // Emit Transfer event on mint call
-    } else if (functionSelector == IERC20Mintable.mint.selector) {
-      (address account, uint256 value) = abi.decode(args, (address, uint256));
+    } else if (functionSelector == ERC20System.mint.selector) {
+      (, , address account, uint256 value) = abi.decode(args, (bytes32, bytes32, address, uint256));
       emit Transfer(address(0), account, value);
 
       // Emit Transfer event on burn call
-    } else if (functionSelector == IERC20Mintable.burn.selector) {
-      (address account, uint256 value) = abi.decode(args, (address, uint256));
+    } else if (functionSelector == ERC20System.burn.selector) {
+      (, , address account, uint256 value) = abi.decode(args, (bytes32, bytes32, address, uint256));
       emit Transfer(account, address(0), value);
 
       // Emit Approval event on approve call
-    } else if (functionSelector == IERC20.approve.selector) {
-      (address spender, uint256 value) = abi.decode(args, (address, uint256));
+    } else if (functionSelector == ERC20System.approve.selector) {
+      (, address spender, uint256 value) = abi.decode(args, (bytes32, address, uint256));
       emit Approval(msgSender, spender, value);
     }
   }
