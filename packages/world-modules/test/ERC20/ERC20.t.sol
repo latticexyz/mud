@@ -17,52 +17,43 @@ import { ERC20Module } from "../../src/modules/erc20/ERC20Module.sol";
 import { MetadataData } from "../../src/modules/erc20/tables/Metadata.sol";
 import { ERC20Registry } from "../../src/modules/erc20/tables/ERC20Registry.sol";
 import { ERC20_REGISTRY_TABLE_ID } from "../../src/modules/erc20/constants.sol";
-import { ERC20Proxy } from "../../src/modules/erc20/ERC20Proxy.sol";
 import { IERC20Events } from "../../src/modules/erc20/IERC20Events.sol";
+import { IERC20Mintable } from "../../src/modules/erc20/IERC20Mintable.sol";
 import { IERC20Errors } from "../../src/modules/erc20/IERC20Errors.sol";
-
-bytes14 constant TEST_NAMESPACE = "myerc20";
+import { registerERC20 } from "../../src/modules/erc20/registerERC20.sol";
 
 contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
   IBaseWorld world;
   ERC20Module erc20Module;
-  ERC20Proxy token;
-  ResourceId namespaceId;
+  IERC20Mintable token;
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
     StoreSwitch.setStoreAddress(address(world));
 
-    namespaceId = WorldResourceIdLib.encodeNamespace(TEST_NAMESPACE);
-
-    // Deploy a new ERC20 module
-    erc20Module = new ERC20Module();
-
-    // Install the ERC20 module
-    world.installModule(
-      erc20Module,
-      abi.encode(TEST_NAMESPACE, MetadataData({ totalSupply: 0, decimals: 18, name: "Token", symbol: "TKN" }))
+    // Register a new ERC20 token
+    token = registerERC20(
+      world,
+      "myERC20",
+      MetadataData({ totalSupply: 0, decimals: 18, name: "Token", symbol: "TKN" })
     );
-
-    token = ERC20Proxy(ERC20Registry.get(ERC20_REGISTRY_TABLE_ID, WorldResourceIdLib.encodeNamespace(TEST_NAMESPACE)));
   }
 
   function testSetUp() public {
     assertTrue(address(token) != address(0));
-    assertEq(NamespaceOwner.get(namespaceId), address(this));
+    assertEq(NamespaceOwner.get(WorldResourceIdLib.encodeNamespace("myERC20")), address(this));
   }
 
   function testInstallTwice() public {
-    bytes14 namespace = "anotherERC20";
     // Install the ERC20 module
-    world.installModule(
-      erc20Module,
-      abi.encode(namespace, MetadataData({ totalSupply: 0, decimals: 18, name: "Test Token", symbol: "TST" }))
+    IERC20Mintable anotherToken = registerERC20(
+      world,
+      "anotherERC20",
+      MetadataData({ totalSupply: 0, decimals: 18, name: "Token", symbol: "TKN" })
     );
-
-    address tokenAddress = ERC20Registry.get(ERC20_REGISTRY_TABLE_ID, WorldResourceIdLib.encodeNamespace(namespace));
-    assertTrue(tokenAddress != address(0));
+    assertTrue(address(anotherToken) != address(0));
+    assertTrue(address(anotherToken) != address(token));
   }
 
   /////////////////////////////////////////////////

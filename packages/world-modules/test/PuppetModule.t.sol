@@ -24,11 +24,11 @@ import { PUPPET_DELEGATION } from "../src/modules/puppet/constants.sol";
 import { registerPuppet } from "../src/modules/puppet/registerPuppet.sol";
 
 contract PuppetTestSystem is System, PuppetMaster {
-  event Hello(string msg);
+  event Hello(string message);
 
-  function echoAndEmit(string memory msg) public returns (string memory) {
-    puppet().log(Hello.selector, abi.encode(msg));
-    return msg;
+  function echoAndEmit(string memory message) public returns (string memory) {
+    puppet().log(Hello.selector, abi.encode(message));
+    return message;
   }
 
   function msgSender() public view returns (address) {
@@ -64,6 +64,7 @@ contract PuppetModuleTest is Test, GasReporter {
     vm.expectEmit(true, true, true, true);
     emit Hello("hello world");
     string memory result = puppet.echoAndEmit("hello world");
+    assertEq(result, "hello world");
   }
 
   function testMsgSender() public {

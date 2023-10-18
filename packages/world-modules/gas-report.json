@@ -3,31 +3,31 @@
     "file": "test/ERC20/ERC20.t.sol",
     "test": "testApprove",
     "name": "approve",
-    "gasUsed": 101458
+    "gasUsed": 114450
   },
   {
     "file": "test/ERC20/ERC20.t.sol",
     "test": "testBurn",
     "name": "burn",
-    "gasUsed": 62009
+    "gasUsed": 75963
   },
   {
     "file": "test/ERC20/ERC20.t.sol",
     "test": "testMint",
     "name": "mint",
-    "gasUsed": 145742
+    "gasUsed": 161802
   },
   {
     "file": "test/ERC20/ERC20.t.sol",
     "test": "testTransfer",
     "name": "transfer",
-    "gasUsed": 82220
+    "gasUsed": 93069
   },
   {
     "file": "test/ERC20/ERC20.t.sol",
     "test": "testTransferFrom",
     "name": "transferFrom",
-    "gasUsed": 99016
+    "gasUsed": 130371
   },
   {
     "file": "test/KeysInTableModule.t.sol",

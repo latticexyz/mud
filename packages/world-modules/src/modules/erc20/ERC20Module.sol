@@ -3,105 +3,85 @@ pragma solidity >=0.8.21;
 
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
-import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
-import { AFTER_CALL_SYSTEM } from "@latticexyz/world/src/systemHookTypes.sol";
 import { Module } from "@latticexyz/world/src/Module.sol";
-import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
-import { MODULE_NAME, ERC20_REGISTRY_TABLE_ID, MODULE_NAMESPACE } from "./constants.sol";
+import { InstalledModules } from "@latticexyz/world/src/codegen/tables/InstalledModules.sol";
+
+import { Puppet } from "../puppet/Puppet.sol";
+import { registerPuppet } from "../puppet/registerPuppet.sol";
+import { MODULE_NAME as PUPPET_MODULE_NAME } from "../puppet/constants.sol";
+import { PuppetModule } from "../puppet/PuppetModule.sol";
+
+import { MODULE_NAME, MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC20_REGISTRY_TABLE_ID } from "./constants.sol";
+import { _allowancesTableId, _balancesTableId, _metadataTableId, _erc20SystemId } from "./utils.sol";
 import { ERC20System } from "./ERC20System.sol";
-import { ERC20Proxy } from "./ERC20Proxy.sol";
+
 import { ERC20Registry } from "./tables/ERC20Registry.sol";
 import { Balances } from "./tables/Balances.sol";
 import { Allowances } from "./tables/Allowances.sol";
 import { Metadata, MetadataData } from "./tables/Metadata.sol";
-import { ERC20DelegationControl } from "./ERC20DelegationControl.sol";
-
-/**
- * TODO:
- * - Set up namespace delegation for the ERC20Proxy: it needs to be able to use callFrom on behalf of everyone in the namespace
- */
 
 contract ERC20Module is Module {
-  using WorldResourceIdInstance for ResourceId;
-
-  ERC20DelegationControl public immutable erc20DelegationControl = new ERC20DelegationControl();
-  ResourceId public immutable erc20DelegationControlId =
-    WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: MODULE_NAMESPACE, name: "ERC20Delegation" });
+  error ERC20Module_InvalidNamespace(bytes14 namespace);
 
   function getName() public pure override returns (bytes16) {
     return MODULE_NAME;
   }
 
-  function install(bytes memory args) public {
-    (bytes14 namespace, MetadataData memory metadata) = abi.decode(args, (bytes14, MetadataData));
-    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
-
-    IBaseWorld world = IBaseWorld(_world());
-
-    // Encode the table IDs based on the namespace
-    ResourceId allowancesTableId = WorldResourceIdLib.encode({
-      typeId: RESOURCE_TABLE,
-      namespace: namespace,
-      name: "Allowances"
-    });
-    ResourceId balancesTableId = WorldResourceIdLib.encode({
-      typeId: RESOURCE_TABLE,
-      namespace: namespace,
-      name: "Balances"
-    });
-    ResourceId metadataTableId = WorldResourceIdLib.encode({
-      typeId: RESOURCE_TABLE,
-      namespace: namespace,
-      name: "Metadata"
-    });
-    ResourceId erc20SystemId = WorldResourceIdLib.encode({
-      typeId: RESOURCE_SYSTEM,
-      namespace: namespace,
-      name: "ERC20"
-    });
-
+  /**
+   * Register systems and tables for a new ERC20 token in a given namespace
+   */
+  function _registerERC20(bytes14 namespace) internal {
     // Register the tables
-    Allowances.register(allowancesTableId);
-    Balances.register(balancesTableId);
-    Metadata.register(metadataTableId);
+    Allowances.register(_allowancesTableId(namespace));
+    Balances.register(_balancesTableId(namespace));
+    Metadata.register(_metadataTableId(namespace));
 
-    // Set the metadata
-    Metadata.set(metadataTableId, metadata);
+    // Register a new ERC20System
+    IBaseWorld(_world()).registerSystem(_erc20SystemId(namespace), new ERC20System(), true);
+  }
 
-    // Create the ERC20System
-    ERC20System erc20System = new ERC20System();
-    world.registerSystem(erc20SystemId, erc20System, true);
+  function _installDependencies() internal {
+    // If the PuppetModule is not installed yet, install it
+    if (InstalledModules.get(PUPPET_MODULE_NAME, keccak256(new bytes(0))) == address(0)) {
+      IBaseWorld(_world()).installModule(new PuppetModule(), new bytes(0));
+    }
+  }
 
-    // Create the ERC20Proxy and system
-    ERC20Proxy erc20Proxy = new ERC20Proxy(world, erc20SystemId, allowancesTableId, balancesTableId, metadataTableId);
+  function install(bytes memory args) public {
+    // Extract args
+    (bytes14 namespace, MetadataData memory metadata) = abi.decode(args, (bytes14, MetadataData));
 
-    // Register the ERC20Proxy as hook on the ERC20System
-    world.registerSystemHook(erc20SystemId, erc20Proxy, AFTER_CALL_SYSTEM);
+    // Require the namespace to not be the module's namespace
+    if (namespace == MODULE_NAMESPACE) {
+      revert ERC20Module_InvalidNamespace(namespace);
+    }
 
-    // Grant the ERC20System and caller access to the namespace
-    world.grantAccess(namespaceId, address(erc20System));
-    world.grantAccess(namespaceId, _msgSender());
+    // Install dependencies
+    _installDependencies();
 
-    // If the ERC20Registry is not registered yet, register it
+    // Register the ERC20 tables and system
+    _registerERC20(namespace);
+
+    // Initialize the Metadata
+    Metadata.set(_metadataTableId(namespace), metadata);
+
+    // Deploy and register the ERC20 puppet.
+    IBaseWorld world = IBaseWorld(_world());
+    ResourceId erc20SystemId = _erc20SystemId(namespace);
+    Puppet puppet = new Puppet(world, erc20SystemId);
+    registerPuppet(world, erc20SystemId, address(puppet));
+
+    // Transfer ownership of the namespace to the caller
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+    world.transferOwnership(namespaceId, _msgSender());
+
+    // Register the ERC20 in the ERC20Registry
     if (!ResourceIds.getExists(ERC20_REGISTRY_TABLE_ID)) {
       ERC20Registry.register(ERC20_REGISTRY_TABLE_ID);
     }
-
-    // If the delegation control is not registered yet, register it and grant it access to the
-    if (!ResourceIds.getExists(erc20DelegationControlId)) {
-      world.registerSystem(erc20DelegationControlId, erc20DelegationControl, true);
-    }
-
-    // Register the erc20 delegation control in the namespace
-    world.registerNamespaceDelegation(namespaceId, erc20DelegationControlId, new bytes(0));
-
-    // Register the ERC20Proxy in the ERC20Registry
-    ERC20Registry.set(ERC20_REGISTRY_TABLE_ID, namespaceId, address(erc20Proxy));
-
-    // Transfer ownership of the namespace to the caller
-    world.transferOwnership(namespaceId, _msgSender());
+    ERC20Registry.set(ERC20_REGISTRY_TABLE_ID, namespaceId, address(puppet));
   }
 
   function installRoot(bytes memory) public pure {

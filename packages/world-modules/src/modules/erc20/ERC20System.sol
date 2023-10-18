@@ -2,21 +2,85 @@
 pragma solidity >=0.8.21;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 import { System } from "@latticexyz/world/src/System.sol";
-import { WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { WorldResourceIdInstance, WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
+import { SystemRegistry } from "@latticexyz/world/src/codegen/tables/SystemRegistry.sol";
+import { ALLOWANCES_NAME, BALANCES_NAME, METADATA_NAME } from "./constants.sol";
 
 import { AccessControlLib } from "../../utils/AccessControlLib.sol";
+import { PuppetMaster } from "../puppet/PuppetMaster.sol";
 
 import { IERC20Errors } from "./IERC20Errors.sol";
+import { IERC20Mintable } from "./IERC20Mintable.sol";
 import { IERC20Events } from "./IERC20Events.sol";
 
 import { Allowances } from "./tables/Allowances.sol";
 import { Balances } from "./tables/Balances.sol";
 import { Metadata } from "./tables/Metadata.sol";
 
-contract ERC20System is System, IERC20Errors, IERC20Events {
+import { _allowancesTableId, _balancesTableId, _metadataTableId, _toBytes32 } from "./utils.sol";
+
+contract ERC20System is System, IERC20Mintable, IERC20Errors, PuppetMaster {
   using WorldResourceIdInstance for ResourceId;
+
+  /**
+   * @dev Returns the name of the token.
+   */
+  function name() public view virtual returns (string memory) {
+    return Metadata.getName(_metadataTableId(_namespace()));
+  }
+
+  /**
+   * @dev Returns the symbol of the token, usually a shorter version of the
+   * name.
+   */
+  function symbol() public view virtual returns (string memory) {
+    return Metadata.getSymbol(_metadataTableId(_namespace()));
+  }
+
+  /**
+   * @dev Returns the number of decimals used to get its user representation.
+   * For example, if `decimals` equals `2`, a balance of `505` tokens should
+   * be displayed to a user as `5.05` (`505 / 10 ** 2`).
+   *
+   * Tokens usually opt for a value of 18, imitating the relationship between
+   * Ether and Wei. This is the default value returned by this function, unless
+   * it's overridden.
+   *
+   * NOTE: This information is only used for _display_ purposes: it in
+   * no way affects any of the arithmetic of the contract, including
+   * {IERC20-balanceOf} and {IERC20-transfer}.
+   */
+  function decimals() public view virtual returns (uint8) {
+    return Metadata.getDecimals(_metadataTableId(_namespace()));
+  }
+
+  /**
+   * @dev Returns the value of tokens in existence.
+   */
+  function totalSupply() external view returns (uint256) {
+    return Metadata.getTotalSupply(_metadataTableId(_namespace()));
+  }
+
+  /**
+   * @dev Returns the value of tokens owned by `account`.
+   */
+  function balanceOf(address account) external view returns (uint256) {
+    return Balances.get(_balancesTableId(_namespace()), account);
+  }
+
+  /**
+   * @dev Returns the remaining number of tokens that `spender` will be
+   * allowed to spend on behalf of `owner` through {transferFrom}. This is
+   * zero by default.
+   *
+   * This value changes when {approve} or {transferFrom} are called.
+   */
+  function allowance(address owner, address spender) external view returns (uint256) {
+    return Allowances.get(_allowancesTableId(_namespace()), owner, spender);
+  }
 
   /**
    * @dev See {IERC20-transfer}.
@@ -26,27 +90,11 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
    * - `to` cannot be the zero address.
    * - the caller must have a balance of at least `value`.
    */
-  function transfer(
-    ResourceId balanceTableId,
-    ResourceId metadataTableId,
-    address to,
-    uint256 value
-  ) public virtual returns (bool) {
+  function transfer(address to, uint256 value) public virtual returns (bool) {
     address owner = _msgSender();
-    _transfer(balanceTableId, metadataTableId, owner, to, value);
+    _transfer(owner, to, value);
 
     return true;
-  }
-
-  /**
-   * @dev See {IERC20-allowance}.
-   */
-  function allowance(
-    ResourceId allowanceTableId,
-    address owner,
-    address spender
-  ) public view virtual returns (uint256) {
-    return Allowances.get(allowanceTableId, owner, spender);
   }
 
   /**
@@ -59,9 +107,9 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
    *
    * - `spender` cannot be the zero address.
    */
-  function approve(ResourceId allowanceTableId, address spender, uint256 value) public virtual returns (bool) {
+  function approve(address spender, uint256 value) public virtual returns (bool) {
     address owner = _msgSender();
-    _approve(allowanceTableId, owner, spender, value);
+    _approve(owner, spender, value);
 
     return true;
   }
@@ -82,17 +130,10 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
    * - the caller must have allowance for ``from``'s tokens of at least
    * `value`.
    */
-  function transferFrom(
-    ResourceId allowanceTableId,
-    ResourceId balanceTableId,
-    ResourceId metadataTableId,
-    address from,
-    address to,
-    uint256 value
-  ) public virtual returns (bool) {
+  function transferFrom(address from, address to, uint256 value) public virtual returns (bool) {
     address spender = _msgSender();
-    _spendAllowance(allowanceTableId, from, spender, value);
-    _transfer(balanceTableId, metadataTableId, from, to, value);
+    _spendAllowance(from, spender, value);
+    _transfer(from, to, value);
 
     return true;
   }
@@ -103,15 +144,15 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
    *
    * Emits a {Transfer} event with `from` set to the zero address.
    */
-  function mint(ResourceId balanceTableId, ResourceId metadataTableId, address account, uint256 value) public {
+  function mint(address account, uint256 value) public {
     // Require the caller to own the namespace
-    AccessControlLib.requireOwner(balanceTableId, _msgSender());
+    _requireOwner();
 
     if (account == address(0)) {
       revert ERC20InvalidReceiver(address(0));
     }
 
-    _update(balanceTableId, metadataTableId, address(0), account, value);
+    _update(address(0), account, value);
   }
 
   /**
@@ -122,15 +163,15 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
    *
    * NOTE: This function is not virtual, {_update} should be overridden instead
    */
-  function burn(ResourceId balanceTableId, ResourceId metadataTableId, address account, uint256 value) public {
+  function burn(address account, uint256 value) public {
     // Require the caller to own the namespace
-    AccessControlLib.requireOwner(balanceTableId, _msgSender());
+    _requireOwner();
 
     if (account == address(0)) {
       revert ERC20InvalidSender(address(0));
     }
 
-    _update(balanceTableId, metadataTableId, account, address(0), value);
+    _update(account, address(0), value);
   }
 
   /**
@@ -143,20 +184,14 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
    *
    * NOTE: This function is not virtual, {_update} should be overridden instead.
    */
-  function _transfer(
-    ResourceId balanceTableId,
-    ResourceId metadataTableId,
-    address from,
-    address to,
-    uint256 value
-  ) internal {
+  function _transfer(address from, address to, uint256 value) internal {
     if (from == address(0)) {
       revert ERC20InvalidSender(address(0));
     }
     if (to == address(0)) {
       revert ERC20InvalidReceiver(address(0));
     }
-    _update(balanceTableId, metadataTableId, from, to, value);
+    _update(from, to, value);
   }
 
   /**
@@ -166,13 +201,11 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
    *
    * Emits a {Transfer} event.
    */
-  function _update(
-    ResourceId balanceTableId,
-    ResourceId metadataTableId,
-    address from,
-    address to,
-    uint256 value
-  ) internal virtual {
+  function _update(address from, address to, uint256 value) internal virtual {
+    bytes14 namespace = _namespace();
+    ResourceId metadataTableId = _metadataTableId(namespace);
+    ResourceId balanceTableId = _balancesTableId(namespace);
+
     if (from == address(0)) {
       // Overflow check required: The rest of the code assumes that totalSupply never overflows
       Metadata.setTotalSupply(metadataTableId, Metadata.getTotalSupply(metadataTableId) + value);
@@ -198,6 +231,9 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
         Balances.set(balanceTableId, to, Balances.get(balanceTableId, to) + value);
       }
     }
+
+    // Emit Transfer event on puppet
+    puppet().log(IERC20Events.Transfer.selector, _toBytes32(from), _toBytes32(to), abi.encode(value));
   }
 
   /**
@@ -208,14 +244,17 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
    * - `owner` cannot be the zero address.
    * - `spender` cannot be the zero address.
    */
-  function _approve(ResourceId allowanceTableId, address owner, address spender, uint256 value) internal virtual {
+  function _approve(address owner, address spender, uint256 value) internal virtual {
     if (owner == address(0)) {
       revert ERC20InvalidApprover(address(0));
     }
     if (spender == address(0)) {
       revert ERC20InvalidSpender(address(0));
     }
-    Allowances.set(allowanceTableId, owner, spender, value);
+    Allowances.set(_allowancesTableId(_namespace()), owner, spender, value);
+
+    // Emit Approval event on puppet
+    puppet().log(IERC20Events.Approval.selector, _toBytes32(owner), _toBytes32(spender), abi.encode(value));
   }
 
   /**
@@ -226,20 +265,24 @@ contract ERC20System is System, IERC20Errors, IERC20Events {
    *
    * Does not emit an {Approval} event.
    */
-  function _spendAllowance(
-    ResourceId allowanceTableId,
-    address owner,
-    address spender,
-    uint256 value
-  ) internal virtual {
-    uint256 currentAllowance = Allowances.get(allowanceTableId, owner, spender);
+  function _spendAllowance(address owner, address spender, uint256 value) internal virtual {
+    uint256 currentAllowance = Allowances.get(_allowancesTableId(_namespace()), owner, spender);
     if (currentAllowance != type(uint256).max) {
       if (currentAllowance < value) {
         revert ERC20InsufficientAllowance(spender, currentAllowance, value);
       }
       unchecked {
-        _approve(allowanceTableId, owner, spender, currentAllowance - value);
+        _approve(owner, spender, currentAllowance - value);
       }
     }
+  }
+
+  function _namespace() internal view returns (bytes14 namespace) {
+    ResourceId systemId = SystemRegistry.get(address(this));
+    return systemId.getNamespace();
+  }
+
+  function _requireOwner() internal view {
+    AccessControlLib.requireOwner(SystemRegistry.get(address(this)), _msgSender());
   }
 }
