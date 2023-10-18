@@ -84,9 +84,6 @@ contract ERC20Module is Module {
     world.grantAccess(namespaceId, address(erc20System));
     world.grantAccess(namespaceId, _msgSender());
 
-    // Transfer ownership of the namespace to the caller
-    world.transferOwnership(namespaceId, _msgSender());
-
     // If the ERC20Registry is not registered yet, register it
     if (!ResourceIds.getExists(ERC20_REGISTRY_TABLE_ID)) {
       ERC20Registry.register(ERC20_REGISTRY_TABLE_ID);
@@ -102,6 +99,9 @@ contract ERC20Module is Module {
 
     // Register the ERC20Proxy in the ERC20Registry
     ERC20Registry.set(ERC20_REGISTRY_TABLE_ID, namespaceId, address(erc20Proxy));
+
+    // Transfer ownership of the namespace to the caller
+    world.transferOwnership(namespaceId, _msgSender());
   }
 
   function installRoot(bytes memory) public pure {
