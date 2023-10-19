@@ -28,22 +28,14 @@ export async function syncToSqlite<TConfig extends StoreConfig = StoreConfig>({
   config,
   database,
   publicClient,
-  address,
-  startBlock,
-  maxBlockRange,
-  indexerUrl,
-  initialState,
   startSync = true,
+  ...syncOptions
 }: SyncToSqliteOptions<TConfig>): Promise<SyncToSqliteResult> {
   const storeSync = await createStoreSync({
     storageAdapter: await sqliteStorage({ database, publicClient, config }),
     config,
-    address,
     publicClient,
-    startBlock,
-    maxBlockRange,
-    indexerUrl,
-    initialState,
+    ...syncOptions,
   });
 
   const sub = startSync ? storeSync.storedBlockLogs$.subscribe() : null;
