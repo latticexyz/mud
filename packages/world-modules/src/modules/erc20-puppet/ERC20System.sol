@@ -6,18 +6,17 @@ import { System } from "@latticexyz/world/src/System.sol";
 import { WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { SystemRegistry } from "@latticexyz/world/src/codegen/tables/SystemRegistry.sol";
-import { ALLOWANCES_NAME, BALANCES_NAME, METADATA_NAME } from "./constants.sol";
 
 import { AccessControlLib } from "../../utils/AccessControlLib.sol";
 import { PuppetMaster } from "../puppet/PuppetMaster.sol";
 import { toTopic } from "../puppet/utils.sol";
+import { Balances } from "../tokens/tables/Balances.sol";
 
 import { IERC20Mintable } from "./IERC20Mintable.sol";
 
 import { Allowances } from "./tables/Allowances.sol";
-import { Balances } from "./tables/Balances.sol";
 import { TotalSupply } from "./tables/TotalSupply.sol";
-import { Metadata } from "./tables/Metadata.sol";
+import { ERC20Metadata } from "./tables/ERC20Metadata.sol";
 
 import { _allowancesTableId, _balancesTableId, _totalSupplyTableId, _metadataTableId } from "./utils.sol";
 
@@ -28,7 +27,7 @@ contract ERC20System is System, IERC20Mintable, PuppetMaster {
    * @dev Returns the name of the token.
    */
   function name() public view virtual returns (string memory) {
-    return Metadata.getName(_metadataTableId(_namespace()));
+    return ERC20Metadata.getName(_metadataTableId(_namespace()));
   }
 
   /**
@@ -36,7 +35,7 @@ contract ERC20System is System, IERC20Mintable, PuppetMaster {
    * name.
    */
   function symbol() public view virtual returns (string memory) {
-    return Metadata.getSymbol(_metadataTableId(_namespace()));
+    return ERC20Metadata.getSymbol(_metadataTableId(_namespace()));
   }
 
   /**
@@ -53,7 +52,7 @@ contract ERC20System is System, IERC20Mintable, PuppetMaster {
    * {IERC20-balanceOf} and {IERC20-transfer}.
    */
   function decimals() public view virtual returns (uint8) {
-    return Metadata.getDecimals(_metadataTableId(_namespace()));
+    return ERC20Metadata.getDecimals(_metadataTableId(_namespace()));
   }
 
   /**
