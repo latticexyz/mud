@@ -1071,6 +1071,9 @@ importers:
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
+      '@openzeppelin/contracts':
+        specifier: ^5.0.0
+        version: 5.0.0
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -2892,6 +2895,10 @@ packages:
       ethers: 5.7.2
       hardhat: 2.10.2(typescript@5.1.6)
     dev: true
+
+  /@openzeppelin/contracts@5.0.0:
+    resolution: {integrity: sha512-bv2sdS6LKqVVMLI5+zqnNrNU/CA+6z6CmwFXm/MzmOPBRSO5reEJN7z0Gbzvs0/bv/MZZXNklubpwy3v2+azsw==}
+    dev: false
 
   /@protobufjs/aspromise@1.1.2:
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}

@@ -12,17 +12,16 @@ import { ALLOWANCES_NAME, BALANCES_NAME, METADATA_NAME } from "./constants.sol";
 import { AccessControlLib } from "../../utils/AccessControlLib.sol";
 import { PuppetMaster } from "../puppet/PuppetMaster.sol";
 
-import { IERC20Errors } from "./IERC20Errors.sol";
 import { IERC20Mintable } from "./IERC20Mintable.sol";
-import { IERC20Events } from "./IERC20Events.sol";
 
 import { Allowances } from "./tables/Allowances.sol";
 import { Balances } from "./tables/Balances.sol";
+import { TotalSupply } from "./tables/TotalSupply.sol";
 import { Metadata } from "./tables/Metadata.sol";
 
-import { _allowancesTableId, _balancesTableId, _metadataTableId, _toBytes32 } from "./utils.sol";
+import { _allowancesTableId, _balancesTableId, _totalSupplyTableId, _metadataTableId, _toBytes32 } from "./utils.sol";
 
-contract ERC20System is System, IERC20Mintable, IERC20Errors, PuppetMaster {
+contract ERC20System is System, IERC20Mintable, PuppetMaster {
   using WorldResourceIdInstance for ResourceId;
 
   /**
@@ -61,7 +60,7 @@ contract ERC20System is System, IERC20Mintable, IERC20Errors, PuppetMaster {
    * @dev Returns the value of tokens in existence.
    */
   function totalSupply() external view returns (uint256) {
-    return Metadata.getTotalSupply(_metadataTableId(_namespace()));
+    return TotalSupply.get(_totalSupplyTableId(_namespace()));
   }
 
   /**
@@ -203,12 +202,12 @@ contract ERC20System is System, IERC20Mintable, IERC20Errors, PuppetMaster {
    */
   function _update(address from, address to, uint256 value) internal virtual {
     bytes14 namespace = _namespace();
-    ResourceId metadataTableId = _metadataTableId(namespace);
+    ResourceId totalSupplyTableId = _totalSupplyTableId(namespace);
     ResourceId balanceTableId = _balancesTableId(namespace);
 
     if (from == address(0)) {
       // Overflow check required: The rest of the code assumes that totalSupply never overflows
-      Metadata.setTotalSupply(metadataTableId, Metadata.getTotalSupply(metadataTableId) + value);
+      TotalSupply.set(totalSupplyTableId, TotalSupply.get(totalSupplyTableId) + value);
     } else {
       uint256 fromBalance = Balances.get(balanceTableId, from);
       if (fromBalance < value) {
@@ -223,7 +222,7 @@ contract ERC20System is System, IERC20Mintable, IERC20Errors, PuppetMaster {
     if (to == address(0)) {
       unchecked {
         // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
-        Metadata.setTotalSupply(metadataTableId, Metadata.getTotalSupply(metadataTableId) - value);
+        TotalSupply.set(totalSupplyTableId, TotalSupply.get(totalSupplyTableId) - value);
       }
     } else {
       unchecked {
@@ -233,7 +232,7 @@ contract ERC20System is System, IERC20Mintable, IERC20Errors, PuppetMaster {
     }
 
     // Emit Transfer event on puppet
-    puppet().log(IERC20Events.Transfer.selector, _toBytes32(from), _toBytes32(to), abi.encode(value));
+    puppet().log(Transfer.selector, _toBytes32(from), _toBytes32(to), abi.encode(value));
   }
 
   /**
@@ -254,7 +253,7 @@ contract ERC20System is System, IERC20Mintable, IERC20Errors, PuppetMaster {
     Allowances.set(_allowancesTableId(_namespace()), owner, spender, value);
 
     // Emit Approval event on puppet
-    puppet().log(IERC20Events.Approval.selector, _toBytes32(owner), _toBytes32(spender), abi.encode(value));
+    puppet().log(Approval.selector, _toBytes32(owner), _toBytes32(spender), abi.encode(value));
   }
 
   /**

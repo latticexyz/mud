@@ -12,6 +12,7 @@ ResourceId constant MODULE_NAMESPACE_ID = ResourceId.wrap(
 
 bytes16 constant ALLOWANCES_NAME = "Allowances";
 bytes16 constant BALANCES_NAME = "Balances";
+bytes16 constant TOTAL_SUPPLY_NAME = "TotalSupply";
 bytes16 constant METADATA_NAME = "Metadata";
 bytes16 constant ERC20_SYSTEM_NAME = "ERC20System";
 
