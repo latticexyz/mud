@@ -4,8 +4,8 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 import { RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "@latticexyz/world/src/worldResourceTypes.sol";
 
-bytes16 constant MODULE_NAME = "erc20";
-bytes14 constant MODULE_NAMESPACE = "erc20";
+bytes16 constant MODULE_NAME = "erc20-puppet";
+bytes14 constant MODULE_NAMESPACE = "erc20-puppet";
 ResourceId constant MODULE_NAMESPACE_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_NAMESPACE, MODULE_NAMESPACE))
 );
