@@ -111,7 +111,7 @@ export default mudConfig({
      *
      ************************************************************************/
     Balances: {
-      directory: "modules/erc20/tables",
+      directory: "modules/erc20-puppet/tables",
       keySchema: {
         account: "address",
       },
@@ -121,7 +121,7 @@ export default mudConfig({
       tableIdArgument: true,
     },
     Allowances: {
-      directory: "modules/erc20/tables",
+      directory: "modules/erc20-puppet/tables",
       keySchema: {
         account: "address",
         spender: "address",
@@ -132,7 +132,7 @@ export default mudConfig({
       tableIdArgument: true,
     },
     Metadata: {
-      directory: "modules/erc20/tables",
+      directory: "modules/erc20-puppet/tables",
       keySchema: {},
       valueSchema: {
         totalSupply: "uint256",
@@ -143,7 +143,7 @@ export default mudConfig({
       tableIdArgument: true,
     },
     ERC20Registry: {
-      directory: "modules/erc20/tables",
+      directory: "modules/erc20-puppet/tables",
       keySchema: {
         namespaceId: "ResourceId",
       },
