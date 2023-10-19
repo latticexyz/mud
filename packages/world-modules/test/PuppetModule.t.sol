@@ -21,7 +21,7 @@ import { PuppetDelegationControl } from "../src/modules/puppet/PuppetDelegationC
 import { Puppet } from "../src/modules/puppet/Puppet.sol";
 import { PuppetMaster } from "../src/modules/puppet/PuppetMaster.sol";
 import { PUPPET_DELEGATION } from "../src/modules/puppet/constants.sol";
-import { registerPuppet } from "../src/modules/puppet/registerPuppet.sol";
+import { createPuppet } from "../src/modules/puppet/createPuppet.sol";
 
 contract PuppetTestSystem is System, PuppetMaster {
   event Hello(string message);
@@ -56,8 +56,7 @@ contract PuppetModuleTest is Test, GasReporter {
     world.registerSystem(systemId, system, true);
 
     // Connect the puppet
-    puppet = PuppetTestSystem(address(new Puppet(world, systemId)));
-    registerPuppet(world, systemId, address(puppet));
+    puppet = PuppetTestSystem(createPuppet(world, systemId));
   }
 
   function testEmitOnPuppet() public {
