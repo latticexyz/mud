@@ -1,8 +1,8 @@
 import { Hex } from "viem";
-import { TableWithRecords } from "../common";
+import { SyncFilter, TableWithRecords } from "../common";
 
 export type QueryAdapter = {
-  findAll: (opts: { chainId: number; address?: Hex; tableIds?: Hex[] }) => Promise<{
+  findAll: (opts: { chainId: number; address?: Hex; filters?: SyncFilter[] }) => Promise<{
     blockNumber: bigint | null;
     tables: TableWithRecords[];
   }>;

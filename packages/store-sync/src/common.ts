@@ -26,6 +26,14 @@ export type TableWithRecords = Table & { records: TableRecord[] };
 export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true, StoreEventsAbi>;
 export type BlockLogs = { blockNumber: StoreEventsLog["blockNumber"]; logs: StoreEventsLog[] };
 
+// TODO: should we add address here?
+export type SyncFilter = {
+  tableId?: Hex;
+  key0?: Hex;
+  key1?: Hex;
+  // TODO: decide how many keys to support
+};
+
 export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
   /**
    * MUD config
@@ -42,9 +50,9 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
    */
   address?: Address;
   /**
-   * Optional table IDs to filter indexer state and RPC state.
+   * Optional filters for indexer and RPC state. Useful to narrow down the data received by the client for large worlds.
    */
-  tableIds?: Hex[];
+  filters?: SyncFilter[];
   /**
    * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.
    */

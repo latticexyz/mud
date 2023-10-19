@@ -827,6 +827,9 @@ importers:
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
+      '@latticexyz/protocol-parser':
+        specifier: workspace:*
+        version: link:../protocol-parser
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
