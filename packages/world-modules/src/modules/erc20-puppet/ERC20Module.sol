@@ -9,7 +9,7 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { InstalledModules } from "@latticexyz/world/src/codegen/tables/InstalledModules.sol";
 
 import { Puppet } from "../puppet/Puppet.sol";
-import { registerPuppet } from "../puppet/registerPuppet.sol";
+import { createPuppet } from "../puppet/createPuppet.sol";
 import { MODULE_NAME as PUPPET_MODULE_NAME } from "../puppet/constants.sol";
 import { PuppetModule } from "../puppet/PuppetModule.sol";
 
@@ -75,8 +75,7 @@ contract ERC20Module is Module {
     // Deploy and register the ERC20 puppet.
     IBaseWorld world = IBaseWorld(_world());
     ResourceId erc20SystemId = _erc20SystemId(namespace);
-    Puppet puppet = new Puppet(world, erc20SystemId);
-    registerPuppet(world, erc20SystemId, address(puppet));
+    address puppet = createPuppet(world, erc20SystemId);
 
     // Transfer ownership of the namespace to the caller
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
@@ -86,7 +85,7 @@ contract ERC20Module is Module {
     if (!ResourceIds.getExists(ERC20_REGISTRY_TABLE_ID)) {
       ERC20Registry.register(ERC20_REGISTRY_TABLE_ID);
     }
-    ERC20Registry.set(ERC20_REGISTRY_TABLE_ID, namespaceId, address(puppet));
+    ERC20Registry.set(ERC20_REGISTRY_TABLE_ID, namespaceId, puppet);
   }
 
   function installRoot(bytes memory) public pure {
