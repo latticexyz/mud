@@ -131,11 +131,18 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
-    Metadata: {
+    TotalSupply: {
       directory: "modules/erc20/tables",
       keySchema: {},
       valueSchema: {
         totalSupply: "uint256",
+      },
+      tableIdArgument: true,
+    },
+    Metadata: {
+      directory: "modules/erc20/tables",
+      keySchema: {},
+      valueSchema: {
         decimals: "uint8",
         name: "string",
         symbol: "string",
