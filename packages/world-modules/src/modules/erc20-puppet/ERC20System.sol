@@ -12,9 +12,7 @@ import { ALLOWANCES_NAME, BALANCES_NAME, METADATA_NAME } from "./constants.sol";
 import { AccessControlLib } from "../../utils/AccessControlLib.sol";
 import { PuppetMaster } from "../puppet/PuppetMaster.sol";
 
-import { IERC20Errors } from "./IERC20Errors.sol";
 import { IERC20Mintable } from "./IERC20Mintable.sol";
-import { IERC20Events } from "./IERC20Events.sol";
 
 import { Allowances } from "./tables/Allowances.sol";
 import { Balances } from "./tables/Balances.sol";
@@ -23,7 +21,7 @@ import { Metadata } from "./tables/Metadata.sol";
 
 import { _allowancesTableId, _balancesTableId, _totalSupplyTableId, _metadataTableId, _toBytes32 } from "./utils.sol";
 
-contract ERC20System is System, IERC20Mintable, IERC20Errors, PuppetMaster {
+contract ERC20System is System, IERC20Mintable, PuppetMaster {
   using WorldResourceIdInstance for ResourceId;
 
   /**
@@ -234,7 +232,7 @@ contract ERC20System is System, IERC20Mintable, IERC20Errors, PuppetMaster {
     }
 
     // Emit Transfer event on puppet
-    puppet().log(IERC20Events.Transfer.selector, _toBytes32(from), _toBytes32(to), abi.encode(value));
+    puppet().log(Transfer.selector, _toBytes32(from), _toBytes32(to), abi.encode(value));
   }
 
   /**
@@ -255,7 +253,7 @@ contract ERC20System is System, IERC20Mintable, IERC20Errors, PuppetMaster {
     Allowances.set(_allowancesTableId(_namespace()), owner, spender, value);
 
     // Emit Approval event on puppet
-    puppet().log(IERC20Events.Approval.selector, _toBytes32(owner), _toBytes32(spender), abi.encode(value));
+    puppet().log(Approval.selector, _toBytes32(owner), _toBytes32(spender), abi.encode(value));
   }
 
   /**

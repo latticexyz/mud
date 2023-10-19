@@ -13,14 +13,16 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
+import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
+
 import { ERC20Module } from "../src/modules/erc20-puppet/ERC20Module.sol";
 import { MetadataData } from "../src/modules/erc20-puppet/tables/Metadata.sol";
 import { ERC20Registry } from "../src/modules/erc20-puppet/tables/ERC20Registry.sol";
 import { ERC20_REGISTRY_TABLE_ID } from "../src/modules/erc20-puppet/constants.sol";
-import { IERC20Events } from "../src/modules/erc20-puppet/IERC20Events.sol";
 import { IERC20Mintable } from "../src/modules/erc20-puppet/IERC20Mintable.sol";
-import { IERC20Errors } from "../src/modules/erc20-puppet/IERC20Errors.sol";
 import { registerERC20 } from "../src/modules/erc20-puppet/registerERC20.sol";
+
+import { IERC20Events } from "./IERC20Events.sol";
 
 contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
   IBaseWorld world;
