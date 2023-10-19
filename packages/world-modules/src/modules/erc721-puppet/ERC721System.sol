@@ -26,6 +26,14 @@ import { TokenURI } from "./tables/TokenURI.sol";
 
 import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId, _toBytes32 } from "./utils.sol";
 
+/**
+ * TODO:
+ * - extend ERC721 to avoid having to redefine all the functions
+ * - make `mint` and `burn` public with `requireOwner` check
+ * - Fix up ERC721 Module
+ * - Add ERC721 tests
+ */
+
 contract ERC721System is IERC721Mintable, System, PuppetMaster {
   using Strings for uint256;
   using WorldResourceIdInstance for ResourceId;
