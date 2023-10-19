@@ -212,7 +212,7 @@ export default mudConfig({
     OperatorApproval: {
       directory: "modules/erc721-puppet/tables",
       keySchema: {
-        tokenId: "uint256",
+        owner: "address",
         operator: "address",
       },
       valueSchema: {

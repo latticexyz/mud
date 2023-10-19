@@ -2,12 +2,15 @@
 pragma solidity >=0.8.21;
 
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+import { IERC165 } from "@openzeppelin/contracts/interfaces/IERC165.sol";
+
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { WorldResourceIdInstance, WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { SystemRegistry } from "@latticexyz/world/src/codegen/tables/SystemRegistry.sol";
+import { WorldContextConsumer } from "@latticexyz/world/src/WorldContext.sol";
 
 import { AccessControlLib } from "../../utils/AccessControlLib.sol";
 import { PuppetMaster } from "../puppet/PuppetMaster.sol";
@@ -23,9 +26,18 @@ import { TokenURI } from "./tables/TokenURI.sol";
 
 import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId, _toBytes32 } from "./utils.sol";
 
-contract ERC721System is System, IERC721Mintable, PuppetMaster {
+contract ERC721System is IERC721Mintable, System, PuppetMaster {
   using Strings for uint256;
   using WorldResourceIdInstance for ResourceId;
+
+  /**
+   *
+   */
+  function supportsInterface(
+    bytes4 interfaceId
+  ) public pure virtual override(WorldContextConsumer, IERC165) returns (bool) {
+    return interfaceId == type(IERC721Mintable).interfaceId || super.supportsInterface(interfaceId);
+  }
 
   /**
    * @dev See {IERC721-balanceOf}.
@@ -121,21 +133,6 @@ contract ERC721System is System, IERC721Mintable, PuppetMaster {
     if (previousOwner != from) {
       revert ERC721IncorrectOwner(from, tokenId, previousOwner);
     }
-  }
-
-  /**
-   * @dev See {IERC721-safeTransferFrom}.
-   */
-  function safeTransferFrom(address from, address to, uint256 tokenId) public {
-    safeTransferFrom(from, to, tokenId, "");
-  }
-
-  /**
-   * @dev See {IERC721-safeTransferFrom}.
-   */
-  function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public virtual {
-    transferFrom(from, to, tokenId);
-    _checkOnERC721Received(from, to, tokenId, data);
   }
 
   /**
@@ -271,29 +268,6 @@ contract ERC721System is System, IERC721Mintable, PuppetMaster {
   }
 
   /**
-   * @dev Mints `tokenId`, transfers it to `to` and checks for `to` acceptance.
-   *
-   * Requirements:
-   *
-   * - `tokenId` must not exist.
-   * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
-   *
-   * Emits a {Transfer} event.
-   */
-  function _safeMint(address to, uint256 tokenId) internal {
-    _safeMint(to, tokenId, "");
-  }
-
-  /**
-   * @dev Same as {xref-ERC721-_safeMint-address-uint256-}[`_safeMint`], with an additional `data` parameter which is
-   * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
-   */
-  function _safeMint(address to, uint256 tokenId, bytes memory data) internal virtual {
-    _mint(to, tokenId);
-    _checkOnERC721Received(address(0), to, tokenId, data);
-  }
-
-  /**
    * @dev Destroys `tokenId`.
    * The approval is cleared when the token is burned.
    * This is an internal function that does not check if the sender is authorized to operate on the token.
@@ -332,38 +306,6 @@ contract ERC721System is System, IERC721Mintable, PuppetMaster {
     } else if (previousOwner != from) {
       revert ERC721IncorrectOwner(from, tokenId, previousOwner);
     }
-  }
-
-  /**
-   * @dev Safely transfers `tokenId` token from `from` to `to`, checking that contract recipients
-   * are aware of the ERC721 standard to prevent tokens from being forever locked.
-   *
-   * `data` is additional data, it has no specified format and it is sent in call to `to`.
-   *
-   * This internal function is like {safeTransferFrom} in the sense that it invokes
-   * {IERC721Receiver-onERC721Received} on the receiver, and can be used to e.g.
-   * implement alternative mechanisms to perform token transfer, such as signature-based.
-   *
-   * Requirements:
-   *
-   * - `tokenId` token must exist and be owned by `from`.
-   * - `to` cannot be the zero address.
-   * - `from` cannot be the zero address.
-   * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
-   *
-   * Emits a {Transfer} event.
-   */
-  function _safeTransfer(address from, address to, uint256 tokenId) internal {
-    _safeTransfer(from, to, tokenId, "");
-  }
-
-  /**
-   * @dev Same as {xref-ERC721-_safeTransfer-address-address-uint256-}[`_safeTransfer`], with an additional `data` parameter which is
-   * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
-   */
-  function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data) internal virtual {
-    _transfer(from, to, tokenId);
-    _checkOnERC721Received(from, to, tokenId, data);
   }
 
   /**

@@ -39,7 +39,7 @@ library OperatorApproval {
    */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](2);
-    _keySchema[0] = SchemaType.UINT256;
+    _keySchema[0] = SchemaType.ADDRESS;
     _keySchema[1] = SchemaType.ADDRESS;
 
     return SchemaLib.encode(_keySchema);
@@ -62,7 +62,7 @@ library OperatorApproval {
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](2);
-    keyNames[0] = "tokenId";
+    keyNames[0] = "owner";
     keyNames[1] = "operator";
   }
 
@@ -92,9 +92,9 @@ library OperatorApproval {
   /**
    * @notice Get approved.
    */
-  function getApproved(ResourceId _tableId, uint256 tokenId, address operator) internal view returns (bool approved) {
+  function getApproved(ResourceId _tableId, address owner, address operator) internal view returns (bool approved) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(uint160(operator)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -104,9 +104,9 @@ library OperatorApproval {
   /**
    * @notice Get approved.
    */
-  function _getApproved(ResourceId _tableId, uint256 tokenId, address operator) internal view returns (bool approved) {
+  function _getApproved(ResourceId _tableId, address owner, address operator) internal view returns (bool approved) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(uint160(operator)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -116,9 +116,9 @@ library OperatorApproval {
   /**
    * @notice Get approved.
    */
-  function get(ResourceId _tableId, uint256 tokenId, address operator) internal view returns (bool approved) {
+  function get(ResourceId _tableId, address owner, address operator) internal view returns (bool approved) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(uint160(operator)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -128,9 +128,9 @@ library OperatorApproval {
   /**
    * @notice Get approved.
    */
-  function _get(ResourceId _tableId, uint256 tokenId, address operator) internal view returns (bool approved) {
+  function _get(ResourceId _tableId, address owner, address operator) internal view returns (bool approved) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(uint160(operator)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -140,9 +140,9 @@ library OperatorApproval {
   /**
    * @notice Set approved.
    */
-  function setApproved(ResourceId _tableId, uint256 tokenId, address operator, bool approved) internal {
+  function setApproved(ResourceId _tableId, address owner, address operator, bool approved) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(uint160(operator)));
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((approved)), _fieldLayout);
@@ -151,9 +151,9 @@ library OperatorApproval {
   /**
    * @notice Set approved.
    */
-  function _setApproved(ResourceId _tableId, uint256 tokenId, address operator, bool approved) internal {
+  function _setApproved(ResourceId _tableId, address owner, address operator, bool approved) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(uint160(operator)));
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((approved)), _fieldLayout);
@@ -162,9 +162,9 @@ library OperatorApproval {
   /**
    * @notice Set approved.
    */
-  function set(ResourceId _tableId, uint256 tokenId, address operator, bool approved) internal {
+  function set(ResourceId _tableId, address owner, address operator, bool approved) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(uint160(operator)));
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((approved)), _fieldLayout);
@@ -173,9 +173,9 @@ library OperatorApproval {
   /**
    * @notice Set approved.
    */
-  function _set(ResourceId _tableId, uint256 tokenId, address operator, bool approved) internal {
+  function _set(ResourceId _tableId, address owner, address operator, bool approved) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(uint160(operator)));
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((approved)), _fieldLayout);
@@ -184,9 +184,9 @@ library OperatorApproval {
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(ResourceId _tableId, uint256 tokenId, address operator) internal {
+  function deleteRecord(ResourceId _tableId, address owner, address operator) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(uint160(operator)));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
@@ -195,9 +195,9 @@ library OperatorApproval {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(ResourceId _tableId, uint256 tokenId, address operator) internal {
+  function _deleteRecord(ResourceId _tableId, address owner, address operator) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(uint160(operator)));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
@@ -229,9 +229,9 @@ library OperatorApproval {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple(uint256 tokenId, address operator) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(address owner, address operator) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(uint160(operator)));
 
     return _keyTuple;
