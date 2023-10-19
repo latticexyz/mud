@@ -33,11 +33,7 @@ contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
     StoreSwitch.setStoreAddress(address(world));
 
     // Register a new ERC20 token
-    token = registerERC20(
-      world,
-      "myERC20",
-      MetadataData({ totalSupply: 0, decimals: 18, name: "Token", symbol: "TKN" })
-    );
+    token = registerERC20(world, "myERC20", MetadataData({ decimals: 18, name: "Token", symbol: "TKN" }));
   }
 
   function testSetUp() public {
@@ -50,7 +46,7 @@ contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
     IERC20Mintable anotherToken = registerERC20(
       world,
       "anotherERC20",
-      MetadataData({ totalSupply: 0, decimals: 18, name: "Token", symbol: "TKN" })
+      MetadataData({ decimals: 18, name: "Token", symbol: "TKN" })
     );
     assertTrue(address(anotherToken) != address(0));
     assertTrue(address(anotherToken) != address(token));
