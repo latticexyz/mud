@@ -9,13 +9,13 @@
     "file": "test/ERC20.t.sol",
     "test": "testBurn",
     "name": "burn",
-    "gasUsed": 75963
+    "gasUsed": 75987
   },
   {
     "file": "test/ERC20.t.sol",
     "test": "testMint",
     "name": "mint",
-    "gasUsed": 161802
+    "gasUsed": 161826
   },
   {
     "file": "test/ERC20.t.sol",
