@@ -4,11 +4,12 @@
 pragma solidity >=0.8.21;
 
 import { IERC20Events } from "./IERC20Events.sol";
+import { IERC20Errors } from "./IERC20Errors.sol";
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
  */
-interface IERC20 is IERC20Events {
+interface IERC20 is IERC20Events, IERC20Errors {
   /**
    * @dev Returns the name of the token.
    */
