@@ -9,7 +9,7 @@ import { WorldConfig } from "@latticexyz/world";
 import { homedir } from "os";
 import { rmSync } from "fs";
 import { deployOptions, runDeploy } from "../runDeploy";
-import { BehaviorSubject, EMPTY, catchError, debounceTime, exhaustMap, filter } from "rxjs";
+import { BehaviorSubject, debounceTime, exhaustMap, filter } from "rxjs";
 import { Address } from "viem";
 import { isDefined } from "@latticexyz/common/utils";
 
