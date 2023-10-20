@@ -1,1 +1,360 @@
 # Extending World
+
+On this page you learn how to modify a `World` that is already deployed to the blockchain.
+If you want to learn how to modify a `World` before it is deployed, [see the hello world page](./hello-world).
+
+## The sample program
+
+To learn how to extend a world, we will extend the `Counter` example to allow users to leave a message while incrementing the counter.
+
+This requires adding several entities:
+
+- **Namespace**.
+  A [namescape](/world/namespaces-access-control) can contain tables and systems.
+  In most cases, the only way you would be able to extend a `World` that somebody else owns is to create your own namespace within that world.
+
+- **Table**.
+  A table to store the messages that have been sent.
+
+- **System**.
+  A system that updates the messages table and then calls `increment` to update the counter.
+
+## Create the Solidity code
+
+The easiest way to create the Solidity code is to use the MUD template:
+
+1. Create a new MUD application.
+   It does not matter which user interface option you choose.
+
+   ```sh copy
+   pnpm create mud@next extension
+   cd extension/packages/contracts
+   ```
+
+1. Edit `mud.config.ts` to include the definitions we need.
+
+   ```ts filename="mud.config.ts" copy
+   import { mudConfig } from "@latticexyz/world/register";
+
+   export default mudConfig({
+     namespace: "messaging",
+     tables: {
+       Messages: {
+         keySchema: {
+           counterValue: "uint32",
+         },
+         valueSchema: {
+           message: "string",
+         },
+       },
+     },
+     systems: {
+       MessageSystem: {
+         name: "MessageSystem",
+         openAccess: true,
+       },
+     },
+   });
+   ```
+
+1. Create `src/systems/MessageSystem.sol`.
+
+   ```solidity filename="MessageSystem.sol" copy
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+
+   import { System } from "@latticexyz/world/src/System.sol";
+   import { Messages } from "../codegen/index.sol";
+
+   interface WorldWithIncrement {
+     function increment() external returns (uint32);
+   }
+
+   contract MessageSystem is System {
+     function incrementMessage(string memory message) public returns (uint32) {
+       uint32 newVal = WorldWithIncrement(_world()).increment();
+       Messages.setMessage(newVal, message);
+       return newVal;
+     }
+   }
+   ```
+
+   **EXPLANATION GOES HERE**
+
+   <details>
+
+   <summary>Explanation</summary>
+
+   </details>
+
+1. Build and compile the Solidity code.
+
+   ```sh copy
+   pnpm build
+   ```
+
+## Deploy to the blockchain
+
+1. In a separate command line window create a blockchain with a `World` using [the TypeScript template](/template/typescript/getting-started)) and start the execution.
+   It does not matter which user interface option you choose.
+
+   ```sh copy
+   pnpm create mud@next extendMe
+   cd extendMe
+   pnpm dev
+   ```
+
+1. Back in the extension, create a `.env` file with:
+
+   - `PRIVATE_KEY` - the private key of an account that has ETH on the blockchain.
+   - `WORLD_ADDRESS` - the address of the `World` to which you add the namespace.
+
+   If you are using the template with a fresh `pnpm dev`, then you can use this `.env`:
+
+   ```sh filename=".env" copy
+   # Anvil default private key for the second account:
+   PRIVATE_KEY=0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+
+   # Address for the world we are changing
+   WORLD_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
+   ```
+
+1. Create this script in `script/MessagingExtension.s.sol`.
+
+   ```solidity filename="MessagingExtension.s.sol" copy
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+
+   import { Script } from "forge-std/Script.sol";
+   import { console } from "forge-std/console.sol";
+   import { IBaseWorld } from "@latticexyz/world-modules/src/interfaces/IBaseWorld.sol";
+
+   import { WorldRegistrationSystem } from "@latticexyz/world/src/modules/core/implementations/WorldRegistrationSystem.sol";
+
+   // Create resource identifiers (for the namespace and system)
+   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+   import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+   import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+   // For registering the table
+   import { Messages } from "../src/codegen/index.sol";
+   import { IStore } from "@latticexyz/store/src/IStore.sol";
+
+   // Registering the MessageSystem
+   import { MessageSystem } from "../src/systems/MessageSystem.sol";
+
+   contract MessagingExtension is Script {
+     function run() external {
+       uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+       address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+       WorldRegistrationSystem world = WorldRegistrationSystem(worldAddress);
+       ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("messaging"));
+       ResourceId systemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "message");
+
+       vm.startBroadcast(deployerPrivateKey);
+       world.registerNamespace(namespaceResource);
+       Messages.register(IStore(worldAddress));
+
+       MessageSystem messageSystem = new MessageSystem();
+       console.log("MessageSystem address: ", address(messageSystem));
+
+       world.registerSystem(systemResource, messageSystem, true);
+       world.registerFunctionSelector(systemResource, "incrementMessage(string)");
+
+       vm.stopBroadcast();
+     }
+   }
+   ```
+
+   <details>
+
+   <summary>Explanation</summary>
+
+   ```solidity
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+   ```
+
+   Standard Solidity boilerplate.
+
+   ```solidity
+   import { Script } from "forge-std/Script.sol";
+   import { console } from "forge-std/console.sol";
+   ```
+
+   The definitions for [forge scripts](https://book.getfoundry.sh/reference/forge/forge-script) and [the console](https://book.getfoundry.sh/reference/forge-std/console-log).
+
+   ```solidity
+   import { IBaseWorld } from "@latticexyz/world-modules/src/interfaces/IBaseWorld.sol";
+   ```
+
+   Use [IBaseWorld.sol](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/interfaces/IBaseWorld.sol) to get definitions that are common to all `World` contracts.
+
+   ```solidity
+   import { WorldRegistrationSystem } from "@latticexyz/world/src/modules/core/implementations/WorldRegistrationSystem.sol";
+   ```
+
+   [WorldRegistartionSystem.sol](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol) contains the function definitions necessary to register new namespaces and systems with an existing `World`.
+
+   ```solidity
+   // Create resource identifiers (for the namespace and system)
+   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+   import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+   import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+   ```
+
+   These definitions make it easy to manage resource identifiers.
+   We need them for the resource IDs we need to create: the namespace and the system.
+
+   ```solidity
+   // For registering the table
+   import { Messages } from "../src/codegen/index.sol";
+   import { IStore } from "@latticexyz/store/src/IStore.sol";
+   ```
+
+   These are the definitions we need to register the `Messages` table.
+
+   ```solidity
+   // Registering the MessageSystem
+   import { MessageSystem } from "../src/systems/MessageSystem.sol";
+   ```
+
+   These are the definitions we need to deploy the `MessageSystem` contract so we'll then be able to register it as a `System` in the `World`.
+
+   ```solidity
+   contract MessagingExtension is Script {
+       function run() external {
+   ```
+
+   This is the function that implements the script.
+
+   ```solidity
+           uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+           address worldAddress = vm.envAddress("WORLD_ADDRESS");
+   ```
+
+   Read the private key and the address of the `World` from the environment (which includes the content of the `.env` file).
+
+   ```solidity
+           WorldRegistrationSystem world = WorldRegistrationSystem(worldAddress);
+           ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("messaging"));
+           ResourceId systemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "message");
+   ```
+
+   Among other things, a MUD world is a `WorldRegistrationSystem`, so it has the appropriate functions.
+   A `ResourceId` is a 32 byte value that uniquely identifies a resource in a MUD `World`.
+   It is two bytes of resource type followed by 14 bytes of namespace and then 16 bytes of the name of the actual resource.
+
+   Here we create two `ResourceId` values:
+
+   | Name              | Type             | Namespace | Resource name |
+   | ----------------- | ---------------- | --------- | ------------- |
+   | namespaceResource | `ns` (namespace) | messaging | Empty         |
+   | systemResource    | `sy` (system)    | messaging | message       |
+
+   If you want to see these values, add these two lines to the script:
+
+   ```solidity
+           console.log("Namespace ID: %x", uint256(ResourceId.unwrap(namespaceResource)));
+           console.log("System ID:    %x", uint256(ResourceId.unwrap(systemResource)));
+   ```
+
+   Note that `console.log` requires a `uint256` value, and we can't get that directly from a `ResourceId`.
+   Instead, we have to [unwrap](https://docs.soliditylang.org/en/v0.8.20/types.html#user-defined-value-types) our `ResourceId` to get the original type (`bytes32`) and then [cast](https://docs.soliditylang.org/en/v0.8.20/types.html#explicit-conversions) it to `uint256`.
+
+   The expected values are:
+
+   | Name         | Expected value                                                     |
+   | ------------ | ------------------------------------------------------------------ |
+   | Namespace ID | 0x6e736d6573736167696e67000000000000000000000000000000000000000000 |
+   | System ID    | 0x73796d6573736167696e6700000000006d657373616765000000000000000000 |
+
+   You can use [an online calculator](https://www.duplichecker.com/hex-to-text.php) to verify the values are correct.
+
+   |              Hex value | ASCII       |
+   | ---------------------: | ----------- |
+   | 6e736d6573736167696e67 | nsmessaging |
+   | 73796d6573736167696e67 | symessaging |
+   |         6d657373616765 | message     |
+
+   ```solidity
+           vm.startBroadcast(deployerPrivateKey);
+   ```
+
+   Use the private key to submit transactions.
+
+   ```solidity
+           world.registerNamespace(namespaceResource);
+   ```
+
+   [Register the namespace](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L39-L63).
+
+   ```solidity
+           Messages.register(IStore(worldAddress));
+   ```
+
+   Register the `Messages` table to `worldAddress`.
+   Because table registration is more complicated, and tables are generated by MUD code anyway, the table library includes a `register` function to register them.
+
+   ```solidity
+           MessageSystem messageSystem = new MessageSystem();
+           world.registerSystem(systemResource, messageSystem, true);
+   ```
+
+   Deploy the new system and then register it with the `World` we are extending.
+   The last parameter is whether or not we allow everybody to access this `System`.
+
+   ```solidity
+           world.registerFunctionSelector(systemResource, "incrementMessage(string)");
+   ```
+
+   Register `MessageSystem.incrementMessage(string)`.
+   This step is necessary to make the function accessible through the `World`.
+   The function's name when accessed through the world is `<namespace>_<system>_<function>`, so this function will be available as `messaging_message_incrementMessage(string)`.
+
+   ```solidity
+           vm.stopBroadcast();
+       }
+   }
+   ```
+
+   Stop using the private key.
+   Here this call is not necessary because we immediately leave the script, but it is a good idea to include it in case `MessagingExtension.run()` ever becomes part of a larger script.
+
+   </details>
+
+1. Run the script.
+   Note that you need to provide the URL in the command line, you can't rely on the `ETH_RPC_URL` environment variable.
+
+   ```sh copy
+   forge script script/MessagingExtension.s.sol --rpc-url http://localhost:8545 --broadcast
+   ```
+
+1. Increment and write a message.
+
+   ```sh copy
+   source .env
+   cast send $WORLD_ADDRESS --private-key $PRIVATE_KEY "messaging_message_incrementMessage(string)" "hello"
+   ```
+
+   When a function is _not_ in the root namespace, it is accessible as `<namespace>_<system>_<function name>` (as long as it is [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L164-L201)).
+
+1. You can see in the user interface of `extendMe` that the counter has been incremented.
+   To see the message, use these commands:
+
+   ```sh copy
+   TABLE_ID=0x74626d6573736167696e6700000000004d657373616765730000000000000000
+   FIELD_LAYOUT=0x0000000100000000000000000000000000000000000000000000000000000000
+   KEY=[`cast to-int256 2`]
+   RAW_RESULT=`cast call $WORLD_ADDRESS --private-key $PRIVATE_KEY "getRecord(bytes32,bytes32[],bytes32)" $TABLE_ID $KEY $FIELD_LAYOUT`
+   cast --to-ascii `echo $RAW_RESULT | tail -c 65 | head -c 64`
+   ```
+
+   **EXPLANATION GOES HERE**
+
+   <details>
+
+   <summary>Explanation</summary>
+
+   </details>
