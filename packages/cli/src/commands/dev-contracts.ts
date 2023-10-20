@@ -52,13 +52,15 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
 
     // Watch for changes
     const lastChange$ = new BehaviorSubject<number>(Date.now());
-    chokidar.watch([configPath, srcDir, scriptDir]).on("all", async (_, updatePath) => {
+    chokidar.watch([configPath, srcDir, scriptDir], { ignoreInitial: true }).on("all", async (_, updatePath) => {
       if (updatePath.includes(configPath)) {
+        console.log(chalk.blue("Config changed, queuing deploy…"));
         lastChange$.next(Date.now());
       }
       if (updatePath.includes(srcDir) || updatePath.includes(scriptDir)) {
         // Ignore changes to codegen files to avoid an infinite loop
         if (!updatePath.includes(initialConfig.codegenDirectory)) {
+          console.log(chalk.blue("Contracts changed, queuing deploy…", updatePath));
           lastChange$.next(Date.now());
         }
       }
@@ -71,7 +73,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
       debounceTime(200),
       exhaustMap(async (lastChange) => {
         if (worldAddress) {
-          console.log(chalk.blue("Change detected, rebuilding and running deploy..."));
+          console.log(chalk.blue("Rebuilding and upgrading world…"));
         }
         // TODO: handle errors
         const deploy = await runDeploy({
