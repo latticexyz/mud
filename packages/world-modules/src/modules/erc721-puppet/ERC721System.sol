@@ -3,6 +3,7 @@ pragma solidity >=0.8.21;
 
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { IERC165 } from "@openzeppelin/contracts/interfaces/IERC165.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
@@ -28,7 +29,6 @@ import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApproval
 
 /**
  * TODO:
- * - extend ERC721 to avoid having to redefine all the functions
  * - make `mint` and `burn` public with `requireOwner` check
  * - Fix up ERC721 Module
  * - Add ERC721 tests
@@ -38,9 +38,6 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
   using Strings for uint256;
   using WorldResourceIdInstance for ResourceId;
 
-  /**
-   *
-   */
   function supportsInterface(
     bytes4 interfaceId
   ) public pure virtual override(WorldContextConsumer, IERC165) returns (bool) {
