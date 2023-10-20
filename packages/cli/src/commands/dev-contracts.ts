@@ -76,7 +76,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
         if (worldAddress) {
           console.log(chalk.blue("Rebuilding and upgrading world…"));
         }
-        // TODO: handle errors
+
         try {
           const deploy = await runDeploy({
             ...opts,
