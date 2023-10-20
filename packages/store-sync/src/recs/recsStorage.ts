@@ -9,41 +9,60 @@ import { Hex, size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
-import { ConfigToRecsComponents } from "./common";
-import { StorageAdapter, StorageAdapterBlock } from "../common";
+import { ConfigToRecsComponents, TablesToRecsComponents } from "./common";
+import { StorageAdapter, StorageAdapterBlock, Table } from "../common";
 import { configToRecsComponents } from "./configToRecsComponents";
 import { singletonEntity } from "./singletonEntity";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
+import { tableToRecsComponent } from "./tableToRecsComponent";
 
-export type RecsStorageOptions<TConfig extends StoreConfig = StoreConfig> = {
+export type RecsStorageOptions<
+  config extends StoreConfig,
+  tables extends Record<string, Omit<Table, "address">> | undefined
+> = {
   world: RecsWorld;
-  // TODO: make config optional?
-  config: TConfig;
+  config: config;
+  tables?: tables;
   shouldSkipUpdateStream?: () => boolean;
 };
 
-export type RecsStorageAdapter<TConfig extends StoreConfig = StoreConfig> = {
+export type RecsStorageAdapter<
+  config extends StoreConfig,
+  tables extends Record<string, Omit<Table, "address">> | undefined
+> = {
   storageAdapter: StorageAdapter;
-  components: ConfigToRecsComponents<TConfig> &
+  components: ConfigToRecsComponents<config> &
+    (tables extends Record<string, Omit<Table, "address">>
+      ? ConfigToRecsComponents<config> & TablesToRecsComponents<tables>
+      : ConfigToRecsComponents<config>) &
     ConfigToRecsComponents<typeof storeConfig> &
     ConfigToRecsComponents<typeof worldConfig> &
     ReturnType<typeof defineInternalComponents>;
 };
 
-export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
+export function recsStorage<
+  config extends StoreConfig = StoreConfig,
+  tables extends Record<string, Omit<Table, "address">> | undefined = undefined
+>({
   world,
   config,
+  tables,
   shouldSkipUpdateStream,
-}: RecsStorageOptions<TConfig>): RecsStorageAdapter<TConfig> {
+}: RecsStorageOptions<config, tables>): RecsStorageAdapter<config, tables> {
   world.registerEntity({ id: singletonEntity });
 
   const components = {
     ...configToRecsComponents(world, config),
+    ...(tables
+      ? Object.fromEntries(
+          Object.entries(tables).map(([tableName, table]) => [tableName, tableToRecsComponent(world, table)])
+        )
+      : null),
     ...configToRecsComponents(world, storeConfig),
     ...configToRecsComponents(world, worldConfig),
     ...defineInternalComponents(world),
-  };
+  } as RecsStorageAdapter<config, tables>["components"];
 
   async function recsStorageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);

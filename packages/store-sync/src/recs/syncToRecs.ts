@@ -1,25 +1,36 @@
 import { StoreConfig } from "@latticexyz/store";
 import { Component as RecsComponent, World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
-import { SyncOptions, SyncResult } from "../common";
+import { SyncOptions, SyncResult, Table } from "../common";
 import { RecsStorageAdapter, recsStorage } from "./recsStorage";
 import { createStoreSync } from "../createStoreSync";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
 
-type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
+type SyncToRecsOptions<
+  config extends StoreConfig,
+  tables extends Record<string, Omit<Table, "address">> | undefined
+> = SyncOptions<config> & {
   world: RecsWorld;
-  config: TConfig;
+  config: config;
+  tables?: tables;
   startSync?: boolean;
 };
 
-type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult & {
-  components: RecsStorageAdapter<TConfig>["components"];
+type SyncToRecsResult<
+  config extends StoreConfig,
+  tables extends Record<string, Omit<Table, "address">> | undefined
+> = SyncResult & {
+  components: RecsStorageAdapter<config, tables>["components"];
   stopSync: () => void;
 };
 
-export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
+export async function syncToRecs<
+  config extends StoreConfig,
+  tables extends Record<string, Omit<Table, "address">> | undefined
+>({
   world,
   config,
+  tables,
   address,
   publicClient,
   startBlock,
@@ -27,10 +38,11 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   initialState,
   indexerUrl,
   startSync = true,
-}: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
+}: SyncToRecsOptions<config, tables>): Promise<SyncToRecsResult<config, tables>> {
   const { storageAdapter, components } = recsStorage({
     world,
     config,
+    tables,
     shouldSkipUpdateStream: (): boolean =>
       getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE,
   });

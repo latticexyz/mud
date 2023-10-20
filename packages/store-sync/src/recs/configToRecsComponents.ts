@@ -1,45 +1,34 @@
-import { StoreConfig } from "@latticexyz/store";
-import { SchemaAbiType } from "@latticexyz/schema-type";
+import { StoreConfig, resolveUserTypes } from "@latticexyz/store";
 import { resourceToHex } from "@latticexyz/common";
-import { World, defineComponent, Type } from "@latticexyz/recs";
+import { World } from "@latticexyz/recs";
 import { ConfigToRecsComponents } from "./common";
-import { schemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
+import { tableToRecsComponent } from "./tableToRecsComponent";
+import { KeySchema } from "@latticexyz/protocol-parser";
 
 export function configToRecsComponents<TConfig extends StoreConfig>(
   world: World,
   config: TConfig
 ): ConfigToRecsComponents<TConfig> {
+  const userTypes = {
+    ...config.userTypes,
+    ...Object.fromEntries(Object.entries(config.enums).map(([key]) => [key, { internalType: "uint8" }] as const)),
+  };
+
   return Object.fromEntries(
     Object.entries(config.tables).map(([tableName, table]) => [
       tableName,
-      defineComponent(
-        world,
-        {
-          ...Object.fromEntries(
-            Object.entries(table.valueSchema).map(([fieldName, schemaAbiType]) => [
-              fieldName,
-              schemaAbiTypeToRecsType[schemaAbiType as SchemaAbiType],
-            ])
-          ),
-          __staticData: Type.OptionalString,
-          __encodedLengths: Type.OptionalString,
-          __dynamicData: Type.OptionalString,
-        },
-        {
-          // TODO: support table namespaces https://github.com/latticexyz/mud/issues/994
-          id: resourceToHex({
-            type: table.offchainOnly ? "offchainTable" : "table",
-            namespace: config.namespace,
-            name: tableName,
-          }),
-          metadata: {
-            componentName: tableName,
-            tableName: `${config.namespace}:${tableName}`,
-            keySchema: table.keySchema,
-            valueSchema: table.valueSchema,
-          },
-        }
-      ),
+      tableToRecsComponent(world, {
+        tableId: resourceToHex({
+          type: table.offchainOnly ? "offchainTable" : "table",
+          namespace: config.namespace,
+          name: table.name, // using the parsed config's `table.name` here rather than `tableName` key because that's what's used by codegen
+        }),
+        namespace: config.namespace,
+        name: tableName,
+        // TODO: refine to static ABI types so we don't have to cast
+        keySchema: resolveUserTypes(table.keySchema, userTypes) as KeySchema,
+        valueSchema: resolveUserTypes(table.valueSchema, userTypes),
+      }),
     ])
   ) as ConfigToRecsComponents<TConfig>;
 }
