@@ -3,14 +3,13 @@
 
 pragma solidity >=0.8.21;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
+import { IERC20 } from "./IERC20.sol";
+import { IERC20Errors } from "./IERC20Errors.sol";
 
 /**
  * @dev Extending the ERC20 standard with permissioned mint and burn functions.
  */
-interface IERC20Mintable is IERC20, IERC20Metadata, IERC20Errors {
+interface IERC20Mintable is IERC20, IERC20Errors {
   /**
    * @dev Creates a `value` amount of tokens and assigns them to `account`, by transferring it from address(0).
    *

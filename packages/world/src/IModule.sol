@@ -24,6 +24,7 @@ interface IModule is IERC165 {
   error Module_RootInstallNotSupported();
   error Module_NonRootInstallNotSupported();
   error Module_AlreadyInstalled();
+  error Module_MissingDependency(string dependency);
 
   /**
    * @notice Return the name of the module.

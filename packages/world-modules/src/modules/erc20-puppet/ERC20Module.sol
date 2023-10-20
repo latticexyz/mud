@@ -11,7 +11,6 @@ import { InstalledModules } from "@latticexyz/world/src/codegen/tables/Installed
 import { Puppet } from "../puppet/Puppet.sol";
 import { createPuppet } from "../puppet/createPuppet.sol";
 import { MODULE_NAME as PUPPET_MODULE_NAME } from "../puppet/constants.sol";
-import { PuppetModule } from "../puppet/PuppetModule.sol";
 
 import { MODULE_NAME, MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC20_REGISTRY_TABLE_ID } from "./constants.sol";
 import { _allowancesTableId, _balancesTableId, _metadataTableId, _erc20SystemId } from "./utils.sol";
@@ -42,10 +41,10 @@ contract ERC20Module is Module {
     IBaseWorld(_world()).registerSystem(_erc20SystemId(namespace), new ERC20System(), true);
   }
 
-  function _installDependencies() internal {
+  function _requireDependencies() internal {
     // If the PuppetModule is not installed yet, install it
     if (InstalledModules.get(PUPPET_MODULE_NAME, keccak256(new bytes(0))) == address(0)) {
-      IBaseWorld(_world()).installModule(new PuppetModule(), new bytes(0));
+      revert Module_MissingDependency(string(bytes.concat(PUPPET_MODULE_NAME)));
     }
   }
 
@@ -63,8 +62,8 @@ contract ERC20Module is Module {
       revert ERC20Module_InvalidNamespace(namespace);
     }
 
-    // Install dependencies
-    _installDependencies();
+    // Require dependencies
+    _requireDependencies();
 
     // Register the ERC20 tables and system
     _registerERC20(namespace);
