@@ -18,6 +18,8 @@ jobs:
             target: mud
           - image: ghcr.io/latticexyz/store-indexer
             target: store-indexer
+          - image: ghcr.io/latticexyz/faucet
+            target: faucet
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
