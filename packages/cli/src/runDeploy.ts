@@ -16,6 +16,8 @@ import { getChainId } from "viem/actions";
 import { postDeploy } from "./utils/utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { tablegen } from "@latticexyz/store/codegen";
+import { worldgen } from "@latticexyz/world/node";
+import { getExistingContracts } from "./utils/getExistingContracts";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
@@ -57,10 +59,10 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     )
   );
 
-  // Run forge build
+  // Run build
   if (!opts.skipBuild) {
     const outPath = path.join(srcDir, config.codegenDirectory);
-    await tablegen(config, outPath, remappings);
+    await Promise.all([tablegen(config, outPath, remappings), worldgen(config, getExistingContracts(srcDir), outPath)]);
     await forge(["build"], { profile });
     await execa("mud", ["abi-ts"], { stdio: "inherit" });
   }
