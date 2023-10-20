@@ -9,7 +9,7 @@ import { Puppet } from "./Puppet.sol";
 contract PuppetMaster {
   error PuppetMaster_NoPuppet(address systemAddress, ResourceId systemId);
 
-  function puppet() internal returns (Puppet) {
+  function puppet() internal view returns (Puppet) {
     ResourceId systemId = SystemRegistry.getSystemId(address(this));
     address puppetAddress = PuppetRegistry.get(PUPPET_TABLE_ID, systemId);
     if (puppetAddress == address(0)) revert PuppetMaster_NoPuppet(address(this), systemId);

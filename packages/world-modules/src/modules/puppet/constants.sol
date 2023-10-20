@@ -13,6 +13,10 @@ ResourceId constant PUPPET_DELEGATION = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_SYSTEM, NAMESPACE, bytes16("Delegation")))
 );
 
+ResourceId constant PUPPET_FACTORY = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, NAMESPACE, bytes16("Factory")))
+);
+
 ResourceId constant PUPPET_TABLE_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, NAMESPACE, bytes16("PuppetRegistry")))
 );

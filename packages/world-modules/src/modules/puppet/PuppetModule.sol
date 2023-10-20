@@ -7,8 +7,9 @@ import { Module } from "@latticexyz/world/src/Module.sol";
 import { WorldContextConsumer } from "@latticexyz/world/src/WorldContext.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
+import { PuppetFactorySystem } from "./PuppetFactorySystem.sol";
 import { PuppetDelegationControl } from "./PuppetDelegationControl.sol";
-import { MODULE_NAME, PUPPET_DELEGATION, PUPPET_TABLE_ID } from "./constants.sol";
+import { MODULE_NAME, PUPPET_DELEGATION, PUPPET_FACTORY, PUPPET_TABLE_ID } from "./constants.sol";
 
 import { PuppetRegistry } from "./tables/PuppetRegistry.sol";
 
@@ -17,6 +18,7 @@ import { PuppetRegistry } from "./tables/PuppetRegistry.sol";
  */
 contract PuppetModule is Module {
   PuppetDelegationControl private immutable puppetDelegationControl = new PuppetDelegationControl();
+  PuppetFactorySystem private immutable puppetFactorySystem = new PuppetFactorySystem();
 
   function getName() public pure returns (bytes16) {
     return MODULE_NAME;
@@ -41,7 +43,8 @@ contract PuppetModule is Module {
     // Register table
     PuppetRegistry.register(PUPPET_TABLE_ID);
 
-    // Register system
+    // Register puppet factory and delegation control
+    world.registerSystem(PUPPET_FACTORY, puppetFactorySystem, true);
     world.registerSystem(PUPPET_DELEGATION, puppetDelegationControl, true);
   }
 }

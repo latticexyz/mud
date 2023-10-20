@@ -15,13 +15,4 @@ contract PuppetDelegationControl is DelegationControl {
     address puppet = _msgSender();
     return PuppetRegistry.get(PUPPET_TABLE_ID, systemId) == puppet;
   }
-
-  /**
-   * Initialize a delegation by storing the mapping from systemId to puppet
-   */
-  function initDelegation(ResourceId systemId, address puppet) public {
-    // Require the caller to be the owner of the system
-    AccessControlLib.requireOwner(systemId, _msgSender());
-    PuppetRegistry.set(PUPPET_TABLE_ID, systemId, puppet);
-  }
 }
