@@ -23,7 +23,7 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "start": "tsx bin/server",
+    "start": "tsx bin/faucet-server",
     "test": "tsc --noEmit --skipLibCheck",
     "test:ci": "pnpm run test"
   },
