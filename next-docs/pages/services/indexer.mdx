@@ -1,12 +1,11 @@
-import WarningBox from "../../components/WarningBox";
 
 # Indexer
 
-The MUD Indexer is an off-chain indexer for on-chain applications built with MUD.
+The MUD Indexer is an offchain indexer for onchain applications built with MUD.
 
 ## Why an off-chain indexer?
 
-Reads with on-chain apps can be tricky.
+Reads with onchain apps can be tricky.
 What does it mean to be able to query the Ethereum network?
 Technically, given a node with a fully synced state, we can explore just about everything using the EVM, but the “exploring” would be looking at raw storage slots for accounts corresponding to smart contracts.
 A way around this exists by providing view functions on smart contracts: these effectively are just wrappers around raw storage and expose a more friendly API.
