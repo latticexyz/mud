@@ -94,13 +94,13 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
           if (lastChange < lastChange$.value) {
             lastChange$.next(lastChange$.value);
           } else {
-            console.log(chalk.gray("\nWaiting for file changes...\n"));
+            console.log(chalk.gray("\nWaiting for file changes…\n"));
           }
           return deploy;
         } catch (error) {
           console.error(chalk.bgRed(chalk.whiteBright("\n Error while attempting deploy \n")));
           console.error(error);
-          console.log(chalk.gray("\nWaiting for file changes...\n"));
+          console.log(chalk.gray("\nWaiting for file changes…\n"));
         }
       }),
       filter(isDefined)
