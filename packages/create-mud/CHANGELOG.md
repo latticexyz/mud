@@ -1,5 +1,32 @@
 # Change Log
 
+## 2.0.0-next.12
+
+### Patch Changes
+
+- 7ce82b6f: Store config now defaults `storeArgument: false` for all tables. This means that table libraries, by default, will no longer include the extra functions with the `_store` argument. This default was changed to clear up the confusion around using table libraries in tests, `PostDeploy` scripts, etc.
+
+  If you are sure you need to manually specify a store when interacting with tables, you can still manually toggle it back on with `storeArgument: true` in the table settings of your MUD config.
+
+  If you want to use table libraries in `PostDeploy.s.sol`, you can add the following lines:
+
+  ```diff
+    import { Script } from "forge-std/Script.sol";
+    import { console } from "forge-std/console.sol";
+    import { IWorld } from "../src/codegen/world/IWorld.sol";
+  + import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+    contract PostDeploy is Script {
+      function run(address worldAddress) external {
+  +     StoreSwitch.setStoreAddress(worldAddress);
+  +
+  +     SomeTable.get(someKey);
+  ```
+
+- d844cd44: Sped up builds by using more of forge's cache.
+
+  Previously we'd build only what we needed because we would check in ABIs and other build artifacts into git, but that meant that we'd get a lot of forge cache misses. Now that we no longer need these files visible, we can take advantage of forge's caching and greatly speed up builds, especially incremental ones.
+
 ## 2.0.0-next.11
 
 ### Patch Changes

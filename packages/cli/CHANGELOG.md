@@ -1,5 +1,89 @@
 # Change Log
 
+## 2.0.0-next.12
+
+### Major Changes
+
+- 29c3f508: `deploy`, `test`, `dev-contracts` were overhauled using a declarative deployment approach under the hood. Deploys are now idempotent and re-running them will introspect the world and figure out the minimal changes necessary to bring the world into alignment with its config: adding tables, adding/upgrading systems, changing access control, etc.
+
+  The following CLI arguments are now removed from these commands:
+
+  - `--debug` (you can now adjust CLI output with `DEBUG` environment variable, e.g. `DEBUG=mud:*`)
+  - `--priorityFeeMultiplier` (now calculated automatically)
+  - `--disableTxWait` (everything is now parallelized with smarter nonce management)
+  - `--pollInterval` (we now lean on viem defaults and we don't wait/poll until the very end of the deploy)
+
+  Most deployment-in-progress logs are now behind a [debug](https://github.com/debug-js/debug) flag, which you can enable with a `DEBUG=mud:*` environment variable.
+
+### Minor Changes
+
+- ccc21e91: Added a `--alwaysRunPostDeploy` flag to deploys (`deploy`, `test`, `dev-contracts` commands) to always run `PostDeploy.s.sol` script after each deploy. By default, `PostDeploy.s.sol` is only run once after a new world is deployed.
+
+  This is helpful if you want to continue a deploy that may not have finished (due to an error or otherwise) or to run deploys with an idempotent `PostDeploy.s.sol` script.
+
+- e667ee80: CLI `deploy`, `test`, `dev-contracts` no longer run `forge clean` before each deploy. We previously cleaned to ensure no outdated artifacts were checked into git (ABIs, typechain types, etc.). Now that all artifacts are gitignored, we can let forge use its cache again.
+- e1dc88eb: Transactions sent via deploy will now be retried a few times before giving up. This hopefully helps with large deploys on some chains.
+
+### Patch Changes
+
+- 7ce82b6f: Store config now defaults `storeArgument: false` for all tables. This means that table libraries, by default, will no longer include the extra functions with the `_store` argument. This default was changed to clear up the confusion around using table libraries in tests, `PostDeploy` scripts, etc.
+
+  If you are sure you need to manually specify a store when interacting with tables, you can still manually toggle it back on with `storeArgument: true` in the table settings of your MUD config.
+
+  If you want to use table libraries in `PostDeploy.s.sol`, you can add the following lines:
+
+  ```diff
+    import { Script } from "forge-std/Script.sol";
+    import { console } from "forge-std/console.sol";
+    import { IWorld } from "../src/codegen/world/IWorld.sol";
+  + import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+    contract PostDeploy is Script {
+      function run(address worldAddress) external {
+  +     StoreSwitch.setStoreAddress(worldAddress);
+  +
+  +     SomeTable.get(someKey);
+  ```
+
+- 3bfee32c: `dev-contracts` will no longer bail when there was an issue with deploying (e.g. typo in contracts) and instead wait for file changes before retrying.
+- 4e2a170f: Deploys now continue if they detect a `Module_AlreadyInstalled` revert error.
+- 61c6ab70: Changed deploy order so that system/module contracts are fully deployed before registering/installing them on the world.
+- 69d55ce3: Deploy commands (`deploy`, `dev-contracts`, `test`) now correctly run `worldgen` to generate system interfaces before deploying.
+- 4fe07930: Fixed a few issues with deploys:
+
+  - properly handle enums in MUD config
+  - only deploy each unique module/system once
+  - waits for transactions serially instead of in parallel, to avoid RPC errors
+
+- d844cd44: Sped up builds by using more of forge's cache.
+
+  Previously we'd build only what we needed because we would check in ABIs and other build artifacts into git, but that meant that we'd get a lot of forge cache misses. Now that we no longer need these files visible, we can take advantage of forge's caching and greatly speed up builds, especially incremental ones.
+
+- 25086be5: Replaced temporary `.mudtest` file in favor of `WORLD_ADDRESS` environment variable when running tests with `MudTest` contract
+- d2f8e940: Moved to new resource ID utils.
+- Updated dependencies [7ce82b6f]
+- Updated dependencies [7fa2ca18]
+- Updated dependencies [6ca1874e]
+- Updated dependencies [06605615]
+- Updated dependencies [f62c767e]
+- Updated dependencies [ca329175]
+- Updated dependencies [f62c767e]
+- Updated dependencies [6ca1874e]
+- Updated dependencies [d2f8e940]
+- Updated dependencies [25086be5]
+- Updated dependencies [29c3f508]
+  - @latticexyz/store@2.0.0-next.12
+  - @latticexyz/world-modules@2.0.0-next.12
+  - @latticexyz/world@2.0.0-next.12
+  - @latticexyz/common@2.0.0-next.12
+  - @latticexyz/abi-ts@2.0.0-next.12
+  - @latticexyz/config@2.0.0-next.12
+  - @latticexyz/protocol-parser@2.0.0-next.12
+  - @latticexyz/gas-report@2.0.0-next.12
+  - @latticexyz/schema-type@2.0.0-next.12
+  - @latticexyz/services@2.0.0-next.12
+  - @latticexyz/utils@2.0.0-next.12
+
 ## 2.0.0-next.11
 
 ### Major Changes

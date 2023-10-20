@@ -1,3 +1,201 @@
+## Version 2.0.0-next.12
+
+Release date: Fri Oct 20 2023
+
+### Major changes
+
+**[feat(store): default off storeArgument (#1741)](https://github.com/latticexyz/mud/commit/7ce82b6fc6bbf390ae159fe990d5d4fca5a4b0cb)** (@latticexyz/cli, @latticexyz/store, @latticexyz/world-modules, @latticexyz/world, create-mud)
+
+Store config now defaults `storeArgument: false` for all tables. This means that table libraries, by default, will no longer include the extra functions with the `_store` argument. This default was changed to clear up the confusion around using table libraries in tests, `PostDeploy` scripts, etc.
+
+If you are sure you need to manually specify a store when interacting with tables, you can still manually toggle it back on with `storeArgument: true` in the table settings of your MUD config.
+
+If you want to use table libraries in `PostDeploy.s.sol`, you can add the following lines:
+
+```diff
+  import { Script } from "forge-std/Script.sol";
+  import { console } from "forge-std/console.sol";
+  import { IWorld } from "../src/codegen/world/IWorld.sol";
++ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+  contract PostDeploy is Script {
+    function run(address worldAddress) external {
++     StoreSwitch.setStoreAddress(worldAddress);
++
++     SomeTable.get(someKey);
+```
+
+**[feat(cli): declarative deployment (#1702)](https://github.com/latticexyz/mud/commit/29c3f5087017dbc9dc2c9160e10bfbac5806741f)** (@latticexyz/cli)
+
+`deploy`, `test`, `dev-contracts` were overhauled using a declarative deployment approach under the hood. Deploys are now idempotent and re-running them will introspect the world and figure out the minimal changes necessary to bring the world into alignment with its config: adding tables, adding/upgrading systems, changing access control, etc.
+
+The following CLI arguments are now removed from these commands:
+
+- `--debug` (you can now adjust CLI output with `DEBUG` environment variable, e.g. `DEBUG=mud:*`)
+- `--priorityFeeMultiplier` (now calculated automatically)
+- `--disableTxWait` (everything is now parallelized with smarter nonce management)
+- `--pollInterval` (we now lean on viem defaults and we don't wait/poll until the very end of the deploy)
+
+Most deployment-in-progress logs are now behind a [debug](https://github.com/debug-js/debug) flag, which you can enable with a `DEBUG=mud:*` environment variable.
+
+**[feat(world-modules): only install modules once (#1756)](https://github.com/latticexyz/mud/commit/6ca1874e02161c8feb08b5fafb20b57ce0c8fe72)** (@latticexyz/world-modules)
+
+Modules now revert with `Module_AlreadyInstalled` if attempting to install more than once with the same calldata.
+
+This is a temporary workaround for our deploy pipeline. We'll make these install steps more idempotent in the future.
+
+### Minor changes
+
+**[docs(world): add changeset for system call helpers (#1747)](https://github.com/latticexyz/mud/commit/7fa2ca1831234b54a55c20632d29877e5e711eb7)** (@latticexyz/world)
+
+Added TS helpers for calling systems dynamically via the World.
+
+- `encodeSystemCall` for `world.call`
+
+  ```ts
+  worldContract.write.call(encodeSystemCall({
+    abi: worldContract.abi,
+    systemId: resourceToHex({ ... }),
+    functionName: "registerDelegation",
+    args: [ ... ],
+  }));
+  ```
+
+- `encodeSystemCallFrom` for `world.callFrom`
+
+  ```ts
+  worldContract.write.callFrom(encodeSystemCallFrom({
+    abi: worldContract.abi,
+    from: "0x...",
+    systemId: resourceToHex({ ... }),
+    functionName: "registerDelegation",
+    args: [ ... ],
+  }));
+  ```
+
+- `encodeSystemCalls` for `world.batchCall`
+
+  ```ts
+  worldContract.write.batchCall(encodeSystemCalls(abi, [{
+    systemId: resourceToHex({ ... }),
+    functionName: "registerDelegation",
+    args: [ ... ],
+  }]));
+  ```
+
+- `encodeSystemCallsFrom` for `world.batchCallFrom`
+  ```ts
+  worldContract.write.batchCallFrom(encodeSystemCallsFrom(abi, "0x...", [{
+    systemId: resourceToHex({ ... }),
+    functionName: "registerDelegation",
+    args: [ ... ],
+  }]));
+  ```
+
+**[feat(world-modules): only install modules once (#1756)](https://github.com/latticexyz/mud/commit/6ca1874e02161c8feb08b5fafb20b57ce0c8fe72)** (@latticexyz/world)
+
+Added a `Module_AlreadyInstalled` error to `IModule`.
+
+**[feat(common): add sendTransaction, add mempool queue to nonce manager (#1717)](https://github.com/latticexyz/mud/commit/0660561545910b03f8358e5ed7698f74e64f955b)** (@latticexyz/common)
+
+- Added a `sendTransaction` helper to mirror viem's `sendTransaction`, but with our nonce manager
+- Added an internal mempool queue to `sendTransaction` and `writeContract` for better nonce handling
+- Defaults block tag to `pending` for transaction simulation and transaction count (when initializing the nonce manager)
+
+**[feat(cli): add `--alwaysPostDeploy` flag to deploys (#1765)](https://github.com/latticexyz/mud/commit/ccc21e91387cb09de9dc56729983776eb9bcdcc4)** (@latticexyz/cli)
+
+Added a `--alwaysRunPostDeploy` flag to deploys (`deploy`, `test`, `dev-contracts` commands) to always run `PostDeploy.s.sol` script after each deploy. By default, `PostDeploy.s.sol` is only run once after a new world is deployed.
+
+This is helpful if you want to continue a deploy that may not have finished (due to an error or otherwise) or to run deploys with an idempotent `PostDeploy.s.sol` script.
+
+**[feat(abi-ts): move logs to debug (#1736)](https://github.com/latticexyz/mud/commit/ca32917519eb9065829f11af105abbbb31d6efa2)** (@latticexyz/abi-ts)
+
+Moves log output behind a debug flag. You can enable logging with `DEBUG=abi-ts` environment variable.
+
+**[feat(cli): remove forge clean from deploy (#1759)](https://github.com/latticexyz/mud/commit/e667ee808b5362ff215ba3faea028b526660eccb)** (@latticexyz/cli)
+
+CLI `deploy`, `test`, `dev-contracts` no longer run `forge clean` before each deploy. We previously cleaned to ensure no outdated artifacts were checked into git (ABIs, typechain types, etc.). Now that all artifacts are gitignored, we can let forge use its cache again.
+
+**[feat(common): clarify resourceId (hex) from resource (object) (#1706)](https://github.com/latticexyz/mud/commit/d2f8e940048e56d9be204bf5b2cbcf8d29cc1dee)** (@latticexyz/common)
+
+Renames `resourceIdToHex` to `resourceToHex` and `hexToResourceId` to `hexToResource`, to better distinguish between a resource ID (hex value) and a resource reference (type, namespace, name).
+
+```diff
+- resourceIdToHex({ type: 'table', namespace: '', name: 'Position' });
++ resourceToHex({ type: 'table', namespace: '', name: 'Position' });
+```
+
+```diff
+- hexToResourceId('0x...');
++ hexToResource('0x...');
+```
+
+Previous methods still exist but are now deprecated to ease migration and reduce breaking changes. These will be removed in a future version.
+
+Also removes the previously deprecated and unused table ID utils (replaced by these resource ID utils).
+
+**[feat(cli): remove .mudtest file in favor of env var (#1722)](https://github.com/latticexyz/mud/commit/25086be5f34d7289f21395595ac8a6aeabfe9b7c)** (@latticexyz/cli, @latticexyz/common, @latticexyz/world)
+
+Replaced temporary `.mudtest` file in favor of `WORLD_ADDRESS` environment variable when running tests with `MudTest` contract
+
+**[feat(faucet,store-indexer): add k8s healthcheck endpoints (#1739)](https://github.com/latticexyz/mud/commit/1d0f7e22b7fb8f6295b149a6584933a3a657ec08)** (@latticexyz/faucet, @latticexyz/store-indexer)
+
+Added `/healthz` and `/readyz` healthcheck endpoints for Kubernetes
+
+**[feat(cli): add retries to deploy (#1766)](https://github.com/latticexyz/mud/commit/e1dc88ebe7f66e4ece13805643e932e038863b6e)** (@latticexyz/cli)
+
+Transactions sent via deploy will now be retried a few times before giving up. This hopefully helps with large deploys on some chains.
+
+### Patch changes
+
+**[fix(cli): don't bail dev-contracts during deploy failure (#1808)](https://github.com/latticexyz/mud/commit/3bfee32cf4d036a73b35f059e0159f1b7a7088e9)** (@latticexyz/cli)
+
+`dev-contracts` will no longer bail when there was an issue with deploying (e.g. typo in contracts) and instead wait for file changes before retrying.
+
+**[feat(store): parallelize table codegen (#1754)](https://github.com/latticexyz/mud/commit/f62c767e7ff3bda807c592d85227221a00dd9353)** (@latticexyz/store)
+
+Parallelized table codegen. Also put logs behind debug flag, which can be enabled using the `DEBUG=mud:*` environment variable.
+
+**[fix(cli): handle module already installed (#1769)](https://github.com/latticexyz/mud/commit/4e2a170f9185a03c2c504912e3d738f06b45137b)** (@latticexyz/cli)
+
+Deploys now continue if they detect a `Module_AlreadyInstalled` revert error.
+
+**[fix(cli): deploy systems/modules before registering/installing them (#1767)](https://github.com/latticexyz/mud/commit/61c6ab70555dc29e8e9428212ee710d7af681cc9)** (@latticexyz/cli)
+
+Changed deploy order so that system/module contracts are fully deployed before registering/installing them on the world.
+
+**[fix(cli): run worldgen with deploy (#1807)](https://github.com/latticexyz/mud/commit/69d55ce3265e10a1ae62ddca9e32e34f1cd52dea)** (@latticexyz/cli)
+
+Deploy commands (`deploy`, `dev-contracts`, `test`) now correctly run `worldgen` to generate system interfaces before deploying.
+
+**[feat(store): parallelize table codegen (#1754)](https://github.com/latticexyz/mud/commit/f62c767e7ff3bda807c592d85227221a00dd9353)** (@latticexyz/common)
+
+Moved some codegen to use `fs/promises` for better parallelism.
+
+**[fix(cli): support enums in deploy, only deploy modules/systems once (#1749)](https://github.com/latticexyz/mud/commit/4fe079309fae04ffd2e611311937906f65bf91e6)** (@latticexyz/cli)
+
+Fixed a few issues with deploys:
+
+- properly handle enums in MUD config
+- only deploy each unique module/system once
+- waits for transactions serially instead of in parallel, to avoid RPC errors
+
+**[feat(cli,create-mud): use forge cache (#1777)](https://github.com/latticexyz/mud/commit/d844cd441c40264ddc90d023e4354adea617febd)** (@latticexyz/cli, create-mud)
+
+Sped up builds by using more of forge's cache.
+
+Previously we'd build only what we needed because we would check in ABIs and other build artifacts into git, but that meant that we'd get a lot of forge cache misses. Now that we no longer need these files visible, we can take advantage of forge's caching and greatly speed up builds, especially incremental ones.
+
+**[feat(cli): declarative deployment (#1702)](https://github.com/latticexyz/mud/commit/29c3f5087017dbc9dc2c9160e10bfbac5806741f)** (@latticexyz/world)
+
+With [resource types in resource IDs](https://github.com/latticexyz/mud/pull/1544), the World config no longer requires table and system names to be unique.
+
+**[feat(common): clarify resourceId (hex) from resource (object) (#1706)](https://github.com/latticexyz/mud/commit/d2f8e940048e56d9be204bf5b2cbcf8d29cc1dee)** (@latticexyz/cli, @latticexyz/dev-tools, @latticexyz/store-sync)
+
+Moved to new resource ID utils.
+
+---
+
 ## Version 2.0.0-next.11
 
 ### Major changes
