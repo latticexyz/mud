@@ -13,6 +13,8 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
+import { PuppetModule } from "../src/modules/puppet/PuppetModule.sol";
+
 import { ERC20Module } from "../src/modules/erc20-puppet/ERC20Module.sol";
 import { MetadataData } from "../src/modules/erc20-puppet/tables/Metadata.sol";
 import { ERC20Registry } from "../src/modules/erc20-puppet/tables/ERC20Registry.sol";
@@ -31,6 +33,7 @@ contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
+    world.installModule(new PuppetModule(), new bytes(0));
     StoreSwitch.setStoreAddress(address(world));
 
     // Register a new ERC20 token

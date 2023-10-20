@@ -41,7 +41,7 @@ contract ERC20Module is Module {
     IBaseWorld(_world()).registerSystem(_erc20SystemId(namespace), new ERC20System(), true);
   }
 
-  function _requireDependencies() internal {
+  function _requireDependencies() internal view {
     // If the PuppetModule is not installed yet, install it
     if (InstalledModules.get(PUPPET_MODULE_NAME, keccak256(new bytes(0))) == address(0)) {
       revert Module_MissingDependency(string(bytes.concat(PUPPET_MODULE_NAME)));
