@@ -1,9 +1,8 @@
-
 # Indexer
 
 The MUD Indexer is an offchain indexer for onchain applications built with MUD.
 
-## Why an off-chain indexer?
+## Why an offchain indexer?
 
 Reads with onchain apps can be tricky.
 What does it mean to be able to query the Ethereum network?
@@ -11,9 +10,11 @@ Technically, given a node with a fully synced state, we can explore just about e
 A way around this exists by providing view functions on smart contracts: these effectively are just wrappers around raw storage and expose a more friendly API.
 Instead of having to figure out where the balances for an account are stored in the storage tree, we now can call a function that does the lookup via Solidity via an RPC endpoint.
 
-The issue with view functions is that complexity in having to generate and call these to get the “full picture” of the state from the chain explodes pretty quickly.
-For a web app client wanting to present the user with an up-to-date view of the on-chain state, the task of calling the different view functions becomes unnecessarily hard very fast.
-This can also quickly accelerate the need to run a set of dedicated nodes just to be able to service the needed number of RPC requests.
+The issue with view functions is that for any sophisticated application the calls needed to get the “full picture” of the state from the chain are very complex.
+Servicing so many view function calls also creates the need to run a set of dedicated nodes instead of relying on a third-party provider's free tier.
+
+The MUD indexer solves this problem by listening to the MUD store events to automatically replicate the entire onchain state in a relational database.
+Having such a database allows clients to quickly and efficiently query the onchain data.
 
 ## Installation
 
@@ -164,4 +165,24 @@ To verify that the indexer runs correctly ensure you have [`jq`](https://jqlang.
 curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
 ```
 
+The result should be nicely formatted (and long) JSON output with all the data stored in the `World`.
+
 ## Resetting the database
+
+When you restart the blockchain you _have_ to reset the database, otherwise you'll get a mix of old and new information.
+Here are the directions how to do it.
+
+### SQLite
+
+Delete the database file (by default `anvil.db`).
+
+### PostgreSQL
+
+Run `psql` and run this command:
+
+```sql
+DROP OWNED BY <see below>;
+```
+
+- If you are running the indexer locally, the owner of the tablespaces is your user name.
+- If you are using Docker, the owner of the tablespaces is `root`.
