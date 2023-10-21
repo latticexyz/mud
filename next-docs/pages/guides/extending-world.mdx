@@ -489,8 +489,6 @@ The easiest way to create the Solidity code is to use the MUD template:
 
    Based on the above we don't need the first 322 characters of `$RAW_RESULT`.
    The first two characters are the `0x` that tells us this is a hexadecimal number.
-   The next 320 characters are words 0-4, which are not the actual message (each word is 32 bytes, which is 64 hexadecimal digits). We also don't need the trailing newline. `${RAW_RESULT : 322 : -2}` removes those characters so we can use [`cast`]() to get the ASCII.
-
-   So we cut the first 322 characters with `tail -c +322` and then we cut the trailing newline with
+   The next 320 characters are words 0-4, which are not the actual message (each word is 32 bytes, which is 64 hexadecimal digits). We also don't need the trailing newline. `${RAW_RESULT:322:-2}` removes those characters so we can use [`cast`](https://book.getfoundry.sh/reference/cast/cast-to-ascii) to get the ASCII.
 
    </details>
