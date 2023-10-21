@@ -189,6 +189,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    // For registering the table
    import { Messages, MessagesTableId } from "../src/codegen/index.sol";
    import { IStore } from "@latticexyz/store/src/IStore.sol";
+   import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
    // For deploying MessageSystem
    import { MessageSystem } from "../src/systems/MessageSystem.sol";
@@ -205,14 +206,8 @@ The easiest way to create the Solidity code is to use the MUD template:
        vm.startBroadcast(deployerPrivateKey);
        world.registerNamespace(namespaceResource);
 
-       IStore(worldAddress).registerTable(
-         MessagesTableId,
-         Messages.getFieldLayout(),
-         Messages.getKeySchema(),
-         Messages.getValueSchema(),
-         Messages.getKeyNames(),
-         Messages.getFieldNames()
-       );
+       StoreSwitch.setStoreAddress(worldAddress);
+       Messages.register();
 
        MessageSystem messageSystem = new MessageSystem();
        console.log("MessageSystem address: ", address(messageSystem));
@@ -269,6 +264,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    // For registering the table
    import { Messages, MessagesTableId } from "../src/codegen/index.sol";
    import { IStore } from "@latticexyz/store/src/IStore.sol";
+   import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
    ```
 
    These are the definitions we need to register the `Messages` table.
@@ -349,14 +345,8 @@ The easiest way to create the Solidity code is to use the MUD template:
    [Register the namespace](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L39-L63).
 
    ```solidity
-           IStore(worldAddress).registerTable(
-              MessagesTableId,
-              Messages.getFieldLayout(),
-              Messages.getKeySchema(),
-              Messages.getValueSchema(),
-              Messages.getKeyNames(),
-              Messages.getFieldNames()
-           );
+           StoreSwitch.setStoreAddress(worldAddress);
+           Messages.register();
    ```
 
    Register the `Messages` table to `worldAddress`.
