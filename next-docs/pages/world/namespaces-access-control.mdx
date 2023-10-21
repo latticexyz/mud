@@ -1,1 +1,31 @@
 # Namespaces and Access Control
+
+- Access control is based on namespaces
+- Every resource (e.g. systems, tables) in the world has an ID.
+- The first two bytes represent the type of resource (e.g. system, table, etc.)
+- The next 14 bytes represent the namespace
+- The last 16 bytes represent the name of the resource
+- Anyone can register a new namespace in the World, which makes them the owner of the namespace
+- The owner of a namespace can register new resources in that namespace and grant access to other actors
+- Access can be granted to a specific resource or all resources in a namespace
+- Systems registered in a namespace are automatically given access to all resources in that namespace
+- Ownership of namespaces can be transferred.
+- If ownership is transferred to the 0 address, it's considered burned. After this happens, no new resources can be registered in the namespace, access can't be changed, and ownership can't be transferred again.
+
+Things only the owner of a namespace can do:
+
+- Register new tables
+- Register new systems
+- Upgrade existing systems
+- Manage access
+- Transfer ownership
+- Register a namespace delegation control
+- Register system hooks for systems in the namespace
+- Register store hooks for tables in the namespace
+- Register function selectors for systems in the namespace
+
+Things accounts with access to a namespace can do:
+
+- Write to tables in the namespace
+- Call private systems in the namespace
+- Access the balance of the namespace (if this is not intended, grant access to individual resources instead of the whole namespace)

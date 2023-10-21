@@ -1,1 +1,6 @@
 # Balance
+
+- Ether sent as part of a system call is not forwarded to the system contract, but stored in the World contract and credited to the system namespace's balance
+- All accounts with access to the namespace can manage the namespace's balance (e.g. by sending it to other namespaces or accounts)
+- The purpose of this is to allow sharing of balance between multiple systems in a namespace
+- The `msg.value` value of the system call is accessible via `_msgValue()` in the system contract

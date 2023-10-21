@@ -1,1 +1,10 @@
 # Introduction
+
+- Store adds low level primitve for storage
+- World adds primitves for logic and access control on top
+- World is a multi-facet proxy (not unlike Diamond) that separates state and logic
+- State is managed in tables (via Store), logic lives in Systems
+- Systems are contracts that are registered in the World, and don't contain own storage, but read and write storage via the World
+- The World is the central entry point
+- Unlike existing multi-facet proxy patterns, World allows multiple parties to register Systems and tables in the same World. This is made possible via the granular access control layer and storage fencing.
+- You can think of World as the kernel of an operating system, managing access to different areas of the storage, routing calls to the right implementation systems, and providing useful tools like hooks, modules, etc.

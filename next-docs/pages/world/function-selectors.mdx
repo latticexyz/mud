@@ -1,1 +1,9 @@
 # Function selectors
+
+- Systems can be called via `call` and `callFrom` with their ID, but for convenience, it's also possible to register function selectors in the World that point to function selectors in the system
+- This makes it possible to create an ABI for the World that allows calling the system directly on the World contract.
+- Function selectors always point to a system ID and a function selector in that system. This means when the system is upgraded, the World function selector automatically points to the new system.
+
+- There are two ways to register function selectors: via `registerFunctionSelector` and via `registerRootFunctionSelector`.
+- `registerRootFunctionSelector` can only be registered by the root namespace owner. `registerRootFunctionSelector` allows an arbitrary function selector to be created for the system function selector.
+- `registerFunctionSelector` can be called by the owner of the respective namespace. Function selectors registered via `registerFunctionSelector` are not arbitrary but follow the following pattern: `<namespace>_<systemName>_<systemFunctionSignature>`. For example, a function selector for the `transfer` function in the `ERC20` system in the `token` namespace would be `token_ERC20_transfer(address,uint256)`.

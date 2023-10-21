@@ -1,1 +1,6 @@
 # Tables
+
+- Tables in a World are the same as Tables in a Store (see Store docs), but with access control.
+- The World is the Store contract that stores all the data.
+- Systems write to storage either internally (StoreCore) or externally (IStore). StoreSwitch in the Table libraries figures out which one to use (depending on whether the system is a root system or not)
+- External writes go through access control (see access control for details)

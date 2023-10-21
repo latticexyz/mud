@@ -1,1 +1,13 @@
 # Modules
+
+- Modules encapsulate a set of resources and their associated configuration and can be installed in different Worlds.
+- They can be thought of as onchain installation scripts (similar to a foundry script, but deployed onchain so it can be verified and installed into different Worlds without having to redeploy the bytecode)
+- Modules can be installed into a World by calling `World.installModule(address moduleAddress, bytes memory initData)` or `World.installRootModule(address moduleAddress, bytes memory initData)`.
+- The difference between the two methods is that `installRootModule` requires the caller to own the root namespace, and the module's `installRoot` method will be `delegatecall`ed, giving the module deeper access to the World. `installModule` is more restrictive and will only `call` the module's `install` method, so the Module doesn't have any privileged access to the World.
+- Examples for modules:
+  - KeysInTable (automatically tracks the keys in a table to make them enumerable)
+  - KeysWithValue (automatically tracks a reverse mapping for a table that maps a value hash to a list of keys with this value)
+  - Puppet (installs the PuppetDelegationControl to allow creating Puppet contracts, eg used by the ERC20 and ERC721 modules)
+  - ERC20 (installs an ERC20 token into a namespace in a World)
+  - ERC721 (installs an ERC721 token into a namespace in a World)
+  - UniqueEntity (add methods to get a unique entity ID)

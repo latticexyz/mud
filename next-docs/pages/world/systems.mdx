@@ -1,1 +1,39 @@
 # Systems
+
+- Systems contain the business logic of a World.
+- They are registered in a World with an ID and are called via the World (either via `call` or `callFrom`, or optionally via a function selector registered for them)
+- The World serves as the central entry point and forwards the calls to the Systems. While doing so, it passes the original `msg.sender` and the original `msg.value` as context to the System. (Note the value is not actually forwarded, but stored in the System's namespace in the World).
+- The `msg.sender` and `msg.value` can be accessed via `_msgSender()` and `_msgValue()` in the System.
+- They should not hold any state, but read and write all state via Tables (via the World)
+- This is important because systems can be deployed once and be registered in different Worlds.
+- They figure out which World to read/write from/to based on their caller (since the World forwards the call to them)
+- Note that a system can only be registered in a World once (but it can be registered in multiple Worlds). This is to guarantee a one-to-one mapping between system address and system ID in the World.
+
+- Systems can be upgraded by the namespace owner.
+- Upgrading a system is done by deploying a new system and registering it with the same ID as the old system.
+- The old system loses access to the namespace and the new system is granted access to the namespace.
+- Note that access that was manually granted to the old system's address is not automatically upgraded to the new system's address
+- Since systems don't contain own state, there is no risk of storage overrides if the new system implementation uses different tables than the old system implementation, which makes the upgrade process very simple.
+
+### Root systems vs non-root systems
+
+- Root systems are systems registered in the root namespace (`bytes14(0)`)
+- The difference between root systems and non-root systems is that root systems are `delegatecall`ed by the World, while non-root systems are `call`ed by the World.
+- Since root systems are `delegatecall`ed, they can access the World's storage directly (via the internal `StoreCore` methods), instead of going through the external access controlled `IStore` methods
+- This also means that root systems can modify all tables, independent of their access control settings
+- The table libraries abstract this away, so that the same code can be used for root and non-root systems
+- As with other namespaces, only the owner of the root namespace can register systems in the root namespace
+- Because of this privilidged role, the root namespace should be used sparingly.
+
+  ### Private systems
+
+- Systems can be registered as private or public systems.
+- If they are registered as public systems, no access control checks are performed and anyone can call them via the World
+- If they are registered as private systems, the same access control checks are performed as for Tables (see access control)
+
+### Calling systems from other systems
+
+- Either via an external call (via the World, either `call`, or `callFrom`, or a function selector) or via an internal `delegatecall` directly to the system contract
+- If `delegatecall` is used, the called system inherits all the context of the calling system, including its access rights. It's recommended to use `WorldContextProvider` in this case to pass the `msg.sender` and `msg,value` to the called system.
+- Note: As a security measure, the World is not allowed to call itself via an external call. This has the effect that root systems (which inherit the world context) can't call other systems via an external call, but they can call other systems via an internal `delegatecall` (ie using WorldContextProvider as mentioned above). This limitation does not apply to non-root systems.
+- Note: if calling a system via an external call via the World, the `msg.sender` will be the calling system, not the original caller. To avoid this, a `delegatecall` via `WorldContextProvider` can be used. (Note again that in this case the access control rights of the calling systems apply, not those of the called system). Alternatively an external call via `callFrom` is possible, but requires approval from the original caller.

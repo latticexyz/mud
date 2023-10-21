@@ -1,1 +1,15 @@
 # Account delegation
+
+- Account delegation allows accounts to delegate the right to call systems in the world to other accounts.
+- The delegator must first register a delegation via `registerDelegation`.
+- The delegatee can then call the system on behalf of the delegator via `callFrom`.
+- As part of registering a delegation, the delegator can specify the type of delegation:
+
+  - `UNLIMITED_DELEGATION` means the delegatee can call any system on behalf of the delegator without restriction, until the relegator removes the delegation.
+  - Alternatively, a `ResourceId` of a system implementing the `DelegationControl` interface can be passed. This system is then called to verify the call in `callFrom` before it is routed to the system. The `DelegationControl` contract can implement arbitrary logic to limit the types of calls that can be made on behalf of the delegator. As an example, the `std-delegations` module implements two types of limited delegations: `TimeboundDelegation` and `CallboundDelegation`.
+
+- Accounts (delegator) can register delegations for individual accounts (delegatee), or for all callers (by providing `address(0)` as the delegatee address). Note that a fallback delegation (for `address(0)`) should only be used in combination with a limited delegation (otherwise the delegator would simply allow anyone to call any method on their behalf)
+
+- Namespace owners can register a delegation control for the entire namespace.
+- This can be useful to implement things like a "trusted forwarder" for the namespace, without requiring every user to register a delegation for the forwarder.
+- Note that this is not a security concern, as the namespace owner can already do anything they want with the namespace, but only the namespace.
