@@ -33,9 +33,7 @@ export type RecsStorageAdapter<
 > = {
   storageAdapter: StorageAdapter;
   components: ConfigToRecsComponents<config> &
-    (tables extends Record<string, Omit<Table, "address">>
-      ? ConfigToRecsComponents<config> & TablesToRecsComponents<tables>
-      : ConfigToRecsComponents<config>) &
+    (tables extends Record<string, Omit<Table, "address">> ? TablesToRecsComponents<tables> : object) &
     ConfigToRecsComponents<typeof storeConfig> &
     ConfigToRecsComponents<typeof worldConfig> &
     ReturnType<typeof defineInternalComponents>;
