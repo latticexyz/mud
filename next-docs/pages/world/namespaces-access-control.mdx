@@ -13,6 +13,10 @@
 - If ownership is transferred to the 0 address, it's considered burned. 
   After this happens, no new resources can be registered in the namespace, access can't be changed, and ownership can't be transferred again. 
   Note that if you want to prove that the app is truly decentralized and nobody can modify the data, you need to revoke all access before you transfer the ownership.
+- Owners are automatically granted access, which is revoked when ownership is transferred. 
+  For the old owner to keep access, the new owner needs to regrant it.
+  Note that this is for access to the entire namespace.
+  Permissions for specific objects in the namespace are maintained.
 
 Things only the owner of a namespace can do:
 
