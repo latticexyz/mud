@@ -42,7 +42,7 @@ export type ConfigToTables<config extends StoreConfig> = {
     tableId: Hex;
     namespace: config["namespace"];
     name: tableName;
-    keySchema: config["tables"][tableName]["keySchema"] & KeySchema;
-    valueSchema: config["tables"][tableName]["valueSchema"] & ValueSchema;
+    keySchema: config["tables"][tableName]["keySchema"];
+    valueSchema: config["tables"][tableName]["valueSchema"];
   };
 };

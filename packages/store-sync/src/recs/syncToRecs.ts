@@ -15,9 +15,10 @@ type SyncToRecsOptions<config extends StoreConfig, tables extends TablesInput | 
   startSync?: boolean;
 };
 
-type SyncToRecsResult<config extends StoreConfig, tables extends TablesInput | undefined> = SyncResult & {
+type SyncToRecsResult<config extends StoreConfig, extraTables extends TablesInput | undefined> = SyncResult & {
   components: RecsStorageAdapter<
-    tables extends TablesInput ? ConfigToTables<config> & tables : ConfigToTables<config>
+    (ConfigToTables<config> extends TablesInput ? ConfigToTables<config> : Record<string, any>) &
+      (extraTables extends TablesInput ? extraTables : Record<string, any>)
   >["components"];
   stopSync: () => void;
 };
