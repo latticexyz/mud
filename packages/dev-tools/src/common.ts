@@ -5,8 +5,8 @@ import { StorageAdapterBlock } from "@latticexyz/store-sync";
 import { ContractWrite } from "@latticexyz/common";
 import { World as RecsWorld } from "@latticexyz/recs";
 
-export type DevToolsOptions<TConfig extends StoreConfig = StoreConfig> = {
-  config: TConfig;
+export type DevToolsOptions = {
+  config: StoreConfig;
   publicClient: PublicClient<Transport, Chain>;
   walletClient: WalletClient<Transport, Chain>;
   latestBlock$: Observable<Block>;

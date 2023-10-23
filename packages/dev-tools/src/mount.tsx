@@ -1,12 +1,9 @@
-import type { StoreConfig } from "@latticexyz/store";
 import type { DevToolsOptions } from "./common";
 
 const containerId = "mud-dev-tools";
 
 // TODO: rework to always return a unmount function (not a promise or possibly undefined)
-export async function mount<TConfig extends StoreConfig>(
-  opts: DevToolsOptions<TConfig>
-): Promise<(() => void) | undefined> {
+export async function mount(opts: DevToolsOptions): Promise<(() => void) | undefined> {
   if (typeof window === "undefined") {
     console.warn("MUD dev-tools should only be used in browser bundles");
     return;
