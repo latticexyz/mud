@@ -1,1 +1,15 @@
 # Balance
+
+ETH is stored in the `World` contract and owned by namespaces.
+Any ETH sent with a call to a `System` is kept on the `World`, and credited to the namescape to which the `System` belongs.
+This has two important effects:
+
+- The ETH balance is shared between the different `System` contracts in the same namespace of the same `World`.
+- The same `System` can be used in multiple `World` contracts, and in multiple namespaces in the same `World`, and the ETH balances remain separate.
+
+To know how much ETH a call has included a `System` can check [`_msgValue()`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L34-L36).
+
+To know how much ETH a specific namespace has you can look in `world:Balances` (the `Balances` table of the `world` namespace).
+
+To transfer ETH out of the `World` you need to have the `access` permission level to the namespace itself.
+Note that `System` contracts within the namespace do have that permission.
