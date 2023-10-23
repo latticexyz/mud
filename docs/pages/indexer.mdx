@@ -54,7 +54,7 @@ They are written under the assumption you are using `anvil` for your test chain,
 1. Run this command (in a separate command line window) as a sanity check to verify the indexer is working correctly:
 
    ```sh copy
-   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x0x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' | jq
+   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' | jq
    ```
 
    The result should be nicely formatted (and long) JSON output.
@@ -195,8 +195,8 @@ Block number: 2042
 Tables: schema,Hooks,StoreMetadata,NamespaceOwner,InstalledModules,ResourceAccess,Systems,FunctionSelector,SystemHooks,SystemRegistry,ResourceType,Counter
 Information about Counter
 {
-  id: '0x0x6e9474e9c83676b9a71133ff96db43e7aa0a4342____Counter',
-  address: '0x0x6e9474e9c83676b9a71133ff96db43e7aa0a4342',
+  id: '0x6e9474e9c83676b9a71133ff96db43e7aa0a4342____Counter',
+  address: '0x6e9474e9c83676b9a71133ff96db43e7aa0a4342',
   tableId: '0x00000000000000000000000000000000436f756e746572000000000000000000',
   namespace: '',
   name: 'Counter',
@@ -223,7 +223,7 @@ If the indexer is elsewhere, modify the URL as appropriate.
 ```ts
 const result = await indexer.findAll.query({
   chainId: 31337,
-  address: "0x0x6e9474e9c83676b9a71133ff96db43e7aa0a4342",
+  address: "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342",
 });
 ```
 
@@ -322,7 +322,7 @@ For queries, the indexer expects to get two parameters in a [query string](https
     "0": {
       "json": {
         "chainId": 31337,
-        "address": "0x0x6e9474e9c83676b9a71133ff96db43e7aa0a4342"
+        "address": "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342"
       }
     }
   }
@@ -343,7 +343,7 @@ To understand the result, it is easiest to look at it inside Node.
 1. Read the result and enter `node`:
 
    ```sh copy
-   curl 'http://localhost:3001/findAll?batch=wd&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x0x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' > res.json
+   curl 'http://localhost:3001/findAll?batch=wd&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' > res.json
    node
    ```
 
@@ -492,13 +492,13 @@ If you are indexing a different `World`, change the world address and use the na
    Get the list of tables for a specific world.
 
    ```sql copy
-   \dt "0x0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__".*
+   \dt "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__".*
    ```
 
 1. Specify the world schema is the default.
 
    ```sql copy
-   SET search_path TO "0x0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__";
+   SET search_path TO "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__";
    ```
 
 1. Get the value of the counter.
