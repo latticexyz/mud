@@ -1,9 +1,8 @@
 import { World } from "@latticexyz/recs";
-import { Table } from "../common";
-import { TablesToRecsComponents } from "./common";
+import { TablesInput, TablesToRecsComponents } from "./common";
 import { tableToRecsComponent } from "./tableToRecsComponent";
 
-export function tablesToRecsComponents<tables extends Record<string, Omit<Table, "address">>>(
+export function tablesToRecsComponents<tables extends TablesInput>(
   world: World,
   tables: tables
 ): TablesToRecsComponents<tables> {

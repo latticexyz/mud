@@ -6,6 +6,9 @@ import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 import { Table } from "../common";
 import { Hex } from "viem";
 
+export type TableInput = Omit<Table, "address">;
+export type TablesInput = Record<string, TableInput>;
+
 export type StoreComponentMetadata = RecsMetadata & {
   componentName: string;
   tableName: string;
@@ -13,7 +16,7 @@ export type StoreComponentMetadata = RecsMetadata & {
   valueSchema: ValueSchema;
 };
 
-export type TableToRecsComponent<table extends Omit<Table, "address">> = RecsComponent<
+export type TableToRecsComponent<table extends TableInput> = RecsComponent<
   {
     __staticData: RecsType.OptionalString;
     __encodedLengths: RecsType.OptionalString;
@@ -30,16 +33,16 @@ export type TableToRecsComponent<table extends Omit<Table, "address">> = RecsCom
   }
 >;
 
-export type TablesToRecsComponents<tables extends Record<string, Omit<Table, "address">>> = {
+export type TablesToRecsComponents<tables extends TablesInput> = {
   [tableName in keyof tables]: TableToRecsComponent<tables[tableName]>;
 };
 
-export type ConfigToRecsComponents<config extends StoreConfig> = {
-  [tableName in keyof config["tables"] & string]: TableToRecsComponent<{
+export type ConfigToTables<config extends StoreConfig> = {
+  [tableName in keyof config["tables"] & string]: {
     tableId: Hex;
     namespace: config["namespace"];
     name: tableName;
     keySchema: config["tables"][tableName]["keySchema"] & KeySchema;
     valueSchema: config["tables"][tableName]["valueSchema"] & ValueSchema;
-  }>;
+  };
 };

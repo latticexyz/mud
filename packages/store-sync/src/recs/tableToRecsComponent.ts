@@ -1,10 +1,9 @@
 import { Type, World, defineComponent } from "@latticexyz/recs";
-import { Table } from "../common";
-import { TableToRecsComponent } from "./common";
+import { TableInput, TableToRecsComponent } from "./common";
 import { schemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
 import { SchemaAbiType } from "@latticexyz/schema-type";
 
-export function tableToRecsComponent<table extends Omit<Table, "address">>(
+export function tableToRecsComponent<table extends TableInput>(
   world: World,
   table: table
 ): TableToRecsComponent<table> {

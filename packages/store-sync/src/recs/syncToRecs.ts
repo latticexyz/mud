@@ -1,36 +1,31 @@
 import { StoreConfig } from "@latticexyz/store";
 import { Component as RecsComponent, World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
-import { SyncOptions, SyncResult, Table } from "../common";
+import { SyncOptions, SyncResult } from "../common";
 import { RecsStorageAdapter, recsStorage } from "./recsStorage";
 import { createStoreSync } from "../createStoreSync";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
+import { ConfigToTables, TablesInput } from "./common";
+import { configToTables } from "./configToTables";
 
-type SyncToRecsOptions<
-  config extends StoreConfig,
-  tables extends Record<string, Omit<Table, "address">> | undefined
-> = SyncOptions<config> & {
+type SyncToRecsOptions<config extends StoreConfig, tables extends TablesInput | undefined> = SyncOptions<config> & {
   world: RecsWorld;
   config: config;
   tables?: tables;
   startSync?: boolean;
 };
 
-type SyncToRecsResult<
-  config extends StoreConfig,
-  tables extends Record<string, Omit<Table, "address">> | undefined
-> = SyncResult & {
-  components: RecsStorageAdapter<config, tables>["components"];
+type SyncToRecsResult<config extends StoreConfig, tables extends TablesInput | undefined> = SyncResult & {
+  components: RecsStorageAdapter<
+    tables extends TablesInput ? ConfigToTables<config> & tables : ConfigToTables<config>
+  >["components"];
   stopSync: () => void;
 };
 
-export async function syncToRecs<
-  config extends StoreConfig,
-  tables extends Record<string, Omit<Table, "address">> | undefined
->({
+export async function syncToRecs<config extends StoreConfig, tables extends TablesInput>({
   world,
   config,
-  tables,
+  tables: extraTables,
   address,
   publicClient,
   startBlock,
@@ -39,9 +34,13 @@ export async function syncToRecs<
   indexerUrl,
   startSync = true,
 }: SyncToRecsOptions<config, tables>): Promise<SyncToRecsResult<config, tables>> {
+  const tables = {
+    ...configToTables(config),
+    ...extraTables,
+  } as tables extends TablesInput ? ConfigToTables<config> & tables : ConfigToTables<config>;
+
   const { storageAdapter, components } = recsStorage({
     world,
-    config,
     tables,
     shouldSkipUpdateStream: (): boolean =>
       getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE,
