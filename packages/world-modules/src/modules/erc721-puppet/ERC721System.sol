@@ -26,8 +26,6 @@ import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApproval
 
 /**
  * TODO:
- * - make `mint` and `burn` public with `requireOwner` check
- * - Fix up ERC721 Module
  * - Add ERC721 tests
  */
 

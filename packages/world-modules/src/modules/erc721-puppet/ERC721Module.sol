@@ -14,34 +14,42 @@ import { MODULE_NAME as PUPPET_MODULE_NAME } from "../puppet/constants.sol";
 import { PuppetModule } from "../puppet/PuppetModule.sol";
 import { Balances } from "../tokens/tables/Balances.sol";
 
-import { MODULE_NAME, MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC20_REGISTRY_TABLE_ID } from "./constants.sol";
-import { _allowancesTableId, _balancesTableId, _metadataTableId, _erc20SystemId } from "./utils.sol";
+import { MODULE_NAME, MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC721_REGISTRY_TABLE_ID } from "./constants.sol";
+import { _erc721SystemId, _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId } from "./utils.sol";
 import { ERC721System } from "./ERC721System.sol";
 
+import { OperatorApproval } from "./tables/OperatorApproval.sol";
+import { Owners } from "./tables/Owners.sol";
+import { TokenApproval } from "./tables/TokenApproval.sol";
+import { TokenURI } from "./tables/TokenURI.sol";
 import { ERC721Registry } from "./tables/ERC721Registry.sol";
-import { ERC721Metadata, ERC721MetadataData } from "./tables/Metadata.sol";
+import { ERC721Metadata, ERC721MetadataData } from "./tables/ERC721Metadata.sol";
 
-contract ERC20Module is Module {
-  error ERC20Module_InvalidNamespace(bytes14 namespace);
+contract ERC721Module is Module {
+  error ERC721Module_InvalidNamespace(bytes14 namespace);
 
   function getName() public pure override returns (bytes16) {
     return MODULE_NAME;
   }
 
   /**
-   * Register systems and tables for a new ERC20 token in a given namespace
+   * Register systems and tables for a new ERC721 token in a given namespace
    */
-  function _registerERC20(bytes14 namespace) internal {
+  function _registerERC721(bytes14 namespace) internal {
     // Register the tables
-    Allowances.register(_allowancesTableId(namespace));
+
+    OperatorApproval.register(_operatorApprovalTableId(namespace));
+    Owners.register(_ownersTableId(namespace));
+    TokenApproval.register(_tokenApprovalTableId(namespace));
+    TokenURI.register(_tokenUriTableId(namespace));
     Balances.register(_balancesTableId(namespace));
-    Metadata.register(_metadataTableId(namespace));
+    ERC721Metadata.register(_metadataTableId(namespace));
 
     // Register a new ERC20System
-    IBaseWorld(_world()).registerSystem(_erc20SystemId(namespace), new ERC20System(), true);
+    IBaseWorld(_world()).registerSystem(_erc721SystemId(namespace), new ERC721System(), true);
   }
 
-  function _installDependencies() internal {
+  function _requireDependencies() internal {
     // If the PuppetModule is not installed yet, install it
     if (InstalledModules.get(PUPPET_MODULE_NAME, keccak256(new bytes(0))) == address(0)) {
       IBaseWorld(_world()).installModule(new PuppetModule(), new bytes(0));
@@ -55,36 +63,36 @@ contract ERC20Module is Module {
     }
 
     // Extract args
-    (bytes14 namespace, MetadataData memory metadata) = abi.decode(args, (bytes14, MetadataData));
+    (bytes14 namespace, ERC721MetadataData memory metadata) = abi.decode(args, (bytes14, ERC721MetadataData));
 
     // Require the namespace to not be the module's namespace
     if (namespace == MODULE_NAMESPACE) {
-      revert ERC20Module_InvalidNamespace(namespace);
+      revert ERC721Module_InvalidNamespace(namespace);
     }
 
-    // Install dependencies
-    _installDependencies();
+    // Require dependencies
+    _requireDependencies();
 
-    // Register the ERC20 tables and system
-    _registerERC20(namespace);
+    // Register the ERC721 tables and system
+    _registerERC721(namespace);
 
     // Initialize the Metadata
-    Metadata.set(_metadataTableId(namespace), metadata);
+    ERC721Metadata.set(_metadataTableId(namespace), metadata);
 
-    // Deploy and register the ERC20 puppet.
+    // Deploy and register the ERC721 puppet.
     IBaseWorld world = IBaseWorld(_world());
-    ResourceId erc20SystemId = _erc20SystemId(namespace);
-    address puppet = createPuppet(world, erc20SystemId);
+    ResourceId erc721SystemId = _erc721SystemId(namespace);
+    address puppet = createPuppet(world, erc721SystemId);
 
     // Transfer ownership of the namespace to the caller
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     world.transferOwnership(namespaceId, _msgSender());
 
-    // Register the ERC20 in the ERC20Registry
-    if (!ResourceIds.getExists(ERC20_REGISTRY_TABLE_ID)) {
-      ERC20Registry.register(ERC20_REGISTRY_TABLE_ID);
+    // Register the ERC721 in the ERC20Registry
+    if (!ResourceIds.getExists(ERC721_REGISTRY_TABLE_ID)) {
+      ERC721Registry.register(ERC721_REGISTRY_TABLE_ID);
     }
-    ERC20Registry.set(ERC20_REGISTRY_TABLE_ID, namespaceId, puppet);
+    ERC721Registry.set(ERC721_REGISTRY_TABLE_ID, namespaceId, puppet);
   }
 
   function installRoot(bytes memory) public pure {
