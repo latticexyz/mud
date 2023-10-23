@@ -115,11 +115,11 @@ export function createContract<
 
             return await pRetry(
               async () => {
-                if (!nonceManager.hasNonce()) {
-                  await nonceManager.resetNonce();
+                if (!contract.nonceManager.hasNonce()) {
+                  await contract.nonceManager.resetNonce();
                 }
 
-                const nonce = nonceManager.nextNonce();
+                const nonce = contract.nonceManager.nextNonce();
                 debug("calling write function with nonce", nonce, preparedWrite);
                 return await walletClient.writeContract({
                   nonce,
@@ -130,9 +130,9 @@ export function createContract<
                 retries: 3,
                 onFailedAttempt: async (error) => {
                   // On nonce errors, reset the nonce and retry
-                  if (nonceManager.shouldResetNonce(error)) {
+                  if (contract.nonceManager.shouldResetNonce(error)) {
                     debug("got nonce error, retrying", error);
-                    await nonceManager.resetNonce();
+                    await contract.nonceManager.resetNonce();
                     return;
                   }
                   // TODO: prepareWrite again if there are gas errors?
