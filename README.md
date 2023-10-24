@@ -56,7 +56,7 @@ MUD is MIT-licensed, open source and free to use.
 pnpm create mud@canary my-project
 ```
 
-More more information on how to get started, have a look at the [MUD documentation](https://mud.dev/quick-start).
+For more information on how to get started, have a look at the [MUD documentation](https://mud.dev/quick-start).
 
 ## Talks
 

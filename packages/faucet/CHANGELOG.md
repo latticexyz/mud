@@ -1,5 +1,11 @@
 # @latticexyz/faucet
 
+## 2.0.0-next.12
+
+### Minor Changes
+
+- 1d0f7e22: Added `/healthz` and `/readyz` healthcheck endpoints for Kubernetes
+
 ## 2.0.0-next.11
 
 ### Patch Changes

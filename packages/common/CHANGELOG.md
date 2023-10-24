@@ -1,5 +1,34 @@
 # Change Log
 
+## 2.0.0-next.12
+
+### Minor Changes
+
+- 06605615: - Added a `sendTransaction` helper to mirror viem's `sendTransaction`, but with our nonce manager
+  - Added an internal mempool queue to `sendTransaction` and `writeContract` for better nonce handling
+  - Defaults block tag to `pending` for transaction simulation and transaction count (when initializing the nonce manager)
+- d2f8e940: Renames `resourceIdToHex` to `resourceToHex` and `hexToResourceId` to `hexToResource`, to better distinguish between a resource ID (hex value) and a resource reference (type, namespace, name).
+
+  ```diff
+  - resourceIdToHex({ type: 'table', namespace: '', name: 'Position' });
+  + resourceToHex({ type: 'table', namespace: '', name: 'Position' });
+  ```
+
+  ```diff
+  - hexToResourceId('0x...');
+  + hexToResource('0x...');
+  ```
+
+  Previous methods still exist but are now deprecated to ease migration and reduce breaking changes. These will be removed in a future version.
+
+  Also removes the previously deprecated and unused table ID utils (replaced by these resource ID utils).
+
+### Patch Changes
+
+- f62c767e: Moved some codegen to use `fs/promises` for better parallelism.
+- 25086be5: Replaced temporary `.mudtest` file in favor of `WORLD_ADDRESS` environment variable when running tests with `MudTest` contract
+  - @latticexyz/schema-type@2.0.0-next.12
+
 ## 2.0.0-next.11
 
 ### Minor Changes
