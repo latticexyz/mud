@@ -14,6 +14,8 @@ It also allows external contract storage to be read onchain without being limite
 
 The [`StoreCore`](./reference) library implements low-level methods for reading and writing data in a `Store` contract and the [`IStore`](./reference) interface exposes some of these methods to external callers.
 
+Note that when exposing `IStoreWrite` methods to external callers, it is necessary to implement an access control mechanism, or use the [access control mechanisms provided by `World`](/world/namespaces-access-control).
+
 Due to the lack of generics in Solidity, the only way to allow functions to act on data of different types is to cast the data to raw "untyped" `bytes`.
 To improve the developer experience, `Store` automatically [generates a library for each table](./table-libraries) which acts as a type wrapper.
 These libraries provide getter and setter functions with strong types for the table's keys and values, encode them using the [Store encoding](./encoding) before passing them to the Store, and decode them before passing them back to the user.

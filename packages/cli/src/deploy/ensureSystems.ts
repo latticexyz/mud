@@ -5,8 +5,9 @@ import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { getSystems } from "./getSystems";
 import { getResourceAccess } from "./getResourceAccess";
-import { wait } from "@latticexyz/common/utils";
+import { uniqueBy, wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
+import { ensureContractsDeployed } from "./ensureContractsDeployed";
 
 export async function ensureSystems({
   client,
@@ -125,6 +126,14 @@ export async function ensureSystems({
   if (systemsToAdd.length) {
     debug("registering new systems", systemsToAdd.map(resourceLabel).join(", "));
   }
+
+  await ensureContractsDeployed({
+    client,
+    contracts: uniqueBy(missingSystems, (system) => getAddress(system.address)).map((system) => ({
+      bytecode: system.bytecode,
+      label: `${resourceLabel(system)} system`,
+    })),
+  });
 
   const registerTxs = missingSystems.map((system) =>
     pRetry(

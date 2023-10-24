@@ -18,6 +18,8 @@ jobs:
             target: mud
           - image: ghcr.io/latticexyz/store-indexer
             target: store-indexer
+          - image: ghcr.io/latticexyz/faucet
+            target: faucet
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -29,7 +31,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        uses: docker/metadata-action@v4.6.0
         with:
           context: git
           images: ${{ matrix.image }}
@@ -40,7 +42,7 @@ jobs:
             type=ref,event=branch
             type=sha
       - name: Build and push Docker image
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        uses: docker/build-push-action@v4.2.1
         with:
           context: .
           push: true

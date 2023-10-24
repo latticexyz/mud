@@ -1,9 +1,10 @@
-import { Client, Transport, Chain, Account, Hex, BaseError } from "viem";
+import { Client, Transport, Chain, Account, Hex, BaseError, getAddress } from "viem";
 import { writeContract } from "@latticexyz/common";
 import { Module, WorldDeploy, worldAbi } from "./common";
 import { debug } from "./debug";
-import { isDefined, wait } from "@latticexyz/common/utils";
+import { isDefined, uniqueBy, wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
+import { ensureContractsDeployed } from "./ensureContractsDeployed";
 
 export async function ensureModules({
   client,
@@ -15,6 +16,14 @@ export async function ensureModules({
   readonly modules: readonly Module[];
 }): Promise<readonly Hex[]> {
   if (!modules.length) return [];
+
+  await ensureContractsDeployed({
+    client,
+    contracts: uniqueBy(modules, (mod) => getAddress(mod.address)).map((mod) => ({
+      bytecode: mod.bytecode,
+      label: `${mod.name} module`,
+    })),
+  });
 
   debug("installing modules:", modules.map((mod) => mod.name).join(", "));
   return (

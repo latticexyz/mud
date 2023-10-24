@@ -23,16 +23,18 @@ export function createSystemCalls(
    * - The first parameter is expected to be a
    *   SetupNetworkResult, as defined in setupNetwork.ts
    *
-   * - Out of this parameter, we only care about two fields:
+   *   Out of this parameter, we only care about two fields:
    *   - worldContract (which comes from getContract, see
-   *     https://github.com/latticexyz/mud/blob/26dabb34321eedff7a43f3fcb46da4f3f5ba3708/templates/phaser/packages/client/src/mud/setupNetwork.ts#L31).
+   *     https://github.com/latticexyz/mud/blob/main/templates/phaser/packages/client/src/mud/setupNetwork.ts#L61-L67).
+   *
    *   - waitForTransaction (which comes from syncToRecs, see
-   *     https://github.com/latticexyz/mud/blob/26dabb34321eedff7a43f3fcb46da4f3f5ba3708/templates/phaser/packages/client/src/mud/setupNetwork.ts#L39).
+   *     https://github.com/latticexyz/mud/blob/main/templates/phaser/packages/client/src/mud/setupNetwork.ts#L75-L81).
    *
    * - From the second parameter, which is a ClientComponent,
    *   we only care about Counter. This parameter comes to use
    *   through createClientComponents.ts, but it originates in
-   *   syncToRecs (https://github.com/latticexyz/mud/blob/26dabb34321eedff7a43f3fcb46da4f3f5ba3708/templates/phaser/packages/client/src/mud/setupNetwork.ts#L39).
+   *   syncToRecs
+   *   (https://github.com/latticexyz/mud/blob/main/templates/phaser/packages/client/src/mud/setupNetwork.ts#L75-L81).
    */
   { worldContract, waitForTransaction }: SetupNetworkResult,
   { Counter }: ClientComponents
@@ -40,7 +42,7 @@ export function createSystemCalls(
   const increment = async () => {
     /*
      * Because IncrementSystem
-     * (https://mud.dev/tutorials/walkthrough/minimal-onchain#incrementsystemsol)
+     * (https://mud.dev/templates/typescript/contracts#incrementsystemsol)
      * is in the root namespace, `.increment` can be called directly
      * on the World contract.
      */
