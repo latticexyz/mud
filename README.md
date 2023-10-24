@@ -24,7 +24,7 @@ MUD is a framework for complex Ethereum applications.
 It adds some conventions for organizing data and logic and abstracts away low-level complexities so you can focus on the features of your app.
 
 It standardizes the way data is stored on-chain.
-With this standard data model, MUD can provide all network code to synchronize contract and client state. This includes synchronizing state directly from an RPC node or a general-purpose MUD indexer.
+With this standard data model, MUD can provide all network code to synchronize contract and client state. This includes synchronizing the state directly from an RPC node or a general-purpose MUD indexer.
 
 MUD is MIT-licensed, open source and free to use.
 
