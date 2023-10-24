@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { ViteDevServer } from "vite";
-import { expect, Browser, Page } from "@playwright/test";
+import { Browser, Page } from "@playwright/test";
 import { createAsyncErrorHandler } from "./asyncErrors";
 import {
   deployContracts,
@@ -24,6 +24,7 @@ import { range } from "@latticexyz/utils";
 import path from "node:path";
 import { rpcHttpUrl } from "./setup/constants";
 import { z } from "zod";
+import { callPageFunction } from "./data/callPageFunction";
 
 const env = z
   .object({
@@ -57,7 +58,7 @@ describe("Sync from indexer", async () => {
     asyncErrorHandler.resetErrors();
   });
 
-  test("should log error if indexer is offline", async () => {
+  it("should log error if indexer is offline", async () => {
     await openClientWithRootAccount(page, { indexerUrl: `http://127.0.0.1:9999/trpc` });
     await waitForInitialSync(page);
 
@@ -87,7 +88,7 @@ describe("Sync from indexer", async () => {
       await indexer.kill();
     });
 
-    test("should sync test data", async () => {
+    it("should sync test data", async () => {
       await openClientWithRootAccount(page, { indexerUrl: indexer.url });
       await waitForInitialSync(page);
 
@@ -107,7 +108,7 @@ describe("Sync from indexer", async () => {
       asyncErrorHandler.expectNoAsyncErrors();
     });
 
-    test("should sync number list modified via system", async () => {
+    it("should sync number list modified via system", async () => {
       await openClientWithRootAccount(page, { indexerUrl: indexer.url });
       await waitForInitialSync(page);
 
@@ -122,6 +123,28 @@ describe("Sync from indexer", async () => {
       // Pop one element from the array
       await pop(page);
       await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42, ...range(4999, 1, 0)] } }] });
+
+      // Should not have thrown errors
+      asyncErrorHandler.expectNoAsyncErrors();
+    });
+
+    it("should only have filtered position data", async () => {
+      await openClientWithRootAccount(page, { indexerUrl: indexer.url });
+      await waitForInitialSync(page);
+
+      const entities = await callPageFunction(page, "getKeys", ["Position"]);
+      expect(entities).toEqual([
+        {
+          x: 1,
+          y: 1,
+          zone: "0x6d61703100000000000000000000000000000000000000000000000000000000",
+        },
+        {
+          x: 2,
+          y: -2,
+          zone: "0x6d61703100000000000000000000000000000000000000000000000000000000",
+        },
+      ]);
 
       // Should not have thrown errors
       asyncErrorHandler.expectNoAsyncErrors();

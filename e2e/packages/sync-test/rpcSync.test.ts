@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { ViteDevServer } from "vite";
 import { Browser, Page } from "@playwright/test";
 import { createAsyncErrorHandler } from "./asyncErrors";
@@ -16,6 +16,7 @@ import {
 } from "./data";
 import { range } from "@latticexyz/utils";
 import { rpcHttpUrl } from "./setup/constants";
+import { callPageFunction } from "./data/callPageFunction";
 
 describe("Sync from RPC", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
@@ -40,7 +41,7 @@ describe("Sync from RPC", async () => {
     await webserver.close();
   });
 
-  test("should sync test data", async () => {
+  it("should sync test data", async () => {
     await openClientWithRootAccount(page);
     await waitForInitialSync(page);
 
@@ -60,7 +61,7 @@ describe("Sync from RPC", async () => {
     asyncErrorHandler.expectNoAsyncErrors();
   });
 
-  test("should sync number list modified via system", async () => {
+  it("should sync number list modified via system", async () => {
     await openClientWithRootAccount(page);
     await waitForInitialSync(page);
 
@@ -78,5 +79,25 @@ describe("Sync from RPC", async () => {
 
     // Should not have thrown errors
     asyncErrorHandler.expectNoAsyncErrors();
+  });
+
+  it("should only have filtered position data", async () => {
+    await openClientWithRootAccount(page);
+    await waitForInitialSync(page);
+
+    expect(await callPageFunction(page, "getKeys", ["Position"])).toMatchInlineSnapshot(`
+      [
+        {
+          "x": 1,
+          "y": 1,
+          "zone": "0x6d61703100000000000000000000000000000000000000000000000000000000",
+        },
+        {
+          "x": 2,
+          "y": -2,
+          "zone": "0x6d61703100000000000000000000000000000000000000000000000000000000",
+        },
+      ]
+    `);
   });
 });

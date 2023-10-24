@@ -1,5 +1,6 @@
 import { Component, Entity, getComponentValue } from "@latticexyz/recs";
 import { setup } from "./mud/setup";
+import { decodeEntity } from "@latticexyz/store-sync/recs";
 
 const {
   network: { components, latestBlock$, worldContract, waitForTransaction },
@@ -11,6 +12,13 @@ _window.waitForTransaction = waitForTransaction;
 
 _window.getComponentValue = (componentName: keyof typeof components, entity: Entity) =>
   getComponentValue(components[componentName] as Component, entity);
+
+_window.getEntities = (componentName: keyof typeof components) => Array.from(components[componentName].entities());
+
+_window.getKeys = (componentName: keyof typeof components) =>
+  Array.from(components[componentName].entities()).map((entity) =>
+    decodeEntity(components[componentName].metadata.keySchema, entity)
+  );
 
 // Update block number in the UI
 latestBlock$.subscribe((block) => {
