@@ -63,7 +63,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   initialState,
   indexerUrl,
 }: CreateStoreSyncOptions<TConfig>): Promise<SyncResult> {
-  const filters =
+  const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
       : [];
