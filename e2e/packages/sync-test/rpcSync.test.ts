@@ -3,20 +3,15 @@ import type { ViteDevServer } from "vite";
 import { Browser, Page } from "@playwright/test";
 import { createAsyncErrorHandler } from "./asyncErrors";
 import { deployContracts, startViteServer, startBrowserAndPage, openClientWithRootAccount } from "./setup";
-import {
-  setContractData,
-  expectClientData,
-  testData1,
-  testData2,
-  mergeTestData,
-  waitForInitialSync,
-  push,
-  pushRange,
-  pop,
-} from "./data";
 import { range } from "@latticexyz/utils";
 import { rpcHttpUrl } from "./setup/constants";
 import { callPageFunction } from "./data/callPageFunction";
+import { expectClientData } from "./data/expectClientData";
+import { mergeTestData } from "./data/mergeTestData";
+import { push, pushRange, pop } from "./data/numberListSystem";
+import { setContractData } from "./data/setContractData";
+import { testData1, testData2 } from "./data/testData";
+import { waitForInitialSync } from "./data/waitForInitialSync";
 
 describe("Sync from RPC", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();

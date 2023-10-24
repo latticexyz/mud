@@ -9,22 +9,17 @@ import {
   startIndexer,
   openClientWithRootAccount,
 } from "./setup";
-import {
-  setContractData,
-  expectClientData,
-  testData1,
-  mergeTestData,
-  testData2,
-  waitForInitialSync,
-  push,
-  pushRange,
-  pop,
-} from "./data";
 import { range } from "@latticexyz/utils";
 import path from "node:path";
 import { rpcHttpUrl } from "./setup/constants";
 import { z } from "zod";
 import { callPageFunction } from "./data/callPageFunction";
+import { expectClientData } from "./data/expectClientData";
+import { mergeTestData } from "./data/mergeTestData";
+import { push, pushRange, pop } from "./data/numberListSystem";
+import { setContractData } from "./data/setContractData";
+import { testData1, testData2 } from "./data/testData";
+import { waitForInitialSync } from "./data/waitForInitialSync";
 
 const env = z
   .object({
