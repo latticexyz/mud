@@ -5,8 +5,11 @@
 
 Calls are sent to the `World` as a central entry point.
 The `World` performs access control checks and if the request is authorized, sends it to the appropriate [`System`](/world/systems).
-Any access from the `System` to [the tables that store the data](/world/tables) also goes through the `World`, making it impossible to bypass access control.
-Those `System` contracts themselves are stateless, all the data in managed by the `World`.
+In most cases access from the `System` to [the tables that store the data](/world/tables) also goes through the `World`, making it impossible to bypass access control.
+The `System` contracts themselves are stateless, all the data in managed by the `World`.
+
+**Note:** A `System` in the root namespace _could_ bypass the access control.
+However, only the owner of the root namespace (by default, the account that deployed the `World`) is able to deploy into the root namespace.
 
 A `World` is like the [diamond design pattern](https://eips.ethereum.org/EIPS/eip-2535) in many ways.
 The big difference is permissionless extensions.
