@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import prettier from "prettier";
 import prettierPluginSolidity from "prettier-plugin-solidity";
 
@@ -27,7 +26,7 @@ export async function formatSolidity(content: string, prettierConfigPath?: strin
     } else {
       message = error;
     }
-    console.log(chalk.yellow(`Error during output formatting: ${message}`));
+    console.log(`Error during output formatting: ${message}`);
     return content;
   }
 }

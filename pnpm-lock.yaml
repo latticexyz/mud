@@ -266,9 +266,6 @@ importers:
       '@solidity-parser/parser':
         specifier: ^0.16.0
         version: 0.16.0
-      chalk:
-        specifier: ^5.2.0
-        version: 5.2.0
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
