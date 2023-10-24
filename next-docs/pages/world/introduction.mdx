@@ -14,7 +14,7 @@ Anybody can claim an unused [namespace](/world/namespaces-access-control), and p
 
 ![overall illustration](./world-intro.svg)
 
-1. An entity (either an [externally owned account](https://ethereum.org/en/developers/docs/accounts/#types-of-account) or a contract) sends a request to the `World`.
+1. An account (either an [externally owned account](https://ethereum.org/en/developers/docs/accounts/#types-of-account) or a contract) sends a request to the `World`.
 2. The `World` authorizes the request and sends it to the appropriate `System`.
-3. The `System` can read information from all the `World`'s tables, and modify information in tables in its own namespace.
+3. The `System` can read information from all the `World`'s tables, and modify information in tables it has access to (by default those in its own namespace).
 4. If the `System` needs to modify information inside a different namespace, it can call a `System` on that namespace to do so.
