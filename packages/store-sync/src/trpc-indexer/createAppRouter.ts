@@ -19,7 +19,7 @@ export function createAppRouter() {
           filters: z
             .array(
               z.object({
-                tableId: z.string().refine(isHex).optional(),
+                tableId: z.string().refine(isHex),
                 key0: z.string().refine(isHex).optional(),
                 key1: z.string().refine(isHex).optional(),
               })

@@ -26,12 +26,13 @@ export type TableWithRecords = Table & { records: TableRecord[] };
 export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true, StoreEventsAbi>;
 export type BlockLogs = { blockNumber: StoreEventsLog["blockNumber"]; logs: StoreEventsLog[] };
 
-// TODO: should we add address here?
 export type SyncFilter = {
-  tableId?: Hex;
+  // TODO: make optional to enable filtering just on keys (any table)
+  //       this is blocked on reworking data storage so we can more easily query data across tables
+  tableId: Hex;
+  // only two keys for now, to reduce complexity of creating indexes on SQL tables
   key0?: Hex;
   key1?: Hex;
-  // TODO: decide how many keys to support
 };
 
 export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {

@@ -209,7 +209,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       const filteredLogs = logs.filter((log) =>
         filters.some(
           (filter) =>
-            (filter.tableId == null || filter.tableId === log.args.tableId) &&
+            filter.tableId === log.args.tableId &&
             (filter.key0 == null || filter.key0 === log.args.keyTuple[0]) &&
             (filter.key1 == null || filter.key1 === log.args.keyTuple[1])
         )
