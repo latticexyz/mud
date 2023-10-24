@@ -70,6 +70,7 @@ const zShorthandSchemaConfig = zFieldData.transform((fieldData) => {
 });
 
 export const zSchemaConfig = zFullSchemaConfig.or(zShorthandSchemaConfig);
+type schemaconfig = z.input<typeof zSchemaConfig>;
 
 export type ResolvedSchema<
   TSchema extends Record<string, string>,

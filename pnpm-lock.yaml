@@ -773,6 +773,9 @@ importers:
       abitype:
         specifier: 0.9.8
         version: 0.9.8(typescript@5.1.6)(zod@3.21.4)
+      viem:
+        specifier: 1.14.0
+        version: 1.14.0(typescript@5.1.6)(zod@3.21.4)
       zod:
         specifier: ^3.21.4
         version: 3.21.4

@@ -124,6 +124,6 @@ export type DynamicAbiTypeToPrimitiveType<TDynamicAbiType extends DynamicAbiType
   (typeof dynamicAbiTypeToDefaultValue)[TDynamicAbiType]
 >;
 
-export function isDynamicAbiType(abiType: string): abiType is DynamicAbiType {
+export function isDynamicAbiType(abiType: unknown): abiType is DynamicAbiType {
   return dynamicAbiTypes.includes(abiType as DynamicAbiType);
 }
