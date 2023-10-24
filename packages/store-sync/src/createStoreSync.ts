@@ -34,7 +34,6 @@ import { SyncStep } from "./SyncStep";
 import { chunk, isDefined } from "@latticexyz/common/utils";
 import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
 import { internalTableIds } from "./internalTableIds";
-import { table } from "console";
 
 const debug = parentDebug.extend("createStoreSync");
 
