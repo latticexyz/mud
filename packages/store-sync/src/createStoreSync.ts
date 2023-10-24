@@ -34,6 +34,7 @@ import { SyncStep } from "./SyncStep";
 import { chunk, isDefined } from "@latticexyz/common/utils";
 import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
 import { internalTableIds } from "./internalTableIds";
+import { table } from "console";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -56,12 +57,16 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   publicClient,
   address,
   filters: initialFilters = [],
+  tableIds = [],
   startBlock: initialStartBlock = 0n,
   maxBlockRange,
   initialState,
   indexerUrl,
 }: CreateStoreSyncOptions<TConfig>): Promise<SyncResult> {
-  const filters = initialFilters.length ? [...initialFilters, ...defaultFilters] : [];
+  const filters =
+    initialFilters.length || tableIds.length
+      ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
+      : [];
   const initialState$ = defer(
     async (): Promise<
       | {

@@ -55,6 +55,10 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
    */
   filters?: SyncFilter[];
   /**
+   * @deprecated Use `filters` option instead.
+   * */
+  tableIds?: Hex[];
+  /**
    * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.
    */
   startBlock?: bigint;
