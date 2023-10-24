@@ -7,6 +7,9 @@ import { IWorld } from "../src/codegen/world/IWorld.sol";
 
 contract PostDeploy is Script {
   function run(address worldAddress) external {
+    // Specify a store so that you can use tables directly in PostDeploy
+    StoreSwitch.setStoreAddress(worldAddress);
+
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
