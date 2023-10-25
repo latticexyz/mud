@@ -1,10 +1,10 @@
-import { createPublicClient, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
+import { createPublicClient, http, createWalletClient, Hex, parseEther, ClientConfig, stringToHex } from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
-import { createBurnerAccount, getContract, transportObserver } from "@latticexyz/common";
+import { createBurnerAccount, getContract, resourceToHex, transportObserver } from "@latticexyz/common";
 import mudConfig from "contracts/mud.config";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
@@ -40,6 +40,21 @@ export async function setupNetwork() {
     publicClient,
     startBlock: BigInt(networkConfig.initialBlockNumber),
     indexerUrl: networkConfig.indexerUrl ?? undefined,
+    filters: Object.entries(mudConfig.tables).map(([, table]) => {
+      const tableId = resourceToHex({
+        type: table.offchainOnly ? "offchainTable" : "table",
+        namespace: mudConfig.namespace,
+        name: table.name,
+      });
+      if (table.name === mudConfig.tables.Position.name) {
+        return {
+          tableId,
+          key0: stringToHex("map1", { size: 32 }),
+        };
+      } else {
+        return { tableId };
+      }
+    }),
   });
 
   // Request drip from faucet
