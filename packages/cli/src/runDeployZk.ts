@@ -70,13 +70,13 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   );
 
   // Run build
-  if (!opts.skipBuild) {
-    const outPath = path.join(srcDir, config.codegenDirectory);
-    console.log("outPath=", outPath);
-    await Promise.all([tablegen(config, outPath, remappings), worldgen(config, getExistingContracts(srcDir), outPath)]);
-    await zkforge(["zkbuild", "-r"], { profile });
-    await execa("mud", ["abi-ts"], { stdio: "inherit" });
-  }
+  // if (!opts.skipBuild) {
+  //   const outPath = path.join(srcDir, config.codegenDirectory);
+  //   console.log("outPath=", outPath);
+  //   await Promise.all([tablegen(config, outPath, remappings), worldgen(config, getExistingContracts(srcDir), outPath)]);
+  //   await zkforge(["zkbuild", "-r"], { profile });
+  //   await execa("mud", ["abi-ts"], { stdio: "inherit" });
+  // }
 
   const privateKey = process.env.PRIVATE_KEY as Hex;
   if (!privateKey) {
