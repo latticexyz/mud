@@ -1,1 +1,74 @@
 # Namespaces and Access Control
+
+MUD access control is based on namespaces.
+Every resource is part of a namespace (if there is no namespace specified that just mean that the resource is part of the root namespace).
+Access to every resource is managed by the owner address of the namespace.
+
+## Resource identifiers
+
+A `ResourceId` is a 32-byte value that uniquely identifies a resource in a MUD `World`.
+It is two bytes of resource type followed by 14 bytes of namespace and then 16 bytes of the name of the actual resource.
+
+Currently, MUD supports these resource types:
+
+- [Table (`tb`)](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeResourceTypes.sol#L11).
+  An onchain table whose information that is available both onchain (through calls to `view` functions) and offchain (either through calls to `view` functions, events, or an [indexer](/services/indexer)).
+- [Offchain table (`ot`)](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeResourceTypes.sol#L14).
+  An offchain table whose information is only available offchain (either through events, or through an [indexer](/services/indexer)).
+- [Namespace (`ns`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L15).
+  A namespace is a container for tables, offchain tables, and systems, as explained here.
+- [System (`sy`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L25).
+  A system contains functions that interact with table data onchain.
+- [Module (`md`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L21).
+  A module is a script that can install tables, systems, etc.
+
+Access control can be attached to any resource.
+
+## Access control levels
+
+There are three access levels in MUD.
+
+### "No" access
+
+This is the level that most users of a MUD application have for all resources.
+Users on this level are allowed to do the following:
+
+- Read information (table content).
+  _There are no secrets on the blockchain_, transactions and events are public information, so this information has to be available.
+- Call functions on any `System` that is publicly accessible to make transactions.
+
+### Access
+
+This level of access is often required for software that is part of the application.
+Access can be granted either on a namespace basis (access to the namespace gives access to all the resources inside it) or on an individual resource.
+
+Entities with this level of access can do anything that "no" access allows, and also:
+
+- Write directly to tables.
+  This is as opposed to users with no access, who can only modify table information by going through a `System` (by default, a `System` has access to its own namespace, which of course includes all of the namespace's tables).
+- Call a `System` that is _not_ publicly accessible.
+- Withdraw from the ETH balance of the namespace.
+  To avoid giving this permission, give an address access to every resource in the namespace, rather than to the namespace itself.
+
+### Ownership
+
+Namespaces are the only resource type that has an owner, and they can only have a single address as the owner (if you need to allow multiple people to act as owner, you can configure a 1/n multi-sig as the owner, and then any of them can do the owner only actions).
+
+The owner is an administrative account, a superuser.
+When you change ownership, the new owner gets access to the namespace, and the old owner loses it.
+Therefore, owners can do anything an address with access can.
+Additionally, owners can also:
+
+- Grant and revoke access within the namespace (either to the namespace itself or to resources inside it).
+- Transfer namespace ownership.
+- Register a [namespace delegation control](/world/account-delegation).
+- Register new [tables](/store/tables).
+- Register [store hooks](/store/store-hooks) for tables in the namespace.
+- Register new [systems](/world/systems).
+- Upgrade existing systems.
+- Register [system hooks](/world/system-hooks) for systems in the namespace.
+- Register [function selectors](/world/function-selectors) for systems in the namespace.
+
+Owners can modify which contract a `World` uses for each `System`, so a namespace with an owner is not truly decentralized, unless the owner is some kind of distributed governance mechanism.
+When the application is ready to be truly decentralized, the owner can revoke previously granted access as needed and then transfer ownership to `address(0)`.
+Once this is done no new access can be granted, and ownership cannot be trasfered again.
