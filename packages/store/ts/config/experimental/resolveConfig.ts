@@ -1,3 +1,4 @@
+import { StringForUnion } from "@latticexyz/common/type-utils";
 import { StoreConfig, TableConfig, UserTypesConfig } from "../storeConfig";
 import { UserType } from "@latticexyz/common/codegen";
 
@@ -6,23 +7,26 @@ export type ResolvedStoreConfig<TStoreConfig extends StoreConfig> = TStoreConfig
     tables: {
       [key in keyof TStoreConfig["tables"]]: ResolvedTableConfig<
         TStoreConfig["tables"][key],
-        TStoreConfig["userTypes"]
+        TStoreConfig["userTypes"],
+        keyof TStoreConfig["enums"] & string
       >;
     };
   };
 };
 
-export type ResolvedTableConfig<TTableConfig extends TableConfig, TUserTypes extends UserTypesConfig> = Omit<
-  TTableConfig,
-  "keySchema" | "valueSchema"
-> & {
-  keySchema: ResolvedSchema<TTableConfig["keySchema"], TUserTypes>;
-  valueSchema: ResolvedSchema<TTableConfig["valueSchema"], TUserTypes>;
+export type ResolvedTableConfig<
+  TTableConfig extends TableConfig,
+  TUserTypes extends UserTypesConfig,
+  TEnumNames extends StringForUnion
+> = Omit<TTableConfig, "keySchema" | "valueSchema"> & {
+  keySchema: ResolvedSchema<TTableConfig["keySchema"], TUserTypes, TEnumNames>;
+  valueSchema: ResolvedSchema<TTableConfig["valueSchema"], TUserTypes, TEnumNames>;
 };
 
 export type ResolvedSchema<
   TSchema extends TableConfig["keySchema"] | TableConfig["valueSchema"],
-  TUserTypes extends UserTypesConfig
+  TUserTypes extends UserTypesConfig,
+  TEnumNames extends StringForUnion
 > = {
   [key in keyof TSchema]: {
     type: TSchema[key] extends keyof TUserTypes
@@ -33,6 +37,8 @@ export type ResolvedSchema<
           // change our version and align with Solidity ABIs going forward.
           TUserTypes[TSchema[key]]["internalType"]
         : never
+      : TSchema[key] extends TEnumNames
+      ? "uint8"
       : TSchema[key];
     internalType: TSchema[key];
   };

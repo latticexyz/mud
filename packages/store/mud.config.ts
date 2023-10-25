@@ -1,12 +1,16 @@
+import { resolveConfig } from "./ts/config/experimental/resolveConfig";
 import { mudConfig } from "./ts/register";
 
-export default mudConfig({
+const config = mudConfig({
   storeImportPath: "../../",
   namespace: "store",
   userTypes: {
     ResourceId: { filePath: "./src/ResourceId.sol", internalType: "bytes32" },
     FieldLayout: { filePath: "./src/FieldLayout.sol", internalType: "bytes32" },
     Schema: { filePath: "./src/Schema.sol", internalType: "bytes32" },
+  },
+  enums: {
+    Enum1: ["hello", "world"],
   },
   tables: {
     StoreHooks: {
@@ -51,7 +55,29 @@ export default mudConfig({
       keySchema: {
         key: "ResourceId",
       },
-      valueSchema: "ResourceId",
+      valueSchema: "Enum1",
     },
   },
 });
+
+export default config;
+
+const resolvedConfig = resolveConfig(config);
+
+resolvedConfig.tables.Shorthand.keySchema.key;
+//                                        ^?
+
+resolvedConfig.tables.Shorthand.valueSchema.value;
+//                                          ^?
+
+resolvedConfig.resolved.tables.Shorthand.keySchema.key.type;
+//                                                     ^?
+
+resolvedConfig.resolved.tables.Shorthand.keySchema.key.internalType;
+//                                                     ^?
+
+resolvedConfig.resolved.tables.Shorthand.valueSchema.value.type;
+//                                                         ^?
+
+resolvedConfig.resolved.tables.Shorthand.valueSchema.value.internalType;
+//                                                         ^?
