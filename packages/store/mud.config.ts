@@ -8,9 +8,6 @@ export default mudConfig({
     FieldLayout: { filePath: "./src/FieldLayout.sol", internalType: "bytes32" },
     Schema: { filePath: "./src/Schema.sol", internalType: "bytes32" },
   },
-  enums: {
-    Enum1: ["hello", "world"],
-  },
   tables: {
     StoreHooks: {
       keySchema: {
