@@ -1,7 +1,6 @@
-import { resolveConfig } from "./ts/config/experimental/resolveConfig";
 import { mudConfig } from "./ts/register";
 
-const config = mudConfig({
+export default mudConfig({
   storeImportPath: "../../",
   namespace: "store",
   userTypes: {
@@ -56,25 +55,3 @@ const config = mudConfig({
     },
   },
 });
-
-export default config;
-
-const resolvedConfig = resolveConfig(config);
-
-resolvedConfig.tables.Shorthand.keySchema.key;
-//                                        ^?
-
-resolvedConfig.tables.Shorthand.valueSchema.value;
-//                                          ^?
-
-resolvedConfig.resolved.tables.Shorthand.keySchema.key.type;
-//                                                     ^?
-
-resolvedConfig.resolved.tables.Shorthand.keySchema.key.internalType;
-//                                                     ^?
-
-resolvedConfig.resolved.tables.Shorthand.valueSchema.value.type;
-//                                                         ^?
-
-resolvedConfig.resolved.tables.Shorthand.valueSchema.value.internalType;
-//                                                         ^?
