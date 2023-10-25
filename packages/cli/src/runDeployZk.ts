@@ -43,19 +43,24 @@ export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
 export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
-  console.log(profile);
-
-  //exit process
-  process.exit(0);
-
   const config = (await loadConfig(opts.configPath)) as StoreConfig & WorldConfig;
   if (opts.printConfig) {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
   }
 
+  console.log(config);
+
+  console.log(opts);
+
+  console.log(profile);
+
   const srcDir = opts.srcDir ?? (await getSrcDirectory(profile));
   const outDir = await getOutDirectory(profile);
   const remappings = await getRemappings();
+
+  console.log("srcDir=", srcDir);
+  console.log("outDir=", outDir);
+  console.log("remappings=", remappings);
 
   const rpc = opts.rpc ?? (await getRpcUrl(profile));
   console.log(
@@ -67,8 +72,9 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   // Run build
   if (!opts.skipBuild) {
     const outPath = path.join(srcDir, config.codegenDirectory);
+    console.log("outPath=", outPath);
     await Promise.all([tablegen(config, outPath, remappings), worldgen(config, getExistingContracts(srcDir), outPath)]);
-    await forge(["build"], { profile });
+    await zkforge(["zkbuild -r"], { profile });
     await execa("mud", ["abi-ts"], { stdio: "inherit" });
   }
 
@@ -80,6 +86,9 @@ Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7
 in your contracts directory to use the default anvil private key.`
     );
   }
+
+  //exit process
+  process.exit(0);
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
