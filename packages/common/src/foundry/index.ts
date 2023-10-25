@@ -137,3 +137,29 @@ async function execLog(command: string, args: string[], options?: Options<string
     throw new Error(errorMessage);
   }
 }
+
+/**
+ * Execute a zkforge command
+ * @param args The arguments to pass to zkforge
+ * @param options { profile?: The foundry profile to use; silent?: If true, nothing will be logged to the console }
+ */
+export async function zkforge(args: string[], options?: { profile?: string; silent?: boolean }): Promise<void> {
+  const execOptions: Options<string> = {
+    env: { FOUNDRY_PROFILE: options?.profile },
+    stdout: "inherit",
+    stderr: "pipe",
+  };
+
+  await (options?.silent ? execa("zkforge", args, execOptions) : execLog("zkforge", args, execOptions));
+}
+
+/**
+ * Execute a zkcast command
+ * @param args The arguments to pass to zkcast
+ * @returns Stdout of the command
+ */
+export async function zkcast(args: string[], options?: { profile?: string }): Promise<string> {
+  return execLog("zkcast", args, {
+    env: { FOUNDRY_PROFILE: options?.profile },
+  });
+}
