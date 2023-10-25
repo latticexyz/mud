@@ -26,12 +26,21 @@ export type TableWithRecords = Table & { records: TableRecord[] };
 export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true, StoreEventsAbi>;
 export type BlockLogs = { blockNumber: StoreEventsLog["blockNumber"]; logs: StoreEventsLog[] };
 
+// only two keys for now, to reduce complexity of creating indexes on SQL tables
+// TODO: make tableId optional to enable filtering just on keys (any table)
+//       this is blocked on reworking data storage so we can more easily query data across tables
 export type SyncFilter = {
-  // TODO: make optional to enable filtering just on keys (any table)
-  //       this is blocked on reworking data storage so we can more easily query data across tables
+  /**
+   * Filter by the `bytes32` table ID.
+   */
   tableId: Hex;
-  // only two keys for now, to reduce complexity of creating indexes on SQL tables
+  /**
+   * Optionally filter by the `bytes32` value of the key in the first position (index zero of the record's key tuple).
+   */
   key0?: Hex;
+  /**
+   * Optionally filter by the `bytes32` value of the key in the second position (index one of the record's key tuple).
+   */
   key1?: Hex;
 };
 
