@@ -46,7 +46,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   console.log(profile);
 
   //exit process
-  process.exit(0);
+  // process.exit(0);
 
   const config = (await loadConfig(opts.configPath)) as StoreConfig & WorldConfig;
   if (opts.printConfig) {

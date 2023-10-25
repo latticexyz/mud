@@ -7,7 +7,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
-import { forge, getOutDirectory, getRemappings, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
+import { zkforge, getOutDirectory, getRemappings, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { execa } from "execa";
 import { MUDError } from "@latticexyz/common/errors";
@@ -74,7 +74,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     const outPath = path.join(srcDir, config.codegenDirectory);
     console.log("outPath=", outPath);
     await Promise.all([tablegen(config, outPath, remappings), worldgen(config, getExistingContracts(srcDir), outPath)]);
-    await zkforge(["zkbuild -r"], { profile });
+    await zkforge(["zkbuild", "-r"], { profile });
     await execa("mud", ["abi-ts"], { stdio: "inherit" });
   }
 
