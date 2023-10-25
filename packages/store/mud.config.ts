@@ -1,6 +1,7 @@
+import { resolveConfig } from "./ts/config/experimental/resolveConfig";
 import { mudConfig } from "./ts/register";
 
-export default mudConfig({
+const config = mudConfig({
   storeImportPath: "../../",
   namespace: "store",
   userTypes: {
@@ -47,5 +48,33 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
+    Shorthand: {
+      keySchema: {
+        key: "ResourceId",
+      },
+      valueSchema: "ResourceId",
+    },
   },
 });
+
+export default config;
+
+const resolvedConfig = resolveConfig(config);
+
+resolvedConfig.tables.Shorthand.keySchema.key;
+//                                        ^?
+
+resolvedConfig.tables.Shorthand.valueSchema.value;
+//                                          ^?
+
+resolvedConfig.resolved.tables.Shorthand.keySchema.key.type;
+//                                                     ^?
+
+resolvedConfig.resolved.tables.Shorthand.keySchema.key.internalType;
+//                                                     ^?
+
+resolvedConfig.resolved.tables.Shorthand.valueSchema.value.type;
+//                                                         ^?
+
+resolvedConfig.resolved.tables.Shorthand.valueSchema.value.internalType;
+//                                                         ^?
