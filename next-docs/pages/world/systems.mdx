@@ -1,1 +1,80 @@
 # Systems
+
+One of the design principles of MUD is to separate the state of the `World` from the business logic that it implements.
+We do this by having stateless `System` contracts with the functions that implement the business logic.
+These contracts are called through the `World`, and call back on the `World` when they need to read or modify state information, which is stored in [tables](./tables).
+
+<details>
+
+<summary>Detailed illustration</summary>
+
+![Detailed illustration](./world-table.svg)
+
+1. An external entity (contract or externally owned account) calls on the `World` a function called `myns_sys_fun`.
+   This means the `fun` function in the `sys` system, which is part of the `myns` namespace (the system is also refered to as `myns:sys`).
+
+1. The `World` verifies that access is permitted (for example, because `myns:sys` is publicly accessible) and if so calls `fun` on the `myns:sys` contract with the provided parameters.
+
+1. At some point in its execution `fun` decides to update the data in the table `myns:tab`.
+   As with all other tables, this table is stored in the `World`'s storage.
+   To modify it, `fun` calls a function on the `World` contract.
+
+1. The `World` verifies that access is permitted (by default it would be, because `myns:sys` has access to the `myns` namespace).
+   If so, it modifies the data in the `myns:tab` table.
+
+</details>
+
+The `World` serves as a central entry point and forwards calls to systems, which allows it to provide [access control](/world/namespaces-access-control).
+
+## Writing systems
+
+A `System` should _not_ have any state, but store all of it in tables in the `World`.
+There are several reasons for this:
+
+- It allows a `World` to enforce access controls.
+- It allows the same `System` to be used by multiple `World` contracts.
+- Upgrades are a lot simpler when all the state is centralized outside of the `System` contract.
+
+Because calls to systems are proxied by the `World`, some message fields don't reflect the original call.
+Use these substitutes:
+
+| Normal code  | `System` replacement |
+| ------------ | -------------------- |
+| `msg.sender` | `_msgSender()`       |
+| `msg.value`  | `_msgValue()`        |
+
+### Calling one `System` from another
+
+Waiting for an answer to https://discord.com/channels/865335009915961364/1156299216575012946/1167161696972984441
+
+- Either via an external call (via the World, either `call`, or `callFrom`, or a function selector) or via an internal `delegatecall` directly to the system contract
+- If `delegatecall` is used, the called system inherits all the context of the calling system, including its access rights. It's recommended to use `WorldContextProvider` in this case to pass the `msg.sender` and `msg,value` to the called system.
+- Note: As a security measure, the World is not allowed to call itself via an external call. This has the effect that root systems (which inherit the world context) can't call other systems via an external call, but they can call other systems via an internal `delegatecall` (ie using WorldContextProvider as mentioned above). This limitation does not apply to non-root systems.
+- Note: if calling a system via an external call via the World, the `msg.sender` will be the calling system, not the original caller. To avoid this, a `delegatecall` via `WorldContextProvider` can be used. (Note again that in this case the access control rights of the calling systems apply, not those of the called system). Alternatively an external call via `callFrom` is possible, but requires approval from the original caller.
+
+## Registering systems
+
+- They are registered in a World with an ID and are called via the World (either via `call` or `callFrom`, or optionally via a function selector registered for them)
+- Note that a system can only be registered in a World once (but it can be registered in multiple Worlds). This is to guarantee a one-to-one mapping between system address and system ID in the World.
+- Systems can be upgraded by the namespace owner.
+- Upgrading a system is done by deploying a new system and registering it with the same ID as the old system.
+- The old system loses access to the namespace and the new system is granted access to the namespace.
+- Note that access that was manually granted to the old system's address is not automatically upgraded to the new system's address
+
+### Root systems vs non-root systems
+
+- Root systems are systems registered in the root namespace (`bytes14(0)`)
+- The difference between root systems and non-root systems is that root systems are `delegatecall`ed by the World, while non-root systems are `call`ed by the World.
+- Since root systems are `delegatecall`ed, they can access the World's storage directly (via the internal `StoreCore` methods), instead of going through the external access controlled `IStore` methods
+- This also means that root systems can modify all tables, independent of their access control settings
+- The table libraries abstract this away, so that the same code can be used for root and non-root systems
+- As with other namespaces, only the owner of the root namespace can register systems in the root namespace
+- Because of this privilidged role, the root namespace should be used sparingly.
+
+  ### Private systems
+
+- Systems can be registered as private or public systems.
+- If they are registered as public systems, no access control checks are performed and anyone can call them via the World
+- If they are registered as private systems, the same access control checks are performed as for Tables (see access control)
+
+### Calling systems from other systems
