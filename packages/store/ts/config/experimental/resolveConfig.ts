@@ -1,6 +1,7 @@
 import { StringForUnion } from "@latticexyz/common/type-utils";
 import { StoreConfig, TableConfig, UserTypesConfig } from "../storeConfig";
 import { UserType } from "@latticexyz/common/codegen";
+import { mapObject } from "@latticexyz/common/utils";
 
 export type ResolvedStoreConfig<TStoreConfig extends StoreConfig> = TStoreConfig & {
   /** @deprecated Note: this property is experimental and expected to change */
@@ -34,10 +35,10 @@ export type ResolvedValueSchema<
   TValueSchema extends TableConfig["valueSchema"],
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion
-> = ResolvedSchema<TValueSchema, TUserTypes, TEnumNames>;
+> = ResolvedSchema<Exclude<TValueSchema, string>, TUserTypes, TEnumNames>;
 
 export type ResolvedSchema<
-  TSchema extends TableConfig["keySchema"] | TableConfig["valueSchema"],
+  TSchema extends Exclude<TableConfig["keySchema"] | TableConfig["valueSchema"], string>,
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion
 > = {
@@ -84,12 +85,18 @@ function resolveTable<
   tableConfig: TTableConfig,
   userTypes: TUserTypes,
   enums: TEnums
-): ResolvedTableConfig<TTableConfig, TUserTypes, TEnums[number]> {
+): ResolvedTableConfig<typeof tableConfig, TUserTypes, TEnums[number]> {
+  const { keySchema: _, valueSchema: __, ...rest } = tableConfig;
+
   return {
-    ...tableConfig,
-    keySchema: resolveKeySchema(tableConfig.keySchema ?? { key: "bytes32" }, userTypes, enums),
-    valueSchema: resolveValueSchema(tableConfig.valueSchema, userTypes, enums),
-  } as ResolvedTableConfig<TTableConfig, TUserTypes, TEnums[number]>;
+    ...rest,
+    keySchema: resolveKeySchema(tableConfig.keySchema, userTypes, enums),
+    valueSchema: resolveValueSchema(tableConfig.valueSchema, userTypes, enums) as ResolvedSchema<
+      Exclude<TTableConfig["valueSchema"], string>,
+      TUserTypes,
+      TEnums[number]
+    >,
+  };
 }
 
 function resolveKeySchema<
@@ -101,7 +108,6 @@ function resolveKeySchema<
   userTypes: TUserTypes,
   enums: TEnums
 ): ResolvedKeySchema<TKeySchema extends undefined ? { key: "bytes32" } : TKeySchema, TUserTypes, TEnums[number]> {
-  // It's concerning that the type says the schema is expanded, but in reality it's not
   const schema = (
     keySchema == null ? { key: "bytes32" } : typeof keySchema === "string" ? { key: keySchema } : keySchema
   ) as TKeySchema extends undefined ? { key: "bytes32" } : TKeySchema;
@@ -117,25 +123,27 @@ function resolveValueSchema<
   userTypes: TUserTypes,
   enums: TEnums
 ): ResolvedValueSchema<TValueSchema, TUserTypes, TEnums[number]> {
-  // It's concerning that the type says the schema is expanded, but in reality it's not
-  const schema = typeof valueSchema === "string" ? ({ value: valueSchema } as unknown as TValueSchema) : valueSchema;
+  const schema = (
+    typeof valueSchema === "string" ? ({ value: valueSchema } as unknown as TValueSchema) : valueSchema
+  ) as Exclude<TValueSchema, string>;
   return resolveSchema(schema, userTypes, enums);
 }
 
 function resolveSchema<
-  TSchema extends NonNullable<TableConfig["keySchema"]> | TableConfig["valueSchema"],
+  TSchema extends Exclude<NonNullable<TableConfig["keySchema"]> | TableConfig["valueSchema"], string>,
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnums extends StringForUnion[]
 >(schema: TSchema, userTypes: TUserTypes, enums: TEnums): ResolvedSchema<TSchema, TUserTypes, TEnums[number]> {
-  const resolvedSchema: Record<string, { internalType: string; type: string }> = {};
-  for (const [key, value] of Object.entries(schema)) {
+  return mapObject<TSchema, ResolvedSchema<TSchema, TUserTypes, TEnums[number]>>(schema, (key, value) => {
     const isUserType = userTypes && value in userTypes;
     const isEnum = enums.includes(value);
-    resolvedSchema[key] = {
-      // This mirrors the logic in the `ResolvedSchema` type
-      type: isUserType ? userTypes[value].internalType : isEnum ? ("uint8" as const) : value,
+    return {
+      type: (isUserType ? userTypes[value].internalType : isEnum ? ("uint8" as const) : value) as ResolvedSchema<
+        TSchema,
+        TUserTypes,
+        TEnums[number]
+      >[typeof key]["type"],
       internalType: value,
     };
-  }
-  return resolvedSchema as ResolvedValueSchema<TSchema, TUserTypes, TEnums[number]>;
+  });
 }
