@@ -1,1 +1,29 @@
 # Tables
+
+`World` uses the [store tables](/store/tables), but adds [access control](/world/namespaces-access-control).
+For onchain tables, the data is stored by the `World` contract, [which is also a `StoreData`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L43).
+
+When a `System` attempts to write to storage, the request goes into [`StoreSwitch`](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol). This library decides which approach to use:
+
+- If the `System` is in the root namespace, then it was called with [`delegatecall`](https://docs.soliditylang.org/en/v0.8.22/introduction-to-smart-contracts.html#delegatecall-and-libraries).
+  This means it has the same storage as the `World` and can write directly to storage using [`StoreCore`](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreCore.sol).
+  These calls bypass access control.
+
+- If the `System` is in any other namespace, then it was called with [`call`](https://docs.soliditylang.org/en/v0.8.22/introduction-to-smart-contracts.html#message-calls) and has to call back into the `World` using [`IStore`](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol).
+  These calls go through access control.
+  They are only permitted if the `System` has access to the table in question.
+  By default a `System` has access to its own namespace and therefore to all the tables inside it - but the namespace owner can modify that if necessary.
+
+![Interaction between the `World`, a `System`, and a table](./world-table.svg)
+
+1. An external entity (contract or externally owned account) calls on the `World` a function called `myns_sys_fun`.
+   This means the `fun` function in the `sys` system, which is part of the `myns` namespace (the system is also refered to as `myns:sys`).
+
+2. The `World` verifies that access is permitted (for example, because `myns:sys` is publicly accessible) and if so calls `fun` on the `myns:sys` contract with the provided parameters.
+
+3. At some point in its execution `fun` decides to update the data in the table `myns:tab`.
+   As with all other tables, this table is stored in the `World`'s storage.
+   To modify it, `fun` calls a function on the `World` contract.
+
+4. The `World` verifies that access is permitted (by default it would be, because `myns:sys` has access to the `myns` namespace).
+   If so, it modifies the data in the `myns:tab` table.
