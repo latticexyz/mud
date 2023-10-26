@@ -17,7 +17,7 @@ export type ResolvedStoreConfig<TStoreConfig extends StoreConfig> = TStoreConfig
 
 export type ResolvedTableConfig<
   TTableConfig extends TableConfig,
-  TUserTypes extends UserTypesConfig,
+  TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion
 > = Omit<TTableConfig, "keySchema" | "valueSchema"> & {
   keySchema: ResolvedKeySchema<TTableConfig["keySchema"], TUserTypes, TEnumNames>;
@@ -26,19 +26,19 @@ export type ResolvedTableConfig<
 
 export type ResolvedKeySchema<
   TKeySchema extends TableConfig["keySchema"],
-  TUserTypes extends UserTypesConfig,
+  TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion
 > = ResolvedSchema<TKeySchema, TUserTypes, TEnumNames>;
 
 export type ResolvedValueSchema<
   TValueSchema extends TableConfig["valueSchema"],
-  TUserTypes extends UserTypesConfig,
+  TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion
 > = ResolvedSchema<TValueSchema, TUserTypes, TEnumNames>;
 
 export type ResolvedSchema<
   TSchema extends TableConfig["keySchema"] | TableConfig["valueSchema"],
-  TUserTypes extends UserTypesConfig,
+  TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion
 > = {
   [key in keyof TSchema]: {
@@ -78,7 +78,7 @@ export function resolveConfig<TStoreConfig extends StoreConfig>(
 
 function resolveTable<
   TTableConfig extends TableConfig,
-  TUserTypes extends UserTypesConfig,
+  TUserTypes extends UserTypesConfig["userTypes"],
   TEnums extends StringForUnion[]
 >(
   tableConfig: TTableConfig,
@@ -94,44 +94,46 @@ function resolveTable<
 
 function resolveKeySchema<
   TKeySchema extends TableConfig["keySchema"],
-  TUserTypes extends UserTypesConfig,
+  TUserTypes extends UserTypesConfig["userTypes"],
   TEnums extends StringForUnion[]
 >(
   keySchema: TKeySchema,
   userTypes: TUserTypes,
   enums: TEnums
 ): ResolvedKeySchema<TKeySchema extends undefined ? { key: "bytes32" } : TKeySchema, TUserTypes, TEnums[number]> {
-  const schema = (keySchema ?? { key: "bytes32" }) as TKeySchema extends undefined ? { key: "bytes32" } : TKeySchema;
+  // It's concerning that the type says the schema is expanded, but in reality it's not
+  const schema = (
+    keySchema == null ? { key: "bytes32" } : typeof keySchema === "string" ? { key: keySchema } : keySchema
+  ) as TKeySchema extends undefined ? { key: "bytes32" } : TKeySchema;
   return resolveSchema(schema, userTypes, enums);
 }
 
 function resolveValueSchema<
   TValueSchema extends TableConfig["valueSchema"],
-  TUserTypes extends UserTypesConfig,
+  TUserTypes extends UserTypesConfig["userTypes"],
   TEnums extends StringForUnion[]
 >(
-  schema: TValueSchema,
+  valueSchema: TValueSchema,
   userTypes: TUserTypes,
   enums: TEnums
 ): ResolvedValueSchema<TValueSchema, TUserTypes, TEnums[number]> {
+  // It's concerning that the type says the schema is expanded, but in reality it's not
+  const schema = typeof valueSchema === "string" ? ({ value: valueSchema } as unknown as TValueSchema) : valueSchema;
   return resolveSchema(schema, userTypes, enums);
 }
 
 function resolveSchema<
   TSchema extends NonNullable<TableConfig["keySchema"]> | TableConfig["valueSchema"],
-  TUserTypes extends UserTypesConfig,
+  TUserTypes extends UserTypesConfig["userTypes"],
   TEnums extends StringForUnion[]
->(schema: TSchema, { userTypes }: TUserTypes, enums: TEnums): ResolvedSchema<TSchema, TUserTypes, TEnums[number]> {
+>(schema: TSchema, userTypes: TUserTypes, enums: TEnums): ResolvedSchema<TSchema, TUserTypes, TEnums[number]> {
   const resolvedSchema: Record<string, { internalType: string; type: string }> = {};
   for (const [key, value] of Object.entries(schema)) {
+    const isUserType = userTypes && value in userTypes;
+    const isEnum = enums.includes(value);
     resolvedSchema[key] = {
       // This mirrors the logic in the `ResolvedSchema` type
-      type:
-        userTypes && key in userTypes
-          ? userTypes[key].internalType
-          : enums.includes(value)
-          ? ("uint8" as const)
-          : value,
+      type: isUserType ? userTypes[value].internalType : isEnum ? ("uint8" as const) : value,
       internalType: value,
     };
   }
