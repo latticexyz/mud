@@ -26,9 +26,17 @@ These contracts are called through the `World`, and call back on the `World` whe
 
 The `World` serves as a central entry point and forwards calls to systems, which allows it to provide [access control](/world/namespaces-access-control).
 
+## Calling systems
+
+To call a `System`, you call the `World` in one of these ways:
+
+- If a function is [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L164-L201), you can call it using the syntax `world.namespace_system_function(parameters)`.
+- You can use [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L346-L351).
+- If you have [the proper delegation](/world/account-delegation) you can use [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L353-L394).
+
 ## Writing systems
 
-A `System` should _not_ have any state, but store all of it in tables in the `World`.
+A `System` should _not_ have any state internally, but store all of it in tables in the `World`.
 There are several reasons for this:
 
 - It allows a `World` to enforce access controls.
@@ -43,18 +51,24 @@ Use these substitutes:
 | `msg.sender` | `_msgSender()`       |
 | `msg.value`  | `_msgValue()`        |
 
+When calling other contracts from a `System`, be aware that if you use `delegatecall` the called contract inherits the caller's permissions and can modify data from the `World` on behalf of the `System`.
+
 ### Calling one `System` from another
 
-Waiting for an answer to https://discord.com/channels/865335009915961364/1156299216575012946/1167161696972984441
+There are two ways to call one `System` from another one.
 
-- Either via an external call (via the World, either `call`, or `callFrom`, or a function selector) or via an internal `delegatecall` directly to the system contract
-- If `delegatecall` is used, the called system inherits all the context of the calling system, including its access rights. It's recommended to use `WorldContextProvider` in this case to pass the `msg.sender` and `msg,value` to the called system.
-- Note: As a security measure, the World is not allowed to call itself via an external call. This has the effect that root systems (which inherit the world context) can't call other systems via an external call, but they can call other systems via an internal `delegatecall` (ie using WorldContextProvider as mentioned above). This limitation does not apply to non-root systems.
-- Note: if calling a system via an external call via the World, the `msg.sender` will be the calling system, not the original caller. To avoid this, a `delegatecall` via `WorldContextProvider` can be used. (Note again that in this case the access control rights of the calling systems apply, not those of the called system). Alternatively an external call via `callFrom` is possible, but requires approval from the original caller.
+| Call type                                    | `call` to the `World`                                                                                                                           | `delegatecall` directly to the `System`                                                                                                                         |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Permissions                                  | those of the called `System`                                                                                                                    | those of the calling `System`                                                                                                                                   |
+| `_msgSender()`                               | calling `System` (unless you can use `callFrom`, which is only available when the user [delegates](/world/account-delegation) to your `System`) | can use [`WorldContextProvider`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L180-L203) to transfer the correct information |
+| `_msgValue()`                                | zero                                                                                                                                            | can use [`WorldContextProvider`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L180-L203) to transfer the correct information |
+| Can be used by systems in the root namespace | No (it's a security measure)                                                                                                                    | Yes                                                                                                                                                             |
 
 ## Registering systems
 
-- They are registered in a World with an ID and are called via the World (either via `call` or `callFrom`, or optionally via a function selector registered for them)
+For a `System` to be callable from a `World` it has to be [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L97-L201).
+If the namespace in which the `System` is registered already exists, only the [namespace owner]
+
 - Note that a system can only be registered in a World once (but it can be registered in multiple Worlds). This is to guarantee a one-to-one mapping between system address and system ID in the World.
 - Systems can be upgraded by the namespace owner.
 - Upgrading a system is done by deploying a new system and registering it with the same ID as the old system.
@@ -76,5 +90,3 @@ Waiting for an answer to https://discord.com/channels/865335009915961364/1156299
 - Systems can be registered as private or public systems.
 - If they are registered as public systems, no access control checks are performed and anyone can call them via the World
 - If they are registered as private systems, the same access control checks are performed as for Tables (see access control)
-
-### Calling systems from other systems
