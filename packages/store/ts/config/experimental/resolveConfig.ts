@@ -2,15 +2,18 @@ import { StringForUnion } from "@latticexyz/common/type-utils";
 import { StoreConfig, TableConfig, UserTypesConfig } from "../storeConfig";
 import { UserType } from "@latticexyz/common/codegen";
 import { mapObject } from "@latticexyz/common/utils";
+import { resourceToHex } from "@latticexyz/common";
 
 export type ResolvedStoreConfig<TStoreConfig extends StoreConfig> = TStoreConfig & {
   /** @deprecated Note: this property is experimental and expected to change */
   _resolved: {
     tables: {
-      [key in keyof TStoreConfig["tables"]]: ResolvedTableConfig<
-        TStoreConfig["tables"][key],
+      [TableKey in keyof TStoreConfig["tables"] & string]: ResolvedTableConfig<
+        TStoreConfig["tables"][TableKey],
         TStoreConfig["userTypes"],
-        keyof TStoreConfig["enums"] & string
+        keyof TStoreConfig["enums"] & string,
+        TStoreConfig["namespace"],
+        TableKey
       >;
     };
   };
@@ -19,10 +22,15 @@ export type ResolvedStoreConfig<TStoreConfig extends StoreConfig> = TStoreConfig
 export type ResolvedTableConfig<
   TTableConfig extends TableConfig,
   TUserTypes extends UserTypesConfig["userTypes"],
-  TEnumNames extends StringForUnion
+  TEnumNames extends StringForUnion,
+  TNamespace extends string = string,
+  TName extends string = string
 > = Omit<TTableConfig, "keySchema" | "valueSchema"> & {
   keySchema: ResolvedKeySchema<TTableConfig["keySchema"], TUserTypes, TEnumNames>;
   valueSchema: ResolvedValueSchema<TTableConfig["valueSchema"], TUserTypes, TEnumNames>;
+  namespace: TNamespace;
+  name: TName;
+  tableId: `0x${string}`;
 };
 
 export type ResolvedKeySchema<
@@ -64,9 +72,13 @@ export function resolveConfig<TStoreConfig extends StoreConfig>(
   const resolvedTables: Record<string, ReturnType<typeof resolveTable>> = {};
 
   for (const key of Object.keys(config.tables)) {
-    resolvedTables[key] = resolveTable(config.tables[key], config.userTypes, Object.keys(config.enums)) as ReturnType<
-      typeof resolveTable
-    >;
+    resolvedTables[key] = resolveTable(
+      config.tables[key],
+      config.userTypes,
+      Object.keys(config.enums),
+      config.namespace,
+      key
+    ) as ReturnType<typeof resolveTable>;
   }
 
   return {
@@ -80,11 +92,15 @@ export function resolveConfig<TStoreConfig extends StoreConfig>(
 function resolveTable<
   TTableConfig extends TableConfig,
   TUserTypes extends UserTypesConfig["userTypes"],
-  TEnums extends StringForUnion[]
+  TEnums extends StringForUnion[],
+  TNamespace extends string,
+  TName extends string
 >(
   tableConfig: TTableConfig,
   userTypes: TUserTypes,
-  enums: TEnums
+  enums: TEnums,
+  namespace: TNamespace,
+  name: TName
 ): ResolvedTableConfig<typeof tableConfig, TUserTypes, TEnums[number]> {
   const { keySchema, valueSchema, ...rest } = tableConfig;
 
@@ -96,6 +112,9 @@ function resolveTable<
       TUserTypes,
       TEnums[number]
     >,
+    namespace,
+    name,
+    tableId: resourceToHex({ type: "table", namespace, name }),
   };
 }
 
