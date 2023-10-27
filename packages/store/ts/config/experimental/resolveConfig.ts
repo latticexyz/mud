@@ -153,7 +153,7 @@ function resolveSchema<
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnums extends StringForUnion[]
 >(schema: TSchema, userTypes: TUserTypes, enums: TEnums): ResolvedSchema<TSchema, TUserTypes, TEnums[number]> {
-  return mapObject<TSchema, ResolvedSchema<TSchema, TUserTypes, TEnums[number]>>(schema, (key, value) => {
+  return mapObject<TSchema, ResolvedSchema<TSchema, TUserTypes, TEnums[number]>>(schema, (value, key) => {
     const isUserType = userTypes && value in userTypes;
     const isEnum = enums.includes(value);
     return {

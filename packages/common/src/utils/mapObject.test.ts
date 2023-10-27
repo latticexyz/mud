@@ -11,9 +11,9 @@ describe("mapObject", () => {
 
     type Mapped<T extends Record<string, string>> = { [key in keyof T]: `mapped-${T[key]}` };
 
-    const target = mapObject<typeof source, Mapped<typeof source>>(source, (key) => {
-      if (key === "hello") return `mapped-${source[key]}`;
-      if (key === "foo") return `mapped-${source[key]}`;
+    const target = mapObject<typeof source, Mapped<typeof source>>(source, (value, key) => {
+      if (key === "hello") return `mapped-${value}`;
+      if (key === "foo") return `mapped-${value}`;
       assertExhaustive(key);
     });
 
