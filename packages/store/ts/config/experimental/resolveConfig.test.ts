@@ -30,19 +30,19 @@ const config = resolveConfig(
 
 describe("resolveConfig", () => {
   it("should resolve userTypes and enums", () => {
-    expect(config._resolved.tables.Shorthand.namespace).toEqual("the-namespace");
+    expect(config.tables.Shorthand.namespace).toEqual("the-namespace");
 
-    expect(config._resolved.tables.Shorthand.name).toEqual("Shorthand");
+    expect(config.tables.Shorthand.name).toEqual("Shorthand");
 
-    expect(config._resolved.tables.Shorthand.tableId).toEqual(
+    expect(config.tables.Shorthand.tableId).toEqual(
       resourceToHex({ type: "table", namespace: "the-namespace", name: "Shorthand" })
     );
 
-    expect(config._resolved.tables.Shorthand.keySchema).toEqual({
+    expect(config.tables.Shorthand.keySchema).toEqual({
       key: { internalType: "ResourceId", type: "bytes32" },
     });
 
-    expect(config._resolved.tables.Shorthand.valueSchema).toEqual({
+    expect(config.tables.Shorthand.valueSchema).toEqual({
       value: { internalType: "ResourceType", type: "uint8" },
     });
   });

@@ -29,20 +29,20 @@ const config = resolveConfig(
 );
 
 describe("resolveConfig", () => {
-  expectTypeOf<typeof config._resolved.tables.Shorthand.namespace>().toEqualTypeOf<"the-namespace">();
+  expectTypeOf<typeof config.tables.Shorthand.namespace>().toEqualTypeOf<"the-namespace">();
 
-  expectTypeOf<typeof config._resolved.tables.Shorthand.name>().toEqualTypeOf<"Shorthand">();
+  expectTypeOf<typeof config.tables.Shorthand.name>().toEqualTypeOf<"Shorthand">();
 
-  expectTypeOf<typeof config._resolved.tables.Shorthand.tableId>().toEqualTypeOf<`0x${string}`>();
+  expectTypeOf<typeof config.tables.Shorthand.tableId>().toEqualTypeOf<`0x${string}`>();
 
-  expectTypeOf<typeof config._resolved.tables.Shorthand.keySchema>().toEqualTypeOf<{
+  expectTypeOf<typeof config.tables.Shorthand.keySchema>().toEqualTypeOf<{
     key: {
       internalType: "ResourceId";
       type: "bytes32";
     };
   }>();
 
-  expectTypeOf<typeof config._resolved.tables.Shorthand.valueSchema>().toEqualTypeOf<{
+  expectTypeOf<typeof config.tables.Shorthand.valueSchema>().toEqualTypeOf<{
     value: {
       internalType: "ResourceType";
       type: "uint8";

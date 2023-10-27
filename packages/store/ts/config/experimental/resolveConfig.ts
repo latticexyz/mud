@@ -4,18 +4,15 @@ import { UserType } from "@latticexyz/common/codegen";
 import { mapObject } from "@latticexyz/common/utils";
 import { resourceToHex } from "@latticexyz/common";
 
-export type ResolvedStoreConfig<TStoreConfig extends StoreConfig> = TStoreConfig & {
-  /** @deprecated Note: this property is experimental and expected to change */
-  _resolved: {
-    tables: {
-      [TableKey in keyof TStoreConfig["tables"] & string]: ResolvedTableConfig<
-        TStoreConfig["tables"][TableKey],
-        TStoreConfig["userTypes"],
-        keyof TStoreConfig["enums"] & string,
-        TStoreConfig["namespace"],
-        TableKey
-      >;
-    };
+export type ResolvedStoreConfig<TStoreConfig extends StoreConfig> = {
+  tables: {
+    [TableKey in keyof TStoreConfig["tables"] & string]: ResolvedTableConfig<
+      TStoreConfig["tables"][TableKey],
+      TStoreConfig["userTypes"],
+      keyof TStoreConfig["enums"] & string,
+      TStoreConfig["namespace"],
+      TableKey
+    >;
   };
 };
 
@@ -82,10 +79,7 @@ export function resolveConfig<TStoreConfig extends StoreConfig>(
   }
 
   return {
-    ...config,
-    _resolved: {
-      tables: resolvedTables as ResolvedStoreConfig<TStoreConfig>["_resolved"]["tables"],
-    },
+    tables: resolvedTables as ResolvedStoreConfig<TStoreConfig>["tables"],
   };
 }
 
