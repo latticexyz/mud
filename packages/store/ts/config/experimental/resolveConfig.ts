@@ -86,12 +86,12 @@ function resolveTable<
   userTypes: TUserTypes,
   enums: TEnums
 ): ResolvedTableConfig<typeof tableConfig, TUserTypes, TEnums[number]> {
-  const { keySchema: _, valueSchema: __, ...rest } = tableConfig;
+  const { keySchema, valueSchema, ...rest } = tableConfig;
 
   return {
     ...rest,
-    keySchema: resolveKeySchema(tableConfig.keySchema, userTypes, enums),
-    valueSchema: resolveValueSchema(tableConfig.valueSchema, userTypes, enums) as ResolvedSchema<
+    keySchema: resolveKeySchema(keySchema, userTypes, enums),
+    valueSchema: resolveValueSchema(valueSchema, userTypes, enums) as ResolvedSchema<
       Exclude<TTableConfig["valueSchema"], string>,
       TUserTypes,
       TEnums[number]
