@@ -63,7 +63,6 @@ export type ResolvedSchema<
   };
 };
 
-
 /**
  * @internal Internal only
  * @deprecated Internal only
