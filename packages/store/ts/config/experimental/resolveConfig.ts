@@ -63,6 +63,11 @@ export type ResolvedSchema<
   };
 };
 
+
+/**
+ * @internal Internal only
+ * @deprecated Internal only
+ */
 export function resolveConfig<TStoreConfig extends StoreConfig>(
   config: TStoreConfig
 ): ResolvedStoreConfig<TStoreConfig> {
