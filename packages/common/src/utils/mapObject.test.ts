@@ -17,7 +17,7 @@ describe("mapObject", () => {
       assertExhaustive(key);
     });
 
-    expect(target).toEqual({ hello: `mapped-world` });
+    expect(target).toEqual({ hello: `mapped-world`, foo: `mapped-bar` });
     expectTypeOf<typeof target>().toEqualTypeOf<Mapped<typeof source>>();
   });
 });
