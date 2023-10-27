@@ -67,13 +67,22 @@ There are two ways to call one `System` from another one.
 ## Registering systems
 
 For a `System` to be callable from a `World` it has to be [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L97-L201).
-If the namespace in which the `System` is registered already exists, only the [namespace owner]
+If the namespace in which the `System` is registered already exists, only the [namespace owner](/world/namespaces-access-control#ownership).
+If it doesn't exist yet it is created, and the address that called `registerSystem` is assigned as the owner of the new namespace.
 
-- Note that a system can only be registered in a World once (but it can be registered in multiple Worlds). This is to guarantee a one-to-one mapping between system address and system ID in the World.
-- Systems can be upgraded by the namespace owner.
-- Upgrading a system is done by deploying a new system and registering it with the same ID as the old system.
-- The old system loses access to the namespace and the new system is granted access to the namespace.
-- Note that access that was manually granted to the old system's address is not automatically upgraded to the new system's address
+In a `World` there can only be one `System` per contract address.
+If you need the functionality and there is already a `System` registered for that address, you can always deploy the bytecode as a new contract.
+
+### Upgrading systems
+
+The namespace owner can upgrade a `System`.
+This is a two-step process: deploy the contract for the new `System` and then call `registerSystem` with the same `ResourceId` as the old one and the new contract address.
+
+This upgrade process removes the old `System` contract's access to the namespace, and gives access to the new contract.
+Any access granted _manually_ to the `System` is not revoked, nor granted to the upgraded `System`.
+
+**Note:** You _should_ make sure to remove any such access.
+`System` access is based on the contract address, so somebody else could register a namespace they'd own, register the old `System` contract as a system in their namespace, and then abuse those permissions (if the `System` has code that can be used for that, of course).
 
 ### Root systems vs non-root systems
 
