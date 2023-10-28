@@ -1,1 +1,14 @@
 # System hooks
+
+The [namespace owner](/world/namespaces-access-control#ownership) can [register](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L65-L81) hooks that are called before any call to a specific `System`, after such a call, or both before and after the call.
+
+## System hook contracts
+
+A system hook contract is a contract that implements the [`ISystemHook`](https://github.com/latticexyz/mud/blob/main/packages/world/src/ISystemHook.sol) interface.
+This interface requires the implementation of two functions.
+
+- `onBeforeCallSystem`, which is called before the actual call.
+- `onAfterCallSystem`, which is called afterward.
+- `supportsInterface`, which is part of [IEP-165](https://eips.ethereum.org/EIPS/eip-165) used to specify which interfaces are supported by a contract.
+
+To have the correct `supportsInterface` you can inherit from [`SystemHook`](https://github.com/latticexyz/mud/blob/main/packages/world/src/SystemHook.sol).
