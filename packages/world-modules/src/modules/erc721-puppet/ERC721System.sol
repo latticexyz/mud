@@ -27,6 +27,7 @@ import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApproval
 /**
  * TODO:
  * - Add ERC721 tests
+ * - TODO: allow burn to be called by owner of token
  */
 
 contract ERC721System is IERC721Mintable, System, PuppetMaster {
@@ -157,6 +158,31 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
   function mint(address to, uint256 tokenId) public virtual {
     _requireOwner();
     _mint(to, tokenId);
+  }
+
+  /**
+   * @dev Mints `tokenId`, transfers it to `to` and checks for `to` acceptance.
+   *
+   * Requirements:
+   *
+   * - caller must own the namespace
+   * - `tokenId` must not exist.
+   * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+   *
+   * Emits a {Transfer} event.
+   */
+  function safeMint(address to, uint256 tokenId) public {
+    _requireOwner();
+    _safeMint(to, tokenId, "");
+  }
+
+  /**
+   * @dev Same as {xref-ERC721-safeMint-address-uint256-}[`_safeMint`], with an additional `data` parameter which is
+   * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
+   */
+  function safeMint(address to, uint256 tokenId, bytes memory data) public virtual {
+    _requireOwner();
+    _safeMint(to, tokenId, data);
   }
 
   /**
