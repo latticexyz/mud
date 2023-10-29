@@ -5,11 +5,64 @@ Any ETH sent with a call to a `System` is kept on the `World`, and credited to t
 This has two important effects:
 
 - The ETH balance is shared between the different `System` contracts in the same namespace of the same `World`.
-- The same `System` can be used in multiple `World` contracts and the ETH balances remain separate.
+- The same `System` can be used in multiple `World` contracts, and in multiple namespaces in the same `World`, and the ETH balances remain separate.
 
 To know how much ETH a call has included a `System` can check [`_msgValue()`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L34-L36).
 
 To know how much ETH a specific namespace has you can look in `world:Balances` (the `Balances` table of the `world` namespace).
+
+<details>
+
+<summary>See this in action</summary>
+
+1. Have a MUD application running.
+   The easiest way to do this is to [run the template locally](/template/typescript/getting-started).
+
+1. Here we are not concerned with the client, so change to the `contracts` page.
+   Because we are not concerned with the client, all the file names will be relative to `.../packages/contracts`.
+
+   ```sh copy
+   cd packages/contracts
+   ```
+
+1. Create this file as `scripts/GetBalance.s.sol`.
+
+   ```solidity filename="GetBalance.s.sol" copy
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+
+   import { Script } from "forge-std/Script.sol";
+   import { console } from "forge-std/console.sol";
+   import { IWorld } from "../src/codegen/world/IWorld.sol";
+   import { Balances, BalancesTableId, _fieldLayout } from "@latticexyz/world/src/codegen/tables/Balances.s$
+   import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+   import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+
+
+   contract GetBalance is Script {
+       function run() external {
+
+           address worldAddress = vm.envAddress("WORLD_ADDRESS");
+           StoreSwitch.setStoreAddress(worldAddress);
+           console.log("World at:", worldAddress);
+           ResourceId nsResource = WorldResourceIdLib.encodeNamespace(bytes14("world"));
+           console.log("Namespace ID: %x", uint256(ResourceId.unwrap(nsResource)));
+           uint256 balance = Balances.get(nsResource);
+           console.log("Balance: %d", balance);
+       }
+   }
+   ```
+
+   <details>
+
+   <summary>Explanation</summary>
+
+   fgff
+
+   </details>
+
+</details>
 
 To transfer ETH out of the `World` you need to have the `access` permission level to the namespace itself.
 Note that `System` contracts within the namespace do have that permission.
