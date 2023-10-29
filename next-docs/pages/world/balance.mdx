@@ -140,11 +140,19 @@ To know how much ETH a specific namespace has you can look in `world:Balances` (
 
    </details>
 
-1. Source the `.env` file (we are going to use the variables there to transfer ETH to the namespace's account).
+1. Source the `.env` file (we are going to use the variables there to transfer ETH to the root namespace's account).
 
    ```sh copy
    source .env
    ```
+
+1. Run the script.
+
+   ```sh copy
+   forge script script/GetBalance.s.sol --rpc-url http://localhost:8545
+   ```
+
+   The balance should be zero for now.
 
 1. To allow `increment` to accept wei, edit `src/systems/IncrementSystem.sol` to make it `payable`:
 
@@ -169,7 +177,50 @@ To know how much ETH a specific namespace has you can look in `world:Balances` (
 
    </CollapseCode>
 
+1. `pnpm dev` deploys the new code, but it deploys it to a new `World`.
+   Restart `pnpm dev` to have a `World` in the same address as before.
+
+1. Call `increment` with ETH.
+
+   ```sh copy
+   cast send --private-key $PRIVATE_KEY 0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342 --value 1ether "increment()"
+   ```
+
+1. Run the script again to see that the balance is higher.
+
+   ```sh copy
+   forge script script/GetBalance.s.sol --rpc-url http://localhost:8545
+   ```
+
 </details>
 
 To transfer ETH out of the `World` you need to have the `access` permission level to the namespace itself.
 Note that `System` contracts within the namespace do have that permission.
+
+You use either [`transferBalanceToNamespace`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/BalanceTransferSystem.sol#L23-L52), if you want to transfer between namespaces in the same `World`, or [`transferBalanceToAddress`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/BalanceTransferSystem.sol#L54-L77), to transfer to a different address.
+
+<details>
+
+<summary>See this in action</summary>
+
+These steps assume you already transferred 1 ether to the root namespace.
+
+1. Run this command to transfer 10 wei to the zero address.
+
+   ```sh copy
+   cast send --private-key $PRIVATE_KEY 0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342 "transferBalanceToAddress(bytes32,address,uint256)" 0x6e73000000000000000000000000000000000000000000000000000000000000 `cast address-zero` 10
+   ```
+
+1. See that the namespace's balance is lower by 10 wei.
+
+   ```sh copy
+   forge script script/GetBalance.s.sol --rpc-url http://localhost:8545
+   ```
+
+1. See that 10 wei have been deducted from the balance of the `World`.
+
+   ```sh copy
+   cast balance $WORLD_ADDRESS
+   ```
+
+</details>
