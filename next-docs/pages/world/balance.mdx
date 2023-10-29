@@ -1,3 +1,5 @@
+import { CollapseCode } from "../../components/CollapseCode";
+
 # Balance
 
 ETH is stored in the `World` contract and owned by namespaces.
@@ -25,6 +27,22 @@ To know how much ETH a specific namespace has you can look in `world:Balances` (
    cd packages/contracts
    ```
 
+1. Create a `.env` file with:
+
+   - `PRIVATE_KEY` - the private key of an account that has ETH on the blockchain.
+   - `WORLD_ADDRESS` - the address of the `World` to which you add the namespace.
+
+   If you are using the template with a fresh `pnpm dev`, then you can use this `.env`:
+
+   ```sh filename=".env" copy
+   # Anvil default private key for the second account
+   # (NOT the account that deployed the World)
+   PRIVATE_KEY=0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+
+   # Address for the world we are extending
+   WORLD_ADDRESS=0x6e9474e9c83676b9a71133ff96db43e7aa0a4342
+   ```
+
 1. Create this file as `scripts/GetBalance.s.sol`.
 
    ```solidity filename="GetBalance.s.sol" copy
@@ -33,24 +51,21 @@ To know how much ETH a specific namespace has you can look in `world:Balances` (
 
    import { Script } from "forge-std/Script.sol";
    import { console } from "forge-std/console.sol";
-   import { IWorld } from "../src/codegen/world/IWorld.sol";
-   import { Balances, BalancesTableId, _fieldLayout } from "@latticexyz/world/src/codegen/tables/Balances.s$
+   import { Balances } from "@latticexyz/world/src/codegen/tables/Balances.sol";
    import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
    import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
    import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 
-
    contract GetBalance is Script {
-       function run() external {
-
-           address worldAddress = vm.envAddress("WORLD_ADDRESS");
-           StoreSwitch.setStoreAddress(worldAddress);
-           console.log("World at:", worldAddress);
-           ResourceId nsResource = WorldResourceIdLib.encodeNamespace(bytes14("world"));
-           console.log("Namespace ID: %x", uint256(ResourceId.unwrap(nsResource)));
-           uint256 balance = Balances.get(nsResource);
-           console.log("Balance: %d", balance);
-       }
+     function run() external {
+       address worldAddress = vm.envAddress("WORLD_ADDRESS");
+       StoreSwitch.setStoreAddress(worldAddress);
+       console.log("World at:", worldAddress);
+       ResourceId nsResource = WorldResourceIdLib.encodeNamespace(bytes14(""));
+       console.log("Namespace ID: %x", uint256(ResourceId.unwrap(nsResource)));
+       uint256 balance = Balances.get(nsResource);
+       console.log("Balance: %d wei", balance);
+     }
    }
    ```
 
@@ -58,9 +73,101 @@ To know how much ETH a specific namespace has you can look in `world:Balances` (
 
    <summary>Explanation</summary>
 
-   fgff
+   ```solidity
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+   ```
+
+   Standard Solidity boilerplate
+
+   ```solidity
+   import { Script } from "forge-std/Script.sol";
+   import { console } from "forge-std/console.sol";
+   ```
+
+   Standard [`forge` script](https://book.getfoundry.sh/tutorials/solidity-scripting) boilerplate.
+
+   ```solidity
+   import { Balances } from "@latticexyz/world/src/codegen/tables/Balances.sol";
+   ```
+
+   The `Balances` table contains namespace balances.
+   Note that while this table's Solidity code is available as part of the library, it is a standard MUD table and as such gets created from [a `mud.config.ts` file](https://github.com/latticexyz/mud/blob/main/packages/world/mud.config.ts#L55-L62).
+
+   ```solidity
+   import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+   ```
+
+   We need [this file](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol) to specify the `World`'s address.
+
+   ```solidity
+   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+   import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+   ```
+
+   We need the namespace's `ResourceId`.
+
+   ```solidity
+   contract GetBalance is Script {
+       function run() external {
+           address worldAddress = vm.envAddress("WORLD_ADDRESS");
+   ```
+
+   Get `WORLD_ADDRESS` from `.env`.
+
+   ```solidity
+          StoreSwitch.setStoreAddress(worldAddress);
+          console.log("World at:", worldAddress);
+   ```
+
+   [Set the address of the `World`](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol#L58-L65) so future data calls to go to the correct location.
+
+   ```solidity
+          ResourceId nsResource = WorldResourceIdLib.encodeNamespace(bytes14(""));
+          console.log("Namespace ID: %x", uint256(ResourceId.unwrap(nsResource)));
+   ```
+
+   Create the `ResourceId` for the root namespace.
+
+   ```solidity
+          uint256 balance = Balances.get(nsResource);
+          console.log("Balance: %d wei", balance);
+      }
+   }
+   ```
+
+   Finally, get the balance from the `world:Balances` table.
 
    </details>
+
+1. Source the `.env` file (we are going to use the variables there to transfer ETH to the namespace's account).
+
+   ```sh copy
+   source .env
+   ```
+
+1. To allow `increment` to accept wei, edit `src/systems/IncrementSystem.sol` to make it `payable`:
+
+   <CollapseCode>
+
+   ```solidity filename="IncrementSystem.sol" showLineNumbers copy {8}
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+
+   import { System } from "@latticexyz/world/src/System.sol";
+   import { Counter } from "../codegen/index.sol";
+
+   contract IncrementSystem is System {
+     function increment() public payable returns (uint32) {
+       uint32 counter = Counter.get();
+       uint32 newValue = counter + 1;
+       Counter.set(newValue);
+       return newValue;
+     }
+   }
+   ```
+
+   </CollapseCode>
 
 </details>
 
