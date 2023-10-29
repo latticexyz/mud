@@ -4,25 +4,23 @@ pragma solidity >=0.8.21;
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-
 import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+import { Position } from "../src/codegen/index.sol";
 
 contract PostDeploy is Script {
   function run(address worldAddress) external {
-    // Specify a store so that you can use tables directly in PostDeploy
     StoreSwitch.setStoreAddress(worldAddress);
 
-    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-
-    // Start broadcasting transactions from the deployer account
     vm.startBroadcast(deployerPrivateKey);
 
-    // ------------------ EXAMPLES ------------------
-
-    // Call increment on the world via the registered function selector
-    uint32 newValue = IWorld(worldAddress).increment();
-    console.log("Increment via IWorld:", newValue);
+    // Set up a bunch of position data so we can demonstrate filtering
+    Position.set({ zone: "map1", x: 1, y: 1, player: msg.sender });
+    Position.set({ zone: "map1", x: 2, y: -2, player: msg.sender });
+    Position.set({ zone: "map2", x: 0, y: -99, player: msg.sender });
+    Position.set({ zone: "map2", x: 0, y: 99, player: msg.sender });
+    Position.set({ zone: "map99", x: 99, y: 99, player: msg.sender });
 
     vm.stopBroadcast();
   }
