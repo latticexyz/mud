@@ -1,1 +1,49 @@
 # Function selectors
+
+If you call a `System` using [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L339-L351).
+If [you have the necessary delegation](/world/account-delegation) you can also use `callFrom`.
+When you use this method, you provide two parameters:
+
+- The `ResourceId` for the `System` to be called.
+- The [calldata](https://docs.soliditylang.org/en/develop/abi-spec.html) to send that system.
+  This calldata includes the four-byte [function signature](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector), as well as any function parameters.
+
+The problem with this method is that the caller needs to encode the calldata and then send it to the `World`.
+This is not as developer-friendly as using the standard mechanism the library provides to call a contract (usually this is `<contract object>.<function>(<args>)`).
+
+The solution is to register a function selector, which allows `System` functions to be called in the usual way by calling the `World` contract.
+Once the namespace owner does this, anybody can use `<World contract object>.<namespace_<system>_<function>(<args>)`.
+
+To register a function selector, you use [`<world>.registerFunctionSelector`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L164-L201).
+This function takes two parameters:
+
+- The `ResourceID` of the `System`.
+  This value encodes both the name space and the name of the `System`.
+- The name of the function within the `System`.
+
+For example, in the [Extending World guide](/guides/extending-world#deploy-to-the-blockchain) we create a namespace called `messaging`, within it a `System` called `message`, and that `System` includes a function called `incrementMessage`.
+
+This is the code we use to register the `System` and the function selector:
+
+```solidity
+    ResourceId systemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "message");
+    world.registerSystem(systemResource, messageSystem, true);
+    world.registerFunctionSelector(systemResource, "incrementMessage(string)");
+```
+
+And this is the command line that uses [`cast`](https://book.getfoundry.sh/cast/) to call `incrementMessage`:
+
+```sh
+cast send $WORLD_ADDRESS --private-key $PRIVATE_KEY "messaging_message_incrementMessage(string)" "hello"
+```
+
+## Root systems
+
+The [systems in the root namespace](/world/systems#root-systems) behave a bit differently.
+If you need to register a function selector for a root `System` (and you're the owner of the root namespace), you use [`registerRootFunctionSelector`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L203-L232). This function has three parameters:
+
+- The system ID
+- The signature of the World function (as a string)
+- The selector of the system function (as the four-byte signature)
+
+This means that the `World`'s function name for a function in a root `System` can be any string, it does not need to correlate to the name inside the `System`.
