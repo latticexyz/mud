@@ -428,6 +428,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     _assumeDifferentNonZero(owner, from, to);
     token.mint(owner, id);
 
+    vm.prank(owner);
     vm.expectRevert(abi.encodeWithSelector(ERC721IncorrectOwner.selector, from, id, owner));
     token.transferFrom(from, to, id);
   }
