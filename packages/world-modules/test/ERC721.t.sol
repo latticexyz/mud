@@ -137,6 +137,22 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     assertEq(NamespaceOwner.get(WorldResourceIdLib.encodeNamespace("myERC721")), address(this));
   }
 
+  function testInstallTwice() public {
+    // Install the ERC721 module again
+    IERC721Mintable anotherToken = registerERC721(
+      world,
+      "anotherERC721",
+      ERC721MetadataData({ name: "Token", symbol: "TKN", baseURI: "" })
+    );
+    assertTrue(address(anotherToken) != address(0));
+    assertTrue(address(anotherToken) != address(token));
+  }
+
+  /////////////////////////////////////////////////
+  // SOLADY ERC721 TEST CAES
+  // (https://github.com/Vectorized/solady/blob/main/test/ERC721.t.sol)
+  /////////////////////////////////////////////////
+
   function testMint(uint256 id, address owner) public {
     vm.assume(owner != address(0));
 
