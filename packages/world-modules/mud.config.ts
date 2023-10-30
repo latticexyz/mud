@@ -107,5 +107,5 @@ export default mudConfig({
     },
   },
 
-  excludeSystems: ["UniqueEntitySystem"],
+  excludeSystems: ["UniqueEntitySystem", "PuppetFactorySystem"],
 });
