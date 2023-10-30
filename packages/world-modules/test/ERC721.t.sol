@@ -481,7 +481,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     address to = address(new RevertingERC721Recipient());
 
     vm.prank(from);
-    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidReceiver.selector, to));
+    vm.expectRevert(abi.encodeWithSelector(ERC721TokenReceiver.onERC721Received.selector));
     token.safeTransferFrom(from, to, id);
   }
 
