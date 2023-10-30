@@ -299,7 +299,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
 
     if (to != address(0)) {
       unchecked {
-        Balances.set(balanceTableId, from, Balances.get(balanceTableId, from) + 1);
+        Balances.set(balanceTableId, to, Balances.get(balanceTableId, to) + 1);
       }
     }
 

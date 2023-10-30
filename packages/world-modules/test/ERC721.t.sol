@@ -150,13 +150,17 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   function testBurn(uint256 id, address owner) public {
     vm.assume(owner != address(0));
 
+    assertEq(token.balanceOf(owner), 0, "before");
+
     _expectMintEvent(owner, id);
     token.mint(owner, id);
+
+    assertEq(token.balanceOf(owner), 1, "after mint");
 
     _expectBurnEvent(owner, id);
     token.burn(id);
 
-    assertEq(token.balanceOf(owner), 0);
+    assertEq(token.balanceOf(owner), 0, "after burn");
 
     vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
     token.ownerOf(id);
@@ -168,7 +172,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     _expectMintEvent(owner, id);
     token.mint(owner, id);
 
-    _expectAccessDenied(address(this));
+    _expectAccessDenied(operator);
     vm.prank(operator);
     token.burn(id);
   }
