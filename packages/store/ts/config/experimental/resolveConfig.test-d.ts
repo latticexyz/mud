@@ -1,6 +1,6 @@
 import { describe, expectTypeOf } from "vitest";
 import { mudConfig } from "../../register/mudConfig";
-import { resolveConfig } from "./resolveConfig";
+import { Table, resolveConfig } from "./resolveConfig";
 
 const config = resolveConfig(
   mudConfig({
@@ -48,4 +48,6 @@ describe("resolveConfig", () => {
       type: "uint8";
     };
   }>();
+
+  expectTypeOf<typeof config.tables.Shorthand>().toMatchTypeOf<Table>();
 });

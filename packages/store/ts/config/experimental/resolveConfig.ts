@@ -1,8 +1,20 @@
+import { Hex } from "viem";
 import { StringForUnion } from "@latticexyz/common/type-utils";
 import { StoreConfig, TableConfig, UserTypesConfig } from "../storeConfig";
 import { UserType } from "@latticexyz/common/codegen";
 import { mapObject } from "@latticexyz/common/utils";
 import { resourceToHex } from "@latticexyz/common";
+import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
+
+export type KeySchema = Record<string, { type: StaticAbiType }>;
+export type ValueSchema = Record<string, { type: SchemaAbiType }>;
+export type Table = {
+  tableId: Hex;
+  namespace: string;
+  name: string;
+  keySchema: KeySchema;
+  valueSchema: ValueSchema;
+};
 
 export type ResolvedStoreConfig<TStoreConfig extends StoreConfig> = {
   tables: {
