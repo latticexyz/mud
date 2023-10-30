@@ -22,8 +22,7 @@ import { ERC20_REGISTRY_TABLE_ID } from "../src/modules/erc20-puppet/constants.s
 import { IERC20Mintable } from "../src/modules/erc20-puppet/IERC20Mintable.sol";
 import { registerERC20 } from "../src/modules/erc20-puppet/registerERC20.sol";
 import { IERC20Errors } from "../src/modules/erc20-puppet/IERC20Errors.sol";
-
-import { IERC20Events } from "./IERC20Events.sol";
+import { IERC20Events } from "../src/modules/erc20-puppet/IERC20Events.sol";
 
 contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
   IBaseWorld world;
