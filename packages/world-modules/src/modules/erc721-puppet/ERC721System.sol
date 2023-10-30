@@ -3,7 +3,7 @@ pragma solidity >=0.8.21;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { System } from "@latticexyz/world/src/System.sol";
-import { WorldResourceIdInstance, WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { SystemRegistry } from "@latticexyz/world/src/codegen/tables/SystemRegistry.sol";
 
 import { AccessControlLib } from "../../utils/AccessControlLib.sol";
