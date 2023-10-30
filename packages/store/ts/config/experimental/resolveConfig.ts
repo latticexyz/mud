@@ -34,7 +34,7 @@ export type ResolvedTableConfig<
   TEnumNames extends StringForUnion,
   TNamespace extends string = string,
   TName extends string = string
-> = Omit<TTableConfig, "keySchema" | "valueSchema"> & {
+> = {
   keySchema: ResolvedKeySchema<TTableConfig["keySchema"], TUserTypes, TEnumNames>;
   valueSchema: ResolvedValueSchema<TTableConfig["valueSchema"], TUserTypes, TEnumNames>;
   namespace: TNamespace;
@@ -112,10 +112,9 @@ function resolveTable<
   namespace: TNamespace,
   name: TName
 ): ResolvedTableConfig<typeof tableConfig, TUserTypes, TEnums[number]> {
-  const { keySchema, valueSchema, ...rest } = tableConfig;
+  const { keySchema, valueSchema } = tableConfig;
 
   return {
-    ...rest,
     keySchema: resolveKeySchema(keySchema, userTypes, enums),
     valueSchema: resolveValueSchema(valueSchema, userTypes, enums) as ResolvedSchema<
       Exclude<TTableConfig["valueSchema"], string>,
