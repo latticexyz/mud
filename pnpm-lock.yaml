@@ -948,6 +948,9 @@ importers:
       zod:
         specifier: ^3.21.4
         version: 3.21.4
+      zustand:
+        specifier: ^4.3.7
+        version: 4.3.7(react@18.2.0)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7

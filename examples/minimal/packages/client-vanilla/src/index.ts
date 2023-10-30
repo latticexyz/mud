@@ -1,31 +1,34 @@
 import { setup } from "./mud/setup";
 import mudConfig from "contracts/mud.config";
+import { tables } from "./mud/tables";
 
-const { components, network } = await setup();
-const { worldContract, waitForTransaction } = network;
+const {
+  network,
+  network: { useStore, worldContract, waitForTransaction },
+  systemCalls,
+} = await setup();
 
-// Components expose a stream that triggers when the component is updated.
-components.CounterTable.update$.subscribe((update) => {
-  const [nextValue, prevValue] = update.value;
-  console.log("Counter updated", update, { nextValue, prevValue });
-  document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+// TODO: provide slice helpers and show subscribing to slices
+useStore.subscribe((state) => {
+  const record = state.getRecord(tables.CounterTable, {});
+  if (record) {
+    document.getElementById("counter")!.innerHTML = String(record.value.value);
+  }
 });
 
-components.MessageTable.update$.subscribe((update) => {
-  console.log("Message received", update);
-  const [nextValue] = update.value;
-
-  const ele = document.getElementById("chat-output")!;
-  ele.innerHTML = ele.innerHTML + `${new Date().toLocaleString()}: ${nextValue?.value}\n`;
+// TODO: provide slice helpers and show subscribing to slices
+useStore.subscribe((state, prevState) => {
+  const record = state.getRecord(tables.MessageTable, {});
+  if (record && record !== prevState.records[record.id]) {
+    document.getElementById("chat-output")!.innerHTML += `${new Date().toLocaleString()}: ${record?.value?.value}\n`;
+  }
 });
 
 // Just for demonstration purposes: we create a global function that can be
 // called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
 (window as any).increment = async () => {
-  const tx = await worldContract.write.increment();
-
-  console.log("increment tx", tx);
-  console.log("increment result", await waitForTransaction(tx));
+  const result = await systemCalls.increment();
+  console.log("increment result", result);
 };
 
 (window as any).willRevert = async () => {
@@ -33,7 +36,6 @@ components.MessageTable.update$.subscribe((update) => {
   const tx = await worldContract.write.willRevert({ gas: 100000n });
 
   console.log("willRevert tx", tx);
-  console.log("willRevert result", await waitForTransaction(tx));
 };
 
 (window as any).sendMessage = async () => {
@@ -46,7 +48,6 @@ components.MessageTable.update$.subscribe((update) => {
   const tx = await worldContract.write.sendMessage([msg]);
 
   console.log("sendMessage tx", tx);
-  console.log("sendMessage result", await waitForTransaction(tx));
 };
 
 document.getElementById("chat-form")?.addEventListener("submit", (e) => {
@@ -66,6 +67,5 @@ if (import.meta.env.DEV) {
     worldAddress: network.worldContract.address,
     worldAbi: network.worldContract.abi,
     write$: network.write$,
-    recsWorld: network.world,
   });
 }
