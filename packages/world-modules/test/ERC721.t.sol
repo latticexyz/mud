@@ -115,6 +115,14 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     vm.assume(address1 != address2);
   }
 
+  function _assumeEOA(address address1) internal view {
+    uint256 toCodeSize;
+    assembly {
+      toCodeSize := extcodesize(address1)
+    }
+    vm.assume(toCodeSize == 0);
+  }
+
   function _assumeDifferentNonZero(address address1, address address2, address address3) internal pure {
     vm.assume(address1 != address(0));
     vm.assume(address2 != address(0));
@@ -267,6 +275,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testSafeTransferFromToEOA(uint256 id, address from, address to, address operator) public {
+    _assumeEOA(from);
+    _assumeEOA(to);
     _assumeDifferentNonZero(from, to, operator);
 
     token.mint(from, id);
@@ -337,6 +347,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testSafeMintToEOA(uint256 id, address to) public {
+    _assumeEOA(to);
     vm.assume(to != address(0));
 
     token.safeMint(to, id);
