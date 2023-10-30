@@ -1,6 +1,7 @@
 import { describe, expectTypeOf } from "vitest";
 import { mudConfig } from "../../register/mudConfig";
-import { Table, resolveConfig } from "./resolveConfig";
+import { resolveConfig } from "./resolveConfig";
+import { Table } from "../../common";
 import storeConfig from "../../../mud.config";
 
 describe("resolveConfig", () => {

@@ -1,21 +1,14 @@
-import { Hex } from "viem";
 import { StringForUnion } from "@latticexyz/common/type-utils";
 import { StoreConfig, TableConfig, UserTypesConfig } from "../storeConfig";
 import { UserType } from "@latticexyz/common/codegen";
 import { mapObject } from "@latticexyz/common/utils";
 import { resourceToHex } from "@latticexyz/common";
-import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType } from "@latticexyz/schema-type";
 
-export type KeySchema = Record<string, { type: StaticAbiType }>;
-export type ValueSchema = Record<string, { type: SchemaAbiType }>;
-export type Table = {
-  tableId: Hex;
-  namespace: string;
-  name: string;
-  keySchema: KeySchema;
-  valueSchema: ValueSchema;
-};
-
+/**
+ * @internal Internal only
+ * @deprecated Internal only
+ */
 export type ResolvedStoreConfig<TStoreConfig extends StoreConfig> = {
   tables: {
     [TableKey in keyof TStoreConfig["tables"] & string]: ResolvedTableConfig<
@@ -28,7 +21,7 @@ export type ResolvedStoreConfig<TStoreConfig extends StoreConfig> = {
   };
 };
 
-export type ResolvedTableConfig<
+type ResolvedTableConfig<
   TTableConfig extends TableConfig,
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion,
@@ -42,19 +35,19 @@ export type ResolvedTableConfig<
   tableId: `0x${string}`;
 };
 
-export type ResolvedKeySchema<
+type ResolvedKeySchema<
   TKeySchema extends TableConfig["keySchema"],
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion
 > = ResolvedSchema<TKeySchema, TUserTypes, TEnumNames>;
 
-export type ResolvedValueSchema<
+type ResolvedValueSchema<
   TValueSchema extends TableConfig["valueSchema"],
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion
 > = ResolvedSchema<Exclude<TValueSchema, string>, TUserTypes, TEnumNames>;
 
-export type ResolvedSchema<
+type ResolvedSchema<
   TSchema extends Exclude<TableConfig["keySchema"] | TableConfig["valueSchema"], string>,
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion
