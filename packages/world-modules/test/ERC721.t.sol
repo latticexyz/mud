@@ -70,7 +70,6 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   IBaseWorld world;
   ERC721Module erc721Module;
   IERC721Mintable token;
-  address tokenOwner = address(0x123456);
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
@@ -79,7 +78,6 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     StoreSwitch.setStoreAddress(address(world));
 
     // Register a new ERC721 token
-    vm.prank(tokenOwner);
     token = registerERC721(world, "myERC721", ERC721MetadataData({ name: "Token", symbol: "TKN", baseURI: "" }));
   }
 
@@ -111,10 +109,29 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     emit ApprovalForAll(owner, operator, approved);
   }
 
+  function _assumeDifferentNonZero(address address1, address address2) internal pure {
+    vm.assume(address1 != address(0));
+    vm.assume(address2 != address(0));
+    vm.assume(address1 != address2);
+  }
+
+  function _assumeDifferentNonZero(address address1, address address2, address address3) internal pure {
+    vm.assume(address1 != address(0));
+    vm.assume(address2 != address(0));
+    vm.assume(address3 != address(0));
+    vm.assume(address1 != address2);
+    vm.assume(address2 != address3);
+    vm.assume(address3 != address1);
+  }
+
+  function testSetUp() public {
+    assertTrue(address(token) != address(0));
+    assertEq(NamespaceOwner.get(WorldResourceIdLib.encodeNamespace("myERC721")), address(this));
+  }
+
   function testMint(uint256 id, address owner) public {
     vm.assume(owner != address(0));
 
-    vm.prank(tokenOwner);
     _expectMintEvent(owner, id);
     token.mint(owner, id);
 
@@ -122,10 +139,11 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     assertEq(token.ownerOf(id), owner);
   }
 
-  function testMintRevertAccessDenied(uint256 id, address owner) public {
-    vm.assume(owner != address(0));
+  function testMintRevertAccessDenied(uint256 id, address owner, address operator) public {
+    _assumeDifferentNonZero(owner, operator);
 
-    _expectAccessDenied(address(this));
+    _expectAccessDenied(operator);
+    vm.prank(operator);
     token.mint(owner, id);
   }
 
@@ -135,7 +153,6 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     _expectMintEvent(owner, id);
     token.mint(owner, id);
 
-    vm.prank(tokenOwner);
     _expectBurnEvent(owner, id);
     token.burn(id);
 
@@ -145,65 +162,76 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.ownerOf(id);
   }
 
-  function testBurnRevertAccessDenined(uint256 id, address owner) public {
-    vm.assume(owner != address(0));
+  function testBurnRevertAccessDenined(uint256 id, address owner, address operator) public {
+    _assumeDifferentNonZero(owner, operator);
 
-    vm.prank(tokenOwner);
     _expectMintEvent(owner, id);
     token.mint(owner, id);
 
     _expectAccessDenied(address(this));
+    vm.prank(operator);
     token.burn(id);
   }
 
-  function testTransferFrom(address owner, uint256 tokenId) public {
-    vm.assume(owner != address(0));
+  function testTransferFrom(address owner, address to, uint256 tokenId) public {
+    _assumeDifferentNonZero(owner, to);
 
-    vm.prank(tokenOwner);
     token.mint(owner, tokenId);
 
     vm.prank(owner);
-    token.transferFrom(owner, address(this), tokenId);
+    token.transferFrom(owner, to, tokenId);
 
-    assertEq(token.balanceOf(owner), tokenId);
-    assertEq(token.balanceOf(address(this)), tokenId);
-    assertEq(token.ownerOf(tokenId), address(this));
+    assertEq(token.balanceOf(owner), 0);
+    assertEq(token.balanceOf(to), 1);
+    assertEq(token.ownerOf(tokenId), to);
   }
 
-  function testApprove(uint256 id, address spender) public {
-    vm.prank(tokenOwner);
-    token.mint(address(this), id);
+  function testApprove(address owner, uint256 id, address spender) public {
+    _assumeDifferentNonZero(owner, spender);
 
-    _expectApprovalEvent(address(this), spender, id);
+    token.mint(owner, id);
+
+    _expectApprovalEvent(owner, spender, id);
     token.approve(spender, id);
     assertEq(token.getApproved(id), spender);
   }
 
-  function testApproveBurn(uint256 id, address spender) public {
-    vm.prank(tokenOwner);
-    token.mint(address(this), id);
+  function testApproveBurn(address owner, uint256 id, address spender) public {
+    _assumeDifferentNonZero(owner, spender);
 
+    token.mint(owner, id);
+
+    vm.prank(owner);
     token.approve(spender, id);
 
     // Burn by sending to 0 address
-    token.transferFrom(address(this), address(0), id);
-    assertEq(token.balanceOf(address(this)), 0);
+    // TODO: this currently fails, but we should allow burning if approved
+    vm.prank(owner);
+    token.transferFrom(owner, address(0), id);
+    assertEq(token.balanceOf(owner), 0);
 
     vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
     token.getApproved(id);
 
     vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
     token.ownerOf(id);
+
+    // Mint again, expect approval to be cleared
+    token.mint(owner, id);
+    assertEq(token.getApproved(id), address(0));
   }
 
-  function testApproveAll(address operator, bool approved) public {
-    _expectApprovalForAllEvent(address(this), operator, approved);
+  function testApproveAll(address owner, address operator, bool approved) public {
+    _assumeDifferentNonZero(owner, operator);
+
+    _expectApprovalForAllEvent(owner, operator, approved);
     token.setApprovalForAll(operator, approved);
-    assertEq(token.isApprovedForAll(address(this), operator), approved);
+    assertEq(token.isApprovedForAll(owner, operator), approved);
   }
 
   function testTransferFromSelf(uint256 id, address from, address to) public {
-    vm.prank(tokenOwner);
+    _assumeDifferentNonZero(from, to);
+
     token.mint(from, id);
 
     vm.prank(from);
@@ -216,7 +244,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testTransferFromApproveAll(uint256 id, address from, address to, address operator) public {
-    vm.prank(tokenOwner);
+    _assumeDifferentNonZero(from, to);
+
     token.mint(from, id);
 
     vm.prank(from);
@@ -232,7 +261,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testSafeTransferFromToEOA(uint256 id, address from, address to, address operator) public {
-    vm.prank(tokenOwner);
+    _assumeDifferentNonZero(from, to);
+
     token.mint(from, id);
 
     vm.prank(from);
@@ -248,9 +278,10 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testSafeTransferFromToERC721Recipient(uint256 id, address from, address operator) public {
+    _assumeDifferentNonZero(from, operator);
+
     ERC721Recipient recipient = new ERC721Recipient();
 
-    vm.prank(tokenOwner);
     token.mint(from, id);
 
     vm.prank(from);
@@ -276,9 +307,10 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     address operator,
     bytes memory data
   ) public {
+    _assumeDifferentNonZero(from, operator);
+
     ERC721Recipient recipient = new ERC721Recipient();
 
-    vm.prank(tokenOwner);
     token.mint(from, id);
 
     vm.prank(from);
@@ -299,23 +331,23 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testSafeMintToEOA(uint256 id, address to) public {
-    vm.prank(tokenOwner);
+    vm.assume(to != address(0));
+
     token.safeMint(to, id);
 
-    assertEq(token.ownerOf(id), address(to));
-    assertEq(token.balanceOf(address(to)), 1);
+    assertEq(token.ownerOf(id), to);
+    assertEq(token.balanceOf(to), 1);
   }
 
   function testSafeMintToERC721Recipient(uint256 id) public {
     ERC721Recipient to = new ERC721Recipient();
 
-    vm.prank(tokenOwner);
     token.safeMint(address(to), id);
 
     assertEq(token.ownerOf(id), address(to));
     assertEq(token.balanceOf(address(to)), 1);
 
-    assertEq(to.operator(), tokenOwner);
+    assertEq(to.operator(), address(this));
     assertEq(to.from(), address(0));
     assertEq(to.id(), id);
     assertEq(to.data(), "");
@@ -324,13 +356,12 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   function testSafeMintToERC721RecipientWithData(uint256 id, bytes memory data) public {
     ERC721Recipient to = new ERC721Recipient();
 
-    vm.prank(tokenOwner);
     token.safeMint(address(to), id, data);
 
     assertEq(token.ownerOf(id), address(to));
     assertEq(token.balanceOf(address(to)), 1);
 
-    assertEq(to.operator(), tokenOwner);
+    assertEq(to.operator(), address(this));
     assertEq(to.from(), address(0));
     assertEq(to.id(), id);
     assertEq(to.data(), data);
@@ -338,33 +369,29 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
 
   function testMintToZeroReverts(uint256 id) public {
     vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, address(0)));
-    vm.prank(tokenOwner);
     token.mint(address(0), id);
   }
 
   function testDoubleMintReverts(uint256 id, address to) public {
-    vm.prank(tokenOwner);
+    vm.assume(to != address(0));
     token.mint(to, id);
 
-    vm.prank(tokenOwner);
     vm.expectRevert(abi.encodePacked(ERC721InvalidSender.selector, address(0)));
     token.mint(to, id);
   }
 
   function testBurnNonExistentReverts(uint256 id) public {
-    vm.prank(tokenOwner);
     vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
     token.burn(id);
   }
 
   function testDoubleBurnReverts(uint256 id, address to) public {
-    vm.prank(tokenOwner);
+    vm.assume(to != address(0));
+
     token.mint(to, id);
 
-    vm.prank(tokenOwner);
     token.burn(id);
 
-    vm.prank(tokenOwner);
     vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
     token.burn(id);
   }
@@ -374,11 +401,13 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.approve(to, id);
   }
 
-  function testApproveUnauthorizedReverts(uint256 id, address owner, address to) public {
-    vm.prank(tokenOwner);
+  function testApproveUnauthorizedReverts(uint256 id, address owner, address operator, address to) public {
+    _assumeDifferentNonZero(owner, operator, to);
+
     token.mint(owner, id);
 
-    vm.expectRevert(abi.encodePacked(ERC721InvalidApprover.selector, address(this)));
+    vm.expectRevert(abi.encodePacked(ERC721InvalidApprover.selector, operator));
+    vm.prank(operator);
     token.approve(to, id);
   }
 
@@ -388,7 +417,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testTransferFromWrongFromReverts(address to, uint256 id, address owner, address from) public {
-    vm.prank(tokenOwner);
+    _assumeDifferentNonZero(owner, from, to);
     token.mint(owner, id);
 
     vm.expectRevert(abi.encodePacked(ERC721IncorrectOwner.selector, from, id, owner));
@@ -396,7 +425,6 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testTransferFromToZeroReverts(uint256 id) public {
-    vm.prank(tokenOwner);
     token.mint(address(this), id);
 
     vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, address(0)));
@@ -404,9 +432,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testTransferFromNotOwner(uint256 id, address from, address to, address operator) public {
-    vm.assume(operator != from);
+    _assumeDifferentNonZero(from, to, operator);
 
-    vm.prank(tokenOwner);
     token.mint(from, id);
 
     vm.prank(operator);
@@ -415,7 +442,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testSafeTransferFromToNonERC721RecipientReverts(uint256 id, address from) public {
-    vm.prank(tokenOwner);
+    vm.assume(from != address(0));
+
     token.mint(from, id);
 
     address to = address(new NonERC721Recipient());
@@ -426,7 +454,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testSafeTransferFromToNonERC721RecipientWithDataReverts(uint256 id, address from, bytes memory data) public {
-    vm.prank(tokenOwner);
+    vm.assume(from != address(0));
+
     token.mint(from, id);
 
     address to = address(new NonERC721Recipient());
@@ -437,7 +466,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testSafeTransferFromToRevertingERC721RecipientReverts(uint256 id, address from) public {
-    vm.prank(tokenOwner);
+    vm.assume(from != address(0));
+
     token.mint(from, id);
 
     address to = address(new RevertingERC721Recipient());
@@ -452,7 +482,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     address from,
     bytes memory data
   ) public {
-    vm.prank(tokenOwner);
+    vm.assume(from != address(0));
+
     token.mint(from, id);
 
     address to = address(new RevertingERC721Recipient());
@@ -463,7 +494,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testSafeTransferFromToERC721RecipientWithWrongReturnDataReverts(uint256 id, address from) public {
-    vm.prank(tokenOwner);
+    vm.assume(from != address(0));
+
     token.mint(from, id);
 
     address to = address(new WrongReturnDataERC721Recipient());
@@ -478,7 +510,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     address from,
     bytes memory data
   ) public {
-    vm.prank(tokenOwner);
+    vm.assume(from != address(0));
+
     token.mint(from, id);
 
     address to = address(new WrongReturnDataERC721Recipient());
@@ -491,7 +524,6 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   function testSafeMintToNonERC721RecipientReverts(uint256 id) public {
     address to = address(new NonERC721Recipient());
 
-    vm.prank(tokenOwner);
     vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
     token.safeMint(to, id);
   }
@@ -499,7 +531,6 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   function testSafeMintToNonERC721RecipientWithDataReverts(uint256 id, bytes memory data) public {
     address to = address(new NonERC721Recipient());
 
-    vm.prank(tokenOwner);
     vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
     token.safeMint(to, id, data);
   }
@@ -507,7 +538,6 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   function testSafeMintToRevertingERC721RecipientReverts(uint256 id) public {
     address to = address(new RevertingERC721Recipient());
 
-    vm.prank(tokenOwner);
     vm.expectRevert(abi.encodePacked(ERC721TokenReceiver.onERC721Received.selector));
     token.safeMint(to, id);
   }
@@ -515,7 +545,6 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   function testSafeMintToRevertingERC721RecipientWithDataReverts(uint256 id, bytes memory data) public {
     address to = address(new RevertingERC721Recipient());
 
-    vm.prank(tokenOwner);
     vm.expectRevert(abi.encodePacked(ERC721TokenReceiver.onERC721Received.selector));
     token.safeMint(to, id, data);
   }
@@ -523,7 +552,6 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   function testSafeMintToERC721RecipientWithWrongReturnData(uint256 id) public {
     address to = address(new WrongReturnDataERC721Recipient());
 
-    vm.prank(tokenOwner);
     vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
     token.safeMint(to, id);
   }
@@ -531,12 +559,12 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   function testSafeMintToERC721RecipientWithWrongReturnDataWithData(uint256 id, bytes memory data) public {
     address to = address(new WrongReturnDataERC721Recipient());
 
-    vm.prank(tokenOwner);
     vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
     token.safeMint(to, id, data);
   }
 
   function testOwnerOfNonExistent(uint256 id) public {
+    vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
     token.ownerOf(id);
   }
 }
