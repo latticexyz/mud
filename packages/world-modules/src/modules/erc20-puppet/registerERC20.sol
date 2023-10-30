@@ -9,7 +9,7 @@ import { ERC20Module } from "./ERC20Module.sol";
 import { MODULE_NAMESPACE_ID, ERC20_REGISTRY_TABLE_ID } from "./constants.sol";
 import { IERC20Mintable } from "./IERC20Mintable.sol";
 
-import { MetadataData } from "./tables/Metadata.sol";
+import { ERC20MetadataData } from "./tables/ERC20Metadata.sol";
 import { ERC20Registry } from "./tables/ERC20Registry.sol";
 
 /**
@@ -19,7 +19,7 @@ import { ERC20Registry } from "./tables/ERC20Registry.sol";
 function registerERC20(
   IBaseWorld world,
   bytes14 namespace,
-  MetadataData memory metadata
+  ERC20MetadataData memory metadata
 ) returns (IERC20Mintable token) {
   // Get the ERC20 module
   ERC20Module erc20Module = ERC20Module(NamespaceOwner.get(MODULE_NAMESPACE_ID));

@@ -119,7 +119,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.mint(owner, id);
 
     assertEq(token.balanceOf(owner), 1);
-    assertEq(_ownerOf(id), owner);
+    assertEq(token.ownerOf(id), owner);
   }
 
   function testMintRevertAccessDenied(uint256 id, address owner) public {
@@ -145,7 +145,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.ownerOf(id);
   }
 
-  function testBurnRevertAccessDenined() public {
+  function testBurnRevertAccessDenined(uint256 id, address owner) public {
     vm.assume(owner != address(0));
 
     vm.prank(tokenOwner);
