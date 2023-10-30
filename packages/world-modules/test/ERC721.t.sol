@@ -52,7 +52,7 @@ contract ERC721Recipient is ERC721TokenReceiver {
 
 contract RevertingERC721Recipient is ERC721TokenReceiver {
   function onERC721Received(address, address, uint256, bytes calldata) public virtual override returns (bytes4) {
-    revert(string(abi.encodePacked(ERC721TokenReceiver.onERC721Received.selector)));
+    revert(string(abi.encodeWithSelector(ERC721TokenReceiver.onERC721Received.selector)));
   }
 }
 
@@ -83,7 +83,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
 
   function _expectAccessDenied(address caller) internal {
     ResourceId tokenSystemId = _erc721SystemId("myERC721");
-    vm.expectRevert(abi.encodePacked(IWorldErrors.World_AccessDenied.selector, tokenSystemId.toString(), caller));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, tokenSystemId.toString(), caller));
   }
 
   function _expectMintEvent(address to, uint256 id) internal {
@@ -158,7 +158,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
 
     assertEq(token.balanceOf(owner), 0);
 
-    vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
+    vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
     token.ownerOf(id);
   }
 
@@ -191,6 +191,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
 
     token.mint(owner, id);
 
+    vm.prank(owner);
     _expectApprovalEvent(owner, spender, id);
     token.approve(spender, id);
     assertEq(token.getApproved(id), spender);
@@ -210,10 +211,10 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.transferFrom(owner, address(0), id);
     assertEq(token.balanceOf(owner), 0);
 
-    vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
+    vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
     token.getApproved(id);
 
-    vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
+    vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
     token.ownerOf(id);
 
     // Mint again, expect approval to be cleared
@@ -224,6 +225,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   function testApproveAll(address owner, address operator, bool approved) public {
     _assumeDifferentNonZero(owner, operator);
 
+    vm.prank(owner);
     _expectApprovalForAllEvent(owner, operator, approved);
     token.setApprovalForAll(operator, approved);
     assertEq(token.isApprovedForAll(owner, operator), approved);
@@ -368,7 +370,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testMintToZeroReverts(uint256 id) public {
-    vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, address(0)));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidReceiver.selector, address(0)));
     token.mint(address(0), id);
   }
 
@@ -376,12 +378,12 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     vm.assume(to != address(0));
     token.mint(to, id);
 
-    vm.expectRevert(abi.encodePacked(ERC721InvalidSender.selector, address(0)));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidSender.selector, address(0)));
     token.mint(to, id);
   }
 
   function testBurnNonExistentReverts(uint256 id) public {
-    vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
+    vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
     token.burn(id);
   }
 
@@ -392,12 +394,12 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
 
     token.burn(id);
 
-    vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
+    vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
     token.burn(id);
   }
 
   function testApproveNonExistentReverts(uint256 id, address to) public {
-    vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
+    vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
     token.approve(to, id);
   }
 
@@ -406,13 +408,13 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
 
     token.mint(owner, id);
 
-    vm.expectRevert(abi.encodePacked(ERC721InvalidApprover.selector, operator));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidApprover.selector, operator));
     vm.prank(operator);
     token.approve(to, id);
   }
 
   function testTransferFromNotExistentReverts(address from, address to, uint256 id) public {
-    vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
+    vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
     token.transferFrom(from, to, id);
   }
 
@@ -420,14 +422,14 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     _assumeDifferentNonZero(owner, from, to);
     token.mint(owner, id);
 
-    vm.expectRevert(abi.encodePacked(ERC721IncorrectOwner.selector, from, id, owner));
+    vm.expectRevert(abi.encodeWithSelector(ERC721IncorrectOwner.selector, from, id, owner));
     token.transferFrom(from, to, id);
   }
 
   function testTransferFromToZeroReverts(uint256 id) public {
     token.mint(address(this), id);
 
-    vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, address(0)));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidReceiver.selector, address(0)));
     token.transferFrom(address(this), address(0), id);
   }
 
@@ -437,7 +439,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.mint(from, id);
 
     vm.prank(operator);
-    vm.expectRevert(abi.encodePacked(ERC721InsufficientApproval.selector, operator, id));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InsufficientApproval.selector, operator, id));
     token.transferFrom(from, to, id);
   }
 
@@ -449,7 +451,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     address to = address(new NonERC721Recipient());
 
     vm.prank(from);
-    vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidReceiver.selector, to));
     token.safeTransferFrom(from, to, id);
   }
 
@@ -461,7 +463,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     address to = address(new NonERC721Recipient());
 
     vm.prank(from);
-    vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidReceiver.selector, to));
     token.safeTransferFrom(from, to, id, data);
   }
 
@@ -473,7 +475,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     address to = address(new RevertingERC721Recipient());
 
     vm.prank(from);
-    vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidReceiver.selector, to));
     token.safeTransferFrom(from, to, id);
   }
 
@@ -489,7 +491,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     address to = address(new RevertingERC721Recipient());
 
     vm.prank(from);
-    vm.expectRevert(abi.encodePacked(ERC721TokenReceiver.onERC721Received.selector));
+    vm.expectRevert(abi.encodeWithSelector(ERC721TokenReceiver.onERC721Received.selector));
     token.safeTransferFrom(from, to, id, data);
   }
 
@@ -501,7 +503,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     address to = address(new WrongReturnDataERC721Recipient());
 
     vm.prank(from);
-    vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidReceiver.selector, to));
     token.safeTransferFrom(from, to, id);
   }
 
@@ -517,54 +519,54 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     address to = address(new WrongReturnDataERC721Recipient());
 
     vm.prank(from);
-    vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidReceiver.selector, to));
     token.safeTransferFrom(from, to, id, data);
   }
 
   function testSafeMintToNonERC721RecipientReverts(uint256 id) public {
     address to = address(new NonERC721Recipient());
 
-    vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidReceiver.selector, to));
     token.safeMint(to, id);
   }
 
   function testSafeMintToNonERC721RecipientWithDataReverts(uint256 id, bytes memory data) public {
     address to = address(new NonERC721Recipient());
 
-    vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidReceiver.selector, to));
     token.safeMint(to, id, data);
   }
 
   function testSafeMintToRevertingERC721RecipientReverts(uint256 id) public {
     address to = address(new RevertingERC721Recipient());
 
-    vm.expectRevert(abi.encodePacked(ERC721TokenReceiver.onERC721Received.selector));
+    vm.expectRevert(abi.encodeWithSelector(ERC721TokenReceiver.onERC721Received.selector));
     token.safeMint(to, id);
   }
 
   function testSafeMintToRevertingERC721RecipientWithDataReverts(uint256 id, bytes memory data) public {
     address to = address(new RevertingERC721Recipient());
 
-    vm.expectRevert(abi.encodePacked(ERC721TokenReceiver.onERC721Received.selector));
+    vm.expectRevert(abi.encodeWithSelector(ERC721TokenReceiver.onERC721Received.selector));
     token.safeMint(to, id, data);
   }
 
   function testSafeMintToERC721RecipientWithWrongReturnData(uint256 id) public {
     address to = address(new WrongReturnDataERC721Recipient());
 
-    vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidReceiver.selector, to));
     token.safeMint(to, id);
   }
 
   function testSafeMintToERC721RecipientWithWrongReturnDataWithData(uint256 id, bytes memory data) public {
     address to = address(new WrongReturnDataERC721Recipient());
 
-    vm.expectRevert(abi.encodePacked(ERC721InvalidReceiver.selector, to));
+    vm.expectRevert(abi.encodeWithSelector(ERC721InvalidReceiver.selector, to));
     token.safeMint(to, id, data);
   }
 
   function testOwnerOfNonExistent(uint256 id) public {
-    vm.expectRevert(abi.encodePacked(ERC721NonexistentToken.selector, id));
+    vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
     token.ownerOf(id);
   }
 }
