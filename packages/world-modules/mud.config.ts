@@ -161,5 +161,5 @@ export default mudConfig({
     },
   },
 
-  excludeSystems: ["UniqueEntitySystem", "PuppetFactorySystem"],
+  excludeSystems: ["UniqueEntitySystem", "PuppetFactorySystem", "ERC20System"],
 });
