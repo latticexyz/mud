@@ -60,7 +60,9 @@ export type ResolvedSchema<
   TEnumNames extends StringForUnion
 > = {
   [key in keyof TSchema]: {
-    type: TSchema[key] extends keyof TUserTypes
+    type: TSchema[key] extends SchemaAbiType
+      ? TSchema[key]
+      : TSchema[key] extends keyof TUserTypes
       ? TUserTypes[TSchema[key]] extends UserType
         ? // Note: we mistakenly named the plain ABI type "internalType",
           // while in Solidity ABIs the plain ABI type is called "type" and
@@ -70,7 +72,7 @@ export type ResolvedSchema<
         : never
       : TSchema[key] extends TEnumNames
       ? "uint8"
-      : TSchema[key];
+      : never;
     internalType: TSchema[key];
   };
 };
