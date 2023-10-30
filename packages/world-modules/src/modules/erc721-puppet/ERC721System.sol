@@ -305,7 +305,8 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
 
     Owners.set(_ownersTableId(_namespace()), tokenId, to);
 
-    emit Transfer(from, to, tokenId);
+    // Emit Transfer event on puppet
+    puppet().log(Transfer.selector, _toBytes32(from), _toBytes32(to), _toBytes32(tokenId), new bytes(0));
 
     return from;
   }
@@ -457,7 +458,8 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
       }
 
       if (emitEvent) {
-        emit Approval(owner, to, tokenId);
+        // Emit Approval event on puppet
+        puppet().log(Approval.selector, _toBytes32(owner), _toBytes32(to), _toBytes32(tokenId), new bytes(0));
       }
     }
 
@@ -477,7 +479,9 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
       revert ERC721InvalidOperator(operator);
     }
     OperatorApproval.set(_operatorApprovalTableId(_namespace()), owner, operator, approved);
-    emit ApprovalForAll(owner, operator, approved);
+
+    // Emit ApprovalForAll event on puppet
+    puppet().log(ApprovalForAll.selector, _toBytes32(owner), _toBytes32(operator), abi.encode(approved));
   }
 
   /**
