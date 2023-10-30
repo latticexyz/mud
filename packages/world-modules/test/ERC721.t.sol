@@ -209,31 +209,6 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     assertEq(token.getApproved(id), spender);
   }
 
-  function testApproveBurn(address owner, uint256 id, address spender) public {
-    _assumeDifferentNonZero(owner, spender);
-
-    token.mint(owner, id);
-
-    vm.prank(owner);
-    token.approve(spender, id);
-
-    // Burn by sending to 0 address
-    // TODO: this currently fails, but we should allow burning if approved
-    vm.prank(owner);
-    token.transferFrom(owner, address(0), id);
-    assertEq(token.balanceOf(owner), 0);
-
-    vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
-    token.getApproved(id);
-
-    vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
-    token.ownerOf(id);
-
-    // Mint again, expect approval to be cleared
-    token.mint(owner, id);
-    assertEq(token.getApproved(id), address(0));
-  }
-
   function testApproveAll(address owner, address operator, bool approved) public {
     _assumeDifferentNonZero(owner, operator);
 

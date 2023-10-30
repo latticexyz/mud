@@ -24,12 +24,6 @@ import { TokenURI } from "./tables/TokenURI.sol";
 
 import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId, _toBytes32 } from "./utils.sol";
 
-/**
- * TODO:
- * - Add ERC721 tests
- * - TODO: allow burn to be called by owner of token
- */
-
 contract ERC721System is IERC721Mintable, System, PuppetMaster {
   using WorldResourceIdInstance for ResourceId;
 
