@@ -37,5 +37,15 @@ export default mudConfig({
         value: "bool",
       },
     },
+    Position: {
+      keySchema: {
+        zone: "bytes32",
+        x: "int32",
+        y: "int32",
+      },
+      valueSchema: {
+        player: "address",
+      },
+    },
   },
 });

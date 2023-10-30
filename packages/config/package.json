@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/config",
-  "version": "2.0.0-next.11",
+  "version": "2.0.0-next.12",
   "description": "Config for Store and World",
   "repository": {
     "type": "git",
@@ -39,7 +39,6 @@
   "dependencies": {
     "@latticexyz/common": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "chalk": "^5.2.0",
     "esbuild": "^0.17.15",
     "find-up": "^6.3.0",
     "viem": "1.14.0",

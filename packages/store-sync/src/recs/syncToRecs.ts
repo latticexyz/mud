@@ -20,13 +20,8 @@ type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult & 
 export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   world,
   config,
-  address,
-  publicClient,
-  startBlock,
-  maxBlockRange,
-  initialState,
-  indexerUrl,
   startSync = true,
+  ...syncOptions
 }: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
   const { storageAdapter, components } = recsStorage({
     world,
@@ -38,12 +33,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   const storeSync = await createStoreSync({
     storageAdapter,
     config,
-    address,
-    publicClient,
-    startBlock,
-    maxBlockRange,
-    indexerUrl,
-    initialState,
+    ...syncOptions,
     onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed, message }) => {
       // already live, no need for more progress updates
       if (getComponentValue(components.SyncProgress, singletonEntity)?.step === SyncStep.LIVE) return;

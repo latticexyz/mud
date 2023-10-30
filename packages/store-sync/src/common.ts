@@ -26,6 +26,24 @@ export type TableWithRecords = Table & { records: TableRecord[] };
 export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true, StoreEventsAbi>;
 export type BlockLogs = { blockNumber: StoreEventsLog["blockNumber"]; logs: StoreEventsLog[] };
 
+// only two keys for now, to reduce complexity of creating indexes on SQL tables
+// TODO: make tableId optional to enable filtering just on keys (any table)
+//       this is blocked on reworking data storage so we can more easily query data across tables
+export type SyncFilter = {
+  /**
+   * Filter by the `bytes32` table ID.
+   */
+  tableId: Hex;
+  /**
+   * Optionally filter by the `bytes32` value of the key in the first position (index zero of the record's key tuple).
+   */
+  key0?: Hex;
+  /**
+   * Optionally filter by the `bytes32` value of the key in the second position (index one of the record's key tuple).
+   */
+  key1?: Hex;
+};
+
 export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
   /**
    * MUD config
@@ -42,8 +60,12 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
    */
   address?: Address;
   /**
-   * Optional table IDs to filter indexer state and RPC state.
+   * Optional filters for indexer and RPC state. Useful to narrow down the data received by the client for large worlds.
    */
+  filters?: SyncFilter[];
+  /**
+   * @deprecated Use `filters` option instead.
+   * */
   tableIds?: Hex[];
   /**
    * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.

@@ -1,5 +1,4 @@
 import { execa, Options } from "execa";
-import chalk from "chalk";
 
 export interface ForgeConfig {
   // project
@@ -127,13 +126,13 @@ export async function anvil(args: string[]): Promise<string> {
 async function execLog(command: string, args: string[], options?: Options<string>): Promise<string> {
   const commandString = `${command} ${args.join(" ")}`;
   try {
-    console.log(chalk.gray(`running "${commandString}"`));
+    console.log(`running "${commandString}"`);
     const { stdout } = await execa(command, args, { stdout: "pipe", stderr: "pipe", ...options });
     return stdout;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     let errorMessage = error?.stderr || error?.message || "";
-    errorMessage += chalk.red(`\nError running "${commandString}"`);
+    errorMessage += `\nError running "${commandString}"`;
     throw new Error(errorMessage);
   }
 }

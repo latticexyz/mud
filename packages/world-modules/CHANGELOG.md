@@ -1,5 +1,49 @@
 # Change Log
 
+## 2.0.0-next.12
+
+### Major Changes
+
+- 6ca1874e: Modules now revert with `Module_AlreadyInstalled` if attempting to install more than once with the same calldata.
+
+  This is a temporary workaround for our deploy pipeline. We'll make these install steps more idempotent in the future.
+
+### Patch Changes
+
+- 7ce82b6f: Store config now defaults `storeArgument: false` for all tables. This means that table libraries, by default, will no longer include the extra functions with the `_store` argument. This default was changed to clear up the confusion around using table libraries in tests, `PostDeploy` scripts, etc.
+
+  If you are sure you need to manually specify a store when interacting with tables, you can still manually toggle it back on with `storeArgument: true` in the table settings of your MUD config.
+
+  If you want to use table libraries in `PostDeploy.s.sol`, you can add the following lines:
+
+  ```diff
+    import { Script } from "forge-std/Script.sol";
+    import { console } from "forge-std/console.sol";
+    import { IWorld } from "../src/codegen/world/IWorld.sol";
+  + import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+    contract PostDeploy is Script {
+      function run(address worldAddress) external {
+  +     StoreSwitch.setStoreAddress(worldAddress);
+  +
+  +     SomeTable.get(someKey);
+  ```
+
+- Updated dependencies [7ce82b6f]
+- Updated dependencies [7fa2ca18]
+- Updated dependencies [6ca1874e]
+- Updated dependencies [06605615]
+- Updated dependencies [f62c767e]
+- Updated dependencies [f62c767e]
+- Updated dependencies [d2f8e940]
+- Updated dependencies [25086be5]
+- Updated dependencies [29c3f508]
+  - @latticexyz/store@2.0.0-next.12
+  - @latticexyz/world@2.0.0-next.12
+  - @latticexyz/common@2.0.0-next.12
+  - @latticexyz/config@2.0.0-next.12
+  - @latticexyz/schema-type@2.0.0-next.12
+
 ## 2.0.0-next.11
 
 ### Minor Changes

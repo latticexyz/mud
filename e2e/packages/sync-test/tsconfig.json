@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "types": ["vitest/globals"],
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],

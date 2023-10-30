@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts",
-    "build:abi": "forge build --skip test script",
-    "build:abi-ts": "mud abi-ts && prettier --write '**/*.abi.json.d.ts'",
+    "build:abi": "forge build",
+    "build:abi-ts": "mud abi-ts",
     "build:mud": "mud tablegen && mud worldgen",
     "clean": "pnpm run clean:abi && pnpm run clean:mud",
     "clean:abi": "forge clean",

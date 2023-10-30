@@ -1,5 +1,4 @@
 import { Page } from "@playwright/test";
-import { Entity } from "@latticexyz/recs";
 import { deserialize, serialize } from "./utils";
 
 /**
@@ -7,17 +6,16 @@ import { deserialize, serialize } from "./utils";
  * This is necessary because `page.evaluate` can only transmit serialisable data,
  * so we can't just return the entire client store (which includes functions to read data)
  */
-export async function readComponentValue(
+export async function callPageFunction(
   page: Page,
-  componentName: string,
-  entity: Entity
+  functionName: string,
+  args: unknown[]
 ): Promise<Record<string, unknown> | undefined> {
-  const args = [componentName, entity, serialize.toString(), deserialize.toString()];
-  const serializedValue = await page.evaluate(async (_args) => {
-    const [_componentName, _entity, _serializeString, _deserializeString] = _args;
-    const _serialize = deserializeFunction(_serializeString);
-    const _deserialize = deserializeFunction(_deserializeString);
-    const value = await window["getComponentValue"](_componentName, _entity);
+  const context = [functionName, args, serialize.toString(), deserialize.toString()] as const;
+  const serializedValue = await page.evaluate(async ([functionName, args, serializeString, deserializeString]) => {
+    const _serialize = deserializeFunction(serializeString);
+    const _deserialize = deserializeFunction(deserializeString);
+    const value = await (window as any)[functionName](...args);
     const serializedValue = value ? _serialize(value) : undefined;
     return serializedValue;
 
@@ -27,7 +25,7 @@ export async function readComponentValue(
     function deserializeFunction(serializedFunction: string) {
       return eval(`(() => ${serializedFunction})()`);
     }
-  }, args);
+  }, context);
 
   return serializedValue ? deserialize(serializedValue) : undefined;
 }

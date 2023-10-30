@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/faucet",
-  "version": "2.0.0-next.11",
+  "version": "2.0.0-next.12",
   "description": "Faucet API for Lattice testnet",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "start": "tsx bin/server",
+    "start": "tsx bin/faucet-server",
     "test": "tsc --noEmit --skipLibCheck",
     "test:ci": "pnpm run test"
   },
