@@ -25,10 +25,6 @@ function _metadataTableId(bytes14 namespace) pure returns (ResourceId) {
   return WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: METADATA_NAME });
 }
 
-function _toBytes32(address addr) pure returns (bytes32) {
-  return bytes32(uint256(uint160(addr)));
-}
-
 function _erc20SystemId(bytes14 namespace) pure returns (ResourceId) {
   return WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: ERC20_SYSTEM_NAME });
 }
