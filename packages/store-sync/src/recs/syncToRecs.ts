@@ -1,4 +1,4 @@
-import { StoreConfig } from "@latticexyz/store";
+import { StoreConfig, Table, ResolvedStoreConfig, resolveConfig } from "@latticexyz/store";
 import { Component as RecsComponent, World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { SyncOptions, SyncResult } from "../common";
 import { RecsStorageAdapter, recsStorage } from "./recsStorage";
@@ -6,31 +6,33 @@ import { createStoreSync } from "../createStoreSync";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
 
-type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
+type SyncToRecsOptions<config extends StoreConfig, extraTables extends Record<string, Table>> = SyncOptions<config> & {
   world: RecsWorld;
-  config: TConfig;
+  config: config;
+  tables?: extraTables;
   startSync?: boolean;
 };
 
-type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult & {
-  components: RecsStorageAdapter<TConfig>["components"];
+type SyncToRecsResult<config extends StoreConfig, extraTables extends Record<string, Table>> = SyncResult & {
+  components: RecsStorageAdapter<ResolvedStoreConfig<config>["tables"] & extraTables>["components"];
   stopSync: () => void;
 };
 
-export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
+export async function syncToRecs<config extends StoreConfig, extraTables extends Record<string, Table>>({
   world,
   config,
-  address,
-  publicClient,
-  startBlock,
-  maxBlockRange,
-  initialState,
-  indexerUrl,
+  tables: extraTables,
   startSync = true,
-}: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
+  ...syncOptions
+}: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
+  const tables = {
+    ...resolveConfig(config).tables,
+    ...extraTables,
+  } as ResolvedStoreConfig<config>["tables"] & extraTables;
+
   const { storageAdapter, components } = recsStorage({
     world,
-    config,
+    tables,
     shouldSkipUpdateStream: (): boolean =>
       getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE,
   });
@@ -38,12 +40,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   const storeSync = await createStoreSync({
     storageAdapter,
     config,
-    address,
-    publicClient,
-    startBlock,
-    maxBlockRange,
-    indexerUrl,
-    initialState,
+    ...syncOptions,
     onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed, message }) => {
       // already live, no need for more progress updates
       if (getComponentValue(components.SyncProgress, singletonEntity)?.step === SyncStep.LIVE) return;

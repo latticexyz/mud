@@ -1,5 +1,16 @@
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@latticexyz/schema-type";
 import { FieldData, FullSchemaConfig, StoreConfig } from "./config";
+import { Hex } from "viem";
+
+export type KeySchema = Record<string, { type: StaticAbiType }>;
+export type ValueSchema = Record<string, { type: SchemaAbiType }>;
+export type Table = {
+  tableId: Hex;
+  namespace: string;
+  name: string;
+  keySchema: KeySchema;
+  valueSchema: ValueSchema;
+};
 
 export type ConfigFieldTypeToSchemaAbiType<T extends FieldData<string>> = T extends SchemaAbiType
   ? T
