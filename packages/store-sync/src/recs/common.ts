@@ -1,31 +1,10 @@
-import { StoreConfig } from "@latticexyz/store";
-import { Component as RecsComponent, Metadata as RecsMetadata, Type as RecsType } from "@latticexyz/recs";
-import { SchemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
-import { SchemaAbiType } from "@latticexyz/schema-type";
+import { Metadata } from "@latticexyz/recs";
 import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 
-export type StoreComponentMetadata = RecsMetadata & {
+export type StoreComponentMetadata = Metadata & {
   componentName: string;
   tableName: string;
+  // TODO: migrate to store's KeySchema/ValueSchema
   keySchema: KeySchema;
   valueSchema: ValueSchema;
-};
-
-export type ConfigToRecsComponents<TConfig extends StoreConfig> = {
-  [tableName in keyof TConfig["tables"] & string]: RecsComponent<
-    {
-      __staticData: RecsType.OptionalString;
-      __encodedLengths: RecsType.OptionalString;
-      __dynamicData: RecsType.OptionalString;
-    } & {
-      [fieldName in keyof TConfig["tables"][tableName]["valueSchema"] & string]: RecsType &
-        SchemaAbiTypeToRecsType<SchemaAbiType & TConfig["tables"][tableName]["valueSchema"][fieldName]>;
-    },
-    StoreComponentMetadata & {
-      componentName: tableName;
-      tableName: `${TConfig["namespace"]}:${tableName}`;
-      keySchema: TConfig["tables"][tableName]["keySchema"];
-      valueSchema: TConfig["tables"][tableName]["valueSchema"];
-    }
-  >;
 };

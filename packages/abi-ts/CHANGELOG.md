@@ -1,5 +1,11 @@
 # @latticexyz/abi-ts
 
+## 2.0.0-next.12
+
+### Minor Changes
+
+- ca329175: Moves log output behind a debug flag. You can enable logging with `DEBUG=abi-ts` environment variable.
+
 ## 2.0.0-next.11
 
 ## 2.0.0-next.10

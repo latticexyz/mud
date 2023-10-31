@@ -1,5 +1,25 @@
 # @latticexyz/store-indexer
 
+## 2.0.0-next.12
+
+### Minor Changes
+
+- 1d0f7e22: Added `/healthz` and `/readyz` healthcheck endpoints for Kubernetes
+
+### Patch Changes
+
+- Updated dependencies [7ce82b6f]
+- Updated dependencies [06605615]
+- Updated dependencies [f62c767e]
+- Updated dependencies [f62c767e]
+- Updated dependencies [d2f8e940]
+- Updated dependencies [25086be5]
+- Updated dependencies [d2f8e940]
+  - @latticexyz/store@2.0.0-next.12
+  - @latticexyz/common@2.0.0-next.12
+  - @latticexyz/store-sync@2.0.0-next.12
+  - @latticexyz/block-logs-stream@2.0.0-next.12
+
 ## 2.0.0-next.11
 
 ### Patch Changes

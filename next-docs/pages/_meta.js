@@ -22,6 +22,7 @@ export default {
   plugins: "Plugins",
   templates: "Templates",
   guides: "Guides",
+  contribute: "Contribute",
   changelog: "Changelog",
   retrospectives: "Retrospectives",
   // --------------------

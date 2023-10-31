@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-indexer",
-  "version": "2.0.0-next.11",
+  "version": "2.0.0-next.12",
   "description": "Minimal Typescript indexer for Store",
   "repository": {
     "type": "git",
@@ -37,6 +37,7 @@
     "@fastify/cors": "^8.3.0",
     "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
+    "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/store-sync": "workspace:*",
     "@trpc/client": "10.34.0",

@@ -28,23 +28,15 @@ export async function syncToPostgres<TConfig extends StoreConfig = StoreConfig>(
   config,
   database,
   publicClient,
-  address,
-  startBlock,
-  maxBlockRange,
-  indexerUrl,
-  initialState,
   startSync = true,
+  ...syncOptions
 }: SyncToPostgresOptions<TConfig>): Promise<SyncToPostgresResult> {
   const { storageAdapter } = await postgresStorage({ database, publicClient, config });
   const storeSync = await createStoreSync({
     storageAdapter,
     config,
-    address,
     publicClient,
-    startBlock,
-    maxBlockRange,
-    indexerUrl,
-    initialState,
+    ...syncOptions,
   });
 
   const sub = startSync ? storeSync.storedBlockLogs$.subscribe() : null;

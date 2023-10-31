@@ -1,5 +1,89 @@
 # Change Log
 
+## 2.0.0-next.12
+
+### Minor Changes
+
+- 7fa2ca18: Added TS helpers for calling systems dynamically via the World.
+
+  - `encodeSystemCall` for `world.call`
+
+    ```ts
+    worldContract.write.call(encodeSystemCall({
+      abi: worldContract.abi,
+      systemId: resourceToHex({ ... }),
+      functionName: "registerDelegation",
+      args: [ ... ],
+    }));
+    ```
+
+  - `encodeSystemCallFrom` for `world.callFrom`
+
+    ```ts
+    worldContract.write.callFrom(encodeSystemCallFrom({
+      abi: worldContract.abi,
+      from: "0x...",
+      systemId: resourceToHex({ ... }),
+      functionName: "registerDelegation",
+      args: [ ... ],
+    }));
+    ```
+
+  - `encodeSystemCalls` for `world.batchCall`
+
+    ```ts
+    worldContract.write.batchCall(encodeSystemCalls(abi, [{
+      systemId: resourceToHex({ ... }),
+      functionName: "registerDelegation",
+      args: [ ... ],
+    }]));
+    ```
+
+  - `encodeSystemCallsFrom` for `world.batchCallFrom`
+    ```ts
+    worldContract.write.batchCallFrom(encodeSystemCallsFrom(abi, "0x...", [{
+      systemId: resourceToHex({ ... }),
+      functionName: "registerDelegation",
+      args: [ ... ],
+    }]));
+    ```
+
+- 6ca1874e: Added a `Module_AlreadyInstalled` error to `IModule`.
+- 25086be5: Replaced temporary `.mudtest` file in favor of `WORLD_ADDRESS` environment variable when running tests with `MudTest` contract
+
+### Patch Changes
+
+- 7ce82b6f: Store config now defaults `storeArgument: false` for all tables. This means that table libraries, by default, will no longer include the extra functions with the `_store` argument. This default was changed to clear up the confusion around using table libraries in tests, `PostDeploy` scripts, etc.
+
+  If you are sure you need to manually specify a store when interacting with tables, you can still manually toggle it back on with `storeArgument: true` in the table settings of your MUD config.
+
+  If you want to use table libraries in `PostDeploy.s.sol`, you can add the following lines:
+
+  ```diff
+    import { Script } from "forge-std/Script.sol";
+    import { console } from "forge-std/console.sol";
+    import { IWorld } from "../src/codegen/world/IWorld.sol";
+  + import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+    contract PostDeploy is Script {
+      function run(address worldAddress) external {
+  +     StoreSwitch.setStoreAddress(worldAddress);
+  +
+  +     SomeTable.get(someKey);
+  ```
+
+- 29c3f508: With [resource types in resource IDs](https://github.com/latticexyz/mud/pull/1544), the World config no longer requires table and system names to be unique.
+- Updated dependencies [7ce82b6f]
+- Updated dependencies [06605615]
+- Updated dependencies [f62c767e]
+- Updated dependencies [f62c767e]
+- Updated dependencies [d2f8e940]
+- Updated dependencies [25086be5]
+  - @latticexyz/store@2.0.0-next.12
+  - @latticexyz/common@2.0.0-next.12
+  - @latticexyz/config@2.0.0-next.12
+  - @latticexyz/schema-type@2.0.0-next.12
+
 ## 2.0.0-next.11
 
 ### Patch Changes
