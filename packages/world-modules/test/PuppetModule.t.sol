@@ -3,6 +3,7 @@ pragma solidity >=0.8.21;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { World } from "@latticexyz/world/src/World.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
@@ -50,13 +51,14 @@ contract PuppetModuleTest is Test, GasReporter {
     world = IBaseWorld(address(new World()));
     world.initialize(new CoreModule());
     world.installModule(new PuppetModule(), new bytes(0));
+    StoreSwitch.setStoreAddress(address(world));
 
     // Register a new system
     PuppetTestSystem system = new PuppetTestSystem();
     world.registerSystem(systemId, system, true);
 
     // Connect the puppet
-    puppet = PuppetTestSystem(createPuppet(world, systemId));
+    puppet = PuppetTestSystem(createPuppet(systemId));
   }
 
   function testEmitOnPuppet() public {
