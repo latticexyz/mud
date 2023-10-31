@@ -8,13 +8,27 @@
     "directory": "packages/services"
   },
   "license": "MIT",
-  "type": "module",
   "exports": {
-    "./ecs-relay": "./dist/ecs-relay.js",
-    "./ecs-snapshot": "./dist/ecs-snapshot.js",
-    "./ecs-stream": "./dist/ecs-stream.js",
-    "./faucet": "./dist/faucet.js",
-    "./mode": "./dist/mode.js"
+    "./ecs-relay": {
+      "require": "./dist/ecs-relay.js",
+      "import": "./dist/ecs-relay.js"
+    },
+    "./ecs-snapshot": {
+      "require": "./dist/ecs-snapshot.js",
+      "import": "./dist/ecs-snapshot.js"
+    },
+    "./ecs-stream": {
+      "require": "./dist/ecs-stream.js",
+      "import": "./dist/ecs-stream.js"
+    },
+    "./faucet": {
+      "require": "./dist/faucet.js",
+      "import": "./dist/faucet.js"
+    },
+    "./mode": {
+      "require": "./dist/mode.js",
+      "import": "./dist/mode.js"
+    }
   },
   "typesVersions": {
     "*": {

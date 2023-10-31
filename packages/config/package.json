@@ -8,12 +8,21 @@
     "directory": "packages/config"
   },
   "license": "MIT",
-  "type": "module",
   "exports": {
-    ".": "./dist/library/index.js",
-    "./register": "./dist/register/index.js",
-    "./node": "./dist/node/index.js"
+    ".": {
+      "require": "./dist/library/index.js",
+      "import": "./dist/library/index.js"
+    },
+    "./register": {
+      "require": "./dist/register/index.js",
+      "import": "./dist/register/index.js"
+    },
+    "./node": {
+      "require": "./dist/node/index.js",
+      "import": "./dist/node/index.js"
+    }
   },
+  "main": "./dist/library/index.js",
   "typesVersions": {
     "*": {
       "index": [
@@ -38,7 +47,7 @@
   "dependencies": {
     "@latticexyz/common": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "chalk": "^5.2.0",
+    "chalk": "4.1.2",
     "esbuild": "^0.17.15",
     "ethers": "^5.7.2",
     "find-up": "^6.3.0",

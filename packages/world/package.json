@@ -8,15 +8,33 @@
     "directory": "packages/world"
   },
   "license": "MIT",
-  "type": "module",
   "exports": {
-    ".": "./dist/ts/library/index.js",
-    "./register": "./dist/ts/register/index.js",
-    "./node": "./dist/ts/node/index.js",
-    "./abi/*": "./abi/*",
-    "./types/*": "./types/*",
-    "./*": "./dist/*"
+    ".": {
+      "require": "./dist/ts/library/index.js",
+      "import": "./dist/ts/library/index.js"
+    },
+    "./register": {
+      "require": "./dist/ts/register/index.js",
+      "import": "./dist/ts/register/index.js"
+    },
+    "./node": {
+      "require": "./dist/ts/node/index.js",
+      "import": "./dist/ts/node/index.js"
+    },
+    "./abi/*": {
+      "require": "./abi/*",
+      "import": "./abi/*"
+    },
+    "./types/*": {
+      "require": "./types/*",
+      "import": "./types/*"
+    },
+    "./*": {
+      "require": "./dist/*",
+      "import": "./dist/*"
+    }
   },
+  "main": "./dist/ts/library/index.js",
   "typesVersions": {
     "*": {
       "index": [

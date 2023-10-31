@@ -8,11 +8,17 @@
     "directory": "packages/schema-type"
   },
   "license": "MIT",
-  "type": "module",
   "exports": {
-    ".": "./dist/typescript/index.js",
-    "./deprecated": "./dist/typescript/deprecated/index.js"
+    ".": {
+      "require": "./dist/typescript/index.js",
+      "import": "./dist/typescript/index.js"
+    },
+    "./deprecated": {
+      "require": "./dist/typescript/deprecated/index.js",
+      "import": "./dist/typescript/deprecated/index.js"
+    }
   },
+  "main": "./dist/index.js",
   "typesVersions": {
     "*": {
       "index": [

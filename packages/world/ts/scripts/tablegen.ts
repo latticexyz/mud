@@ -4,7 +4,9 @@ import { getSrcDirectory } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { tablegen } from "@latticexyz/store/codegen";
 
-const config = (await loadConfig()) as StoreConfig;
-const srcDir = await getSrcDirectory();
+(async () => {
+  const config = (await loadConfig()) as StoreConfig;
+  const srcDir = await getSrcDirectory();
 
-await tablegen(config, path.join(srcDir, config.codegenDirectory));
+  await tablegen(config, path.join(srcDir, config.codegenDirectory));
+})();

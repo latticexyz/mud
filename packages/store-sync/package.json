@@ -8,13 +8,25 @@
     "directory": "packages/store-sync"
   },
   "license": "MIT",
-  "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./sqlite": "./dist/sqlite/index.js",
-    "./recs": "./dist/recs/index.js",
-    "./trpc-indexer": "./dist/trpc-indexer/index.js"
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js"
+    },
+    "./sqlite": {
+      "require": "./dist/sqlite/index.js",
+      "import": "./dist/sqlite/index.js"
+    },
+    "./recs": {
+      "require": "./dist/recs/index.js",
+      "import": "./dist/recs/index.js"
+    },
+    "./trpc-indexer": {
+      "require": "./dist/trpc-indexer/index.js",
+      "import": "./dist/trpc-indexer/index.js"
+    }
   },
+  "main": "./dist/index.js",
   "typesVersions": {
     "*": {
       "index": [

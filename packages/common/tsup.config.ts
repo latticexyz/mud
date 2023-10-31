@@ -12,7 +12,7 @@ export default defineConfig({
     utils: "src/utils/index.ts",
   },
   target: "esnext",
-  format: ["esm"],
+  format: ["esm", "cjs"],
   dts: false,
   sourcemap: true,
   clean: true,

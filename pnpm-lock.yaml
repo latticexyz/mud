@@ -235,9 +235,6 @@ importers:
       execa:
         specifier: ^7.0.0
         version: 7.0.0
-      p-retry:
-        specifier: ^5.1.2
-        version: 5.1.2
       prettier:
         specifier: ^2.8.4
         version: 2.8.4
@@ -270,8 +267,8 @@ importers:
         specifier: workspace:*
         version: link:../schema-type
       chalk:
-        specifier: ^5.2.0
-        version: 5.2.0
+        specifier: 4.1.2
+        version: 4.1.2
       esbuild:
         specifier: ^0.17.15
         version: 0.17.15

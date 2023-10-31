@@ -7,11 +7,17 @@
     "directory": "packages/recs"
   },
   "license": "MIT",
-  "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./deprecated": "./dist/deprecated/index.js"
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js"
+    },
+    "./deprecated": {
+      "require": "./dist/deprecated/index.js",
+      "import": "./dist/deprecated/index.js"
+    }
   },
+  "main": "./dist/index.js",
   "typesVersions": {
     "*": {
       "index": [

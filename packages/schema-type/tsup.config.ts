@@ -4,7 +4,7 @@ export default defineConfig({
   entry: ["src/typescript/index.ts", "src/typescript/deprecated/index.ts"],
   outDir: "dist/typescript",
   target: "esnext",
-  format: ["esm"],
+  format: ["esm", "cjs"],
   dts: false,
   sourcemap: true,
   clean: true,

@@ -13,7 +13,7 @@ import {
   WriteContractParameters,
   getContract,
 } from "viem";
-import pRetry from "p-retry";
+// import pRetry from "p-retry";
 import { createNonceManager } from "./createNonceManager";
 import { debug as parentDebug } from "./debug";
 import { UnionOmit } from "./type-utils/common";
@@ -113,33 +113,35 @@ export function createContract<
           async function write(options: WriteContractParameters): Promise<Hex> {
             const preparedWrite = await prepareWrite(options);
 
-            return await pRetry(
-              async () => {
-                if (!contract.nonceManager.hasNonce()) {
-                  await contract.nonceManager.resetNonce();
-                }
+            if (!contract.nonceManager.hasNonce()) {
+              await contract.nonceManager.resetNonce();
+            }
 
-                const nonce = contract.nonceManager.nextNonce();
-                debug("calling write function with nonce", nonce, preparedWrite);
-                return await walletClient.writeContract({
-                  nonce,
-                  ...preparedWrite,
-                });
-              },
-              {
-                retries: 3,
-                onFailedAttempt: async (error) => {
-                  // On nonce errors, reset the nonce and retry
-                  if (contract.nonceManager.shouldResetNonce(error)) {
-                    debug("got nonce error, retrying", error);
-                    await contract.nonceManager.resetNonce();
-                    return;
-                  }
-                  // TODO: prepareWrite again if there are gas errors?
-                  throw error;
-                },
-              }
-            );
+            const nonce = contract.nonceManager.nextNonce();
+            debug("calling write function with nonce", nonce, preparedWrite);
+            return await walletClient.writeContract({
+              nonce,
+              ...preparedWrite,
+            });
+
+            // return await pRetry(
+            //   async () => {
+
+            //   },
+            //   {
+            //     retries: 3,
+            //     onFailedAttempt: async (error) => {
+            //       // On nonce errors, reset the nonce and retry
+            //       if (contract.nonceManager.shouldResetNonce(error)) {
+            //         debug("got nonce error, retrying", error);
+            //         await contract.nonceManager.resetNonce();
+            //         return;
+            //       }
+            //       // TODO: prepareWrite again if there are gas errors?
+            //       throw error;
+            //     },
+            //   }
+            // );
           }
 
           return (...parameters) => {

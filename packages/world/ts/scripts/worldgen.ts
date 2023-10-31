@@ -7,24 +7,26 @@ import { WorldConfig } from "../library";
 import { worldgen } from "../node";
 import { StoreConfig } from "@latticexyz/store";
 
-// TODO dedupe this and cli's worldgen command
-const configPath = undefined;
-const clean = false;
-const srcDir = await getSrcDirectory();
+(async () => {
+  // TODO dedupe this and cli's worldgen command
+  const configPath = undefined;
+  const clean = false;
+  const srcDir = await getSrcDirectory();
 
-// Get a list of all contract names
-const existingContracts = glob.sync(`${srcDir}/**/*.sol`).map((path) => ({
-  path,
-  basename: basename(path, ".sol"),
-}));
+  // Get a list of all contract names
+  const existingContracts = glob.sync(`${srcDir}/**/*.sol`).map((path) => ({
+    path,
+    basename: basename(path, ".sol"),
+  }));
 
-// Load and resolve the config
-const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
+  // Load and resolve the config
+  const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
 
-const outputBaseDirectory = path.join(srcDir, mudConfig.codegenDirectory);
+  const outputBaseDirectory = path.join(srcDir, mudConfig.codegenDirectory);
 
-// clear the worldgen directory
-if (clean) rmSync(path.join(outputBaseDirectory, mudConfig.worldgenDirectory), { recursive: true, force: true });
+  // clear the worldgen directory
+  if (clean) rmSync(path.join(outputBaseDirectory, mudConfig.worldgenDirectory), { recursive: true, force: true });
 
-// generate new interfaces
-await worldgen(mudConfig, existingContracts, outputBaseDirectory);
+  // generate new interfaces
+  await worldgen(mudConfig, existingContracts, outputBaseDirectory);
+})();

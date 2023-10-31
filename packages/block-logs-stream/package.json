@@ -8,10 +8,13 @@
     "directory": "packages/block-logs-stream"
   },
   "license": "MIT",
-  "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js"
+    }
   },
+  "main": "./dist/index.js",
   "types": "src/index.ts",
   "scripts": {
     "build": "pnpm run build:js",

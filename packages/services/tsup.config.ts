@@ -9,7 +9,7 @@ export default defineConfig({
     mode: "protobuf/ts/mode/mode.ts",
   },
   target: "esnext",
-  format: ["esm"],
+  format: ["esm", "cjs"],
   dts: false,
   sourcemap: true,
   clean: true,

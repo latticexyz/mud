@@ -8,15 +8,33 @@
     "directory": "packages/store"
   },
   "license": "MIT",
-  "type": "module",
   "exports": {
-    ".": "./dist/ts/index.js",
-    "./codegen": "./dist/ts/codegen/index.js",
-    "./config": "./dist/ts/config/index.js",
-    "./register": "./dist/ts/register/index.js",
-    "./abi/*": "./abi/*",
-    "./*": "./dist/*"
+    ".": {
+      "require": "./dist/ts/index.js",
+      "import": "./dist/ts/index.js"
+    },
+    "./codegen": {
+      "require": "./dist/ts/codegen/index.js",
+      "import": "./dist/ts/codegen/index.js"
+    },
+    "./config": {
+      "require": "./dist/ts/config/index.js",
+      "import": "./dist/ts/config/index.js"
+    },
+    "./register": {
+      "require": "./dist/ts/register/index.js",
+      "import": "./dist/ts/register/index.js"
+    },
+    "./abi/*": {
+      "require": "./abi/*",
+      "import": "./abi/*"
+    },
+    "./*": {
+      "require": "./dist/*",
+      "import": "./dist/*"
+    }
   },
+  "main": "./dist/ts/index.js",
   "typesVersions": {
     "*": {
       "index": [
