@@ -1,10 +1,9 @@
 import { setup } from "./mud/setup";
 import mudConfig from "contracts/mud.config";
-import { tables } from "./mud/tables";
 
 const {
   network,
-  network: { useStore, worldContract, waitForTransaction },
+  network: { tables, useStore, worldContract, waitForTransaction },
   systemCalls,
 } = await setup();
 

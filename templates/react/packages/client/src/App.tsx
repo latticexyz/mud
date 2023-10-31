@@ -1,9 +1,8 @@
 import { useMUD } from "./MUDContext";
-import { tables } from "./mud/tables";
 
 export const App = () => {
   const {
-    network: { useStore },
+    network: { tables, useStore },
     systemCalls: { increment },
   } = useMUD();
 

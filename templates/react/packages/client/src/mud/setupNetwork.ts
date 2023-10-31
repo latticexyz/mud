@@ -10,7 +10,6 @@ import { getNetworkConfig } from "./getNetworkConfig";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, getContract, transportObserver, ContractWrite } from "@latticexyz/common";
 import { Subject, share } from "rxjs";
-import { tables } from "./tables";
 
 /*
  * Import our MUD config, which includes strong types for
@@ -72,8 +71,7 @@ export async function setupNetwork() {
    * to the viem publicClient to make RPC calls to fetch MUD
    * events from the chain.
    */
-  const { useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
-    tables,
+  const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
     config: mudConfig,
     address: networkConfig.worldAddress as Hex,
     publicClient,
@@ -109,6 +107,7 @@ export async function setupNetwork() {
   }
 
   return {
+    tables,
     useStore,
     publicClient,
     walletClient: burnerWalletClient,

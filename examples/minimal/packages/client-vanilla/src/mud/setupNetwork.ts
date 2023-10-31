@@ -5,7 +5,7 @@ import { getNetworkConfig } from "./getNetworkConfig";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, getContract, transportObserver, ContractWrite } from "@latticexyz/common";
 import { Subject, share } from "rxjs";
-import { tables } from "./tables";
+import mudConfig from "contracts/mud.config";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -35,8 +35,8 @@ export async function setupNetwork() {
     onWrite: (write) => write$.next(write),
   });
 
-  const { useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
-    tables,
+  const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
+    config: mudConfig,
     address: networkConfig.worldAddress as Hex,
     publicClient,
     startBlock: BigInt(networkConfig.initialBlockNumber),
@@ -67,6 +67,7 @@ export async function setupNetwork() {
   }
 
   return {
+    tables,
     useStore,
     publicClient,
     walletClient: burnerWalletClient,

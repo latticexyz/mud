@@ -1,12 +1,10 @@
 import { Address, Block, Hex, Log, PublicClient } from "viem";
-import { StoreConfig, StoreEventsAbiItem, StoreEventsAbi, resolveUserTypes, resolveConfig } from "@latticexyz/store";
+import { StoreConfig, StoreEventsAbiItem, StoreEventsAbi, resolveConfig } from "@latticexyz/store";
 import { Observable } from "rxjs";
-import { resourceToHex } from "@latticexyz/common";
 import { UnionPick } from "@latticexyz/common/type-utils";
 import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
-import { mapObject } from "@latticexyz/common/utils";
 import { flattenSchema } from "./flattenSchema";
 
 export const storeTables = resolveConfig(storeConfig).tables;

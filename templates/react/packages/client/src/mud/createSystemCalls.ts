@@ -4,7 +4,6 @@
  */
 
 import { SetupNetworkResult } from "./setupNetwork";
-import { tables } from "./tables";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
@@ -28,7 +27,7 @@ export function createSystemCalls(
    *   syncToRecs
    *   (https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts#L77-L83).
    */
-  { useStore, worldContract, waitForTransaction }: SetupNetworkResult
+  { tables, useStore, worldContract, waitForTransaction }: SetupNetworkResult
 ) {
   const increment = async () => {
     /*

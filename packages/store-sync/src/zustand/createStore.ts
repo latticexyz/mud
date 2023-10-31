@@ -2,7 +2,6 @@ import { SchemaToPrimitives, Table, Tables } from "@latticexyz/store";
 import { StoreApi, UseBoundStore, create } from "zustand";
 import { RawRecord, TableRecord } from "./common";
 import { Hex, concatHex } from "viem";
-import { storeTables, worldTables } from "../common";
 import { encodeKey } from "@latticexyz/protocol-parser";
 import { flattenSchema } from "../flattenSchema";
 
@@ -12,10 +11,7 @@ type TableRecords<table extends Table> = {
 
 // TODO: split this into distinct stores and combine (https://docs.pmnd.rs/zustand/guides/typescript#slices-pattern)?
 
-export type ZustandState<
-  tables extends Tables,
-  allTables extends Tables = tables & typeof storeTables & typeof worldTables
-> = {
+export type ZustandState<tables extends Tables> = {
   /** Tables derived from table registration store events */
   readonly tables: {
     readonly [tableId: Hex]: Table;
@@ -26,7 +22,7 @@ export type ZustandState<
   };
   /** Decoded table records derived from raw records */
   readonly records: {
-    readonly [id: string]: TableRecord<allTables[keyof allTables]>;
+    readonly [id: string]: TableRecord<tables[keyof tables]>;
   };
   readonly getRecords: <table extends Table>(table: table) => TableRecords<table>;
   readonly getRecord: <table extends Table>(

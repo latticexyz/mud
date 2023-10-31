@@ -1,27 +1,45 @@
-import { Tables } from "@latticexyz/store";
-import { SyncOptions, SyncResult } from "../common";
+import { ResolvedStoreConfig, StoreConfig, Tables, resolveConfig } from "@latticexyz/store";
+import { SyncOptions, SyncResult, storeTables, worldTables } from "../common";
 import { createStoreSync } from "../createStoreSync";
 import { ZustandStore } from "./createStore";
 import { createStore } from "./createStore";
 import { createStorageAdapter } from "./createStorageAdapter";
 
-type SyncToZustandOptions<tables extends Tables> = SyncOptions & {
-  tables: tables;
-  store?: ZustandStore<tables>;
+type AllTables<config extends StoreConfig, extraTables extends Tables> = ResolvedStoreConfig<config>["tables"] &
+  extraTables &
+  typeof storeTables &
+  typeof worldTables;
+
+type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables> = SyncOptions & {
+  config: config;
+  tables?: extraTables;
+  store?: ZustandStore<AllTables<config, extraTables>>;
   startSync?: boolean;
 };
 
-type SyncToZustandResult<tables extends Tables> = SyncResult & {
-  useStore: ZustandStore<tables>;
+type SyncToZustandResult<config extends StoreConfig, extraTables extends Tables> = SyncResult & {
+  tables: AllTables<config, extraTables>;
+  useStore: ZustandStore<AllTables<config, extraTables>>;
   stopSync: () => void;
 };
 
-export async function syncToZustand<tables extends Tables>({
-  tables,
+export async function syncToZustand<config extends StoreConfig, extraTables extends Tables>({
+  config,
+  tables: extraTables,
   store,
   startSync = true,
   ...syncOptions
-}: SyncToZustandOptions<tables>): Promise<SyncToZustandResult<tables>> {
+}: SyncToZustandOptions<config, extraTables>): Promise<SyncToZustandResult<config, extraTables>> {
+  // TODO: migrate this once we redo config to return fully resolved tables (https://github.com/latticexyz/mud/issues/1668)
+  // TODO: move store/world tables into `resolveConfig`
+  const resolvedConfig = resolveConfig(config);
+  const tables = {
+    ...resolvedConfig.tables,
+    ...extraTables,
+    ...storeTables,
+    ...worldTables,
+  } as AllTables<config, extraTables>;
+
   const useStore = store ?? createStore({ tables });
   const storageAdapter = createStorageAdapter({ store: useStore });
 
@@ -37,6 +55,7 @@ export async function syncToZustand<tables extends Tables>({
 
   return {
     ...storeSync,
+    tables,
     useStore,
     stopSync,
   };
