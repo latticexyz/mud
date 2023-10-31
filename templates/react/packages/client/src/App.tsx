@@ -1,14 +1,13 @@
-import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
-import { singletonEntity } from "@latticexyz/store-sync/recs";
+import { tables } from "./mud/tables";
 
 export const App = () => {
   const {
-    components: { Counter },
+    network: { useStore },
     systemCalls: { increment },
   } = useMUD();
 
-  const counter = useComponentValue(Counter, singletonEntity);
+  const counter = useStore((state) => state.getValue(tables.Counter, {}));
 
   return (
     <>
