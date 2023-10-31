@@ -1,3 +1,5 @@
+import Illustration from "./world-table-illustration.mdx";
+
 # Systems
 
 One of the design principles of MUD is to separate the state of the `World` from the business logic that it implements.
@@ -8,19 +10,7 @@ These contracts are called through the `World`, and call back on the `World` whe
 
 <summary>Detailed illustration</summary>
 
-![Detailed illustration](./world-table.svg)
-
-1. An external entity (contract or externally owned account) calls on the `World` a function called `myns_sys_fun`.
-   This means the `fun` function in the `sys` system, which is part of the `myns` namespace (the system is also refered to as `myns:sys`).
-
-1. The `World` verifies that access is permitted (for example, because `myns:sys` is publicly accessible) and if so calls `fun` on the `myns:sys` contract with the provided parameters.
-
-1. At some point in its execution `fun` decides to update the data in the table `myns:tab`.
-   As with all other tables, this table is stored in the `World`'s storage.
-   To modify it, `fun` calls a function on the `World` contract.
-
-1. The `World` verifies that access is permitted (by default it would be, because `myns:sys` has access to the `myns` namespace).
-   If so, it modifies the data in the `myns:tab` table.
+<Illustration />
 
 </details>
 
