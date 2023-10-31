@@ -1,13 +1,13 @@
 ![Interaction between the `World`, a `System`, and a table](./world-table.svg)
 
 1. An account calls a function called `namespace_system_function` via the `World`.
-   This means the `fun` function in the `sys` system, which is part of the `myns` namespace (the system is also refered to as `myns:sys`).
+   [This function was registered](./function-selectors) by the owner of the `namespace` namespace and points to the `function` function in the `system` system in the `namespace` namespace.
 
-2. The `World` verifies that access is permitted (for example, because `myns:sys` is publicly accessible) and if so calls `fun` on the `myns:sys` contract with the provided parameters.
+2. The `World` verifies that access is permitted (for example, because `namespace:system` is publicly accessible) and if so calls `function` on the `namespace:system` contract with the provided parameters.
 
-3. At some point in its execution `fun` decides to update the data in the table `myns:tab`.
+3. At some point in its execution `function` decides to update the data in the table `namespace:table`.
    As with all other tables, this table is stored in the `World`'s storage.
-   To modify it, `fun` calls a function on the `World` contract.
+   To modify it, `function` calls a function on the `World` contract.
 
-4. The `World` verifies that access is permitted (by default it would be, because `myns:sys` has access to the `myns` namespace).
-   If so, it modifies the data in the `myns:tab` table.
+4. The `World` verifies that access is permitted (by default it would be, because `namespace:system` has access to the `namespace` namespace).
+   If so, it modifies the data in the `namespace:table` table.
