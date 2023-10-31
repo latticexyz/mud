@@ -4,7 +4,7 @@ import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
-import { ContractWrite, createBurnerAccount, getContract, transportObserver } from "@latticexyz/common";
+import { ContractWrite, createBurnerAccount, getContract, resourceToHex, transportObserver } from "@latticexyz/common";
 import { Subject, share } from "rxjs";
 import mudConfig from "contracts/mud.config";
 import { createClient as createFaucetClient } from "@latticexyz/faucet";
@@ -40,10 +40,23 @@ export async function setupNetwork() {
   const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
     world,
     config: mudConfig,
+    tables: {
+      KeysWithValue: {
+        namespace: "keywval",
+        name: "Inventory",
+        tableId: resourceToHex({ type: "table", namespace: "keywval", name: "Inventory" }),
+        keySchema: {
+          valueHash: { type: "bytes32" },
+        },
+        valueSchema: {
+          keysWithValue: { type: "bytes32[]" },
+        },
+      },
+    },
     address: networkConfig.worldAddress as Hex,
     publicClient,
     startBlock: BigInt(networkConfig.initialBlockNumber),
-  });
+  } as const);
 
   try {
     console.log("creating faucet client");
