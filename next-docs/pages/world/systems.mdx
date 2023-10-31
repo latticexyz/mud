@@ -2,9 +2,9 @@ import Illustration from "./world-table-illustration.mdx";
 
 # Systems
 
-One of the design principles of MUD is to separate the state of the `World` from the business logic that it implements.
-We do this by having stateless `System` contracts with the functions that implement the business logic.
-These contracts are called through the `World`, and call back on the `World` when they need to read or modify state information, which is stored in [tables](./tables).
+One of the design principles of MUD is to separate the state of the `World` from the business logic.
+The business logic is implemented in stateless `System` contracts.
+`System`s are called through the `World`, and call back to the `World` to read and write state from [tables](./tables).
 
 <details>
 
@@ -26,22 +26,22 @@ To call a `System`, you call the `World` in one of these ways:
 
 ## Writing systems
 
-A `System` should _not_ have any state internally, but store all of it in tables in the `World`.
+A `System` should _not_ have any internal state, but store all of it in tables in the `World`.
 There are several reasons for this:
 
 - It allows a `World` to enforce access controls.
 - It allows the same `System` to be used by multiple `World` contracts.
 - Upgrades are a lot simpler when all the state is centralized outside of the `System` contract.
 
-Because calls to systems are proxied by the `World`, some message fields don't reflect the original call.
+Because calls to systems are proxied through the `World`, some message fields don't reflect the original call.
 Use these substitutes:
 
-| Normal code  | `System` replacement |
+| Vanilla Solidity  | `System` replacement |
 | ------------ | -------------------- |
 | `msg.sender` | `_msgSender()`       |
 | `msg.value`  | `_msgValue()`        |
 
-When calling other contracts from a `System`, be aware that if you use `delegatecall` the called contract inherits the caller's permissions and can modify data from the `World` on behalf of the `System`.
+When calling other contracts from a `System`, be aware that if you use `delegatecall` the called contract inherits the `System`'s permissions and can modify data in the `World` on behalf of the `System`.
 
 ### Calling one `System` from another
 
@@ -57,11 +57,10 @@ There are two ways to call one `System` from another one.
 ## Registering systems
 
 For a `System` to be callable from a `World` it has to be [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L97-L201).
-If the namespace in which the `System` is registered already exists, only the [namespace owner](/world/namespaces-access-control#ownership).
-If it doesn't exist yet it is created, and the address that called `registerSystem` is assigned as the owner of the new namespace.
+Only the [namespace owner](./namespaces-access-control#ownership) can register a `System` in a namespace.
 
-In a `World` there can only be one `System` per contract address.
-If you need the functionality and there is already a `System` registered for that address, you can always deploy the bytecode as a new contract.
+`System`s can be registered once per `World`, but the same system can be registered in multiple `World`s.
+If you need multiple instances of a `System` in the same world, you can deploy the `System` multiple times and register the individual deployments individually.
 
 ### Upgrading systems
 
@@ -69,9 +68,9 @@ The namespace owner can upgrade a `System`.
 This is a two-step process: deploy the contract for the new `System` and then call `registerSystem` with the same `ResourceId` as the old one and the new contract address.
 
 This upgrade process removes the old `System` contract's access to the namespace, and gives access to the new contract.
-Any access granted _manually_ to the `System` is not revoked, nor granted to the upgraded `System`.
+Any access granted _manually_ to the old `System` is not revoked, nor granted to the upgraded `System`.
 
-**Note:** You _should_ make sure to remove any such access.
+**Note:** You _should_ make sure to remove any such manually granted access.
 `System` access is based on the contract address, so somebody else could register a namespace they'd own, register the old `System` contract as a system in their namespace, and then abuse those permissions (if the `System` has code that can be used for that, of course).
 
 ## Access control
@@ -80,22 +79,21 @@ When you register a `System`, you can specify whether it is going to be private 
 
 - A public `System` has no access control checks, it can be called by anybody.
   This is the main mechanism for user interaction with a MUD application.
-- A private `System` can only be called by entities that have access.
+- A private `System` can only be called by accounts that have access.
   This access can be the result of:
 
   - Access permission to the namespace in which the `System` is registered.
   - Access permission specifically to the `System`.
 
-  Note that while code in private systems can only be called by authorized resources, by default those authorized resources include public systems in the same namespace operating on behalf of any user.
-  Vulnerabilities in private systems are _harder_ to exploit, but not necessarily impossible.
+Note that `System`s have access to their own namespace by default, so public `System`s can call private `System`s in their namespace.
 
 ## Root systems
 
 The `World` uses `call` for systems in other namespaces, but `delegatecall` for those in the root namespace (`bytes14(0)`).
 As a result, root systems have access to the `World` contract's storage.
-Because of this access, root systems use [the internal `StoreCore` methods](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreCore.sol), which are slightly cheaper than calling [the `IStore` methods](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol) used by other systems.
+Because of this access, root systems use [the internal `StoreCore` methods](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreCore.sol), which are slightly cheaper than calling [the external `IStore` methods](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol) used by other systems.
 Note that the table libraries abstract this difference, so normally there is no reason to be concerned about it.
 
 Another effect of having access to the storage of the `World` is that root systems could, in theory, overwrite any information in any table regardless of access control.
-We recommend that the root namespace be used only when needed, and any `System` registered for it be properly audited.
-Of course, only the owner of the root namespace can register systems in the root namespace.
+Only the [owner of the root namespace](./namespaces-access-control) can register root systems.
+We recommend to only use the root namespace when strictly necessary.
