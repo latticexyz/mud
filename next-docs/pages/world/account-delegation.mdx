@@ -1,1 +1,74 @@
 # Account delegation
+
+_Account delegation_ allows a _delegator_ address to permit a _delegatee_ address to call a `System` on its behalf.
+This enables multiple use cases.
+
+- **Session wallets**.
+  Normally a wallet requires the user to authorize each transaction separately.
+  In the case of a blockchain game, this means having to authorize every move, which is excessive.
+  Using account delegation players can authorize a different wallet, one whose private key is stored on the client, to play to act on their behalf.
+  Because this wallet's private key is stored in the client, rather than a browser extension, the client can decide when asking for authorization is warranted and when it isn't.
+  By making sure this is a _separate_ wallet, we protect the player's main account in the case of vulnerable or malicious game clients.
+
+- **Approvals**.
+  MUD applications can have a feature similar to [the ERC-20 `approve` function](https://eips.ethereum.org/EIPS/eip-20#approve).
+
+## Creating a delegation
+
+First, the delegator has to call [`registerDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L234-L263).
+This function takes three parameters:
+
+- `delegatee`, the address given the privileges.
+  This can be `address(0)` to give permission to all addresses.
+
+- `delegationControlId`, this is usually the `ResourceId` for a `System` that decides whether an attempt to do something by the delegatee on behalf of the delegator is authorized or not.
+  Alternatively, this value can be [`UNLIMITED_DELEGATION`](https://github.com/latticexyz/mud/blob/main/packages/world/src/constants.sol#L23-L25), in which case the delegatee has unlimited authority.
+
+  We have an example of a delegation control `System` in [the `std-delegations` module](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/std-delegations).
+
+- `initCallData`, call data for a function that is called on the `delegationControlId` to inform it of the new delegation.
+  This [call data](https://docs.soliditylang.org/en/latest/abi-spec.html) includes both the function to call and the parameters with which it is provided.
+
+## Using a delegation
+
+The delegatee can use [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L353-L394).
+This function takes three parameters:
+
+- `delegator`, the address on whose behalf the call is happening.
+- `systemId`, the `System` to call.
+- `callData`, the [call data](https://docs.soliditylang.org/en/latest/abi-spec.html) to send the `System`, which includes both the function to call and the parameters with which it is provided.
+
+## Namespace delegation
+
+The owner of a namespace can use [`registerNamespaceDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L265-L306) for all access to the namespace.
+This functionality is useful, for example, to implement a trusted forwarder for the namespace.
+This is not a security concern, even though it looks like one, because the namespace owner already has full control over any table or `System` in the name space.
+
+## Gotchas and edge cases
+
+There are several edge cases which could trip people up when it comes to delegation.
+
+### Only one delegation per (delegator, delegatee) pair
+
+The table that specifies the `System` to check for delegation ([`world:UserDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world/src/codegen/tables/UserDelegationControl.sol)) has two fields in the key: `delegator` and `delegetee`.
+This means that if a user registers one delegation to let a specific `System` authorize requests for one purpose (for example, requests to a specific namespace), and then another delegation to have a different `System` authorize requests for a differet purpose (maybe a different namespace), within the same `World`, the second registration overwrites the first.
+
+This is not a major problem, it is possible to write a `System` that will authorize requests by looking at the destination namespace and calling a different `System` to authorize requests going to different namespaces, but you should be aware of it.
+
+### Can give `UNLIMITED_DELEGATION` to `address(0)`
+
+There are circumstances that require you to give limited permissions to every user, so sometimes you it makes sense to use `address(0)`.
+MUD also lets you give `UNLIMITED_DELEGATION` to every user, but that does not make sense unless there is nothing in the `World` you care about.
+
+### Order of delegation checks
+
+As you can see in [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L353-L394), the order of delegation checks is:
+
+1. If there is a `world:UserDelegationControl` entry with the delegator and the delegatee (a.k.a. `msg.sender`), check it.
+   If it results in an approval, perform the call.
+1. If the user provided a universal delegation (one where the delegatee is `address(0)`), check it.
+   If it results in an approval, perform the call.
+1. If there is an applicable namespace delegation, check that one.
+   If it results in an approval, perform the call.
+
+This means that if there's a namespace delegation that modifies information (for example, writes to a MUD table to gather statistics) users will be able to bypass it by creating their own delegation with the same delegetee and a `System` that would approve.
