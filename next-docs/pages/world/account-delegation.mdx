@@ -11,7 +11,9 @@ This enables multiple use cases.
   By making sure this is a _separate_ wallet, we protect the player's main account in the case of vulnerable or malicious game clients.
 
 - **Approvals**.
-  MUD applications can have a feature similar to [the ERC-20 `approve` function](https://eips.ethereum.org/EIPS/eip-20#approve).
+  Users can approve contracts to perform actions in a MUD world on their behalf.
+  This is conceptually similar to how ERC20's [`approve`/`transferFrom`](https://eips.ethereum.org/EIPS/eip-20#transferfrom) enables atomic swaps by allowing contracts to withdraw from a user's balance and then deposit a different asset in a single transaction.
+  For example, an agent could exchange two in-game assets atomically if the two sides of the trade give it the necessary permission.
 
 ## Creating a delegation
 
@@ -19,7 +21,7 @@ First, the delegator has to call [`registerDelegation`](https://github.com/latti
 This function takes three parameters:
 
 - `delegatee`, the address given the privileges.
-  This can be `address(0)` to let this delegation apply to all callers. Note that combining `address(0)` with an unlimited delegation is discouraged, as it would allow anyone to perform any action on behalf of the delegator.  
+  This can be `address(0)` to let this delegation apply to all callers. Note that combining `address(0)` with an unlimited delegation is discouraged, as it would allow anyone to perform any action on behalf of the delegator.
 
 - `delegationControlId`, this is usually the `ResourceId` for a `System` that decides whether an attempt to do something by the delegatee on behalf of the delegator is authorized or not.
   Alternatively, this value can be [`UNLIMITED_DELEGATION`](https://github.com/latticexyz/mud/blob/main/packages/world/src/constants.sol#L23-L25), in which case the delegatee has unlimited authority.
@@ -44,23 +46,7 @@ The owner of a namespace can use [`registerNamespaceDelegation`](https://github.
 This functionality is useful, for example, to implement a trusted forwarder for the namespace.
 This is not a security concern because the namespace owner already has full control over any table or `System` in the namespace.
 
-## Gotchas and edge cases
-
-There are several edge cases which could trip people up when it comes to delegation.
-
-### Only one delegation per (delegator, delegatee) pair
-
-The table that specifies the `System` to check for delegation ([`world:UserDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world/src/codegen/tables/UserDelegationControl.sol)) has two fields in the key: `delegator` and `delegetee`.
-This means that if a user registers one delegation to let a specific `System` authorize requests for one purpose (for example, requests to a specific namespace), and then another delegation to have a different `System` authorize requests for a differet purpose (maybe a different namespace), within the same `World`, the second registration overwrites the first.
-
-This is not a major problem, it is possible to write a `System` that will authorize requests by looking at the destination namespace and calling a different `System` to authorize requests going to different namespaces, but you should be aware of it.
-
-### Can give `UNLIMITED_DELEGATION` to `address(0)`
-
-There are circumstances that require you to give limited permissions to every user, so sometimes you it makes sense to use `address(0)`.
-MUD also lets you give `UNLIMITED_DELEGATION` to every user, but that does not make sense unless there is nothing in the `World` you care about.
-
-### Order of delegation checks
+## Order of delegation checks
 
 As you can see in [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L353-L394), the order of delegation checks is:
 
