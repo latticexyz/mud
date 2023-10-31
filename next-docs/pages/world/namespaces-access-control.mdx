@@ -34,7 +34,7 @@ This is the level that most users of a MUD application have for all resources.
 Users on this level are allowed to do the following:
 
 - Read data from tables.
-  _There are no secrets on the blockchain_, transactions and events are public information, so this information has to be available.
+  Any information posted or created on the blockchain is public, so this information is available anyway.
 - Call functions on [public `System`s](./systems).
 
 ### Access
@@ -47,8 +47,8 @@ Entities with this level of access can do anything that "no" access allows, and 
 - Write directly to tables.
   This is as opposed to users with no access, who can only modify table information by going through a public `System` (by default, a `System` has access to its own namespace, which includes all of the namespace's tables).
 - Call functions on [private `System`s](./systems).
-- Withdraw from the ETH balance of the namespace.
-  To avoid giving this permission, give an address access to every resource in the namespace, rather than to the namespace itself.
+- In the case of access to a namespace, withdraw from the ETH balance of the namespace.
+  To avoid giving this permission, you can give an address access to every resource in the namespace, rather than to the namespace itself.
 
 ### Ownership
 
@@ -70,6 +70,5 @@ Additionally, owners can also:
 - Register [system hooks](/world/system-hooks) for systems in the namespace.
 - Register [function selectors](/world/function-selectors) for systems in the namespace.
 
-Owners can modify which contract a `World` uses for each `System`, so a namespace with an owner is not truly decentralized, unless the owner is some kind of distributed governance mechanism.
-When the application is ready to be truly decentralized, the owner can revoke previously granted access as needed and then transfer ownership to `address(0)`.
-Once this is done no new access can be granted, and ownership cannot be transferred again.
+Owners can modify which contract a `World` uses for each `System`.
+Note: once ownership of a namespace is burned (i.e. transferred to `address(0)`), no new access can be granted or revoked, ownership can't be transferred again, and `System`s can't be added, removed, or upgraded (unless the `System` is itself a [proxy](https://blog.openzeppelin.com/proxy-patterns)).
