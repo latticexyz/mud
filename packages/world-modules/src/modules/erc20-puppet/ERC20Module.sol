@@ -74,7 +74,7 @@ contract ERC20Module is Module {
     // Deploy and register the ERC20 puppet.
     IBaseWorld world = IBaseWorld(_world());
     ResourceId erc20SystemId = _erc20SystemId(namespace);
-    address puppet = createPuppet(world, erc20SystemId);
+    address puppet = createPuppet(erc20SystemId);
 
     // Transfer ownership of the namespace to the caller
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
