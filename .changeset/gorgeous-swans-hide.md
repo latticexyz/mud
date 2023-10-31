@@ -2,7 +2,7 @@
 "@latticexyz/world-modules": minor
 ---
 
-Adds the `ERC721Module` to `@latticexyz/world-modules`. 
+Added the `ERC721Module` to `@latticexyz/world-modules`. 
 This module allows the registration of `ERC721` tokens in an existing World.
 
 Important note: this module has not been audited yet, so any production use is discouraged for now.
