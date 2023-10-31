@@ -8,9 +8,11 @@
     "directory": "packages/cli"
   },
   "license": "MIT",
-  "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js"
+    }
   },
   "types": "src/index.ts",
   "bin": {
