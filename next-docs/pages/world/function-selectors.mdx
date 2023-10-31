@@ -1,13 +1,14 @@
 # Function selectors
 
-If you call a `System` using [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L339-L351).
-If [you have the necessary delegation](/world/account-delegation) you can also use `callFrom`.
-When you use this method, you provide two parameters:
+You can call a `System` using [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L339-L351).
+When you use this method, you provide two parameters.
 
 - The `ResourceId` for the `System` to be called.
 - The [calldata](https://docs.soliditylang.org/en/develop/abi-spec.html) to send that system.
   This calldata includes the four-byte [function selector](https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector), as well as any function parameters.
-It's the result of encoding via `abi.encodeCall`.
+  To get the calldata, you can use [`abi.encodeCall`](https://docs.soliditylang.org/en/v0.8.22/cheatsheet.html#abi-encoding-and-decoding-functions).
+
+If [you have the necessary delegation](/world/account-delegation) you can also use `callFrom`, which lets you also specify the address on whose behalf you are calling.
 
 To improve the developer experience of calling `System` functions, the namespace owner can register a function selector for each `System` function in the `World` contract.
 This removes the need for the caller to know the system's `ResourceId`, and the need to manually encode the calldata via `abi.encodeCall`.
@@ -18,7 +19,7 @@ This function takes two parameters:
 
 - The `ResourceID` of the `System`.
   This value encodes both the namespace and the name of the `System`.
-- The name of the function within the `System`.
+- [The signature (name and parameter types)](https://docs.soliditylang.org/en/v0.8.22/abi-spec.html#function-selector) of the function within the `System`.
 
 For example, in the [Extending World guide](/guides/extending-world#deploy-to-the-blockchain) we create a namespace called `messaging`, within it a `System` called `message`, and that `System` includes a function called `incrementMessage`.
 
@@ -30,10 +31,10 @@ This is the code we use to register the `System` and the function selector:
     world.registerFunctionSelector(systemId, "incrementMessage(string)");
 ```
 
-And this is the command line that uses [`cast`](https://book.getfoundry.sh/cast/) to call `incrementMessage`:
+After the function selector is registered, it can be accessed directly on the World:
 
-```sh
-cast send $WORLD_ADDRESS --private-key $PRIVATE_KEY "messaging_message_incrementMessage(string)" "hello"
+```solidity
+    world.messaging_message_incrementMessage("hello");
 ```
 
 ## Root systems
