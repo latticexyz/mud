@@ -10,6 +10,8 @@ type TableRecords<table extends Table> = {
   readonly [id: string]: TableRecord<table>;
 };
 
+// TODO: split this into distinct stores and combine (https://docs.pmnd.rs/zustand/guides/typescript#slices-pattern)?
+
 export type ZustandState<
   tables extends Tables,
   allTables extends Tables = tables & typeof storeTables & typeof worldTables
@@ -31,6 +33,10 @@ export type ZustandState<
     table: table,
     key: SchemaToPrimitives<table["keySchema"]>
   ) => TableRecord<table> | undefined;
+  readonly getValue: <table extends Table>(
+    table: table,
+    key: SchemaToPrimitives<table["keySchema"]>
+  ) => TableRecord<table>["value"] | undefined;
 };
 
 export type ZustandStore<tables extends Tables> = UseBoundStore<StoreApi<ZustandState<tables>>>;
@@ -61,6 +67,12 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
           record.table.tableId === table.tableId && concatHex([...record.keyTuple]) === concatHex(expectedKeyTuple)
       );
       return record as TableRecord<table> | undefined;
+    },
+    getValue: <table extends Table>(
+      table: table,
+      key: SchemaToPrimitives<table["keySchema"]>
+    ): TableRecord<table>["value"] | undefined => {
+      return get().getRecord(table, key)?.value;
     },
   }));
 }

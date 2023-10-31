@@ -10,9 +10,9 @@ const {
 
 // TODO: provide slice helpers and show subscribing to slices
 useStore.subscribe((state) => {
-  const record = state.getRecord(tables.CounterTable, {});
-  if (record) {
-    document.getElementById("counter")!.innerHTML = String(record.value.value);
+  const value = state.getValue(tables.CounterTable, {});
+  if (value) {
+    document.getElementById("counter")!.innerHTML = String(value.value);
   }
 });
 
@@ -20,7 +20,7 @@ useStore.subscribe((state) => {
 useStore.subscribe((state, prevState) => {
   const record = state.getRecord(tables.MessageTable, {});
   if (record && record !== prevState.records[record.id]) {
-    document.getElementById("chat-output")!.innerHTML += `${new Date().toLocaleString()}: ${record?.value?.value}\n`;
+    document.getElementById("chat-output")!.innerHTML += `${new Date().toLocaleString()}: ${record?.value.value}\n`;
   }
 });
 
