@@ -46,9 +46,9 @@ MUD is MIT-licensed, open source and free to use.
 
 ### Soon
 
-- Local simulation of transactions (including optimistic state)
-- Built-in support for account abstraction
-- Contract package manager
+- Local simulation of transactions (including optimistic state).
+- Built-in support for account abstraction.
+- Contract package manager.
 
 ## Quickstart
 
