@@ -33,14 +33,6 @@ function _tokenUriTableId(bytes14 namespace) pure returns (ResourceId) {
   return WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: TOKEN_URI_NAME });
 }
 
-function _toBytes32(address addr) pure returns (bytes32) {
-  return bytes32(uint256(uint160(addr)));
-}
-
-function _toBytes32(uint256 id) pure returns (bytes32) {
-  return bytes32(id);
-}
-
 function _erc721SystemId(bytes14 namespace) pure returns (ResourceId) {
   return WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: ERC721_SYSTEM_NAME });
 }

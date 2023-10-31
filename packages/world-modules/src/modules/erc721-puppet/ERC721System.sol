@@ -8,6 +8,7 @@ import { SystemRegistry } from "@latticexyz/world/src/codegen/tables/SystemRegis
 
 import { AccessControlLib } from "../../utils/AccessControlLib.sol";
 import { PuppetMaster } from "../puppet/PuppetMaster.sol";
+import { toTopic } from "../puppet/utils.sol";
 import { Balances } from "../tokens/tables/Balances.sol";
 
 import { IERC721Mintable } from "./IERC721Mintable.sol";
@@ -19,7 +20,7 @@ import { Owners } from "./tables/Owners.sol";
 import { TokenApproval } from "./tables/TokenApproval.sol";
 import { TokenURI } from "./tables/TokenURI.sol";
 
-import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId, _toBytes32 } from "./utils.sol";
+import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId } from "./utils.sol";
 
 contract ERC721System is IERC721Mintable, System, PuppetMaster {
   using WorldResourceIdInstance for ResourceId;
@@ -297,7 +298,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
     Owners.set(_ownersTableId(_namespace()), tokenId, to);
 
     // Emit Transfer event on puppet
-    puppet().log(Transfer.selector, _toBytes32(from), _toBytes32(to), _toBytes32(tokenId), new bytes(0));
+    puppet().log(Transfer.selector, toTopic(from), toTopic(to), toTopic(tokenId), new bytes(0));
 
     return from;
   }
@@ -450,7 +451,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
 
       if (emitEvent) {
         // Emit Approval event on puppet
-        puppet().log(Approval.selector, _toBytes32(owner), _toBytes32(to), _toBytes32(tokenId), new bytes(0));
+        puppet().log(Approval.selector, toTopic(owner), toTopic(to), toTopic(tokenId), new bytes(0));
       }
     }
 
@@ -472,7 +473,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
     OperatorApproval.set(_operatorApprovalTableId(_namespace()), owner, operator, approved);
 
     // Emit ApprovalForAll event on puppet
-    puppet().log(ApprovalForAll.selector, _toBytes32(owner), _toBytes32(operator), abi.encode(approved));
+    puppet().log(ApprovalForAll.selector, toTopic(owner), toTopic(operator), abi.encode(approved));
   }
 
   /**
