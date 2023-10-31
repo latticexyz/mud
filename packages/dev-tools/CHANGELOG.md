@@ -54,7 +54,7 @@
 
   ```ts
   // https://vitejs.dev/guide/env-and-mode.html
-  if (import.meta.env.DEV) {
+  if (true) {
     mountDevTools({ ... });
   }
   ```

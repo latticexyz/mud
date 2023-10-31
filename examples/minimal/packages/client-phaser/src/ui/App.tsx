@@ -14,7 +14,7 @@ export const App = () => {
     useStore.setState({ networkLayer });
 
     // https://vitejs.dev/guide/env-and-mode.html
-    if (import.meta.env.DEV) {
+    if (true) {
       import("@latticexyz/dev-tools").then(({ mount: mountDevTools }) =>
         mountDevTools({
           config: mudConfig,

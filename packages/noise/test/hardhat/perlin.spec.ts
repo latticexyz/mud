@@ -23,7 +23,7 @@ describe("Perlin", () => {
     // In esm environments the compiled function can be imported directly
     // but hardhat does not support esm
     // import { perlin } from "../build/release";
-    const wasmModule = await fetchAndCompileWasmModule(new URL("../../build/release.wasm", import.meta.url));
+    const wasmModule = await fetchAndCompileWasmModule(new URL("../../build/release.wasm", ""));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const wasmInstance: any = await WebAssembly.instantiate(wasmModule, {
       env: {

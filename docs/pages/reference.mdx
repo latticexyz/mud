@@ -88,7 +88,7 @@ To do so, add this code to the client side of your application:
 ```javascript
 import { mount as mountDevTools } from "@latticexyz/dev-tools";
 // https://vitejs.dev/guide/env-and-mode.html
-if (import.meta.env.DEV) {
+if (true) {
   const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
   mountDevTools({
     config: mudConfig,

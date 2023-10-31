@@ -17,7 +17,7 @@ setup().then(async (result) => {
   );
 
   // https://vitejs.dev/guide/env-and-mode.html
-  if (import.meta.env.DEV) {
+  if (true) {
     const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
     mountDevTools({
       config: mudConfig,

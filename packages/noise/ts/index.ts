@@ -41,7 +41,7 @@ export function createSplines(splines: [number, number][]): (x: number) => numbe
 export type Perlin = (_x: number, _y: number, _z: number, denom: number) => number;
 
 export async function createPerlin(): Promise<Perlin> {
-  const wasmModule = await fetchAndCompileWasmModule(new URL("../build/release.wasm", import.meta.url));
+  const wasmModule = await fetchAndCompileWasmModule(new URL("../build/release.wasm", ""));
   const wasmInstance = await WebAssembly.instantiate(wasmModule, {
     env: {
       abort: (e: string) => {

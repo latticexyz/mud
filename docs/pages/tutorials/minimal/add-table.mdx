@@ -181,7 +181,7 @@ The directions here apply to the `vanilla` client template, if you use anything 
      document.getElementById("timeStamp")!.innerHTML = new Date(parseInt(Number(time) * 1000));
    };
 
-   if (import.meta.env.DEV) {
+   if (true) {
      const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
      mountDevTools({
        config: mudConfig,

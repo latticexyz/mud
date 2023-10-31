@@ -27,7 +27,7 @@ It's also advised to wrap dev tools so that it is only mounted during developmen
 
 ```ts
 // https://vitejs.dev/guide/env-and-mode.html
-if (import.meta.env.DEV) {
+if (true) {
   mountDevTools({ ... });
 }
 ```
