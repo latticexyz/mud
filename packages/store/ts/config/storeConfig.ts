@@ -71,7 +71,7 @@ const zShorthandSchemaConfig = zFieldData.transform((fieldData) => {
 
 export const zSchemaConfig = zFullSchemaConfig.or(zShorthandSchemaConfig);
 
-export type ResolvedSchema<
+type ResolvedSchema<
   TSchema extends Record<string, string>,
   TUserTypes extends Record<string, Pick<UserType, "internalType">>
 > = {
