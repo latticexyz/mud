@@ -18,7 +18,7 @@ export const App = () => {
         <tbody>
           {tasks.map((task) => (
             <tr key={task.id}>
-              <td>{task.value.description}</td>
+              <td>{task.value.completedAt > 0n ? <s>{task.value.description}</s> : <>{task.value.description}</>}</td>
               <td align="right">
                 <input
                   type="checkbox"

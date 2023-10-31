@@ -24,7 +24,9 @@ contract PostDeploy is Script {
 
     // Or we can call our own systems
     IWorld(worldAddress).addTask("Take out the trash");
-    IWorld(worldAddress).addTask("Do the dishes");
+
+    bytes32 key = IWorld(worldAddress).addTask("Do the dishes");
+    IWorld(worldAddress).completeTask(key);
 
     vm.stopBroadcast();
   }
