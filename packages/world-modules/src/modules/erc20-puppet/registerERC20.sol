@@ -5,8 +5,6 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 
-import { SystemSwitch } from "../../utils/SystemSwitch.sol";
-
 import { ERC20Module } from "./ERC20Module.sol";
 import { MODULE_NAMESPACE_ID, ERC20_REGISTRY_TABLE_ID } from "./constants.sol";
 import { IERC20Mintable } from "./IERC20Mintable.sol";
