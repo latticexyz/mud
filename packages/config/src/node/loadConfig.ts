@@ -15,7 +15,7 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
   try {
     await esbuild.build({
       entryPoints: [configPath],
-      format: "esm",
+      format: "cjs",
       outfile: TEMP_CONFIG,
       // https://esbuild.github.io/getting-started/#bundling-for-node
       platform: "node",
