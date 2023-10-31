@@ -37,13 +37,27 @@ After the function selector is registered, it can be accessed directly on the Wo
     world.messaging_message_incrementMessage("hello");
 ```
 
-## Root systems
+## Root function selectors
 
-The [systems in the root namespace](/world/systems#root-systems) behave a bit differently.
-If you need to register a function selector for a root `System` (and you're the owner of the root namespace), you use [`registerRootFunctionSelector`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L203-L232). This function has three parameters:
+The owner of the root namespace can use [`registerRootFunctionSelector`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L203-L232) to register an arbitrary string as a function signature.
 
-- The system ID
-- The signature of the World function (as a string)
-- The selector of the system function (as the four-byte signature)
+This function has three parameters:
+
+- The `ResourceId` of the `System` to be called
+- The signature of the World` function (as a string)
+- The selector of the `System` function (as the four-byte signature)
 
 This means that the `World`'s function name for a function in a root `System` can be any string, it does not need to correlate to the name inside the `System`.
+
+For example, the root namespace owner could register `message:incrementMessage(string)` using this code
+
+```solidity
+    ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "message");
+    world.registerRootFunctionSelector(systemId, "incrementMessage(string)", bytes4(0x80e40162));
+```
+
+After the function selector is registered, it can be accessed directly on the World:
+
+```solidity
+    world.incrementMessage("hello");
+```
