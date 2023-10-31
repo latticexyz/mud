@@ -7,7 +7,9 @@ import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import { StoreEventsLog } from "../common";
 import { singletonEntity } from "./singletonEntity";
 import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
-import { storeEventsAbi } from "@latticexyz/store";
+import { resolveConfig, storeEventsAbi } from "@latticexyz/store";
+
+const tables = resolveConfig(mudConfig).tables;
 
 // TODO: make test-data a proper package and export this
 const blocks = groupLogsByBlockNumber(
@@ -25,7 +27,7 @@ const blocks = groupLogsByBlockNumber(
 describe("recsStorage", () => {
   it("creates components", async () => {
     const world = createWorld();
-    const { components } = recsStorage({ world, config: mudConfig });
+    const { components } = recsStorage({ world, tables });
     expect(components.NumberList.id).toMatchInlineSnapshot(
       '"0x746200000000000000000000000000004e756d6265724c697374000000000000"'
     );
@@ -33,7 +35,7 @@ describe("recsStorage", () => {
 
   it("sets component values from logs", async () => {
     const world = createWorld();
-    const { storageAdapter, components } = recsStorage({ world, config: mudConfig });
+    const { storageAdapter, components } = recsStorage({ world, tables });
 
     for (const block of blocks) {
       await storageAdapter(block);
