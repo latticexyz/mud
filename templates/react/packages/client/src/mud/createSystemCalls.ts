@@ -3,6 +3,7 @@
  * for changes in the World state (using the System contracts).
  */
 
+import { Hex } from "viem";
 import { SetupNetworkResult } from "./setupNetwork";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
@@ -29,19 +30,25 @@ export function createSystemCalls(
    */
   { tables, useStore, worldContract, waitForTransaction }: SetupNetworkResult
 ) {
-  const increment = async () => {
-    /*
-     * Because IncrementSystem
-     * (https://mud.dev/templates/typescript/contracts#incrementsystemsol)
-     * is in the root namespace, `.increment` can be called directly
-     * on the World contract.
-     */
-    const tx = await worldContract.write.increment();
+  const addTask = async (label: string) => {
+    const tx = await worldContract.write.addTask([label]);
     await waitForTransaction(tx);
-    return useStore.getState().getRecord(tables.Counter, {})?.value.value;
+  };
+
+  const toggleTask = async (key: Hex) => {
+    const isComplete = (useStore.getState().getValue(tables.Tasks, { key })?.completedAt ?? 0n) > 0n;
+    const tx = isComplete ? await worldContract.write.resetTask([key]) : await worldContract.write.completeTask([key]);
+    await waitForTransaction(tx);
+  };
+
+  const deleteTask = async (key: Hex) => {
+    const tx = await worldContract.write.deleteTask([key]);
+    await waitForTransaction(tx);
   };
 
   return {
-    increment,
+    addTask,
+    toggleTask,
+    deleteTask,
   };
 }

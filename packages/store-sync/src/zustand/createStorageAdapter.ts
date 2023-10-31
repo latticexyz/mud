@@ -61,6 +61,12 @@ export function createStorageAdapter<tables extends Tables>({
       const id = logToId(log);
 
       if (log.eventName === "Store_SetRecord") {
+        debug("setting record", {
+          namespace: table.namespace,
+          name: table.name,
+          id,
+          log,
+        });
         updatedIds.push(id);
         store.setState({
           rawRecords: {
@@ -76,6 +82,12 @@ export function createStorageAdapter<tables extends Tables>({
           },
         });
       } else if (log.eventName === "Store_SpliceStaticData") {
+        debug("splicing static data", {
+          namespace: table.namespace,
+          name: table.name,
+          id,
+          log,
+        });
         updatedIds.push(id);
         const previousRecord = (store.getState().rawRecords[id] as RawRecord | undefined) ?? {
           id,
@@ -96,6 +108,12 @@ export function createStorageAdapter<tables extends Tables>({
           },
         });
       } else if (log.eventName === "Store_SpliceDynamicData") {
+        debug("splicing dynamic data", {
+          namespace: table.namespace,
+          name: table.name,
+          id,
+          log,
+        });
         updatedIds.push(id);
         const previousRecord = (store.getState().rawRecords[id] as RawRecord | undefined) ?? {
           id,
@@ -118,6 +136,12 @@ export function createStorageAdapter<tables extends Tables>({
           },
         });
       } else if (log.eventName === "Store_DeleteRecord") {
+        debug("deleting record", {
+          namespace: table.namespace,
+          name: table.name,
+          id,
+          log,
+        });
         deletedIds.push(id);
         const { [id]: deletedRecord, ...rawRecords } = store.getState().rawRecords;
         store.setState({ rawRecords });
@@ -127,7 +151,7 @@ export function createStorageAdapter<tables extends Tables>({
     if (!updatedIds.length && !deletedIds.length) return;
 
     const records = {
-      ...Object.fromEntries(Object.entries(store.getState().records).filter(([id]) => deletedIds.includes(id))),
+      ...Object.fromEntries(Object.entries(store.getState().records).filter(([id]) => !deletedIds.includes(id))),
       ...Object.fromEntries(
         updatedIds
           .map((id) => {
