@@ -34,15 +34,15 @@ MUD is MIT-licensed, open source and free to use.
 
 ### Today
 
-- State synchronization between contracts and clients without custom networking code
-- General purpose indexers (without custom indexing code)
-- Seamless contract upgrades (+ automatic contract upgrades during development)
-- Shared contract state
-- Optimistic updates
-- Automatic type generation for contracts and systems
-- Query language to interact with contract state
-- Data explorer to inspect and modify contract and local state
-- Bitpacking utilities
+- State synchronization between contracts and clients without the need for custom networking code.
+- General-purpose indexers (without custom indexing code).
+- Seamless contract upgrades (+ automatic contract upgrades during development).
+- Shared contract state.
+- Optimistic updates.
+- Automatic type generation for contracts and systems.
+- Query language to interact with contract state.
+- Data explorer to inspect and modify contract and local state.
+- Bitpacking utilities.
 
 ### Soon
 
