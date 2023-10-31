@@ -20,7 +20,7 @@ The `World` serves as a central entry point and forwards calls to systems, which
 
 To call a `System`, you call the `World` in one of these ways:
 
-- If a function is [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L164-L201), you can call it using the syntax `world.namespace_system_function(parameters)`.
+- If a [function selector for the `System` is registered in the World](./function-selectors), you can call it via `world.<namespace>_<system>_<function>(<arguments>)`.
 - You can use [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L346-L351).
 - If you have [the proper delegation](/world/account-delegation) you can use [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L353-L394).
 
