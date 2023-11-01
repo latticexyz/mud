@@ -253,9 +253,6 @@ importers:
       '@latticexyz/services':
         specifier: link:../../../../packages/services
         version: link:../../../../packages/services
-      '@latticexyz/store':
-        specifier: link:../../../../packages/store
-        version: link:../../../../packages/store
       '@latticexyz/store-sync':
         specifier: link:../../../../packages/store-sync
         version: link:../../../../packages/store-sync
