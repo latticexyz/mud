@@ -105,7 +105,61 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
+    /************************************************************************
+     *
+     *    ERC20 MODULE
+     *
+     ************************************************************************/
+    Balances: {
+      directory: "modules/erc20-puppet/tables",
+      keySchema: {
+        account: "address",
+      },
+      valueSchema: {
+        value: "uint256",
+      },
+      tableIdArgument: true,
+    },
+    Allowances: {
+      directory: "modules/erc20-puppet/tables",
+      keySchema: {
+        account: "address",
+        spender: "address",
+      },
+      valueSchema: {
+        value: "uint256",
+      },
+      tableIdArgument: true,
+    },
+    TotalSupply: {
+      directory: "modules/erc20-puppet/tables",
+      keySchema: {},
+      valueSchema: {
+        totalSupply: "uint256",
+      },
+      tableIdArgument: true,
+    },
+    Metadata: {
+      directory: "modules/erc20-puppet/tables",
+      keySchema: {},
+      valueSchema: {
+        decimals: "uint8",
+        name: "string",
+        symbol: "string",
+      },
+      tableIdArgument: true,
+    },
+    ERC20Registry: {
+      directory: "modules/erc20-puppet/tables",
+      keySchema: {
+        namespaceId: "ResourceId",
+      },
+      valueSchema: {
+        erc20Address: "address",
+      },
+      tableIdArgument: true,
+    },
   },
 
-  excludeSystems: ["UniqueEntitySystem", "PuppetFactorySystem"],
+  excludeSystems: ["UniqueEntitySystem", "PuppetFactorySystem", "ERC20System"],
 });
