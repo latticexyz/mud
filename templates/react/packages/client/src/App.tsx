@@ -18,7 +18,6 @@ export const App = () => {
         <tbody>
           {tasks.map((task) => (
             <tr key={task.id}>
-              <td>{task.value.completedAt > 0n ? <s>{task.value.description}</s> : <>{task.value.description}</>}</td>
               <td align="right">
                 <input
                   type="checkbox"
@@ -37,14 +36,17 @@ export const App = () => {
                   }}
                 />
               </td>
-              <td>
+              <td>{task.value.completedAt > 0n ? <s>{task.value.description}</s> : <>{task.value.description}</>}</td>
+              <td align="right">
                 <button
                   type="button"
                   title="Delete task"
+                  style={{ all: "unset" }}
                   onClick={async (event) => {
                     event.preventDefault();
-                    const button = event.currentTarget;
+                    if (!window.confirm("Are you sure you want to delete this task?")) return;
 
+                    const button = event.currentTarget;
                     button.disabled = true;
                     try {
                       await deleteTask(task.key.key);
@@ -61,6 +63,9 @@ export const App = () => {
         </tbody>
         <tfoot>
           <tr>
+            <td>
+              <input type="checkbox" disabled />
+            </td>
             <td colSpan={2}>
               <form
                 onSubmit={async (event) => {
