@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
+
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { SystemRegistry } from "@latticexyz/world/src/codegen/tables/SystemRegistry.sol";
 import { PuppetRegistry } from "./tables/PuppetRegistry.sol";
