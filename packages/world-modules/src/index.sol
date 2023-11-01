@@ -9,3 +9,4 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./modules/keysintable/table
 import { UniqueEntity } from "./modules/uniqueentity/tables/UniqueEntity.sol";
 import { CallboundDelegations, CallboundDelegationsTableId } from "./modules/std-delegations/tables/CallboundDelegations.sol";
 import { TimeboundDelegations, TimeboundDelegationsTableId } from "./modules/std-delegations/tables/TimeboundDelegations.sol";
+import { PuppetRegistry } from "./modules/puppet/tables/PuppetRegistry.sol";
