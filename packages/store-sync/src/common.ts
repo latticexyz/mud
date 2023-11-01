@@ -7,7 +7,9 @@ import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { flattenSchema } from "./flattenSchema";
 
+/** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
 export const storeTables = resolveConfig(storeConfig).tables;
+/** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
 export const worldTables = resolveConfig(worldConfig).tables;
 
 export type ChainId = number;
