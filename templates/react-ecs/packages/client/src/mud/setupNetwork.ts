@@ -5,10 +5,13 @@
  */
 import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
-import { syncToZustand } from "@latticexyz/store-sync/zustand";
+import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
+
 import { getNetworkConfig } from "./getNetworkConfig";
+import { world } from "./world";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, getContract, transportObserver, ContractWrite } from "@latticexyz/common";
+
 import { Subject, share } from "rxjs";
 
 /*
@@ -71,7 +74,8 @@ export async function setupNetwork() {
    * to the viem publicClient to make RPC calls to fetch MUD
    * events from the chain.
    */
-  const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
+  const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
+    world,
     config: mudConfig,
     address: networkConfig.worldAddress as Hex,
     publicClient,
@@ -107,8 +111,9 @@ export async function setupNetwork() {
   }
 
   return {
-    tables,
-    useStore,
+    world,
+    components,
+    playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
     publicClient,
     walletClient: burnerWalletClient,
     latestBlock$,
