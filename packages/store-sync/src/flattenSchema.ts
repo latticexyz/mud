@@ -1,8 +1,8 @@
 import { mapObject } from "@latticexyz/common/utils";
-import { SchemaAbiType } from "@latticexyz/schema-type";
+import { ValueSchema } from "@latticexyz/store";
 
-export function flattenSchema<schema extends Record<string, { type: SchemaAbiType }>>(
+export function flattenSchema<schema extends ValueSchema>(
   schema: schema
-): { [k in keyof schema]: schema[k]["type"] } {
+): { readonly [k in keyof schema]: schema[k]["type"] } {
   return mapObject(schema, (value) => value.type);
 }

@@ -16,7 +16,6 @@
     "@latticexyz/react": "link:../../../../packages/react",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
     "@latticexyz/services": "link:../../../../packages/services",
-    "@latticexyz/store": "link:../../../../packages/store",
     "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
