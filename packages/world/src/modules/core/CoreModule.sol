@@ -23,7 +23,6 @@ import { CORE_MODULE_NAME, CORE_SYSTEM_ID } from "./constants.sol";
 
 import { Systems } from "../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../codegen/tables/FunctionSelectors.sol";
-import { FunctionSignatures } from "../../codegen/tables/FunctionSignatures.sol";
 import { SystemHooks } from "../../codegen/tables/SystemHooks.sol";
 import { SystemRegistry } from "../../codegen/tables/SystemRegistry.sol";
 import { Balances } from "../../codegen/tables/Balances.sol";
@@ -88,7 +87,6 @@ contract CoreModule is Module {
     ResourceAccess.register();
     Systems.register();
     FunctionSelectors.register();
-    FunctionSignatures.register();
     SystemHooks.register();
     SystemRegistry.register();
 
