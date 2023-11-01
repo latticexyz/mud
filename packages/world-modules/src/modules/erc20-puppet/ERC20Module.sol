@@ -11,15 +11,15 @@ import { InstalledModules } from "@latticexyz/world/src/codegen/tables/Installed
 import { Puppet } from "../puppet/Puppet.sol";
 import { createPuppet } from "../puppet/createPuppet.sol";
 import { MODULE_NAME as PUPPET_MODULE_NAME } from "../puppet/constants.sol";
+import { Balances } from "../tokens/tables/Balances.sol";
 
 import { MODULE_NAME, MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC20_REGISTRY_TABLE_ID } from "./constants.sol";
 import { _allowancesTableId, _balancesTableId, _metadataTableId, _erc20SystemId } from "./utils.sol";
 import { ERC20System } from "./ERC20System.sol";
 
 import { ERC20Registry } from "./tables/ERC20Registry.sol";
-import { Balances } from "./tables/Balances.sol";
 import { Allowances } from "./tables/Allowances.sol";
-import { Metadata, MetadataData } from "./tables/Metadata.sol";
+import { ERC20Metadata, ERC20MetadataData } from "./tables/ERC20Metadata.sol";
 
 contract ERC20Module is Module {
   error ERC20Module_InvalidNamespace(bytes14 namespace);
@@ -35,7 +35,7 @@ contract ERC20Module is Module {
     // Register the tables
     Allowances.register(_allowancesTableId(namespace));
     Balances.register(_balancesTableId(namespace));
-    Metadata.register(_metadataTableId(namespace));
+    ERC20Metadata.register(_metadataTableId(namespace));
 
     // Register a new ERC20System
     IBaseWorld(_world()).registerSystem(_erc20SystemId(namespace), new ERC20System(), true);
@@ -55,7 +55,7 @@ contract ERC20Module is Module {
     }
 
     // Extract args
-    (bytes14 namespace, MetadataData memory metadata) = abi.decode(args, (bytes14, MetadataData));
+    (bytes14 namespace, ERC20MetadataData memory metadata) = abi.decode(args, (bytes14, ERC20MetadataData));
 
     // Require the namespace to not be the module's namespace
     if (namespace == MODULE_NAMESPACE) {
@@ -69,7 +69,7 @@ contract ERC20Module is Module {
     _registerERC20(namespace);
 
     // Initialize the Metadata
-    Metadata.set(_metadataTableId(namespace), metadata);
+    ERC20Metadata.set(_metadataTableId(namespace), metadata);
 
     // Deploy and register the ERC20 puppet.
     IBaseWorld world = IBaseWorld(_world());

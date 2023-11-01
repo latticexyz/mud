@@ -16,7 +16,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { PuppetModule } from "../src/modules/puppet/PuppetModule.sol";
 
 import { ERC20Module } from "../src/modules/erc20-puppet/ERC20Module.sol";
-import { MetadataData } from "../src/modules/erc20-puppet/tables/Metadata.sol";
+import { ERC20MetadataData } from "../src/modules/erc20-puppet/tables/ERC20Metadata.sol";
 import { ERC20Registry } from "../src/modules/erc20-puppet/tables/ERC20Registry.sol";
 import { ERC20_REGISTRY_TABLE_ID } from "../src/modules/erc20-puppet/constants.sol";
 import { IERC20Mintable } from "../src/modules/erc20-puppet/IERC20Mintable.sol";
@@ -36,7 +36,7 @@ contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
     StoreSwitch.setStoreAddress(address(world));
 
     // Register a new ERC20 token
-    token = registerERC20(world, "myERC20", MetadataData({ decimals: 18, name: "Token", symbol: "TKN" }));
+    token = registerERC20(world, "myERC20", ERC20MetadataData({ decimals: 18, name: "Token", symbol: "TKN" }));
   }
 
   function testSetUp() public {
@@ -49,7 +49,7 @@ contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
     IERC20Mintable anotherToken = registerERC20(
       world,
       "anotherERC20",
-      MetadataData({ decimals: 18, name: "Token", symbol: "TKN" })
+      ERC20MetadataData({ decimals: 18, name: "Token", symbol: "TKN" })
     );
     assertTrue(address(anotherToken) != address(0));
     assertTrue(address(anotherToken) != address(token));

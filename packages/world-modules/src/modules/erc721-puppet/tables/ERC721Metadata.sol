@@ -21,16 +21,16 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0001010201000000000000000000000000000000000000000000000000000000
+  0x0000000300000000000000000000000000000000000000000000000000000000
 );
 
-struct MetadataData {
-  uint8 decimals;
+struct ERC721MetadataData {
   string name;
   string symbol;
+  string baseURI;
 }
 
-library Metadata {
+library ERC721Metadata {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.
@@ -55,7 +55,7 @@ library Metadata {
    */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](3);
-    _valueSchema[0] = SchemaType.UINT8;
+    _valueSchema[0] = SchemaType.STRING;
     _valueSchema[1] = SchemaType.STRING;
     _valueSchema[2] = SchemaType.STRING;
 
@@ -76,9 +76,9 @@ library Metadata {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](3);
-    fieldNames[0] = "decimals";
-    fieldNames[1] = "name";
-    fieldNames[2] = "symbol";
+    fieldNames[0] = "name";
+    fieldNames[1] = "symbol";
+    fieldNames[2] = "baseURI";
   }
 
   /**
@@ -93,44 +93,6 @@ library Metadata {
    */
   function _register(ResourceId _tableId) internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-  }
-
-  /**
-   * @notice Get decimals.
-   */
-  function getDecimals(ResourceId _tableId) internal view returns (uint8 decimals) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint8(bytes1(_blob)));
-  }
-
-  /**
-   * @notice Get decimals.
-   */
-  function _getDecimals(ResourceId _tableId) internal view returns (uint8 decimals) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint8(bytes1(_blob)));
-  }
-
-  /**
-   * @notice Set decimals.
-   */
-  function setDecimals(ResourceId _tableId, uint8 decimals) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((decimals)), _fieldLayout);
-  }
-
-  /**
-   * @notice Set decimals.
-   */
-  function _setDecimals(ResourceId _tableId, uint8 decimals) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((decimals)), _fieldLayout);
   }
 
   /**
@@ -430,9 +392,157 @@ library Metadata {
   }
 
   /**
+   * @notice Get baseURI.
+   */
+  function getBaseURI(ResourceId _tableId) internal view returns (string memory baseURI) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 2);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get baseURI.
+   */
+  function _getBaseURI(ResourceId _tableId) internal view returns (string memory baseURI) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 2);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Set baseURI.
+   */
+  function setBaseURI(ResourceId _tableId, string memory baseURI) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 2, bytes((baseURI)));
+  }
+
+  /**
+   * @notice Set baseURI.
+   */
+  function _setBaseURI(ResourceId _tableId, string memory baseURI) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setDynamicField(_tableId, _keyTuple, 2, bytes((baseURI)));
+  }
+
+  /**
+   * @notice Get the length of baseURI.
+   */
+  function lengthBaseURI(ResourceId _tableId) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 2);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of baseURI.
+   */
+  function _lengthBaseURI(ResourceId _tableId) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 2);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get an item of baseURI.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemBaseURI(ResourceId _tableId, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of baseURI.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemBaseURI(ResourceId _tableId, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Push a slice to baseURI.
+   */
+  function pushBaseURI(ResourceId _tableId, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 2, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to baseURI.
+   */
+  function _pushBaseURI(ResourceId _tableId, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 2, bytes((_slice)));
+  }
+
+  /**
+   * @notice Pop a slice from baseURI.
+   */
+  function popBaseURI(ResourceId _tableId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 2, 1);
+  }
+
+  /**
+   * @notice Pop a slice from baseURI.
+   */
+  function _popBaseURI(ResourceId _tableId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 2, 1);
+  }
+
+  /**
+   * @notice Update a slice of baseURI at `_index`.
+   */
+  function updateBaseURI(ResourceId _tableId, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of baseURI at `_index`.
+   */
+  function _updateBaseURI(ResourceId _tableId, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Get the full data.
    */
-  function get(ResourceId _tableId) internal view returns (MetadataData memory _table) {
+  function get(ResourceId _tableId) internal view returns (ERC721MetadataData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
@@ -446,7 +556,7 @@ library Metadata {
   /**
    * @notice Get the full data.
    */
-  function _get(ResourceId _tableId) internal view returns (MetadataData memory _table) {
+  function _get(ResourceId _tableId) internal view returns (ERC721MetadataData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
@@ -460,11 +570,10 @@ library Metadata {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(ResourceId _tableId, uint8 decimals, string memory name, string memory symbol) internal {
-    bytes memory _staticData = encodeStatic(decimals);
-
-    PackedCounter _encodedLengths = encodeLengths(name, symbol);
-    bytes memory _dynamicData = encodeDynamic(name, symbol);
+  function set(ResourceId _tableId, string memory name, string memory symbol, string memory baseURI) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(name, symbol, baseURI);
+    bytes memory _dynamicData = encodeDynamic(name, symbol, baseURI);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -474,11 +583,10 @@ library Metadata {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(ResourceId _tableId, uint8 decimals, string memory name, string memory symbol) internal {
-    bytes memory _staticData = encodeStatic(decimals);
-
-    PackedCounter _encodedLengths = encodeLengths(name, symbol);
-    bytes memory _dynamicData = encodeDynamic(name, symbol);
+  function _set(ResourceId _tableId, string memory name, string memory symbol, string memory baseURI) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(name, symbol, baseURI);
+    bytes memory _dynamicData = encodeDynamic(name, symbol, baseURI);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -488,11 +596,10 @@ library Metadata {
   /**
    * @notice Set the full data using the data struct.
    */
-  function set(ResourceId _tableId, MetadataData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.decimals);
-
-    PackedCounter _encodedLengths = encodeLengths(_table.name, _table.symbol);
-    bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol);
+  function set(ResourceId _tableId, ERC721MetadataData memory _table) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(_table.name, _table.symbol, _table.baseURI);
+    bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol, _table.baseURI);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -502,22 +609,14 @@ library Metadata {
   /**
    * @notice Set the full data using the data struct.
    */
-  function _set(ResourceId _tableId, MetadataData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.decimals);
-
-    PackedCounter _encodedLengths = encodeLengths(_table.name, _table.symbol);
-    bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol);
+  function _set(ResourceId _tableId, ERC721MetadataData memory _table) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(_table.name, _table.symbol, _table.baseURI);
+    bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol, _table.baseURI);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
-  }
-
-  /**
-   * @notice Decode the tightly packed blob of static data using this table's field layout.
-   */
-  function decodeStatic(bytes memory _blob) internal pure returns (uint8 decimals) {
-    decimals = (uint8(Bytes.slice1(_blob, 0)));
   }
 
   /**
@@ -526,7 +625,7 @@ library Metadata {
   function decodeDynamic(
     PackedCounter _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (string memory name, string memory symbol) {
+  ) internal pure returns (string memory name, string memory symbol, string memory baseURI) {
     uint256 _start;
     uint256 _end;
     unchecked {
@@ -539,22 +638,26 @@ library Metadata {
       _end += _encodedLengths.atIndex(1);
     }
     symbol = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(2);
+    }
+    baseURI = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
   }
 
   /**
    * @notice Decode the tightly packed blobs using this table's field layout.
-   * @param _staticData Tightly packed static fields.
+   *
    * @param _encodedLengths Encoded lengths of dynamic fields.
    * @param _dynamicData Tightly packed dynamic fields.
    */
   function decode(
-    bytes memory _staticData,
+    bytes memory,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (MetadataData memory _table) {
-    (_table.decimals) = decodeStatic(_staticData);
-
-    (_table.name, _table.symbol) = decodeDynamic(_encodedLengths, _dynamicData);
+  ) internal pure returns (ERC721MetadataData memory _table) {
+    (_table.name, _table.symbol, _table.baseURI) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
   /**
@@ -576,24 +679,17 @@ library Metadata {
   }
 
   /**
-   * @notice Tightly pack static (fixed length) data using this table's schema.
-   * @return The static data, encoded into a sequence of bytes.
-   */
-  function encodeStatic(uint8 decimals) internal pure returns (bytes memory) {
-    return abi.encodePacked(decimals);
-  }
-
-  /**
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
   function encodeLengths(
     string memory name,
-    string memory symbol
+    string memory symbol,
+    string memory baseURI
   ) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(bytes(name).length, bytes(symbol).length);
+      _encodedLengths = PackedCounterLib.pack(bytes(name).length, bytes(symbol).length, bytes(baseURI).length);
     }
   }
 
@@ -601,8 +697,12 @@ library Metadata {
    * @notice Tightly pack dynamic (variable length) data using this table's schema.
    * @return The dynamic data, encoded into a sequence of bytes.
    */
-  function encodeDynamic(string memory name, string memory symbol) internal pure returns (bytes memory) {
-    return abi.encodePacked(bytes((name)), bytes((symbol)));
+  function encodeDynamic(
+    string memory name,
+    string memory symbol,
+    string memory baseURI
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(bytes((name)), bytes((symbol)), bytes((baseURI)));
   }
 
   /**
@@ -612,14 +712,13 @@ library Metadata {
    * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
    */
   function encode(
-    uint8 decimals,
     string memory name,
-    string memory symbol
+    string memory symbol,
+    string memory baseURI
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(decimals);
-
-    PackedCounter _encodedLengths = encodeLengths(name, symbol);
-    bytes memory _dynamicData = encodeDynamic(name, symbol);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(name, symbol, baseURI);
+    bytes memory _dynamicData = encodeDynamic(name, symbol, baseURI);
 
     return (_staticData, _encodedLengths, _dynamicData);
   }

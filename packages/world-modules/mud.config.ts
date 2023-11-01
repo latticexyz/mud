@@ -107,16 +107,31 @@ export default mudConfig({
     },
     /************************************************************************
      *
-     *    ERC20 MODULE
+     *    TOKEN TABLES (SHARED BY ERC20, ERC721)
      *
      ************************************************************************/
     Balances: {
-      directory: "modules/erc20-puppet/tables",
+      directory: "modules/tokens/tables",
       keySchema: {
         account: "address",
       },
       valueSchema: {
         value: "uint256",
+      },
+      tableIdArgument: true,
+    },
+    /************************************************************************
+     *
+     *    ERC20 MODULE
+     *
+     ************************************************************************/
+    ERC20Metadata: {
+      directory: "modules/erc20-puppet/tables",
+      keySchema: {},
+      valueSchema: {
+        decimals: "uint8",
+        name: "string",
+        symbol: "string",
       },
       tableIdArgument: true,
     },
@@ -139,16 +154,6 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
-    Metadata: {
-      directory: "modules/erc20-puppet/tables",
-      keySchema: {},
-      valueSchema: {
-        decimals: "uint8",
-        name: "string",
-        symbol: "string",
-      },
-      tableIdArgument: true,
-    },
     ERC20Registry: {
       directory: "modules/erc20-puppet/tables",
       keySchema: {
@@ -159,7 +164,72 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
+    /************************************************************************
+     *
+     *    ERC721 MODULE
+     *
+     ************************************************************************/
+    ERC721Metadata: {
+      directory: "modules/erc721-puppet/tables",
+      keySchema: {},
+      valueSchema: {
+        name: "string",
+        symbol: "string",
+        baseURI: "string",
+      },
+      tableIdArgument: true,
+    },
+    TokenURI: {
+      directory: "modules/erc721-puppet/tables",
+      keySchema: {
+        tokenId: "uint256",
+      },
+      valueSchema: {
+        tokenURI: "string",
+      },
+      tableIdArgument: true,
+    },
+    Owners: {
+      directory: "modules/erc721-puppet/tables",
+      keySchema: {
+        tokenId: "uint256",
+      },
+      valueSchema: {
+        owner: "address",
+      },
+      tableIdArgument: true,
+    },
+    TokenApproval: {
+      directory: "modules/erc721-puppet/tables",
+      keySchema: {
+        tokenId: "uint256",
+      },
+      valueSchema: {
+        account: "address",
+      },
+      tableIdArgument: true,
+    },
+    OperatorApproval: {
+      directory: "modules/erc721-puppet/tables",
+      keySchema: {
+        owner: "address",
+        operator: "address",
+      },
+      valueSchema: {
+        approved: "bool",
+      },
+      tableIdArgument: true,
+    },
+    ERC721Registry: {
+      directory: "modules/erc721-puppet/tables",
+      keySchema: {
+        namespaceId: "ResourceId",
+      },
+      valueSchema: {
+        erc20Address: "address",
+      },
+      tableIdArgument: true,
+    },
   },
-
-  excludeSystems: ["UniqueEntitySystem", "PuppetFactorySystem", "ERC20System"],
+  excludeSystems: ["UniqueEntitySystem", "PuppetFactorySystem", "ERC20System", "ERC721System"],
 });
