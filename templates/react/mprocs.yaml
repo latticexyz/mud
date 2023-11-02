@@ -1,0 +1,7 @@
+procs:
+  contracts:
+    cwd: packages/contracts
+    shell: pnpm run dev
+  client:
+    cwd: packages/client
+    shell: pnpm run dev
