@@ -4,6 +4,7 @@ import { RawRecord, TableRecord } from "./common";
 import { Hex, concatHex } from "viem";
 import { encodeKey } from "@latticexyz/protocol-parser";
 import { flattenSchema } from "../flattenSchema";
+import { getId } from "./getId";
 
 type TableRecords<table extends Table> = {
   readonly [id: string]: TableRecord<table>;
@@ -50,19 +51,15 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
       const records = get().records;
       return Object.fromEntries(
         Object.entries(records).filter(([id, record]) => record.table.tableId === table.tableId)
-      ) as any as TableRecords<table>;
+      ) as unknown as TableRecords<table>;
     },
     getRecord: <table extends Table>(
       table: table,
       key: SchemaToPrimitives<table["keySchema"]>
     ): TableRecord<table> | undefined => {
-      const records = Object.values(get().records);
-      const expectedKeyTuple = encodeKey(flattenSchema(table.keySchema), key);
-      const record = records.find(
-        (record) =>
-          record.table.tableId === table.tableId && concatHex([...record.keyTuple]) === concatHex(expectedKeyTuple)
-      );
-      return record as TableRecord<table> | undefined;
+      const keyTuple = encodeKey(flattenSchema(table.keySchema), key);
+      const id = getId({ tableId: table.tableId, keyTuple });
+      return get().records[id] as unknown as TableRecord<table> | undefined;
     },
     getValue: <table extends Table>(
       table: table,

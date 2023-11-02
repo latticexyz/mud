@@ -6,7 +6,7 @@ import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "./logToTable";
 import { hexToResource, spliceHex } from "@latticexyz/common";
 import { debug } from "./debug";
-import { logToId } from "./logToId";
+import { getId } from "./getId";
 import { size } from "viem";
 import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 import { flattenSchema } from "../flattenSchema";
@@ -58,7 +58,7 @@ export function createStorageAdapter<tables extends Tables>({
         continue;
       }
 
-      const id = logToId(log);
+      const id = getId(log.args);
 
       if (log.eventName === "Store_SetRecord") {
         debug("setting record", {
@@ -181,7 +181,6 @@ export function createStorageAdapter<tables extends Tables>({
       ),
     };
 
-    // TODO: improve types
-    store.setState({ records: records as any });
+    store.setState({ records });
   };
 }

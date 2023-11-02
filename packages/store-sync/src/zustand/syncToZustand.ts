@@ -4,6 +4,7 @@ import { createStoreSync } from "../createStoreSync";
 import { ZustandStore } from "./createStore";
 import { createStore } from "./createStore";
 import { createStorageAdapter } from "./createStorageAdapter";
+import { Address } from "viem";
 
 type AllTables<config extends StoreConfig, extraTables extends Tables> = ResolvedStoreConfig<config>["tables"] &
   extraTables &
@@ -11,6 +12,8 @@ type AllTables<config extends StoreConfig, extraTables extends Tables> = Resolve
   typeof worldTables;
 
 type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables> = SyncOptions & {
+  // require address for now to keep the data model + retrieval simpler
+  address: Address;
   config: config;
   tables?: extraTables;
   store?: ZustandStore<AllTables<config, extraTables>>;

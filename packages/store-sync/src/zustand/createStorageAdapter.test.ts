@@ -19,7 +19,7 @@ const blocks = groupLogsByBlockNumber(
       topics: log.topics as [Hex, ...Hex[]],
       strict: true,
     });
-    return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
+    return formatLog(log as unknown as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
   })
 );
 
@@ -34,8 +34,8 @@ describe("createStorageAdapter", () => {
 
     expect(useStore.getState().getRecords(tables.NumberList)).toMatchInlineSnapshot(`
       {
-        "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342:0x746200000000000000000000000000004e756d6265724c697374000000000000:0x": {
-          "id": "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342:0x746200000000000000000000000000004e756d6265724c697374000000000000:0x",
+        "0x746200000000000000000000000000004e756d6265724c697374000000000000:0x": {
+          "id": "0x746200000000000000000000000000004e756d6265724c697374000000000000:0x",
           "key": {},
           "keyTuple": [],
           "table": {
