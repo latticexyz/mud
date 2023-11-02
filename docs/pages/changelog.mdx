@@ -1,3 +1,208 @@
+## Version 2.0.0-next.13
+
+Release date: Thu Nov 02 2023
+
+### Major changes
+
+**[feat(utils): remove hash utils and ethers (#1783)](https://github.com/latticexyz/mud/commit/52182f70d350bb99cdfa6054cd6d181e58a91aa6)** (@latticexyz/utils)
+
+Removed `keccak256` and `keccak256Coord` hash utils in favor of [viem's `keccak256`](https://viem.sh/docs/utilities/keccak256.html#keccak256).
+
+```diff
+- import { keccak256 } from "@latticexyz/utils";
++ import { keccak256, toHex } from "viem";
+
+- const hash = keccak256("some string");
++ const hash = keccak256(toHex("some string"));
+```
+
+```diff
+- import { keccak256Coord } from "@latticexyz/utils";
++ import { encodeAbiParameters, keccak256, parseAbiParameters } from "viem";
+
+  const coord = { x: 1, y: 1 };
+- const hash = keccak256Coord(coord);
++ const hash = keccak256(encodeAbiParameters(parseAbiParameters("int32, int32"), [coord.x, coord.y]));
+```
+
+**[feat(store-indexer,store-sync): filter by table and key (#1794)](https://github.com/latticexyz/mud/commit/f6d214e3d79f9591fddd3687aa987a57f417256c)** (@latticexyz/store-indexer)
+
+Removed `tableIds` filter option in favor of the more flexible `filters` option that accepts `tableId` and an optional `key0` and/or `key1` to filter data by tables and keys.
+
+If you were using an indexer client directly, you'll need to update your query:
+
+```diff
+  await indexer.findAll.query({
+    chainId,
+    address,
+-   tableIds: ['0x...'],
++   filters: [{ tableId: '0x...' }],
+  });
+```
+
+**[feat(create-mud): move react template to zustand, add react-ecs template (#1851)](https://github.com/latticexyz/mud/commit/78949f2c939ff5f743c026367c5978cb459f6f88)** (create-mud)
+
+Replaced the `react` template with a basic task list app using the new Zustand storage adapter and sync method. This new template better demonstrates the different ways of building with MUD and has fewer concepts to learn (i.e. just tables and records, no more ECS).
+
+For ECS-based React apps, you can use `react-ecs` template for the previous RECS storage adapter.
+
+### Minor changes
+
+**[feat(create-mud): replace concurrently with mprocs (#1862)](https://github.com/latticexyz/mud/commit/6288f9033b5f26124ab0ae3cde5934a7aef50f95)** (create-mud)
+
+Updated templates to use [mprocs](https://github.com/pvolok/mprocs) instead of [concurrently](https://github.com/open-cli-tools/concurrently) for running dev scripts.
+
+**[feat(store-sync): extra table definitions (#1840)](https://github.com/latticexyz/mud/commit/de47d698f031a28ef8d9e329e3cffc85e904c6a1)** (@latticexyz/store-sync)
+
+Added an optional `tables` option to `syncToRecs` to allow you to sync from tables that may not be expressed by your MUD config. This will be useful for namespaced tables used by [ERC20](https://github.com/latticexyz/mud/pull/1789) and [ERC721](https://github.com/latticexyz/mud/pull/1844) token modules until the MUD config gains [namespace support](https://github.com/latticexyz/mud/issues/994).
+
+Here's how we use this in our example project with the `KeysWithValue` module:
+
+```ts
+syncToRecs({
+  ...
+  tables: {
+    KeysWithValue: {
+      namespace: "keywval",
+      name: "Inventory",
+      tableId: resourceToHex({ type: "table", namespace: "keywval", name: "Inventory" }),
+      keySchema: {
+        valueHash: { type: "bytes32" },
+      },
+      valueSchema: {
+        keysWithValue: { type: "bytes32[]" },
+      },
+    },
+  },
+  ...
+});
+```
+
+**[feat(world-modules): add ERC721 module (#1844)](https://github.com/latticexyz/mud/commit/d7325e517ce18597d55e8bce41036e78e00c3a78)** (@latticexyz/world-modules)
+
+Added the `ERC721Module` to `@latticexyz/world-modules`.
+This module allows the registration of `ERC721` tokens in an existing World.
+
+Important note: this module has not been audited yet, so any production use is discouraged for now.
+
+````solidity
+import { PuppetModule } from "@latticexyz/world-modules/src/modules/puppet/PuppetModule.sol";
+import { ERC721MetadataData } from "@latticexyz/world-modules/src/modules/erc721-puppet/tables/ERC721Metadata.sol";
+import { IERC721Mintable } from "@latticexyz/world-modules/src/modules/erc721-puppet/IERC721Mintable.sol";
+import { registerERC721 } from "@latticexyz/world-modules/src/modules/erc721-puppet/registerERC721.sol";
+
+// The ERC721 module requires the Puppet module to be installed first
+world.installModule(new PuppetModule(), new bytes(0));
+
+// After the Puppet module is installed, new ERC721 tokens can be registered
+IERC721Mintable token = registerERC721(world, "myERC721", ERC721MetadataData({ name: "Token", symbol: "TKN", baseURI: "" }));```
+````
+
+**[feat(world-modules): add puppet module (#1793)](https://github.com/latticexyz/mud/commit/35348f831b923aed6e9bdf8b38bf337f3e944a48)** (@latticexyz/world-modules)
+
+Added the `PuppetModule` to `@latticexyz/world-modules`. The puppet pattern allows an external contract to be registered as an external interface for a MUD system.
+This allows standards like `ERC20` (that require a specific interface and events to be emitted by a unique contract) to be implemented inside a MUD World.
+
+The puppet serves as a proxy, forwarding all calls to the implementation system (also called the "puppet master").
+The "puppet master" system can emit events from the puppet contract.
+
+```solidity
+import { PuppetModule } from "@latticexyz/world-modules/src/modules/puppet/PuppetModule.sol";
+import { createPuppet } from "@latticexyz/world-modules/src/modules/puppet/createPuppet.sol";
+
+// Install the puppet module
+world.installModule(new PuppetModule(), new bytes(0));
+
+// Register a new puppet for any system
+// The system must implement the `CustomInterface`,
+// and the caller must own the system's namespace
+CustomInterface puppet = CustomInterface(createPuppet(world, <systemId>));
+```
+
+**[feat(create-mud): enable MUD CLI debug logs (#1861)](https://github.com/latticexyz/mud/commit/b68e1699b52714561c9ac62fa593d0b6cd9fe656)** (create-mud)
+
+Enabled MUD CLI debug logs for all templates.
+
+**[feat(store-indexer,store-sync): filter by table and key (#1794)](https://github.com/latticexyz/mud/commit/f6d214e3d79f9591fddd3687aa987a57f417256c)** (@latticexyz/store-sync)
+
+Added a `filters` option to store sync to allow filtering client data on tables and keys. Previously, it was only possible to filter on `tableIds`, but the new filter option allows for more flexible filtering by key.
+
+If you are building a large MUD application, you can use positional keys as a way to shard data and make it possible to load only the data needed in the client for a particular section of your app. We're using this already in Sky Strife to load match-specific data into match pages without having to load data for all matches, greatly improving load time and client performance.
+
+```ts
+syncToRecs({
+  ...
+  filters: [{ tableId: '0x...', key0: '0x...' }],
+});
+```
+
+The `tableIds` option is now deprecated and will be removed in the future, but is kept here for backwards compatibility.
+
+**[feat(world-modules): add ERC20 module (#1789)](https://github.com/latticexyz/mud/commit/83638373450af5d8f703a183a74107ef7efb4152)** (@latticexyz/world-modules)
+
+Added the `ERC20Module` to `@latticexyz/world-modules`.
+This module allows the registration of `ERC20` tokens in an existing World.
+
+Important note: this module has not been audited yet, so any production use is discouraged for now.
+
+```solidity
+import { PuppetModule } from "@latticexyz/world-modules/src/modules/puppet/PuppetModule.sol";
+import { IERC20Mintable } from "@latticexyz/world-modules/src/modules/erc20-puppet/IERC20Mintable.sol";
+import { registerERC20 } from "@latticexyz/world-modules/src/modules/erc20-puppet/registerERC20.sol";
+
+// The ERC20 module requires the Puppet module to be installed first
+world.installModule(new PuppetModule(), new bytes(0));
+
+// After the Puppet module is installed, new ERC20 tokens can be registered
+IERC20Mintable token = registerERC20(world, "myERC20", ERC20MetadataData({ decimals: 18, name: "Token", symbol: "TKN" }));
+```
+
+**[feat(store-sync): sync to zustand (#1843)](https://github.com/latticexyz/mud/commit/fa77635839e760a9de5fc8959ee492b7a4d8a7cd)** (@latticexyz/store-sync)
+
+Added a Zustand storage adapter and corresponding `syncToZustand` method for use in vanilla and React apps. It's used much like the other sync methods, except it returns a bound store and set of typed tables.
+
+```ts
+import { syncToZustand } from "@latticexyz/store-sync/zustand";
+import config from "contracts/mud.config";
+
+const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
+  config,
+  ...
+});
+
+// in vanilla apps
+const positions = useStore.getState().getRecords(tables.Position);
+
+// in React apps
+const positions = useStore((state) => state.getRecords(tables.Position));
+```
+
+This change will be shortly followed by an update to our templates that uses Zustand as the default client data store and sync method.
+
+**[feat(store): add experimental config resolve helper (#1826)](https://github.com/latticexyz/mud/commit/b1d41727d4b1964ad3cd907c1c2126b02172b413)** (@latticexyz/common)
+
+Added a `mapObject` helper to map the value of each property of an object to a new value.
+
+### Patch changes
+
+**[fix(create-mud): set store address in PostDeploy script (#1817)](https://github.com/latticexyz/mud/commit/c5148da763645e0adc1250245ea447904014bef2)** (create-mud)
+
+Updated templates' PostDeploy script to set store address so that tables can be used directly inside PostDeploy.
+
+**[fix(create-mud): workaround create-create-app templating (#1863)](https://github.com/latticexyz/mud/commit/1b33a915c56247599c19c5de04090b776b87d561)** (create-mud)
+
+Fixed an issue when creating a new project from the `react` app, where React's expressions were overlapping with Handlebars expressions (used by our template command).
+
+**[fix(cli): change import order so .env file is loaded first (#1860)](https://github.com/latticexyz/mud/commit/21a626ae9bd79f1a275edc70b43d19ed43f48131)** (@latticexyz/cli)
+
+Changed `mud` CLI import order so that environment variables from the `.env` file are loaded before other imports.
+
+**[fix(common,config): remove chalk usage (#1824)](https://github.com/latticexyz/mud/commit/3e057061da17dd2d0c5fd23e6f5a027bdf9a9223)** (@latticexyz/common, @latticexyz/config)
+
+Removed chalk usage from modules imported in client fix downstream client builds (vite in particular).
+
+---
+
 ## Version 2.0.0-next.12
 
 Release date: Fri Oct 20 2023

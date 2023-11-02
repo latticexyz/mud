@@ -1,5 +1,23 @@
 # @latticexyz/dev-tools
 
+## 2.0.0-next.13
+
+### Patch Changes
+
+- Updated dependencies [52182f70]
+- Updated dependencies [de47d698]
+- Updated dependencies [f6d214e3]
+- Updated dependencies [fa776358]
+- Updated dependencies [3e057061]
+- Updated dependencies [b1d41727]
+  - @latticexyz/utils@2.0.0-next.13
+  - @latticexyz/store-sync@2.0.0-next.13
+  - @latticexyz/common@2.0.0-next.13
+  - @latticexyz/recs@2.0.0-next.13
+  - @latticexyz/store@2.0.0-next.13
+  - @latticexyz/world@2.0.0-next.13
+  - @latticexyz/react@2.0.0-next.13
+
 ## 2.0.0-next.12
 
 ### Patch Changes
