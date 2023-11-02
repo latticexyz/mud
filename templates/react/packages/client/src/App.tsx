@@ -1,5 +1,7 @@
 import { useMUD } from "./MUDContext";
 
+const styleUnset = { all: "unset" } as const;
+
 export const App = () => {
   const {
     network: { tables, useStore },
@@ -41,7 +43,7 @@ export const App = () => {
                 <button
                   type="button"
                   title="Delete task"
-                  style={{ all: "unset" }}
+                  style={styleUnset}
                   onClick={async (event) => {
                     event.preventDefault();
                     if (!window.confirm("Are you sure you want to delete this task?")) return;
@@ -87,7 +89,7 @@ export const App = () => {
                   }
                 }}
               >
-                <fieldset style={{ all: "unset" }}>
+                <fieldset style={styleUnset}>
                   <input type="text" name="description" />{" "}
                   <button type="submit" title="Add task">
                     Add
