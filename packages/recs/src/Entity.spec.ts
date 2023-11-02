@@ -25,11 +25,11 @@ describe("Entity", () => {
     });
 
     it("should create an entity with given components and values", () => {
-      const Position = defineComponent(world, { x: Type.Number, y: Type.Number });
+      const Position = defineComponent(world, { vec: { x: Type.Number, y: Type.Number } });
       const CanMove = defineComponent(world, { value: Type.Boolean });
 
-      const value1 = { x: 1, y: 1 };
-      const value2 = { x: 2, y: 1 };
+      const value1 = { vec: { x: 1, y: 1 } };
+      const value2 = { vec: { x: 2, y: 1 } };
 
       const movableEntity = createEntity(world, [withValue(Position, value1), withValue(CanMove, { value: true })]);
 
