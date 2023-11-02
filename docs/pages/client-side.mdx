@@ -90,7 +90,7 @@ const { PlayerComponent, PositionComponent, NameComponent } = components
 const matchingEntities = runQuery([
   Has(PlayerComponent),
   Has(Name),
-  HasValue(PositionCompoennt, {x: 0, y: 0})
+  HasValue(PositionComponent, {x: 0, y: 0})
 ])
 // now you can map these to their name as an example
 const names = matchingEntities.map(
@@ -125,7 +125,7 @@ import { useEntityQuery } from "@latticexyz/react";
 import { Has, HasValue, getComponentValueStrict } from "@latticexyz/recs";
 function ExampleComponent() {
   const { components, world } = useMUD;
-  const { NameComponent, PlayerComponent, PositionCompoennt } = components
+  const { NameComponent, PlayerComponent, PositionComponent } = components
   // get a list of all entities that are named, players, and at the center of the universe
   // it is reactive and will trigger a re-render when the set of matching queries update
   const entities = useEntityQuery([Has(PlayerComponent), Has(Name), HasValue(PositionComponent, {x: 0, y: 0}])
