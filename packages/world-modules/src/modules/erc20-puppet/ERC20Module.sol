@@ -24,25 +24,14 @@ import { ERC20Metadata, ERC20MetadataData } from "./tables/ERC20Metadata.sol";
 contract ERC20Module is Module {
   error ERC20Module_InvalidNamespace(bytes14 namespace);
 
+  address immutable registrationLibrary = address(new ERC20ModuleRegistrationLibrary());
+
   function getName() public pure override returns (bytes16) {
     return MODULE_NAME;
   }
 
-  /**
-   * Register systems and tables for a new ERC20 token in a given namespace
-   */
-  function _registerERC20(bytes14 namespace) internal {
-    // Register the tables
-    Allowances.register(_allowancesTableId(namespace));
-    Balances.register(_balancesTableId(namespace));
-    ERC20Metadata.register(_metadataTableId(namespace));
-
-    // Register a new ERC20System
-    IBaseWorld(_world()).registerSystem(_erc20SystemId(namespace), new ERC20System(), true);
-  }
-
   function _requireDependencies() internal view {
-    // If the PuppetModule is not installed yet, install it
+    // Require PuppetModule to be installed
     if (InstalledModules.get(PUPPET_MODULE_NAME, keccak256(new bytes(0))) == address(0)) {
       revert Module_MissingDependency(string(bytes.concat(PUPPET_MODULE_NAME)));
     }
@@ -66,13 +55,13 @@ contract ERC20Module is Module {
     _requireDependencies();
 
     // Register the ERC20 tables and system
-    _registerERC20(namespace);
+    IBaseWorld world = IBaseWorld(_world());
+    registrationLibrary.delegatecall(abi.encodeCall(ERC20ModuleRegistrationLibrary.register, (world, namespace)));
 
     // Initialize the Metadata
     ERC20Metadata.set(_metadataTableId(namespace), metadata);
 
     // Deploy and register the ERC20 puppet.
-    IBaseWorld world = IBaseWorld(_world());
     ResourceId erc20SystemId = _erc20SystemId(namespace);
     address puppet = createPuppet(world, erc20SystemId);
 
@@ -89,5 +78,20 @@ contract ERC20Module is Module {
 
   function installRoot(bytes memory) public pure {
     revert Module_RootInstallNotSupported();
+  }
+}
+
+contract ERC20ModuleRegistrationLibrary {
+  /**
+   * Register systems and tables for a new ERC20 token in a given namespace
+   */
+  function register(IBaseWorld world, bytes14 namespace) public {
+    // Register the tables
+    Allowances.register(_allowancesTableId(namespace));
+    Balances.register(_balancesTableId(namespace));
+    ERC20Metadata.register(_metadataTableId(namespace));
+
+    // Register a new ERC20System
+    world.registerSystem(_erc20SystemId(namespace), new ERC20System(), true);
   }
 }
