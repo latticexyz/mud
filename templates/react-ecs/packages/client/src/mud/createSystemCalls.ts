@@ -3,8 +3,10 @@
  * for changes in the World state (using the System contracts).
  */
 
-import { Hex } from "viem";
+import { getComponentValue } from "@latticexyz/recs";
+import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
@@ -28,27 +30,22 @@ export function createSystemCalls(
    *   syncToRecs
    *   (https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts#L77-L83).
    */
-  { tables, useStore, worldContract, waitForTransaction }: SetupNetworkResult
+  { worldContract, waitForTransaction }: SetupNetworkResult,
+  { Counter }: ClientComponents
 ) {
-  const addTask = async (label: string) => {
-    const tx = await worldContract.write.addTask([label]);
+  const increment = async () => {
+    /*
+     * Because IncrementSystem
+     * (https://mud.dev/templates/typescript/contracts#incrementsystemsol)
+     * is in the root namespace, `.increment` can be called directly
+     * on the World contract.
+     */
+    const tx = await worldContract.write.increment();
     await waitForTransaction(tx);
-  };
-
-  const toggleTask = async (key: Hex) => {
-    const isComplete = (useStore.getState().getValue(tables.Tasks, { key })?.completedAt ?? 0n) > 0n;
-    const tx = isComplete ? await worldContract.write.resetTask([key]) : await worldContract.write.completeTask([key]);
-    await waitForTransaction(tx);
-  };
-
-  const deleteTask = async (key: Hex) => {
-    const tx = await worldContract.write.deleteTask([key]);
-    await waitForTransaction(tx);
+    return getComponentValue(Counter, singletonEntity);
   };
 
   return {
-    addTask,
-    toggleTask,
-    deleteTask,
+    increment,
   };
 }
