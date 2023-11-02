@@ -7,6 +7,7 @@ export default defineConfig({
     "src/postgres/index.ts",
     "src/recs/index.ts",
     "src/trpc-indexer/index.ts",
+    "src/zustand/index.ts",
   ],
   target: "esnext",
   format: ["esm"],

@@ -14,7 +14,8 @@
     "./postgres": "./dist/postgres/index.js",
     "./recs": "./dist/recs/index.js",
     "./sqlite": "./dist/sqlite/index.js",
-    "./trpc-indexer": "./dist/trpc-indexer/index.js"
+    "./trpc-indexer": "./dist/trpc-indexer/index.js",
+    "./zustand": "./dist/zustand/index.js"
   },
   "typesVersions": {
     "*": {
@@ -32,6 +33,9 @@
       ],
       "trpc-indexer": [
         "./src/trpc-indexer/index.ts"
+      ],
+      "zustand": [
+        "./src/zustand/index.ts"
       ]
     }
   },
@@ -63,7 +67,8 @@
     "sql.js": "^1.8.0",
     "superjson": "^1.12.4",
     "viem": "1.14.0",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "zustand": "^4.3.7"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
