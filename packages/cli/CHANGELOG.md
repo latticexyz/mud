@@ -1,5 +1,28 @@
 # Change Log
 
+## 2.0.0-next.13
+
+### Patch Changes
+
+- 21a626ae: Changed `mud` CLI import order so that environment variables from the `.env` file are loaded before other imports.
+- Updated dependencies [52182f70]
+- Updated dependencies [d7325e51]
+- Updated dependencies [35348f83]
+- Updated dependencies [83638373]
+- Updated dependencies [3e057061]
+- Updated dependencies [b1d41727]
+  - @latticexyz/utils@2.0.0-next.13
+  - @latticexyz/world-modules@2.0.0-next.13
+  - @latticexyz/common@2.0.0-next.13
+  - @latticexyz/config@2.0.0-next.13
+  - @latticexyz/protocol-parser@2.0.0-next.13
+  - @latticexyz/store@2.0.0-next.13
+  - @latticexyz/world@2.0.0-next.13
+  - @latticexyz/abi-ts@2.0.0-next.13
+  - @latticexyz/gas-report@2.0.0-next.13
+  - @latticexyz/schema-type@2.0.0-next.13
+  - @latticexyz/services@2.0.0-next.13
+
 ## 2.0.0-next.12
 
 ### Major Changes
