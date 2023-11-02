@@ -140,6 +140,7 @@ async function renderDocs() {
           .map((input) => {
             const docsPath = getDocsPath(input.source);
             const docsFiles = readdirSync(docsPath);
+            docsFiles.sort();
             return docsFiles
               .filter(input.filterFiles ?? identity)
               .map((fileName) => readFileSync(path.join(docsPath, fileName), { encoding: "utf8" }));
