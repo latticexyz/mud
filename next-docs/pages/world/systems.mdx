@@ -36,10 +36,10 @@ There are several reasons for this:
 Because calls to systems are proxied through the `World`, some message fields don't reflect the original call.
 Use these substitutes:
 
-| Vanilla Solidity  | `System` replacement |
-| ------------ | -------------------- |
-| `msg.sender` | `_msgSender()`       |
-| `msg.value`  | `_msgValue()`        |
+| Vanilla Solidity | `System` replacement |
+| ---------------- | -------------------- |
+| `msg.sender`     | `_msgSender()`       |
+| `msg.value`      | `_msgValue()`        |
 
 When calling other contracts from a `System`, be aware that if you use `delegatecall` the called contract inherits the `System`'s permissions and can modify data in the `World` on behalf of the `System`.
 
