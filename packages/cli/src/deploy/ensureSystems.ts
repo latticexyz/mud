@@ -1,4 +1,4 @@
-import { Client, Transport, Chain, Account, Hex, getAddress } from "viem";
+import { Client, Transport, Chain, Account, Hex, getAddress, encodeFunctionData } from "viem";
 import { writeContract } from "@latticexyz/common";
 import { System, WorldDeploy, worldAbi } from "./common";
 import { debug } from "./debug";
@@ -7,6 +7,7 @@ import { getSystems } from "./getSystems";
 import { getResourceAccess } from "./getResourceAccess";
 import { uniqueBy, wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
+import { getBatchCallData } from "../utils/getBatchCallData";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 
 export async function ensureSystems({
@@ -22,29 +23,42 @@ export async function ensureSystems({
     getSystems({ client, worldDeploy }),
     getResourceAccess({ client, worldDeploy }),
   ]);
+
+  // Prepare access changes
+
   const systemIds = systems.map((system) => system.systemId);
+
   const currentAccess = worldAccess.filter(({ resourceId }) => systemIds.includes(resourceId));
+
   const desiredAccess = systems.flatMap((system) =>
     system.allowedAddresses.map((address) => ({ resourceId: system.systemId, address }))
   );
 
-  const accessToAdd = desiredAccess.filter(
-    (access) =>
-      !currentAccess.some(
-        ({ resourceId, address }) =>
-          resourceId === access.resourceId && getAddress(address) === getAddress(access.address)
-      )
-  );
+  type accessType = {
+    resourceId: Hex;
+    address: Hex;
+    isRemove: boolean;
+  };
 
-  const accessToRemove = currentAccess.filter(
-    (access) =>
-      !desiredAccess.some(
-        ({ resourceId, address }) =>
-          resourceId === access.resourceId && getAddress(address) === getAddress(access.address)
-      )
-  );
+  const accessToAdd: accessType[] = desiredAccess
+    .filter(
+      (access) =>
+        !currentAccess.some(
+          ({ resourceId, address }) =>
+            resourceId === access.resourceId && getAddress(address) === getAddress(access.address)
+        )
+    )
+    .map((access) => ({ ...access, isRemove: false }));
 
-  // TODO: move each system access+registration to batch call to be atomic
+  const accessToRemove: accessType[] = currentAccess
+    .filter(
+      (access) =>
+        !desiredAccess.some(
+          ({ resourceId, address }) =>
+            resourceId === access.resourceId && getAddress(address) === getAddress(access.address)
+        )
+    )
+    .map((access) => ({ ...access, isRemove: true }));
 
   if (accessToRemove.length) {
     debug("revoking", accessToRemove.length, "access grants");
@@ -53,48 +67,20 @@ export async function ensureSystems({
     debug("adding", accessToAdd.length, "access grants");
   }
 
-  const accessTxs = [
-    ...accessToRemove.map((access) =>
-      pRetry(
-        () =>
-          writeContract(client, {
-            chain: client.chain ?? null,
-            address: worldDeploy.address,
-            abi: worldAbi,
-            functionName: "revokeAccess",
-            args: [access.resourceId, access.address],
-          }),
-        {
-          retries: 3,
-          onFailedAttempt: async (error) => {
-            const delay = error.attemptNumber * 500;
-            debug(`failed to revoke access, retrying in ${delay}ms...`);
-            await wait(delay);
-          },
-        }
-      )
-    ),
-    ...accessToAdd.map((access) =>
-      pRetry(
-        () =>
-          writeContract(client, {
-            chain: client.chain ?? null,
-            address: worldDeploy.address,
-            abi: worldAbi,
-            functionName: "grantAccess",
-            args: [access.resourceId, access.address],
-          }),
-        {
-          retries: 3,
-          onFailedAttempt: async (error) => {
-            const delay = error.attemptNumber * 500;
-            debug(`failed to grant access, retrying in ${delay}ms...`);
-            await wait(delay);
-          },
-        }
-      )
-    ),
-  ];
+  const accessChanges = accessToAdd.concat(accessToRemove);
+
+  const accessChangeMap = accessChanges.reduce((map, access) => {
+    const systemId = access.resourceId;
+    const accesses = map[systemId];
+    if (accesses) {
+      accesses.push(access);
+    } else {
+      map[systemId] = [access];
+    }
+    return map;
+  }, {} as Record<string, accessType[]>);
+
+  // Prepare Systems to register
 
   const existingSystems = systems.filter((system) =>
     worldSystems.some(
@@ -135,27 +121,68 @@ export async function ensureSystems({
     })),
   });
 
-  const registerTxs = missingSystems.map((system) =>
-    pRetry(
-      () =>
-        writeContract(client, {
-          chain: client.chain ?? null,
-          address: worldDeploy.address,
-          abi: worldAbi,
-          // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-          functionName: "registerSystem",
-          args: [system.systemId, system.address, system.allowAll],
-        }),
-      {
-        retries: 3,
-        onFailedAttempt: async (error) => {
-          const delay = error.attemptNumber * 500;
-          debug(`failed to register system ${resourceLabel(system)}, retrying in ${delay}ms...`);
-          await wait(delay);
-        },
+  const missingSystemsMap = missingSystems.reduce((map, system) => {
+    map[system.systemId] = system;
+    return map;
+  }, {} as Record<string, System>);
+
+  if (Object.keys(missingSystemsMap).length !== missingSystems.length) {
+    throw new Error("Duplicate systemId found in systems");
+  }
+
+  // Combine systems and access changes
+  const registrationAndAccess: [System, accessType[]][] = Object.entries(missingSystemsMap).map(
+    ([systemId, system]) => {
+      if (systemId in accessChangeMap) {
+        return [system, accessChangeMap[systemId]];
+      } else {
+        return [system, [] as accessType[]];
       }
-    )
+    }
   );
 
-  return await Promise.all([...accessTxs, ...registerTxs]);
+  const encodedFunctionDataBySystem = registrationAndAccess.reduce((acc, [system, access]) => {
+    const registerSystemFunctionData: Hex = encodeFunctionData({
+      abi: worldAbi,
+      functionName: "registerSystem",
+      args: [system.systemId, system.address, system.allowAll],
+    });
+
+    const accessFunctionDataList: Hex[] = access.map((access: any) => {
+      const functionName = access.isRemove ? "revokeAccess" : "grantAccess";
+      const encodedData = encodeFunctionData({
+        abi: worldAbi,
+        functionName: functionName,
+        args: [access.resourceId, access.address],
+      });
+      return encodedData;
+    });
+    const systemLabel = resourceLabel(system);
+    acc[systemLabel] = [registerSystemFunctionData, ...accessFunctionDataList];
+    return acc;
+  }, {} as Record<string, Hex[]>);
+
+  const systemTxs = [
+    ...Object.entries(encodedFunctionDataBySystem).map(([systemLabel, encodedFunctionData]) =>
+      pRetry(
+        () =>
+          writeContract(client, {
+            chain: client.chain ?? null,
+            address: worldDeploy.address,
+            abi: worldAbi,
+            functionName: "batchCall",
+            args: [getBatchCallData(encodedFunctionData)],
+          }),
+        {
+          retries: 3,
+          onFailedAttempt: async (error) => {
+            const delay = error.attemptNumber * 500;
+            debug(`failed to register or change access permission at ${systemLabel}, retrying in ${delay}ms...`);
+            await wait(delay);
+          },
+        }
+      )
+    ),
+  ];
+  return await Promise.all([...systemTxs]);
 }

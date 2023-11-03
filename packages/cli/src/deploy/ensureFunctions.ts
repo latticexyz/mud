@@ -1,10 +1,11 @@
-import { Client, Transport, Chain, Account, Hex } from "viem";
+import { Client, Transport, Chain, Account, Hex, encodeFunctionData } from "viem";
 import { hexToResource, writeContract } from "@latticexyz/common";
 import { WorldDeploy, WorldFunction, worldAbi } from "./common";
 import { debug } from "./debug";
 import { getFunctions } from "./getFunctions";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
+import { getBatchCallData } from "../utils/getBatchCallData";
 
 export async function ensureFunctions({
   client,
@@ -36,47 +37,57 @@ export async function ensureFunctions({
 
   if (!toAdd.length) return [];
 
-  debug("registering functions:", toAdd.map((func) => func.signature).join(", "));
+  debug("Batch registering functions:", toAdd.map((func) => func.signature).join(", "));
+
+  const toAddBySystem = toAdd.reduce((acc: { [key: Hex]: WorldFunction[] }, func) => {
+    if (acc[func.systemId]) {
+      acc[func.systemId].push(func);
+    } else {
+      acc[func.systemId] = [func];
+    }
+    return acc;
+  }, {});
+
+  const encodedFunctionDataBySystem = Object.entries(toAddBySystem).reduce((acc, [systemId, functions]) => {
+    const { namespace } = hexToResource(systemId as Hex);
+    const encodedFunctionDataList = functions.map((func) => {
+      let encodedFunctionData: Hex;
+      if (namespace === "") {
+        encodedFunctionData = encodeFunctionData({
+          abi: worldAbi,
+          functionName: "registerRootFunctionSelector",
+          args: [systemId, func.systemFunctionSignature, func.systemFunctionSelector],
+        });
+      } else {
+        encodedFunctionData = encodeFunctionData({
+          abi: worldAbi,
+          functionName: "registerFunctionSelector",
+          args: [systemId, func.systemFunctionSignature],
+        });
+      }
+      return encodedFunctionData;
+    });
+    acc[systemId] = encodedFunctionDataList;
+    return acc;
+  }, {} as Record<string, Hex[]>);
 
   return Promise.all(
-    toAdd.map((func) => {
-      const { namespace } = hexToResource(func.systemId);
-      if (namespace === "") {
-        return pRetry(
-          () =>
-            writeContract(client, {
-              chain: client.chain ?? null,
-              address: worldDeploy.address,
-              abi: worldAbi,
-              // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-              functionName: "registerRootFunctionSelector",
-              args: [func.systemId, func.systemFunctionSignature, func.systemFunctionSelector],
-            }),
-          {
-            retries: 3,
-            onFailedAttempt: async (error) => {
-              const delay = error.attemptNumber * 500;
-              debug(`failed to register function ${func.signature}, retrying in ${delay}ms...`);
-              await wait(delay);
-            },
-          }
-        );
-      }
+    Object.entries(encodedFunctionDataBySystem).map(([systemId, encodedFunctionData]) => {
       return pRetry(
         () =>
           writeContract(client, {
             chain: client.chain ?? null,
             address: worldDeploy.address,
             abi: worldAbi,
-            // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-            functionName: "registerFunctionSelector",
-            args: [func.systemId, func.systemFunctionSignature],
+            functionName: "batchCall",
+            args: [getBatchCallData(encodedFunctionData)],
           }),
         {
           retries: 3,
           onFailedAttempt: async (error) => {
             const delay = error.attemptNumber * 500;
-            debug(`failed to register function ${func.signature}, retrying in ${delay}ms...`);
+            //TODO: Replace the systemId with system label
+            debug(`failed to register function ${systemId}, retrying in ${delay}ms...`);
             await wait(delay);
           },
         }
