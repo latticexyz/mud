@@ -1,5 +1,73 @@
 # Change Log
 
+## 2.0.0-next.13
+
+### Minor Changes
+
+- d7325e51: Added the `ERC721Module` to `@latticexyz/world-modules`.
+  This module allows the registration of `ERC721` tokens in an existing World.
+
+  Important note: this module has not been audited yet, so any production use is discouraged for now.
+
+  ````solidity
+  import { PuppetModule } from "@latticexyz/world-modules/src/modules/puppet/PuppetModule.sol";
+  import { ERC721MetadataData } from "@latticexyz/world-modules/src/modules/erc721-puppet/tables/ERC721Metadata.sol";
+  import { IERC721Mintable } from "@latticexyz/world-modules/src/modules/erc721-puppet/IERC721Mintable.sol";
+  import { registerERC721 } from "@latticexyz/world-modules/src/modules/erc721-puppet/registerERC721.sol";
+
+  // The ERC721 module requires the Puppet module to be installed first
+  world.installModule(new PuppetModule(), new bytes(0));
+
+  // After the Puppet module is installed, new ERC721 tokens can be registered
+  IERC721Mintable token = registerERC721(world, "myERC721", ERC721MetadataData({ name: "Token", symbol: "TKN", baseURI: "" }));```
+  ````
+
+- 35348f83: Added the `PuppetModule` to `@latticexyz/world-modules`. The puppet pattern allows an external contract to be registered as an external interface for a MUD system.
+  This allows standards like `ERC20` (that require a specific interface and events to be emitted by a unique contract) to be implemented inside a MUD World.
+
+  The puppet serves as a proxy, forwarding all calls to the implementation system (also called the "puppet master").
+  The "puppet master" system can emit events from the puppet contract.
+
+  ```solidity
+  import { PuppetModule } from "@latticexyz/world-modules/src/modules/puppet/PuppetModule.sol";
+  import { createPuppet } from "@latticexyz/world-modules/src/modules/puppet/createPuppet.sol";
+
+  // Install the puppet module
+  world.installModule(new PuppetModule(), new bytes(0));
+
+  // Register a new puppet for any system
+  // The system must implement the `CustomInterface`,
+  // and the caller must own the system's namespace
+  CustomInterface puppet = CustomInterface(createPuppet(world, <systemId>));
+  ```
+
+- 83638373: Added the `ERC20Module` to `@latticexyz/world-modules`.
+  This module allows the registration of `ERC20` tokens in an existing World.
+
+  Important note: this module has not been audited yet, so any production use is discouraged for now.
+
+  ```solidity
+  import { PuppetModule } from "@latticexyz/world-modules/src/modules/puppet/PuppetModule.sol";
+  import { IERC20Mintable } from "@latticexyz/world-modules/src/modules/erc20-puppet/IERC20Mintable.sol";
+  import { registerERC20 } from "@latticexyz/world-modules/src/modules/erc20-puppet/registerERC20.sol";
+
+  // The ERC20 module requires the Puppet module to be installed first
+  world.installModule(new PuppetModule(), new bytes(0));
+
+  // After the Puppet module is installed, new ERC20 tokens can be registered
+  IERC20Mintable token = registerERC20(world, "myERC20", ERC20MetadataData({ decimals: 18, name: "Token", symbol: "TKN" }));
+  ```
+
+### Patch Changes
+
+- Updated dependencies [3e057061]
+- Updated dependencies [b1d41727]
+  - @latticexyz/common@2.0.0-next.13
+  - @latticexyz/config@2.0.0-next.13
+  - @latticexyz/store@2.0.0-next.13
+  - @latticexyz/world@2.0.0-next.13
+  - @latticexyz/schema-type@2.0.0-next.13
+
 ## 2.0.0-next.12
 
 ### Major Changes

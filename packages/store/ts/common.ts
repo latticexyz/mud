@@ -2,14 +2,32 @@ import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@lat
 import { FieldData, FullSchemaConfig, StoreConfig } from "./config";
 import { Hex } from "viem";
 
-export type KeySchema = Record<string, { type: StaticAbiType }>;
-export type ValueSchema = Record<string, { type: SchemaAbiType }>;
+export type KeySchema = {
+  readonly [k: string]: {
+    readonly type: StaticAbiType;
+  };
+};
+export type ValueSchema = {
+  readonly [k: string]: {
+    readonly type: SchemaAbiType;
+  };
+};
+
 export type Table = {
-  tableId: Hex;
-  namespace: string;
-  name: string;
-  keySchema: KeySchema;
-  valueSchema: ValueSchema;
+  readonly tableId: Hex;
+  readonly namespace: string;
+  readonly name: string;
+  readonly keySchema: KeySchema;
+  readonly valueSchema: ValueSchema;
+};
+
+export type Tables = {
+  readonly [k: string]: Table;
+};
+
+/** Map a table schema like `{ value: { type: "uint256" } }` to its primitive types like `{ value: bigint }` */
+export type SchemaToPrimitives<schema extends ValueSchema> = {
+  readonly [key in keyof schema]: SchemaAbiTypeToPrimitiveType<schema[key]["type"]>;
 };
 
 export type ConfigFieldTypeToSchemaAbiType<T extends FieldData<string>> = T extends SchemaAbiType

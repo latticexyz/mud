@@ -28,7 +28,6 @@ setup().then(async (result) => {
       worldAddress: result.network.worldContract.address,
       worldAbi: result.network.worldContract.abi,
       write$: result.network.write$,
-      recsWorld: result.network.world,
     });
   }
 });

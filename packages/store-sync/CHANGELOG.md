@@ -1,5 +1,78 @@
 # @latticexyz/store-sync
 
+## 2.0.0-next.13
+
+### Minor Changes
+
+- de47d698: Added an optional `tables` option to `syncToRecs` to allow you to sync from tables that may not be expressed by your MUD config. This will be useful for namespaced tables used by [ERC20](https://github.com/latticexyz/mud/pull/1789) and [ERC721](https://github.com/latticexyz/mud/pull/1844) token modules until the MUD config gains [namespace support](https://github.com/latticexyz/mud/issues/994).
+
+  Here's how we use this in our example project with the `KeysWithValue` module:
+
+  ```ts
+  syncToRecs({
+    ...
+    tables: {
+      KeysWithValue: {
+        namespace: "keywval",
+        name: "Inventory",
+        tableId: resourceToHex({ type: "table", namespace: "keywval", name: "Inventory" }),
+        keySchema: {
+          valueHash: { type: "bytes32" },
+        },
+        valueSchema: {
+          keysWithValue: { type: "bytes32[]" },
+        },
+      },
+    },
+    ...
+  });
+  ```
+
+- f6d214e3: Added a `filters` option to store sync to allow filtering client data on tables and keys. Previously, it was only possible to filter on `tableIds`, but the new filter option allows for more flexible filtering by key.
+
+  If you are building a large MUD application, you can use positional keys as a way to shard data and make it possible to load only the data needed in the client for a particular section of your app. We're using this already in Sky Strife to load match-specific data into match pages without having to load data for all matches, greatly improving load time and client performance.
+
+  ```ts
+  syncToRecs({
+    ...
+    filters: [{ tableId: '0x...', key0: '0x...' }],
+  });
+  ```
+
+  The `tableIds` option is now deprecated and will be removed in the future, but is kept here for backwards compatibility.
+
+- fa776358: Added a Zustand storage adapter and corresponding `syncToZustand` method for use in vanilla and React apps. It's used much like the other sync methods, except it returns a bound store and set of typed tables.
+
+  ```ts
+  import { syncToZustand } from "@latticexyz/store-sync/zustand";
+  import config from "contracts/mud.config";
+
+  const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
+    config,
+    ...
+  });
+
+  // in vanilla apps
+  const positions = useStore.getState().getRecords(tables.Position);
+
+  // in React apps
+  const positions = useStore((state) => state.getRecords(tables.Position));
+  ```
+
+  This change will be shortly followed by an update to our templates that uses Zustand as the default client data store and sync method.
+
+### Patch Changes
+
+- Updated dependencies [3e057061]
+- Updated dependencies [b1d41727]
+  - @latticexyz/common@2.0.0-next.13
+  - @latticexyz/recs@2.0.0-next.13
+  - @latticexyz/block-logs-stream@2.0.0-next.13
+  - @latticexyz/protocol-parser@2.0.0-next.13
+  - @latticexyz/store@2.0.0-next.13
+  - @latticexyz/world@2.0.0-next.13
+  - @latticexyz/schema-type@2.0.0-next.13
+
 ## 2.0.0-next.12
 
 ### Patch Changes
