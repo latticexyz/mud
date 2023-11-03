@@ -1,5 +1,5 @@
-import { utils } from "ethers";
 import { ZodIssueCode, RefinementCtx } from "zod";
+import { isAddress } from "viem";
 
 export const STORE_NAME_MAX_LENGTH = 16;
 export const STORE_NAMESPACE_MAX_LENGTH = 14;
@@ -120,7 +120,7 @@ export const validateBaseRoute = _factoryForValidateRoute(false, false);
 export const validateSingleLevelRoute = _factoryForValidateRoute(true, true);
 
 export function validateEthereumAddress(address: string, ctx: RefinementCtx) {
-  if (!utils.isAddress(address)) {
+  if (!isAddress(address)) {
     ctx.addIssue({
       code: ZodIssueCode.custom,
       message: `Address must be a valid Ethereum address`,

@@ -1,6 +1,6 @@
 {
   "name": "create-mud",
-  "version": "2.0.0-next.12",
+  "version": "2.0.0-next.13",
   "description": "Create a new MUD project",
   "license": "MIT",
   "author": "Lattice <mud@lattice.xyz>",
@@ -15,10 +15,11 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "prepublishOnly": "npm run clean && npm run build",
-    "test": "pnpm run test:vanilla && pnpm run test:react && pnpm run test:phaser && pnpm run test:threejs",
+    "test": "pnpm run test:vanilla && pnpm run test:react && pnpm run test:react-ecs && pnpm run test:phaser && pnpm run test:threejs",
     "test:ci": "pnpm run test",
     "test:phaser": "dist/cli.js test-project --template phaser && rimraf test-project",
     "test:react": "dist/cli.js test-project --template react && rimraf test-project",
+    "test:react-ecs": "dist/cli.js test-project --template react-ecs && rimraf test-project",
     "test:threejs": "dist/cli.js test-project --template threejs && rimraf test-project",
     "test:vanilla": "dist/cli.js test-project --template vanilla && rimraf test-project"
   },

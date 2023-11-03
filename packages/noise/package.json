@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/noise",
-  "version": "2.0.0-next.12",
+  "version": "2.0.0-next.13",
   "license": "MIT",
   "type": "module",
   "exports": {

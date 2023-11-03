@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.0-next.12",
+  "version": "2.0.0-next.13",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -55,6 +55,7 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "abitype": "0.9.8",
+    "viem": "1.14.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {
