@@ -118,7 +118,7 @@ function resolveTable<
     >,
     namespace,
     name,
-    tableId: resourceToHex({ type: "table", namespace, name }),
+    tableId: resourceToHex({ type: tableConfig.offchainOnly ? "offchainTable" : "table", namespace, name }),
   };
 }
 

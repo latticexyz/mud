@@ -1,5 +1,23 @@
 # Change Log
 
+## 2.0.0-next.13
+
+### Major Changes
+
+- 78949f2c: Replaced the `react` template with a basic task list app using the new Zustand storage adapter and sync method. This new template better demonstrates the different ways of building with MUD and has fewer concepts to learn (i.e. just tables and records, no more ECS).
+
+  For ECS-based React apps, you can use `react-ecs` template for the previous RECS storage adapter.
+
+### Minor Changes
+
+- 6288f903: Updated templates to use [mprocs](https://github.com/pvolok/mprocs) instead of [concurrently](https://github.com/open-cli-tools/concurrently) for running dev scripts.
+- b68e1699: Enabled MUD CLI debug logs for all templates.
+
+### Patch Changes
+
+- c5148da7: Updated templates' PostDeploy script to set store address so that tables can be used directly inside PostDeploy.
+- 1b33a915: Fixed an issue when creating a new project from the `react` app, where React's expressions were overlapping with Handlebars expressions (used by our template command).
+
 ## 2.0.0-next.12
 
 ### Patch Changes

@@ -1,1 +1,60 @@
 # Account delegation
+
+_Account delegation_ allows a _delegator_ address to permit a _delegatee_ address to call a `System` on its behalf.
+This enables multiple use cases.
+
+- **Session wallets**.
+  Normally a wallet requires the user to authorize each transaction separately.
+  In the case of a blockchain game, this means having to authorize every move, which is excessive.
+  Using account delegation players can authorize a different wallet, one whose private key is stored on the client, to act on their behalf.
+  Because this wallet's private key is stored in the client, rather than a browser extension, the client can decide when asking for authorization is warranted and when it isn't.
+  By making sure this is a _separate_ wallet, we protect the player's main account in the case of vulnerable or malicious game clients.
+
+- **Approvals**.
+  Users can approve contracts to perform actions in a MUD world on their behalf.
+  This is conceptually similar to how ERC20's [`approve`/`transferFrom`](https://eips.ethereum.org/EIPS/eip-20#transferfrom) enables atomic swaps by allowing contracts to withdraw from a user's balance and then deposit a different asset in a single transaction.
+  For example, an agent could exchange two in-game assets atomically if the two sides of the trade give it the necessary permission.
+
+## Creating a delegation
+
+First, the delegator has to call [`registerDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L234-L263).
+This function takes three parameters:
+
+- `delegatee`, the address given the privileges.
+  This can be `address(0)` to let this delegation apply to all callers. Note that combining `address(0)` with an unlimited delegation is discouraged, as it would allow anyone to perform any action on behalf of the delegator.
+
+- `delegationControlId`, this is usually the `ResourceId` for a `System` that decides whether an attempt to do something by the delegatee on behalf of the delegator is authorized or not.
+  Alternatively, this value can be [`UNLIMITED_DELEGATION`](https://github.com/latticexyz/mud/blob/main/packages/world/src/constants.sol#L23-L25), in which case the delegatee has unlimited authority.
+
+  We have an example of a delegation control `System` in [the `std-delegations` module](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/std-delegations).
+
+- `initCallData`, call data for a function that is called on the `delegationControlId` to inform it of the new delegation.
+  This [call data](https://docs.soliditylang.org/en/latest/abi-spec.html) includes both the function selector of the function to call and arguments to pass to the function (the result of `abi.encodeCall`) .
+
+## Using a delegation
+
+The delegatee can use [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L353-L394).
+This function takes three parameters:
+
+- `delegator`, the address on whose behalf the call is happening.
+- `systemId`, the `System` to call.
+- `callData`, the [call data](https://docs.soliditylang.org/en/latest/abi-spec.html) to send the `System`, which includes both the function selector and arguments (the result of `abi.encodeCall`).
+
+## Namespace delegation
+
+The owner of a namespace can use [`registerNamespaceDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L265-L306) to register a delegation that applies to all callers of systems in this namespace.
+This functionality is useful, for example, to implement a trusted forwarder for the namespace.
+This is not a security concern because the namespace owner already has full control over any table or `System` in the namespace.
+
+## Order of delegation checks
+
+As you can see in [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L353-L394), the order of delegation checks is:
+
+1. If there is a `world:UserDelegationControl` entry with the delegator and the delegatee (a.k.a. `msg.sender`), check it.
+   If it results in an approval, perform the call.
+1. If the user provided a fallback delegation (one where the delegatee is `address(0)`), check it.
+   If it results in an approval, perform the call.
+1. If there is an applicable namespace delegation, check that one.
+   If it results in an approval, perform the call.
+
+This means that if there's a namespace delegation that modifies information (for example, writes to a MUD table to gather statistics) users will be able to bypass it by creating their own delegation with the same delegetee and a `System` that would approve.

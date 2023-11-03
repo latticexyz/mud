@@ -1,5 +1,35 @@
 # @latticexyz/store-indexer
 
+## 2.0.0-next.13
+
+### Major Changes
+
+- f6d214e3: Removed `tableIds` filter option in favor of the more flexible `filters` option that accepts `tableId` and an optional `key0` and/or `key1` to filter data by tables and keys.
+
+  If you were using an indexer client directly, you'll need to update your query:
+
+  ```diff
+    await indexer.findAll.query({
+      chainId,
+      address,
+  -   tableIds: ['0x...'],
+  +   filters: [{ tableId: '0x...' }],
+    });
+  ```
+
+### Patch Changes
+
+- Updated dependencies [de47d698]
+- Updated dependencies [f6d214e3]
+- Updated dependencies [fa776358]
+- Updated dependencies [3e057061]
+- Updated dependencies [b1d41727]
+  - @latticexyz/store-sync@2.0.0-next.13
+  - @latticexyz/common@2.0.0-next.13
+  - @latticexyz/block-logs-stream@2.0.0-next.13
+  - @latticexyz/protocol-parser@2.0.0-next.13
+  - @latticexyz/store@2.0.0-next.13
+
 ## 2.0.0-next.12
 
 ### Minor Changes
