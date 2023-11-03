@@ -1,1 +1,21 @@
 # Config
+
+To install the MUD command line interface (CLI) into your environment, run this command:
+
+```sh copy
+pnpm install -g @latticexyz/cli@next
+```
+
+Alternatively, you can install `@latticexyz/cli` as part of a Node project, in which case you can access it from the project's root using either `pnpm mud` or `./node_modules/.bin/mud`
+
+Once you installed `mud`, run this command as a sanity check:
+
+```sh copy
+mud hello `whoami`
+```
+
+To get the list of available functions, run:
+
+```sh copy
+mud --help
+```
