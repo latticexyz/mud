@@ -13,6 +13,12 @@ To know how much ETH a call has included a `System` can check [`_msgValue()`](ht
 
 To know how much ETH a specific namespace has you can look in `world:Balances` (the `Balances` table of the `world` namespace).
 
+```solidity
+import { Balances } from "@latticexyz/world/src/codegen/tables/Balances.sol";
+
+uint256 balance = Balances.get(<namespace>);
+```
+
 <details>
 
 <summary>See this in action</summary>
