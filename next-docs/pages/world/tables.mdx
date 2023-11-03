@@ -1,1 +1,20 @@
+import Illustration from "./world-table-illustration.mdx";
+
 # Tables
+
+`World` uses the [store tables](/store/tables), but adds [access control](/world/namespaces-access-control).
+For onchain tables, the data is stored by the `World` contract, [which is also a `StoreData`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L43).
+
+When a `System` reads or writes storage via [table libraries](/store/table-libraries), the request goes into [`StoreSwitch`](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol). This library decides which approach to use:
+
+- If the `System` is in the root namespace, then it was called with [`delegatecall`](https://docs.soliditylang.org/en/v0.8.22/introduction-to-smart-contracts.html#delegatecall-and-libraries).
+  This means it inherits the `World` storage and can write directly to storage using [`StoreCore`](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreCore.sol).
+  These calls bypass access control.
+
+- If the `System` is in any other namespace, then it was called with [`call`](https://docs.soliditylang.org/en/v0.8.22/introduction-to-smart-contracts.html#message-calls) and has to call back into the `World` using [`IStore`](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol).
+  These calls go through access control.
+  They are only permitted if the `System` has access to the table in question.
+  By default a `System` has access to its own namespace and therefore to all the tables inside it.
+  Additional [access can be granted](./namespaces-access-control) by the namespace owner.
+
+<Illustration />
