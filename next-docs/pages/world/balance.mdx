@@ -7,7 +7,7 @@ Any ETH sent with a call to a `System` is kept on the `World`, and credited to t
 This has two important effects:
 
 - The ETH balance is shared between the different `System` contracts in the same namespace of the same `World`.
-- The same `System` can be used in multiple `World` contracts, and in multiple namespaces in the same `World`, and the ETH balances remain separate.
+- The same `System` can be used in multiple `World` contracts and the ETH balances remain separate.
 
 To know how much ETH a call has included a `System` can check [`_msgValue()`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L34-L36).
 
@@ -61,9 +61,9 @@ To know how much ETH a specific namespace has you can look in `world:Balances` (
        address worldAddress = vm.envAddress("WORLD_ADDRESS");
        StoreSwitch.setStoreAddress(worldAddress);
        console.log("World at:", worldAddress);
-       ResourceId nsResource = WorldResourceIdLib.encodeNamespace(bytes14(""));
-       console.log("Namespace ID: %x", uint256(ResourceId.unwrap(nsResource)));
-       uint256 balance = Balances.get(nsResource);
+       ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14(""));
+       console.log("Namespace ID: %x", uint256(ResourceId.unwrap(namespaceResource)));
+       uint256 balance = Balances.get(namespaceResource);
        console.log("Balance: %d wei", balance);
      }
    }
@@ -123,14 +123,14 @@ To know how much ETH a specific namespace has you can look in `world:Balances` (
    [Set the address of the `World`](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol#L58-L65) so future data calls to go to the correct location.
 
    ```solidity
-          ResourceId nsResource = WorldResourceIdLib.encodeNamespace(bytes14(""));
-          console.log("Namespace ID: %x", uint256(ResourceId.unwrap(nsResource)));
+          ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14(""));
+          console.log("Namespace ID: %x", uint256(ResourceId.unwrap(namespaceResource)));
    ```
 
    Create the `ResourceId` for the root namespace.
 
    ```solidity
-          uint256 balance = Balances.get(nsResource);
+          uint256 balance = Balances.get(namespaceResource);
           console.log("Balance: %d wei", balance);
       }
    }
