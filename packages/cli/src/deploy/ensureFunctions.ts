@@ -56,13 +56,13 @@ export async function ensureFunctions({
         encodedFunctionData = encodeFunctionData({
           abi: worldAbi,
           functionName: "registerRootFunctionSelector",
-          args: [systemId, func.systemFunctionSignature, func.systemFunctionSelector],
+          args: [systemId as Hex, func.systemFunctionSignature, func.systemFunctionSelector],
         });
       } else {
         encodedFunctionData = encodeFunctionData({
           abi: worldAbi,
           functionName: "registerFunctionSelector",
-          args: [systemId, func.systemFunctionSignature],
+          args: [systemId as Hex, func.systemFunctionSignature],
         });
       }
       return encodedFunctionData;
