@@ -1,5 +1,8 @@
 export default {
   "add-table": "Add a table",
   "add-system": "Add a system",
-  "deploy": "Deploy to a blockchain",
+  "deploy": {
+    "title": "Deploy to a blockchain",
+    "href": "/cli/deploy"
+  }
 };
