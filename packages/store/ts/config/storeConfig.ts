@@ -23,7 +23,7 @@ import {
 } from "@latticexyz/config";
 import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 import { UserType } from "@latticexyz/common/codegen";
-import { SchemaAbiType, schemaAbiTypes } from "@latticexyz/schema-type";
+import { SchemaAbiType, isSchemaAbiType, schemaAbiTypes } from "@latticexyz/schema-type";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
@@ -88,17 +88,14 @@ export function resolveUserTypes<
 >(schema: TSchema, userTypes: TUserTypes): ResolvedSchema<TSchema, TUserTypes> {
   const resolvedSchema: Record<string, SchemaAbiType> = {};
   for (const [key, value] of Object.entries(schema)) {
-    const staticArray = parseStaticArray(value);
-
-    if (userTypes[value] !== undefined) {
-      // user-defined types
+    if (isSchemaAbiType(value)) {
+      resolvedSchema[key] = value;
+    } else if (userTypes[value] !== undefined) {
       resolvedSchema[key] = userTypes[value].internalType as SchemaAbiType;
-    } else if (staticArray) {
-      // static arrays
-      resolvedSchema[key] = `${staticArray.elementType as StaticAbiType}[]`;
     } else {
-      // abi types
-      resolvedSchema[key] = value as SchemaAbiType;
+      const staticArray = parseStaticArray(value);
+      if (!staticArray) throw new Error(`Unexpected type: ${value}`);
+      resolvedSchema[key] = `${staticArray.elementType as StaticAbiType}[]`;
     }
   }
   return resolvedSchema as ResolvedSchema<TSchema, TUserTypes>;
