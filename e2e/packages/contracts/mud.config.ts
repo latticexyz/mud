@@ -47,5 +47,11 @@ export default mudConfig({
         player: "address",
       },
     },
+    StaticList: {
+      keySchema: {},
+      valueSchema: {
+        value: "uint256[2]",
+      },
+    },
   },
 });
