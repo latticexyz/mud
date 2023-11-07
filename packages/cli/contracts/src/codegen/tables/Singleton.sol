@@ -782,15 +782,10 @@ library Singleton {
  * @return _result The static array.
  */
 function toStaticArray_uint32_2(uint32[] memory _value) pure returns (uint32[2] memory _result) {
-  if (_value.length < 2) {
-    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
-    return _result;
-  } else {
-    // in memory static arrays are just dynamic arrays without the 32 length bytes
-    // (without the length check this could lead to memory corruption)
-    assembly {
-      _result := add(_value, 0x20)
-    }
+  // in memory static arrays are just dynamic arrays without the 32 length bytes
+  // (without the length check this could lead to memory corruption)
+  assembly {
+    _result := add(_value, 0x20)
   }
 }
 
@@ -804,15 +799,10 @@ function toStaticArray_uint32_2(uint32[] memory _value) pure returns (uint32[2] 
  * @return _result The static array.
  */
 function toStaticArray_uint32_1(uint32[] memory _value) pure returns (uint32[1] memory _result) {
-  if (_value.length < 1) {
-    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
-    return _result;
-  } else {
-    // in memory static arrays are just dynamic arrays without the 32 length bytes
-    // (without the length check this could lead to memory corruption)
-    assembly {
-      _result := add(_value, 0x20)
-    }
+  // in memory static arrays are just dynamic arrays without the 32 length bytes
+  // (without the length check this could lead to memory corruption)
+  assembly {
+    _result := add(_value, 0x20)
   }
 }
 

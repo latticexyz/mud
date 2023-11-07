@@ -1213,15 +1213,10 @@ library Dynamics1 {
  * @return _result The static array.
  */
 function toStaticArray_bytes32_1(bytes32[] memory _value) pure returns (bytes32[1] memory _result) {
-  if (_value.length < 1) {
-    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
-    return _result;
-  } else {
-    // in memory static arrays are just dynamic arrays without the 32 length bytes
-    // (without the length check this could lead to memory corruption)
-    assembly {
-      _result := add(_value, 0x20)
-    }
+  // in memory static arrays are just dynamic arrays without the 32 length bytes
+  // (without the length check this could lead to memory corruption)
+  assembly {
+    _result := add(_value, 0x20)
   }
 }
 
@@ -1235,15 +1230,10 @@ function toStaticArray_bytes32_1(bytes32[] memory _value) pure returns (bytes32[
  * @return _result The static array.
  */
 function toStaticArray_int32_2(int32[] memory _value) pure returns (int32[2] memory _result) {
-  if (_value.length < 2) {
-    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
-    return _result;
-  } else {
-    // in memory static arrays are just dynamic arrays without the 32 length bytes
-    // (without the length check this could lead to memory corruption)
-    assembly {
-      _result := add(_value, 0x20)
-    }
+  // in memory static arrays are just dynamic arrays without the 32 length bytes
+  // (without the length check this could lead to memory corruption)
+  assembly {
+    _result := add(_value, 0x20)
   }
 }
 
@@ -1257,15 +1247,10 @@ function toStaticArray_int32_2(int32[] memory _value) pure returns (int32[2] mem
  * @return _result The static array.
  */
 function toStaticArray_uint128_3(uint128[] memory _value) pure returns (uint128[3] memory _result) {
-  if (_value.length < 3) {
-    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
-    return _result;
-  } else {
-    // in memory static arrays are just dynamic arrays without the 32 length bytes
-    // (without the length check this could lead to memory corruption)
-    assembly {
-      _result := add(_value, 0x20)
-    }
+  // in memory static arrays are just dynamic arrays without the 32 length bytes
+  // (without the length check this could lead to memory corruption)
+  assembly {
+    _result := add(_value, 0x20)
   }
 }
 
@@ -1279,15 +1264,10 @@ function toStaticArray_uint128_3(uint128[] memory _value) pure returns (uint128[
  * @return _result The static array.
  */
 function toStaticArray_address_4(address[] memory _value) pure returns (address[4] memory _result) {
-  if (_value.length < 4) {
-    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
-    return _result;
-  } else {
-    // in memory static arrays are just dynamic arrays without the 32 length bytes
-    // (without the length check this could lead to memory corruption)
-    assembly {
-      _result := add(_value, 0x20)
-    }
+  // in memory static arrays are just dynamic arrays without the 32 length bytes
+  // (without the length check this could lead to memory corruption)
+  assembly {
+    _result := add(_value, 0x20)
   }
 }
 
@@ -1301,15 +1281,10 @@ function toStaticArray_address_4(address[] memory _value) pure returns (address[
  * @return _result The static array.
  */
 function toStaticArray_bool_5(bool[] memory _value) pure returns (bool[5] memory _result) {
-  if (_value.length < 5) {
-    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
-    return _result;
-  } else {
-    // in memory static arrays are just dynamic arrays without the 32 length bytes
-    // (without the length check this could lead to memory corruption)
-    assembly {
-      _result := add(_value, 0x20)
-    }
+  // in memory static arrays are just dynamic arrays without the 32 length bytes
+  // (without the length check this could lead to memory corruption)
+  assembly {
+    _result := add(_value, 0x20)
   }
 }
 

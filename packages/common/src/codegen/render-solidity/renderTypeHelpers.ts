@@ -82,16 +82,12 @@ function renderWrapperStaticArray(
     ) pure returns (
       ${elementType}[${staticLength}] memory _result
     ) {
-      if (_value.length < ${staticLength}) {
-        // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
-        return _result;
-      } else {
+
         // in memory static arrays are just dynamic arrays without the 32 length bytes
         // (without the length check this could lead to memory corruption)
         assembly {
           _result := add(_value, 0x20)
         }
-      }
     }
   `;
 }
