@@ -21,15 +21,15 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("StaticList")))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("StaticArray")))
 );
-ResourceId constant StaticListTableId = _tableId;
+ResourceId constant StaticArrayTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0000000100000000000000000000000000000000000000000000000000000000
 );
 
-library StaticList {
+library StaticArray {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.
@@ -457,10 +457,15 @@ library StaticList {
  * @return _result The static array.
  */
 function toStaticArray_uint256_2(uint256[] memory _value) pure returns (uint256[2] memory _result) {
-  // in memory static arrays are just dynamic arrays without the 32 length bytes
-  // (without the length check this could lead to memory corruption)
-  assembly {
-    _result := add(_value, 0x20)
+  if (_value.length < 2) {
+    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
+    return _result;
+  } else {
+    // in memory static arrays are just dynamic arrays without the 32 length bytes
+    // (without the length check this could lead to memory corruption)
+    assembly {
+      _result := add(_value, 0x20)
+    }
   }
 }
 
