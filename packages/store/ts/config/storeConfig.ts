@@ -88,7 +88,18 @@ export function resolveUserTypes<
 >(schema: TSchema, userTypes: TUserTypes): ResolvedSchema<TSchema, TUserTypes> {
   const resolvedSchema: Record<string, SchemaAbiType> = {};
   for (const [key, value] of Object.entries(schema)) {
-    resolvedSchema[key] = (userTypes[value]?.internalType as SchemaAbiType) ?? value;
+    const staticArray = parseStaticArray(value);
+
+    if (userTypes[value] !== undefined) {
+      // user-defined types
+      resolvedSchema[key] = userTypes[value].internalType as SchemaAbiType;
+    } else if (staticArray) {
+      // static arrays
+      resolvedSchema[key] = `${staticArray.elementType as StaticAbiType}[]`;
+    } else {
+      // abi types
+      resolvedSchema[key] = value as SchemaAbiType;
+    }
   }
   return resolvedSchema as ResolvedSchema<TSchema, TUserTypes>;
 }
