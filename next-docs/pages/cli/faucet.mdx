@@ -1,1 +1,27 @@
 # mud faucet
+
+Ask a [faucet service](/services/faucet) for test ETH.
+
+## Sample use
+
+```sh copy
+ADDR=0x863DEAFF47BF8bF8cb4B9AB0F49360aD7046713b
+cast to-unit `cast balance --rpc-url https://follower.testnet-chain.linfra.xyz $ADDR` eth
+pnpm mud faucet --address $ADDR
+sleep 10
+cast to-unit `cast balance --rpc-url https://follower.testnet-chain.linfra.xyz $ADDR` eth
+```
+
+Note that we have the `sleep 10` because the faucet's transaction transferring the ETH does not happen immediately.]
+
+## Options
+
+These are the command line options you can specify on `mud faucet`:
+
+| Option        | Meaning                              | Type    | Default value                                                                           |
+| ------------- | ------------------------------------ | ------- | --------------------------------------------------------------------------------------- |
+| `--version`   | Show version number                  | boolean | false                                                                                   |
+| `--dripDev`   | Request a drip from the dev endpoint | boolean | true                                                                                    |
+| `--faucetUrl` | URL of the MUD faucet                | string  | The faucet for the Lattice test network, https://faucet.testnet-mud-services.linfra.xyz |
+| `--address`   | The address to fund                  | string  | Empty                                                                                   |
+| `--help`      | Show help                            | boolean | false                                                                                   |
