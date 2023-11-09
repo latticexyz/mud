@@ -37,10 +37,10 @@ These are the command line options you can specify on `mud dev-contracts`:
 
 | Option                  | Meaning                                  | Type    | Default value                                                                                |
 | ----------------------- | ---------------------------------------- | ------- | -------------------------------------------------------------------------------------------- |
-| `--version`             | Show version number                      | boolean | false                                                                                        |
+| `--version`             | Show version number                      | boolean | `false`                                                                                        |
 | `--configPath`          | Path to the config file                  | string  | `foundry.toml`                                                                               |
 | `--rpc`<sup>1</sup>     | The RPC URL to use                       | string  | Empty, in which case the command starts [`anvil`](https://book.getfoundry.sh/anvil/) for you |
-| `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy | boolean | false (run the script only when deploying a new `World`)                                     |
-| `--help`                | Show help                                | boolean | false                                                                                        |
+| `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy | boolean | `false` (run the script only when deploying a new `World`)                                     |
+| `--help`                | Show help                                | boolean | `false`                                                                                        |
 
 (1) The hostname `localhost` may not work. If that is the case, use `127.0.0.1` instead.
