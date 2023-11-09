@@ -1,9 +1,5 @@
 import { mudConfig } from "@latticexyz/world/register";
 
-// loading state
-// promise for buttons
-// design system
-// admin
 export default mudConfig({
   worldgenDirectory: "interfaces",
   worldInterfaceName: "IBaseWorld",
