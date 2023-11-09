@@ -144,6 +144,14 @@ library UserTyped {
   /**
    * @notice Get v1.
    */
+  function getV1(bytes32[] memory _keyTuple) internal view returns (TestTypeAddress v1) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return TestTypeAddress.wrap(address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get v1.
+   */
   function _getV1(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -158,6 +166,14 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return TestTypeAddress.wrap(address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get v1.
+   */
+  function _getV1(bytes32[] memory _keyTuple) internal view returns (TestTypeAddress v1) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return TestTypeAddress.wrap(address(bytes20(_blob)));
   }
@@ -186,6 +202,13 @@ library UserTyped {
   /**
    * @notice Set v1.
    */
+  function setV1(bytes32[] memory _keyTuple, TestTypeAddress v1) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set v1.
+   */
   function _setV1(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -201,6 +224,13 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set v1.
+   */
+  function _setV1(bytes32[] memory _keyTuple, TestTypeAddress v1) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(TestTypeAddress.unwrap(v1)), _fieldLayout);
   }
 
@@ -228,6 +258,14 @@ library UserTyped {
   /**
    * @notice Get v2.
    */
+  function getV2(bytes32[] memory _keyTuple) internal view returns (TestTypeInt64 v2) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return TestTypeInt64.wrap(int64(uint64(bytes8(_blob))));
+  }
+
+  /**
+   * @notice Get v2.
+   */
   function _getV2(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -242,6 +280,14 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return TestTypeInt64.wrap(int64(uint64(bytes8(_blob))));
+  }
+
+  /**
+   * @notice Get v2.
+   */
+  function _getV2(bytes32[] memory _keyTuple) internal view returns (TestTypeInt64 v2) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return TestTypeInt64.wrap(int64(uint64(bytes8(_blob))));
   }
@@ -270,6 +316,13 @@ library UserTyped {
   /**
    * @notice Set v2.
    */
+  function setV2(bytes32[] memory _keyTuple, TestTypeInt64 v2) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set v2.
+   */
   function _setV2(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -285,6 +338,13 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set v2.
+   */
+  function _setV2(bytes32[] memory _keyTuple, TestTypeInt64 v2) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(TestTypeInt64.unwrap(v2)), _fieldLayout);
   }
 
@@ -312,6 +372,14 @@ library UserTyped {
   /**
    * @notice Get v3.
    */
+  function getV3(bytes32[] memory _keyTuple) internal view returns (TestTypeLibrary.TestTypeBool v3) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get v3.
+   */
   function _getV3(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -326,6 +394,14 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get v3.
+   */
+  function _getV3(bytes32[] memory _keyTuple) internal view returns (TestTypeLibrary.TestTypeBool v3) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
     return TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(bytes1(_blob))));
   }
@@ -348,6 +424,19 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
+    StoreSwitch.setStaticField(
+      _tableId,
+      _keyTuple,
+      2,
+      abi.encodePacked(TestTypeLibrary.TestTypeBool.unwrap(v3)),
+      _fieldLayout
+    );
+  }
+
+  /**
+   * @notice Set v3.
+   */
+  function setV3(bytes32[] memory _keyTuple, TestTypeLibrary.TestTypeBool v3) internal {
     StoreSwitch.setStaticField(
       _tableId,
       _keyTuple,
@@ -385,6 +474,19 @@ library UserTyped {
   }
 
   /**
+   * @notice Set v3.
+   */
+  function _setV3(bytes32[] memory _keyTuple, TestTypeLibrary.TestTypeBool v3) internal {
+    StoreCore.setStaticField(
+      _tableId,
+      _keyTuple,
+      2,
+      abi.encodePacked(TestTypeLibrary.TestTypeBool.unwrap(v3)),
+      _fieldLayout
+    );
+  }
+
+  /**
    * @notice Get v4.
    */
   function getV4(
@@ -401,6 +503,14 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
+    return TestTypeLibrary.TestTypeUint128.wrap(uint128(bytes16(_blob)));
+  }
+
+  /**
+   * @notice Get v4.
+   */
+  function getV4(bytes32[] memory _keyTuple) internal view returns (TestTypeLibrary.TestTypeUint128 v4) {
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
     return TestTypeLibrary.TestTypeUint128.wrap(uint128(bytes16(_blob)));
   }
@@ -427,6 +537,14 @@ library UserTyped {
   }
 
   /**
+   * @notice Get v4.
+   */
+  function _getV4(bytes32[] memory _keyTuple) internal view returns (TestTypeLibrary.TestTypeUint128 v4) {
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
+    return TestTypeLibrary.TestTypeUint128.wrap(uint128(bytes16(_blob)));
+  }
+
+  /**
    * @notice Set v4.
    */
   function setV4(
@@ -444,6 +562,19 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
+    StoreSwitch.setStaticField(
+      _tableId,
+      _keyTuple,
+      3,
+      abi.encodePacked(TestTypeLibrary.TestTypeUint128.unwrap(v4)),
+      _fieldLayout
+    );
+  }
+
+  /**
+   * @notice Set v4.
+   */
+  function setV4(bytes32[] memory _keyTuple, TestTypeLibrary.TestTypeUint128 v4) internal {
     StoreSwitch.setStaticField(
       _tableId,
       _keyTuple,
@@ -481,6 +612,19 @@ library UserTyped {
   }
 
   /**
+   * @notice Set v4.
+   */
+  function _setV4(bytes32[] memory _keyTuple, TestTypeLibrary.TestTypeUint128 v4) internal {
+    StoreCore.setStaticField(
+      _tableId,
+      _keyTuple,
+      3,
+      abi.encodePacked(TestTypeLibrary.TestTypeUint128.unwrap(v4)),
+      _fieldLayout
+    );
+  }
+
+  /**
    * @notice Get v5.
    */
   function getV5(
@@ -504,6 +648,14 @@ library UserTyped {
   /**
    * @notice Get v5.
    */
+  function getV5(bytes32[] memory _keyTuple) internal view returns (ResourceId v5) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
+    return ResourceId.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get v5.
+   */
   function _getV5(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -518,6 +670,14 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
+    return ResourceId.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get v5.
+   */
+  function _getV5(bytes32[] memory _keyTuple) internal view returns (ResourceId v5) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
     return ResourceId.wrap(bytes32(_blob));
   }
@@ -546,6 +706,13 @@ library UserTyped {
   /**
    * @notice Set v5.
    */
+  function setV5(bytes32[] memory _keyTuple, ResourceId v5) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set v5.
+   */
   function _setV5(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -561,6 +728,13 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set v5.
+   */
+  function _setV5(bytes32[] memory _keyTuple, ResourceId v5) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked(ResourceId.unwrap(v5)), _fieldLayout);
   }
 
@@ -592,6 +766,18 @@ library UserTyped {
   /**
    * @notice Get the full data.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (UserTypedData memory _table) {
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
   function _get(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -606,6 +792,18 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (UserTypedData memory _table) {
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
@@ -647,6 +845,25 @@ library UserTyped {
   /**
    * @notice Set the full data using individual values.
    */
+  function set(
+    bytes32[] memory _keyTuple,
+    TestTypeAddress v1,
+    TestTypeInt64 v2,
+    TestTypeLibrary.TestTypeBool v3,
+    TestTypeLibrary.TestTypeUint128 v4,
+    ResourceId v5
+  ) internal {
+    bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
   function _set(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -670,6 +887,25 @@ library UserTyped {
     _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
+  function _set(
+    bytes32[] memory _keyTuple,
+    TestTypeAddress v1,
+    TestTypeInt64 v2,
+    TestTypeLibrary.TestTypeBool v3,
+    TestTypeLibrary.TestTypeUint128 v4,
+    ResourceId v5
+  ) internal {
+    bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -703,6 +939,18 @@ library UserTyped {
   /**
    * @notice Set the full data using the data struct.
    */
+  function set(bytes32[] memory _keyTuple, UserTypedData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.v1, _table.v2, _table.v3, _table.v4, _table.v5);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
   function _set(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -722,6 +970,18 @@ library UserTyped {
     _keyTuple[2] = _boolToBytes32(TestTypeLibrary.TestTypeBool.unwrap(k3));
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function _set(bytes32[] memory _keyTuple, UserTypedData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.v1, _table.v2, _table.v3, _table.v4, _table.v5);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -790,6 +1050,13 @@ library UserTyped {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(
     TestTypeAddress k1,
     TestTypeInt64 k2,
@@ -804,6 +1071,13 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -845,6 +1119,7 @@ library UserTyped {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(
     TestTypeAddress k1,
     TestTypeInt64 k2,

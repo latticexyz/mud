@@ -108,9 +108,25 @@ library ERC20Metadata {
   /**
    * @notice Get decimals.
    */
+  function getDecimals(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint8 decimals) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint8(bytes1(_blob)));
+  }
+
+  /**
+   * @notice Get decimals.
+   */
   function _getDecimals(ResourceId _tableId) internal view returns (uint8 decimals) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint8(bytes1(_blob)));
+  }
+
+  /**
+   * @notice Get decimals.
+   */
+  function _getDecimals(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint8 decimals) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint8(bytes1(_blob)));
   }
@@ -127,9 +143,23 @@ library ERC20Metadata {
   /**
    * @notice Set decimals.
    */
+  function setDecimals(ResourceId _tableId, bytes32[] memory _keyTuple, uint8 decimals) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((decimals)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set decimals.
+   */
   function _setDecimals(ResourceId _tableId, uint8 decimals) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((decimals)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set decimals.
+   */
+  function _setDecimals(ResourceId _tableId, bytes32[] memory _keyTuple, uint8 decimals) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((decimals)), _fieldLayout);
   }
 
@@ -146,9 +176,25 @@ library ERC20Metadata {
   /**
    * @notice Get name.
    */
+  function getName(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (string memory name) {
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get name.
+   */
   function _getName(ResourceId _tableId) internal view returns (string memory name) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get name.
+   */
+  function _getName(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (string memory name) {
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (string(_blob));
   }
@@ -165,9 +211,23 @@ library ERC20Metadata {
   /**
    * @notice Set name.
    */
+  function setName(ResourceId _tableId, bytes32[] memory _keyTuple, string memory name) internal {
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((name)));
+  }
+
+  /**
+   * @notice Set name.
+   */
   function _setName(ResourceId _tableId, string memory name) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((name)));
+  }
+
+  /**
+   * @notice Set name.
+   */
+  function _setName(ResourceId _tableId, bytes32[] memory _keyTuple, string memory name) internal {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((name)));
   }
 
@@ -186,9 +246,29 @@ library ERC20Metadata {
   /**
    * @notice Get the length of name.
    */
+  function lengthName(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256) {
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of name.
+   */
   function _lengthName(ResourceId _tableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of name.
+   */
+  function _lengthName(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 1;
@@ -212,9 +292,39 @@ library ERC20Metadata {
    * @notice Get an item of name.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
+  function getItemName(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint256 _index
+  ) internal view returns (string memory) {
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of name.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
   function _getItemName(ResourceId _tableId, uint256 _index) internal view returns (string memory) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of name.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemName(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint256 _index
+  ) internal view returns (string memory) {
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
       return (string(_blob));
@@ -233,9 +343,23 @@ library ERC20Metadata {
   /**
    * @notice Push a slice to name.
    */
+  function pushName(ResourceId _tableId, bytes32[] memory _keyTuple, string memory _slice) internal {
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to name.
+   */
   function _pushName(ResourceId _tableId, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to name.
+   */
+  function _pushName(ResourceId _tableId, bytes32[] memory _keyTuple, string memory _slice) internal {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
 
@@ -251,9 +375,23 @@ library ERC20Metadata {
   /**
    * @notice Pop a slice from name.
    */
+  function popName(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from name.
+   */
   function _popName(ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from name.
+   */
+  function _popName(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
 
@@ -263,6 +401,16 @@ library ERC20Metadata {
   function updateName(ResourceId _tableId, uint256 _index, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of name at `_index`.
+   */
+  function updateName(ResourceId _tableId, bytes32[] memory _keyTuple, uint256 _index, string memory _slice) internal {
     unchecked {
       bytes memory _encoded = bytes((_slice));
       StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
@@ -282,6 +430,16 @@ library ERC20Metadata {
   }
 
   /**
+   * @notice Update a slice of name at `_index`.
+   */
+  function _updateName(ResourceId _tableId, bytes32[] memory _keyTuple, uint256 _index, string memory _slice) internal {
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Get symbol.
    */
   function getSymbol(ResourceId _tableId) internal view returns (string memory symbol) {
@@ -294,9 +452,25 @@ library ERC20Metadata {
   /**
    * @notice Get symbol.
    */
+  function getSymbol(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (string memory symbol) {
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get symbol.
+   */
   function _getSymbol(ResourceId _tableId) internal view returns (string memory symbol) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get symbol.
+   */
+  function _getSymbol(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (string memory symbol) {
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
     return (string(_blob));
   }
@@ -313,9 +487,23 @@ library ERC20Metadata {
   /**
    * @notice Set symbol.
    */
+  function setSymbol(ResourceId _tableId, bytes32[] memory _keyTuple, string memory symbol) internal {
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, bytes((symbol)));
+  }
+
+  /**
+   * @notice Set symbol.
+   */
   function _setSymbol(ResourceId _tableId, string memory symbol) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setDynamicField(_tableId, _keyTuple, 1, bytes((symbol)));
+  }
+
+  /**
+   * @notice Set symbol.
+   */
+  function _setSymbol(ResourceId _tableId, bytes32[] memory _keyTuple, string memory symbol) internal {
     StoreCore.setDynamicField(_tableId, _keyTuple, 1, bytes((symbol)));
   }
 
@@ -334,9 +522,29 @@ library ERC20Metadata {
   /**
    * @notice Get the length of symbol.
    */
+  function lengthSymbol(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256) {
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of symbol.
+   */
   function _lengthSymbol(ResourceId _tableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of symbol.
+   */
+  function _lengthSymbol(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
     unchecked {
       return _byteLength / 1;
@@ -360,9 +568,39 @@ library ERC20Metadata {
    * @notice Get an item of symbol.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
+  function getItemSymbol(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint256 _index
+  ) internal view returns (string memory) {
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of symbol.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
   function _getItemSymbol(ResourceId _tableId, uint256 _index) internal view returns (string memory) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of symbol.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemSymbol(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint256 _index
+  ) internal view returns (string memory) {
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
       return (string(_blob));
@@ -381,9 +619,23 @@ library ERC20Metadata {
   /**
    * @notice Push a slice to symbol.
    */
+  function pushSymbol(ResourceId _tableId, bytes32[] memory _keyTuple, string memory _slice) internal {
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to symbol.
+   */
   function _pushSymbol(ResourceId _tableId, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to symbol.
+   */
+  function _pushSymbol(ResourceId _tableId, bytes32[] memory _keyTuple, string memory _slice) internal {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
   }
 
@@ -399,9 +651,23 @@ library ERC20Metadata {
   /**
    * @notice Pop a slice from symbol.
    */
+  function popSymbol(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 1);
+  }
+
+  /**
+   * @notice Pop a slice from symbol.
+   */
   function _popSymbol(ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 1);
+  }
+
+  /**
+   * @notice Pop a slice from symbol.
+   */
+  function _popSymbol(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 1);
   }
 
@@ -420,9 +686,39 @@ library ERC20Metadata {
   /**
    * @notice Update a slice of symbol at `_index`.
    */
+  function updateSymbol(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint256 _index,
+    string memory _slice
+  ) internal {
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of symbol at `_index`.
+   */
   function _updateSymbol(ResourceId _tableId, uint256 _index, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of symbol at `_index`.
+   */
+  function _updateSymbol(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint256 _index,
+    string memory _slice
+  ) internal {
     unchecked {
       bytes memory _encoded = bytes((_slice));
       StoreCore.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
@@ -446,9 +742,39 @@ library ERC20Metadata {
   /**
    * @notice Get the full data.
    */
+  function get(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple
+  ) internal view returns (ERC20MetadataData memory _table) {
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
   function _get(ResourceId _tableId) internal view returns (ERC20MetadataData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
+  function _get(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple
+  ) internal view returns (ERC20MetadataData memory _table) {
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
@@ -474,6 +800,24 @@ library ERC20Metadata {
   /**
    * @notice Set the full data using individual values.
    */
+  function set(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint8 decimals,
+    string memory name,
+    string memory symbol
+  ) internal {
+    bytes memory _staticData = encodeStatic(decimals);
+
+    PackedCounter _encodedLengths = encodeLengths(name, symbol);
+    bytes memory _dynamicData = encodeDynamic(name, symbol);
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
   function _set(ResourceId _tableId, uint8 decimals, string memory name, string memory symbol) internal {
     bytes memory _staticData = encodeStatic(decimals);
 
@@ -481,6 +825,24 @@ library ERC20Metadata {
     bytes memory _dynamicData = encodeDynamic(name, symbol);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
+  function _set(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint8 decimals,
+    string memory name,
+    string memory symbol
+  ) internal {
+    bytes memory _staticData = encodeStatic(decimals);
+
+    PackedCounter _encodedLengths = encodeLengths(name, symbol);
+    bytes memory _dynamicData = encodeDynamic(name, symbol);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -502,6 +864,18 @@ library ERC20Metadata {
   /**
    * @notice Set the full data using the data struct.
    */
+  function set(ResourceId _tableId, bytes32[] memory _keyTuple, ERC20MetadataData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.decimals);
+
+    PackedCounter _encodedLengths = encodeLengths(_table.name, _table.symbol);
+    bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol);
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
   function _set(ResourceId _tableId, ERC20MetadataData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.decimals);
 
@@ -509,6 +883,18 @@ library ERC20Metadata {
     bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function _set(ResourceId _tableId, bytes32[] memory _keyTuple, ERC20MetadataData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.decimals);
+
+    PackedCounter _encodedLengths = encodeLengths(_table.name, _table.symbol);
+    bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -569,9 +955,23 @@ library ERC20Metadata {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -627,6 +1027,7 @@ library ERC20Metadata {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple() internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 

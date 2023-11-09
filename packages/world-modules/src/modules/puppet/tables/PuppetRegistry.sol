@@ -104,10 +104,26 @@ library PuppetRegistry {
   /**
    * @notice Get puppet.
    */
+  function getPuppet(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (address puppet) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get puppet.
+   */
   function _getPuppet(ResourceId _tableId, ResourceId systemId) internal view returns (address puppet) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get puppet.
+   */
+  function _getPuppet(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (address puppet) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
@@ -126,10 +142,26 @@ library PuppetRegistry {
   /**
    * @notice Get puppet.
    */
+  function get(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (address puppet) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get puppet.
+   */
   function _get(ResourceId _tableId, ResourceId systemId) internal view returns (address puppet) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get puppet.
+   */
+  function _get(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (address puppet) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
@@ -147,10 +179,24 @@ library PuppetRegistry {
   /**
    * @notice Set puppet.
    */
+  function setPuppet(ResourceId _tableId, bytes32[] memory _keyTuple, address puppet) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((puppet)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set puppet.
+   */
   function _setPuppet(ResourceId _tableId, ResourceId systemId, address puppet) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((puppet)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set puppet.
+   */
+  function _setPuppet(ResourceId _tableId, bytes32[] memory _keyTuple, address puppet) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((puppet)), _fieldLayout);
   }
 
@@ -167,10 +213,24 @@ library PuppetRegistry {
   /**
    * @notice Set puppet.
    */
+  function set(ResourceId _tableId, bytes32[] memory _keyTuple, address puppet) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((puppet)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set puppet.
+   */
   function _set(ResourceId _tableId, ResourceId systemId, address puppet) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((puppet)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set puppet.
+   */
+  function _set(ResourceId _tableId, bytes32[] memory _keyTuple, address puppet) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((puppet)), _fieldLayout);
   }
 
@@ -187,10 +247,24 @@ library PuppetRegistry {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId _tableId, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -220,6 +294,7 @@ library PuppetRegistry {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(ResourceId systemId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(systemId);

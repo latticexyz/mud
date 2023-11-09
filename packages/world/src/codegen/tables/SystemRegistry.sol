@@ -109,10 +109,26 @@ library SystemRegistry {
   /**
    * @notice Get systemId.
    */
+  function getSystemId(bytes32[] memory _keyTuple) internal view returns (ResourceId systemId) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return ResourceId.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get systemId.
+   */
   function _getSystemId(address system) internal view returns (ResourceId systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return ResourceId.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get systemId.
+   */
+  function _getSystemId(bytes32[] memory _keyTuple) internal view returns (ResourceId systemId) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return ResourceId.wrap(bytes32(_blob));
   }
@@ -131,10 +147,26 @@ library SystemRegistry {
   /**
    * @notice Get systemId.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (ResourceId systemId) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return ResourceId.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get systemId.
+   */
   function _get(address system) internal view returns (ResourceId systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return ResourceId.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get systemId.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (ResourceId systemId) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return ResourceId.wrap(bytes32(_blob));
   }
@@ -152,10 +184,24 @@ library SystemRegistry {
   /**
    * @notice Set systemId.
    */
+  function setSystemId(bytes32[] memory _keyTuple, ResourceId systemId) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set systemId.
+   */
   function _setSystemId(address system, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set systemId.
+   */
+  function _setSystemId(bytes32[] memory _keyTuple, ResourceId systemId) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
   }
 
@@ -172,10 +218,24 @@ library SystemRegistry {
   /**
    * @notice Set systemId.
    */
+  function set(bytes32[] memory _keyTuple, ResourceId systemId) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set systemId.
+   */
   function _set(address system, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set systemId.
+   */
+  function _set(bytes32[] memory _keyTuple, ResourceId systemId) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
   }
 
@@ -192,10 +252,24 @@ library SystemRegistry {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -225,6 +299,7 @@ library SystemRegistry {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(address system) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));

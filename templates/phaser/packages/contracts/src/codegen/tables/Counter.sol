@@ -103,9 +103,25 @@ library Counter {
   /**
    * @notice Get value.
    */
+  function getValue(bytes32[] memory _keyTuple) internal view returns (uint32 value) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get value.
+   */
   function _getValue() internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get value.
+   */
+  function _getValue(bytes32[] memory _keyTuple) internal view returns (uint32 value) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint32(bytes4(_blob)));
   }
@@ -123,9 +139,25 @@ library Counter {
   /**
    * @notice Get value.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (uint32 value) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get value.
+   */
   function _get() internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get value.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (uint32 value) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint32(bytes4(_blob)));
   }
@@ -142,9 +174,23 @@ library Counter {
   /**
    * @notice Set value.
    */
+  function setValue(bytes32[] memory _keyTuple, uint32 value) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
   function _setValue(uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
+  function _setValue(bytes32[] memory _keyTuple, uint32 value) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -160,9 +206,23 @@ library Counter {
   /**
    * @notice Set value.
    */
+  function set(bytes32[] memory _keyTuple, uint32 value) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
   function _set(uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
+  function _set(bytes32[] memory _keyTuple, uint32 value) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -178,9 +238,23 @@ library Counter {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -210,6 +284,7 @@ library Counter {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple() internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 

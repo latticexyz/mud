@@ -112,12 +112,28 @@ library Position {
   /**
    * @notice Get player.
    */
+  function getPlayer(bytes32[] memory _keyTuple) internal view returns (address player) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get player.
+   */
   function _getPlayer(bytes32 zone, int32 x, int32 y) internal view returns (address player) {
     bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = zone;
     _keyTuple[1] = bytes32(uint256(int256(x)));
     _keyTuple[2] = bytes32(uint256(int256(y)));
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get player.
+   */
+  function _getPlayer(bytes32[] memory _keyTuple) internal view returns (address player) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
@@ -138,12 +154,28 @@ library Position {
   /**
    * @notice Get player.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (address player) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get player.
+   */
   function _get(bytes32 zone, int32 x, int32 y) internal view returns (address player) {
     bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = zone;
     _keyTuple[1] = bytes32(uint256(int256(x)));
     _keyTuple[2] = bytes32(uint256(int256(y)));
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get player.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (address player) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
@@ -163,12 +195,26 @@ library Position {
   /**
    * @notice Set player.
    */
+  function setPlayer(bytes32[] memory _keyTuple, address player) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((player)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set player.
+   */
   function _setPlayer(bytes32 zone, int32 x, int32 y, address player) internal {
     bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = zone;
     _keyTuple[1] = bytes32(uint256(int256(x)));
     _keyTuple[2] = bytes32(uint256(int256(y)));
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((player)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set player.
+   */
+  function _setPlayer(bytes32[] memory _keyTuple, address player) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((player)), _fieldLayout);
   }
 
@@ -187,12 +233,26 @@ library Position {
   /**
    * @notice Set player.
    */
+  function set(bytes32[] memory _keyTuple, address player) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((player)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set player.
+   */
   function _set(bytes32 zone, int32 x, int32 y, address player) internal {
     bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = zone;
     _keyTuple[1] = bytes32(uint256(int256(x)));
     _keyTuple[2] = bytes32(uint256(int256(y)));
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((player)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set player.
+   */
+  function _set(bytes32[] memory _keyTuple, address player) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((player)), _fieldLayout);
   }
 
@@ -211,12 +271,26 @@ library Position {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(bytes32 zone, int32 x, int32 y) internal {
     bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = zone;
     _keyTuple[1] = bytes32(uint256(int256(x)));
     _keyTuple[2] = bytes32(uint256(int256(y)));
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -246,6 +320,7 @@ library Position {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(bytes32 zone, int32 x, int32 y) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = zone;

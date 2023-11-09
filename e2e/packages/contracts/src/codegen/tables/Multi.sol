@@ -122,6 +122,14 @@ library Multi {
   /**
    * @notice Get num.
    */
+  function getNum(bytes32[] memory _keyTuple) internal view returns (int256 num) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (int256(uint256(bytes32(_blob))));
+  }
+
+  /**
+   * @notice Get num.
+   */
   function _getNum(uint32 a, bool b, uint256 c, int120 d) internal view returns (int256 num) {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(a));
@@ -129,6 +137,14 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (int256(uint256(bytes32(_blob))));
+  }
+
+  /**
+   * @notice Get num.
+   */
+  function _getNum(bytes32[] memory _keyTuple) internal view returns (int256 num) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (int256(uint256(bytes32(_blob))));
   }
@@ -149,6 +165,13 @@ library Multi {
   /**
    * @notice Set num.
    */
+  function setNum(bytes32[] memory _keyTuple, int256 num) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((num)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set num.
+   */
   function _setNum(uint32 a, bool b, uint256 c, int120 d, int256 num) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(a));
@@ -156,6 +179,13 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((num)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set num.
+   */
+  function _setNum(bytes32[] memory _keyTuple, int256 num) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((num)), _fieldLayout);
   }
 
@@ -176,6 +206,14 @@ library Multi {
   /**
    * @notice Get value.
    */
+  function getValue(bytes32[] memory _keyTuple) internal view returns (bool value) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get value.
+   */
   function _getValue(uint32 a, bool b, uint256 c, int120 d) internal view returns (bool value) {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(a));
@@ -183,6 +221,14 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get value.
+   */
+  function _getValue(bytes32[] memory _keyTuple) internal view returns (bool value) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
@@ -203,6 +249,13 @@ library Multi {
   /**
    * @notice Set value.
    */
+  function setValue(bytes32[] memory _keyTuple, bool value) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
   function _setValue(uint32 a, bool b, uint256 c, int120 d, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(a));
@@ -210,6 +263,13 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
+  function _setValue(bytes32[] memory _keyTuple, bool value) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -234,6 +294,18 @@ library Multi {
   /**
    * @notice Get the full data.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (MultiData memory _table) {
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
   function _get(uint32 a, bool b, uint256 c, int120 d) internal view returns (MultiData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(a));
@@ -241,6 +313,18 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (MultiData memory _table) {
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
@@ -270,6 +354,18 @@ library Multi {
   /**
    * @notice Set the full data using individual values.
    */
+  function set(bytes32[] memory _keyTuple, int256 num, bool value) internal {
+    bytes memory _staticData = encodeStatic(num, value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
   function _set(uint32 a, bool b, uint256 c, int120 d, int256 num, bool value) internal {
     bytes memory _staticData = encodeStatic(num, value);
 
@@ -281,6 +377,18 @@ library Multi {
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
+  function _set(bytes32[] memory _keyTuple, int256 num, bool value) internal {
+    bytes memory _staticData = encodeStatic(num, value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -306,6 +414,18 @@ library Multi {
   /**
    * @notice Set the full data using the data struct.
    */
+  function set(bytes32[] memory _keyTuple, MultiData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.num, _table.value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
   function _set(uint32 a, bool b, uint256 c, int120 d, MultiData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.num, _table.value);
 
@@ -317,6 +437,18 @@ library Multi {
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function _set(bytes32[] memory _keyTuple, MultiData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.num, _table.value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -360,6 +492,13 @@ library Multi {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(uint32 a, bool b, uint256 c, int120 d) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(a));
@@ -367,6 +506,13 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -396,6 +542,7 @@ library Multi {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(uint32 a, bool b, uint256 c, int120 d) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(a));

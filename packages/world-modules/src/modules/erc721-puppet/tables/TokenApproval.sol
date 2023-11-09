@@ -101,10 +101,26 @@ library TokenApproval {
   /**
    * @notice Get account.
    */
+  function getAccount(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (address account) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get account.
+   */
   function _getAccount(ResourceId _tableId, uint256 tokenId) internal view returns (address account) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get account.
+   */
+  function _getAccount(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (address account) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
@@ -123,10 +139,26 @@ library TokenApproval {
   /**
    * @notice Get account.
    */
+  function get(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (address account) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get account.
+   */
   function _get(ResourceId _tableId, uint256 tokenId) internal view returns (address account) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get account.
+   */
+  function _get(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (address account) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
@@ -144,10 +176,24 @@ library TokenApproval {
   /**
    * @notice Set account.
    */
+  function setAccount(ResourceId _tableId, bytes32[] memory _keyTuple, address account) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((account)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set account.
+   */
   function _setAccount(ResourceId _tableId, uint256 tokenId, address account) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((account)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set account.
+   */
+  function _setAccount(ResourceId _tableId, bytes32[] memory _keyTuple, address account) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((account)), _fieldLayout);
   }
 
@@ -164,10 +210,24 @@ library TokenApproval {
   /**
    * @notice Set account.
    */
+  function set(ResourceId _tableId, bytes32[] memory _keyTuple, address account) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((account)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set account.
+   */
   function _set(ResourceId _tableId, uint256 tokenId, address account) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((account)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set account.
+   */
+  function _set(ResourceId _tableId, bytes32[] memory _keyTuple, address account) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((account)), _fieldLayout);
   }
 
@@ -184,10 +244,24 @@ library TokenApproval {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId _tableId, uint256 tokenId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -217,6 +291,7 @@ library TokenApproval {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(uint256 tokenId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));

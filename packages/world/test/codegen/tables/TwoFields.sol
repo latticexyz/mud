@@ -105,9 +105,25 @@ library TwoFields {
   /**
    * @notice Get value1.
    */
+  function getValue1(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (bool value1) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get value1.
+   */
   function _getValue1(ResourceId _tableId) internal view returns (bool value1) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get value1.
+   */
+  function _getValue1(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (bool value1) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
@@ -124,9 +140,23 @@ library TwoFields {
   /**
    * @notice Set value1.
    */
+  function setValue1(ResourceId _tableId, bytes32[] memory _keyTuple, bool value1) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value1.
+   */
   function _setValue1(ResourceId _tableId, bool value1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value1.
+   */
+  function _setValue1(ResourceId _tableId, bytes32[] memory _keyTuple, bool value1) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
   }
 
@@ -143,9 +173,25 @@ library TwoFields {
   /**
    * @notice Get value2.
    */
+  function getValue2(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (bool value2) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get value2.
+   */
   function _getValue2(ResourceId _tableId) internal view returns (bool value2) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get value2.
+   */
+  function _getValue2(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (bool value2) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
@@ -162,9 +208,23 @@ library TwoFields {
   /**
    * @notice Set value2.
    */
+  function setValue2(ResourceId _tableId, bytes32[] memory _keyTuple, bool value2) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value2.
+   */
   function _setValue2(ResourceId _tableId, bool value2) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value2.
+   */
+  function _setValue2(ResourceId _tableId, bytes32[] memory _keyTuple, bool value2) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
   }
 
@@ -185,9 +245,33 @@ library TwoFields {
   /**
    * @notice Get the full data.
    */
+  function get(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (TwoFieldsData memory _table) {
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
   function _get(ResourceId _tableId) internal view returns (TwoFieldsData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
+  function _get(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (TwoFieldsData memory _table) {
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
@@ -213,6 +297,18 @@ library TwoFields {
   /**
    * @notice Set the full data using individual values.
    */
+  function set(ResourceId _tableId, bytes32[] memory _keyTuple, bool value1, bool value2) internal {
+    bytes memory _staticData = encodeStatic(value1, value2);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
   function _set(ResourceId _tableId, bool value1, bool value2) internal {
     bytes memory _staticData = encodeStatic(value1, value2);
 
@@ -220,6 +316,18 @@ library TwoFields {
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
+  function _set(ResourceId _tableId, bytes32[] memory _keyTuple, bool value1, bool value2) internal {
+    bytes memory _staticData = encodeStatic(value1, value2);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -241,6 +349,18 @@ library TwoFields {
   /**
    * @notice Set the full data using the data struct.
    */
+  function set(ResourceId _tableId, bytes32[] memory _keyTuple, TwoFieldsData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.value1, _table.value2);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
   function _set(ResourceId _tableId, TwoFieldsData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.value1, _table.value2);
 
@@ -248,6 +368,18 @@ library TwoFields {
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function _set(ResourceId _tableId, bytes32[] memory _keyTuple, TwoFieldsData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.value1, _table.value2);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -287,9 +419,23 @@ library TwoFields {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -319,6 +465,7 @@ library TwoFields {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple() internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 

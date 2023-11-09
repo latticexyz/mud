@@ -101,10 +101,29 @@ library TokenURI {
   /**
    * @notice Get tokenURI.
    */
+  function getTokenURI(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (string memory tokenURI) {
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get tokenURI.
+   */
   function _getTokenURI(ResourceId _tableId, uint256 tokenId) internal view returns (string memory tokenURI) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get tokenURI.
+   */
+  function _getTokenURI(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple
+  ) internal view returns (string memory tokenURI) {
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (string(_blob));
   }
@@ -123,10 +142,26 @@ library TokenURI {
   /**
    * @notice Get tokenURI.
    */
+  function get(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (string memory tokenURI) {
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get tokenURI.
+   */
   function _get(ResourceId _tableId, uint256 tokenId) internal view returns (string memory tokenURI) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get tokenURI.
+   */
+  function _get(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (string memory tokenURI) {
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (string(_blob));
   }
@@ -144,10 +179,24 @@ library TokenURI {
   /**
    * @notice Set tokenURI.
    */
+  function setTokenURI(ResourceId _tableId, bytes32[] memory _keyTuple, string memory tokenURI) internal {
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((tokenURI)));
+  }
+
+  /**
+   * @notice Set tokenURI.
+   */
   function _setTokenURI(ResourceId _tableId, uint256 tokenId, string memory tokenURI) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((tokenURI)));
+  }
+
+  /**
+   * @notice Set tokenURI.
+   */
+  function _setTokenURI(ResourceId _tableId, bytes32[] memory _keyTuple, string memory tokenURI) internal {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((tokenURI)));
   }
 
@@ -164,10 +213,24 @@ library TokenURI {
   /**
    * @notice Set tokenURI.
    */
+  function set(ResourceId _tableId, bytes32[] memory _keyTuple, string memory tokenURI) internal {
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((tokenURI)));
+  }
+
+  /**
+   * @notice Set tokenURI.
+   */
   function _set(ResourceId _tableId, uint256 tokenId, string memory tokenURI) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((tokenURI)));
+  }
+
+  /**
+   * @notice Set tokenURI.
+   */
+  function _set(ResourceId _tableId, bytes32[] memory _keyTuple, string memory tokenURI) internal {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((tokenURI)));
   }
 
@@ -178,6 +241,16 @@ library TokenURI {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of tokenURI.
+   */
+  function lengthTokenURI(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 1;
@@ -200,10 +273,30 @@ library TokenURI {
   /**
    * @notice Get the length of tokenURI.
    */
+  function _lengthTokenURI(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256) {
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of tokenURI.
+   */
   function length(ResourceId _tableId, uint256 tokenId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of tokenURI.
+   */
+  function length(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 1;
@@ -224,6 +317,16 @@ library TokenURI {
   }
 
   /**
+   * @notice Get the length of tokenURI.
+   */
+  function _length(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256) {
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
    * @notice Get an item of tokenURI.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
@@ -231,6 +334,21 @@ library TokenURI {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of tokenURI.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemTokenURI(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint256 _index
+  ) internal view returns (string memory) {
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
       return (string(_blob));
@@ -259,10 +377,40 @@ library TokenURI {
    * @notice Get an item of tokenURI.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
+  function _getItemTokenURI(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint256 _index
+  ) internal view returns (string memory) {
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of tokenURI.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
   function getItem(ResourceId _tableId, uint256 tokenId, uint256 _index) internal view returns (string memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of tokenURI.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItem(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint256 _index
+  ) internal view returns (string memory) {
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
       return (string(_blob));
@@ -284,12 +432,34 @@ library TokenURI {
   }
 
   /**
+   * @notice Get an item of tokenURI.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItem(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint256 _index
+  ) internal view returns (string memory) {
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
    * @notice Push a slice to tokenURI.
    */
   function pushTokenURI(ResourceId _tableId, uint256 tokenId, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to tokenURI.
+   */
+  function pushTokenURI(ResourceId _tableId, bytes32[] memory _keyTuple, string memory _slice) internal {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
 
@@ -306,6 +476,13 @@ library TokenURI {
   /**
    * @notice Push a slice to tokenURI.
    */
+  function _pushTokenURI(ResourceId _tableId, bytes32[] memory _keyTuple, string memory _slice) internal {
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to tokenURI.
+   */
   function push(ResourceId _tableId, uint256 tokenId, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
@@ -316,10 +493,24 @@ library TokenURI {
   /**
    * @notice Push a slice to tokenURI.
    */
+  function push(ResourceId _tableId, bytes32[] memory _keyTuple, string memory _slice) internal {
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to tokenURI.
+   */
   function _push(ResourceId _tableId, uint256 tokenId, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to tokenURI.
+   */
+  function _push(ResourceId _tableId, bytes32[] memory _keyTuple, string memory _slice) internal {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
 
@@ -336,10 +527,24 @@ library TokenURI {
   /**
    * @notice Pop a slice from tokenURI.
    */
+  function popTokenURI(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from tokenURI.
+   */
   function _popTokenURI(ResourceId _tableId, uint256 tokenId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from tokenURI.
+   */
+  function _popTokenURI(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
 
@@ -356,10 +561,24 @@ library TokenURI {
   /**
    * @notice Pop a slice from tokenURI.
    */
+  function pop(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from tokenURI.
+   */
   function _pop(ResourceId _tableId, uint256 tokenId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from tokenURI.
+   */
+  function _pop(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
 
@@ -370,6 +589,21 @@ library TokenURI {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of tokenURI at `_index`.
+   */
+  function updateTokenURI(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint256 _index,
+    string memory _slice
+  ) internal {
     unchecked {
       bytes memory _encoded = bytes((_slice));
       StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
@@ -392,10 +626,35 @@ library TokenURI {
   /**
    * @notice Update a slice of tokenURI at `_index`.
    */
+  function _updateTokenURI(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple,
+    uint256 _index,
+    string memory _slice
+  ) internal {
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of tokenURI at `_index`.
+   */
   function update(ResourceId _tableId, uint256 tokenId, uint256 _index, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of tokenURI at `_index`.
+   */
+  function update(ResourceId _tableId, bytes32[] memory _keyTuple, uint256 _index, string memory _slice) internal {
     unchecked {
       bytes memory _encoded = bytes((_slice));
       StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
@@ -416,6 +675,16 @@ library TokenURI {
   }
 
   /**
+   * @notice Update a slice of tokenURI at `_index`.
+   */
+  function _update(ResourceId _tableId, bytes32[] memory _keyTuple, uint256 _index, string memory _slice) internal {
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Delete all data for given keys.
    */
   function deleteRecord(ResourceId _tableId, uint256 tokenId) internal {
@@ -428,10 +697,24 @@ library TokenURI {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId _tableId, uint256 tokenId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -471,6 +754,7 @@ library TokenURI {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(uint256 tokenId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(tokenId));

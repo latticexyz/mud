@@ -6,9 +6,10 @@ import {
   renderImports,
   renderTableId,
   renderTypeHelpers,
-  renderWithStore,
   renderedSolidityHeader,
   RenderStaticField,
+  renderWithStore,
+  renderWithKey,
 } from "@latticexyz/common/codegen";
 import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
 import { renderDeleteRecordMethods, renderRecordData, renderRecordMethods } from "./record";
@@ -30,7 +31,7 @@ export function renderTable(options: RenderTableOptions) {
     keyTuple,
   } = options;
 
-  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
+  const { _typedTableId } = renderCommonData(options);
 
   return `
     ${renderedSolidityHeader}
@@ -126,7 +127,7 @@ export function renderTable(options: RenderTableOptions) {
 
       ${renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+        ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
           /**
            * @notice Register the table with its config${_commentSuffix}.
            */
@@ -165,10 +166,16 @@ export function renderTable(options: RenderTableOptions) {
       /**
        * @notice Encode keys as a bytes32 array using this table's field layout.
        */
-      function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory) {
-        ${_keyTupleDefinition}
-        return _keyTuple;
-      }
+      ${renderWithKey(
+        keyTuple,
+        true,
+        ({ _typedKeyArgs, _keyTupleDefinition }) => `
+        function encodeKeyTuple(${_typedKeyArgs}) internal pure returns (bytes32[] memory) {
+          ${_keyTupleDefinition}
+          return _keyTuple;
+        }
+      `
+      )}
     }
 
     ${renderTypeHelpers(options)}

@@ -127,10 +127,26 @@ library Tables {
   /**
    * @notice Get fieldLayout.
    */
+  function getFieldLayout(bytes32[] memory _keyTuple) internal view returns (FieldLayout fieldLayout) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return FieldLayout.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get fieldLayout.
+   */
   function _getFieldLayout(ResourceId tableId) internal view returns (FieldLayout fieldLayout) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return FieldLayout.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get fieldLayout.
+   */
+  function _getFieldLayout(bytes32[] memory _keyTuple) internal view returns (FieldLayout fieldLayout) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return FieldLayout.wrap(bytes32(_blob));
   }
@@ -148,10 +164,24 @@ library Tables {
   /**
    * @notice Set fieldLayout.
    */
+  function setFieldLayout(bytes32[] memory _keyTuple, FieldLayout fieldLayout) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(FieldLayout.unwrap(fieldLayout)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set fieldLayout.
+   */
   function _setFieldLayout(ResourceId tableId, FieldLayout fieldLayout) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(FieldLayout.unwrap(fieldLayout)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set fieldLayout.
+   */
+  function _setFieldLayout(bytes32[] memory _keyTuple, FieldLayout fieldLayout) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(FieldLayout.unwrap(fieldLayout)), _fieldLayout);
   }
 
@@ -169,10 +199,26 @@ library Tables {
   /**
    * @notice Get keySchema.
    */
+  function getKeySchema(bytes32[] memory _keyTuple) internal view returns (Schema keySchema) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return Schema.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get keySchema.
+   */
   function _getKeySchema(ResourceId tableId) internal view returns (Schema keySchema) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return Schema.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get keySchema.
+   */
+  function _getKeySchema(bytes32[] memory _keyTuple) internal view returns (Schema keySchema) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return Schema.wrap(bytes32(_blob));
   }
@@ -190,10 +236,24 @@ library Tables {
   /**
    * @notice Set keySchema.
    */
+  function setKeySchema(bytes32[] memory _keyTuple, Schema keySchema) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(Schema.unwrap(keySchema)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set keySchema.
+   */
   function _setKeySchema(ResourceId tableId, Schema keySchema) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(Schema.unwrap(keySchema)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set keySchema.
+   */
+  function _setKeySchema(bytes32[] memory _keyTuple, Schema keySchema) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked(Schema.unwrap(keySchema)), _fieldLayout);
   }
 
@@ -211,10 +271,26 @@ library Tables {
   /**
    * @notice Get valueSchema.
    */
+  function getValueSchema(bytes32[] memory _keyTuple) internal view returns (Schema valueSchema) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return Schema.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get valueSchema.
+   */
   function _getValueSchema(ResourceId tableId) internal view returns (Schema valueSchema) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return Schema.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get valueSchema.
+   */
+  function _getValueSchema(bytes32[] memory _keyTuple) internal view returns (Schema valueSchema) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
     return Schema.wrap(bytes32(_blob));
   }
@@ -232,10 +308,24 @@ library Tables {
   /**
    * @notice Set valueSchema.
    */
+  function setValueSchema(bytes32[] memory _keyTuple, Schema valueSchema) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked(Schema.unwrap(valueSchema)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set valueSchema.
+   */
   function _setValueSchema(ResourceId tableId, Schema valueSchema) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked(Schema.unwrap(valueSchema)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set valueSchema.
+   */
+  function _setValueSchema(bytes32[] memory _keyTuple, Schema valueSchema) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked(Schema.unwrap(valueSchema)), _fieldLayout);
   }
 
@@ -253,10 +343,26 @@ library Tables {
   /**
    * @notice Get abiEncodedKeyNames.
    */
+  function getAbiEncodedKeyNames(bytes32[] memory _keyTuple) internal view returns (bytes memory abiEncodedKeyNames) {
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (bytes(_blob));
+  }
+
+  /**
+   * @notice Get abiEncodedKeyNames.
+   */
   function _getAbiEncodedKeyNames(ResourceId tableId) internal view returns (bytes memory abiEncodedKeyNames) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
+    return (bytes(_blob));
+  }
+
+  /**
+   * @notice Get abiEncodedKeyNames.
+   */
+  function _getAbiEncodedKeyNames(bytes32[] memory _keyTuple) internal view returns (bytes memory abiEncodedKeyNames) {
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (bytes(_blob));
   }
@@ -274,10 +380,24 @@ library Tables {
   /**
    * @notice Set abiEncodedKeyNames.
    */
+  function setAbiEncodedKeyNames(bytes32[] memory _keyTuple, bytes memory abiEncodedKeyNames) internal {
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((abiEncodedKeyNames)));
+  }
+
+  /**
+   * @notice Set abiEncodedKeyNames.
+   */
   function _setAbiEncodedKeyNames(ResourceId tableId, bytes memory abiEncodedKeyNames) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((abiEncodedKeyNames)));
+  }
+
+  /**
+   * @notice Set abiEncodedKeyNames.
+   */
+  function _setAbiEncodedKeyNames(bytes32[] memory _keyTuple, bytes memory abiEncodedKeyNames) internal {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((abiEncodedKeyNames)));
   }
 
@@ -297,10 +417,30 @@ library Tables {
   /**
    * @notice Get the length of abiEncodedKeyNames.
    */
+  function lengthAbiEncodedKeyNames(bytes32[] memory _keyTuple) internal view returns (uint256) {
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of abiEncodedKeyNames.
+   */
   function _lengthAbiEncodedKeyNames(ResourceId tableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of abiEncodedKeyNames.
+   */
+  function _lengthAbiEncodedKeyNames(bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 1;
@@ -325,10 +465,32 @@ library Tables {
    * @notice Get an item of abiEncodedKeyNames.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
+  function getItemAbiEncodedKeyNames(bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes memory) {
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (bytes(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of abiEncodedKeyNames.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
   function _getItemAbiEncodedKeyNames(ResourceId tableId, uint256 _index) internal view returns (bytes memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (bytes(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of abiEncodedKeyNames.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemAbiEncodedKeyNames(bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes memory) {
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
@@ -348,10 +510,24 @@ library Tables {
   /**
    * @notice Push a slice to abiEncodedKeyNames.
    */
+  function pushAbiEncodedKeyNames(bytes32[] memory _keyTuple, bytes memory _slice) internal {
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to abiEncodedKeyNames.
+   */
   function _pushAbiEncodedKeyNames(ResourceId tableId, bytes memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to abiEncodedKeyNames.
+   */
+  function _pushAbiEncodedKeyNames(bytes32[] memory _keyTuple, bytes memory _slice) internal {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
 
@@ -368,10 +544,24 @@ library Tables {
   /**
    * @notice Pop a slice from abiEncodedKeyNames.
    */
+  function popAbiEncodedKeyNames(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from abiEncodedKeyNames.
+   */
   function _popAbiEncodedKeyNames(ResourceId tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from abiEncodedKeyNames.
+   */
+  function _popAbiEncodedKeyNames(bytes32[] memory _keyTuple) internal {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
 
@@ -382,6 +572,16 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of abiEncodedKeyNames at `_index`.
+   */
+  function updateAbiEncodedKeyNames(bytes32[] memory _keyTuple, uint256 _index, bytes memory _slice) internal {
     unchecked {
       bytes memory _encoded = bytes((_slice));
       StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
@@ -402,6 +602,16 @@ library Tables {
   }
 
   /**
+   * @notice Update a slice of abiEncodedKeyNames at `_index`.
+   */
+  function _updateAbiEncodedKeyNames(bytes32[] memory _keyTuple, uint256 _index, bytes memory _slice) internal {
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Get abiEncodedFieldNames.
    */
   function getAbiEncodedFieldNames(ResourceId tableId) internal view returns (bytes memory abiEncodedFieldNames) {
@@ -415,10 +625,30 @@ library Tables {
   /**
    * @notice Get abiEncodedFieldNames.
    */
+  function getAbiEncodedFieldNames(
+    bytes32[] memory _keyTuple
+  ) internal view returns (bytes memory abiEncodedFieldNames) {
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
+    return (bytes(_blob));
+  }
+
+  /**
+   * @notice Get abiEncodedFieldNames.
+   */
   function _getAbiEncodedFieldNames(ResourceId tableId) internal view returns (bytes memory abiEncodedFieldNames) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
+    return (bytes(_blob));
+  }
+
+  /**
+   * @notice Get abiEncodedFieldNames.
+   */
+  function _getAbiEncodedFieldNames(
+    bytes32[] memory _keyTuple
+  ) internal view returns (bytes memory abiEncodedFieldNames) {
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
     return (bytes(_blob));
   }
@@ -436,10 +666,24 @@ library Tables {
   /**
    * @notice Set abiEncodedFieldNames.
    */
+  function setAbiEncodedFieldNames(bytes32[] memory _keyTuple, bytes memory abiEncodedFieldNames) internal {
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, bytes((abiEncodedFieldNames)));
+  }
+
+  /**
+   * @notice Set abiEncodedFieldNames.
+   */
   function _setAbiEncodedFieldNames(ResourceId tableId, bytes memory abiEncodedFieldNames) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    StoreCore.setDynamicField(_tableId, _keyTuple, 1, bytes((abiEncodedFieldNames)));
+  }
+
+  /**
+   * @notice Set abiEncodedFieldNames.
+   */
+  function _setAbiEncodedFieldNames(bytes32[] memory _keyTuple, bytes memory abiEncodedFieldNames) internal {
     StoreCore.setDynamicField(_tableId, _keyTuple, 1, bytes((abiEncodedFieldNames)));
   }
 
@@ -459,10 +703,30 @@ library Tables {
   /**
    * @notice Get the length of abiEncodedFieldNames.
    */
+  function lengthAbiEncodedFieldNames(bytes32[] memory _keyTuple) internal view returns (uint256) {
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of abiEncodedFieldNames.
+   */
   function _lengthAbiEncodedFieldNames(ResourceId tableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of abiEncodedFieldNames.
+   */
+  function _lengthAbiEncodedFieldNames(bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
     unchecked {
       return _byteLength / 1;
@@ -487,10 +751,38 @@ library Tables {
    * @notice Get an item of abiEncodedFieldNames.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
+  function getItemAbiEncodedFieldNames(
+    bytes32[] memory _keyTuple,
+    uint256 _index
+  ) internal view returns (bytes memory) {
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
+      return (bytes(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of abiEncodedFieldNames.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
   function _getItemAbiEncodedFieldNames(ResourceId tableId, uint256 _index) internal view returns (bytes memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
+      return (bytes(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of abiEncodedFieldNames.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemAbiEncodedFieldNames(
+    bytes32[] memory _keyTuple,
+    uint256 _index
+  ) internal view returns (bytes memory) {
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
@@ -510,10 +802,24 @@ library Tables {
   /**
    * @notice Push a slice to abiEncodedFieldNames.
    */
+  function pushAbiEncodedFieldNames(bytes32[] memory _keyTuple, bytes memory _slice) internal {
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to abiEncodedFieldNames.
+   */
   function _pushAbiEncodedFieldNames(ResourceId tableId, bytes memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to abiEncodedFieldNames.
+   */
+  function _pushAbiEncodedFieldNames(bytes32[] memory _keyTuple, bytes memory _slice) internal {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, bytes((_slice)));
   }
 
@@ -530,10 +836,24 @@ library Tables {
   /**
    * @notice Pop a slice from abiEncodedFieldNames.
    */
+  function popAbiEncodedFieldNames(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 1);
+  }
+
+  /**
+   * @notice Pop a slice from abiEncodedFieldNames.
+   */
   function _popAbiEncodedFieldNames(ResourceId tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 1);
+  }
+
+  /**
+   * @notice Pop a slice from abiEncodedFieldNames.
+   */
+  function _popAbiEncodedFieldNames(bytes32[] memory _keyTuple) internal {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 1);
   }
 
@@ -553,10 +873,30 @@ library Tables {
   /**
    * @notice Update a slice of abiEncodedFieldNames at `_index`.
    */
+  function updateAbiEncodedFieldNames(bytes32[] memory _keyTuple, uint256 _index, bytes memory _slice) internal {
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of abiEncodedFieldNames at `_index`.
+   */
   function _updateAbiEncodedFieldNames(ResourceId tableId, uint256 _index, bytes memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of abiEncodedFieldNames at `_index`.
+   */
+  function _updateAbiEncodedFieldNames(bytes32[] memory _keyTuple, uint256 _index, bytes memory _slice) internal {
     unchecked {
       bytes memory _encoded = bytes((_slice));
       StoreCore.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 1), uint40(_encoded.length), _encoded);
@@ -581,10 +921,34 @@ library Tables {
   /**
    * @notice Get the full data.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (TablesData memory _table) {
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
   function _get(ResourceId tableId) internal view returns (TablesData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (TablesData memory _table) {
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
@@ -618,6 +982,25 @@ library Tables {
   /**
    * @notice Set the full data using individual values.
    */
+  function set(
+    bytes32[] memory _keyTuple,
+    FieldLayout fieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
+    bytes memory abiEncodedKeyNames,
+    bytes memory abiEncodedFieldNames
+  ) internal {
+    bytes memory _staticData = encodeStatic(fieldLayout, keySchema, valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
   function _set(
     ResourceId tableId,
     FieldLayout fieldLayout,
@@ -633,6 +1016,25 @@ library Tables {
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
+  function _set(
+    bytes32[] memory _keyTuple,
+    FieldLayout fieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
+    bytes memory abiEncodedKeyNames,
+    bytes memory abiEncodedFieldNames
+  ) internal {
+    bytes memory _staticData = encodeStatic(fieldLayout, keySchema, valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -655,6 +1057,18 @@ library Tables {
   /**
    * @notice Set the full data using the data struct.
    */
+  function set(bytes32[] memory _keyTuple, TablesData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.fieldLayout, _table.keySchema, _table.valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
   function _set(ResourceId tableId, TablesData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.fieldLayout, _table.keySchema, _table.valueSchema);
 
@@ -663,6 +1077,18 @@ library Tables {
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function _set(bytes32[] memory _keyTuple, TablesData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.fieldLayout, _table.keySchema, _table.valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -730,10 +1156,24 @@ library Tables {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -798,6 +1238,7 @@ library Tables {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(ResourceId tableId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);

@@ -98,9 +98,28 @@ library TotalSupply {
   /**
    * @notice Get totalSupply.
    */
+  function getTotalSupply(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256 totalSupply) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get totalSupply.
+   */
   function _getTotalSupply(ResourceId _tableId) internal view returns (uint256 totalSupply) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get totalSupply.
+   */
+  function _getTotalSupply(
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple
+  ) internal view returns (uint256 totalSupply) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
@@ -118,9 +137,25 @@ library TotalSupply {
   /**
    * @notice Get totalSupply.
    */
+  function get(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256 totalSupply) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get totalSupply.
+   */
   function _get(ResourceId _tableId) internal view returns (uint256 totalSupply) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get totalSupply.
+   */
+  function _get(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256 totalSupply) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
@@ -137,9 +172,23 @@ library TotalSupply {
   /**
    * @notice Set totalSupply.
    */
+  function setTotalSupply(ResourceId _tableId, bytes32[] memory _keyTuple, uint256 totalSupply) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((totalSupply)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set totalSupply.
+   */
   function _setTotalSupply(ResourceId _tableId, uint256 totalSupply) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((totalSupply)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set totalSupply.
+   */
+  function _setTotalSupply(ResourceId _tableId, bytes32[] memory _keyTuple, uint256 totalSupply) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((totalSupply)), _fieldLayout);
   }
 
@@ -155,9 +204,23 @@ library TotalSupply {
   /**
    * @notice Set totalSupply.
    */
+  function set(ResourceId _tableId, bytes32[] memory _keyTuple, uint256 totalSupply) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((totalSupply)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set totalSupply.
+   */
   function _set(ResourceId _tableId, uint256 totalSupply) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((totalSupply)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set totalSupply.
+   */
+  function _set(ResourceId _tableId, bytes32[] memory _keyTuple, uint256 totalSupply) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((totalSupply)), _fieldLayout);
   }
 
@@ -173,9 +236,23 @@ library TotalSupply {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -205,6 +282,7 @@ library TotalSupply {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple() internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 

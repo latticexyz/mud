@@ -109,10 +109,26 @@ library Balances {
   /**
    * @notice Get balance.
    */
+  function getBalance(bytes32[] memory _keyTuple) internal view returns (uint256 balance) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get balance.
+   */
   function _getBalance(ResourceId namespaceId) internal view returns (uint256 balance) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get balance.
+   */
+  function _getBalance(bytes32[] memory _keyTuple) internal view returns (uint256 balance) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
@@ -131,10 +147,26 @@ library Balances {
   /**
    * @notice Get balance.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (uint256 balance) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get balance.
+   */
   function _get(ResourceId namespaceId) internal view returns (uint256 balance) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get balance.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (uint256 balance) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
@@ -152,10 +184,24 @@ library Balances {
   /**
    * @notice Set balance.
    */
+  function setBalance(bytes32[] memory _keyTuple, uint256 balance) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set balance.
+   */
   function _setBalance(ResourceId namespaceId, uint256 balance) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set balance.
+   */
+  function _setBalance(bytes32[] memory _keyTuple, uint256 balance) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
@@ -172,10 +218,24 @@ library Balances {
   /**
    * @notice Set balance.
    */
+  function set(bytes32[] memory _keyTuple, uint256 balance) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set balance.
+   */
   function _set(ResourceId namespaceId, uint256 balance) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set balance.
+   */
+  function _set(bytes32[] memory _keyTuple, uint256 balance) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
@@ -192,10 +252,24 @@ library Balances {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -225,6 +299,7 @@ library Balances {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(ResourceId namespaceId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);

@@ -105,9 +105,25 @@ library UniqueEntity {
   /**
    * @notice Get value.
    */
+  function getValue(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256 value) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get value.
+   */
   function _getValue(ResourceId _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get value.
+   */
+  function _getValue(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256 value) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
@@ -118,6 +134,18 @@ library UniqueEntity {
   function getValue(IStore _store, ResourceId _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get value (using the specified store).
+   */
+  function getValue(
+    IStore _store,
+    ResourceId _tableId,
+    bytes32[] memory _keyTuple
+  ) internal view returns (uint256 value) {
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
@@ -135,9 +163,25 @@ library UniqueEntity {
   /**
    * @notice Get value.
    */
+  function get(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256 value) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get value.
+   */
   function _get(ResourceId _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get value.
+   */
+  function _get(ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256 value) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
@@ -148,6 +192,14 @@ library UniqueEntity {
   function get(IStore _store, ResourceId _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get value (using the specified store).
+   */
+  function get(IStore _store, ResourceId _tableId, bytes32[] memory _keyTuple) internal view returns (uint256 value) {
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
@@ -164,9 +216,23 @@ library UniqueEntity {
   /**
    * @notice Set value.
    */
+  function setValue(ResourceId _tableId, bytes32[] memory _keyTuple, uint256 value) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
   function _setValue(ResourceId _tableId, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
+  function _setValue(ResourceId _tableId, bytes32[] memory _keyTuple, uint256 value) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -176,6 +242,13 @@ library UniqueEntity {
   function setValue(IStore _store, ResourceId _tableId, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value (using the specified store).
+   */
+  function setValue(IStore _store, ResourceId _tableId, bytes32[] memory _keyTuple, uint256 value) internal {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -191,9 +264,23 @@ library UniqueEntity {
   /**
    * @notice Set value.
    */
+  function set(ResourceId _tableId, bytes32[] memory _keyTuple, uint256 value) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
   function _set(ResourceId _tableId, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
+  function _set(ResourceId _tableId, bytes32[] memory _keyTuple, uint256 value) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -203,6 +290,13 @@ library UniqueEntity {
   function set(IStore _store, ResourceId _tableId, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value (using the specified store).
+   */
+  function set(IStore _store, ResourceId _tableId, bytes32[] memory _keyTuple, uint256 value) internal {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -218,9 +312,23 @@ library UniqueEntity {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(ResourceId _tableId, bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -230,6 +338,13 @@ library UniqueEntity {
   function deleteRecord(IStore _store, ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    _store.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys (using the specified store).
+   */
+  function deleteRecord(IStore _store, ResourceId _tableId, bytes32[] memory _keyTuple) internal {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
@@ -259,6 +374,7 @@ library UniqueEntity {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple() internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 

@@ -116,10 +116,26 @@ library Tasks {
   /**
    * @notice Get createdAt.
    */
+  function getCreatedAt(bytes32[] memory _keyTuple) internal view returns (uint256 createdAt) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get createdAt.
+   */
   function _getCreatedAt(bytes32 key) internal view returns (uint256 createdAt) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get createdAt.
+   */
+  function _getCreatedAt(bytes32[] memory _keyTuple) internal view returns (uint256 createdAt) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
@@ -137,10 +153,24 @@ library Tasks {
   /**
    * @notice Set createdAt.
    */
+  function setCreatedAt(bytes32[] memory _keyTuple, uint256 createdAt) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((createdAt)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set createdAt.
+   */
   function _setCreatedAt(bytes32 key, uint256 createdAt) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((createdAt)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set createdAt.
+   */
+  function _setCreatedAt(bytes32[] memory _keyTuple, uint256 createdAt) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((createdAt)), _fieldLayout);
   }
 
@@ -158,10 +188,26 @@ library Tasks {
   /**
    * @notice Get completedAt.
    */
+  function getCompletedAt(bytes32[] memory _keyTuple) internal view returns (uint256 completedAt) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get completedAt.
+   */
   function _getCompletedAt(bytes32 key) internal view returns (uint256 completedAt) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get completedAt.
+   */
+  function _getCompletedAt(bytes32[] memory _keyTuple) internal view returns (uint256 completedAt) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (uint256(bytes32(_blob)));
   }
@@ -179,10 +225,24 @@ library Tasks {
   /**
    * @notice Set completedAt.
    */
+  function setCompletedAt(bytes32[] memory _keyTuple, uint256 completedAt) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((completedAt)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set completedAt.
+   */
   function _setCompletedAt(bytes32 key, uint256 completedAt) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((completedAt)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set completedAt.
+   */
+  function _setCompletedAt(bytes32[] memory _keyTuple, uint256 completedAt) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((completedAt)), _fieldLayout);
   }
 
@@ -200,10 +260,26 @@ library Tasks {
   /**
    * @notice Get description.
    */
+  function getDescription(bytes32[] memory _keyTuple) internal view returns (string memory description) {
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get description.
+   */
   function _getDescription(bytes32 key) internal view returns (string memory description) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get description.
+   */
+  function _getDescription(bytes32[] memory _keyTuple) internal view returns (string memory description) {
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (string(_blob));
   }
@@ -221,10 +297,24 @@ library Tasks {
   /**
    * @notice Set description.
    */
+  function setDescription(bytes32[] memory _keyTuple, string memory description) internal {
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((description)));
+  }
+
+  /**
+   * @notice Set description.
+   */
   function _setDescription(bytes32 key, string memory description) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((description)));
+  }
+
+  /**
+   * @notice Set description.
+   */
+  function _setDescription(bytes32[] memory _keyTuple, string memory description) internal {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((description)));
   }
 
@@ -244,10 +334,30 @@ library Tasks {
   /**
    * @notice Get the length of description.
    */
+  function lengthDescription(bytes32[] memory _keyTuple) internal view returns (uint256) {
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of description.
+   */
   function _lengthDescription(bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of description.
+   */
+  function _lengthDescription(bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 1;
@@ -272,10 +382,32 @@ library Tasks {
    * @notice Get an item of description.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
+  function getItemDescription(bytes32[] memory _keyTuple, uint256 _index) internal view returns (string memory) {
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of description.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
   function _getItemDescription(bytes32 key, uint256 _index) internal view returns (string memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of description.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemDescription(bytes32[] memory _keyTuple, uint256 _index) internal view returns (string memory) {
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
       return (string(_blob));
@@ -295,10 +427,24 @@ library Tasks {
   /**
    * @notice Push a slice to description.
    */
+  function pushDescription(bytes32[] memory _keyTuple, string memory _slice) internal {
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to description.
+   */
   function _pushDescription(bytes32 key, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to description.
+   */
+  function _pushDescription(bytes32[] memory _keyTuple, string memory _slice) internal {
     StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
   }
 
@@ -315,10 +461,24 @@ library Tasks {
   /**
    * @notice Pop a slice from description.
    */
+  function popDescription(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from description.
+   */
   function _popDescription(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from description.
+   */
+  function _popDescription(bytes32[] memory _keyTuple) internal {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
   }
 
@@ -338,10 +498,30 @@ library Tasks {
   /**
    * @notice Update a slice of description at `_index`.
    */
+  function updateDescription(bytes32[] memory _keyTuple, uint256 _index, string memory _slice) internal {
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of description at `_index`.
+   */
   function _updateDescription(bytes32 key, uint256 _index, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of description at `_index`.
+   */
+  function _updateDescription(bytes32[] memory _keyTuple, uint256 _index, string memory _slice) internal {
     unchecked {
       bytes memory _encoded = bytes((_slice));
       StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
@@ -366,10 +546,34 @@ library Tasks {
   /**
    * @notice Get the full data.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (TasksData memory _table) {
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
   function _get(bytes32 key) internal view returns (TasksData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (TasksData memory _table) {
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
@@ -396,6 +600,18 @@ library Tasks {
   /**
    * @notice Set the full data using individual values.
    */
+  function set(bytes32[] memory _keyTuple, uint256 createdAt, uint256 completedAt, string memory description) internal {
+    bytes memory _staticData = encodeStatic(createdAt, completedAt);
+
+    PackedCounter _encodedLengths = encodeLengths(description);
+    bytes memory _dynamicData = encodeDynamic(description);
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
   function _set(bytes32 key, uint256 createdAt, uint256 completedAt, string memory description) internal {
     bytes memory _staticData = encodeStatic(createdAt, completedAt);
 
@@ -404,6 +620,23 @@ library Tasks {
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
+  function _set(
+    bytes32[] memory _keyTuple,
+    uint256 createdAt,
+    uint256 completedAt,
+    string memory description
+  ) internal {
+    bytes memory _staticData = encodeStatic(createdAt, completedAt);
+
+    PackedCounter _encodedLengths = encodeLengths(description);
+    bytes memory _dynamicData = encodeDynamic(description);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -426,6 +659,18 @@ library Tasks {
   /**
    * @notice Set the full data using the data struct.
    */
+  function set(bytes32[] memory _keyTuple, TasksData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.createdAt, _table.completedAt);
+
+    PackedCounter _encodedLengths = encodeLengths(_table.description);
+    bytes memory _dynamicData = encodeDynamic(_table.description);
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
   function _set(bytes32 key, TasksData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.createdAt, _table.completedAt);
 
@@ -434,6 +679,18 @@ library Tasks {
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function _set(bytes32[] memory _keyTuple, TasksData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.createdAt, _table.completedAt);
+
+    PackedCounter _encodedLengths = encodeLengths(_table.description);
+    bytes memory _dynamicData = encodeDynamic(_table.description);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -491,10 +748,24 @@ library Tasks {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -547,6 +818,7 @@ library Tasks {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;

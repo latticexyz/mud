@@ -109,10 +109,26 @@ library NamespaceDelegationControl {
   /**
    * @notice Get delegationControlId.
    */
+  function getDelegationControlId(bytes32[] memory _keyTuple) internal view returns (ResourceId delegationControlId) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return ResourceId.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get delegationControlId.
+   */
   function _getDelegationControlId(ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return ResourceId.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get delegationControlId.
+   */
+  function _getDelegationControlId(bytes32[] memory _keyTuple) internal view returns (ResourceId delegationControlId) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return ResourceId.wrap(bytes32(_blob));
   }
@@ -131,10 +147,26 @@ library NamespaceDelegationControl {
   /**
    * @notice Get delegationControlId.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (ResourceId delegationControlId) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return ResourceId.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get delegationControlId.
+   */
   function _get(ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return ResourceId.wrap(bytes32(_blob));
+  }
+
+  /**
+   * @notice Get delegationControlId.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (ResourceId delegationControlId) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return ResourceId.wrap(bytes32(_blob));
   }
@@ -146,6 +178,19 @@ library NamespaceDelegationControl {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    StoreSwitch.setStaticField(
+      _tableId,
+      _keyTuple,
+      0,
+      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
+      _fieldLayout
+    );
+  }
+
+  /**
+   * @notice Set delegationControlId.
+   */
+  function setDelegationControlId(bytes32[] memory _keyTuple, ResourceId delegationControlId) internal {
     StoreSwitch.setStaticField(
       _tableId,
       _keyTuple,
@@ -174,10 +219,36 @@ library NamespaceDelegationControl {
   /**
    * @notice Set delegationControlId.
    */
+  function _setDelegationControlId(bytes32[] memory _keyTuple, ResourceId delegationControlId) internal {
+    StoreCore.setStaticField(
+      _tableId,
+      _keyTuple,
+      0,
+      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
+      _fieldLayout
+    );
+  }
+
+  /**
+   * @notice Set delegationControlId.
+   */
   function set(ResourceId namespaceId, ResourceId delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    StoreSwitch.setStaticField(
+      _tableId,
+      _keyTuple,
+      0,
+      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
+      _fieldLayout
+    );
+  }
+
+  /**
+   * @notice Set delegationControlId.
+   */
+  function set(bytes32[] memory _keyTuple, ResourceId delegationControlId) internal {
     StoreSwitch.setStaticField(
       _tableId,
       _keyTuple,
@@ -204,6 +275,19 @@ library NamespaceDelegationControl {
   }
 
   /**
+   * @notice Set delegationControlId.
+   */
+  function _set(bytes32[] memory _keyTuple, ResourceId delegationControlId) internal {
+    StoreCore.setStaticField(
+      _tableId,
+      _keyTuple,
+      0,
+      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
+      _fieldLayout
+    );
+  }
+
+  /**
    * @notice Delete all data for given keys.
    */
   function deleteRecord(ResourceId namespaceId) internal {
@@ -216,10 +300,24 @@ library NamespaceDelegationControl {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -249,6 +347,7 @@ library NamespaceDelegationControl {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(ResourceId namespaceId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
