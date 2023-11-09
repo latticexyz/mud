@@ -35,9 +35,7 @@ const publicClient = createPublicClient({
 });
 
 const chainId = await publicClient.getChainId();
-const database = drizzle(postgres(env.DATABASE_URL), {
-  logger: new DefaultLogger(),
-});
+const database = drizzle(postgres(env.DATABASE_URL));
 
 const { storageAdapter, internalTables } = await postgresStorage({ database, publicClient });
 
