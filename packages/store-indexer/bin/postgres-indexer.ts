@@ -9,14 +9,15 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { cleanDatabase, postgresStorage, schemaVersion } from "@latticexyz/store-sync/postgres";
 import { createStoreSync } from "@latticexyz/store-sync";
-import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
-import fastify from "fastify";
+import { indexerEnvSchema, parseEnv } from "./parseEnv";
 
 const env = parseEnv(
   z.intersection(
-    z.intersection(indexerEnvSchema, frontendEnvSchema),
+    indexerEnvSchema,
     z.object({
       DATABASE_URL: z.string(),
+      HEALTHCHECK_HOST: z.string().optional(),
+      HEALTHCHECK_PORT: z.coerce.number().optional(),
     })
   )
 );
@@ -93,11 +94,16 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
     console.log("all caught up");
   });
 
-const server = fastify();
+if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
+  const { default: fastify } = await import("fastify");
 
-// k8s healthchecks
-server.get("/healthz", (req, res) => res.code(200).send());
-server.get("/readyz", (req, res) => (isCaughtUp ? res.code(200).send("ready") : res.code(424).send("backfilling")));
+  const server = fastify();
 
-await server.listen({ host: env.HOST, port: env.PORT });
-console.log(`postgres indexer healthcheck server listening on http://${env.HOST}:${env.PORT}`);
+  // k8s healthchecks
+  server.get("/healthz", (req, res) => res.code(200).send());
+  server.get("/readyz", (req, res) => (isCaughtUp ? res.code(200).send("ready") : res.code(424).send("backfilling")));
+
+  server.listen({ host: env.HEALTHCHECK_HOST, port: env.HEALTHCHECK_PORT }, (error, address) => {
+    console.log(`postgres indexer healthcheck server listening on ${address}`);
+  });
+}
