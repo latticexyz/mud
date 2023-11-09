@@ -1,1 +1,29 @@
 # mud worldgen
+
+Autogenerate MUD Store table libraries based on the config file
+
+## Sample usage
+
+Use the `System`s under `src`<sup>1</sup> to generate the Solidity interface definitions for those `Systems` and put them in `src/codegen/world`.
+Also, create `src/codegen/world/IWorld.sol` which imports all the `System` interfaces.
+
+(1) Any file that ends with `System.sol`, for example `IncrementSystem.sol`.
+
+## Options
+
+These are the command line options you can specify on `mud tablegen`:
+
+| Option         | Meaning                                                       | Type    | Default value   |
+| -------------- | ------------------------------------------------------------- | ------- | --------------- |
+| `--version`    | Show version number                                           | boolean | `false`         |
+| `--configPath` | Path to the config file                                       | string  | `mud.config.ts` |
+| `--clean`      | Clear the worldgen directory before generating new interfaces | boolean | `true`          |
+| `--help`       | Show help                                                     | boolean | `false`         |
+
+## Debugging
+
+To generate debug messages, use this command:
+
+```sh copy
+export DEBUG=mud:common:codegen
+```
