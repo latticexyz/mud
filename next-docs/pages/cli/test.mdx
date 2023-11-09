@@ -1,1 +1,37 @@
+Can't do until [this issue](https://discord.com/channels/865335009915961364/1156299216575012946/1171965703264403587) is fixed.
+
 # mud test
+
+Run tests in MUD contracts in a new `anvil` instance (possibly using a [fork test](https://book.getfoundry.sh/forge/fork-testing)).
+If necessary, `mud test` will also generate the Solidity code and compile it.
+
+## Sample usage
+
+Run all the tests with debug outputs, starting from the Holesky test network.
+
+```sh copy
+export DEBUG=*
+pnpm mud test --rpc https://ethereum-holesky.publicnode.com
+```
+
+## Options
+
+These are the command line options you can specify on `mud test`:
+
+| Option                  | Meaning                                                                                               | Type    | Default value                                              |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------- |
+| `--version`             | Show version number                                                                                   | boolean | `false`                                                    |
+| `--configPath`          | Path to the config file                                                                               | string  | `foundry.toml`                                             |
+| `--printConfig`         | Print the resolved config                                                                             | boolean | `false`                                                    |
+| `--saveDeployment       | Save the deployment info to a file                                                                    | boolean | `true`                                                     |
+| `--profile`             | The foundry profile to use                                                                            | string  | `local`                                                    |
+| `--rpc`<sup>1</sup>     | RPC URL for the blockchain to fork                                                                    | string  | Start from the `anvil` default                             |
+| `--worldAddress`        | Deploy to an existing World at the given address                                                      | string  | Empty, deploy new `World`                                  |
+| `--srcDir`              | Source directory                                                                                      | string  | Foundry `src` directory                                    |
+| `--skipBuild`           | Skip rebuilding the contracts before deploying                                                        | boolean | `false`                                                    |
+| `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy                                                              | boolean | `false` (run the script only when deploying a new `World`) |
+| `--port`                | Port to access internal node when using [fork testing](https://book.getfoundry.sh/forge/fork-testing) | number  | 4242                                                       |
+| `--forgeOptions`        | Options to pass to [`forge test`](https://book.getfoundry.sh/forge/tests)                             | string  | Empty                                                      |
+| `--help`                | Show help                                                                                             | boolean | false                                                      |
+
+(1) The hostname `localhost` may not work. If that is the case, use `127.0.0.1` instead.
