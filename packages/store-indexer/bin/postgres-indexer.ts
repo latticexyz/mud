@@ -75,6 +75,7 @@ const { latestBlockNumber$, storedBlockLogs$ } = await createStoreSync({
   publicClient,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
+  address: env.STORE_ADDRESS,
 });
 
 storedBlockLogs$.subscribe();

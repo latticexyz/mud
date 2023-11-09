@@ -71,6 +71,7 @@ const { latestBlockNumber$, storedBlockLogs$ } = await syncToSqlite({
   publicClient,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
+  address: env.STORE_ADDRESS,
 });
 
 let isCaughtUp = false;
