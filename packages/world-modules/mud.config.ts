@@ -1,5 +1,9 @@
 import { mudConfig } from "@latticexyz/world/register";
 
+// loading state
+// promise for buttons
+// design system
+// admin
 export default mudConfig({
   worldgenDirectory: "interfaces",
   worldInterfaceName: "IBaseWorld",
@@ -75,6 +79,17 @@ export default mudConfig({
         delegatee: "address",
         systemId: "ResourceId",
         callDataHash: "bytes32",
+      },
+      valueSchema: {
+        availableCalls: "uint256",
+      },
+    },
+    SystemboundDelegations: {
+      directory: "modules/std-delegations/tables",
+      keySchema: {
+        delegator: "address",
+        delegatee: "address",
+        systemId: "ResourceId",
       },
       valueSchema: {
         availableCalls: "uint256",
