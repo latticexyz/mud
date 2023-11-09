@@ -22,7 +22,7 @@ import { SystemboundDelegationControl } from "../src/modules/std-delegations/Sys
 import { TimeboundDelegationControl } from "../src/modules/std-delegations/TimeboundDelegationControl.sol";
 import { CALLBOUND_DELEGATION, SYSTEMBOUND_DELEGATION, TIMEBOUND_DELEGATION } from "../src/modules/std-delegations/StandardDelegationsModule.sol";
 
-import { WorldTestSystem } from "@latticexyz/world/test/World.t.sol";
+import { WorldTestSystem, WorldTestSystemReturn } from "@latticexyz/world/test/World.t.sol";
 
 contract StandardDelegationsModuleTest is Test, GasReporter {
   IBaseWorld private world;
@@ -78,7 +78,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     world.registerDelegation(
       delegatee,
       SYSTEMBOUND_DELEGATION,
-      abi.encodeCall(SystemboundDelegationControl.initDelegation, (delegatee, systemId, 1))
+      abi.encodeCall(SystemboundDelegationControl.initDelegation, (delegatee, systemId, 2))
     );
     endGasReport();
 
@@ -91,6 +91,14 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
 
     // Expect the system to have received the delegator's address
     assertEq(returnedAddress, delegator);
+
+    // Call another system from the delegatee on behalf of the delegator
+    vm.prank(delegatee);
+    returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.echo, (bytes32(0))));
+    WorldTestSystemReturn memory returnedStruct = abi.decode(returnData, (WorldTestSystemReturn));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedStruct.sender, delegator);
 
     // Expect the delegation to have been used up
     vm.prank(delegatee);
