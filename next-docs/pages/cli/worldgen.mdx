@@ -7,11 +7,12 @@ Autogenerate MUD Store table libraries based on the config file
 Use the `System`s under `src`<sup>1</sup> to generate the Solidity interface definitions for those `Systems` and put them in `src/codegen/world`.
 Also, create `src/codegen/world/IWorld.sol` which imports all the `System` interfaces.
 
-(1) Any file that ends with `System.sol`, for example `IncrementSystem.sol`.
+(1) By default this is any file that ends with `...System.sol`, for example `IncrementSystem.sol`.
+However, in the config file you can specify additional `System`s, under `systems`, as well as exclude files that end in `..System.sol`, by putting them under `excludeSystems`.
 
 ## Options
 
-These are the command line options you can specify on `mud tablegen`:
+These are the command line options you can specify on `mud worldgen`:
 
 | Option         | Meaning                                                       | Type    | Default value   |
 | -------------- | ------------------------------------------------------------- | ------- | --------------- |
