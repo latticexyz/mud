@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import "dotenv/config";
 import { z } from "zod";
-import { DefaultLogger } from "drizzle-orm";
 import fastify from "fastify";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import { AppRouter, createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
@@ -19,9 +18,7 @@ const env = parseEnv(
   )
 );
 
-const database = drizzle(postgres(env.DATABASE_URL), {
-  logger: new DefaultLogger(),
-});
+const database = drizzle(postgres(env.DATABASE_URL));
 
 // @see https://fastify.dev/docs/latest/
 const server = fastify({
