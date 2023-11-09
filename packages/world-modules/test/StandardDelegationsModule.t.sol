@@ -92,7 +92,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     // Expect the system to have received the delegator's address
     assertEq(returnedAddress, delegator);
 
-    // Call a different system from the delegatee on behalf of the delegator
+    // Call a different function from the delegatee on behalf of the delegator
     vm.prank(delegatee);
     returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.echo, (bytes32(0))));
     WorldTestSystemReturn memory returnedStruct = abi.decode(returnData, (WorldTestSystemReturn));
