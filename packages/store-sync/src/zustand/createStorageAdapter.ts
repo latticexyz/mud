@@ -22,29 +22,29 @@ export function createStorageAdapter<tables extends Tables>({
   return async function zustandStorageAdapter({ blockNumber, logs }) {
     // TODO: clean this up so that we do one store write per block
 
-    const previousTables = store.getState().tables;
-    const newTables = logs
-      .filter(isTableRegistrationLog)
-      .map(logToTable)
-      .filter((newTable) => {
-        const existingTable = previousTables[newTable.tableId];
-        if (existingTable) {
-          console.warn("table already registered, ignoring", {
-            newTable,
-            existingTable,
-          });
-          return false;
-        }
-        return true;
-      });
-    if (newTables.length) {
-      store.setState({
-        tables: {
-          ...previousTables,
-          ...Object.fromEntries(newTables.map((table) => [table.tableId, table])),
-        },
-      });
-    }
+    // const previousTables = store.getState().tables;
+    // const newTables = logs
+    //   .filter(isTableRegistrationLog)
+    //   .map(logToTable)
+    //   .filter((newTable) => {
+    //     const existingTable = previousTables[newTable.tableId];
+    //     if (existingTable) {
+    //       console.warn("table already registered, ignoring", {
+    //         newTable,
+    //         existingTable,
+    //       });
+    //       return false;
+    //     }
+    //     return true;
+    //   });
+    // if (newTables.length) {
+    //   store.setState({
+    //     tables: {
+    //       ...previousTables,
+    //       ...Object.fromEntries(newTables.map((table) => [table.tableId, table])),
+    //     },
+    //   });
+    // }
 
     const updatedIds: string[] = [];
     const deletedIds: string[] = [];
@@ -53,7 +53,7 @@ export function createStorageAdapter<tables extends Tables>({
       const table = store.getState().tables[log.args.tableId];
       if (!table) {
         const { namespace, name } = hexToResource(log.args.tableId);
-        debug(`skipping update for unknown table: ${namespace}:${name} at ${log.address}`);
+        debug(`skipping update for unknown table: ${namespace}:${name} (${log.args.tableId}) at ${log.address}`);
         console.log(store.getState().tables, log.args.tableId);
         continue;
       }
