@@ -49,6 +49,7 @@ export type WorldFunction = {
 export type DeterministicContract = {
   readonly address: Address;
   readonly bytecode: Hex;
+  readonly deployedBytecodeSize: number;
   readonly abi: Abi;
 };
 
