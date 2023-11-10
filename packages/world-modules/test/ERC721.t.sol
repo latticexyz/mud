@@ -314,9 +314,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     address operator,
     bytes memory data
   ) public {
-    _assumeDifferentNonZero(from, operator);
-
     ERC721Recipient recipient = new ERC721Recipient();
+    _assumeDifferentNonZero(from, operator, address(recipient));
 
     token.mint(from, id);
 
@@ -334,7 +333,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     assertEq(token.getApproved(id), address(0));
     assertEq(token.ownerOf(id), address(recipient));
     assertEq(token.balanceOf(address(recipient)), 1);
-    assertEq(token.balanceOf(from), 0);
+    assertEq(token.balanceOf(from), 0, "last");
   }
 
   function testSafeMintToEOA(uint256 id, address to) public {
