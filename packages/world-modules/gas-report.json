@@ -243,7 +243,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromSystemDelegation",
     "name": "call a system via a systembound delegation",
-    "gasUsed": 35924
+    "gasUsed": 33831
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
