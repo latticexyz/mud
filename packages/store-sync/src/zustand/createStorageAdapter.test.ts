@@ -45,6 +45,7 @@ describe("createStorageAdapter", () => {
             "tableId": "0x746200000000000000000000000000004e756d6265724c697374000000000000",
             "valueSchema": {
               "value": {
+                "internalType": "uint32[]",
                 "type": "uint32[]",
               },
             },

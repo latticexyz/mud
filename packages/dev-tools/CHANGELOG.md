@@ -1,5 +1,40 @@
 # @latticexyz/dev-tools
 
+## 2.0.0-next.14
+
+### Minor Changes
+
+- 1faf7f69: Added Zustand support to Dev Tools:
+
+  ```ts
+  const { syncToZustand } from "@latticexyz/store-sync";
+  const { mount as mountDevTools } from "@latticexyz/dev-tools";
+
+  const { useStore } = syncToZustand({ ... });
+
+  mountDevTools({
+    ...
+    useStore,
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies [aacffcb5]
+- Updated dependencies [1faf7f69]
+- Updated dependencies [b2d2aa71]
+- Updated dependencies [bb91edaa]
+- Updated dependencies [1327ea8c]
+- Updated dependencies [bb91edaa]
+  - @latticexyz/common@2.0.0-next.14
+  - @latticexyz/store-sync@2.0.0-next.14
+  - @latticexyz/store@2.0.0-next.14
+  - @latticexyz/world@2.0.0-next.14
+  - @latticexyz/schema-type@2.0.0-next.14
+  - @latticexyz/react@2.0.0-next.14
+  - @latticexyz/recs@2.0.0-next.14
+  - @latticexyz/utils@2.0.0-next.14
+
 ## 2.0.0-next.13
 
 ### Patch Changes
