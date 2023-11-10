@@ -2,8 +2,6 @@ import { Tables } from "@latticexyz/store";
 import { StorageAdapter } from "../common";
 import { RawRecord } from "./common";
 import { ZustandStore } from "./createStore";
-import { isTableRegistrationLog } from "../isTableRegistrationLog";
-import { logToTable } from "./logToTable";
 import { hexToResource, spliceHex } from "@latticexyz/common";
 import { debug } from "./debug";
 import { getId } from "./getId";
@@ -21,30 +19,6 @@ export function createStorageAdapter<tables extends Tables>({
 }: CreateStorageAdapterOptions<tables>): StorageAdapter {
   return async function zustandStorageAdapter({ blockNumber, logs }) {
     // TODO: clean this up so that we do one store write per block
-
-    // const previousTables = store.getState().tables;
-    // const newTables = logs
-    //   .filter(isTableRegistrationLog)
-    //   .map(logToTable)
-    //   .filter((newTable) => {
-    //     const existingTable = previousTables[newTable.tableId];
-    //     if (existingTable) {
-    //       console.warn("table already registered, ignoring", {
-    //         newTable,
-    //         existingTable,
-    //       });
-    //       return false;
-    //     }
-    //     return true;
-    //   });
-    // if (newTables.length) {
-    //   store.setState({
-    //     tables: {
-    //       ...previousTables,
-    //       ...Object.fromEntries(newTables.map((table) => [table.tableId, table])),
-    //     },
-    //   });
-    // }
 
     const updatedIds: string[] = [];
     const deletedIds: string[] = [];
