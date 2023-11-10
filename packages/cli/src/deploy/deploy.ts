@@ -12,10 +12,9 @@ import { Table } from "./configToTables";
 import { assertNamespaceOwner } from "./assertNamespaceOwner";
 import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
-import { ensureContract } from "./ensureContract";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
-import { coreModuleBytecode, worldFactoryBytecode } from "./ensureWorldFactory";
+import { coreModuleBytecode, worldFactoryBytecode, worldFactoryContracts } from "./ensureWorldFactory";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -43,14 +42,15 @@ export async function deploy<configInput extends ConfigInput>({
   await ensureContractsDeployed({
     client,
     contracts: [
-      { bytecode: coreModuleBytecode, label: "core module" },
-      { bytecode: worldFactoryBytecode, label: "world factory" },
+      ...worldFactoryContracts,
       ...uniqueBy(systems, (system) => getAddress(system.address)).map((system) => ({
         bytecode: system.bytecode,
+        deployedBytecodeSize: system.deployedBytecodeSize,
         label: `${resourceLabel(system)} system`,
       })),
       ...uniqueBy(config.modules, (mod) => getAddress(mod.address)).map((mod) => ({
         bytecode: mod.bytecode,
+        deployedBytecodeSize: mod.deployedBytecodeSize,
         label: `${mod.name} module`,
       })),
     ],
