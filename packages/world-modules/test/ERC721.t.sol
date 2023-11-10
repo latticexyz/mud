@@ -333,7 +333,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     assertEq(token.getApproved(id), address(0));
     assertEq(token.ownerOf(id), address(recipient));
     assertEq(token.balanceOf(address(recipient)), 1);
-    assertEq(token.balanceOf(from), 0, "last");
+    assertEq(token.balanceOf(from), 0);
   }
 
   function testSafeMintToEOA(uint256 id, address to) public {
