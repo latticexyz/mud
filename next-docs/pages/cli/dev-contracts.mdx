@@ -40,6 +40,7 @@ These are the command line options you can specify on `mud dev-contracts`:
 | `--version`             | Show version number                      | boolean | `false`                                                                                        |
 | `--configPath`          | Path to the config file                  | string  | `foundry.toml`                                                                               |
 | `--rpc`<sup>1</sup>     | The RPC URL to use                       | string  | Empty, in which case the command starts [`anvil`](https://book.getfoundry.sh/anvil/) for you |
+| `--worldAddress`        | Deploy to an existing World at the given address | string | Empty, deploy new `World` |
 | `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy | boolean | `false` (run the script only when deploying a new `World`)                                     |
 | `--help`                | Show help                                | boolean | `false`                                                                                        |
 
