@@ -1,5 +1,23 @@
 # Change Log
 
+## 2.0.0-next.14
+
+### Minor Changes
+
+- fdbba6d8: Added a new delegation control called `SystemboundDelegationControl` that delegates control of a specific system for some maximum number of calls. It is almost identical to `CallboundDelegationControl` except the delegatee can call the system with any function and args.
+
+### Patch Changes
+
+- Updated dependencies [aacffcb5]
+- Updated dependencies [b2d2aa71]
+- Updated dependencies [bb91edaa]
+- Updated dependencies [bb91edaa]
+  - @latticexyz/common@2.0.0-next.14
+  - @latticexyz/store@2.0.0-next.14
+  - @latticexyz/world@2.0.0-next.14
+  - @latticexyz/schema-type@2.0.0-next.14
+  - @latticexyz/config@2.0.0-next.14
+
 ## 2.0.0-next.13
 
 ### Minor Changes
