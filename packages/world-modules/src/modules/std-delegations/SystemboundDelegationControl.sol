@@ -7,7 +7,7 @@ import { SystemboundDelegations } from "./tables/SystemboundDelegations.sol";
 
 contract SystemboundDelegationControl is DelegationControl {
   /**
-   * Verify a delegation by checking if the delegator has any available calls left in the SystemboundDelegations table and decrementing the available calls if so.
+   * Verify a delegation by checking if the caller (delegatee) has any available calls left for the given delegator in the SystemboundDelegations table and decrementing the available calls if so.
    */
   function verify(address delegator, ResourceId systemId, bytes memory) public returns (bool) {
     // Get the number of available calls for the given delegator, systemId and callData
