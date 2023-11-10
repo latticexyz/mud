@@ -40,6 +40,9 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="${PATH}:${PNPM_HOME}"
 RUN npm install pnpm --global && pnpm --version
 
+# bun
+RUN npm install bun --global && bun --version
+
 FROM base AS mud
 COPY . /app
 WORKDIR /app
