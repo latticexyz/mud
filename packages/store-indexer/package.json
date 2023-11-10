@@ -14,9 +14,9 @@
   },
   "types": "src/index.ts",
   "bin": {
-    "postgres-frontend": "./dist/bin/postgres-frontend.js",
-    "postgres-indexer": "./dist/bin/postgres-indexer.js",
-    "sqlite-indexer": "./dist/bin/sqlite-indexer.js"
+    "postgres-frontend": "./dist/postgres-frontend.js",
+    "postgres-indexer": "./dist/postgres-indexer.js",
+    "sqlite-indexer": "./dist/sqlite-indexer.js"
   },
   "scripts": {
     "build": "pnpm run build:js",

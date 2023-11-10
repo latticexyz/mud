@@ -11,10 +11,10 @@
   "type": "module",
   "exports": {
     ".": "./dist/ts/index.js",
+    "./mud.config": "./dist/mud.config.js",
     "./register": "./dist/ts/register/index.js",
     "./node": "./dist/ts/node/index.js",
-    "./out/*": "./out/*",
-    "./*": "./dist/*"
+    "./out/*": "./out/*"
   },
   "typesVersions": {
     "*": {
