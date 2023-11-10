@@ -9,10 +9,6 @@
   },
   "license": "MIT",
   "type": "module",
-  "exports": {
-    ".": "./dist/index.js"
-  },
-  "types": "src/index.ts",
   "bin": {
     "postgres-frontend": "./dist/postgres-frontend.js",
     "postgres-indexer": "./dist/postgres-indexer.js",
