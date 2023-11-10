@@ -164,7 +164,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testMintRevertAccessDenied(uint256 id, address owner, address operator) public {
-    _assumeDifferentNonZero(owner, operator);
+    _assumeDifferentNonZero(owner, operator, address(this));
 
     _expectAccessDenied(operator);
     vm.prank(operator);
