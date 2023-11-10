@@ -5,4 +5,14 @@ const withNextra = nextra({
   themeConfig: "./theme.config.tsx",
 });
 
-export default withNextra();
+export default withNextra({
+  async redirects() {
+    return [
+      {
+        source: "/what-is-mud",
+        destination: "/introduction",
+        permanent: true,
+      },
+    ];
+  },
+});
