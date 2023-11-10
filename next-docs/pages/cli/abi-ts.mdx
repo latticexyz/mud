@@ -1,10 +1,10 @@
 # `mud abi-ts`
 
-This command converts [JSON files](https://www.json.org/json-en.html) that contain the [ABI](https://docs.soliditylang.org/en/latest/abi-spec.html) to [TypeScript](https://www.typescriptlang.org/) so they can be imported more easily into applications.
+This command converts [JSON files](https://www.json.org/json-en.html) that contain the [ABI](https://docs.soliditylang.org/en/latest/abi-spec.html) to [TypeScript](https://www.typescriptlang.org/) with strong types so they can be used to infer types for tools like [`viem`](https://viem.sh/) or [`wagmi`](https://wagmi.sh/).
 
 ## Using the command
 
-1. Inside a MUD project create an ABI JSON file.
+1. Build your Solidity files (e.g. with [`forge`](https://book.getfoundry.sh/)) to obtain an ABI JSON file.
    For example, you can use this file:
 
    ```json filename="greeter.abi.json" copy
