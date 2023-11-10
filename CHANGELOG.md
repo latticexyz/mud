@@ -1,3 +1,84 @@
+## Version 2.0.0-next.14
+
+Release date: Fri Nov 10 2023
+
+### Major changes
+
+**[feat(dev-tools): show zustand tables (#1891)](https://github.com/latticexyz/mud/commit/1faf7f697481a92c02ca40edbf71e317de1c06e3)** (@latticexyz/store-sync)
+
+`syncToZustand` now uses `tables` argument to populate the Zustand store's `tables` key, rather than the on-chain table registration events. This means we'll no longer store data into Zustand you haven't opted into receiving (e.g. other namespaces).
+
+**[feat(store-indexer): separate postgres indexer/frontend services (#1887)](https://github.com/latticexyz/mud/commit/5ecccfe751b0d217f98a45e8e7fdc73d15ad6494)** (@latticexyz/store-indexer)
+
+Separated frontend server and indexer service for Postgres indexer. Now you can run the Postgres indexer with one writer and many readers.
+
+If you were previously using the `postgres-indexer` binary, you'll now need to run both `postgres-indexer` and `postgres-frontend`.
+
+For consistency, the Postgres database logs are now disabled by default. If you were using these, please let us know so we can add them back in with an environment variable flag.
+
+### Minor changes
+
+**[feat(cli): warn when contract is over or close to the size limit (#1894)](https://github.com/latticexyz/mud/commit/bdb46fe3aa124014a53f1f070eb0db25771ace19)** (@latticexyz/cli)
+
+Deploys now validate contract size before deploying and warns when a contract is over or close to the size limit (24kb). This should help identify the most common cause of "evm revert" errors during system and module contract deploys.
+
+**[fix(store): resolveUserTypes for static arrays (#1876)](https://github.com/latticexyz/mud/commit/bb91edaa01c8a66fc3eef4d5c93ccd20ae9a5066)** (@latticexyz/schema-type)
+
+Added `isSchemaAbiType` helper function to check and narrow an unknown string to the `SchemaAbiType` type
+
+**[feat(dev-tools): show zustand tables (#1891)](https://github.com/latticexyz/mud/commit/1faf7f697481a92c02ca40edbf71e317de1c06e3)** (@latticexyz/dev-tools, create-mud)
+
+Added Zustand support to Dev Tools:
+
+```ts
+const { syncToZustand } from "@latticexyz/store-sync";
+const { mount as mountDevTools } from "@latticexyz/dev-tools";
+
+const { useStore } = syncToZustand({ ... });
+
+mountDevTools({
+  ...
+  useStore,
+});
+```
+
+**[docs: add changeset for SystemboundDelegationControl (#1906)](https://github.com/latticexyz/mud/commit/fdbba6d88563034be607600a7af25b234f306103)** (@latticexyz/world-modules)
+
+Added a new delegation control called `SystemboundDelegationControl` that delegates control of a specific system for some maximum number of calls. It is almost identical to `CallboundDelegationControl` except the delegatee can call the system with any function and args.
+
+**[feat(store-indexer): add env var to index only one store (#1886)](https://github.com/latticexyz/mud/commit/f318f2fe736767230442f074fffd2d39c5629b38)** (@latticexyz/store-indexer)
+
+Added `STORE_ADDRESS` environment variable to index only a specific MUD Store.
+
+### Patch changes
+
+**[fix(create-mud): pin prettier-plugin-solidity (#1889)](https://github.com/latticexyz/mud/commit/aacffcb59ad75826b33a437ce430ac0e8bfe0ddb)** (@latticexyz/common, create-mud)
+
+Pinned prettier-plugin-solidity version to 1.1.3
+
+**[fix(cli): add worldAddress to dev-contracts (#1892)](https://github.com/latticexyz/mud/commit/1feecf4955462554c650f56e4777aa330e31f667)** (@latticexyz/cli)
+
+Added `--worldAddress` argument to `dev-contracts` CLI command so that you can develop against an existing world.
+
+**[fix(store,world): explicit mud.config exports (#1900)](https://github.com/latticexyz/mud/commit/b2d2aa715b30cdbcddf8e442c663bd319235c209)** (@latticexyz/store, @latticexyz/world)
+
+Added an explicit package export for `mud.config`
+
+**[fix(store-sync): show TS error for non-existent tables when using zustand (#1896)](https://github.com/latticexyz/mud/commit/1327ea8c88f99fd268c743966dabed6122be098d)** (@latticexyz/store-sync)
+
+Fixed `syncToZustand` types so that non-existent tables give an error and `never` type instead of a generic `Table` type.
+
+**[fix(store): resolveUserTypes for static arrays (#1876)](https://github.com/latticexyz/mud/commit/bb91edaa01c8a66fc3eef4d5c93ccd20ae9a5066)** (@latticexyz/store)
+
+Fixed `resolveUserTypes` for static arrays.
+`resolveUserTypes` is used by `deploy`, which prevented deploying tables with static arrays.
+
+**[docs(faucet): fix default port in readme (#1835)](https://github.com/latticexyz/mud/commit/9ad27046c5fbc814cb7d9339097eed96a922c083)** (@latticexyz/cli)
+
+The `mud test` cli now exits with code 1 on test failure. It used to exit with code 0, which meant that CIs didn't notice test failures.
+
+---
+
 ## Version 2.0.0-next.13
 
 Release date: Thu Nov 02 2023

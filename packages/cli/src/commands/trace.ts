@@ -8,7 +8,7 @@ import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
-import worldConfig from "@latticexyz/world/mud.config.js";
+import worldConfig from "@latticexyz/world/mud.config";
 import { resourceToHex } from "@latticexyz/common";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { createClient, http } from "viem";

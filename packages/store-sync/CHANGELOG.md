@@ -1,5 +1,26 @@
 # @latticexyz/store-sync
 
+## 2.0.0-next.14
+
+### Major Changes
+
+- 1faf7f69: `syncToZustand` now uses `tables` argument to populate the Zustand store's `tables` key, rather than the on-chain table registration events. This means we'll no longer store data into Zustand you haven't opted into receiving (e.g. other namespaces).
+
+### Patch Changes
+
+- 1327ea8c: Fixed `syncToZustand` types so that non-existent tables give an error and `never` type instead of a generic `Table` type.
+- Updated dependencies [aacffcb5]
+- Updated dependencies [b2d2aa71]
+- Updated dependencies [bb91edaa]
+- Updated dependencies [bb91edaa]
+  - @latticexyz/common@2.0.0-next.14
+  - @latticexyz/store@2.0.0-next.14
+  - @latticexyz/world@2.0.0-next.14
+  - @latticexyz/schema-type@2.0.0-next.14
+  - @latticexyz/block-logs-stream@2.0.0-next.14
+  - @latticexyz/protocol-parser@2.0.0-next.14
+  - @latticexyz/recs@2.0.0-next.14
+
 ## 2.0.0-next.13
 
 ### Minor Changes

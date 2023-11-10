@@ -1,5 +1,27 @@
 # Change Log
 
+## 2.0.0-next.14
+
+### Minor Changes
+
+- 1faf7f69: Added Zustand support to Dev Tools:
+
+  ```ts
+  const { syncToZustand } from "@latticexyz/store-sync";
+  const { mount as mountDevTools } from "@latticexyz/dev-tools";
+
+  const { useStore } = syncToZustand({ ... });
+
+  mountDevTools({
+    ...
+    useStore,
+  });
+  ```
+
+### Patch Changes
+
+- aacffcb5: Pinned prettier-plugin-solidity version to 1.1.3
+
 ## 2.0.0-next.13
 
 ### Major Changes

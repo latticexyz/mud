@@ -164,7 +164,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testMintRevertAccessDenied(uint256 id, address owner, address operator) public {
-    _assumeDifferentNonZero(owner, operator);
+    _assumeDifferentNonZero(owner, operator, address(this));
 
     _expectAccessDenied(operator);
     vm.prank(operator);
@@ -314,9 +314,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     address operator,
     bytes memory data
   ) public {
-    _assumeDifferentNonZero(from, operator);
-
     ERC721Recipient recipient = new ERC721Recipient();
+    _assumeDifferentNonZero(from, operator, address(recipient));
 
     token.mint(from, id);
 

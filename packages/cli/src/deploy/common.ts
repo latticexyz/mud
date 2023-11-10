@@ -1,6 +1,6 @@
 import { Abi, Address, Hex, padHex } from "viem";
-import storeConfig from "@latticexyz/store/mud.config.js";
-import worldConfig from "@latticexyz/world/mud.config.js";
+import storeConfig from "@latticexyz/store/mud.config";
+import worldConfig from "@latticexyz/world/mud.config";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import IModuleAbi from "@latticexyz/world-modules/out/IModule.sol/IModule.abi.json" assert { type: "json" };
 import { Tables, configToTables } from "./configToTables";
@@ -8,6 +8,9 @@ import { StoreConfig, helloStoreEvent } from "@latticexyz/store";
 import { WorldConfig, helloWorldEvent } from "@latticexyz/world";
 
 export const salt = padHex("0x", { size: 32 });
+
+// https://eips.ethereum.org/EIPS/eip-170
+export const contractSizeLimit = parseInt("6000", 16);
 
 // TODO: add `as const` to mud config so these get more strongly typed (blocked by current config parsing not using readonly)
 export const storeTables = configToTables(storeConfig);
@@ -46,6 +49,7 @@ export type WorldFunction = {
 export type DeterministicContract = {
   readonly address: Address;
   readonly bytecode: Hex;
+  readonly deployedBytecodeSize: number;
   readonly abi: Abi;
 };
 
