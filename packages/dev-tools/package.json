@@ -26,6 +26,7 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/react": "workspace:*",
     "@latticexyz/recs": "workspace:*",
+    "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/utils": "workspace:*",
