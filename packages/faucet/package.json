@@ -17,7 +17,8 @@
     "faucet-server": "./dist/bin/faucet-server.js"
   },
   "scripts": {
-    "build": "pnpm run build:js",
+    "build": "pnpm run build:js && pnpm run build:bin",
+    "build:bin": "tsup --config bin/tsup.config.ts",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
