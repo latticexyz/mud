@@ -18,10 +18,11 @@ import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 
 import { StandardDelegationsModule } from "../src/modules/std-delegations/StandardDelegationsModule.sol";
 import { CallboundDelegationControl } from "../src/modules/std-delegations/CallboundDelegationControl.sol";
+import { SystemboundDelegationControl } from "../src/modules/std-delegations/SystemboundDelegationControl.sol";
 import { TimeboundDelegationControl } from "../src/modules/std-delegations/TimeboundDelegationControl.sol";
-import { CALLBOUND_DELEGATION, TIMEBOUND_DELEGATION } from "../src/modules/std-delegations/StandardDelegationsModule.sol";
+import { CALLBOUND_DELEGATION, SYSTEMBOUND_DELEGATION, TIMEBOUND_DELEGATION } from "../src/modules/std-delegations/StandardDelegationsModule.sol";
 
-import { WorldTestSystem } from "@latticexyz/world/test/World.t.sol";
+import { WorldTestSystem, WorldTestSystemReturn } from "@latticexyz/world/test/World.t.sol";
 
 contract StandardDelegationsModuleTest is Test, GasReporter {
   IBaseWorld private world;
@@ -63,6 +64,41 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
 
     // Expect the system to have received the delegator's address
     assertEq(returnedAddress, delegator);
+
+    // Expect the delegation to have been used up
+    vm.prank(delegatee);
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
+    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+  }
+
+  function testCallFromSystemDelegation() public {
+    // Register the systembound delegation for one call to the system's msgSender function
+    vm.prank(delegator);
+    startGasReport("register a systembound delegation");
+    world.registerDelegation(
+      delegatee,
+      SYSTEMBOUND_DELEGATION,
+      abi.encodeCall(SystemboundDelegationControl.initDelegation, (delegatee, systemId, 2))
+    );
+    endGasReport();
+
+    // Call a system from the delegatee on behalf of the delegator
+    vm.prank(delegatee);
+    startGasReport("call a system via a systembound delegation");
+    bytes memory returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    endGasReport();
+    address returnedAddress = abi.decode(returnData, (address));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedAddress, delegator);
+
+    // Call a different function from the delegatee on behalf of the delegator
+    vm.prank(delegatee);
+    returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.echo, (bytes32(0))));
+    WorldTestSystemReturn memory returnedStruct = abi.decode(returnData, (WorldTestSystemReturn));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedStruct.sender, delegator);
 
     // Expect the delegation to have been used up
     vm.prank(delegatee);

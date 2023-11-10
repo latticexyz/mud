@@ -225,7 +225,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromCallboundDelegation",
     "name": "register a callbound delegation",
-    "gasUsed": 117420
+    "gasUsed": 117426
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -235,9 +235,21 @@
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
+    "test": "testCallFromSystemDelegation",
+    "name": "register a systembound delegation",
+    "gasUsed": 114982
+  },
+  {
+    "file": "test/StandardDelegationsModule.t.sol",
+    "test": "testCallFromSystemDelegation",
+    "name": "call a system via a systembound delegation",
+    "gasUsed": 33831
+  },
+  {
+    "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromTimeboundDelegation",
     "name": "register a timebound delegation",
-    "gasUsed": 111914
+    "gasUsed": 111920
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
