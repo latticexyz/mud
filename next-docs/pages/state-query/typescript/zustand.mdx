@@ -1,0 +1,62 @@
+# Zustand
+
+[Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction) is a state management solution that supports JavaScript and TypeScript.
+
+- `syncToZustand` https://github.com/latticexyz/mud/blob/3122cdf1c0fd81a1cea5019f5796fee9b53c4ac6/templates/react/packages/client/src/mud/setupNetwork.ts#L74-L79
+- returns strongly typed `tables` (which will use to reference tables when querying data) and `useStore` (which is both a React hook and vanilla-compatible store)
+- Inside React, you want to use `useStore` like a hook and select the slice of data you want: https://github.com/pmndrs/zustand#selecting-multiple-state-slices
+- You can also read/write to store state outside of React: https://github.com/pmndrs/zustand#readingwriting-state-and-reacting-to-changes-outside-of-components
+- `getRecords(table)` returns an object with internal unique ID as the key and the record (key + value) as the value
+  ```tsx
+  {
+    [id: string]: {
+      table: Table;
+      id: string;
+      keyTuple: Hex[];
+      key: {
+        key: Hex;
+      };
+      value: {
+        value: string;
+      };
+    };
+  }
+  ```
+  For cases where you want an array, you can just `Object.values(records)`
+  https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/App.tsx#L11-L15
+- `getRecord(table, key)` to get a specific record (with key+value like above) or `getValue(table, key)` to get just the value
+- when using via React hook, it’s automatically reactive, and when using state slices (see Zustand docs), it’s smart enough to only re-render when the sliced state changes
+- Zustand feels very React-friendly for those used to `useState`, it’s just a bigger state tree and auto-populated by MUD
+
+## RECS
+
+- I think you have enough context on this but we can skip docs for this for now if we’re running out of time. Zustand is a better starting place for ~most use cases.
+
+# State Synchronization
+
+`createStoreSync` powers all of our state sync libraries (zustand, recs, sqlite, postgres). As an argument, it takes in a “storage adapter” that looks like `(block: StorageAdapterBlock) => Promise<void>`
+
+```tsx
+// StoreEventsLog is a strongly typed Log from viem that is specific to our store events ABI
+// StorageAdapterLog is a subset of StoreEventsLog that just uses address, eventName, and args
+export type StorageAdapterLog = Partial<StoreEventsLog> & UnionPick<StoreEventsLog, "address" | "eventName" | "args">;
+export type StorageAdapterBlock = { blockNumber: BlockLogs["blockNumber"]; logs: StorageAdapterLog[] };
+export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
+```
+
+Internally, `createStoreSync` does a bunch of work:
+
+- it starts from a “block stream”, using an RPC client to watch incoming blocks from the chain and creates an RxJS stream from them (created via MUD’s `createBlockStream`)
+- on each block in the stream, it uses `blockRangeToLogs` to fetch Store event logs for the given block range (optionally filtering down to the world address and eventually namespaces and tables)
+  - leans on [viem’s `getLogs`](https://viem.sh/docs/actions/public/getLogs.html#getlogs) under the hood, passing in the store events ABI to filter logs on store events
+  - `blockRangeToLogs` attempts to fetch logs in big chunks (`maxBlockRange`), narrowing the chunk size as it reaches API limits (block range limits or request limits)
+  - it continues until it catches up to the latest block in the stream, then it’s able to just fetch logs for one block at a time
+  - these logs are grouped by block and emitted as their own stream of `StorageAdapterBlock`s
+- it passes each `StorageAdapterBlock` into the `StorageAdapter` to be stored, awaits the promise it returns, and continues to the next block
+- `createStoreSync` then returns a stream of stored block logs, which can be used to determine where in the state sync is in the chain history
+- no reorg support built-in yet but theoretically could add by having two sync streams running, one for “latest” or “unsafe” blocks and one for “finalized” or “safe” blocks
+- `createStoreSync` supports a few other things but not sure if we want or need to explain these
+  - can accept initial state as an argument, to hydrate sync from an external data source and continue where it left off
+  - hydrating initial state from a MUD indexer (like above) given an indexer URL
+  - filtering the data stream by tables and keys (to keep client state lightweight and only focused on what it needs)
+  - calls an `onProgress` callback (admittedly could/should be a stream returned instead of a callback) during sync to show where it is in the process (hydrating from initial state, syncing from rpc, fully caught up)
