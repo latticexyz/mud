@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.0.0-next.14
+
+### Patch Changes
+
+- aacffcb5: Pinned prettier-plugin-solidity version to 1.1.3
+- Updated dependencies [bb91edaa]
+  - @latticexyz/schema-type@2.0.0-next.14
+
 ## 2.0.0-next.13
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # Change Log
 
+## 2.0.0-next.14
+
+### Patch Changes
+
+- b2d2aa71: Added an explicit package export for `mud.config`
+- Updated dependencies [aacffcb5]
+- Updated dependencies [b2d2aa71]
+- Updated dependencies [bb91edaa]
+- Updated dependencies [bb91edaa]
+  - @latticexyz/common@2.0.0-next.14
+  - @latticexyz/store@2.0.0-next.14
+  - @latticexyz/schema-type@2.0.0-next.14
+  - @latticexyz/config@2.0.0-next.14
+
 ## 2.0.0-next.13
 
 ### Patch Changes
