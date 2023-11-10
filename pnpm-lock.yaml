@@ -353,6 +353,9 @@ importers:
       '@latticexyz/recs':
         specifier: workspace:*
         version: link:../recs
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../schema-type
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
