@@ -2,8 +2,9 @@ import { defineConfig } from "tsup";
 
 export default defineConfig({
   entry: {
-    "bin/faucet-server": "bin/faucet-server.ts",
+    "faucet-server": "bin/faucet-server.ts",
   },
+  outDir: "dist/bin",
   target: "esnext",
   format: ["esm"],
   dts: false,

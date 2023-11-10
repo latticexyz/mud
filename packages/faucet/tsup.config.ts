@@ -1,7 +1,10 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts"],
+  entry: {
+    index: "src/index.ts",
+  },
+  outDir: "dist/js",
   target: "esnext",
   format: ["esm"],
   dts: false,

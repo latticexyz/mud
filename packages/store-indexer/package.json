@@ -10,16 +10,15 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "postgres-frontend": "./dist/postgres-frontend.js",
-    "postgres-indexer": "./dist/postgres-indexer.js",
-    "sqlite-indexer": "./dist/sqlite-indexer.js"
+    "postgres-frontend": "./dist/bin/postgres-frontend.js",
+    "postgres-indexer": "./dist/bin/postgres-indexer.js",
+    "sqlite-indexer": "./dist/bin/sqlite-indexer.js"
   },
   "scripts": {
-    "build": "pnpm run build:js",
-    "build:js": "tsup",
-    "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
-    "dev": "tsup --watch",
+    "build": "pnpm run build:bin",
+    "build:bin": "tsup --config bin/tsup.config.ts",
+    "clean": "pnpm run clean:bin",
+    "clean:bin": "rimraf dist/bin",
     "lint": "eslint .",
     "start:postgres": "concurrently -n indexer,frontend -c cyan,magenta 'tsx bin/postgres-indexer' 'tsx bin/postgres-frontend'",
     "start:postgres:local": "DEBUG=mud:store-sync:createStoreSync DATABASE_URL=postgres://127.0.0.1/postgres RPC_HTTP_URL=http://127.0.0.1:8545 pnpm start:postgres",

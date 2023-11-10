@@ -10,7 +10,7 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/src/index.js"
+    ".": "./dist/js/index.js"
   },
   "types": "src/index.ts",
   "bin": {
@@ -20,8 +20,9 @@
     "build": "pnpm run build:js && pnpm run build:bin",
     "build:bin": "tsup --config bin/tsup.config.ts",
     "build:js": "tsup",
-    "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean": "pnpm run clean:js && pnpm run clean:bin",
+    "clean:bin": "rimraf dist/bin",
+    "clean:js": "rimraf dist/js",
     "dev": "tsup --watch",
     "lint": "eslint .",
     "start": "tsx bin/faucet-server",
