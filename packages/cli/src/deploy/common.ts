@@ -9,6 +9,9 @@ import { WorldConfig, helloWorldEvent } from "@latticexyz/world";
 
 export const salt = padHex("0x", { size: 32 });
 
+// https://eips.ethereum.org/EIPS/eip-170
+export const contractSizeLimit = parseInt("6000", 16);
+
 // TODO: add `as const` to mud config so these get more strongly typed (blocked by current config parsing not using readonly)
 export const storeTables = configToTables(storeConfig);
 export const worldTables = configToTables(worldConfig);

@@ -1,7 +1,7 @@
-import { Client, Transport, Chain, Account, concatHex, getCreate2Address, Hex } from "viem";
+import { Client, Transport, Chain, Account, concatHex, getCreate2Address, Hex, size } from "viem";
 import { getBytecode } from "viem/actions";
 import { deployer } from "./ensureDeployer";
-import { salt } from "./common";
+import { contractSizeLimit, salt } from "./common";
 import { sendTransaction } from "@latticexyz/common";
 import { debug } from "./debug";
 import pRetry from "p-retry";
@@ -19,6 +19,11 @@ export async function ensureContract({
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
 } & Contract): Promise<readonly Hex[]> {
+  if (size(bytecode) > contractSizeLimit) {
+    // TODO: detect this earlier and run this command automatically?
+    throw new Error(`This ${label} is over the contract size limit. Run \`forge build --sizes\` for more info.`);
+  }
+
   const address = getCreate2Address({ from: deployer, salt, bytecode });
 
   const contractCode = await getBytecode(client, { address, blockTag: "pending" });
