@@ -1,6 +1,6 @@
 import { Abi, Address, Hex, padHex } from "viem";
-import storeConfig from "@latticexyz/store/mud.config.js";
-import worldConfig from "@latticexyz/world/mud.config.js";
+import storeConfig from "@latticexyz/store/mud.config";
+import worldConfig from "@latticexyz/world/mud.config";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import IModuleAbi from "@latticexyz/world-modules/out/IModule.sol/IModule.abi.json" assert { type: "json" };
 import { Tables, configToTables } from "./configToTables";
