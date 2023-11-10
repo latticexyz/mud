@@ -41,6 +41,8 @@ ENV PATH="${PATH}:${PNPM_HOME}"
 RUN npm install pnpm --global && pnpm --version
 
 # bun
+ENV BUN_INSTALL="${HOME}/.bun"
+ENV PATH="${PATH}:${BUN_INSTALL}/bin"
 RUN npm install bun --global && bun --version
 
 FROM base AS mud
