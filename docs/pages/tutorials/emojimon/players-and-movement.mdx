@@ -53,7 +53,7 @@ In MUD, a system can have an arbitrary number of methods inside of it. Since we 
 
 Before we add in the functionality of users moving we need to make sure each user is being properly identified as a player with the position and movable table. The former gives us a means of operating on it to create movement, and the latter allows us to grant the entity permission to use the move system.
 
-To solve for these problems we can add the **spawn method**, which will assign the `Player`, `Position`, and `Movable` tables we created earlier, inside of `MapSystem.sol`.
+To solve these problems we can add the **spawn method**, which will assign the `Player`, `Position`, and `Movable` tables we created earlier, inside of `MapSystem.sol`.
 
 <CollapseCode>
 
