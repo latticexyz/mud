@@ -64,7 +64,7 @@ The table configuration can have these properties:
 
 **`tableIdArgument` (optional)**: `bool`: whether to create getter and setter functions with the table ID as an argument, this is used to generate a single library to operate on multiple tables with the same key and value structure.
 
-**`storeArgument` (optional)**: `bool`: whether to create getter and setter functions with the store address as an argument, this is used to generate a single library to operate on the same table in multiple stores. This adds new functions to the library, doubling the amount of functions created (each getter/setter will comes in a pair of “with `storeArgument`” and “without `storeArgument`”)
+**`storeArgument` (optional)**: `bool`: whether to create getter and setter functions with the store address as an argument, this is used to generate a single library to operate on the same table in multiple stores. This adds new functions to the library, doubling the amount of functions created (each getter/setter will come in a pair of “with `storeArgument`” and “without `storeArgument`”)
 
 **`dataStruct` (optional)**: `bool`: whether to create getter and setter functions with a data struct.
 
