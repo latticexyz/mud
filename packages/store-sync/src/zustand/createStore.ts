@@ -1,7 +1,7 @@
 import { SchemaToPrimitives, Table, Tables } from "@latticexyz/store";
 import { StoreApi, UseBoundStore, create } from "zustand";
 import { RawRecord, TableRecord } from "./common";
-import { Hex, concatHex } from "viem";
+import { Hex } from "viem";
 import { encodeKey } from "@latticexyz/protocol-parser";
 import { flattenSchema } from "../flattenSchema";
 import { getId } from "./getId";
@@ -44,7 +44,7 @@ export type CreateStoreOptions<tables extends Tables> = {
 
 export function createStore<tables extends Tables>(opts: CreateStoreOptions<tables>): ZustandStore<tables> {
   return create<ZustandState<tables>>((set, get) => ({
-    tables: {},
+    tables: Object.fromEntries(Object.entries(opts.tables).map(([, table]) => [table.tableId, table])),
     rawRecords: {},
     records: {},
     getRecords: <table extends Table>(table: table): TableRecords<table> => {

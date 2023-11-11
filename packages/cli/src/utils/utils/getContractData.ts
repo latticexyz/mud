@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import path from "path";
 import { MUDError } from "@latticexyz/common/errors";
-import { Abi, Hex } from "viem";
+import { Abi, Hex, size } from "viem";
 import { PublicLibrary } from "../../deploy/common";
 
 export interface LinkReferences {
@@ -22,7 +22,7 @@ export function getContractData(
   contractName: string,
   forgeOutDirectory: string,
   libraries: PublicLibrary[]
-): { bytecode: Hex; abi: Abi } {
+): { bytecode: Hex; abi: Abi; deployedBytecodeSize: number } {
   let data: any;
   const contractDataPath = path.join(forgeOutDirectory, filename, contractName + ".json");
   try {
@@ -35,10 +35,13 @@ export function getContractData(
   if (!bytecode) throw new MUDError(`No bytecode found in ${contractDataPath}`);
   const linkedBytecode = linkLibraries(bytecode, data?.bytecode?.linkReferences, libraries);
 
+  const deployedBytecode = data?.deployedBytecode?.object;
+  if (!deployedBytecode) throw new MUDError(`No deployed bytecode found in ${contractDataPath}`);
+
   const abi = data?.abi;
   if (!abi) throw new MUDError(`No ABI found in ${contractDataPath}`);
 
-  return { abi, bytecode: linkedBytecode };
+  return { abi, bytecode, deployedBytecodeSize: size(deployedBytecode as Hex) };
 }
 
 function linkLibraries(bytecode: Hex, linkReferences: LinkReferences, libraries: PublicLibrary[]) {

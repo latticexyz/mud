@@ -13,12 +13,15 @@ import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/
 import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
 import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
-import { parseEnv } from "./parseEnv";
+import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
 
 const env = parseEnv(
-  z.object({
-    SQLITE_FILENAME: z.string().default("indexer.db"),
-  })
+  z.intersection(
+    z.intersection(indexerEnvSchema, frontendEnvSchema),
+    z.object({
+      SQLITE_FILENAME: z.string().default("indexer.db"),
+    })
+  )
 );
 
 const transports: Transport[] = [
@@ -68,6 +71,7 @@ const { latestBlockNumber$, storedBlockLogs$ } = await syncToSqlite({
   publicClient,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
+  address: env.STORE_ADDRESS,
 });
 
 let isCaughtUp = false;
@@ -106,4 +110,4 @@ server.register(fastifyTRPCPlugin<AppRouter>, {
 });
 
 await server.listen({ host: env.HOST, port: env.PORT });
-console.log(`indexer server listening on http://${env.HOST}:${env.PORT}`);
+console.log(`sqlite indexer frontend listening on http://${env.HOST}:${env.PORT}`);

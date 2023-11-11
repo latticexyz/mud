@@ -80,6 +80,17 @@ export default mudConfig({
         availableCalls: "uint256",
       },
     },
+    SystemboundDelegations: {
+      directory: "modules/std-delegations/tables",
+      keySchema: {
+        delegator: "address",
+        delegatee: "address",
+        systemId: "ResourceId",
+      },
+      valueSchema: {
+        availableCalls: "uint256",
+      },
+    },
     TimeboundDelegations: {
       directory: "modules/std-delegations/tables",
       keySchema: {

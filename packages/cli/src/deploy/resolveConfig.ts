@@ -78,6 +78,7 @@ export async function resolveConfig<config extends ConfigInput>({
       ),
       address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
       bytecode: contractData.bytecode,
+      deployedBytecodeSize: contractData.deployedBytecodeSize,
       abi: contractData.abi,
       functions: systemFunctions,
     };
@@ -121,15 +122,9 @@ export async function resolveConfig<config extends ConfigInput>({
     ),
   };
 
-  const defaultModules = defaultModuleContracts.map((mod) => ({
-    name: mod.name,
-    bytecode: (typeof mod.bytecode === "string" ? mod.bytecode : mod.bytecode.object) as Hex,
-    abi: mod.abi as Abi,
-  }));
-
   const modules = config.modules.map((mod) => {
     const contractData =
-      defaultModules.find((defaultMod) => defaultMod.name === mod.name) ??
+      defaultModuleContracts.find((defaultMod) => defaultMod.name === mod.name) ??
       getContractData(`${mod.name}.sol`, mod.name, forgeOutDir, libraries);
     const installArgs = mod.args
       .map((arg) => resolveWithContext(arg, resolveContext))
@@ -146,6 +141,7 @@ export async function resolveConfig<config extends ConfigInput>({
       installData: installArgs.length === 0 ? "0x" : installArgs[0],
       address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
       bytecode: contractData.bytecode,
+      deployedBytecodeSize: contractData.deployedBytecodeSize,
       abi: contractData.abi,
     };
   });

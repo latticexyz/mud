@@ -45,7 +45,12 @@ export async function getPublicLibraries(forgeOutDir: string) {
 
   const libraries: PublicLibrary[] = [];
   for (const { libraryFullPath, libraryFilename, libraryName } of orderedLibraryDeps) {
-    const { bytecode, abi } = getContractData(libraryFilename, libraryName, forgeOutDir, libraries);
+    const { bytecode, abi, deployedBytecodeSize } = getContractData(
+      libraryFilename,
+      libraryName,
+      forgeOutDir,
+      libraries
+    );
     const address = getCreate2Address({ from: deployer, bytecode, salt });
 
     const fullyQualifiedName = `${libraryFullPath}:${libraryName}`;
@@ -56,6 +61,7 @@ export async function getPublicLibraries(forgeOutDir: string) {
       address,
       bytecode,
       abi,
+      deployedBytecodeSize,
       fullyQualifiedName,
       filename: libraryFilename,
       name: libraryName,

@@ -4,7 +4,7 @@ import { Subject, lastValueFrom, map, toArray } from "rxjs";
 import { EIP1193RequestFn, RpcLog, Transport, createPublicClient, createTransport } from "viem";
 import { wait } from "@latticexyz/common/utils";
 
-// TODO: there is a chance that these tests will need to be written differently with timers to avoid flakiness
+vi.useFakeTimers();
 
 const mockedTransportRequest = vi.fn<Parameters<EIP1193RequestFn>, ReturnType<EIP1193RequestFn>>();
 const mockTransport: Transport = () =>
@@ -29,7 +29,7 @@ describe("blockRangeToLogs", () => {
     mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
       requests.push(params);
       if (method !== "eth_getLogs") throw new Error("not implemented");
-      await wait(450);
+      await Promise.race([wait(450), vi.runAllTimersAsync()]);
       return [];
     });
 
@@ -46,10 +46,10 @@ describe("blockRangeToLogs", () => {
 
     (async (): Promise<void> => {
       for (let blockNumber = 1000n; blockNumber <= 1010n; blockNumber++) {
-        await wait(100);
+        await Promise.race([wait(100), vi.runAllTimersAsync()]);
         latestBlockNumber$.next(blockNumber);
       }
-      await wait(100);
+      await Promise.race([wait(100), vi.runAllTimersAsync()]);
       latestBlockNumber$.complete();
     })();
 
