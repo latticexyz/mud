@@ -1,62 +1,184 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+
 # Zustand
 
-[Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction) is a state management solution that supports JavaScript and TypeScript.
+[Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction) is a state management library that supports JavaScript and TypeScript.
+You can see it in use in the [`react` template](https://github.com/latticexyz/mud/tree/main/templates/react).
 
-- `syncToZustand` https://github.com/latticexyz/mud/blob/3122cdf1c0fd81a1cea5019f5796fee9b53c4ac6/templates/react/packages/client/src/mud/setupNetwork.ts#L74-L79
-- returns strongly typed `tables` (which will use to reference tables when querying data) and `useStore` (which is both a React hook and vanilla-compatible store)
-- Inside React, you want to use `useStore` like a hook and select the slice of data you want: https://github.com/pmndrs/zustand#selecting-multiple-state-slices
-- You can also read/write to store state outside of React: https://github.com/pmndrs/zustand#readingwriting-state-and-reacting-to-changes-outside-of-components
-- `getRecords(table)` returns an object with internal unique ID as the key and the record (key + value) as the value
-  ```tsx
-  {
-    [id: string]: {
-      table: Table;
-      id: string;
-      keyTuple: Hex[];
-      key: {
-        key: Hex;
-      };
-      value: {
-        value: string;
-      };
-    };
-  }
-  ```
-  For cases where you want an array, you can just `Object.values(records)`
-  https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/App.tsx#L11-L15
-- `getRecord(table, key)` to get a specific record (with key+value like above) or `getValue(table, key)` to get just the value
-- when using via React hook, it’s automatically reactive, and when using state slices (see Zustand docs), it’s smart enough to only re-render when the sliced state changes
-- Zustand feels very React-friendly for those used to `useState`, it’s just a bigger state tree and auto-populated by MUD
+## Zustand and React
 
-## RECS
+Zustand is React native.
+The way you use it is very similar to the way you'd use `useState`, except that the state you receive is bigger, it is auto-populated by MUD, and you change it through a `System` instead of using a function provided by the hook.
 
-- I think you have enough context on this but we can skip docs for this for now if we’re running out of time. Zustand is a better starting place for ~most use cases.
+### Initialization
 
-# State Synchronization
+To initialize the synchronization you use [`syncToZustand`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/zustand/syncToZustand.ts).
 
-`createStoreSync` powers all of our state sync libraries (zustand, recs, sqlite, postgres). As an argument, it takes in a “storage adapter” that looks like `(block: StorageAdapterBlock) => Promise<void>`
-
-```tsx
-// StoreEventsLog is a strongly typed Log from viem that is specific to our store events ABI
-// StorageAdapterLog is a subset of StoreEventsLog that just uses address, eventName, and args
-export type StorageAdapterLog = Partial<StoreEventsLog> & UnionPick<StoreEventsLog, "address" | "eventName" | "args">;
-export type StorageAdapterBlock = { blockNumber: BlockLogs["blockNumber"]; logs: StorageAdapterLog[] };
-export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
+```ts copy
+const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
+  config: mudConfig,
+  address: networkConfig.worldAddress as Hex,
+  publicClient,
+  startBlock: BigInt(networkConfig.initialBlockNumber),
+});
 ```
 
-Internally, `createStoreSync` does a bunch of work:
+The most important fields returned by `syncToZustand` are:
 
-- it starts from a “block stream”, using an RPC client to watch incoming blocks from the chain and creates an RxJS stream from them (created via MUD’s `createBlockStream`)
-- on each block in the stream, it uses `blockRangeToLogs` to fetch Store event logs for the given block range (optionally filtering down to the world address and eventually namespaces and tables)
-  - leans on [viem’s `getLogs`](https://viem.sh/docs/actions/public/getLogs.html#getlogs) under the hood, passing in the store events ABI to filter logs on store events
-  - `blockRangeToLogs` attempts to fetch logs in big chunks (`maxBlockRange`), narrowing the chunk size as it reaches API limits (block range limits or request limits)
-  - it continues until it catches up to the latest block in the stream, then it’s able to just fetch logs for one block at a time
-  - these logs are grouped by block and emitted as their own stream of `StorageAdapterBlock`s
-- it passes each `StorageAdapterBlock` into the `StorageAdapter` to be stored, awaits the promise it returns, and continues to the next block
-- `createStoreSync` then returns a stream of stored block logs, which can be used to determine where in the state sync is in the chain history
-- no reorg support built-in yet but theoretically could add by having two sync streams running, one for “latest” or “unsafe” blocks and one for “finalized” or “safe” blocks
-- `createStoreSync` supports a few other things but not sure if we want or need to explain these
-  - can accept initial state as an argument, to hydrate sync from an external data source and continue where it left off
-  - hydrating initial state from a MUD indexer (like above) given an indexer URL
-  - filtering the data stream by tables and keys (to keep client state lightweight and only focused on what it needs)
-  - calls an `onProgress` callback (admittedly could/should be a stream returned instead of a callback) during sync to show where it is in the process (hydrating from initial state, syncing from rpc, fully caught up)
+- The `tables` variable, which contains the metadata (key schema, value schema, etc.) of the tables.
+- The `useStore` [React hook](https://react.dev/reference/react/hooks) you can use to [read information from tables](https://github.com/pmndrs/zustand#selecting-multiple-state-slices).
+  It can also be used [without React](https://github.com/pmndrs/zustand#readingwriting-state-and-reacting-to-changes-outside-of-components).
+
+### Get all records
+
+To get all the records in a specific table you can use this syntax:
+
+```tsx copy
+const records = useStore(state => Object.values(state.getRecords(tables.<table name>)))
+```
+
+The result is a list of records.
+For every field that is part of the key each record contains a `key.<field name>` field.
+For every field that is part of the value each record contains a `value.<field name>` field.
+
+For example, if you look at [the `Systems` table](https://github.com/latticexyz/mud/blob/main/packages/world/mud.config.ts#L63-L72), you might get these records:
+
+<CollapseCode>
+
+```json showLineNumbers {1-2,28-36,62-70}
+[
+  {
+    "id": "0x7462776f726c6400000000000000000053797374656d73000000000000000000:0x73790000000000000000000000000000636f7265000000000000000000000000",
+    "table": {
+      "keySchema": {
+        "systemId": {
+          "type": "bytes32",
+          "internalType": "ResourceId"
+        }
+      },
+      "valueSchema": {
+        "system": {
+          "type": "address",
+          "internalType": "address"
+        },
+        "publicAccess": {
+          "type": "bool",
+          "internalType": "bool"
+        }
+      },
+      "namespace": "world",
+      "name": "Systems",
+      "tableId": "0x7462776f726c6400000000000000000053797374656d73000000000000000000"
+    },
+    "keyTuple": ["0x73790000000000000000000000000000636f7265000000000000000000000000"],
+    "key": {
+      "systemId": "0x73790000000000000000000000000000636f7265000000000000000000000000"
+    },
+    "value": {
+      "system": "0xD041DF1408B365897dA363b3b2100057514CC725",
+      "publicAccess": true
+    }
+  },
+  {
+    "id": "0x7462776f726c6400000000000000000053797374656d73000000000000000000:0x737900000000000000000000000000005461736b7353797374656d0000000000",
+    "table": {
+      "keySchema": {
+        "systemId": {
+          "type": "bytes32",
+          "internalType": "ResourceId"
+        }
+      },
+      "valueSchema": {
+        "system": {
+          "type": "address",
+          "internalType": "address"
+        },
+        "publicAccess": {
+          "type": "bool",
+          "internalType": "bool"
+        }
+      },
+      "namespace": "world",
+      "name": "Systems",
+      "tableId": "0x7462776f726c6400000000000000000053797374656d73000000000000000000"
+    },
+    "keyTuple": ["0x737900000000000000000000000000005461736b7353797374656d0000000000"],
+    "key": {
+      "systemId": "0x737900000000000000000000000000005461736b7353797374656d0000000000"
+    },
+    "value": {
+      "system": "0x29E2e167C27caab62666E2E88B4e3BEB579E351F",
+      "publicAccess": true
+    }
+  }
+]
+```
+
+</CollapseCode>
+
+### Get a specific record
+
+To get a specific record you can use `getRecord`.
+For example, this code finds the record for the `systemId` that corresponds to `:TasksSystem`.
+
+```ts copy
+const key = {
+  systemId: "0x737900000000000000000000000000005461736b7353797374656d0000000000",
+};
+const rec = useStore((state) => state.getRecord(tables.Systems, key));
+```
+
+For the result:
+
+```json
+{
+  "id": "0x7462776f726c6400000000000000000053797374656d73000000000000000000:0x737900000000000000000000000000005461736b7353797374656d0000000000",
+  "table": {
+    "keySchema": {
+      "systemId": {
+        "type": "bytes32",
+        "internalType": "ResourceId"
+      }
+    },
+    "valueSchema": {
+      "system": {
+        "type": "address",
+        "internalType": "address"
+      },
+      "publicAccess": {
+        "type": "bool",
+        "internalType": "bool"
+      }
+    },
+    "namespace": "world",
+    "name": "Systems",
+    "tableId": "0x7462776f726c6400000000000000000053797374656d73000000000000000000"
+  },
+  "keyTuple": ["0x737900000000000000000000000000005461736b7353797374656d0000000000"],
+  "key": {
+    "systemId": "0x737900000000000000000000000000005461736b7353797374656d0000000000"
+  },
+  "value": {
+    "system": "0x29E2e167C27caab62666E2E88B4e3BEB579E351F",
+    "publicAccess": true
+  }
+}
+```
+
+If you just want the value, you can use `getValue`.
+
+```ts copy
+const key = {
+  systemId: "0x737900000000000000000000000000005461736b7353797374656d0000000000",
+};
+const val = useStore((state) => state.getValue(tables.Systems, key));
+```
+
+For the result:
+
+```json
+{
+  "system": "0x29E2e167C27caab62666E2E88B4e3BEB579E351F",
+  "publicAccess": true
+}
+```
