@@ -76,7 +76,7 @@ in your contracts directory to use the default anvil private key.`
     );
   }
 
-  const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
+  const resolvedConfig = await resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
   const client = createWalletClient({
     transport: http(rpc),

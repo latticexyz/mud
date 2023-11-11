@@ -64,9 +64,18 @@ export type Module = DeterministicContract & {
   readonly installData: Hex; // TODO: figure out better naming for this
 };
 
+// https://docs.soliditylang.org/en/latest/using-the-compiler.html#library-linking
+export type PublicLibrary = DeterministicContract & {
+  readonly fullyQualifiedName: string;
+  readonly filename: string;
+  readonly name: string;
+  readonly addressPlaceholder: string;
+};
+
 export type ConfigInput = StoreConfig & WorldConfig;
 export type Config<config extends ConfigInput> = {
   readonly tables: Tables<config>;
   readonly systems: readonly System[];
   readonly modules: readonly Module[];
+  readonly libraries: readonly PublicLibrary[];
 };

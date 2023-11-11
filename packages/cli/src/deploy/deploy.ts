@@ -12,7 +12,6 @@ import { Table } from "./configToTables";
 import { assertNamespaceOwner } from "./assertNamespaceOwner";
 import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
-import { ensureContract } from "./ensureContract";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { coreModuleBytecode, worldFactoryBytecode } from "./ensureWorldFactory";
@@ -36,8 +35,20 @@ export async function deploy<configInput extends ConfigInput>({
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   const tables = Object.values(config.tables) as Table[];
   const systems = Object.values(config.systems);
+  const libraries = Object.values(config.libraries);
 
   await ensureDeployer(client);
+
+  // deploy all libraries ahead of other contracts
+  await ensureContractsDeployed({
+    client,
+    contracts: [
+      ...uniqueBy(libraries, (library) => getAddress(library.address)).map((library) => ({
+        bytecode: library.bytecode,
+        label: `${library.fullyQualifiedName} library`,
+      })),
+    ],
+  });
 
   // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
   await ensureContractsDeployed({

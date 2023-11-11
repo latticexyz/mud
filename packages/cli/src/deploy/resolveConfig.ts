@@ -20,10 +20,11 @@ import { getContractData } from "../utils/utils/getContractData";
 import { configToTables } from "./configToTables";
 import { deployer } from "./ensureDeployer";
 import { resourceLabel } from "./resourceLabel";
+import { getPublicLibraries } from "./getPublicLibraries";
 
 // TODO: this should be replaced by https://github.com/latticexyz/mud/issues/1668
 
-export function resolveConfig<config extends ConfigInput>({
+export async function resolveConfig<config extends ConfigInput>({
   config,
   forgeSourceDir,
   forgeOutDir,
@@ -31,13 +32,15 @@ export function resolveConfig<config extends ConfigInput>({
   config: config;
   forgeSourceDir: string;
   forgeOutDir: string;
-}): Config<config> {
+}): Promise<Config<config>> {
+  const libraries = await getPublicLibraries(forgeOutDir);
+
   const tables = configToTables(config);
 
   // TODO: should the config parser/loader help with resolving systems?
   const contractNames = getExistingContracts(forgeSourceDir).map(({ basename }) => basename);
   const resolvedConfig = resolveWorldConfig(config, contractNames);
-  const baseSystemContractData = getContractData("System", forgeOutDir);
+  const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir, libraries);
   const baseSystemFunctions = baseSystemContractData.abi
     .filter((item): item is typeof item & { type: "function" } => item.type === "function")
     .map(getFunctionSignature);
@@ -46,7 +49,7 @@ export function resolveConfig<config extends ConfigInput>({
     const namespace = config.namespace;
     const name = system.name;
     const systemId = resourceToHex({ type: "system", namespace, name });
-    const contractData = getContractData(systemName, forgeOutDir);
+    const contractData = getContractData(`${systemName}.sol`, systemName, forgeOutDir, libraries);
 
     const systemFunctions = contractData.abi
       .filter((item): item is typeof item & { type: "function" } => item.type === "function")
@@ -126,7 +129,8 @@ export function resolveConfig<config extends ConfigInput>({
 
   const modules = config.modules.map((mod) => {
     const contractData =
-      defaultModules.find((defaultMod) => defaultMod.name === mod.name) ?? getContractData(mod.name, forgeOutDir);
+      defaultModules.find((defaultMod) => defaultMod.name === mod.name) ??
+      getContractData(`${mod.name}.sol`, mod.name, forgeOutDir, libraries);
     const installArgs = mod.args
       .map((arg) => resolveWithContext(arg, resolveContext))
       .map((arg) => {
@@ -150,5 +154,6 @@ export function resolveConfig<config extends ConfigInput>({
     tables,
     systems: systemsWithAccess,
     modules,
+    libraries,
   };
 }
