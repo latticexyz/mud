@@ -95,7 +95,7 @@ MyTable.deleteRecord("some.key");
 ### Access to Store via low-level API
 
 <Aside emoji="⚠️">
-  Accessing Store via the low-level API is not recommend, although it is safe (no storage corruption can happen).
+  Accessing Store via the low-level API is not recommended, although it is safe (no storage corruption can happen).
 </Aside>
 
 Reading records returns `bytes`, and writing to records require `bytes` too. Store will make sure to prevent corruption when writes happen by retrieving the schemas and computing expected total length.
