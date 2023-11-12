@@ -1,5 +1,5 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
-import { Hex, TransactionReceiptNotFoundError } from "viem";
+import { Hex, TransactionReceiptNotFoundError, encodeAbiParameters, parseAbiParameters } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -8,6 +8,7 @@ import {
   SyncOptions,
   SyncResult,
   TableWithRecords,
+  storeTables,
 } from "./common";
 import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
@@ -32,8 +33,16 @@ import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
 import { SyncStep } from "./SyncStep";
 import { chunk, isDefined } from "@latticexyz/common/utils";
-import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
+import {
+  encodeKey,
+  encodeValueArgs,
+  keySchemaToHex,
+  valueSchemaToFieldLayoutHex,
+  valueSchemaToHex,
+} from "@latticexyz/protocol-parser";
 import { internalTableIds } from "./internalTableIds";
+import { flattenSchema } from "./flattenSchema";
+import { tableToLog } from "./tableToLog";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -140,19 +149,22 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         message: "Hydrating from snapshot",
       });
 
-      const logs: StorageAdapterLog[] = tables.flatMap((table) =>
-        table.records.map(
-          (record): StorageAdapterLog => ({
-            eventName: "Store_SetRecord",
-            address: table.address,
-            args: {
-              tableId: table.tableId,
-              keyTuple: encodeKey(table.keySchema, record.key),
-              ...encodeValueArgs(table.valueSchema, record.value),
-            },
-          })
-        )
-      );
+      const logs: StorageAdapterLog[] = [
+        ...tables.map(tableToLog),
+        ...tables.flatMap((table) =>
+          table.records.map(
+            (record): StorageAdapterLog => ({
+              eventName: "Store_SetRecord",
+              address: table.address,
+              args: {
+                tableId: table.tableId,
+                keyTuple: encodeKey(table.keySchema, record.key),
+                ...encodeValueArgs(table.valueSchema, record.value),
+              },
+            })
+          )
+        ),
+      ];
 
       // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
       // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
