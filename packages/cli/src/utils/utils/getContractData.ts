@@ -37,11 +37,12 @@ export function getContractData(
 
   const deployedBytecode = data?.deployedBytecode?.object;
   if (!deployedBytecode) throw new MUDError(`No deployed bytecode found in ${contractDataPath}`);
+  const linkedDeployedBytecode = linkLibraries(deployedBytecode, data?.deployedBytecode?.linkReferences, libraries);
 
   const abi = data?.abi;
   if (!abi) throw new MUDError(`No ABI found in ${contractDataPath}`);
 
-  return { abi, bytecode, deployedBytecodeSize: size(deployedBytecode as Hex) };
+  return { abi, bytecode: linkedBytecode, deployedBytecodeSize: size(linkedDeployedBytecode as Hex) };
 }
 
 function linkLibraries(bytecode: Hex, linkReferences: LinkReferences, libraries: PublicLibrary[]) {

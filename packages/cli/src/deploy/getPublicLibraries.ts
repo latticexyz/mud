@@ -13,38 +13,49 @@ export async function getPublicLibraries(forgeOutDir: string) {
     libraryFullPath: string;
     libraryFilename: string;
     libraryName: string;
+    contractFullyQualifiedName: string;
+    libraryFullyQualifiedName: string;
   }[] = [];
   const files = glob.sync(`${forgeOutDir}/**/*.json`, { ignore: "**/*.abi.json" });
 
-  for (const contractFullPath of files) {
-    const json = JSON.parse((await readFile(contractFullPath, "utf8")).trim());
+  for (const contractOutPath of files) {
+    const json = JSON.parse((await readFile(contractOutPath, "utf8")).trim());
     const linkReferences = json.bytecode.linkReferences as LinkReferences;
+
+    const contractFullPath = json.ast.absolutePath;
+    // skip files that do not reference any contract/library
+    if (!json.metadata) continue;
+    const contractName = json.metadata.settings.compilationTarget[contractFullPath];
 
     for (const [libraryFullPath, namePositions] of Object.entries(linkReferences)) {
       const names = Object.keys(namePositions);
       for (const libraryName of names) {
         libraryDeps.push({
-          contractFullPath,
+          contractFullPath: json.ast.absolutePath,
           libraryFullPath,
           libraryFilename: path.basename(libraryFullPath),
           libraryName,
+          contractFullyQualifiedName: `${contractFullPath}:${contractName}`,
+          libraryFullyQualifiedName: `${libraryFullPath}:${libraryName}`,
         });
       }
     }
   }
 
-  const directedGraphEdges: [string, string][] = libraryDeps.map(({ contractFullPath, libraryFullPath }) => [
-    libraryFullPath,
-    contractFullPath,
-  ]);
+  const directedGraphEdges: [string, string][] = libraryDeps.map(
+    ({ contractFullyQualifiedName, libraryFullyQualifiedName }) => [
+      libraryFullyQualifiedName,
+      contractFullyQualifiedName,
+    ]
+  );
   const dependencyOrder = toposort(directedGraphEdges);
 
   const orderedLibraryDeps = libraryDeps.sort((a, b) => {
-    return dependencyOrder.indexOf(a.libraryFullPath) - dependencyOrder.indexOf(b.libraryFullPath);
+    return dependencyOrder.indexOf(a.libraryFullyQualifiedName) - dependencyOrder.indexOf(b.libraryFullyQualifiedName);
   });
 
   const libraries: PublicLibrary[] = [];
-  for (const { libraryFullPath, libraryFilename, libraryName } of orderedLibraryDeps) {
+  for (const { libraryFilename, libraryName, libraryFullyQualifiedName } of orderedLibraryDeps) {
     const { bytecode, abi, deployedBytecodeSize } = getContractData(
       libraryFilename,
       libraryName,
@@ -53,8 +64,7 @@ export async function getPublicLibraries(forgeOutDir: string) {
     );
     const address = getCreate2Address({ from: deployer, bytecode, salt });
 
-    const fullyQualifiedName = `${libraryFullPath}:${libraryName}`;
-    const hashPrefix = keccak256(stringToHex(fullyQualifiedName)).slice(2, 36);
+    const hashPrefix = keccak256(stringToHex(libraryFullyQualifiedName)).slice(2, 36);
     const addressPlaceholder = `__$${hashPrefix}$__`;
 
     libraries.push({
@@ -62,7 +72,7 @@ export async function getPublicLibraries(forgeOutDir: string) {
       bytecode,
       abi,
       deployedBytecodeSize,
-      fullyQualifiedName,
+      fullyQualifiedName: libraryFullyQualifiedName,
       filename: libraryFilename,
       name: libraryName,
       addressPlaceholder,
