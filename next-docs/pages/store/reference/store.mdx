@@ -23,6 +23,16 @@ event Store_SetRecord(
 );
 ```
 
+**Parameters**
+
+| Name             | Type            | Description                                             |
+| ---------------- | --------------- | ------------------------------------------------------- |
+| `tableId`        | `ResourceId`    | The ID of the table where the record is set.            |
+| `keyTuple`       | `bytes32[]`     | An array representing the composite key for the record. |
+| `staticData`     | `bytes`         | The static data of the record.                          |
+| `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.  |
+| `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
+
 ### Store_SpliceStaticData
 
 Emitted when static data in the store is spliced.
@@ -33,6 +43,15 @@ so the total length of the data remains the same and no data is shifted._
 ```solidity
 event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
 ```
+
+**Parameters**
+
+| Name       | Type         | Description                                                           |
+| ---------- | ------------ | --------------------------------------------------------------------- |
+| `tableId`  | `ResourceId` | The ID of the table where the data is spliced.                        |
+| `keyTuple` | `bytes32[]`  | An array representing the key for the record.                         |
+| `start`    | `uint48`     | The start position in bytes for the splice operation.                 |
+| `data`     | `bytes`      | The data to write to the static data of the record at the start byte. |
 
 ### Store_SpliceDynamicData
 
@@ -49,6 +68,17 @@ event Store_SpliceDynamicData(
 );
 ```
 
+**Parameters**
+
+| Name             | Type            | Description                                                               |
+| ---------------- | --------------- | ------------------------------------------------------------------------- |
+| `tableId`        | `ResourceId`    | The ID of the table where the data is spliced.                            |
+| `keyTuple`       | `bytes32[]`     | An array representing the composite key for the record.                   |
+| `start`          | `uint48`        | The start position in bytes for the splice operation.                     |
+| `deleteCount`    | `uint40`        | The number of bytes to delete in the splice operation.                    |
+| `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.                    |
+| `data`           | `bytes`         | The data to insert into the dynamic data of the record at the start byte. |
+
 ### Store_DeleteRecord
 
 Emitted when a record is deleted from the store.
@@ -56,6 +86,13 @@ Emitted when a record is deleted from the store.
 ```solidity
 event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 ```
+
+**Parameters**
+
+| Name       | Type         | Description                                             |
+| ---------- | ------------ | ------------------------------------------------------- |
+| `tableId`  | `ResourceId` | The ID of the table where the record is deleted.        |
+| `keyTuple` | `bytes32[]`  | An array representing the composite key for the record. |
 
 ## IStoreErrors
 
@@ -153,6 +190,12 @@ Emitted when the store is initialized.
 ```solidity
 event HelloStore(bytes32 indexed storeVersion);
 ```
+
+**Parameters**
+
+| Name           | Type      | Description                        |
+| -------------- | --------- | ---------------------------------- |
+| `storeVersion` | `bytes32` | The version of the Store contract. |
 
 ## IStoreRead
 
