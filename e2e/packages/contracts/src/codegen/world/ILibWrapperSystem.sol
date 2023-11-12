@@ -9,4 +9,6 @@ pragma solidity >=0.8.21;
  */
 interface ILibWrapperSystem {
   function callLib() external returns (string memory);
+
+  function callFreeFunc() external returns (string memory);
 }

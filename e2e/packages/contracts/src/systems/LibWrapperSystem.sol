@@ -9,6 +9,10 @@ contract LibWrapperSystem is System {
   function callLib() public returns (string memory) {
     return Lib1.call();
   }
+
+  function callFreeFunc() public returns (string memory) {
+    return freeLibWrapper();
+  }
 }
 
 library Lib1 {
@@ -21,4 +25,8 @@ library Lib3 {
   function call() public pure returns (string memory) {
     return Lib4.call();
   }
+}
+
+function freeLibWrapper() pure returns (string memory) {
+  return Lib1.call();
 }
