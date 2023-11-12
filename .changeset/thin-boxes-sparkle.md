@@ -2,7 +2,7 @@
 "@latticexyz/cli": major
 ---
 
-- Added `getPublicLibraries` helper, which returns the data needed to link all public libraries within a given forge output directory 
+- Added `getPublicLibraries` helper, which returns the data needed to link all public libraries within a given forge output directory
 
 - Added a human-readable error to `ensureContract` about unlinked public libraries
 
