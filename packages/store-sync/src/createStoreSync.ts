@@ -8,6 +8,7 @@ import {
   SyncOptions,
   SyncResult,
   TableWithRecords,
+  internalTableIds,
   storeTables,
 } from "./common";
 import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
@@ -33,15 +34,7 @@ import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
 import { SyncStep } from "./SyncStep";
 import { chunk, isDefined } from "@latticexyz/common/utils";
-import {
-  encodeKey,
-  encodeValueArgs,
-  keySchemaToHex,
-  valueSchemaToFieldLayoutHex,
-  valueSchemaToHex,
-} from "@latticexyz/protocol-parser";
-import { internalTableIds } from "./internalTableIds";
-import { flattenSchema } from "./flattenSchema";
+import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
 import { tableToLog } from "./tableToLog";
 
 const debug = parentDebug.extend("createStoreSync");
