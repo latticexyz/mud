@@ -1,0 +1,717 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+
+# Map and terrain
+
+In this section, we will accomplish the following:
+
+- Configure the map as a singleton table and initialize it in the client.
+- Add terrain (tall grass and boulders) to the map.
+- Prevent movement into boulders.
+
+## Use a singleton table for the map config
+
+At this point we have the concept of a 2D grid but there is no official "map" and there is no terrain.
+To do so in the ECS model we will now implement the map as a [singleton table](/store/advanced-features#singleton-table) and initialize it in the client.
+Singleton tables are tables with a single record.
+This kind of table is useful to store top-level state.
+
+Go ahead and add the `MapConfig` as a singleton table in the MUD config (`mud.config.ts`).
+
+<CollapseCode>
+
+```ts filename="packages/contracts/mud.config.ts" {5,8-16} copy showLineNumbers
+import { mudConfig } from "@latticexyz/world/register";
+
+export default mudConfig({
+  enums: {
+    TerrainType: ["None", "TallGrass", "Boulder"],
+  },
+  tables: {
+    MapConfig: {
+      keySchema: {},
+      dataStruct: false,
+      valueSchema: {
+        width: "uint32",
+        height: "uint32",
+        terrain: "bytes",
+      },
+    },
+    Movable: "bool",
+    Player: "bool",
+    Position: {
+      dataStruct: false,
+      valueSchema: {
+        x: "uint32",
+        y: "uint32",
+      },
+    },
+  },
+});
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```ts
+  enums: {
+    TerrainType: ["None", "TallGrass", "Boulder"],
+  },
+```
+
+This is how you define an [enumeration](https://www.tutorialspoint.com/solidity/solidity_enums.htm).
+The Solidity code for enumerations goes in `packages/contracts/src/codegen/common.sol`.
+
+```ts
+    MapConfig: {
+      keySchema: {},
+```
+
+An empty key schema is the way you define [a singleton](/store/advanced-features#singleton-table).
+
+```ts
+      dataStruct: false,
+      valueSchema: {
+        width: "uint32",
+        height: "uint32",
+        terrain: "bytes",
+      },
+    },
+```
+
+The terrain is a list of bytes.
+We couldn't declare an array of arrays, because MUD schemas are limited to five dynamic (variable length) fields.
+
+</details>
+
+## Add terrain
+
+There are two features we have yet to implement—boulders to obstruct movement and tall grass to generate encounters.
+Before we start setting up the components and systems necessary to do so we must first add the terrain itself and render them in the client.
+
+First, we’ll use the `PostDeploy.s.sol` to initialize the terrain in the `World`.
+
+<CollapseCode>
+
+```solidity filename="packages/contracts/script/PostDeploy.s.sol" {6-8,16-58} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { TerrainType } from "../src/codegen/common.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { MapConfig } from "../src/codegen/index.sol";
+
+contract PostDeploy is Script {
+  function run(address worldAddress) external {
+    console.log("Deployed world: ", worldAddress);
+
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    vm.startBroadcast(deployerPrivateKey);
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    TerrainType O = TerrainType.None;
+    TerrainType T = TerrainType.TallGrass;
+    TerrainType B = TerrainType.Boulder;
+
+    TerrainType[20][20] memory map = [
+      [O, O, O, O, O, O, T, O, O, O, O, O, O, O, O, O, O, O, O, O],
+      [O, O, T, O, O, O, O, O, T, O, O, O, O, B, O, O, O, O, O, O],
+      [O, T, T, T, T, O, O, O, O, O, O, O, O, O, O, T, T, O, O, O],
+      [O, O, T, T, T, T, O, O, O, O, B, O, O, O, O, O, T, O, O, O],
+      [O, O, O, O, T, T, O, O, O, O, O, O, O, O, O, O, O, T, O, O],
+      [O, O, O, B, B, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+      [O, T, O, O, O, B, B, O, O, O, O, T, O, O, O, O, O, B, O, O],
+      [O, O, T, T, O, O, O, O, O, T, O, B, O, O, T, O, B, O, O, O],
+      [O, O, T, O, O, O, O, T, T, T, O, B, B, O, O, O, O, O, O, O],
+      [O, O, O, O, O, O, O, T, T, T, O, B, T, O, T, T, O, O, O, O],
+      [O, B, O, O, O, B, O, O, T, T, O, B, O, O, T, T, O, O, O, O],
+      [O, O, B, O, O, O, T, O, T, T, O, O, B, T, T, T, O, O, O, O],
+      [O, O, B, B, O, O, O, O, T, O, O, O, B, O, T, O, O, O, O, O],
+      [O, O, O, B, B, O, O, O, O, O, O, O, O, B, O, T, O, O, O, O],
+      [O, O, O, O, B, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+      [O, O, O, O, O, O, O, O, O, O, B, B, O, O, T, O, O, O, O, O],
+      [O, O, O, O, T, O, O, O, T, B, O, O, O, T, T, O, B, O, O, O],
+      [O, O, O, T, O, T, T, T, O, O, O, O, O, T, O, O, O, O, O, O],
+      [O, O, O, T, T, T, T, O, O, O, O, T, O, O, O, T, O, O, O, O],
+      [O, O, O, O, O, T, O, O, O, O, O, O, O, O, O, O, O, O, O, O]
+    ];
+
+    uint32 height = uint32(map.length);
+    uint32 width = uint32(map[0].length);
+    bytes memory terrain = new bytes(width * height);
+
+    for (uint32 y = 0; y < height; y++) {
+      for (uint32 x = 0; x < width; x++) {
+        TerrainType terrainType = map[y][x];
+        if (terrainType == TerrainType.None) continue;
+
+        terrain[(y * width) + x] = bytes1(uint8(terrainType));
+      }
+    }
+
+    MapConfig.set(width, height, terrain);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+Note that when you modify `PostDeploy.s.sol` you need to look in the `pnpm dev` output.
+If there is an error, restart it.
+
+Now let’s render the terrain in the client via `GameBoard.tsx`.
+
+<CollapseCode>
+
+```tsx filename="packages/client/src/GameBoard.tsx" {5-7,13,31-44,51-52} copy showLineNumbers
+import { useComponentValue } from "@latticexyz/react";
+import { GameMap } from "./GameMap";
+import { useMUD } from "./MUDContext";
+import { useKeyboardMovement } from "./useKeyboardMovement";
+import { hexToArray } from "@latticexyz/utils";
+import { TerrainType, terrainTypes } from "./terrainTypes";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
+
+export const GameBoard = () => {
+  useKeyboardMovement();
+
+  const {
+    components: { MapConfig, Player, Position },
+    network: { playerEntity },
+    systemCalls: { spawn },
+  } = useMUD();
+
+  const canSpawn = useComponentValue(Player, playerEntity)?.value !== true;
+
+  const playerPosition = useComponentValue(Position, playerEntity);
+  const player =
+    playerEntity && playerPosition
+      ? {
+          x: playerPosition.x,
+          y: playerPosition.y,
+          emoji: "🤠",
+          entity: playerEntity,
+        }
+      : null;
+
+  const mapConfig = useComponentValue(MapConfig, singletonEntity);
+  if (mapConfig == null) {
+    throw new Error("map config not set or not ready, only use this hook after loading state === LIVE");
+  }
+
+  const { width, height, terrain: terrainData } = mapConfig;
+  const terrain = Array.from(hexToArray(terrainData)).map((value, index) => {
+    const { emoji } = value in TerrainType ? terrainTypes[value as TerrainType] : { emoji: "" };
+    return {
+      x: index % width,
+      y: Math.floor(index / width),
+      emoji,
+    };
+  });
+
+  return (
+    <GameMap
+      width={width}
+      height={height}
+      terrain={terrain}
+      onTileClick={canSpawn ? spawn : undefined}
+      players={player ? [player] : []}
+    />
+  );
+};
+```
+
+</CollapseCode>
+
+You can run this command to update all the files to this point in the game's development.
+
+```sh copy
+git reset --hard d886c8375177bddc3a8353a3aba52f4fb71b550e
+```
+
+## Turn boulders into obstructions
+
+Although boulders are rendering on the map at this point, they do not yet prevent movement in the way we want them to.
+To accomplish this we will add an `Obstruction` table and query for entities with that table in our move method.
+
+Let's start by adding the table to the MUD config:
+
+<CollapseCode>
+
+```ts filename="packages/contracts/mud.config.ts" {18} copy showLineNumbers
+import { mudConfig } from "@latticexyz/world/register";
+
+export default mudConfig({
+  enums: {
+    TerrainType: ["None", "TallGrass", "Boulder"],
+  },
+  tables: {
+    MapConfig: {
+      keySchema: {},
+      dataStruct: false,
+      valueSchema: {
+        width: "uint32",
+        height: "uint32",
+        terrain: "bytes",
+      },
+    },
+    Movable: "bool",
+    Obstruction: "bool",
+    Player: "bool",
+    Position: {
+      dataStruct: false,
+      valueSchema: {
+        x: "uint32",
+        y: "uint32",
+      },
+    },
+  },
+});
+```
+
+</CollapseCode>
+
+We'll then make sure `PostDeploy.s.sol` initializes the boulders properly (with the obstruction and position component) so we can query them later.
+
+<CollapseCode>
+
+```solidity filename="packages/contracts/script/PostDeploy.s.sol" {8-9,57-61} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { TerrainType } from "../src/codegen/common.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { MapConfig, Obstruction, Position } from "../src/codegen/index.sol";
+import { positionToEntityKey } from "../src/positionToEntityKey.sol";
+
+contract PostDeploy is Script {
+  function run(address worldAddress) external {
+    console.log("Deployed world: ", worldAddress);
+
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    vm.startBroadcast(deployerPrivateKey);
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    TerrainType O = TerrainType.None;
+    TerrainType T = TerrainType.TallGrass;
+    TerrainType B = TerrainType.Boulder;
+
+    TerrainType[20][20] memory map = [
+      [O, O, O, O, O, O, T, O, O, O, O, O, O, O, O, O, O, O, O, O],
+      [O, O, T, O, O, O, O, O, T, O, O, O, O, B, O, O, O, O, O, O],
+      [O, T, T, T, T, O, O, O, O, O, O, O, O, O, O, T, T, O, O, O],
+      [O, O, T, T, T, T, O, O, O, O, B, O, O, O, O, O, T, O, O, O],
+      [O, O, O, O, T, T, O, O, O, O, O, O, O, O, O, O, O, T, O, O],
+      [O, O, O, B, B, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+      [O, T, O, O, O, B, B, O, O, O, O, T, O, O, O, O, O, B, O, O],
+      [O, O, T, T, O, O, O, O, O, T, O, B, O, O, T, O, B, O, O, O],
+      [O, O, T, O, O, O, O, T, T, T, O, B, B, O, O, O, O, O, O, O],
+      [O, O, O, O, O, O, O, T, T, T, O, B, T, O, T, T, O, O, O, O],
+      [O, B, O, O, O, B, O, O, T, T, O, B, O, O, T, T, O, O, O, O],
+      [O, O, B, O, O, O, T, O, T, T, O, O, B, T, T, T, O, O, O, O],
+      [O, O, B, B, O, O, O, O, T, O, O, O, B, O, T, O, O, O, O, O],
+      [O, O, O, B, B, O, O, O, O, O, O, O, O, B, O, T, O, O, O, O],
+      [O, O, O, O, B, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+      [O, O, O, O, O, O, O, O, O, O, B, B, O, O, T, O, O, O, O, O],
+      [O, O, O, O, T, O, O, O, T, B, O, O, O, T, T, O, B, O, O, O],
+      [O, O, O, T, O, T, T, T, O, O, O, O, O, T, O, O, O, O, O, O],
+      [O, O, O, T, T, T, T, O, O, O, O, T, O, O, O, T, O, O, O, O],
+      [O, O, O, O, O, T, O, O, O, O, O, O, O, O, O, O, O, O, O, O]
+    ];
+
+    uint32 height = uint32(map.length);
+    uint32 width = uint32(map[0].length);
+    bytes memory terrain = new bytes(width * height);
+
+    for (uint32 y = 0; y < height; y++) {
+      for (uint32 x = 0; x < width; x++) {
+        TerrainType terrainType = map[y][x];
+        if (terrainType == TerrainType.None) continue;
+
+        terrain[(y * width) + x] = bytes1(uint8(terrainType));
+
+        bytes32 entity = positionToEntityKey(x, y);
+        if (terrainType == TerrainType.Boulder) {
+          Position.set(entity, x, y);
+          Obstruction.set(entity, true);
+        }
+      }
+    }
+
+    MapConfig.set(width, height, terrain);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+Because boulders affect game play, they are entities.
+The changes here implement that fact.
+
+```solidity
+import { positionToEntityKey } from "../src/positionToEntityKey.sol";
+```
+
+[This function](https://github.com/latticexyz/emojimon/blob/main/packages/contracts/src/positionToEntityKey.sol) gives us an entity ID for a location that is consistent, and different for every location.
+
+```solidity
+        bytes32 entity = positionToEntityKey(x, y);
+        if (terrainType == TerrainType.Boulder) {
+          Position.set(world, entity, x, y);
+          Obstruction.set(world, entity, true);
+        }
+```
+
+If the terrain is a boulder, specify the location and that it is an `Obstraction`.
+
+</details>
+
+Then let's use this table in the `moveBy` and `spawn` methods in `MapSystem.sol`.
+
+<CollapseCode>
+
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,7,14-15,33-34} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { System } from "@latticexyz/world/src/System.sol";
+import { MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+import { positionToEntityKey } from "../positionToEntityKey.sol";
+
+contract MapSystem is System {
+  function spawn(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(address(_msgSender()));
+    require(!Player.get(player), "already spawned");
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Player.set(player, true);
+    Position.set(player, x, y);
+    Movable.set(player, true);
+  }
+
+  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
+    bytes32 player = addressToEntityKey(_msgSender());
+    require(Movable.get(player), "cannot move");
+
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
+    require(clientX == fromX && clientY == fromY, "client confused about location");
+
+    uint32 x = uint32(int32(fromX) + deltaX);
+    uint32 y = uint32(int32(fromY) + deltaY);
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Position.set(player, x, y);
+  }
+
+  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
+    return uint32(deltaX * deltaX + deltaY * deltaY);
+  }
+}
+```
+
+</CollapseCode>
+
+Lastly, let's ensure these interactions are optimistically rendering in the `createSystemCalls.ts` method.
+
+<CollapseCode>
+
+```ts filename="packages/client/src/mud/createSystemCalls.ts" {10,12-14,30,46} copy showLineNumbers
+import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
+import { ClientComponents } from "./createClientComponents";
+import { SetupNetworkResult } from "./setupNetwork";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
+
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+export function createSystemCalls(
+  { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
+  { MapConfig, Obstruction, Player, Position }: ClientComponents
+) {
+  const isObstructed = (x: number, y: number) => {
+    return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
+  };
+
+  const moveBy = async (deltaX: number, deltaY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const playerPosition = getComponentValue(Position, playerEntity);
+    if (!playerPosition) {
+      console.warn("cannot moveBy without a player position, not yet spawned?");
+      return;
+    }
+
+    const newX = playerPosition.x + deltaX;
+    const newY = playerPosition.y + deltaY;
+
+    if (isObstructed(newX, newY)) throw new Error("cannot go into an obstructed space");
+
+    const tx = await worldContract.write.moveBy([playerPosition.x, playerPosition.y, deltaX, deltaY]);
+    await waitForTransaction(tx);
+  };
+
+  const spawn = async (x: number, y: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
+    if (!canSpawn) {
+      throw new Error("already spawned");
+    }
+
+    if (isObstructed(x, y)) throw new Error("cannot go into an obstructed space");
+
+    const tx = await worldContract.write.spawn([x, y]);
+    await waitForTransaction(tx);
+  };
+
+  return {
+    moveBy,
+    spawn,
+  };
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```ts
+const isObstructed = (x: number, y: number) => {
+  return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
+};
+```
+
+Here we run [a query](https://mud.dev/world/querying) that looks for all the entities that have `Obstruction` set to `true`, and whose entity ID is the one for the terrain in `(x,y)`.
+If there are any then this space is obstructed.
+
+This function is not the most efficient possibility.
+In theory we could have created a TypeScript version of [`positionToEntityKey`](https://github.com/latticexyz/emojimon/blob/main/packages/contracts/src/positionToEntityKey.sol#L4) and used that to check if the specific entity for the location where the player wishes to go is obstructed.
+
+While this could have been more efficient, it would have made future development harder.
+In the future we might have mobile obstructions, for example trolls that walk around the map randomly.
+If we use a query, then as soon as we provide those entites with `Obstruction` and `Position` they'll start obstructing the player.
+
+Processing power on the client is usually cheap and abundant, because most client devices spend most of their time waiting for input to act upon.
+The expensive resource we need to optimize for is processing on the blockchain, a.k.a. [gas](https://ethereum.org/en/developers/docs/gas/).
+
+</details>
+
+Now if you try moving onto a tile with a boulder you’ll see that you can’t!
+
+You can run this command to update all the files to this point in the game's development.
+
+```sh copy
+git reset --hard 54213103d54d9d7772b212b5aefbdf9a43656cb9
+```
+
+## Wraparound movement
+
+Players can move off of the bounds of the map.
+We'll address this by updating the `spawn` and `moveTo` methods in `MapSystem.sol` to wrap the player coordinate around the map size.
+
+<CollapseCode>
+
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {14-17,35-41} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { System } from "@latticexyz/world/src/System.sol";
+import { MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+import { positionToEntityKey } from "../positionToEntityKey.sol";
+
+contract MapSystem is System {
+  function spawn(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(address(_msgSender()));
+    require(!Player.get(player), "already spawned");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Player.set(player, true);
+    Position.set(player, x, y);
+    Movable.set(player, true);
+  }
+
+  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
+    bytes32 player = addressToEntityKey(_msgSender());
+    require(Movable.get(player), "cannot move");
+
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
+    require(clientX == fromX && clientY == fromY, "client confused about location");
+
+    // Constrain position to map size, wrapping around if necessary
+    // Also, by adding width and height, avoid negative numbers,
+    // which uint32 does not support.
+    (uint32 width, uint32 height, ) = MapConfig.get();
+
+    uint32 x = uint32(int32(fromX) + deltaX + int32(width)) % width;
+    uint32 y = uint32(int32(fromY) + deltaY + int32(height)) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Position.set(player, x, y);
+  }
+
+  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
+    return uint32(deltaX * deltaX + deltaY * deltaY);
+  }
+}
+```
+
+</CollapseCode>
+
+{/*
+
+Let’s go back to `createSystemCalls.ts` to make sure these are rendering optimistically in the same way that movement and spawning currently are.
+
+<CollapseCode>
+
+```ts filename="createSystemCalls.ts" {13-19,38,73} copy showLineNumbers
+import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
+import { ClientComponents } from "./createClientComponents";
+import { SetupNetworkResult } from "./setupNetwork";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
+import { uuid } from "@latticexyz/utils";
+
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+export function createSystemCalls(
+  { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
+  { MapConfig, Obstruction, Player, Position }: ClientComponents
+) {
+  const wrapPosition = (x: number, y: number) => {
+    const mapConfig = getComponentValue(MapConfig, singletonEntity);
+    if (!mapConfig) {
+      throw new Error("mapConfig no yet loaded or initialized");
+    }
+    return [(x + mapConfig.width) % mapConfig.width, (y + mapConfig.height) % mapConfig.height];
+  };
+
+  const isObstructed = (x: number, y: number) => {
+    return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
+  };
+
+  const moveBy = async (deltaX: number, deltaY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const playerPosition = getComponentValue(Position, playerEntity);
+    if (!playerPosition) {
+      console.warn("cannot moveBy without a player position, not yet spawned?");
+      return;
+    }
+
+    let newX = playerPosition.x + deltaX;
+    let newY = playerPosition.y + deltaY;
+    [newX, newY] = wrapPosition(newX, newY);
+
+    if (isObstructed(newX, newY)) throw new Error("cannot go into an obstructed space");
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x: newX, y: newY },
+    });
+
+    const playerId = uuid();
+    Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
+
+    try {
+      const tx = await worldContract.write.moveBy([playerPosition.x, playerPosition.y, deltaX, deltaY]);
+      await waitForTransaction(tx);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
+  };
+
+  const spawn = async (x: number, y: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
+    if (!canSpawn) {
+      throw new Error("already spawned");
+    }
+
+    [x, y] = wrapPosition(x, y);
+
+    if (isObstructed(x, y)) {
+      console.warn("cannot spawn on obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+
+    const playerId = uuid();
+    Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
+
+    try {
+      const tx = await worldContract.write.spawn([x, y]);
+      await waitForTransaction(tx);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
+  };
+
+  return {
+    moveBy,
+    spawn,
+  };
+}
+```
+
+</CollapseCode>
+
+*/}
+You can run this command to update all the files to this point in the game's development.
+
+```sh copy
+git reset --hard 1bffe935acc047b6d3a0acb24af5bea86a750e2c
+```
