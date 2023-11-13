@@ -68,113 +68,86 @@ export default withNextra({
         destination: "/store/introduction",
         permanent: true        
       },
-      /*           
       {
-        source: "https://mud.dev/world",
-        destination: "http://localhost:3000/world/introduction",
+        source: "/world",
+        destination: "/world/introduction",
         permanent: true        
       },
       {
-        source: "https://mud.dev/world/world-101",
-        destination: "http://localhost:3000/world/introduction",
+        source: "/world/world-101",
+        destination: "/world/introduction",
         permanent: true        
       },
       {
-        source: "https://mud.dev/world/config",
-        destination: "http://localhost:3000/cli/config",
+        source: "/world/config",
+        destination: "/cli/config",
         permanent: true        
       },
       {
-        source: "https://mud.dev/world/deployer",
-        destination: "http://localhost:3000/cli/deploy",
+        source: "/world/deployer",
+        destination: "/cli/deploy",
         permanent: true        
       },           
       {
-        source: "https://mud.dev/world/subsystems",
-        destination: "http://localhost:3000/world/introduction",
+        source: "/world/subsystems",
+        destination: "/world/introduction",
         permanent: true        
       },
       {
-        source: "https://mud.dev/world/community-computers",
-        destination: "http://localhost:3000/world/introduction",
+        source: "/world/community-computers",
+        destination: "/world/introduction",
         permanent: true        
       },
       {
-        source: "https://mud.dev/world/querying",
-        destination: "http://localhost:3000/state-query/introduction",
+        source: "/world/querying",
+        destination: "/state-query/introduction",
         permanent: true        
       },
       {
-        source: "https://mud.dev/world/internals",
-        destination: "http://localhost:3000/world/introduction",
+        source: "/world/internals",
+        destination: "/world/introduction",
         permanent: true        
       },           
       {
-        source: "https://mud.dev/client-side",
-        destination: "http://localhost:3000/state-query/typescript/recs",
+        source: "/client-side",
+        destination: "/state-query/typescript/recs",
         permanent: true        
       },
       {
-        source: "https://mud.dev/indexer",
-        destination: "http://localhost:3000/services/indexer",
+        source: "/indexer",
+        destination: "/services/indexer",
         permanent: true        
       },            
       {
-        source: "https://mud.dev/cli",
-        destination: "http://localhost:3000/cli/tablegen",
+        source: "/cli",
+        destination: "/cli/tablegen",
         permanent: true        
       },
       {
-        source: "https://mud.dev/ecs",
+        source: "/ecs",
         destination: "/guides/emojimon/1-preface-the-ecs-model.mdx",
         permanent: true        
       },           
       {
-        source: "https://mud.dev/plugins",
-        destination: "http://localhost:3000/world/introduction",
+        source: "/plugins",
+        destination: "/world/introduction",
         permanent: true        
       },
       {
-        source: "https://mud.dev/tutorials",
-        destination: "http://localhost:3000/guides/hello-world",
+        source: "/tutorials",
+        destination: "/guides/hello-world",
         permanent: true        
       },
       {
-        source: "https://mud.dev/tutorials/emojimon",
+        source: "/tutorials/emojimon",
         destination: "/guides/emojimon",
         permanent: true        
       },      
       {
-        source: "https://mud.dev/tutorials/emojimon/preface-the-ecs-model",
+        source: "/tutorials/emojimon/preface-the-ecs-model",
         destination: "/guides/emojimon/1-preface-the-ecs-model.mdx",
         permanent: true        
       },
-      {
-        source: "",
-        destination: "",
-        permanent: true        
-      },
-      {
-        source: "",
-        destination: "",
-        permanent: true        
-      },
-      {
-        source: "",
-        destination: "",
-        permanent: true        
-      },      
-      {
-        source: "",
-        destination: "",
-        permanent: true        
-      },
-      {
-        source: "",
-        destination: "",
-        permanent: true        
-      },            
-      */                
     ];
   },
 });
