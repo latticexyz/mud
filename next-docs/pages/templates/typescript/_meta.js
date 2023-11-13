@@ -2,7 +2,8 @@ export default {
   "getting-started": "Getting Started",
   contracts: "Contracts",
   vanilla: "Vanilla",
-  react: "React",
-  phaser: "Phaser",
+  react: "React (coming soon)"
+  "react-ecs": "React-ECS",
+  phaser: "Phaser (coming soon)",
   three: "Three.js",
 };
