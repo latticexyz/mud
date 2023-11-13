@@ -18,7 +18,7 @@ export async function getTables(db: PgDatabase<any>, keys: string[] = []): Promi
     tables.map(async (table) => {
       const sqlTable = buildTable(table);
       try {
-        await db.select(sqlTable.__key).from(sqlTable).limit(1);
+        await db.select({ key: sqlTable.__key }).from(sqlTable).limit(1);
         return table;
       } catch (error) {
         debug("Could not query table, skipping", getTableName(sqlTable), error);
