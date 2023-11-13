@@ -130,23 +130,25 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             .execute();
         } else if (log.eventName === "Store_SpliceStaticData") {
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
-          const previousValue = (
-            await tx
-              .select()
-              .from(sqlTable)
-              .where(eq(sqlTable.__key, uniqueKey))
-              .execute()
-              // https://github.com/latticexyz/mud/issues/1923
-              .catch((error) => {
-                console.error(
-                  "Could not query previous value for splice static data",
-                  getTableName(sqlTable),
-                  uniqueKey,
-                  error
-                );
-                return [];
-              })
-          )[0];
+          const previousValue = await tx
+            .select()
+            .from(sqlTable)
+            .where(eq(sqlTable.__key, uniqueKey))
+            .execute()
+            .then(
+              (rows) => rows[0],
+              (error) => (error instanceof Error ? error : new Error(String(error)))
+            );
+          if (previousValue instanceof Error) {
+            // https://github.com/latticexyz/mud/issues/1923
+            debug(
+              "Could not query previous value for splice static data, skipping update",
+              getTableName(sqlTable),
+              uniqueKey,
+              previousValue
+            );
+            continue;
+          }
           const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
           const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
           const newValue = decodeValueArgs(table.valueSchema, {
@@ -185,23 +187,25 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             .execute();
         } else if (log.eventName === "Store_SpliceDynamicData") {
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
-          const previousValue = (
-            await tx
-              .select()
-              .from(sqlTable)
-              .where(eq(sqlTable.__key, uniqueKey))
-              .execute()
-              // https://github.com/latticexyz/mud/issues/1923
-              .catch((error) => {
-                console.error(
-                  "Could not query previous value for splice dynamic data",
-                  getTableName(sqlTable),
-                  uniqueKey,
-                  error
-                );
-                return [];
-              })
-          )[0];
+          const previousValue = await tx
+            .select()
+            .from(sqlTable)
+            .where(eq(sqlTable.__key, uniqueKey))
+            .execute()
+            .then(
+              (rows) => rows[0],
+              (error) => (error instanceof Error ? error : new Error(String(error)))
+            );
+          if (previousValue instanceof Error) {
+            // https://github.com/latticexyz/mud/issues/1923
+            debug(
+              "Could not query previous value for splice dynamic data, skipping update",
+              getTableName(sqlTable),
+              uniqueKey,
+              previousValue
+            );
+            continue;
+          }
           const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
           const newDynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);
           const newValue = decodeValueArgs(table.valueSchema, {
