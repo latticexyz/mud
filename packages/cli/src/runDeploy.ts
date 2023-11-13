@@ -7,7 +7,14 @@ import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
-import { forge, getOutDirectory, getRemappings, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
+import {
+  forge,
+  getForgeConfig,
+  getOutDirectory,
+  getRemappings,
+  getRpcUrl,
+  getSrcDirectory,
+} from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { execa } from "execa";
 import { MUDError } from "@latticexyz/common/errors";
@@ -18,7 +25,6 @@ import { WorldDeploy } from "./deploy/common";
 import { tablegen } from "@latticexyz/store/codegen";
 import { worldgen } from "@latticexyz/world/node";
 import { getExistingContracts } from "./utils/getExistingContracts";
-import { rm } from "node:fs/promises";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
@@ -66,7 +72,15 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     await Promise.all([tablegen(config, outPath, remappings), worldgen(config, getExistingContracts(srcDir), outPath)]);
 
     // TODO remove when https://github.com/foundry-rs/foundry/issues/6241 is resolved
-    await rm(path.join(outDir, "IWorld.sol"), { recursive: true, force: true });
+    const forgeConfig = await getForgeConfig(profile);
+    if (forgeConfig.cache) {
+      const cacheFilePath = path.join(forgeConfig.cache_path, "solidity-files-cache.json");
+      const worldInterfacePath = path.join(outPath, "world", "IWorld.sol");
+
+      const solidityFilesCache = JSON.parse(readFileSync(cacheFilePath, "utf8"));
+      solidityFilesCache["files"][worldInterfacePath]["contentHash"] = "00000000000000000000000000000000";
+      writeFileSync(cacheFilePath, JSON.stringify(solidityFilesCache, undefined, 2));
+    }
 
     await forge(["build"], { profile });
     await execa("mud", ["abi-ts"], { stdio: "inherit" });
