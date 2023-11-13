@@ -7,7 +7,7 @@ Added and populated `syncProgress` key in Zustand store for sync progress, like 
 ```tsx
 const syncProgress = useStore((state) => state.syncProgress);
 
-if (syncProgress.step !== LIVE) {
+if (syncProgress.step !== SyncStep.LIVE) {
   return <>Loading ({Math.floor(syncProgress.percentage)}%)</>;
 }
 ```
