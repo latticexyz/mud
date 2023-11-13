@@ -1,1 +1,47 @@
 # mud dev-contracts
+
+Start a development server for MUD contracts, and redeploy or modify the `World` when contracts change.
+
+## Using the command
+
+Before you run `mud dev-contracts` you need to specify the private key of the deploying account.
+There are several ways to do this:
+
+- Export an environment variable.
+
+  ```sh copy
+  export PRIVATE_KEY=0x<key goes here>
+  ```
+
+- Edit `.env` to specify the `PRIVATE_KEY` value.
+
+  ```sh copy
+  # This .env file is for demonstration purposes only.
+  #
+  # This should usually be excluded via .gitignore and the env vars attached to
+  # your deployment environment, but we're including this here for ease of local
+  # development. Please do not commit changes to this file!
+  #
+  # Anvil default private key:
+  PRIVATE_KEY=0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+  ```
+
+You also need to specify a URL to the blockchain.
+Again, there are several ways to do this:
+
+- Use the `--rpc <url>` command line parameter.
+- Specify the URL as the `eth_rpc_url` value [in the `local` profile in `foundry.toml`](https://book.getfoundry.sh/config/).
+- Do not specify an RPC at all, in which case `mud dev-contracts` starts an [`anvil`](https://book.getfoundry.sh/anvil/) instance for you.
+
+These are the command line options you can specify on `mud dev-contracts`:
+
+| Option                  | Meaning                                          | Type    | Default value                                                                                |
+| ----------------------- | ------------------------------------------------ | ------- | -------------------------------------------------------------------------------------------- |
+| `--version`             | Show version number                              | boolean | `false`                                                                                      |
+| `--configPath`          | Path to the config file                          | string  | `mud.config.ts`                                                                              |
+| `--rpc`<sup>1</sup>     | The RPC URL to use                               | string  | Empty, in which case the command starts [`anvil`](https://book.getfoundry.sh/anvil/) for you |
+| `--worldAddress`        | Deploy to an existing World at the given address | string  | Empty, deploy new `World`                                                                    |
+| `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy         | boolean | `false` (run the script only when deploying a new `World`)                                   |
+| `--help`                | Show help                                        | boolean | `false`                                                                                      |
+
+(1) The hostname `localhost` may not work. If that is the case, use `127.0.0.1` instead.
