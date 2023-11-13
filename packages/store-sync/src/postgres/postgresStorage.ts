@@ -141,7 +141,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             );
           if (previousValue instanceof Error) {
             // https://github.com/latticexyz/mud/issues/1923
-            console.error(
+            debug(
               "Could not query previous value for splice static data, skipping update",
               getTableName(sqlTable),
               uniqueKey,
@@ -198,7 +198,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             );
           if (previousValue instanceof Error) {
             // https://github.com/latticexyz/mud/issues/1923
-            console.error(
+            debug(
               "Could not query previous value for splice dynamic data, skipping update",
               getTableName(sqlTable),
               uniqueKey,
