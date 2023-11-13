@@ -5,10 +5,10 @@ import { CollapseCode } from "../../../components/CollapseCode";
 [Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction) is a state management library that supports JavaScript and TypeScript.
 You can see it in use in the [`react` template](https://github.com/latticexyz/mud/tree/main/templates/react).
 
-## Under React
+## With React
 
-Zustand is React native.
-The way you use it is very similar to the way you'd use `useState`, except that the state you receive is bigger, it is auto-populated by MUD, and you change it through a `System` instead of using a function provided by the hook.
+Zustand is native to React.
+The way you use it is very similar to the way you'd use `useState`, but with a bigger state tree that is synchronised with the contract state by MUD. To change state you send a transaction to a [System](/world/systems).
 
 ### Initialization
 
