@@ -93,35 +93,35 @@ First let's make sure the client is being initialized properly in `PostDeploy.s.
 ```solidity filename="packages/contracts/scripts/PostDeploy.s.sol" {9,63-66} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
-      
+
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { TerrainType } from "../src/codegen/common.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { EncounterTrigger, MapConfig, Obstruction, Position } from "../src/codegen/index.sol";
 import { positionToEntityKey } from "../src/positionToEntityKey.sol";
-      
+
 contract PostDeploy is Script {
   function run(address worldAddress) external {
     console.log("Deployed world: ", worldAddress);
-      
+
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     vm.startBroadcast(deployerPrivateKey);
     StoreSwitch.setStoreAddress(worldAddress);
-      
+
     TerrainType O = TerrainType.None;
     TerrainType T = TerrainType.TallGrass;
     TerrainType B = TerrainType.Boulder;
-      
+
     TerrainType[20][20] memory map = [
       [O, O, O, O, O, O, T, O, O, O, O, O, O, O, O, O, O, O, O, O],
       [O, O, T, O, O, O, O, O, T, O, O, O, O, B, O, O, O, O, O, O],
       [O, T, T, T, T, O, O, O, O, O, O, O, O, O, O, T, T, O, O, O],
       [O, O, T, T, T, T, O, O, O, O, B, O, O, O, O, O, T, O, O, O],
       [O, O, O, O, T, T, O, O, O, O, O, O, O, O, O, O, O, T, O, O],
-      [O, O, O, B, B, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O], 
+      [O, O, O, B, B, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
       [O, T, O, O, O, B, B, O, O, O, O, T, O, O, O, O, O, B, O, O],
-      [O, O, T, T, O, O, O, O, O, T, O, B, O, O, T, O, B, O, O, O],  
+      [O, O, T, T, O, O, O, O, O, T, O, B, O, O, T, O, B, O, O, O],
       [O, O, T, O, O, O, O, T, T, T, O, B, B, O, O, O, O, O, O, O],
       [O, O, O, O, O, O, O, T, T, T, O, B, T, O, T, T, O, O, O, O],
       [O, B, O, O, O, B, O, O, T, T, O, B, O, O, T, T, O, O, O, O],
@@ -135,18 +135,18 @@ contract PostDeploy is Script {
       [O, O, O, T, T, T, T, O, O, O, O, T, O, O, O, T, O, O, O, O],
       [O, O, O, O, O, T, O, O, O, O, O, O, O, O, O, O, O, O, O, O]
     ];
-    
+
     uint32 height = uint32(map.length);
     uint32 width = uint32(map[0].length);
     bytes memory terrain = new bytes(width * height);
-      
+
     for (uint32 y = 0; y < height; y++) {
       for (uint32 x = 0; x < width; x++) {
         TerrainType terrainType = map[y][x];
         if (terrainType == TerrainType.None) continue;
-      
+
         terrain[(y * width) + x] = bytes1(uint8(terrainType));
-      
+
         bytes32 entity = positionToEntityKey(x, y);
         if (terrainType == TerrainType.Boulder) {
           Position.set(entity, x, y);
@@ -156,12 +156,12 @@ contract PostDeploy is Script {
           EncounterTrigger.set(entity, true);
         }
       }
-    } 
-    
+    }
+
     MapConfig.set(width, height, terrain);
-    
+
     vm.stopBroadcast();
-  }   
+  }
 }
 ```
 
@@ -361,7 +361,7 @@ contract MapSystem is System {
 
 </CollapseCode>
 
-{/* 
+{/\*
 
 Let's also make sure these interactions are rendering optimistically like everything else. Let's update `createSystemCalls.ts` accordingly.
 
@@ -473,8 +473,7 @@ export function createSystemCalls(
 
 </CollapseCode>
 
-*/}
-
+\*/}
 
 ## Start encounter and spawn a monster
 
@@ -890,7 +889,6 @@ export function createSystemCalls(
 
     const tx = await worldContract.write.spawn([x, y]);
     await waitForTransaction(tx);
-
   };
 
   const throwBall = async () => {
@@ -932,7 +930,6 @@ You can run this command to update all the files to this point in the game's dev
 ```sh copy
 git reset --hard 00bffa27dc5d369fe536e35b84e0a5d5cc466645
 ```
-
 
 ## Flee encounters
 
@@ -994,7 +991,6 @@ contract EncounterSystem is System {
 Since our flee system always allows you to run away, we technically don't need to listen for system call updates to determine the outcome. But doing so will help our UI and toasts stay in sync with component updates.
 
 Because the encounter screen is shown only when you're in an encounter, you'll see that it will automatically disappear when you run away. This is the nice thing about MUD and declarative, responsive UI!
-
 
 <CollapseCode>
 
@@ -1065,7 +1061,6 @@ export function createSystemCalls(
 
     const tx = await worldContract.write.spawn([x, y]);
     await waitForTransaction(tx);
-
   };
 
   const throwBall = async () => {
@@ -1093,13 +1088,13 @@ export function createSystemCalls(
   const fleeEncounter = async () => {
     const tx = await worldContract.write.flee([]);
     await waitForTransaction(tx);
-  };  
+  };
 
   return {
     moveBy,
     spawn,
     throwBall,
-    fleeEncounter
+    fleeEncounter,
   };
 }
 ```

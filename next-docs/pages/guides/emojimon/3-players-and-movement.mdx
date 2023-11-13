@@ -396,9 +396,7 @@ export const GameBoard = () => {
         }
       : null;
 
-  return <GameMap width={20} height={20} 
-            onTileClick={canSpawn ? spawn : undefined} players={player ? [player] : []} 
-         />;
+  return <GameMap width={20} height={20} onTileClick={canSpawn ? spawn : undefined} players={player ? [player] : []} />;
 };
 ```
 
@@ -410,7 +408,7 @@ You can run this command to update all the files to this point in the game's dev
 git reset --hard 025bae043c6b1f787bba13bec298dbda10d92c37
 ```
 
-{/*
+{/\*
 
 ## Add optimistic rendering
 
@@ -595,6 +593,6 @@ git reset --hard 21a584661cef2fd956acf13e534d3fa8cd2a26c1
 
 Try moving the player around with the keyboard now. It should feel much snappier!
 
-*/}
+\*/}
 
 Now that we have players, movement, and a basic map, let's start making improvements to the map itself.
