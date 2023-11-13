@@ -125,7 +125,7 @@ export default withNextra({
       },
       {
         source: "/ecs",
-        destination: "/guides/emojimon/1-preface-the-ecs-model.mdx",
+        destination: "/guides/emojimon/1-preface-the-ecs-model",
         permanent: true        
       },           
       {
@@ -145,7 +145,7 @@ export default withNextra({
       },      
       {
         source: "/tutorials/emojimon/preface-the-ecs-model",
-        destination: "/guides/emojimon/1-preface-the-ecs-model.mdx",
+        destination: "/guides/emojimon/1-preface-the-ecs-model",
         permanent: true        
       },
     ];
