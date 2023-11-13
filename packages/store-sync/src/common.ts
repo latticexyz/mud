@@ -12,6 +12,10 @@ export const storeTables = resolveConfig(storeConfig).tables;
 /** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
 export const worldTables = resolveConfig(worldConfig).tables;
 
+export const internalTableIds = [...Object.values(storeTables), ...Object.values(worldTables)].map(
+  (table) => table.tableId
+);
+
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
 
