@@ -18,6 +18,7 @@ import { WorldDeploy } from "./deploy/common";
 import { tablegen } from "@latticexyz/store/codegen";
 import { worldgen } from "@latticexyz/world/node";
 import { getExistingContracts } from "./utils/getExistingContracts";
+import { rm } from "node:fs/promises";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
@@ -63,6 +64,10 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   if (!opts.skipBuild) {
     const outPath = path.join(srcDir, config.codegenDirectory);
     await Promise.all([tablegen(config, outPath, remappings), worldgen(config, getExistingContracts(srcDir), outPath)]);
+
+    // TODO remove when https://github.com/foundry-rs/foundry/issues/6241 is resolved
+    await rm(path.join(outDir, "IWorld.sol"), { recursive: true, force: true });
+
     await forge(["build"], { profile });
     await execa("mud", ["abi-ts"], { stdio: "inherit" });
   }
