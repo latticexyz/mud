@@ -24,8 +24,22 @@ export async function createQueryAdapter(database: PgDatabase<any>): Promise<Que
 
       const tablesWithRecords = await Promise.all(
         tables.map(async (table) => {
-          const sqliteTable = buildTable(table);
-          const records = await database.select().from(sqliteTable).where(eq(sqliteTable.__isDeleted, false)).execute();
+          const sqlTable = buildTable(table);
+          let records: Record<string, any>[] = [];
+          // Apparently sometimes we can have tables that exist in the internal table but no relation/schema set up, so queries fail.
+          // See https://github.com/latticexyz/mud/issues/1923
+          // For now we'll wrap in a try/catch.
+          // TODO: make a more robust fix for this
+          try {
+            records = await database.select().from(sqlTable).where(eq(sqlTable.__isDeleted, false)).execute();
+          } catch (error) {
+            console.error(
+              "Could not query for records, returning empty set for table",
+              `${table.namespace}:${table.name}`,
+              table.tableId,
+              error
+            );
+          }
           const filteredRecords = !filters.length
             ? records
             : records.filter((record) => {
