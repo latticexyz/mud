@@ -1,0 +1,188 @@
+# Indexer
+
+The MUD Indexer is an offchain indexer for onchain applications built with MUD.
+
+## Why an offchain indexer?
+
+Reads with onchain apps can be tricky.
+What does it mean to be able to query the Ethereum network?
+Technically, given a node with a fully synced state, we can explore just about everything using the EVM, but the “exploring” would be looking at raw storage slots for accounts corresponding to smart contracts.
+A way around this exists by providing view functions on smart contracts: these effectively are just wrappers around raw storage and expose a more friendly API.
+Instead of having to figure out where the balances for an account are stored in the storage tree, we now can call a function that does the lookup via Solidity via an RPC endpoint.
+
+The issue with view functions is that for any sophisticated application the calls needed to get the “full picture” of the state from the chain are very complex.
+Servicing so many view function calls also creates the need to run a set of dedicated nodes instead of relying on a third-party provider's free tier.
+
+The MUD indexer solves this problem by listening to the MUD store events to automatically replicate the entire onchain state in a relational database.
+Having such a database allows clients to quickly and efficiently query the onchain data.
+
+## Installation
+
+These environment variables need to be provided to the indexer to work:
+
+| Type                          | Variable        | Meaning                                                                                                  | Sample value (using `anvil` running on the host)          |
+| ----------------------------- | --------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Needed                        | RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              | http://host.docker.internal:8545 (when running in Docker) |
+| Optional                      | RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
+| Optional                      | START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                         |
+| Optional                      | DEBUG=mud:\*    | Turn on debugging                                                                                        |                                                           |
+| Optional, only for SQLite     | SQLITE_FILENAME | Name of database                                                                                         | `anvil.db`                                                |
+| Optional, only for PostgreSQL | DATABASE_URL    | URL for the database, of the form `postgres://<host>/<database>`                                         |
+
+### Running directly
+
+To run the indexer directly on your computer:
+
+1. Build the MUD repository, [as per the directions](/contribute).
+
+1. Start a `World` to index.
+   An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
+
+1. Run the indexer from the build MUD repository.
+   For example, to start the indexer with SQLite, use these commands.
+
+   ```bash copy
+   cd packages/store-indexer
+   export RPC_HTTP_URL=http://localhost:8545
+   pnpm start:sqlite
+   ```
+
+   Alternatively, you can start the indexer for the local blockchain using `pnpm start:sqlite:local`, in which case you don't need to specify `RPC_HTTP_URL`.
+
+**Note:** The `anvil.db` is persistent if you stop and restart the indexer.
+If that is not the desired behavior (for example, because you restarted the blockchain itself), delete it before starting the indexer.
+
+### Docker
+
+The indexer Docker image is available [on github](https://github.com/latticexyz/mud/pkgs/container/store-indexer).
+
+There are several ways to provide the environment variables to `docker run`:
+
+- On the command line you can specify `-e <variable>=<value>`.
+  You specify this after the `docker run`, but before the name of the image.
+- You can also write all the environment variables in a file and specify it using `--env-file`.
+  You specify this after the `docker run`, but before the name of the image.
+- Both [Docker Compose](https://docs.docker.com/compose/) and [Kubernetes](https://kubernetes.io/) have their own mechanisms for starting docker containers with environment variables.
+
+The easiest way to test the indexer is to [run the template as a world](/templates/typescript/getting-started) in a separate command-line window.
+
+#### SQLite
+
+The command to start the indexer in SQLite mode is `pnpm start:sqlite`.
+To index an `anvil` instance running to the host, use:
+
+```sh copy
+docker run \
+  --platform linux/amd64 \
+  -e RPC_HTTP_URL=http://host.docker.internal:8545 \
+  -p 3001:3001  \
+  ghcr.io/latticexyz/store-indexer:latest  \
+  pnpm start:sqlite
+```
+
+However, this creates a docker container with a state, the SQLite database file.
+If we start a new container with the same image and parameters, it is going to have to go back to the start of the blockchain, which depending on how long the blockchain has been in use may be a problem.
+We can solve this with [volumes](https://docs.docker.com/storage/volumes/):
+
+1. Create a docker volume for the SQLite database file.
+
+   ```sh copy
+   docker volume create sqlite-db-file
+   ```
+
+1. Run the indexer container using the volume.
+
+   ```sh copy
+   docker run \
+      --platform linux/amd64 \
+      -e RPC_HTTP_URL=http://host.docker.internal:8545 \
+      -e SQLITE_FILENAME=/dbase/anvil.db \
+      -v sqlite-db-file:/dbase \
+      -p 3001:3001  \
+      ghcr.io/latticexyz/store-indexer:latest  \
+      pnpm start:sqlite
+   ```
+
+1. Run this command to test next indexer.
+
+   ```sh copy
+   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
+   ```
+
+1. You can stop the docker container and restart it, or start a separate container using the same database.
+
+1. When you are done, you have to delete the docker containers that used it before you can delete the volume.
+   You can use these commands:
+
+   ```sh copy
+   docker rm `docker ps -a --filter volume=sqlite-db-file -q`
+   docker volume rm sqlite-db-file
+   ```
+
+   **Note:** You should do this every time you restart the blockchain.
+   Otherwise your index will include data from multiple blockchains, and make no sense.
+
+#### PostgreSQL
+
+The command to start the indexer in PostgreSQL mode is `pnpm start:postgres`.
+
+1. The docker instance identifies itself to PostgreSQL as `root`.
+   To give this user permissions on the database, enter `psql` and run this command.
+
+   ```sql copy
+   CREATE ROLE root SUPERUSER LOGIN;
+   ```
+
+   **Note:** This is assuming a database that is isolated from the internet and only used by trusted entities.
+   In a production system you will use at least a password as authentication, and limit the user's authority.
+
+1. Start the docker container.
+   For example, to index an `anvil` instance running to the host to the database `postgres` on the host, use.
+
+   ```sh copy
+   docker run \
+     --platform linux/amd64 \
+     -e RPC_HTTP_URL=http://host.docker.internal:8545 \
+     -e DATABASE_URL=postgres://host.docker.internal/postgres \
+     -p 3001:3001  \
+     ghcr.io/latticexyz/store-indexer:latest  \
+     pnpm start:postgres
+   ```
+
+1. The PostgreSQL database is persistent.
+   If you restart the blockchain you have to delete the content of this database, otherwise the indexer will include old information.
+   To delete the database content, enter `psql` and run this command.
+
+   ```sql copy
+   DROP OWNED BY root;
+   ```
+
+### Verification
+
+To verify that the indexer runs correctly ensure you have [`jq`](https://jqlang.github.io/jq/) installed and run
+
+```bash copy
+curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
+```
+
+The result should be nicely formatted (and long) JSON output with all the data stored in the `World`.
+
+## Resetting the database
+
+When you restart the blockchain you _have_ to reset the database, otherwise you'll get a mix of old and new information.
+Here are the directions how to do it.
+
+### SQLite
+
+Delete the database file (by default `anvil.db`).
+
+### PostgreSQL
+
+Run `psql` and run this command:
+
+```sql
+DROP OWNED BY <see below>;
+```
+
+- If you are running the indexer locally, the owner of the tablespaces is your user name.
+- If you are using Docker, the owner of the tablespaces is `root`.

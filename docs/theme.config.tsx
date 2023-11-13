@@ -23,6 +23,9 @@ const config: DocsThemeConfig = {
     text: "MIT 2023 © MUD",
   },
   primaryHue: 28,
+  sidebar: {
+    defaultMenuCollapseLevel: 1,
+  },
 };
 
 export default config;

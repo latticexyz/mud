@@ -1,0 +1,55 @@
+# Getting started
+
+[The TypeScript templates](https://github.com/latticexyz/mud/tree/main/templates) are provided by [Lattice](https://lattice.xyz/).
+
+## Installation
+
+To run any of the TypeScript templates:
+
+1. Create the template with pnpm.
+   If you need, replace `tutorial` with your application name.
+
+   ```sh copy
+   pnpm create mud@next tutorial
+   ```
+
+   **Note:** The `@next` is only necessary until MUD v2.0 is officially released.
+
+1. Select the template:
+
+   - [Vanilla](./vanilla)
+   - [React](./react)
+   - [Phaser](./phaser)
+   - [Three.js](./three)
+
+1. Start the development server, which updates automatically when you modify files.
+
+   ```sh copy
+   cd tutorial
+   pnpm dev
+   ```
+
+## Using the templates
+
+### Code organization
+
+Other than a few utility files, most of the code is in two packages:
+
+- `packages/contracts` contains the onchain part of the application.
+- `packages/client` contains the offchain part of the application, the user interface.
+  The app runs in the user's browser, in development it is served from a [vite](https://vitejs.dev/) server.
+  The content of this package varies based on the template used.
+
+### Vanilla and react
+
+The applications in these two templates is the same.
+You have an onchain counter and you can press `Increment` to increment it.
+
+### Three.js
+
+In this application the position of an object, the big green cube, is stored onchain.
+In the user interface you can move that cube using the arrow keys, space, and ctrl.
+
+### Phaser
+
+TODO
