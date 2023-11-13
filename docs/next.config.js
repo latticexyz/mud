@@ -11,142 +11,142 @@ export default withNextra({
       {
         source: "/what-is-mud",
         destination: "/introduction",
-        permanent: true,
+        permanent: false,
       },
       {
         source: "/quick-start",
         destination: "/quickstart",
-        permanent: true,
+        permanent: false,
       },   
       {
         source: "/store",
         destination: "/store/introduction",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/store/installation",
         destination: "/store/introduction",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/store/reading-and-writing",
         destination: "/store/table-libraries#reading-data",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/store/config",
         destination: "/store/table-libraries#config",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/store/advanced-features",
         destination: "/store/introduction",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/store/indexing",
         destination: "/store/introduction",
-        permanent: true        
+        permanent: false        
       },           
       {
         source: "/store/spec",
         destination: "/store/introduction",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/store/gas-efficiency",
         destination: "/store/introduction",
-        permanent: true        
+        permanent: false        
       },  
       {
         source: "/store/using-without-world",
         destination: "/store/introduction",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/store/internals",
         destination: "/store/introduction",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/world",
         destination: "/world/introduction",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/world/world-101",
         destination: "/world/introduction",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/world/config",
         destination: "/cli/config",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/world/deployer",
         destination: "/cli/deploy",
-        permanent: true        
+        permanent: false        
       },           
       {
         source: "/world/subsystems",
         destination: "/world/introduction",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/world/community-computers",
         destination: "/world/introduction",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/world/querying",
         destination: "/state-query/introduction",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/world/internals",
         destination: "/world/introduction",
-        permanent: true        
+        permanent: false        
       },           
       {
         source: "/client-side",
         destination: "/state-query/typescript/recs",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/indexer",
         destination: "/services/indexer",
-        permanent: true        
+        permanent: false        
       },            
       {
         source: "/cli",
         destination: "/cli/tablegen",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/ecs",
         destination: "/guides/emojimon/1-preface-the-ecs-model",
-        permanent: true        
+        permanent: false        
       },           
       {
         source: "/plugins",
         destination: "/world/introduction",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/tutorials",
         destination: "/guides/hello-world",
-        permanent: true        
+        permanent: false        
       },
       {
         source: "/tutorials/emojimon",
         destination: "/guides/emojimon",
-        permanent: true        
+        permanent: false        
       },      
       {
         source: "/tutorials/emojimon/preface-the-ecs-model",
         destination: "/guides/emojimon/1-preface-the-ecs-model",
-        permanent: true        
+        permanent: false        
       },
     ];
   },
