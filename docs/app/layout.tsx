@@ -32,7 +32,7 @@ type Props = { children: ReactNode };
 export default function Layout({ children }: Props) {
   return (
     <html lang="en">
-      <body className={twMerge("bg-black text-white", supplyMono.variable)}>{children}</body>
+      <body className={twMerge("bg-mud text-white", supplyMono.variable)}>{children}</body>
     </html>
   );
 }
