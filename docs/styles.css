@@ -47,8 +47,12 @@ a {
 }
 
 /* Skin sidebar fonts */
-.nextra-sidebar-container a,
-.nextra-sidebar-container button {
+.nextra-sidebar-container {
   font-family: "PP Supply Mono";
   text-transform: uppercase;
+}
+.nextra-sidebar-container a,
+.nextra-sidebar-container button {
+  font-family: "Basier Circle";
+  text-transform: none;
 }

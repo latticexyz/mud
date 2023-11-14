@@ -15,7 +15,7 @@ export default {
     type: "separator",
   },
   cli: "CLI",
-  "state-synchronization": "State Sync",
+  "state-sync": "State Sync",
   "state-query": "State Query",
   services: "Services",
   plugins: "Plugins",
