@@ -31,7 +31,7 @@ const WarningBox = ({ title, message }) => {
       paddingLeft: "34px",
       color: "white",
     },
-  };
+  } as const;
 
   return (
     <div style={styles.container}>
