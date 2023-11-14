@@ -31,7 +31,7 @@ export default async function HomePage() {
             <div className="font-mono text-3xl uppercase sm:text-4xl">MUD</div>
             <a
               href="https://lattice.xyz"
-              className="shrink-0 flex md:flex-row-reverse items-center gap-3 p-4 -m-4 font-mono md:text-lg uppercase leading-none transition hover:bg-white hover:text-mud"
+              className="shrink-0 flex md:flex-row-reverse items-center gap-3 p-3 -m-3 font-mono md:text-lg uppercase leading-none transition hover:bg-white hover:text-mud"
             >
               <span>
                 Built by
@@ -91,7 +91,7 @@ export default async function HomePage() {
               target="_blank"
               rel="noopener noreferrer"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               <SourceIcon />
               Source code
@@ -99,7 +99,7 @@ export default async function HomePage() {
             <Link
               href="/changelog"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               <ChangelogIcon />
               Changelog
@@ -107,7 +107,7 @@ export default async function HomePage() {
             <Link
               href="/introduction"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               <DocsIcon />
               Documentation
@@ -117,7 +117,7 @@ export default async function HomePage() {
               target="_blank"
               rel="noopener noreferrer"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               <ContributeIcon />
               Contribute
@@ -127,7 +127,7 @@ export default async function HomePage() {
               target="_blank"
               rel="noopener noreferrer"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               <StatusIcon />
               Status
@@ -137,7 +137,7 @@ export default async function HomePage() {
               target="_blank"
               rel="noopener noreferrer"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               <CalendarIcon />
               Roadmap
@@ -223,7 +223,7 @@ export default async function HomePage() {
             <a
               href="https://world.mirror.xyz/"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               Magazine
             </a>
@@ -232,7 +232,7 @@ export default async function HomePage() {
               target="_blank"
               rel="noopener noreferrer"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               Discord
             </a>
@@ -241,7 +241,7 @@ export default async function HomePage() {
               target="_blank"
               rel="noopener noreferrer"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               Twitter
             </a>
@@ -250,7 +250,7 @@ export default async function HomePage() {
               target="_blank"
               rel="noopener noreferrer"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               YouTube
             </a>
