@@ -1,0 +1,54 @@
+/* Add fonts to workspace */
+@font-face {
+  font-family: "PP Supply Mono";
+  src: url("/pp-mono.otf");
+}
+
+@font-face {
+  font-family: "Basier Circle";
+  src: url("/basier-bold.otf");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Basier Circle";
+  src: url("/basier-semibold.otf");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "Basier Circle";
+  src: url("/basier-medium.otf");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "Basier Circle";
+  src: url("/basier-regular.otf");
+  font-weight: 400;
+}
+
+/* Skin headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "PP Supply Mono";
+  text-transform: uppercase;
+}
+
+/* Skin body */
+
+p,
+a {
+  font-family: "Basier Circle";
+}
+
+/* Skin sidebar fonts */
+.nextra-sidebar-container a,
+.nextra-sidebar-container button {
+  font-family: "PP Supply Mono";
+  text-transform: uppercase;
+}
