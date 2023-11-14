@@ -3,30 +3,33 @@ import React from "react";
 const WarningBox = ({ title, message }) => {
   const styles = {
     container: {
-      backgroundColor: "#FDF2F3",
+      backgroundColor: "rgba(255, 118, 18, 0.2)",
       borderRadius: "4px",
-      border: "1px solid #E8D9DA",
-      padding: "12px 20px",
+      border: "none",
+      padding: "12px 12px 4px 16px",
       margin: "16px 0",
-      color: "#7D221C",
+      color: "white",
     },
     header: {
       display: "flex",
       alignItems: "center",
-      fontSize: "1rem",
+      fontSize: "1.2rem",
+      fontFamily: "PP Supply Mono",
+      textTransform: "uppercase",
       fontWeight: "bold",
-      lineHeight: "1.43",
+      lineHeight: "1.5",
     },
     icon: {
       marginRight: "12px",
       fontSize: "22px",
     },
     message: {
-      fontSize: "1rem",
+      fontSize: "1.05rem",
+      fontFamily: "Basier Circle",
       fontWeight: "400",
       lineHeight: "1.43",
       paddingLeft: "34px",
-      color: "#995A56",
+      color: "white",
     },
   };
 
