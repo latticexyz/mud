@@ -47,14 +47,6 @@ export default async function HomePage() {
                 className="aspect-square max-w-none w-[12rem] sm:w-[16rem] md:w-[14rem] lg:w-[18rem]"
               />
             </div>
-            {/* <Logo className="self-center my-auto w-full h-full max-w-[16rem]" /> */}
-            {/* <div className="grow"> */}
-            {/* <svg className=""></svg> */}
-            {/* <div className="w-full h-full"></div> */}
-            {/* logo */}
-            {/* <div className="block object-contain">hello</div> */}
-            {/* <Logo className="-my-0 w-auto h-auto" preserveAspectRatio="none" /> */}
-            {/* </div> */}
             <div className="space-y-8 md:grow md:self-end">
               <div className="space-y-4">
                 <div className="max-w-2xl font-mono text-3xl sm:text-3xl md:text-4xl lg:text-5xl uppercase [text-wrap:balance]">
@@ -95,31 +87,35 @@ export default async function HomePage() {
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <a
-              href="#"
+              href="https://github.com/latticexyz/mud"
+              target="_blank"
+              rel="noopener noreferrer"
               // eslint-disable-next-line max-len
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
             >
               <SourceIcon />
               Source code
             </a>
-            <a
-              href="#"
+            <Link
+              href="/changelog"
               // eslint-disable-next-line max-len
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
             >
               <ChangelogIcon />
               Changelog
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              href="/introduction"
               // eslint-disable-next-line max-len
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
             >
               <DocsIcon />
               Documentation
-            </a>
+            </Link>
             <a
-              href="#"
+              href="https://contribute.mud.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
               // eslint-disable-next-line max-len
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
             >
@@ -127,7 +123,9 @@ export default async function HomePage() {
               Contribute
             </a>
             <a
-              href="#"
+              href="https://status.mud.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
               // eslint-disable-next-line max-len
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
             >
@@ -135,12 +133,14 @@ export default async function HomePage() {
               Status
             </a>
             <a
-              href="#"
+              href="https://roadmap.mud.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
               // eslint-disable-next-line max-len
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
             >
               <CalendarIcon />
-              Calendar
+              Roadmap
             </a>
           </div>
         </div>
@@ -151,7 +151,12 @@ export default async function HomePage() {
             <p className="text-lg text-white/60">Start using a wide ecosystem of projects powered by MUD.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
-            <a href="#" className="group border border-white/20 grid overflow-hidden">
+            <a
+              href="https://skystrife.xyz/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group border border-white/20 grid overflow-hidden"
+            >
               <span className="z-10 row-start-1 col-start-1 flex flex-col gap-4 p-12 font-mono uppercase leading-none">
                 <span className="text-2xl leading-none">Sky Strife</span>
                 <span>An onchain strategy game</span>
@@ -161,7 +166,12 @@ export default async function HomePage() {
                 style={{ backgroundImage: "url('/images/projects/sky-strife.png')" }}
               />
             </a>
-            <a href="#" className="group border border-white/20 grid overflow-hidden">
+            <a
+              href="https://craft.mud.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group border border-white/20 grid overflow-hidden"
+            >
               <span className="z-10 row-start-1 col-start-1 flex flex-col gap-4 p-12 font-mono uppercase leading-none">
                 <span className="text-2xl leading-none">OPCraft</span>
                 <span>Voxel crafting game on OP Stack</span>
@@ -171,7 +181,12 @@ export default async function HomePage() {
                 style={{ backgroundImage: "url('/images/projects/opcraft.png')" }}
               />
             </a>
-            <a href="#" className="group border border-white/20 grid overflow-hidden">
+            <a
+              href="https://www.primodium.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group border border-white/20 grid overflow-hidden"
+            >
               <span className="z-10 row-start-1 col-start-1 flex flex-col gap-4 p-12 font-mono uppercase leading-none">
                 <span className="text-2xl leading-none">Primodium</span>
                 <span>An onchain city-building game</span>
@@ -181,7 +196,12 @@ export default async function HomePage() {
                 style={{ backgroundImage: "url('/images/projects/primodium.png')" }}
               />
             </a>
-            <a href="#" className="group border border-white/20 grid overflow-hidden">
+            <a
+              href="https://www.words3.xyz/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group border border-white/20 grid overflow-hidden"
+            >
               <span className="z-10 row-start-1 col-start-1 flex flex-col gap-4 p-12 font-mono uppercase leading-none">
                 <span className="text-2xl leading-none">Words3</span>
                 <span>Onchain scrabble</span>
@@ -201,28 +221,34 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <a
-              href="#"
+              href="https://world.mirror.xyz/"
               // eslint-disable-next-line max-len
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
             >
               Magazine
             </a>
             <a
-              href="#"
+              href="https://discord.lattice.xyz/"
+              target="_blank"
+              rel="noopener noreferrer"
               // eslint-disable-next-line max-len
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
             >
               Discord
             </a>
             <a
-              href="#"
+              href="https://twitter.com/latticexyz"
+              target="_blank"
+              rel="noopener noreferrer"
               // eslint-disable-next-line max-len
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
             >
               Twitter
             </a>
             <a
-              href="#"
+              href="https://www.youtube.com/@latticexyz"
+              target="_blank"
+              rel="noopener noreferrer"
               // eslint-disable-next-line max-len
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-white hover:text-black hover:border-white"
             >
