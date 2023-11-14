@@ -43,7 +43,7 @@ h6 {
 
 p,
 a {
-  font-family: "Basier Circle";
+  /* font-family: "Basier Circle"; */
 }
 
 /* Skin sidebar fonts */
@@ -53,6 +53,6 @@ a {
 }
 .nextra-sidebar-container a,
 .nextra-sidebar-container button {
-  font-family: "Basier Circle";
+  /* font-family: "Basier Circle"; */
   text-transform: none;
 }
