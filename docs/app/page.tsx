@@ -12,7 +12,7 @@ import { ChangelogIcon } from "../src/icons/ChangelogIcon";
 export const metadata: Metadata = {
   title: "MUD",
   description: "Battle-tested onchain framework for developers.",
-  icons: "/icons/redstone.svg",
+  icons: "/images/logos/circle/mud.svg",
 };
 
 export default async function HomePage() {

@@ -22,9 +22,9 @@ const supplyMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Redstone",
-  description: "A super low-cost chain for games and autonomous worlds.",
-  icons: "/icons/redstone.svg",
+  title: "MUD",
+  description: "Battle-tested onchain framework for developers.",
+  icons: "/images/logos/circle/mud.svg",
 };
 
 type Props = { children: ReactNode };
