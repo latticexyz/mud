@@ -157,7 +157,10 @@ export default async function HomePage() {
               rel="noopener noreferrer"
               className="group border border-white/20 grid overflow-hidden"
             >
-              <span className="z-10 row-start-1 col-start-1 flex flex-col gap-4 p-12 font-mono uppercase leading-none">
+              <span
+                className="z-10 row-start-1 col-start-1 flex flex-col gap-4 p-12 font-mono uppercase leading-none"
+                style={{ textShadow: "0 3px 6px #000" }}
+              >
                 <span className="text-2xl leading-none">Sky Strife</span>
                 <span>An onchain strategy game</span>
               </span>
@@ -172,7 +175,10 @@ export default async function HomePage() {
               rel="noopener noreferrer"
               className="group border border-white/20 grid overflow-hidden"
             >
-              <span className="z-10 row-start-1 col-start-1 flex flex-col gap-4 p-12 font-mono uppercase leading-none">
+              <span
+                className="z-10 row-start-1 col-start-1 flex flex-col gap-4 p-12 font-mono uppercase leading-none"
+                style={{ textShadow: "0 3px 6px #000" }}
+              >
                 <span className="text-2xl leading-none">OPCraft</span>
                 <span>Voxel crafting game on OP Stack</span>
               </span>
@@ -187,7 +193,10 @@ export default async function HomePage() {
               rel="noopener noreferrer"
               className="group border border-white/20 grid overflow-hidden"
             >
-              <span className="z-10 row-start-1 col-start-1 flex flex-col gap-4 p-12 font-mono uppercase leading-none">
+              <span
+                className="z-10 row-start-1 col-start-1 flex flex-col gap-4 p-12 font-mono uppercase leading-none"
+                style={{ textShadow: "0 3px 6px #000" }}
+              >
                 <span className="text-2xl leading-none">Primodium</span>
                 <span>An onchain city-building game</span>
               </span>
@@ -202,13 +211,16 @@ export default async function HomePage() {
               rel="noopener noreferrer"
               className="group border border-white/20 grid overflow-hidden"
             >
-              <span className="z-10 row-start-1 col-start-1 flex flex-col gap-4 p-12 font-mono uppercase leading-none">
+              <span
+                className="z-10 row-start-1 col-start-1 flex flex-col gap-4 p-12 font-mono uppercase leading-none"
+                style={{ textShadow: "0 3px 6px #000" }}
+              >
                 <span className="text-2xl leading-none">Words3</span>
                 <span>Onchain scrabble</span>
               </span>
               <span
                 className="row-start-1 col-start-1 bg-cover bg-center grayscale opacity-30 transition group-hover:grayscale-0 group-hover:opacity-50 group-hover:scale-105"
-                style={{ backgroundImage: "url('/images/projects/kamigotchi.png')" }}
+                style={{ backgroundImage: "url('/images/projects/words3.png')" }}
               />
             </a>
           </div>
