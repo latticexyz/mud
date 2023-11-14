@@ -21,7 +21,7 @@ const config: DocsThemeConfig = {
   ),
   darkMode: false,
   nextThemes: {
-    defaultTheme: 'dark',
+    defaultTheme: "dark",
   },
   footer: {
     text: "MIT 2023 © MUD",

@@ -35,7 +35,7 @@ const Card = ({ title, text, iconSVG }) => {
       fontWeight: "600",
       lineHeight: "24px",
       fontFamily: "PP Supply Mono",
-      textTransform: "uppercase"
+      textTransform: "uppercase",
     },
     text: {
       color: "rgba(255, 255, 255, 0.70)",
