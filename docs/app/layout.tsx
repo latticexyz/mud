@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   title: "MUD",
   description: "Battle-tested onchain framework for developers.",
   icons: "/images/logos/circle/mud.svg",
+  openGraph: {
+    images: "/images/og-img-mud.png",
+  },
 };
 
 type Props = { children: ReactNode };
