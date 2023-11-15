@@ -1,4 +1,4 @@
-import { eq, getTableName } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { PgDatabase } from "drizzle-orm/pg-core";
 import { buildTable, buildInternalTables, getTables } from "@latticexyz/store-sync/postgres";
 import { QueryAdapter } from "@latticexyz/store-sync/trpc-indexer";
@@ -24,23 +24,8 @@ export async function createQueryAdapter(database: PgDatabase<any>): Promise<Que
 
       const tablesWithRecords = await Promise.all(
         tables.map(async (table) => {
-          const sqlTable = buildTable(table);
-          const records = await database
-            .select()
-            .from(sqlTable)
-            .where(eq(sqlTable.__isDeleted, false))
-            .execute()
-            // Apparently sometimes we can have tables that exist in the internal table but no relation/schema set up, so queries fail.
-            // See https://github.com/latticexyz/mud/issues/1923
-            // TODO: make a more robust fix for this
-            .catch((error) => {
-              console.error(
-                "Could not query for records, returning empty set for table",
-                getTableName(sqlTable),
-                error
-              );
-              return [];
-            });
+          const sqliteTable = buildTable(table);
+          const records = await database.select().from(sqliteTable).where(eq(sqliteTable.__isDeleted, false)).execute();
           const filteredRecords = !filters.length
             ? records
             : records.filter((record) => {
