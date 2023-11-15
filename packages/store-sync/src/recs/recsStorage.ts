@@ -47,40 +47,41 @@ export function recsStorage<tables extends Record<string, Table>>({
   };
 
   async function recsStorageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
-    const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
-    for (const newTable of newTables) {
-      const tableEntity = getTableEntity(newTable);
-      if (hasComponent(components.RegisteredTables, tableEntity)) {
-        console.warn("table already registered, ignoring", {
-          newTable,
-          existingTable: getComponentValue(components.RegisteredTables, tableEntity)?.table,
-        });
-      } else {
-        setComponent(
-          components.RegisteredTables,
-          tableEntity,
-          { table: newTable },
-          { skipUpdateStream: shouldSkipUpdateStream?.() }
-        );
-      }
-    }
+    // const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
+    // for (const newTable of newTables) {
+    //   const tableEntity = getTableEntity(newTable);
+    //   if (hasComponent(components.RegisteredTables, tableEntity)) {
+    //     console.warn("table already registered, ignoring", {
+    //       newTable,
+    //       existingTable: getComponentValue(components.RegisteredTables, tableEntity)?.table,
+    //     });
+    //   } else {
+    //     setComponent(
+    //       components.RegisteredTables,
+    //       tableEntity,
+    //       { table: newTable },
+    //       { skipUpdateStream: shouldSkipUpdateStream?.() }
+    //     );
+    //   }
+    // }
 
     for (const log of logs) {
-      const { namespace, name } = hexToResource(log.args.tableId);
-      const table = getComponentValue(
-        components.RegisteredTables,
-        getTableEntity({ address: log.address, namespace, name })
-      )?.table;
-      if (!table) {
-        debug(`skipping update for unknown table: ${namespace}:${name} at ${log.address}`);
-        continue;
-      }
+      // const { namespace, name } = hexToResource(log.args.tableId);
+      // const table = getComponentValue(
+      //   components.RegisteredTables,
+      //   getTableEntity({ address: log.address, namespace, name })
+      // )?.table;
+      // if (!table) {
+      //   debug(`skipping update for unknown table: ${namespace}:${name} at ${log.address}`);
+      //   continue;
+      // }
 
-      const component = world.components.find((c) => c.id === table.tableId);
+      const tableId = hexToResource(log.args.tableId);
+      const component = world.components.find((c) => c.id === log.args.tableId);
       if (!component) {
         debug(
-          `skipping update for unknown component: ${table.tableId} (${table.namespace}:${
-            table.name
+          `skipping update for unknown component: ${log.args.tableId} (${tableId.namespace}:${
+            tableId.name
           }). Available components: ${Object.keys(components)}`
         );
         continue;
@@ -89,10 +90,10 @@ export function recsStorage<tables extends Record<string, Table>>({
       const entity = hexKeyTupleToEntity(log.args.keyTuple);
 
       if (log.eventName === "Store_SetRecord") {
-        const value = decodeValueArgs(table.valueSchema, log.args);
+        const value = decodeValueArgs(component.metadata.valueSchema, log.args);
         debug("setting component", {
-          namespace: table.namespace,
-          name: table.name,
+          namespace: tableId.namespace,
+          name: tableId.name,
           entity,
           value,
         });
@@ -112,14 +113,14 @@ export function recsStorage<tables extends Record<string, Table>>({
         const previousValue = getComponentValue(component, entity);
         const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
         const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
-        const newValue = decodeValueArgs(table.valueSchema, {
+        const newValue = decodeValueArgs(component.metadata.valueSchema, {
           staticData: newStaticData,
           encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
           dynamicData: (previousValue?.__dynamicData as Hex) ?? "0x",
         });
         debug("setting component via splice static", {
-          namespace: table.namespace,
-          name: table.name,
+          namespace: tableId.namespace,
+          name: tableId.name,
           entity,
           previousStaticData,
           newStaticData,
@@ -140,15 +141,15 @@ export function recsStorage<tables extends Record<string, Table>>({
         const previousValue = getComponentValue(component, entity);
         const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
         const newDynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);
-        const newValue = decodeValueArgs(table.valueSchema, {
+        const newValue = decodeValueArgs(component.metadata.valueSchema, {
           staticData: (previousValue?.__staticData as Hex) ?? "0x",
           // TODO: handle unchanged encoded lengths
           encodedLengths: log.args.encodedLengths,
           dynamicData: newDynamicData,
         });
         debug("setting component via splice dynamic", {
-          namespace: table.namespace,
-          name: table.name,
+          namespace: tableId.namespace,
+          name: tableId.name,
           entity,
           previousDynamicData,
           newDynamicData,
@@ -167,8 +168,8 @@ export function recsStorage<tables extends Record<string, Table>>({
         );
       } else if (log.eventName === "Store_DeleteRecord") {
         debug("deleting component", {
-          namespace: table.namespace,
-          name: table.name,
+          namespace: tableId.namespace,
+          name: tableId.name,
           entity,
         });
         removeComponent(component, entity, { skipUpdateStream: shouldSkipUpdateStream?.() });
