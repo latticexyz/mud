@@ -1,4 +1,4 @@
-# FORK of recs - Reactive Entity Component System
+# recs - Reactive Entity Component System
 
 `recs` is built with reactivity in mind.
 `Components` and `Queries` expose an `update$` stream, that `Systems` can react to.
