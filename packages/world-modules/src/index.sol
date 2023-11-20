@@ -8,6 +8,7 @@ import { KeysInTable, KeysInTableData, KeysInTableTableId } from "./modules/keys
 import { UsedKeysIndex, UsedKeysIndexTableId } from "./modules/keysintable/tables/UsedKeysIndex.sol";
 import { UniqueEntity } from "./modules/uniqueentity/tables/UniqueEntity.sol";
 import { CallboundDelegations, CallboundDelegationsTableId } from "./modules/std-delegations/tables/CallboundDelegations.sol";
+import { SystemboundDelegations, SystemboundDelegationsTableId } from "./modules/std-delegations/tables/SystemboundDelegations.sol";
 import { TimeboundDelegations, TimeboundDelegationsTableId } from "./modules/std-delegations/tables/TimeboundDelegations.sol";
 import { PuppetRegistry } from "./modules/puppet/tables/PuppetRegistry.sol";
 import { Balances } from "./modules/tokens/tables/Balances.sol";

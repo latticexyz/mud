@@ -21,6 +21,7 @@ export async function ensureModules({
     client,
     contracts: uniqueBy(modules, (mod) => getAddress(mod.address)).map((mod) => ({
       bytecode: mod.bytecode,
+      deployedBytecodeSize: mod.deployedBytecodeSize,
       label: `${mod.name} module`,
     })),
   });

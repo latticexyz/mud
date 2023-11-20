@@ -3,8 +3,6 @@ import { Hex, concatHex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { StorageAdapterLog, Table, schemasTable } from "./common";
 import { hexToResource } from "@latticexyz/common";
 
-// TODO: add tableToLog
-
 export function logToTable(log: StorageAdapterLog & { eventName: "Store_SetRecord" }): Table {
   const [tableId, ...otherKeys] = log.args.keyTuple;
   if (otherKeys.length) {

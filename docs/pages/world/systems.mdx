@@ -1,0 +1,99 @@
+import Illustration from "./world-table-illustration.mdx";
+
+# Systems
+
+One of the design principles of MUD is to separate the state of the `World` from the business logic.
+The business logic is implemented in stateless `System` contracts.
+`System`s are called through the `World`, and call back to the `World` to read and write state from [tables](./tables).
+
+<details>
+
+<summary>Detailed illustration</summary>
+
+<Illustration />
+
+</details>
+
+The `World` serves as a central entry point and forwards calls to systems, which allows it to provide [access control](/world/namespaces-access-control).
+
+## Calling systems
+
+To call a `System`, you call the `World` in one of these ways:
+
+- If a [function selector for the `System` is registered in the `World`](./function-selectors), you can call it via `world.<namespace>_<system>_<function>(<arguments>)`.
+- You can use [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L346-L351).
+- If you have [the proper delegation](/world/account-delegation) you can use [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L353-L394).
+
+## Writing systems
+
+A `System` should _not_ have any internal state, but store all of it in tables in the `World`.
+There are several reasons for this:
+
+- It allows a `World` to enforce access controls.
+- It allows the same `System` to be used by multiple `World` contracts.
+- Upgrades are a lot simpler when all the state is centralized outside of the `System` contract.
+
+Because calls to systems are proxied through the `World`, some message fields don't reflect the original call.
+Use these substitutes:
+
+| Vanilla Solidity | `System` replacement |
+| ---------------- | -------------------- |
+| `msg.sender`     | `_msgSender()`       |
+| `msg.value`      | `_msgValue()`        |
+
+When calling other contracts from a `System`, be aware that if you use `delegatecall` the called contract inherits the `System`'s permissions and can modify data in the `World` on behalf of the `System`.
+
+### Calling one `System` from another
+
+There are two ways to call one `System` from another one.
+
+| Call type                                    | `call` to the `World`                                                                                                                           | `delegatecall` directly to the `System`                                                                                                                         |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Permissions                                  | those of the called `System`                                                                                                                    | those of the calling `System`                                                                                                                                   |
+| `_msgSender()`                               | calling `System` (unless you can use `callFrom`, which is only available when the user [delegates](/world/account-delegation) to your `System`) | can use [`WorldContextProvider`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L180-L203) to transfer the correct information |
+| `_msgValue()`                                | zero                                                                                                                                            | can use [`WorldContextProvider`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L180-L203) to transfer the correct information |
+| Can be used by systems in the root namespace | No (it's a security measure)                                                                                                                    | Yes                                                                                                                                                             |
+
+## Registering systems
+
+For a `System` to be callable from a `World` it has to be [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L97-L201).
+Only the [namespace owner](./namespaces-access-control#ownership) can register a `System` in a namespace.
+
+`System`s can be registered once per `World`, but the same system can be registered in multiple `World`s.
+If you need multiple instances of a `System` in the same world, you can deploy the `System` multiple times and register the individual deployments individually.
+
+### Upgrading systems
+
+The namespace owner can upgrade a `System`.
+This is a two-step process: deploy the contract for the new `System` and then call `registerSystem` with the same `ResourceId` as the old one and the new contract address.
+
+This upgrade process removes the old `System` contract's access to the namespace, and gives access to the new contract.
+Any access granted _manually_ to the old `System` is not revoked, nor granted to the upgraded `System`.
+
+**Note:** You _should_ make sure to remove any such manually granted access.
+`System` access is based on the contract address, so somebody else could register a namespace they'd own, register the old `System` contract as a system in their namespace, and then abuse those permissions (if the `System` has code that can be used for that, of course).
+
+## Access control
+
+When you register a `System`, you can specify whether it is going to be private or public.
+
+- A public `System` has no access control checks, it can be called by anybody.
+  This is the main mechanism for user interaction with a MUD application.
+- A private `System` can only be called by accounts that have access.
+  This access can be the result of:
+
+  - Access permission to the namespace in which the `System` is registered.
+  - Access permission specifically to the `System`.
+
+Note that `System`s have access to their own namespace by default, so public `System`s can call private `System`s in their namespace.
+
+## Root systems
+
+The `World` uses `call` for systems in other namespaces, but `delegatecall` for those in the root namespace (`bytes14(0)`).
+As a result, root systems have access to the `World` contract's storage.
+Because of this access, root systems use [the internal `StoreCore` methods](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreCore.sol), which are slightly cheaper than calling [the external `IStore` methods](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol) used by other systems.
+Note that the table libraries abstract this difference, so normally there is no reason to be concerned about it.
+
+Another effect of having access to the storage of the `World` is that root systems could, in theory, overwrite any information in any table regardless of access control.
+Only the [owner of the root namespace](./namespaces-access-control) can register root systems.
+We recommend to only use the root namespace when strictly necessary.

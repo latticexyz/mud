@@ -14,7 +14,7 @@ const Card = ({ title, text, iconSVG }) => {
       borderRadius: "4px",
       border: "1px solid rgba(0, 0, 0, 0.08)",
       transition: "background-color 0.3s, color 0.3s",
-      backgroundColor: hover ? "#F2F0EE" : "#FAFAF9",
+      backgroundColor: hover ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,1)",
     },
     cardContent: {
       display: "flex",
@@ -29,14 +29,16 @@ const Card = ({ title, text, iconSVG }) => {
       alignItems: "center",
     },
     header: {
-      color: "#000",
+      color: "#fff",
       fontSize: "18px",
       fontStyle: "normal",
       fontWeight: "600",
       lineHeight: "24px",
+      fontFamily: "PP Supply Mono",
+      textTransform: "uppercase",
     },
     text: {
-      color: "rgba(0, 0, 0, 0.70)",
+      color: "rgba(255, 255, 255, 0.70)",
       fontSize: "15px",
       fontStyle: "normal",
       fontWeight: "400",
@@ -47,7 +49,6 @@ const Card = ({ title, text, iconSVG }) => {
   return (
     <div style={styles.cardBackground} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <div style={styles.icon}>{iconSVG}</div>
-
       <div style={styles.cardContent}>
         <div style={styles.header}>{title}</div>
         <div style={styles.text}>{text}</div>

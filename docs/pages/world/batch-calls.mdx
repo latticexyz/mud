@@ -1,0 +1,8 @@
+# Batch calls
+
+Batch calls allow a single call to the `World` to perform multiple `System` calls.
+Using [`batchCall`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/BatchCallSystem.sol#L15-L33) you can issue calls on your own behalf.
+If you have the proper [delegations](/world/account-delegation), you can also use [`batchCallFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/BatchCallSystem.sol#L35-L53) to issue `System` calls on behalf of other addresses.
+
+The calls take place sequentially, and after they all finish successfully you get back the return values from all of them.
+If any of the calls revert, so does `batchCall` / `batchCallFrom`, so all the state changes created by the previous calls are discarded.

@@ -131,6 +131,7 @@ export async function ensureSystems({
     client,
     contracts: uniqueBy(missingSystems, (system) => getAddress(system.address)).map((system) => ({
       bytecode: system.bytecode,
+      deployedBytecodeSize: system.deployedBytecodeSize,
       label: `${resourceLabel(system)} system`,
     })),
   });

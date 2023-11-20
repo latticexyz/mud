@@ -66,5 +66,6 @@ if (import.meta.env.DEV) {
     worldAddress: network.worldContract.address,
     worldAbi: network.worldContract.abi,
     write$: network.write$,
+    useStore: network.useStore,
   });
 }

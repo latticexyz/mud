@@ -1,6 +1,6 @@
 import "./preflight.css";
 import "tailwindcss/tailwind.css";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 import { router } from "./router";
 import { RouterProvider } from "react-router-dom";

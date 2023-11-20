@@ -342,8 +342,8 @@ importers:
         specifier: ^2.6.2
         version: 2.6.2
       prettier-plugin-solidity:
-        specifier: ^1.0.0-beta.19
-        version: 1.0.0-beta.19(prettier@2.6.2)
+        specifier: 1.1.3
+        version: 1.1.3(prettier@2.6.2)
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -1030,12 +1030,6 @@ packages:
       '@scure/base': 1.1.1
     dev: false
 
-  /@solidity-parser/parser@0.14.5:
-    resolution: {integrity: sha512-6dKnHZn7fg/iQATVEzqyUOyEidbn05q7YA2mQ9hC0MMXhhV3/JrsxmFSYZAcr7j1yUP700LLhTruvJ3MiQmjJg==}
-    dependencies:
-      antlr4ts: 0.5.0-alpha.4
-    dev: true
-
   /@solidity-parser/parser@0.16.0:
     resolution: {integrity: sha512-ESipEcHyRHg4Np4SqBCfcXwyxxna1DgFVz69bgpLV8vzl/NP1DtcKsJ4dJZXWQhY/Z4J2LeKBiOkOVZn9ct33Q==}
     dependencies:
@@ -1694,10 +1688,6 @@ packages:
 
   /electron-to-chromium@1.4.380:
     resolution: {integrity: sha512-XKGdI4pWM78eLH2cbXJHiBnWUwFSzZM7XujsB6stDiGu9AeSqziedP6amNLpJzE3i0rLTcfAwdCTs5ecP5yeSg==}
-    dev: true
-
-  /emoji-regex@10.2.1:
-    resolution: {integrity: sha512-97g6QgOk8zlDRdgq1WxwgTMgEWGVAQvB5Fdpgc1MkNy56la5SKP9GsMXKDOdqwn90/41a8yPwIGk1Y6WVbeMQA==}
     dev: true
 
   /emoji-regex@8.0.0:
@@ -2905,19 +2895,16 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier-plugin-solidity@1.0.0-beta.19(prettier@2.6.2):
-    resolution: {integrity: sha512-xxRQ5ZiiZyUoMFLE9h7HnUDXI/daf1tnmL1msEdcKmyh7ZGQ4YklkYLC71bfBpYU2WruTb5/SFLUaEb3RApg5g==}
+  /prettier-plugin-solidity@1.1.3(prettier@2.6.2):
+    resolution: {integrity: sha512-fQ9yucPi2sBbA2U2Xjh6m4isUTJ7S7QLc/XDDsktqqxYfTwdYKJ0EnnywXHwCGAaYbQNK+HIYPL1OemxuMsgeg==}
     engines: {node: '>=12'}
     peerDependencies:
-      prettier: ^2.3.0
+      prettier: '>=2.3.0 || >=3.0.0-alpha.0'
     dependencies:
-      '@solidity-parser/parser': 0.14.5
-      emoji-regex: 10.2.1
-      escape-string-regexp: 4.0.0
+      '@solidity-parser/parser': 0.16.0
       prettier: 2.6.2
       semver: 7.5.0
       solidity-comments-extractor: 0.0.7
-      string-width: 4.2.3
     dev: true
 
   /prettier@2.6.2:

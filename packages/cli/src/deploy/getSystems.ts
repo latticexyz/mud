@@ -14,7 +14,7 @@ export async function getSystems({
 }: {
   readonly client: Client;
   readonly worldDeploy: WorldDeploy;
-}): Promise<readonly Omit<System, "abi" | "bytecode">[]> {
+}): Promise<readonly Omit<System, "abi" | "bytecode" | "deployedBytecodeSize">[]> {
   const [resourceIds, functions, resourceAccess] = await Promise.all([
     getResourceIds({ client, worldDeploy }),
     getFunctions({ client, worldDeploy }),
