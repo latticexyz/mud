@@ -1,9 +1,9 @@
 {
-  "name": "@dojoengine/recs",
-  "version": "0.1.35",
+  "name": "@latticexyz/recs",
+  "version": "2.0.0-next.12",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dojoengine/mud.git",
+    "url": "https://github.com/latticexyz/mud.git",
     "directory": "packages/recs"
   },
   "license": "MIT",
