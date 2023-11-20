@@ -5,13 +5,17 @@ import { ZustandStore } from "./createStore";
 import { createStore } from "./createStore";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { Address } from "viem";
+import { SyncStep } from "../SyncStep";
 
-type AllTables<config extends StoreConfig, extraTables extends Tables> = ResolvedStoreConfig<config>["tables"] &
-  extraTables &
+type AllTables<
+  config extends StoreConfig,
+  extraTables extends Tables | undefined
+> = ResolvedStoreConfig<config>["tables"] &
+  (extraTables extends Tables ? extraTables : Record<never, never>) &
   typeof storeTables &
   typeof worldTables;
 
-type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables> = SyncOptions & {
+type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables | undefined> = SyncOptions & {
   // require address for now to keep the data model + retrieval simpler
   address: Address;
   config: config;
@@ -20,13 +24,13 @@ type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables
   startSync?: boolean;
 };
 
-type SyncToZustandResult<config extends StoreConfig, extraTables extends Tables> = SyncResult & {
+type SyncToZustandResult<config extends StoreConfig, extraTables extends Tables | undefined> = SyncResult & {
   tables: AllTables<config, extraTables>;
   useStore: ZustandStore<AllTables<config, extraTables>>;
   stopSync: () => void;
 };
 
-export async function syncToZustand<config extends StoreConfig, extraTables extends Tables>({
+export async function syncToZustand<config extends StoreConfig, extraTables extends Tables | undefined>({
   config,
   tables: extraTables,
   store,
@@ -41,7 +45,7 @@ export async function syncToZustand<config extends StoreConfig, extraTables exte
     ...extraTables,
     ...storeTables,
     ...worldTables,
-  } as AllTables<config, extraTables>;
+  } as unknown as AllTables<config, extraTables>;
 
   const useStore = store ?? createStore({ tables });
   const storageAdapter = createStorageAdapter({ store: useStore });
@@ -49,6 +53,11 @@ export async function syncToZustand<config extends StoreConfig, extraTables exte
   const storeSync = await createStoreSync({
     storageAdapter,
     ...syncOptions,
+    onProgress: (syncProgress) => {
+      // already live, no need for more progress updates
+      if (useStore.getState().syncProgress.step === SyncStep.LIVE) return;
+      useStore.setState(() => ({ syncProgress }));
+    },
   });
 
   const sub = startSync ? storeSync.storedBlockLogs$.subscribe() : null;

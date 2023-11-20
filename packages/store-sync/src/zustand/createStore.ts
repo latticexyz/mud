@@ -1,10 +1,11 @@
 import { SchemaToPrimitives, Table, Tables } from "@latticexyz/store";
 import { StoreApi, UseBoundStore, create } from "zustand";
 import { RawRecord, TableRecord } from "./common";
-import { Hex, concatHex } from "viem";
+import { Hex } from "viem";
 import { encodeKey } from "@latticexyz/protocol-parser";
 import { flattenSchema } from "../flattenSchema";
 import { getId } from "./getId";
+import { SyncStep } from "../SyncStep";
 
 type TableRecords<table extends Table> = {
   readonly [id: string]: TableRecord<table>;
@@ -13,6 +14,13 @@ type TableRecords<table extends Table> = {
 // TODO: split this into distinct stores and combine (https://docs.pmnd.rs/zustand/guides/typescript#slices-pattern)?
 
 export type ZustandState<tables extends Tables> = {
+  readonly syncProgress: {
+    readonly step: SyncStep;
+    readonly message: string;
+    readonly percentage: number;
+    readonly latestBlockNumber: bigint;
+    readonly lastBlockNumberProcessed: bigint;
+  };
   /** Tables derived from table registration store events */
   readonly tables: {
     readonly [tableId: Hex]: Table;
@@ -44,7 +52,14 @@ export type CreateStoreOptions<tables extends Tables> = {
 
 export function createStore<tables extends Tables>(opts: CreateStoreOptions<tables>): ZustandStore<tables> {
   return create<ZustandState<tables>>((set, get) => ({
-    tables: {},
+    syncProgress: {
+      step: SyncStep.INITIALIZE,
+      message: "Connecting",
+      percentage: 0,
+      latestBlockNumber: 0n,
+      lastBlockNumberProcessed: 0n,
+    },
+    tables: Object.fromEntries(Object.entries(opts.tables).map(([, table]) => [table.tableId, table])),
     rawRecords: {},
     records: {},
     getRecords: <table extends Table>(table: table): TableRecords<table> => {

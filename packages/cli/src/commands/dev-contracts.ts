@@ -17,6 +17,7 @@ const devOptions = {
   rpc: deployOptions.rpc,
   configPath: deployOptions.configPath,
   alwaysRunPostDeploy: deployOptions.alwaysRunPostDeploy,
+  worldAddress: deployOptions.worldAddress,
 };
 
 const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof devOptions>> = {
@@ -67,7 +68,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
       }
     });
 
-    let worldAddress: Address | undefined;
+    let worldAddress = opts.worldAddress as Address | undefined;
 
     const deploys$ = lastChange$.pipe(
       // debounce so that a large batch of file changes only triggers a deploy after it settles down, rather than the first change it sees (and then redeploying immediately after)

@@ -1,5 +1,24 @@
 # Change Log
 
+## 2.0.0-next.14
+
+### Patch Changes
+
+- aacffcb5: Pinned prettier-plugin-solidity version to 1.1.3
+- Updated dependencies [bb91edaa]
+  - @latticexyz/schema-type@2.0.0-next.14
+
+## 2.0.0-next.13
+
+### Minor Changes
+
+- b1d41727: Added a `mapObject` helper to map the value of each property of an object to a new value.
+
+### Patch Changes
+
+- 3e057061: Removed chalk usage from modules imported in client fix downstream client builds (vite in particular).
+  - @latticexyz/schema-type@2.0.0-next.13
+
 ## 2.0.0-next.12
 
 ### Minor Changes

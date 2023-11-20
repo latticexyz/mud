@@ -1,0 +1,74 @@
+# Namespaces and Access Control
+
+Access control in a `World` is based on namespaces.
+Every resource is part of a namespace (a blank namespace refers to the `root` namespace).
+Access to resources is managed by the owner of the namespace.
+
+## Resource identifiers
+
+A `ResourceId` is a 32-byte value that uniquely identifies a resource in a `World`.
+It is two bytes of resource type followed by 14 bytes of namespace and then 16 bytes of the name of the actual resource.
+
+Currently, MUD supports these resource types:
+
+- [Table (`tb`)](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeResourceTypes.sol#L11).
+  An onchain table whose information is available both onchain (through calls to `view` functions) and offchain (either through calls to `view` functions, events, or an [indexer](/services/indexer)).
+- [Offchain table (`ot`)](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeResourceTypes.sol#L14).
+  An offchain table whose information is only available offchain (either through events, or through an [indexer](/services/indexer)).
+- [Namespace (`ns`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L15).
+  A namespace is a container for tables, offchain tables, and systems, as explained here.
+- [System (`sy`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L25).
+  A [system](./systems) contains logic that interact with table data onchain.
+- [Module (`md`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L21).
+  A module is a deployed script that can install tables, systems, etc.
+
+Access control can be attached to any resource.
+
+## Access control levels
+
+There are three access levels in MUD.
+
+### "No" access
+
+This is the level that most users of a MUD application have for all resources.
+Users on this level are allowed to do the following:
+
+- Read data from tables.
+  Any information posted or created on the blockchain is public, so this information is available anyway.
+- Call functions on [public `System`s](./systems).
+
+### Access
+
+This level of access is often required for software that is part of the application.
+Access can be granted either on a namespace basis (access to the namespace gives access to all the resources inside it) or on an individual resource.
+
+Entities with this level of access can do anything that "no" access allows, and also:
+
+- Write directly to tables.
+  This is as opposed to users with no access, who can only modify table information by going through a public `System` (by default, a `System` has access to its own namespace, which includes all of the namespace's tables).
+- Call functions on [private `System`s](./systems).
+- In the case of access to a namespace, withdraw from the ETH balance of the namespace.
+  To avoid giving this permission, you can give an address access to every resource in the namespace, rather than to the namespace itself.
+
+### Ownership
+
+`Namespace` is the only resource type that has an owner.
+The owner is a single account (but by using multi-sig accounts ownership can be shared).
+
+The owner is an administrative account, a superuser.
+When you change ownership, the new owner gets access to the namespace, and the old owner loses it.
+Therefore, owners can do anything an address with access can.
+Additionally, owners can also:
+
+- Grant and revoke access within the namespace (either to the namespace itself or to resources inside it).
+- Transfer namespace ownership.
+- Register a [namespace delegation control](/world/account-delegation).
+- Register new [tables](/store/tables).
+- Register [store hooks](/store/store-hooks) for tables in the namespace.
+- Register new [systems](/world/systems).
+- Upgrade existing systems.
+- Register [system hooks](/world/system-hooks) for systems in the namespace.
+- Register [function selectors](/world/function-selectors) for systems in the namespace.
+
+Owners can modify which contract a `World` uses for each `System`.
+Note: once ownership of a namespace is burned (i.e. transferred to `address(0)`), no new access can be granted or revoked, ownership can't be transferred again, and `System`s can't be added, removed, or upgraded (unless the `System` is itself a [proxy](https://blog.openzeppelin.com/proxy-patterns)).

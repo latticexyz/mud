@@ -1,0 +1,52 @@
+# Getting started
+
+## Prerequisites
+
+- git ([download](https://git-scm.com/downloads))
+- foundry (forge, anvil, cast) ([download](https://book.getfoundry.sh/getting-started/installation), make sure to `foundryup` at least once)
+- node.js (v17+) ([download](https://nodejs.org/en/download/))
+- pnpm (`npm install pnpm --global` after installing node)
+
+## Setup
+
+Most projects in MUD are started by running `pnpm create mud <project name>`, but for this tutorial we've included some initial code to get you up and running quicker. This includes React components and base TailwindCSS styles.
+
+1. Fork or clone from the [Emojimon starter kit repo](https://github.com/latticexyz/emojimon).
+   You can use the command below.
+
+   ```bash copy
+   git clone https://github.com/latticexyz/emojimon.git -b mud-update-next-14
+   ```
+
+1. Install the dependencies and start up the MUD services (anvil node, contracts deployer, and client).
+
+   ```bash copy
+   cd emojimon && pnpm install && pnpm run dev
+   ```
+
+1. At this point you can play the game to see the finished game.
+   Open the game in your browser.
+   By default the game is at [http://localhost:3000](http://localhost:3000), but it could be on a different port if that port's taken.
+
+1. Click the map to spawn at a specific location and move using the arrow keys.
+   Note that on each block you can only move one space, and the block time on the anvil blockchain is one second.
+
+1. Now that you've seen our end goal, reset the repository to [the starting snapshot](https://github.com/latticexyz/emojimon/tree/8520a8206929f6265609cc9166c985846fd0cd87).
+
+```sh copy
+git reset --hard 8520a8206929f6265609cc9166c985846fd0cd87
+```
+
+After you do this, the game is just a green area where the map is going to be.
+
+<details>
+
+<summary>Code structure</summary>
+
+Except for a few utility files, most of the code is in two packages:
+
+- [`packages/contracts`](https://github.com/latticexyz/emojimon/tree/main/packages/contracts) contains the onchain part of the game.
+- [`packages/client`](https://github.com/latticexyz/emojimon/tree/main/packages/client) contains the offchain part of the game, the user interface.
+  The software runs on the user's browser, it is just served from a [vite](https://vitejs.dev/) server.
+
+</details>

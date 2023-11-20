@@ -1,5 +1,62 @@
 # @latticexyz/store-indexer
 
+## 2.0.0-next.14
+
+### Major Changes
+
+- 5ecccfe7: Separated frontend server and indexer service for Postgres indexer. Now you can run the Postgres indexer with one writer and many readers.
+
+  If you were previously using the `postgres-indexer` binary, you'll now need to run both `postgres-indexer` and `postgres-frontend`.
+
+  For consistency, the Postgres database logs are now disabled by default. If you were using these, please let us know so we can add them back in with an environment variable flag.
+
+### Minor Changes
+
+- f318f2fe: Added `STORE_ADDRESS` environment variable to index only a specific MUD Store.
+
+### Patch Changes
+
+- Updated dependencies [aacffcb5]
+- Updated dependencies [1faf7f69]
+- Updated dependencies [b2d2aa71]
+- Updated dependencies [1327ea8c]
+- Updated dependencies [bb91edaa]
+  - @latticexyz/common@2.0.0-next.14
+  - @latticexyz/store-sync@2.0.0-next.14
+  - @latticexyz/store@2.0.0-next.14
+  - @latticexyz/block-logs-stream@2.0.0-next.14
+  - @latticexyz/protocol-parser@2.0.0-next.14
+
+## 2.0.0-next.13
+
+### Major Changes
+
+- f6d214e3: Removed `tableIds` filter option in favor of the more flexible `filters` option that accepts `tableId` and an optional `key0` and/or `key1` to filter data by tables and keys.
+
+  If you were using an indexer client directly, you'll need to update your query:
+
+  ```diff
+    await indexer.findAll.query({
+      chainId,
+      address,
+  -   tableIds: ['0x...'],
+  +   filters: [{ tableId: '0x...' }],
+    });
+  ```
+
+### Patch Changes
+
+- Updated dependencies [de47d698]
+- Updated dependencies [f6d214e3]
+- Updated dependencies [fa776358]
+- Updated dependencies [3e057061]
+- Updated dependencies [b1d41727]
+  - @latticexyz/store-sync@2.0.0-next.13
+  - @latticexyz/common@2.0.0-next.13
+  - @latticexyz/block-logs-stream@2.0.0-next.13
+  - @latticexyz/protocol-parser@2.0.0-next.13
+  - @latticexyz/store@2.0.0-next.13
+
 ## 2.0.0-next.12
 
 ### Minor Changes
