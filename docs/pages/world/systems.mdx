@@ -54,6 +54,61 @@ There are two ways to call one `System` from another one.
 | `_msgValue()`                                | zero                                                                                                                                            | can use [`WorldContextProvider`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L180-L203) to transfer the correct information |
 | Can be used by systems in the root namespace | No (it's a security measure)                                                                                                                    | Yes                                                                                                                                                             |
 
+#### Calling from a root `System`
+
+If you need to call a `System` from a `System` in the root namespace you can use [`SystemSwitch`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/utils/SystemSwitch.sol).
+
+1. Import `SystemSwitch`.
+
+   ```solidity copy
+   import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.sol";
+   ```
+
+1. Call the function using `SystemSwitch.call`.
+   For example, here is how you can call [`IncrementSystem.increment()`](http://localhost:3000/templates/typescript/contracts#incrementsystemsol).
+
+   ```solidity copy
+    uint32 retval = abi.decode(
+      SystemSwitch.call(
+        abi.encodeWithSignature("increment()")
+      ),
+      (uint32) 
+    );
+   ```
+
+   <details>
+
+   <summary>Explanation</summary>
+
+   ```solidity
+   abi.encodeWithSignature("increment()")
+   ```
+
+   Use [`abi.encodeWithSignature`](https://docs.soliditylang.org/en/latest/cheatsheet.html#abi-encoding-and-decoding-functions) to create the calldata.
+   The first parameter is [the function name with the parameter types](https://docs.soliditylang.org/en/v0.8.23/abi-spec.html#function-selector).
+   If the function gets any parameters, they are specified as extra parameters.
+
+   ```solidity
+   SystemSwitch.call(
+        abi.encodeWithSignature(...)
+   )
+   ```
+
+   Using `SystemSwitch.call` with the calldata created by `abi.encodeWithSignature`. 
+   `SystemSwitch.call` takes care of figuring out details, such as what type of call to use.
+
+   ```solidity
+   uint32 retval = abi.decode(
+      SystemSwitch.call(...),
+      (uint32) 
+   );   
+   ```
+
+   Use [`abi.decode`](https://docs.soliditylang.org/en/latest/cheatsheet.html#abi-encoding-and-decoding-functions) to decode the call's return value.
+   The second parameter is the data type (or types if there are multiple return values).
+
+   </details>
+
 ## Registering systems
 
 For a `System` to be callable from a `World` it has to be [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L97-L201).
