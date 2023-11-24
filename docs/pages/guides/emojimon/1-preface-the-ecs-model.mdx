@@ -25,9 +25,9 @@ This is what the game needs to support:
 
 You'll notice that in the scope above there are a few key interactions that we need to account for. Let's use a basic one to begin—**the interaction between a player moving and a boulder blocking its movement.**
 
-In the ECS model both the player and the boulder can be thought of as entities, both of which have components that give it certain properties. For example, the player may have a `movable` component and the boulder an `obstruction` component.
+In the ECS model both the player and the boulder can be thought of as entities, both of which have components that give it certain properties. For example, the player may have a `Movable` component and the boulder an `Obstruction` component.
 
-In a vacuum these components don't _do_ anything, they are just data (in this example, booleans). However, when we bring a system into context—the `MoveSystem`—this allows us to operate on an entity’s `position` component to move them. It would also have the logic to know that `position` cannot be moved onto a spot on the grid in which an entity with `obstruction` is present.
+In a vacuum these components don't _do_ anything, they are just data (in this example, booleans). However, when we bring a system into context—the `MoveSystem`—this allows us to operate on an entity’s `Position` component to move them. It would also have the logic to know that `Position` cannot be moved onto a spot on the grid in which an entity with `Obstruction` is present.
 
 ### ECS in MUD
 
@@ -35,7 +35,7 @@ There is one last concept to understand before we begin—how to actually implem
 
 In MUD there are tables instead of components (MUD is a general database protocol, not specific to onchain games).
 However, for the sake of this tutorial, these can be mostly thought of interchangeably.
-To apply the ECS model for the example above you'd use `bytes32` as an entity identifier, and create both a `movable` table and an `obstruction` table, both of type `bool` (for boolean values).
+To apply the ECS model for the example above you'd use `bytes32` as an entity identifier, and create both a `Movable` table and an `Obstruction` table, both of type `bool` (for boolean values).
 
 You would then create a system, `MoveSystem.sol`, and write up the logic required to interact with the tables (i.e. components) accordingly.
 

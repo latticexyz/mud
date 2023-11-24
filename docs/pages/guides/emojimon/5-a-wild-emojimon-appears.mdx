@@ -424,7 +424,7 @@ Now we need a way to choose a type of monster when entering an encounter. We can
 
 ```solidity filename="packages/contracts/src/systems/MapSystem.sol" {4-5,50-55,62-67} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 import { System } from "@latticexyz/world/src/System.sol";
 import { Encounter, EncounterData, Encounterable, EncounterTrigger, MapConfig, Monster, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
 import { MonsterType } from "../codegen/common.sol";
@@ -667,7 +667,7 @@ We also want the emojimon to be able to escape if the fail throws multiple times
 
 ```solidity filename="pacakges/contracts/src/systems/EncounterSystem.sol" copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 import { System } from "@latticexyz/world/src/System.sol";
 import { Encounter, EncounterData, MonsterCatchAttempt, OwnedBy, Monster } from "../codegen/index.sol";
 import { MonsterCatchResult } from "../codegen/common.sol";
@@ -825,7 +825,7 @@ Last but not least, players should be able to flee encounters. We can add this w
 
 ```solidity filename="packages/contracts/src/systems/EncounterSystem.sol" {37-45} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 import { System } from "@latticexyz/world/src/System.sol";
 import { Encounter, EncounterData, MonsterCatchAttempt, OwnedBy, Monster } from "../codegen/index.sol";
 import { MonsterCatchResult } from "../codegen/common.sol";

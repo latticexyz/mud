@@ -18,7 +18,7 @@ We're going to start by defining three new tables:
 
 - `Player: 'bool'` - determine which entities are players (e.g. distinct wallet addresses).
 - `Movable: 'bool'` - determine whether or not an entity can move.
-- `Position: { valueSchema: { x: 'uint32', y: 'uint32' } }` - determine which position an entity is located on a 2D grid.
+- `Position: { valueSchema: { x: 'int32', y: 'int32' } }` - determine which position an entity is located on a 2D grid.
 
 The syntax is as follows:
 
@@ -29,7 +29,7 @@ import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
   enums: {
-    // TODO
+    Direction: ["North", "East", "South", "West"],
   },
   tables: {
     Movable: "bool",
@@ -37,8 +37,8 @@ export default mudConfig({
     Position: {
       dataStruct: false,
       valueSchema: {
-        x: "uint32",
-        y: "uint32",
+        x: "int32",
+        y: "int32",
       },
     },
   },
@@ -65,9 +65,10 @@ So by default entites are neither `Movable` nor a `Player`.
     Position: {
       dataStruct: false,
       valueSchema: {
-        x: "uint32",
-        y: "uint32",
+        x: "int32",
+        y: "int32",
       },
+    },
 ```
 
 The `Position` of an entity includes both an `x` coordinate and a `y` coordinate.
@@ -92,23 +93,19 @@ To solve for these problems we can add the `spawn` method, which will assign the
 
 ```solidity filename="packages/contract/src/systems/MapSystem.sol" {4-5,8-15} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 import { System } from "@latticexyz/world/src/System.sol";
 import { Movable, Player, Position } from "../codegen/index.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 
 contract MapSystem is System {
-  function spawn(uint32 x, uint32 y) public {
+  function spawn(int32 x, int32 y) public {
     bytes32 player = addressToEntityKey(address(_msgSender()));
     require(!Player.get(player), "already spawned");
 
     Player.set(player, true);
     Position.set(player, x, y);
     Movable.set(player, true);
-  }
-
-  function distance2(uint32 deltaX, uint32 deltaY) internal pure returns (uint32) {
-    return deltaX * deltaX + deltaY * deltaY;
   }
 }
 ```
@@ -132,7 +129,7 @@ import { addressToEntityKey } from "../addressToEntityKey.sol";
 [This function](https://github.com/latticexyz/emojimon/blob/main/packages/contracts/src/addressToEntityKey.sol) converts an address, use as the player's, to a `bytes32` value that can identify an entity.
 
 ```solidity
-  function spawn(uint32 x, uint32 y) public {
+  function spawn(int32 x, int32 y) public {
 ```
 
 The `spawn` function spawns a new player entity on the map.
@@ -164,18 +161,19 @@ To set a component value we use `<Component name>.set(<entity>, <value>)`.
 
 As you see, writing systems and their methods in MUD is similar to writing regular smart contracts. The key difference is that their state is defined and stored in tables rather than in the system contract itself.
 
-### `moveBy` method
+### `move` method
 
-Next we’ll add the `moveBy` method to `MapSystem.sol`.
+Next we’ll add the `move` method to `MapSystem.sol`.
 This will allow us to move users (e.g. the user's wallet address as their entityID) by updating their `Position` table.
 
 <CollapseCode>
 
-```solidity filename="packages/contract/src/systems/MapSystem.sol" {17-29} copy showLineNumbers
+```solidity filename="packages/contract/src/systems/MapSystem.sol" {5,18-34} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 import { System } from "@latticexyz/world/src/System.sol";
 import { Movable, Player, Position } from "../codegen/index.sol";
+import { Direction } from "../codegen/common.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 
 contract MapSystem is System {
@@ -188,22 +186,22 @@ contract MapSystem is System {
     Movable.set(player, true);
   }
 
-  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
+  function move(Direction direction) public {
     bytes32 player = addressToEntityKey(_msgSender());
     require(Movable.get(player), "cannot move");
 
-    (uint32 fromX, uint32 fromY) = Position.get(player);
-    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
-    require(clientX == fromX && clientY == fromY, "client confused about location");
-
-    uint32 x = uint32(int32(fromX) + deltaX);
-    uint32 y = uint32(int32(fromY) + deltaY);
+    (int32 x, int32 y) = Position.get(player);
+    if (direction == Direction.North) {
+      y -= 1;
+    } else if (direction == Direction.East) {
+      x += 1;
+    } else if (direction == Direction.South) {
+      y += 1;
+    } else if (direction == Direction.West) {
+      x -= 1;
+    }
 
     Position.set(player, x, y);
-  }
-
-  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
-    return uint32(deltaX * deltaX + deltaY * deltaY);
   }
 }
 ```
@@ -215,37 +213,49 @@ contract MapSystem is System {
 <summary>Explanation</summary>
 
 ```solidity
-  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
+  function move(Direction direction) public {
 ```
 
-If the client and the onchain code ever get out of sync about a player's position, it's best to forbid user movement until they synchronize again.
-To be able to detect that situation, we have the client code call the system onchain with what it thinks is the player's position.
+We pass in the direction to move and mutate the onchain player position based on that direction.
 
 ```solidity
-    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(Movable.get(player), "cannot move");
 ```
 
-This is how we get the player's real position (the onchain state is the authoritative version).
+Make sure the entity (the player, in this case) can move.
 
 ```solidity
-    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
-    require(clientX == fromX && clientY == fromY, "client confused about location");
+    (int32 x, int32 y) = Position.get(player);
 ```
 
-If the attempted move is more than one space, or if the client is out of sync about the player's location, do not move.
+Load the player's current onchain position.
+
+```solidity
+    if (direction == Direction.North) {
+      y -= 1;
+    } else if (direction == Direction.East) {
+      x += 1;
+    } else if (direction == Direction.South) {
+      y += 1;
+    } else if (direction == Direction.West) {
+      x -= 1;
+    }
+```
+
+Mutate the position according to the direction. You may notice that the Y coordinates are in reverse of what you might expect. We do this for ease of rendering in the browser, where the origin (`0,0`) is at the top-left corner of the screen (rather than bottom left).
 
 </details>
 
 This method will allow users to interact with a smart contract, auto-generated by MUD, to update their position.
 However, we are not yet able to visualize this on the client, so let's add that to make it feel more real.
 
-## Modify the user interface to call the map system
+## Call the map system from the client
 
-We’ll fill in the `moveBy` and `spawn` methods in our client’s `createSystemCalls.ts`.
+We’ll fill in the `move` and `spawn` methods in our client’s `createSystemCalls.ts`.
 
 <CollapseCode>
 
-```tsx filename="packages/client/src/mud/createSystemCalls.ts" {1-4,10,12-44} copy showLineNumbers
+```tsx filename="packages/client/src/mud/createSystemCalls.ts" {9-10,13-24,28-38} copy showLineNumbers
 import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
 import { uuid } from "@latticexyz/utils";
 import { ClientComponents } from "./createClientComponents";
@@ -257,18 +267,18 @@ export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
   { Player, Position }: ClientComponents
 ) {
-  const moveBy = async (deltaX: number, deltaY: number) => {
+  const move = async (direction: Direction) => {
     if (!playerEntity) {
       throw new Error("no player");
     }
 
-    const playerPosition = getComponentValue(Position, playerEntity);
-    if (!playerPosition) {
-      console.warn("cannot moveBy without a player position, not yet spawned?");
+    const position = getComponentValue(Position, playerEntity);
+    if (!position) {
+      console.warn("cannot move without a player position, not yet spawned?");
       return;
     }
 
-    const tx = await worldContract.write.moveBy([playerPosition.x, playerPosition.y, deltaX, deltaY]);
+    const tx = await worldContract.write.move([direction]);
     await waitForTransaction(tx);
   };
 
@@ -286,9 +296,21 @@ export function createSystemCalls(
     await waitForTransaction(tx);
   };
 
+  const throwBall = async () => {
+    // TODO
+    return null as any;
+  };
+
+  const fleeEncounter = async () => {
+    // TODO
+    return null as any;
+  };
+
   return {
-    moveBy,
+    move,
     spawn,
+    throwBall,
+    fleeEncounter,
   };
 }
 ```
@@ -313,11 +335,10 @@ From the network setup we get the user identity (`playerEntity`), the address of
 The client code that uses the system calls needs the `Player` and `Position` components, as you'll see below.
 
 ```ts
-) {
-  const moveBy = async (deltaX: number, deltaY: number) => {
+  const move = async (direction: Direction) => {
 ```
 
-This function moves the player by a specific amount.
+This function moves the player in a specific direction.
 
 ```ts
 if (!playerEntity) {
@@ -326,7 +347,7 @@ if (!playerEntity) {
 
 const playerPosition = getComponentValue(Position, playerEntity);
 if (!playerPosition) {
-  console.warn("cannot moveBy without a player position, not yet spawned?");
+  console.warn("cannot move without a player position, not yet spawned?");
   return;
 }
 ```
@@ -335,32 +356,18 @@ If there is no player, or no player position, we can't move.
 Currently there is no way to spawn a player without setting a position, so this check is redundant - but we may introduce a spawn method in the future that is positionless, in which case we'll need it.
 
 ```ts
-    const tx = await worldContract.write.moveBy([playerPosition.x, playerPosition.y,
-      deltaX, deltaY]);
-    await waitForTransaction(tx);
-  };
+const tx = await worldContract.write.move([direction]);
+await waitForTransaction(tx);
 ```
 
 This (`worldContract.write.<method>`) is the way we call a method on a system at the root namespace.
 
 ```ts
   const spawn = async (x: number, y: number) => {
-    ...
-  }
 ```
 
 Spawn a new player.
-It is very similar to `moveBy` above.
-
-```ts
-  return {
-    moveBy,
-    spawn,
-  };
-}
-```
-
-Return the functions in a structure so they can be called.
+It is very similar to `move` above.
 
 </details>
 
@@ -368,7 +375,7 @@ Now we can apply all of these backend changes to the client by updating `GameBoa
 
 <CollapseCode>
 
-```tsx filename="packages/client/src/GameBoard.tsx" {1,3-4,7-30} copy showLineNumbers
+```tsx filename="packages/client/src/GameBoard.tsx" {1,3-4,7-28} copy showLineNumbers
 import { useComponentValue } from "@latticexyz/react";
 import { GameMap } from "./GameMap";
 import { useMUD } from "./MUDContext";
@@ -402,10 +409,184 @@ export const GameBoard = () => {
 
 </CollapseCode>
 
+## Optimistic rendering
+
+Our player movement renders very slowly, because it waits for the onchain state to be updated, those updates propagate to our client, and then the map and player position updates accordingly. We can make this feel near-instant by adding optimistic rendering.
+
+First, we'll make our `Player` and `Position` components overridable.
+
+<CollapseCode>
+
+```typescript filename="packages/client/src/mud/createClientComponents.ts" {1,9-10} copy,showLineNumbers
+import { overridableComponent } from "@latticexyz/recs";
+import { SetupNetworkResult } from "./setupNetwork";
+
+export type ClientComponents = ReturnType<typeof createClientComponents>;
+
+export function createClientComponents({ components }: SetupNetworkResult) {
+  return {
+    ...components,
+    Player: overridableComponent(components.Player),
+    Position: overridableComponent(components.Position),
+  };
+}
+```
+
+</CollapseCode>
+
+This lets us "overlay" values while our `spawn` and `move` transactions are pending, which we'll add next.
+
+<CollapseCode>
+
+```typescript filename="packages/client/src/mud/createSystemCalls.ts" {3,25-42,45-47,60-71,74-77} copy,showLineNumbers
+import { getComponentValue } from "@latticexyz/recs";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
+import { uuid } from "@latticexyz/utils";
+import { ClientComponents } from "./createClientComponents";
+import { SetupNetworkResult } from "./setupNetwork";
+import { Direction } from "../direction";
+
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+export function createSystemCalls(
+  { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
+  { Player, Position }: ClientComponents
+) {
+  const move = async (direction: Direction) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const position = getComponentValue(Position, playerEntity);
+    if (!position) {
+      console.warn("cannot move without a player position, not yet spawned?");
+      return;
+    }
+
+    let { x, y } = position;
+    if (direction === Direction.North) {
+      y -= 1;
+    } else if (direction === Direction.East) {
+      x += 1;
+    } else if (direction === Direction.South) {
+      y += 1;
+    } else if (direction === Direction.West) {
+      x -= 1;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+
+    try {
+      const tx = await worldContract.write.move([direction]);
+      await waitForTransaction(tx);
+    } finally {
+      Position.removeOverride(positionId);
+    }
+  };
+
+  const spawn = async (x: number, y: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
+    if (!canSpawn) {
+      throw new Error("already spawned");
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+    const playerId = uuid();
+    Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
+
+    try {
+      const tx = await worldContract.write.spawn([x, y]);
+      await waitForTransaction(tx);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
+  };
+
+  const throwBall = async () => {
+    // TODO
+    return null as any;
+  };
+
+  const fleeEncounter = async () => {
+    // TODO
+    return null as any;
+  };
+
+  return {
+    move,
+    spawn,
+    throwBall,
+    fleeEncounter,
+  };
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```typescript
+let { x, y } = position;
+if (direction === Direction.North) {
+  y -= 1;
+} else if (direction === Direction.East) {
+  x += 1;
+} else if (direction === Direction.South) {
+  y += 1;
+} else if (direction === Direction.West) {
+  x -= 1;
+}
+```
+
+Mutate the position in the same way we do onchain. In the future, MUD will be able to better simulate contract calls in the client to avoid duplicating logic like this.
+
+```typescript
+const positionId = uuid();
+Position.addOverride(positionId, {
+  entity: playerEntity,
+  value: { x, y },
+});
+```
+
+Add a component value override for the player `Position`. We need to provide the override a unique ID so that we can later remove the value by this ID.
+
+```typescript
+try {
+  const tx = await worldContract.write.move([direction]);
+  await waitForTransaction(tx);
+} finally {
+  Position.removeOverride(positionId);
+}
+```
+
+Wrap our `move` contract call in a `try`/`catch` block and then, if the transaction call completes or fails for any reason, remove the override.
+
+For `spawn`, we do a similar approach, except we need to add overrides for both the `Player` and `Position` component values, to mirror what happens onchain.
+
+</details>
+
 You can run this command to update all the files to this point in the game's development.
 
 ```sh copy
-git reset --hard 025bae043c6b1f787bba13bec298dbda10d92c37
+git reset --hard 35adaebf5e97717902f09bb838476ec1763a003a
 ```
 
 Now that we have players, movement, and a basic map, let's start making improvements to the map itself.
