@@ -148,7 +148,7 @@ The easiest way to create the Solidity code is to use the MUD template:
 
 ## Deploy to the blockchain
 
-1. To have a `Counter` example `World` to modify, go to a separate command line window and create a blockchain with a `World` using [the TypeScript template](/template/typescript/getting-started) and start the execution.
+1. To have a `World` with the `Counter` example to modify, go to a separate command line window and create a blockchain with a `World` using [the TypeScript template](/template/typescript/getting-started) and start the execution.
    Choose either the `react-ecs` user interface or the `vanilla` one.
 
    ```sh copy
@@ -332,11 +332,11 @@ The easiest way to create the Solidity code is to use the MUD template:
 
    You can use [an online calculator](https://www.duplichecker.com/hex-to-text.php) to verify the values are correct.
 
-   |              Hex value | ASCII         |
-   | ---------------------: | ------------- |
-   | 6e736d6573736167696e67 | nsmessaging   |
-   | 73796d6573736167696e67 | symessaging   |
-   |         6d657373616765 | MessageSystem |
+   |                  Hex value | ASCII         |
+   | -------------------------: | ------------- |
+   |     6e736d6573736167696e67 | nsmessaging   |
+   |     73796d6573736167696e67 | symessaging   |
+   | 4d65737361676553797374656d | MessageSystem |
 
    ```solidity
            vm.startBroadcast(deployerPrivateKey);
@@ -542,7 +542,7 @@ Here we modify the template UI to so it will run properly.
 
    <CollapseCode>
 
-    ```ts fileName="index.ts" copy showLineNumbers {10-17}
+    ```ts filename="index.ts" copy showLineNumbers {10-17}
     import { setup } from "./mud/setup";
     import mudConfig from "contracts/mud.config";
 
@@ -589,10 +589,9 @@ Here we modify the template UI to so it will run properly.
 1. The network configuration does not have the correct `World` address. 
    Get the `World` address from the application being extended.
    By default, you can do see this application on URL [http://localhost:3000](http://localhost:3000).
+   Edit `src/mud/getNetworkConfig.ts` to set the `World` address.   
 
-   Note: If you have not modified the `contracts` package of the application you extend, the address is `0x6e9474e9c83676b9a71133ff96db43e7aa0a4342`.
-
-   Edit `src/mud/getNetworkConfig.ts` to use the correct address.
+   Note: If you followed the directions above to create `extendMe`, the `World` address is `0x6e9474e9c83676b9a71133ff96db43e7aa0a4342`.
 
    <CollapseCode>
 
@@ -651,8 +650,8 @@ Here we modify the template UI to so it will run properly.
       *    vite dev server was started or client was built
       * 4. The default, 31337 (anvil)
       */
-      const chainId = Number(params.get("chainId") || params.get("chainid") || import.meta.env.VITE_CHAIN_ID |$
-    
+      const chainId = Number(params.get("chainId") || params.get("chainid") || import.meta.env.VITE_CHAIN_ID || 31337)
+      
       /*
       * Find the chain (unless it isn't in the list of supported chains).
       */
@@ -707,7 +706,7 @@ Also, we don't have access to the `Counter` component, so we comment out the cod
 
    <CollapseCode>
 
-    ```ts fileName="createSystemCalls.ts" copy showLineNumbers {43-44,46}
+    ```ts filename="createSystemCalls.ts" copy showLineNumbers {43-44,46}
     /*
     * Create the system calls that the client can use to ask
     * for changes in the World state (using the System contracts).
@@ -782,7 +781,7 @@ We will now fix this.
 
 1. Copy the `mud.config.ts` to `src/mud/counter.config.ts`.
 
-    ```ts fileName="counter.config.ts" copy
+    ```ts filename="counter.config.ts" copy
     import { mudConfig } from "@latticexyz/world/register";
 
     export default mudConfig({
@@ -799,7 +798,7 @@ We will now fix this.
 
    <CollapseCode>
 
-    ```ts fileName="setupNetwork.ts" copy showLineNumbers {17,28,84}
+    ```ts filename="setupNetwork.ts" copy showLineNumbers {17,28,84}
     /*
     * The MUD client code is built on top of viem
     * (https://viem.sh/docs/getting-started.html).
@@ -1041,3 +1040,6 @@ We will now fix this.
       ```   
 
      </CollapseCode>
+
+Now you can click **Increment** and see the update.
+Also, you can look in **Components > :Counter** and see the counter value.
