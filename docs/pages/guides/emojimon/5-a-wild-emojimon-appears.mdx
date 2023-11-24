@@ -39,11 +39,12 @@ Let's start by adding three new tables to `mud.config.ts`.
 
 <CollapseCode>
 
-```ts filename="packages/contracts/mud.config.ts" {8-19} copy showLineNumbers
+```ts filename="packages/contracts/mud.config.ts" {9-20} copy showLineNumbers
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
   enums: {
+    Direction: ["North", "East", "South", "West"],
     TerrainType: ["None", "TallGrass", "Boulder"],
   },
   tables: {
@@ -74,8 +75,8 @@ export default mudConfig({
     Position: {
       dataStruct: false,
       valueSchema: {
-        x: "uint32",
-        y: "uint32",
+        x: "int32",
+        y: "int32",
       },
     },
   },
@@ -90,24 +91,28 @@ First let's make sure the client is being initialized properly in `PostDeploy.s.
 
 <CollapseCode>
 
-```solidity filename="packages/contracts/scripts/PostDeploy.s.sol" {9,63-66} copy showLineNumbers
+```solidity filename="packages/contracts/scripts/PostDeploy.s.sol" {9,65-68} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
-import { TerrainType } from "../src/codegen/common.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { EncounterTrigger, MapConfig, Obstruction, Position } from "../src/codegen/index.sol";
+import { TerrainType } from "../src/codegen/common.sol";
 import { positionToEntityKey } from "../src/positionToEntityKey.sol";
 
 contract PostDeploy is Script {
   function run(address worldAddress) external {
-    console.log("Deployed world: ", worldAddress);
-
-    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-    vm.startBroadcast(deployerPrivateKey);
+    // Specify a store so that you can use tables directly in PostDeploy
     StoreSwitch.setStoreAddress(worldAddress);
+
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    vm.startBroadcast(deployerPrivateKey);
 
     TerrainType O = TerrainType.None;
     TerrainType T = TerrainType.TallGrass;
@@ -147,12 +152,12 @@ contract PostDeploy is Script {
 
         terrain[(y * width) + x] = bytes1(uint8(terrainType));
 
-        bytes32 entity = positionToEntityKey(x, y);
+        bytes32 entity = positionToEntityKey(int32(x), int32(y));
         if (terrainType == TerrainType.Boulder) {
-          Position.set(entity, x, y);
+          Position.set(entity, int32(x), int32(y));
           Obstruction.set(entity, true);
         } else if (terrainType == TerrainType.TallGrass) {
-          Position.set(entity, x, y);
+          Position.set(entity, int32(x), int32(y));
           EncounterTrigger.set(entity, true);
         }
       }
@@ -171,24 +176,25 @@ Then let's update the `spawn` method in `MapSystem.sol` to include the `Encounte
 
 <CollapseCode>
 
-```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,25} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,26} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { Encounterable, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
+import { Direction } from "../codegen/common.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 import { positionToEntityKey } from "../positionToEntityKey.sol";
 
 contract MapSystem is System {
-  function spawn(uint32 x, uint32 y) public {
+  function spawn(int32 x, int32 y) public {
     bytes32 player = addressToEntityKey(address(_msgSender()));
     require(!Player.get(player), "already spawned");
 
     // Constrain position to map size, wrapping around if necessary
     (uint32 width, uint32 height, ) = MapConfig.get();
-    x = (x + width) % width;
-    y = (y + height) % height;
+    x = (x + int32(width)) % int32(width);
+    y = (y + int32(height)) % int32(height);
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
@@ -199,30 +205,30 @@ contract MapSystem is System {
     Encounterable.set(player, true);
   }
 
-  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
+  function move(Direction direction) public {
     bytes32 player = addressToEntityKey(_msgSender());
     require(Movable.get(player), "cannot move");
 
-    (uint32 fromX, uint32 fromY) = Position.get(player);
-    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
-    require(clientX == fromX && clientY == fromY, "client confused about location");
+    (int32 x, int32 y) = Position.get(player);
+    if (direction == Direction.North) {
+      y -= 1;
+    } else if (direction == Direction.East) {
+      x += 1;
+    } else if (direction == Direction.South) {
+      y += 1;
+    } else if (direction == Direction.West) {
+      x -= 1;
+    }
 
     // Constrain position to map size, wrapping around if necessary
-    // Also, by adding width and height, avoid negative numbers,
-    // which uint32 does not support.
     (uint32 width, uint32 height, ) = MapConfig.get();
-
-    uint32 x = uint32(int32(fromX) + deltaX + int32(width)) % width;
-    uint32 y = uint32(int32(fromY) + deltaY + int32(height)) % height;
+    x = (x + int32(width)) % int32(width);
+    y = (y + int32(height)) % int32(height);
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
 
     Position.set(player, x, y);
-  }
-
-  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
-    return uint32(deltaX * deltaX + deltaY * deltaY);
   }
 }
 ```
@@ -240,24 +246,25 @@ At this point we would ideally like to implement an element of randomness for tr
 
 <CollapseCode>
 
-```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,25} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,54-59} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
 import { System } from "@latticexyz/world/src/System.sol";
-import { Encounterable, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
+import { Encounterable, EncounterTrigger, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
+import { Direction } from "../codegen/common.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 import { positionToEntityKey } from "../positionToEntityKey.sol";
 
 contract MapSystem is System {
-  function spawn(uint32 x, uint32 y) public {
+  function spawn(int32 x, int32 y) public {
     bytes32 player = addressToEntityKey(address(_msgSender()));
     require(!Player.get(player), "already spawned");
 
     // Constrain position to map size, wrapping around if necessary
     (uint32 width, uint32 height, ) = MapConfig.get();
-    x = (x + width) % width;
-    y = (y + height) % height;
+    x = (x + int32(width)) % int32(width);
+    y = (y + int32(height)) % int32(height);
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
@@ -268,30 +275,37 @@ contract MapSystem is System {
     Encounterable.set(player, true);
   }
 
-  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
+  function move(Direction direction) public {
     bytes32 player = addressToEntityKey(_msgSender());
     require(Movable.get(player), "cannot move");
 
-    (uint32 fromX, uint32 fromY) = Position.get(player);
-    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
-    require(clientX == fromX && clientY == fromY, "client confused about location");
+    (int32 x, int32 y) = Position.get(player);
+    if (direction == Direction.North) {
+      y -= 1;
+    } else if (direction == Direction.East) {
+      x += 1;
+    } else if (direction == Direction.South) {
+      y += 1;
+    } else if (direction == Direction.West) {
+      x -= 1;
+    }
 
     // Constrain position to map size, wrapping around if necessary
-    // Also, by adding width and height, avoid negative numbers,
-    // which uint32 does not support.
     (uint32 width, uint32 height, ) = MapConfig.get();
-
-    uint32 x = uint32(int32(fromX) + deltaX + int32(width)) % width;
-    uint32 y = uint32(int32(fromY) + deltaY + int32(height)) % height;
+    x = (x + int32(width)) % int32(width);
+    y = (y + int32(height)) % int32(height);
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
 
     Position.set(player, x, y);
-  }
 
-  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
-    return uint32(deltaX * deltaX + deltaY * deltaY);
+    if (Encounterable.get(player) && EncounterTrigger.get(position)) {
+      uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.prevrandao)));
+      if (rand % 5 == 0) {
+        // TODO
+      }
+    }
   }
 }
 ```
@@ -302,24 +316,25 @@ Now that we have all of the encounter logic setup we just want to take the last 
 
 <CollapseCode>
 
-```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,31} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,32} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { Encounter, Encounterable, EncounterTrigger, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
+import { Direction } from "../codegen/common.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 import { positionToEntityKey } from "../positionToEntityKey.sol";
 
 contract MapSystem is System {
-  function spawn(uint32 x, uint32 y) public {
+  function spawn(int32 x, int32 y) public {
     bytes32 player = addressToEntityKey(address(_msgSender()));
     require(!Player.get(player), "already spawned");
 
     // Constrain position to map size, wrapping around if necessary
     (uint32 width, uint32 height, ) = MapConfig.get();
-    x = (x + width) % width;
-    y = (y + height) % height;
+    x = (x + int32(width)) % int32(width);
+    y = (y + int32(height)) % int32(height);
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
@@ -330,32 +345,174 @@ contract MapSystem is System {
     Encounterable.set(player, true);
   }
 
-  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
+  function move(Direction direction) public {
     bytes32 player = addressToEntityKey(_msgSender());
     require(Movable.get(player), "cannot move");
     require(!Encounter.getExists(player), "cannot move during an encounter");
 
-    (uint32 fromX, uint32 fromY) = Position.get(player);
-    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
-    require(clientX == fromX && clientY == fromY, "client confused about location");
+    (int32 x, int32 y) = Position.get(player);
+    if (direction == Direction.North) {
+      y -= 1;
+    } else if (direction == Direction.East) {
+      x += 1;
+    } else if (direction == Direction.South) {
+      y += 1;
+    } else if (direction == Direction.West) {
+      x -= 1;
+    }
 
     // Constrain position to map size, wrapping around if necessary
-    // Also, by adding width and height, avoid negative numbers,
-    // which uint32 does not support.
     (uint32 width, uint32 height, ) = MapConfig.get();
-
-    uint32 x = uint32(int32(fromX) + deltaX + int32(width)) % width;
-    uint32 y = uint32(int32(fromY) + deltaY + int32(height)) % height;
+    x = (x + int32(width)) % int32(width);
+    y = (y + int32(height)) % int32(height);
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
 
     Position.set(player, x, y);
-  }
 
-  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
-    return uint32(deltaX * deltaX + deltaY * deltaY);
+    if (Encounterable.get(player) && EncounterTrigger.get(position)) {
+      uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.prevrandao)));
+      if (rand % 5 == 0) {
+        startEncounter(player);
+      }
+    }
   }
+}
+```
+
+</CollapseCode>
+
+Let's also add this to our client code for better optimistic rendering.
+
+<CollapseCode>
+
+```ts filename="packages/client/src/mud/createSystemCalls.ts" {37-41} copy showLineNumbers
+import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
+import { uuid } from "@latticexyz/utils";
+import { ClientComponents } from "./createClientComponents";
+import { SetupNetworkResult } from "./setupNetwork";
+import { Direction } from "../direction";
+
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+export function createSystemCalls(
+  { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
+  { Encounter, MapConfig, Obstruction, Player, Position }: ClientComponents
+) {
+  const wrapPosition = (x: number, y: number) => {
+    const mapConfig = getComponentValue(MapConfig, singletonEntity);
+    if (!mapConfig) {
+      throw new Error("mapConfig no yet loaded or initialized");
+    }
+    return [(x + mapConfig.width) % mapConfig.width, (y + mapConfig.height) % mapConfig.height];
+  };
+
+  const isObstructed = (x: number, y: number) => {
+    return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
+  };
+
+  const move = async (direction: Direction) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const position = getComponentValue(Position, playerEntity);
+    if (!position) {
+      console.warn("cannot move without a player position, not yet spawned?");
+      return;
+    }
+
+    const inEncounter = !!getComponentValue(Encounter, playerEntity);
+    if (inEncounter) {
+      console.warn("cannot move while in encounter");
+      return;
+    }
+
+    let { x: inputX, y: inputY } = position;
+    if (direction === Direction.North) {
+      inputY -= 1;
+    } else if (direction === Direction.East) {
+      inputX += 1;
+    } else if (direction === Direction.South) {
+      inputY += 1;
+    } else if (direction === Direction.West) {
+      inputX -= 1;
+    }
+
+    const [x, y] = wrapPosition(inputX, inputY);
+    if (isObstructed(x, y)) {
+      console.warn("cannot move to obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+
+    try {
+      const tx = await worldContract.write.move([direction]);
+      await waitForTransaction(tx);
+    } finally {
+      Position.removeOverride(positionId);
+    }
+  };
+
+  const spawn = async (inputX: number, inputY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
+    if (!canSpawn) {
+      throw new Error("already spawned");
+    }
+
+    const [x, y] = wrapPosition(inputX, inputY);
+    if (isObstructed(x, y)) {
+      console.warn("cannot spawn on obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+    const playerId = uuid();
+    Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
+
+    try {
+      const tx = await worldContract.write.spawn([x, y]);
+      await waitForTransaction(tx);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
+  };
+
+  const throwBall = async () => {
+    // TODO
+    return null as any;
+  };
+
+  const fleeEncounter = async () => {
+    // TODO
+    return null as any;
+  };
+
+  return {
+    move,
+    spawn,
+    throwBall,
+    fleeEncounter,
+  };
 }
 ```
 
@@ -371,11 +528,12 @@ We'll add a new enum for `MonsterType` and use that in a new `Monster` table/com
 
 <CollapseCode>
 
-```ts filename="packages/contracts/mud.config.ts" {5,30} copy showLineNumbers
+```ts filename="packages/contracts/mud.config.ts" {6,31} copy showLineNumbers
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
   enums: {
+    Direction: ["North", "East", "South", "West"],
     MonsterType: ["None", "Eagle", "Rat", "Caterpillar"],
     TerrainType: ["None", "TallGrass", "Boulder"],
   },
@@ -408,8 +566,8 @@ export default mudConfig({
     Position: {
       dataStruct: false,
       valueSchema: {
-        x: "uint32",
-        y: "uint32",
+        x: "int32",
+        y: "int32",
       },
     },
   },
@@ -422,24 +580,25 @@ Now we need a way to choose a type of monster when entering an encounter. We can
 
 <CollapseCode>
 
-```solidity filename="packages/contracts/src/systems/MapSystem.sol" {4-5,50-55,62-67} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5-6,58,63-68} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
+
 import { System } from "@latticexyz/world/src/System.sol";
 import { Encounter, EncounterData, Encounterable, EncounterTrigger, MapConfig, Monster, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
-import { MonsterType } from "../codegen/common.sol";
+import { Direction, MonsterType } from "../codegen/common.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 import { positionToEntityKey } from "../positionToEntityKey.sol";
 
 contract MapSystem is System {
-  function spawn(uint32 x, uint32 y) public {
+  function spawn(int32 x, int32 y) public {
     bytes32 player = addressToEntityKey(address(_msgSender()));
     require(!Player.get(player), "already spawned");
 
     // Constrain position to map size, wrapping around if necessary
     (uint32 width, uint32 height, ) = MapConfig.get();
-    x = (x + width) % width;
-    y = (y + height) % height;
+    x = (x + int32(width)) % int32(width);
+    y = (y + int32(height)) % int32(height);
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
@@ -450,22 +609,26 @@ contract MapSystem is System {
     Encounterable.set(player, true);
   }
 
-  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
+  function move(Direction direction) public {
     bytes32 player = addressToEntityKey(_msgSender());
     require(Movable.get(player), "cannot move");
     require(!Encounter.getExists(player), "cannot move during an encounter");
 
-    (uint32 fromX, uint32 fromY) = Position.get(player);
-    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
-    require(clientX == fromX && clientY == fromY, "client confused about location");
+    (int32 x, int32 y) = Position.get(player);
+    if (direction == Direction.North) {
+      y -= 1;
+    } else if (direction == Direction.East) {
+      x += 1;
+    } else if (direction == Direction.South) {
+      y += 1;
+    } else if (direction == Direction.West) {
+      x -= 1;
+    }
 
     // Constrain position to map size, wrapping around if necessary
-    // Also, by adding width and height, avoid negative numbers,
-    // which uint32 does not support.
     (uint32 width, uint32 height, ) = MapConfig.get();
-
-    uint32 x = uint32(int32(fromX) + deltaX + int32(width)) % width;
-    uint32 y = uint32(int32(fromY) + deltaY + int32(height)) % height;
+    x = (x + int32(width)) % int32(width);
+    y = (y + int32(height)) % int32(height);
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
@@ -478,10 +641,6 @@ contract MapSystem is System {
         startEncounter(player);
       }
     }
-  }
-
-  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
-    return uint32(deltaX * deltaX + deltaY * deltaY);
   }
 
   function startEncounter(bytes32 player) internal {
@@ -499,7 +658,7 @@ Then let’s query to see if the player is in an encounter and, if so, get the m
 
 <CollapseCode>
 
-```tsx filename="packages/client/src/GameBoard.tsx" {8-10,16,49-51,61-65} copy showLineNumbers
+```tsx filename="packages/client/src/GameBoard.tsx" {8-10,16,49-51,60-64} copy showLineNumbers
 import { useComponentValue } from "@latticexyz/react";
 import { GameMap } from "./GameMap";
 import { useMUD } from "./MUDContext";
@@ -507,15 +666,15 @@ import { useKeyboardMovement } from "./useKeyboardMovement";
 import { hexToArray } from "@latticexyz/utils";
 import { TerrainType, terrainTypes } from "./terrainTypes";
 import { singletonEntity } from "@latticexyz/store-sync/recs";
-import { EncounterScreen } from "./EncounterScreen";
 import { Entity } from "@latticexyz/recs";
+import { EncounterScreen } from "./EncounterScreen";
 import { MonsterType, monsterTypes } from "./monsterTypes";
 
 export const GameBoard = () => {
   useKeyboardMovement();
 
   const {
-    components: { Encounter, Monster, MapConfig, Player, Position },
+    components: { Encounter, MapConfig, Monster, Player, Position },
     network: { playerEntity },
     systemCalls: { spawn },
   } = useMUD();
@@ -575,12 +734,6 @@ You did it! You are now able to move, start encounters, and see emojimon in said
 
 With this screen setup there are two more steps to go—enabling the player to capture emojimon and flee the encounter. Let’s keep going!
 
-You can run this command to update all the files to this point in the game's development.
-
-```sh copy
-git reset --hard b8b063b330e77656485faf75bed1af5c344bdfbc
-```
-
 ## Capture emojimon
 
 In order to have a proper capture system we will need a few new additions:
@@ -596,17 +749,18 @@ The first step is modifying the MUD config to add the necessary tables.
 
 We also need a way to represent the catch attempt. We’ll add a `MonsterCatchResult` enum with the different types of results of a catch attempt (missed, caught, fled).
 
-We’ll add `MonsterCatchAttempt` as an [offchain table](/store/advanced-features#offchain-tables) to broadcast the catch attempt to clients without storing any data on chain. This will allow the client to understand these interactions and render/animate them accordingly. You can think of offchain tables like native Solidity events but with the same structure and encoding as regular tables.
+We’ll add `MonsterCatchAttempt` as an [offchain table](/store/tables#types-of-tables) to broadcast the catch attempt to clients without storing any data on chain. This will allow the client to understand these interactions and render/animate them accordingly. You can think of offchain tables like native Solidity events but with the same structure and encoding as regular tables.
 
 Go ahead and add both of these to the MUD config.
 
 <CollapseCode>
 
-```ts filename="packages/contracts/mud.config.ts" {5,31-40,44} copy showLineNumbers
+```ts filename="packages/contracts/mud.config.ts" {6,32-41,45} copy showLineNumbers
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
   enums: {
+    Direction: ["North", "East", "South", "West"],
     MonsterCatchResult: ["Missed", "Caught", "Fled"],
     MonsterType: ["None", "Eagle", "Rat", "Caterpillar"],
     TerrainType: ["None", "TallGrass", "Boulder"],
@@ -634,7 +788,7 @@ export default mudConfig({
       },
     },
     MonsterCatchAttempt: {
-      ephemeral: true,
+      offchainOnly: true,
       dataStruct: false,
       keySchema: {
         encounter: "bytes32",
@@ -651,8 +805,8 @@ export default mudConfig({
     Position: {
       dataStruct: false,
       valueSchema: {
-        x: "uint32",
-        y: "uint32",
+        x: "int32",
+        y: "int32",
       },
     },
   },
@@ -668,8 +822,9 @@ We also want the emojimon to be able to escape if the fail throws multiple times
 ```solidity filename="pacakges/contracts/src/systems/EncounterSystem.sol" copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
+
 import { System } from "@latticexyz/world/src/System.sol";
-import { Encounter, EncounterData, MonsterCatchAttempt, OwnedBy, Monster } from "../codegen/index.sol";
+import { Player, Encounter, EncounterData, MonsterCatchAttempt, OwnedBy, Monster } from "../codegen/index.sol";
 import { MonsterCatchResult } from "../codegen/common.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 
@@ -708,11 +863,14 @@ The encounter screen already has a **Throw** button displayed, we just need to w
 
 <CollapseCode>
 
-```ts filename="packages/client/src/mud/createSystemCalls.ts" {10,70-90,95} copy showLineNumbers
+```ts filename="packages/client/src/mud/createSystemCalls.ts" {7,13,112-130} copy showLineNumbers
 import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
+import { uuid } from "@latticexyz/utils";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
-import { singletonEntity } from "@latticexyz/store-sync/recs";
+import { Direction } from "../direction";
+import { MonsterCatchResult } from "../monsterCatchResult";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
@@ -732,31 +890,55 @@ export function createSystemCalls(
     return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
   };
 
-  const moveBy = async (deltaX: number, deltaY: number) => {
+  const move = async (direction: Direction) => {
     if (!playerEntity) {
       throw new Error("no player");
     }
 
-    const inEncounter = !!getComponentValue(Encounter, playerEntity);
-    if (inEncounter) throw new error("cannot move during encounter");
-
-    const playerPosition = getComponentValue(Position, playerEntity);
-    if (!playerPosition) {
-      console.warn("cannot moveBy without a player position, not yet spawned?");
+    const position = getComponentValue(Position, playerEntity);
+    if (!position) {
+      console.warn("cannot move without a player position, not yet spawned?");
       return;
     }
 
-    let newX = playerPosition.x + deltaX;
-    let newY = playerPosition.y + deltaY;
-    [newX, newY] = wrapPosition(newX, newY);
+    const inEncounter = !!getComponentValue(Encounter, playerEntity);
+    if (inEncounter) {
+      console.warn("cannot move while in encounter");
+      return;
+    }
 
-    if (isObstructed(newX, newY)) throw new Error("cannot go into an obstructed space");
+    let { x: inputX, y: inputY } = position;
+    if (direction === Direction.North) {
+      inputY -= 1;
+    } else if (direction === Direction.East) {
+      inputX += 1;
+    } else if (direction === Direction.South) {
+      inputY += 1;
+    } else if (direction === Direction.West) {
+      inputX -= 1;
+    }
 
-    const tx = await worldContract.write.moveBy([playerPosition.x, playerPosition.y, deltaX, deltaY]);
-    await waitForTransaction(tx);
+    const [x, y] = wrapPosition(inputX, inputY);
+    if (isObstructed(x, y)) {
+      console.warn("cannot move to obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+
+    try {
+      const tx = await worldContract.write.move([direction]);
+      await waitForTransaction(tx);
+    } finally {
+      Position.removeOverride(positionId);
+    }
   };
 
-  const spawn = async (x: number, y: number) => {
+  const spawn = async (inputX: number, inputY: number) => {
     if (!playerEntity) {
       throw new Error("no player");
     }
@@ -766,15 +948,30 @@ export function createSystemCalls(
       throw new Error("already spawned");
     }
 
-    [x, y] = wrapPosition(x, y);
-
+    const [x, y] = wrapPosition(inputX, inputY);
     if (isObstructed(x, y)) {
       console.warn("cannot spawn on obstructed space");
       return;
     }
 
-    const tx = await worldContract.write.spawn([x, y]);
-    await waitForTransaction(tx);
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+    const playerId = uuid();
+    Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
+
+    try {
+      const tx = await worldContract.write.spawn([x, y]);
+      await waitForTransaction(tx);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
   };
 
   const throwBall = async () => {
@@ -788,7 +985,7 @@ export function createSystemCalls(
       throw new Error("no encounter");
     }
 
-    const tx = await worldContract.write.throwBall([]);
+    const tx = await worldContract.write.throwBall();
     await waitForTransaction(tx);
 
     const catchAttempt = getComponentValue(MonsterCatchAttempt, player);
@@ -799,10 +996,16 @@ export function createSystemCalls(
     return catchAttempt.result as MonsterCatchResult;
   };
 
+  const fleeEncounter = async () => {
+    // TODO
+    return null as any;
+  };
+
   return {
-    moveBy,
+    move,
     spawn,
     throwBall,
+    fleeEncounter,
   };
 }
 ```
@@ -811,23 +1014,18 @@ export function createSystemCalls(
 
 When you click the button, the `EncounterScreen` creates a pending toast and kicks off the transaction by calling our `throwBall` method above. We use `awaitStreamValue` to ensure the transaction went through and MUD has updated the client component data. After that, we can get the result of the catch attempt and return it so that the `EncounterScreen` can render the proper message in the toast.
 
-You can run this command to update all the files to this point in the game's development.
-
-```sh copy
-git reset --hard 00bffa27dc5d369fe536e35b84e0a5d5cc466645
-```
-
 ## Flee encounters
 
 Last but not least, players should be able to flee encounters. We can add this with a `flee` method in `EncounterSystem.sol` as well. To keep it simple we’ll guarantee that the player can always run away safely.
 
 <CollapseCode>
 
-```solidity filename="packages/contracts/src/systems/EncounterSystem.sol" {37-45} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/EncounterSystem.sol" {38-46} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
+
 import { System } from "@latticexyz/world/src/System.sol";
-import { Encounter, EncounterData, MonsterCatchAttempt, OwnedBy, Monster } from "../codegen/index.sol";
+import { Player, Encounter, EncounterData, MonsterCatchAttempt, OwnedBy, Monster } from "../codegen/index.sol";
 import { MonsterCatchResult } from "../codegen/common.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 
@@ -880,11 +1078,14 @@ Because the encounter screen is shown only when you're in an encounter, you'll s
 
 <CollapseCode>
 
-```ts filename="packages/client/src/mud/createSystemCalls.ts" copy showLineNumbers {92-95,101}
+```ts filename="packages/client/src/mud/createSystemCalls.ts" copy showLineNumbers {134-135}
 import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
+import { uuid } from "@latticexyz/utils";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
-import { singletonEntity } from "@latticexyz/store-sync/recs";
+import { Direction } from "../direction";
+import { MonsterCatchResult } from "../monsterCatchResult";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
@@ -904,31 +1105,55 @@ export function createSystemCalls(
     return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
   };
 
-  const moveBy = async (deltaX: number, deltaY: number) => {
+  const move = async (direction: Direction) => {
     if (!playerEntity) {
       throw new Error("no player");
     }
 
-    const inEncounter = !!getComponentValue(Encounter, playerEntity);
-    if (inEncounter) throw new error("cannot move during encounter");
-
-    const playerPosition = getComponentValue(Position, playerEntity);
-    if (!playerPosition) {
-      console.warn("cannot moveBy without a player position, not yet spawned?");
+    const position = getComponentValue(Position, playerEntity);
+    if (!position) {
+      console.warn("cannot move without a player position, not yet spawned?");
       return;
     }
 
-    let newX = playerPosition.x + deltaX;
-    let newY = playerPosition.y + deltaY;
-    [newX, newY] = wrapPosition(newX, newY);
+    const inEncounter = !!getComponentValue(Encounter, playerEntity);
+    if (inEncounter) {
+      console.warn("cannot move while in encounter");
+      return;
+    }
 
-    if (isObstructed(newX, newY)) throw new Error("cannot go into an obstructed space");
+    let { x: inputX, y: inputY } = position;
+    if (direction === Direction.North) {
+      inputY -= 1;
+    } else if (direction === Direction.East) {
+      inputX += 1;
+    } else if (direction === Direction.South) {
+      inputY += 1;
+    } else if (direction === Direction.West) {
+      inputX -= 1;
+    }
 
-    const tx = await worldContract.write.moveBy([playerPosition.x, playerPosition.y, deltaX, deltaY]);
-    await waitForTransaction(tx);
+    const [x, y] = wrapPosition(inputX, inputY);
+    if (isObstructed(x, y)) {
+      console.warn("cannot move to obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+
+    try {
+      const tx = await worldContract.write.move([direction]);
+      await waitForTransaction(tx);
+    } finally {
+      Position.removeOverride(positionId);
+    }
   };
 
-  const spawn = async (x: number, y: number) => {
+  const spawn = async (inputX: number, inputY: number) => {
     if (!playerEntity) {
       throw new Error("no player");
     }
@@ -938,15 +1163,30 @@ export function createSystemCalls(
       throw new Error("already spawned");
     }
 
-    [x, y] = wrapPosition(x, y);
-
+    const [x, y] = wrapPosition(inputX, inputY);
     if (isObstructed(x, y)) {
       console.warn("cannot spawn on obstructed space");
       return;
     }
 
-    const tx = await worldContract.write.spawn([x, y]);
-    await waitForTransaction(tx);
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+    const playerId = uuid();
+    Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
+
+    try {
+      const tx = await worldContract.write.spawn([x, y]);
+      await waitForTransaction(tx);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
   };
 
   const throwBall = async () => {
@@ -960,7 +1200,7 @@ export function createSystemCalls(
       throw new Error("no encounter");
     }
 
-    const tx = await worldContract.write.throwBall([]);
+    const tx = await worldContract.write.throwBall();
     await waitForTransaction(tx);
 
     const catchAttempt = getComponentValue(MonsterCatchAttempt, player);
@@ -972,12 +1212,12 @@ export function createSystemCalls(
   };
 
   const fleeEncounter = async () => {
-    const tx = await worldContract.write.flee([]);
+    const tx = await worldContract.write.flee();
     await waitForTransaction(tx);
   };
 
   return {
-    moveBy,
+    move,
     spawn,
     throwBall,
     fleeEncounter,
@@ -990,5 +1230,5 @@ export function createSystemCalls(
 You can run this command to update all the files to this point in the game's development.
 
 ```sh copy
-git reset --hard 6511b5e9aa38f02f417ed41a63c75a9217bca1b8
+git reset --hard 06b92eda810e11ca359fa9f0338e97c372f12709
 ```

@@ -10,7 +10,7 @@ By writing a simple query to find all players and render them in the client, weâ
 
 <CollapseCode>
 
-```tsx filename="packages/client/src/GameBoard.tsx" {1,8,23-31,67} copy showLineNumbers
+```tsx filename="packages/client/src/GameBoard.tsx" {1,8,23-31,58} copy showLineNumbers
 import { useComponentValue, useEntityQuery } from "@latticexyz/react";
 import { GameMap } from "./GameMap";
 import { useMUD } from "./MUDContext";
@@ -84,7 +84,7 @@ export const GameBoard = () => {
 You can run this command to update all the files to this point in the game's development.
 
 ```sh copy
-git reset --hard f389208bb898ce81aa697be70a2de18107f93c53
+git reset --hard 02bcb9b0179fa57ad318fe2700e8ac7ce0f7bfaf
 ```
 
 All you have to do now is deploy to testnet!
