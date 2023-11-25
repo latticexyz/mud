@@ -105,10 +105,24 @@ library Offchain {
   /**
    * @notice Set value.
    */
+  function setValue(bytes32[] memory _keyTuple, uint256 value) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
   function _setValue(bytes32 key, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
+  function _setValue(bytes32[] memory _keyTuple, uint256 value) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -130,6 +144,18 @@ library Offchain {
   /**
    * @notice Set the full data using individual values.
    */
+  function set(bytes32[] memory _keyTuple, uint256 value) internal {
+    bytes memory _staticData = encodeStatic(value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
   function _set(bytes32 key, uint256 value) internal {
     bytes memory _staticData = encodeStatic(value);
 
@@ -138,6 +164,18 @@ library Offchain {
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
+  function _set(bytes32[] memory _keyTuple, uint256 value) internal {
+    bytes memory _staticData = encodeStatic(value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -172,10 +210,24 @@ library Offchain {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -205,6 +257,7 @@ library Offchain {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;

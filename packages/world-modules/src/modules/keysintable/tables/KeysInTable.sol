@@ -132,10 +132,26 @@ library KeysInTable {
   /**
    * @notice Get keys0.
    */
+  function getKeys0(bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys0) {
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys0.
+   */
   function _getKeys0(ResourceId sourceTableId) internal view returns (bytes32[] memory keys0) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys0.
+   */
+  function _getKeys0(bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys0) {
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
@@ -147,6 +163,14 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys0 (using the specified store).
+   */
+  function getKeys0(IStore _store, bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys0) {
     bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
@@ -164,10 +188,24 @@ library KeysInTable {
   /**
    * @notice Set keys0.
    */
+  function setKeys0(bytes32[] memory _keyTuple, bytes32[] memory keys0) internal {
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)));
+  }
+
+  /**
+   * @notice Set keys0.
+   */
   function _setKeys0(ResourceId sourceTableId, bytes32[] memory keys0) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)));
+  }
+
+  /**
+   * @notice Set keys0.
+   */
+  function _setKeys0(bytes32[] memory _keyTuple, bytes32[] memory keys0) internal {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)));
   }
 
@@ -182,12 +220,29 @@ library KeysInTable {
   }
 
   /**
+   * @notice Set keys0 (using the specified store).
+   */
+  function setKeys0(IStore _store, bytes32[] memory _keyTuple, bytes32[] memory keys0) internal {
+    _store.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)));
+  }
+
+  /**
    * @notice Get the length of keys0.
    */
   function lengthKeys0(ResourceId sourceTableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
+   * @notice Get the length of keys0.
+   */
+  function lengthKeys0(bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 32;
@@ -208,12 +263,32 @@ library KeysInTable {
   }
 
   /**
+   * @notice Get the length of keys0.
+   */
+  function _lengthKeys0(bytes32[] memory _keyTuple) internal view returns (uint256) {
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
    * @notice Get the length of keys0 (using the specified store).
    */
   function lengthKeys0(IStore _store, ResourceId sourceTableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
+   * @notice Get the length of keys0 (using the specified store).
+   */
+  function lengthKeys0(IStore _store, bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 0);
     unchecked {
       return _byteLength / 32;
@@ -238,10 +313,32 @@ library KeysInTable {
    * @notice Get an item of keys0.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
+  function getItemKeys0(bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of keys0.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
   function _getItemKeys0(ResourceId sourceTableId, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of keys0.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemKeys0(bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
       return (bytes32(_blob));
@@ -263,12 +360,30 @@ library KeysInTable {
   }
 
   /**
+   * @notice Get an item of keys0 (using the specified store).
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemKeys0(IStore _store, bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
+    unchecked {
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
    * @notice Push an element to keys0.
    */
   function pushKeys0(ResourceId sourceTableId, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Push an element to keys0.
+   */
+  function pushKeys0(bytes32[] memory _keyTuple, bytes32 _element) internal {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
@@ -283,12 +398,26 @@ library KeysInTable {
   }
 
   /**
+   * @notice Push an element to keys0.
+   */
+  function _pushKeys0(bytes32[] memory _keyTuple, bytes32 _element) internal {
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
+  }
+
+  /**
    * @notice Push an element to keys0 (using the specified store).
    */
   function pushKeys0(IStore _store, ResourceId sourceTableId, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Push an element to keys0 (using the specified store).
+   */
+  function pushKeys0(IStore _store, bytes32[] memory _keyTuple, bytes32 _element) internal {
     _store.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
 
@@ -305,10 +434,24 @@ library KeysInTable {
   /**
    * @notice Pop an element from keys0.
    */
+  function popKeys0(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 32);
+  }
+
+  /**
+   * @notice Pop an element from keys0.
+   */
   function _popKeys0(ResourceId sourceTableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 32);
+  }
+
+  /**
+   * @notice Pop an element from keys0.
+   */
+  function _popKeys0(bytes32[] memory _keyTuple) internal {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 32);
   }
 
@@ -323,12 +466,29 @@ library KeysInTable {
   }
 
   /**
+   * @notice Pop an element from keys0 (using the specified store).
+   */
+  function popKeys0(IStore _store, bytes32[] memory _keyTuple) internal {
+    _store.popFromDynamicField(_tableId, _keyTuple, 0, 32);
+  }
+
+  /**
    * @notice Update an element of keys0 at `_index`.
    */
   function updateKeys0(ResourceId sourceTableId, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update an element of keys0 at `_index`.
+   */
+  function updateKeys0(bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
       StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 32), uint40(_encoded.length), _encoded);
@@ -349,12 +509,32 @@ library KeysInTable {
   }
 
   /**
+   * @notice Update an element of keys0 at `_index`.
+   */
+  function _updateKeys0(bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Update an element of keys0 (using the specified store) at `_index`.
    */
   function updateKeys0(IStore _store, ResourceId sourceTableId, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update an element of keys0 (using the specified store) at `_index`.
+   */
+  function updateKeys0(IStore _store, bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
       _store.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 32), uint40(_encoded.length), _encoded);
@@ -375,10 +555,26 @@ library KeysInTable {
   /**
    * @notice Get keys1.
    */
+  function getKeys1(bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys1) {
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys1.
+   */
   function _getKeys1(ResourceId sourceTableId) internal view returns (bytes32[] memory keys1) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys1.
+   */
+  function _getKeys1(bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys1) {
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
@@ -390,6 +586,14 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 1);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys1 (using the specified store).
+   */
+  function getKeys1(IStore _store, bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys1) {
     bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 1);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
@@ -407,10 +611,24 @@ library KeysInTable {
   /**
    * @notice Set keys1.
    */
+  function setKeys1(bytes32[] memory _keyTuple, bytes32[] memory keys1) internal {
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)));
+  }
+
+  /**
+   * @notice Set keys1.
+   */
   function _setKeys1(ResourceId sourceTableId, bytes32[] memory keys1) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)));
+  }
+
+  /**
+   * @notice Set keys1.
+   */
+  function _setKeys1(bytes32[] memory _keyTuple, bytes32[] memory keys1) internal {
     StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)));
   }
 
@@ -425,12 +643,29 @@ library KeysInTable {
   }
 
   /**
+   * @notice Set keys1 (using the specified store).
+   */
+  function setKeys1(IStore _store, bytes32[] memory _keyTuple, bytes32[] memory keys1) internal {
+    _store.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)));
+  }
+
+  /**
    * @notice Get the length of keys1.
    */
   function lengthKeys1(ResourceId sourceTableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
+   * @notice Get the length of keys1.
+   */
+  function lengthKeys1(bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 1);
     unchecked {
       return _byteLength / 32;
@@ -451,12 +686,32 @@ library KeysInTable {
   }
 
   /**
+   * @notice Get the length of keys1.
+   */
+  function _lengthKeys1(bytes32[] memory _keyTuple) internal view returns (uint256) {
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
    * @notice Get the length of keys1 (using the specified store).
    */
   function lengthKeys1(IStore _store, ResourceId sourceTableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
+   * @notice Get the length of keys1 (using the specified store).
+   */
+  function lengthKeys1(IStore _store, bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 1);
     unchecked {
       return _byteLength / 32;
@@ -481,10 +736,32 @@ library KeysInTable {
    * @notice Get an item of keys1.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
+  function getItemKeys1(bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of keys1.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
   function _getItemKeys1(ResourceId sourceTableId, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of keys1.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemKeys1(bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 32, (_index + 1) * 32);
       return (bytes32(_blob));
@@ -506,12 +783,30 @@ library KeysInTable {
   }
 
   /**
+   * @notice Get an item of keys1 (using the specified store).
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemKeys1(IStore _store, bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
+    unchecked {
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
    * @notice Push an element to keys1.
    */
   function pushKeys1(ResourceId sourceTableId, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Push an element to keys1.
+   */
+  function pushKeys1(bytes32[] memory _keyTuple, bytes32 _element) internal {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
@@ -526,12 +821,26 @@ library KeysInTable {
   }
 
   /**
+   * @notice Push an element to keys1.
+   */
+  function _pushKeys1(bytes32[] memory _keyTuple, bytes32 _element) internal {
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
+  }
+
+  /**
    * @notice Push an element to keys1 (using the specified store).
    */
   function pushKeys1(IStore _store, ResourceId sourceTableId, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    _store.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Push an element to keys1 (using the specified store).
+   */
+  function pushKeys1(IStore _store, bytes32[] memory _keyTuple, bytes32 _element) internal {
     _store.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
@@ -548,10 +857,24 @@ library KeysInTable {
   /**
    * @notice Pop an element from keys1.
    */
+  function popKeys1(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 32);
+  }
+
+  /**
+   * @notice Pop an element from keys1.
+   */
   function _popKeys1(ResourceId sourceTableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 32);
+  }
+
+  /**
+   * @notice Pop an element from keys1.
+   */
+  function _popKeys1(bytes32[] memory _keyTuple) internal {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 32);
   }
 
@@ -566,12 +889,29 @@ library KeysInTable {
   }
 
   /**
+   * @notice Pop an element from keys1 (using the specified store).
+   */
+  function popKeys1(IStore _store, bytes32[] memory _keyTuple) internal {
+    _store.popFromDynamicField(_tableId, _keyTuple, 1, 32);
+  }
+
+  /**
    * @notice Update an element of keys1 at `_index`.
    */
   function updateKeys1(ResourceId sourceTableId, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update an element of keys1 at `_index`.
+   */
+  function updateKeys1(bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
       StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 32), uint40(_encoded.length), _encoded);
@@ -592,12 +932,32 @@ library KeysInTable {
   }
 
   /**
+   * @notice Update an element of keys1 at `_index`.
+   */
+  function _updateKeys1(bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Update an element of keys1 (using the specified store) at `_index`.
    */
   function updateKeys1(IStore _store, ResourceId sourceTableId, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      _store.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update an element of keys1 (using the specified store) at `_index`.
+   */
+  function updateKeys1(IStore _store, bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
       _store.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 32), uint40(_encoded.length), _encoded);
@@ -618,10 +978,26 @@ library KeysInTable {
   /**
    * @notice Get keys2.
    */
+  function getKeys2(bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys2) {
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 2);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys2.
+   */
   function _getKeys2(ResourceId sourceTableId) internal view returns (bytes32[] memory keys2) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 2);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys2.
+   */
+  function _getKeys2(bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys2) {
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 2);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
@@ -633,6 +1009,14 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 2);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys2 (using the specified store).
+   */
+  function getKeys2(IStore _store, bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys2) {
     bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 2);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
@@ -650,10 +1034,24 @@ library KeysInTable {
   /**
    * @notice Set keys2.
    */
+  function setKeys2(bytes32[] memory _keyTuple, bytes32[] memory keys2) internal {
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)));
+  }
+
+  /**
+   * @notice Set keys2.
+   */
   function _setKeys2(ResourceId sourceTableId, bytes32[] memory keys2) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreCore.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)));
+  }
+
+  /**
+   * @notice Set keys2.
+   */
+  function _setKeys2(bytes32[] memory _keyTuple, bytes32[] memory keys2) internal {
     StoreCore.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)));
   }
 
@@ -668,12 +1066,29 @@ library KeysInTable {
   }
 
   /**
+   * @notice Set keys2 (using the specified store).
+   */
+  function setKeys2(IStore _store, bytes32[] memory _keyTuple, bytes32[] memory keys2) internal {
+    _store.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)));
+  }
+
+  /**
    * @notice Get the length of keys2.
    */
   function lengthKeys2(ResourceId sourceTableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 2);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
+   * @notice Get the length of keys2.
+   */
+  function lengthKeys2(bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 2);
     unchecked {
       return _byteLength / 32;
@@ -694,12 +1109,32 @@ library KeysInTable {
   }
 
   /**
+   * @notice Get the length of keys2.
+   */
+  function _lengthKeys2(bytes32[] memory _keyTuple) internal view returns (uint256) {
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 2);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
    * @notice Get the length of keys2 (using the specified store).
    */
   function lengthKeys2(IStore _store, ResourceId sourceTableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 2);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
+   * @notice Get the length of keys2 (using the specified store).
+   */
+  function lengthKeys2(IStore _store, bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 2);
     unchecked {
       return _byteLength / 32;
@@ -724,10 +1159,32 @@ library KeysInTable {
    * @notice Get an item of keys2.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
+  function getItemKeys2(bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of keys2.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
   function _getItemKeys2(ResourceId sourceTableId, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of keys2.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemKeys2(bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 32, (_index + 1) * 32);
       return (bytes32(_blob));
@@ -749,12 +1206,30 @@ library KeysInTable {
   }
 
   /**
+   * @notice Get an item of keys2 (using the specified store).
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemKeys2(IStore _store, bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
+    unchecked {
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
    * @notice Push an element to keys2.
    */
   function pushKeys2(ResourceId sourceTableId, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Push an element to keys2.
+   */
+  function pushKeys2(bytes32[] memory _keyTuple, bytes32 _element) internal {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
@@ -769,12 +1244,26 @@ library KeysInTable {
   }
 
   /**
+   * @notice Push an element to keys2.
+   */
+  function _pushKeys2(bytes32[] memory _keyTuple, bytes32 _element) internal {
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
+  }
+
+  /**
    * @notice Push an element to keys2 (using the specified store).
    */
   function pushKeys2(IStore _store, ResourceId sourceTableId, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    _store.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Push an element to keys2 (using the specified store).
+   */
+  function pushKeys2(IStore _store, bytes32[] memory _keyTuple, bytes32 _element) internal {
     _store.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
@@ -791,10 +1280,24 @@ library KeysInTable {
   /**
    * @notice Pop an element from keys2.
    */
+  function popKeys2(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 2, 32);
+  }
+
+  /**
+   * @notice Pop an element from keys2.
+   */
   function _popKeys2(ResourceId sourceTableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 2, 32);
+  }
+
+  /**
+   * @notice Pop an element from keys2.
+   */
+  function _popKeys2(bytes32[] memory _keyTuple) internal {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 2, 32);
   }
 
@@ -809,12 +1312,29 @@ library KeysInTable {
   }
 
   /**
+   * @notice Pop an element from keys2 (using the specified store).
+   */
+  function popKeys2(IStore _store, bytes32[] memory _keyTuple) internal {
+    _store.popFromDynamicField(_tableId, _keyTuple, 2, 32);
+  }
+
+  /**
    * @notice Update an element of keys2 at `_index`.
    */
   function updateKeys2(ResourceId sourceTableId, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update an element of keys2 at `_index`.
+   */
+  function updateKeys2(bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
       StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 32), uint40(_encoded.length), _encoded);
@@ -835,12 +1355,32 @@ library KeysInTable {
   }
 
   /**
+   * @notice Update an element of keys2 at `_index`.
+   */
+  function _updateKeys2(bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Update an element of keys2 (using the specified store) at `_index`.
    */
   function updateKeys2(IStore _store, ResourceId sourceTableId, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      _store.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update an element of keys2 (using the specified store) at `_index`.
+   */
+  function updateKeys2(IStore _store, bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
       _store.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 32), uint40(_encoded.length), _encoded);
@@ -861,10 +1401,26 @@ library KeysInTable {
   /**
    * @notice Get keys3.
    */
+  function getKeys3(bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys3) {
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 3);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys3.
+   */
   function _getKeys3(ResourceId sourceTableId) internal view returns (bytes32[] memory keys3) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 3);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys3.
+   */
+  function _getKeys3(bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys3) {
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 3);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
@@ -876,6 +1432,14 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 3);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys3 (using the specified store).
+   */
+  function getKeys3(IStore _store, bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys3) {
     bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 3);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
@@ -893,10 +1457,24 @@ library KeysInTable {
   /**
    * @notice Set keys3.
    */
+  function setKeys3(bytes32[] memory _keyTuple, bytes32[] memory keys3) internal {
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)));
+  }
+
+  /**
+   * @notice Set keys3.
+   */
   function _setKeys3(ResourceId sourceTableId, bytes32[] memory keys3) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreCore.setDynamicField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)));
+  }
+
+  /**
+   * @notice Set keys3.
+   */
+  function _setKeys3(bytes32[] memory _keyTuple, bytes32[] memory keys3) internal {
     StoreCore.setDynamicField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)));
   }
 
@@ -911,12 +1489,29 @@ library KeysInTable {
   }
 
   /**
+   * @notice Set keys3 (using the specified store).
+   */
+  function setKeys3(IStore _store, bytes32[] memory _keyTuple, bytes32[] memory keys3) internal {
+    _store.setDynamicField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)));
+  }
+
+  /**
    * @notice Get the length of keys3.
    */
   function lengthKeys3(ResourceId sourceTableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 3);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
+   * @notice Get the length of keys3.
+   */
+  function lengthKeys3(bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 3);
     unchecked {
       return _byteLength / 32;
@@ -937,12 +1532,32 @@ library KeysInTable {
   }
 
   /**
+   * @notice Get the length of keys3.
+   */
+  function _lengthKeys3(bytes32[] memory _keyTuple) internal view returns (uint256) {
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 3);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
    * @notice Get the length of keys3 (using the specified store).
    */
   function lengthKeys3(IStore _store, ResourceId sourceTableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 3);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
+   * @notice Get the length of keys3 (using the specified store).
+   */
+  function lengthKeys3(IStore _store, bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 3);
     unchecked {
       return _byteLength / 32;
@@ -967,10 +1582,32 @@ library KeysInTable {
    * @notice Get an item of keys3.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
+  function getItemKeys3(bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 3, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of keys3.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
   function _getItemKeys3(ResourceId sourceTableId, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 3, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of keys3.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemKeys3(bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 3, _index * 32, (_index + 1) * 32);
       return (bytes32(_blob));
@@ -992,12 +1629,30 @@ library KeysInTable {
   }
 
   /**
+   * @notice Get an item of keys3 (using the specified store).
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemKeys3(IStore _store, bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
+    unchecked {
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 3, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
    * @notice Push an element to keys3.
    */
   function pushKeys3(ResourceId sourceTableId, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Push an element to keys3.
+   */
+  function pushKeys3(bytes32[] memory _keyTuple, bytes32 _element) internal {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
   }
 
@@ -1012,12 +1667,26 @@ library KeysInTable {
   }
 
   /**
+   * @notice Push an element to keys3.
+   */
+  function _pushKeys3(bytes32[] memory _keyTuple, bytes32 _element) internal {
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
+  }
+
+  /**
    * @notice Push an element to keys3 (using the specified store).
    */
   function pushKeys3(IStore _store, ResourceId sourceTableId, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    _store.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Push an element to keys3 (using the specified store).
+   */
+  function pushKeys3(IStore _store, bytes32[] memory _keyTuple, bytes32 _element) internal {
     _store.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
   }
 
@@ -1034,10 +1703,24 @@ library KeysInTable {
   /**
    * @notice Pop an element from keys3.
    */
+  function popKeys3(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 3, 32);
+  }
+
+  /**
+   * @notice Pop an element from keys3.
+   */
   function _popKeys3(ResourceId sourceTableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 3, 32);
+  }
+
+  /**
+   * @notice Pop an element from keys3.
+   */
+  function _popKeys3(bytes32[] memory _keyTuple) internal {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 3, 32);
   }
 
@@ -1052,12 +1735,29 @@ library KeysInTable {
   }
 
   /**
+   * @notice Pop an element from keys3 (using the specified store).
+   */
+  function popKeys3(IStore _store, bytes32[] memory _keyTuple) internal {
+    _store.popFromDynamicField(_tableId, _keyTuple, 3, 32);
+  }
+
+  /**
    * @notice Update an element of keys3 at `_index`.
    */
   function updateKeys3(ResourceId sourceTableId, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 3, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update an element of keys3 at `_index`.
+   */
+  function updateKeys3(bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
       StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 3, uint40(_index * 32), uint40(_encoded.length), _encoded);
@@ -1078,12 +1778,32 @@ library KeysInTable {
   }
 
   /**
+   * @notice Update an element of keys3 at `_index`.
+   */
+  function _updateKeys3(bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 3, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Update an element of keys3 (using the specified store) at `_index`.
    */
   function updateKeys3(IStore _store, ResourceId sourceTableId, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      _store.spliceDynamicData(_tableId, _keyTuple, 3, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update an element of keys3 (using the specified store) at `_index`.
+   */
+  function updateKeys3(IStore _store, bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
       _store.spliceDynamicData(_tableId, _keyTuple, 3, uint40(_index * 32), uint40(_encoded.length), _encoded);
@@ -1104,10 +1824,26 @@ library KeysInTable {
   /**
    * @notice Get keys4.
    */
+  function getKeys4(bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys4) {
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 4);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys4.
+   */
   function _getKeys4(ResourceId sourceTableId) internal view returns (bytes32[] memory keys4) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 4);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys4.
+   */
+  function _getKeys4(bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys4) {
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 4);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
@@ -1119,6 +1855,14 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 4);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get keys4 (using the specified store).
+   */
+  function getKeys4(IStore _store, bytes32[] memory _keyTuple) internal view returns (bytes32[] memory keys4) {
     bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 4);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
@@ -1136,10 +1880,24 @@ library KeysInTable {
   /**
    * @notice Set keys4.
    */
+  function setKeys4(bytes32[] memory _keyTuple, bytes32[] memory keys4) internal {
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)));
+  }
+
+  /**
+   * @notice Set keys4.
+   */
   function _setKeys4(ResourceId sourceTableId, bytes32[] memory keys4) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreCore.setDynamicField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)));
+  }
+
+  /**
+   * @notice Set keys4.
+   */
+  function _setKeys4(bytes32[] memory _keyTuple, bytes32[] memory keys4) internal {
     StoreCore.setDynamicField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)));
   }
 
@@ -1154,12 +1912,29 @@ library KeysInTable {
   }
 
   /**
+   * @notice Set keys4 (using the specified store).
+   */
+  function setKeys4(IStore _store, bytes32[] memory _keyTuple, bytes32[] memory keys4) internal {
+    _store.setDynamicField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)));
+  }
+
+  /**
    * @notice Get the length of keys4.
    */
   function lengthKeys4(ResourceId sourceTableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 4);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
+   * @notice Get the length of keys4.
+   */
+  function lengthKeys4(bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 4);
     unchecked {
       return _byteLength / 32;
@@ -1180,12 +1955,32 @@ library KeysInTable {
   }
 
   /**
+   * @notice Get the length of keys4.
+   */
+  function _lengthKeys4(bytes32[] memory _keyTuple) internal view returns (uint256) {
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 4);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
    * @notice Get the length of keys4 (using the specified store).
    */
   function lengthKeys4(IStore _store, ResourceId sourceTableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 4);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
+   * @notice Get the length of keys4 (using the specified store).
+   */
+  function lengthKeys4(IStore _store, bytes32[] memory _keyTuple) internal view returns (uint256) {
     uint256 _byteLength = _store.getDynamicFieldLength(_tableId, _keyTuple, 4);
     unchecked {
       return _byteLength / 32;
@@ -1210,10 +2005,32 @@ library KeysInTable {
    * @notice Get an item of keys4.
    * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
    */
+  function getItemKeys4(bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 4, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of keys4.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
   function _getItemKeys4(ResourceId sourceTableId, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 4, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of keys4.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemKeys4(bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 4, _index * 32, (_index + 1) * 32);
       return (bytes32(_blob));
@@ -1235,12 +2052,30 @@ library KeysInTable {
   }
 
   /**
+   * @notice Get an item of keys4 (using the specified store).
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemKeys4(IStore _store, bytes32[] memory _keyTuple, uint256 _index) internal view returns (bytes32) {
+    unchecked {
+      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 4, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
    * @notice Push an element to keys4.
    */
   function pushKeys4(ResourceId sourceTableId, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Push an element to keys4.
+   */
+  function pushKeys4(bytes32[] memory _keyTuple, bytes32 _element) internal {
     StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
   }
 
@@ -1255,12 +2090,26 @@ library KeysInTable {
   }
 
   /**
+   * @notice Push an element to keys4.
+   */
+  function _pushKeys4(bytes32[] memory _keyTuple, bytes32 _element) internal {
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
+  }
+
+  /**
    * @notice Push an element to keys4 (using the specified store).
    */
   function pushKeys4(IStore _store, ResourceId sourceTableId, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    _store.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Push an element to keys4 (using the specified store).
+   */
+  function pushKeys4(IStore _store, bytes32[] memory _keyTuple, bytes32 _element) internal {
     _store.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
   }
 
@@ -1277,10 +2126,24 @@ library KeysInTable {
   /**
    * @notice Pop an element from keys4.
    */
+  function popKeys4(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 4, 32);
+  }
+
+  /**
+   * @notice Pop an element from keys4.
+   */
   function _popKeys4(ResourceId sourceTableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 4, 32);
+  }
+
+  /**
+   * @notice Pop an element from keys4.
+   */
+  function _popKeys4(bytes32[] memory _keyTuple) internal {
     StoreCore.popFromDynamicField(_tableId, _keyTuple, 4, 32);
   }
 
@@ -1295,12 +2158,29 @@ library KeysInTable {
   }
 
   /**
+   * @notice Pop an element from keys4 (using the specified store).
+   */
+  function popKeys4(IStore _store, bytes32[] memory _keyTuple) internal {
+    _store.popFromDynamicField(_tableId, _keyTuple, 4, 32);
+  }
+
+  /**
    * @notice Update an element of keys4 at `_index`.
    */
   function updateKeys4(ResourceId sourceTableId, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 4, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update an element of keys4 at `_index`.
+   */
+  function updateKeys4(bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
       StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 4, uint40(_index * 32), uint40(_encoded.length), _encoded);
@@ -1321,12 +2201,32 @@ library KeysInTable {
   }
 
   /**
+   * @notice Update an element of keys4 at `_index`.
+   */
+  function _updateKeys4(bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 4, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Update an element of keys4 (using the specified store) at `_index`.
    */
   function updateKeys4(IStore _store, ResourceId sourceTableId, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      _store.spliceDynamicData(_tableId, _keyTuple, 4, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update an element of keys4 (using the specified store) at `_index`.
+   */
+  function updateKeys4(IStore _store, bytes32[] memory _keyTuple, uint256 _index, bytes32 _element) internal {
     unchecked {
       bytes memory _encoded = abi.encodePacked((_element));
       _store.spliceDynamicData(_tableId, _keyTuple, 4, uint40(_index * 32), uint40(_encoded.length), _encoded);
@@ -1351,10 +2251,34 @@ library KeysInTable {
   /**
    * @notice Get the full data.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (KeysInTableData memory _table) {
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
   function _get(ResourceId sourceTableId) internal view returns (KeysInTableData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (KeysInTableData memory _table) {
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
@@ -1370,6 +2294,18 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Get the full data (using the specified store).
+   */
+  function get(IStore _store, bytes32[] memory _keyTuple) internal view returns (KeysInTableData memory _table) {
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
       _tableId,
       _keyTuple,
@@ -1402,6 +2338,24 @@ library KeysInTable {
   /**
    * @notice Set the full data using individual values.
    */
+  function set(
+    bytes32[] memory _keyTuple,
+    bytes32[] memory keys0,
+    bytes32[] memory keys1,
+    bytes32[] memory keys2,
+    bytes32[] memory keys3,
+    bytes32[] memory keys4
+  ) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
+    bytes memory _dynamicData = encodeDynamic(keys0, keys1, keys2, keys3, keys4);
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
   function _set(
     ResourceId sourceTableId,
     bytes32[] memory keys0,
@@ -1416,6 +2370,24 @@ library KeysInTable {
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
+  function _set(
+    bytes32[] memory _keyTuple,
+    bytes32[] memory keys0,
+    bytes32[] memory keys1,
+    bytes32[] memory keys2,
+    bytes32[] memory keys3,
+    bytes32[] memory keys4
+  ) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
+    bytes memory _dynamicData = encodeDynamic(keys0, keys1, keys2, keys3, keys4);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -1443,6 +2415,25 @@ library KeysInTable {
   }
 
   /**
+   * @notice Set the full data using individual values (using the specified store).
+   */
+  function set(
+    IStore _store,
+    bytes32[] memory _keyTuple,
+    bytes32[] memory keys0,
+    bytes32[] memory keys1,
+    bytes32[] memory keys2,
+    bytes32[] memory keys3,
+    bytes32[] memory keys4
+  ) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
+    bytes memory _dynamicData = encodeDynamic(keys0, keys1, keys2, keys3, keys4);
+
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
    * @notice Set the full data using the data struct.
    */
   function set(ResourceId sourceTableId, KeysInTableData memory _table) internal {
@@ -1452,6 +2443,17 @@ library KeysInTable {
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function set(bytes32[] memory _keyTuple, KeysInTableData memory _table) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
+    bytes memory _dynamicData = encodeDynamic(_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -1471,6 +2473,17 @@ library KeysInTable {
   }
 
   /**
+   * @notice Set the full data using the data struct.
+   */
+  function _set(bytes32[] memory _keyTuple, KeysInTableData memory _table) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
+    bytes memory _dynamicData = encodeDynamic(_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
    * @notice Set the full data using the data struct (using the specified store).
    */
   function set(IStore _store, ResourceId sourceTableId, KeysInTableData memory _table) internal {
@@ -1480,6 +2493,17 @@ library KeysInTable {
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
+
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using the data struct (using the specified store).
+   */
+  function set(IStore _store, bytes32[] memory _keyTuple, KeysInTableData memory _table) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
+    bytes memory _dynamicData = encodeDynamic(_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
 
     _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -1563,10 +2587,24 @@ library KeysInTable {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId sourceTableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -1577,6 +2615,13 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
+    _store.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys (using the specified store).
+   */
+  function deleteRecord(IStore _store, bytes32[] memory _keyTuple) internal {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
@@ -1647,6 +2692,7 @@ library KeysInTable {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(ResourceId sourceTableId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);

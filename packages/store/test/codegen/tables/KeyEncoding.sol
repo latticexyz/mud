@@ -131,6 +131,14 @@ library KeyEncoding {
   /**
    * @notice Get value.
    */
+  function getValue(bytes32[] memory _keyTuple) internal view returns (bool value) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get value.
+   */
   function _getValue(
     uint256 k1,
     int32 k2,
@@ -147,6 +155,14 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get value.
+   */
+  function _getValue(bytes32[] memory _keyTuple) internal view returns (bool value) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
@@ -177,6 +193,14 @@ library KeyEncoding {
   /**
    * @notice Get value.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (bool value) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get value.
+   */
   function _get(
     uint256 k1,
     int32 k2,
@@ -193,6 +217,14 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get value.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (bool value) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
@@ -215,6 +247,13 @@ library KeyEncoding {
   /**
    * @notice Set value.
    */
+  function setValue(bytes32[] memory _keyTuple, bool value) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
   function _setValue(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -224,6 +263,13 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
+  function _setValue(bytes32[] memory _keyTuple, bool value) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -245,6 +291,13 @@ library KeyEncoding {
   /**
    * @notice Set value.
    */
+  function set(bytes32[] memory _keyTuple, bool value) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
   function _set(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -254,6 +307,13 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
+  function _set(bytes32[] memory _keyTuple, bool value) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -275,6 +335,13 @@ library KeyEncoding {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -284,6 +351,13 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -313,6 +387,7 @@ library KeyEncoding {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(
     uint256 k1,
     int32 k2,

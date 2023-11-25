@@ -109,10 +109,26 @@ library NamespaceOwner {
   /**
    * @notice Get owner.
    */
+  function getOwner(bytes32[] memory _keyTuple) internal view returns (address owner) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get owner.
+   */
   function _getOwner(ResourceId namespaceId) internal view returns (address owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get owner.
+   */
+  function _getOwner(bytes32[] memory _keyTuple) internal view returns (address owner) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
@@ -131,10 +147,26 @@ library NamespaceOwner {
   /**
    * @notice Get owner.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (address owner) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get owner.
+   */
   function _get(ResourceId namespaceId) internal view returns (address owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get owner.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (address owner) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
@@ -152,10 +184,24 @@ library NamespaceOwner {
   /**
    * @notice Set owner.
    */
+  function setOwner(bytes32[] memory _keyTuple, address owner) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set owner.
+   */
   function _setOwner(ResourceId namespaceId, address owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set owner.
+   */
+  function _setOwner(bytes32[] memory _keyTuple, address owner) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
   }
 
@@ -172,10 +218,24 @@ library NamespaceOwner {
   /**
    * @notice Set owner.
    */
+  function set(bytes32[] memory _keyTuple, address owner) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set owner.
+   */
   function _set(ResourceId namespaceId, address owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set owner.
+   */
+  function _set(bytes32[] memory _keyTuple, address owner) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
   }
 
@@ -192,10 +252,24 @@ library NamespaceOwner {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord(ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -225,6 +299,7 @@ library NamespaceOwner {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple(ResourceId namespaceId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);

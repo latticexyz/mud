@@ -4,44 +4,50 @@ import {
   renderCommonData,
   renderList,
   renderWithStore,
+  renderWithKey,
 } from "@latticexyz/common/codegen";
 import { renderDecodeValueType } from "./field";
 import { RenderTableOptions } from "./types";
 
 export function renderRecordMethods(options: RenderTableOptions) {
   const { structName, storeArgument } = options;
-  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
+  const { _typedTableId } = renderCommonData(options);
 
   let result = "";
 
   if (options.withGetters) {
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-        /**
-         * @notice Get the full data${_commentSuffix}.
-         */
-        function ${_methodNamePrefix}get(${renderArguments([
-        _typedStore,
-        _typedTableId,
-        _typedKeyArgs,
-      ])}) internal view returns (${renderDecodedRecord(options)}) {
-          ${_keyTupleDefinition}
-          
-          (
-            bytes memory _staticData,
-            PackedCounter _encodedLengths,
-            bytes memory _dynamicData
-            ) = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
-            return decode(_staticData, _encodedLengths, _dynamicData);
-          }
-        `
+      ({ _typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix }) =>
+        renderWithKey(
+          options.keyTuple,
+          false,
+          ({ _typedKeyArgs, _keyTupleDefinition }) =>
+            `
+            /**
+             * @notice Get the full data${_commentSuffix}.
+             */
+            function ${_methodNamePrefix}get(${renderArguments([
+              _typedStore,
+              _typedTableId,
+              _typedKeyArgs,
+            ])}) internal view returns (${renderDecodedRecord(options)}) {
+              ${_keyTupleDefinition}
+              
+              (
+                bytes memory _staticData,
+                PackedCounter _encodedLengths,
+                bytes memory _dynamicData
+                ) = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
+                return decode(_staticData, _encodedLengths, _dynamicData);
+              }
+          `
+        )
     );
   }
 
-  result += renderWithStore(
-    storeArgument,
-    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+  result += renderWithStore(storeArgument, ({ _typedStore, _store, _commentSuffix, _methodNamePrefix, _internal }) =>
+    renderWithKey(options.keyTuple, false, ({ _typedKeyArgs, _keyTupleDefinition }) => {
       const externalArguments = renderArguments([
         _typedStore,
         _typedTableId,
@@ -53,24 +59,23 @@ export function renderRecordMethods(options: RenderTableOptions) {
         "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" + (_internal ? ", _fieldLayout" : "");
 
       return `
-        /** 
-         * @notice Set the full data using individual values${_commentSuffix}.
-         */
-        function ${_methodNamePrefix}set(${externalArguments}) internal {
-          ${renderRecordData(options)}
+          /** 
+           * @notice Set the full data using individual values${_commentSuffix}.
+           */
+          function ${_methodNamePrefix}set(${externalArguments}) internal {
+            ${renderRecordData(options)}
 
-          ${_keyTupleDefinition}
+            ${_keyTupleDefinition}
 
-          ${_store}.setRecord(${internalArguments});
-        }
-    `;
-    }
+            ${_store}.setRecord(${internalArguments});
+          }
+        `;
+    })
   );
 
   if (structName !== undefined) {
-    result += renderWithStore(
-      storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+    result += renderWithStore(storeArgument, ({ _typedStore, _store, _commentSuffix, _methodNamePrefix, _internal }) =>
+      renderWithKey(options.keyTuple, false, ({ _typedKeyArgs, _keyTupleDefinition }) => {
         const externalArguments = renderArguments([
           _typedStore,
           _typedTableId,
@@ -82,18 +87,18 @@ export function renderRecordMethods(options: RenderTableOptions) {
           "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" + (_internal ? ", _fieldLayout" : "");
 
         return `
-          /**
-           * @notice Set the full data using the data struct${_commentSuffix}.
-           */
-          function ${_methodNamePrefix}set(${externalArguments}) internal {
-            ${renderRecordData(options, "_table.")}
+            /**
+             * @notice Set the full data using the data struct${_commentSuffix}.
+             */
+            function ${_methodNamePrefix}set(${externalArguments}) internal {
+              ${renderRecordData(options, "_table.")}
 
-            ${_keyTupleDefinition}
+              ${_keyTupleDefinition}
 
-            ${_store}.setRecord(${internalArguments});
-          }
-      `;
-      }
+              ${_store}.setRecord(${internalArguments});
+            }
+          `;
+      })
     );
   }
 
@@ -135,24 +140,23 @@ export function renderRecordData(options: RenderTableOptions, namePrefix = "") {
 
 export function renderDeleteRecordMethods(options: RenderTableOptions) {
   const { storeArgument } = options;
-  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
+  const { _typedTableId } = renderCommonData(options);
 
-  return renderWithStore(
-    storeArgument,
-    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+  return renderWithStore(storeArgument, ({ _typedStore, _store, _commentSuffix, _methodNamePrefix, _internal }) =>
+    renderWithKey(options.keyTuple, false, ({ _typedKeyArgs, _keyTupleDefinition }) => {
       const externalArguments = renderArguments([_typedStore, _typedTableId, _typedKeyArgs]);
       const internalArguments = "_tableId, _keyTuple" + (_internal ? ", _fieldLayout" : "");
 
       return `
-      /** 
-       * @notice Delete all data for given keys${_commentSuffix}.
-       */
-      function ${_methodNamePrefix}deleteRecord(${externalArguments}) internal {
-        ${_keyTupleDefinition}
-        ${_store}.deleteRecord(${internalArguments});
-      }
-    `;
-    }
+          /** 
+           * @notice Delete all data for given keys${_commentSuffix}.
+           */
+          function ${_methodNamePrefix}deleteRecord(${externalArguments}) internal {
+            ${_keyTupleDefinition}
+            ${_store}.deleteRecord(${internalArguments});
+          }
+        `;
+    })
   );
 }
 

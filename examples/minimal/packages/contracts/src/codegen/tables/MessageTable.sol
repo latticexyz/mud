@@ -106,12 +106,34 @@ library MessageTable {
   /**
    * @notice Set the full data using individual values.
    */
+  function set(bytes32[] memory _keyTuple, string memory value) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(value);
+    bytes memory _dynamicData = encodeDynamic(value);
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
   function _set(string memory value) internal {
     bytes memory _staticData;
     PackedCounter _encodedLengths = encodeLengths(value);
     bytes memory _dynamicData = encodeDynamic(value);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using individual values.
+   */
+  function _set(bytes32[] memory _keyTuple, string memory value) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(value);
+    bytes memory _dynamicData = encodeDynamic(value);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -157,9 +179,23 @@ library MessageTable {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -199,6 +235,7 @@ library MessageTable {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple() internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 

@@ -110,9 +110,25 @@ library CounterTable {
   /**
    * @notice Get value.
    */
+  function getValue(bytes32[] memory _keyTuple) internal view returns (uint32 value) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get value.
+   */
   function _getValue() internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get value.
+   */
+  function _getValue(bytes32[] memory _keyTuple) internal view returns (uint32 value) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint32(bytes4(_blob)));
   }
@@ -123,6 +139,14 @@ library CounterTable {
   function getValue(IStore _store) internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get value (using the specified store).
+   */
+  function getValue(IStore _store, bytes32[] memory _keyTuple) internal view returns (uint32 value) {
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint32(bytes4(_blob)));
   }
@@ -140,9 +164,25 @@ library CounterTable {
   /**
    * @notice Get value.
    */
+  function get(bytes32[] memory _keyTuple) internal view returns (uint32 value) {
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get value.
+   */
   function _get() internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get value.
+   */
+  function _get(bytes32[] memory _keyTuple) internal view returns (uint32 value) {
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint32(bytes4(_blob)));
   }
@@ -153,6 +193,14 @@ library CounterTable {
   function get(IStore _store) internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get value (using the specified store).
+   */
+  function get(IStore _store, bytes32[] memory _keyTuple) internal view returns (uint32 value) {
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint32(bytes4(_blob)));
   }
@@ -169,9 +217,23 @@ library CounterTable {
   /**
    * @notice Set value.
    */
+  function setValue(bytes32[] memory _keyTuple, uint32 value) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
   function _setValue(uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
+  function _setValue(bytes32[] memory _keyTuple, uint32 value) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -181,6 +243,13 @@ library CounterTable {
   function setValue(IStore _store, uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value (using the specified store).
+   */
+  function setValue(IStore _store, bytes32[] memory _keyTuple, uint32 value) internal {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -196,9 +265,23 @@ library CounterTable {
   /**
    * @notice Set value.
    */
+  function set(bytes32[] memory _keyTuple, uint32 value) internal {
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
   function _set(uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value.
+   */
+  function _set(bytes32[] memory _keyTuple, uint32 value) internal {
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -208,6 +291,13 @@ library CounterTable {
   function set(IStore _store, uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set value (using the specified store).
+   */
+  function set(IStore _store, bytes32[] memory _keyTuple, uint32 value) internal {
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
@@ -223,9 +313,23 @@ library CounterTable {
   /**
    * @notice Delete all data for given keys.
    */
+  function deleteRecord(bytes32[] memory _keyTuple) internal {
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
   function _deleteRecord() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /**
+   * @notice Delete all data for given keys.
+   */
+  function _deleteRecord(bytes32[] memory _keyTuple) internal {
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
@@ -235,6 +339,13 @@ library CounterTable {
   function deleteRecord(IStore _store) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    _store.deleteRecord(_tableId, _keyTuple);
+  }
+
+  /**
+   * @notice Delete all data for given keys (using the specified store).
+   */
+  function deleteRecord(IStore _store, bytes32[] memory _keyTuple) internal {
     _store.deleteRecord(_tableId, _keyTuple);
   }
 
@@ -264,6 +375,7 @@ library CounterTable {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
+
   function encodeKeyTuple() internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
