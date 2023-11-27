@@ -41,11 +41,15 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
       // TODO: update stores table
 
       for (const log of logs) {
-        debug(log.eventName, log);
-
         const keyBytes = encodePacked(["bytes32[]"], [log.args.keyTuple]);
 
         if (log.eventName === "Store_SetRecord") {
+          debug("upserting record", {
+            address: log.address,
+            tableId: log.args.tableId,
+            keyTuple: log.args.keyTuple,
+          });
+
           await tx
             .insert(recordsTable)
             .values({
@@ -95,9 +99,6 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
             address: log.address,
             tableId: log.args.tableId,
             keyTuple: log.args.keyTuple,
-            previousStaticData,
-            newStaticData,
-            previousValue,
           });
 
           await tx
@@ -145,9 +146,6 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
             address: log.address,
             tableId: log.args.tableId,
             keyTuple: log.args.keyTuple,
-            previousDynamicData,
-            newDynamicData,
-            previousValue,
           });
 
           await tx
