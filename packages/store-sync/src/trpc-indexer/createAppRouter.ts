@@ -11,7 +11,7 @@ export function createAppRouter() {
   });
 
   return t.router({
-    getRecords: t.procedure
+    getLogs: t.procedure
       .input(
         z.object({
           chainId: z.number(),
@@ -27,10 +27,10 @@ export function createAppRouter() {
             .optional(),
         })
       )
-      .query(async (opts): ReturnType<QueryAdapter["getRecords"]> => {
+      .query(async (opts): ReturnType<QueryAdapter["getLogs"]> => {
         const { queryAdapter } = opts.ctx;
         const { chainId, address, filters } = opts.input;
-        return queryAdapter.getRecords({ chainId, address, filters });
+        return queryAdapter.getLogs({ chainId, address, filters });
       }),
 
     findAll: t.procedure
