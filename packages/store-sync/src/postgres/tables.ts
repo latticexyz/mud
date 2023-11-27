@@ -29,11 +29,11 @@ export const recordsTable = pgSchema(schemaName).table(
     keyBytes: asHex("key_bytes").notNull(),
     key0: asHex("key0"),
     key1: asHex("key1"),
-    lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric"),
     staticData: asHex("static_data"),
     encodedLengths: asHex("encoded_lengths"),
     dynamicData: asHex("dynamic_data"),
     isDeleted: boolean("is_deleted"),
+    lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric"),
   },
   (table) => ({
     pk: primaryKey(table.address, table.tableId, table.keyBytes),

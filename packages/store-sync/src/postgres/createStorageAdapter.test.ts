@@ -4,7 +4,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { Hex, RpcLog, createPublicClient, decodeEventLog, formatLog, http } from "viem";
 import { foundry } from "viem/chains";
-import { PostgresStorageAdapter, postgresStorage } from "./postgresStorage";
+import { PostgresStorageAdapter, createStorageAdapter } from "./createStorageAdapter";
 import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import { storeEventsAbi } from "@latticexyz/store";
 import { StoreEventsLog } from "../common";
@@ -24,7 +24,7 @@ const blocks = groupLogsByBlockNumber(
   })
 );
 
-describe("postgresStorage", async () => {
+describe("createStorageAdapter", async () => {
   const db = drizzle(postgres(process.env.DATABASE_URL!), {
     logger: new DefaultLogger(),
   });
@@ -37,7 +37,7 @@ describe("postgresStorage", async () => {
   let storageAdapter: PostgresStorageAdapter;
 
   beforeEach(async () => {
-    storageAdapter = await postgresStorage({ database: db, publicClient });
+    storageAdapter = await createStorageAdapter({ database: db, publicClient });
     return storageAdapter.cleanUp;
   });
 

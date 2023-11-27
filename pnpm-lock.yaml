@@ -845,9 +845,6 @@ importers:
       '@trpc/server':
         specifier: 10.34.0
         version: 10.34.0
-      '@wagmi/chains':
-        specifier: ^0.2.22
-        version: 0.2.22(typescript@5.1.6)
       better-sqlite3:
         specifier: ^8.6.0
         version: 8.6.0
@@ -3680,17 +3677,6 @@ packages:
       loupe: 2.3.6
       pretty-format: 27.5.1
     dev: true
-
-  /@wagmi/chains@0.2.22(typescript@5.1.6):
-    resolution: {integrity: sha512-TdiOzJT6TO1JrztRNjTA5Quz+UmQlbvWFG8N41u9tta0boHA1JCAzGGvU6KuIcOmJfRJkKOUIt67wlbopCpVHg==}
-    peerDependencies:
-      typescript: '>=4.9.4'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      typescript: 5.1.6
-    dev: false
 
   /abab@2.0.6:
     resolution: {integrity: sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==}

@@ -8,16 +8,21 @@ import { spliceHex } from "@latticexyz/common";
 import { setupTables } from "./setupTables";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 
-const tables = [chainTable, storesTable, recordsTable] as const;
+const tables = {
+  chainTable,
+  storesTable,
+  recordsTable,
+} as const;
 
 // Currently assumes one DB per chain ID
 
 export type PostgresStorageAdapter = {
   storageAdapter: StorageAdapter;
+  tables: typeof tables;
   cleanUp: () => Promise<void>;
 };
 
-export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>({
+export async function createStorageAdapter<TConfig extends StoreConfig = StoreConfig>({
   database,
   publicClient,
 }: {
@@ -213,6 +218,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
   return {
     storageAdapter: postgresStorageAdapter,
+    tables,
     cleanUp: async (): Promise<void> => {
       for (const fn of cleanUp) {
         await fn();
