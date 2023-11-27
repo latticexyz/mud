@@ -1,0 +1,34 @@
+{
+  "name": "front",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@latticexyz/common": "2.0.0-next.12",
+    "@latticexyz/dev-tools": "2.0.0-next.12",
+    "@latticexyz/recs": "2.0.0-next.12",
+    "@latticexyz/schema-type": "2.0.0-next.12",
+    "@latticexyz/services": "2.0.0-next.12",
+    "@latticexyz/store-sync": "2.0.0-next.12",
+    "@latticexyz/utils": "2.0.0-next.12",
+    "@latticexyz/world": "2.0.0-next.12",
+    "contracts": "workspace:*",
+    "rxjs": "7.5.5",
+    "viem": "1.14.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^2.4.2",
+    "@tsconfig/svelte": "^5.0.0",
+    "svelte": "^4.0.5",
+    "svelte-check": "^3.4.6",
+    "tslib": "^2.6.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  }
+}
