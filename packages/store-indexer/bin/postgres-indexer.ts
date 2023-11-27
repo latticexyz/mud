@@ -7,7 +7,7 @@ import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { cleanDatabase, createStorageAdapter, schemaVersion } from "@latticexyz/store-sync/postgres";
+import { createStorageAdapter } from "@latticexyz/store-sync/postgres";
 import { createStoreSync } from "@latticexyz/store-sync";
 import { indexerEnvSchema, parseEnv } from "./parseEnv";
 
