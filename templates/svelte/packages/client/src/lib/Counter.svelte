@@ -1,29 +1,31 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { getSetup } from "../main";
+  import { onMount, onDestroy } from "svelte";
+  import {
+    useComponents,
+    useSystemCalls,
+    subscribeToComponentUpdate,
+  } from "../MUDAccessor";
   import { writable } from "svelte/store";
 
   const counter = writable(0);
-  let systemCalls: any;
+  const components = useComponents();
+  const systemCalls = useSystemCalls();
 
-  onMount(async () => {
-    const setup = getSetup();
-    systemCalls = setup.systemCalls;
+  let unsubscribeCounter = () => {};
 
-    if (setup.components) {
-      setup.components.Counter.update$.subscribe((update: any) => {
-        const [nextValue, prevValue] = update.value;
-        console.log("Counter updated", update, {
-          nextValue,
-          prevValue,
-        });
-        counter.set(nextValue.value);
-      });
-    }
+  onMount(() => {
+    unsubscribeCounter = subscribeToComponentUpdate(
+      components?.Counter,
+      counter
+    );
+  });
+
+  onDestroy(() => {
+    unsubscribeCounter();
   });
 
   async function incrementCounter() {
-    if (systemCalls && systemCalls.increment) {
+    if (systemCalls?.increment) {
       await systemCalls.increment();
     }
   }
