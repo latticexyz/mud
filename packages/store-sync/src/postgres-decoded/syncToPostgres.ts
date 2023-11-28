@@ -1,7 +1,7 @@
 import { StoreConfig } from "@latticexyz/store";
 import { PgDatabase } from "drizzle-orm/pg-core";
 import { SyncOptions, SyncResult } from "../common";
-import { postgresStorage } from "./createStorageAdapter";
+import { createStorageAdapter } from "./createStorageAdapter";
 import { createStoreSync } from "../createStoreSync";
 
 type SyncToPostgresOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
@@ -31,7 +31,7 @@ export async function syncToPostgres<TConfig extends StoreConfig = StoreConfig>(
   startSync = true,
   ...syncOptions
 }: SyncToPostgresOptions<TConfig>): Promise<SyncToPostgresResult> {
-  const { storageAdapter } = await postgresStorage({ database, publicClient, config });
+  const { storageAdapter } = await createStorageAdapter({ database, publicClient, config });
   const storeSync = await createStoreSync({
     storageAdapter,
     config,
