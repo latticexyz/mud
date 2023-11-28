@@ -1,7 +1,7 @@
 import { StoreConfig } from "@latticexyz/store";
 import { PgDatabase } from "drizzle-orm/pg-core";
 import { SyncOptions, SyncResult } from "../common";
-import { postgresStorage } from "./postgresStorage";
+import { postgresStorage } from "./createStorageAdapter";
 import { createStoreSync } from "../createStoreSync";
 
 type SyncToPostgresOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {

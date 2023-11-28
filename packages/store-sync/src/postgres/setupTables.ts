@@ -38,7 +38,10 @@ export async function setupTables(
 
       const primaryKeyColumns = columns.filter((column) => column.primary).map((column) => column.name);
       if (primaryKeyColumns.length) {
-        query = query.addPrimaryKeyConstraint(`${primaryKeyColumns.join("_")}_pk`, primaryKeyColumns as any);
+        query = query.addPrimaryKeyConstraint(
+          `${tableConfig.name}_${primaryKeyColumns.join("_")}_pk`,
+          primaryKeyColumns as any
+        );
       }
 
       for (const pk of tableConfig.primaryKeys) {
@@ -51,7 +54,7 @@ export async function setupTables(
       for (const index of tableConfig.indexes) {
         const columnNames = index.config.columns.map((col) => col.name);
         let query = scopedDb.schema
-          .createIndex(index.config.name ?? `${columnNames.join("_")}_index`)
+          .createIndex(index.config.name ?? `${tableConfig.name}_${columnNames.join("_")}_index`)
           .on(tableConfig.name)
           .columns(columnNames)
           .ifNotExists();

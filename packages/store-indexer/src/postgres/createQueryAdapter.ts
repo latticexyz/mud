@@ -1,10 +1,10 @@
+import { getAddress } from "viem";
 import { PgDatabase } from "drizzle-orm/pg-core";
+import { TableWithRecords, isTableRegistrationLog, logToTable, storeTables } from "@latticexyz/store-sync";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 import { QueryAdapter } from "@latticexyz/store-sync/trpc-indexer";
 import { debug } from "../debug";
-import { getAddress } from "viem";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 import { getLogs } from "./getLogs";
-import { TableWithRecords, isTableRegistrationLog, logToTable } from "@latticexyz/store-sync";
 
 /**
  * Creates a query adapter for the tRPC server/client to query data from Postgres.
@@ -18,7 +18,12 @@ export async function createQueryAdapter(database: PgDatabase<any>): Promise<Que
       return getLogs(database, opts);
     },
     async findAll(opts) {
-      const { blockNumber, logs } = await getLogs(database, opts);
+      const filters = opts.filters ?? [];
+      const { blockNumber, logs } = await getLogs(database, {
+        ...opts,
+        // make sure we're always retrieving `store.Tables` table, so we can decode table values
+        filters: filters.length > 0 ? [...filters, { tableId: storeTables.Tables.tableId }] : [],
+      });
 
       const tables = logs.filter(isTableRegistrationLog).map(logToTable);
 

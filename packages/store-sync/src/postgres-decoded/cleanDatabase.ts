@@ -1,21 +1,18 @@
 import { PgDatabase, getTableConfig } from "drizzle-orm/pg-core";
-import { buildInternalTables } from "./buildInternalTables";
 import { getTables } from "./getTables";
 import { buildTable } from "./buildTable";
-import { isDefined } from "@latticexyz/common/utils";
+import { isDefined, unique } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 import { sql } from "drizzle-orm";
-import { pgDialect } from "./pgDialect";
+import { pgDialect } from "../postgres/pgDialect";
+import { cleanDatabase as cleanBytesDatabase } from "../postgres/cleanDatabase";
 
-// This intentionally just cleans up known schemas/tables/rows. We could drop the database but that's scary.
+// This intentionally just cleans up known schemas/tables. We could drop the database but that's scary.
 
 export async function cleanDatabase(db: PgDatabase<any>): Promise<void> {
-  const internalTables = buildInternalTables();
-  // TODO: check if internalTables schema matches, delete if not
+  const sqlTables = (await getTables(db)).map(buildTable);
 
-  const tables = (await getTables(db)).map(buildTable);
-
-  const schemaNames = [...new Set(tables.map((table) => getTableConfig(table).schema))].filter(isDefined);
+  const schemaNames = unique(sqlTables.map((sqlTable) => getTableConfig(sqlTable).schema).filter(isDefined));
 
   for (const schemaName of schemaNames) {
     try {
@@ -26,9 +23,5 @@ export async function cleanDatabase(db: PgDatabase<any>): Promise<void> {
     }
   }
 
-  for (const internalTable of Object.values(internalTables)) {
-    const tableConfig = getTableConfig(internalTable);
-    debug(`deleting all rows from ${tableConfig.schema}.${tableConfig.name}`);
-    await db.delete(internalTable);
-  }
+  await cleanBytesDatabase(db);
 }
