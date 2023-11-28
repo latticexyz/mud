@@ -107,10 +107,10 @@ contract Permissions is Script {
     address worldAddress = 0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342;
 
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
-    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    uint256 namespaceOwnerPrivateKey = vm.envUint("PRIVATE_KEY");
 
-    // Start broadcasting transactions from the deployer account
-    vm.startBroadcast(deployerPrivateKey);
+    // Start broadcasting transactions from the account owning the namespace
+    vm.startBroadcast(namespaceOwnerPrivateKey);
 
     IWorld(worldAddress).grantAccess(CounterTableId, address(0));
     IWorld(worldAddress).revokeAccess(CounterTableId, address(1));
