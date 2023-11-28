@@ -9,6 +9,7 @@ export * from "./isDefined";
 export * from "./isNotNull";
 export * from "./iteratorToArray";
 export * from "./mapObject";
+export * from "./unique";
 export * from "./uniqueBy";
 export * from "./wait";
 export * from "./waitForIdle";

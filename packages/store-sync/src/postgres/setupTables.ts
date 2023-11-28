@@ -1,7 +1,7 @@
 import { AnyPgColumn, PgTableWithColumns, PgDatabase, getTableConfig } from "drizzle-orm/pg-core";
 import { getTableColumns, sql } from "drizzle-orm";
 import { ColumnDataType } from "kysely";
-import { isDefined } from "@latticexyz/common/utils";
+import { isDefined, unique } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 import { pgDialect } from "./pgDialect";
 
@@ -9,7 +9,7 @@ export async function setupTables(
   db: PgDatabase<any>,
   tables: PgTableWithColumns<any>[]
 ): Promise<() => Promise<void>> {
-  const schemaNames = [...new Set(tables.map((table) => getTableConfig(table).schema).filter(isDefined))];
+  const schemaNames = unique(tables.map((table) => getTableConfig(table).schema).filter(isDefined));
 
   await db.transaction(async (tx) => {
     for (const schemaName of schemaNames) {

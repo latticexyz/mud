@@ -9,7 +9,7 @@ import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import { storeEventsAbi } from "@latticexyz/store";
 import { StoreEventsLog } from "../common";
 import worldRpcLogs from "../../../../test-data/world-logs.json";
-import { chainTable, recordsTable } from "./tables";
+import { tables } from "./tables";
 import { resourceToHex } from "@latticexyz/common";
 
 const blocks = groupLogsByBlockNumber(
@@ -46,7 +46,7 @@ describe("createStorageAdapter", async () => {
       await storageAdapter.storageAdapter(block);
     }
 
-    expect(await db.select().from(chainTable)).toMatchInlineSnapshot(`
+    expect(await db.select().from(tables.chainTable)).toMatchInlineSnapshot(`
       [
         {
           "chainId": 31337,
@@ -58,8 +58,8 @@ describe("createStorageAdapter", async () => {
     expect(
       await db
         .select()
-        .from(recordsTable)
-        .where(eq(recordsTable.tableId, resourceToHex({ type: "table", namespace: "", name: "NumberList" })))
+        .from(tables.recordsTable)
+        .where(eq(tables.recordsTable.tableId, resourceToHex({ type: "table", namespace: "", name: "NumberList" })))
     ).toMatchInlineSnapshot(`
       [
         {

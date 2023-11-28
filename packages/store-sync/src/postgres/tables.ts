@@ -1,24 +1,18 @@
-import { boolean, index, pgSchema, primaryKey, text } from "drizzle-orm/pg-core";
+import { boolean, index, pgSchema, primaryKey } from "drizzle-orm/pg-core";
 import { transformSchemaName } from "./transformSchemaName";
 import { asAddress, asBigInt, asHex, asNumber } from "./columnTypes";
 
-export const schemaName = transformSchemaName("mud");
+const schemaName = transformSchemaName("mud");
 
 /**
  * Singleton table for the state of the chain we're indexing
  */
-export const chainTable = pgSchema(schemaName).table("chain", {
+const chainTable = pgSchema(schemaName).table("chain", {
   chainId: asNumber("chain_id", "bigint").notNull().primaryKey(),
   lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric"),
 });
 
-export const storesTable = pgSchema(schemaName).table("stores", {
-  address: asAddress("address").notNull().primaryKey(),
-  storeVersion: text("store_version").notNull(),
-  lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric"),
-});
-
-export const recordsTable = pgSchema(schemaName).table(
+const recordsTable = pgSchema(schemaName).table(
   "records",
   {
     address: asAddress("address").notNull(),
@@ -43,3 +37,8 @@ export const recordsTable = pgSchema(schemaName).table(
     // TODO: add indices for querying multiple keys
   })
 );
+
+export const tables = {
+  chainTable,
+  recordsTable,
+};

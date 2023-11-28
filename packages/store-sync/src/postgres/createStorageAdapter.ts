@@ -3,16 +3,10 @@ import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
-import { chainTable, storesTable, recordsTable } from "./tables";
+import { tables } from "./tables";
 import { spliceHex } from "@latticexyz/common";
 import { setupTables } from "./setupTables";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
-
-const tables = {
-  chainTable,
-  storesTable,
-  recordsTable,
-} as const;
 
 // Currently assumes one DB per chain ID
 
@@ -38,8 +32,6 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
 
   async function postgresStorageAdapter({ blockNumber, logs }: StorageAdapterBlock): Promise<void> {
     await database.transaction(async (tx) => {
-      // TODO: update stores table
-
       for (const log of logs) {
         const keyBytes = encodePacked(["bytes32[]"], [log.args.keyTuple]);
 
@@ -51,7 +43,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           });
 
           await tx
-            .insert(recordsTable)
+            .insert(tables.recordsTable)
             .values({
               address: log.address,
               tableId: log.args.tableId,
@@ -65,7 +57,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               isDeleted: false,
             })
             .onConflictDoUpdate({
-              target: [recordsTable.address, recordsTable.tableId, recordsTable.keyBytes],
+              target: [tables.recordsTable.address, tables.recordsTable.tableId, tables.recordsTable.keyBytes],
               set: {
                 staticData: log.args.staticData,
                 encodedLengths: log.args.encodedLengths,
@@ -79,13 +71,13 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           // TODO: replace this operation with SQL `overlay()` (https://www.postgresql.org/docs/9.3/functions-binarystring.html)
 
           const previousValue = await tx
-            .select({ staticData: recordsTable.staticData })
-            .from(recordsTable)
+            .select({ staticData: tables.recordsTable.staticData })
+            .from(tables.recordsTable)
             .where(
               and(
-                eq(recordsTable.address, log.address),
-                eq(recordsTable.tableId, log.args.tableId),
-                eq(recordsTable.keyBytes, keyBytes)
+                eq(tables.recordsTable.address, log.address),
+                eq(tables.recordsTable.tableId, log.args.tableId),
+                eq(tables.recordsTable.keyBytes, keyBytes)
               )
             )
             .limit(1)
@@ -102,7 +94,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           });
 
           await tx
-            .insert(recordsTable)
+            .insert(tables.recordsTable)
             .values({
               address: log.address,
               tableId: log.args.tableId,
@@ -114,7 +106,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               isDeleted: false,
             })
             .onConflictDoUpdate({
-              target: [recordsTable.address, recordsTable.tableId, recordsTable.keyBytes],
+              target: [tables.recordsTable.address, tables.recordsTable.tableId, tables.recordsTable.keyBytes],
               set: {
                 staticData: newStaticData,
                 lastUpdatedBlockNumber: blockNumber,
@@ -126,13 +118,13 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           // TODO: replace this operation with SQL `overlay()` (https://www.postgresql.org/docs/9.3/functions-binarystring.html)
 
           const previousValue = await tx
-            .select({ dynamicData: recordsTable.dynamicData })
-            .from(recordsTable)
+            .select({ dynamicData: tables.recordsTable.dynamicData })
+            .from(tables.recordsTable)
             .where(
               and(
-                eq(recordsTable.address, log.address),
-                eq(recordsTable.tableId, log.args.tableId),
-                eq(recordsTable.keyBytes, keyBytes)
+                eq(tables.recordsTable.address, log.address),
+                eq(tables.recordsTable.tableId, log.args.tableId),
+                eq(tables.recordsTable.keyBytes, keyBytes)
               )
             )
             .limit(1)
@@ -149,7 +141,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           });
 
           await tx
-            .insert(recordsTable)
+            .insert(tables.recordsTable)
             .values({
               address: log.address,
               tableId: log.args.tableId,
@@ -162,7 +154,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               isDeleted: false,
             })
             .onConflictDoUpdate({
-              target: [recordsTable.address, recordsTable.tableId, recordsTable.keyBytes],
+              target: [tables.recordsTable.address, tables.recordsTable.tableId, tables.recordsTable.keyBytes],
               set: {
                 encodedLengths: log.args.encodedLengths,
                 dynamicData: newDynamicData,
@@ -179,7 +171,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           });
 
           await tx
-            .update(recordsTable)
+            .update(tables.recordsTable)
             .set({
               staticData: null,
               encodedLengths: null,
@@ -189,9 +181,9 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
             })
             .where(
               and(
-                eq(recordsTable.address, log.address),
-                eq(recordsTable.tableId, log.args.tableId),
-                eq(recordsTable.keyBytes, keyBytes)
+                eq(tables.recordsTable.address, log.address),
+                eq(tables.recordsTable.tableId, log.args.tableId),
+                eq(tables.recordsTable.keyBytes, keyBytes)
               )
             )
             .execute();
@@ -199,13 +191,13 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
       }
 
       await tx
-        .insert(chainTable)
+        .insert(tables.chainTable)
         .values({
           chainId,
           lastUpdatedBlockNumber: blockNumber,
         })
         .onConflictDoUpdate({
-          target: [chainTable.chainId],
+          target: [tables.chainTable.chainId],
           set: {
             lastUpdatedBlockNumber: blockNumber,
           },
