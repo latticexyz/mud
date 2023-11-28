@@ -157,7 +157,9 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     vm.assume(owner != address(0));
 
     _expectMintEvent(owner, id);
+    startGasReport("mint");
     token.mint(owner, id);
+    endGasReport();
 
     assertEq(token.balanceOf(owner), 1);
     assertEq(token.ownerOf(id), owner);
@@ -182,7 +184,9 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     assertEq(token.balanceOf(owner), 1, "after mint");
 
     _expectBurnEvent(owner, id);
+    startGasReport("burn");
     token.burn(id);
+    endGasReport();
 
     assertEq(token.balanceOf(owner), 0, "after burn");
 
@@ -207,7 +211,10 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.mint(owner, tokenId);
 
     vm.prank(owner);
+
+    startGasReport("transferFrom");
     token.transferFrom(owner, to, tokenId);
+    endGasReport();
 
     assertEq(token.balanceOf(owner), 0);
     assertEq(token.balanceOf(to), 1);
@@ -221,7 +228,11 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
 
     vm.prank(owner);
     _expectApprovalEvent(owner, spender, id);
+
+    startGasReport("approve");
     token.approve(spender, id);
+    endGasReport();
+
     assertEq(token.getApproved(id), spender);
   }
 
@@ -230,7 +241,11 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
 
     vm.prank(owner);
     _expectApprovalForAllEvent(owner, operator, approved);
+
+    startGasReport("setApprovalForAll");
     token.setApprovalForAll(operator, approved);
+    endGasReport();
+
     assertEq(token.isApprovedForAll(owner, operator), approved);
   }
 
@@ -276,7 +291,9 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.setApprovalForAll(operator, true);
 
     vm.prank(operator);
+    startGasReport("safeTransferFrom");
     token.safeTransferFrom(from, to, id);
+    endGasReport();
 
     assertEq(token.getApproved(id), address(0));
     assertEq(token.ownerOf(id), to);
@@ -340,7 +357,9 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     _assumeEOA(to);
     vm.assume(to != address(0));
 
+    startGasReport("safeMint");
     token.safeMint(to, id);
+    endGasReport();
 
     assertEq(token.ownerOf(id), to);
     assertEq(token.balanceOf(to), 1);
