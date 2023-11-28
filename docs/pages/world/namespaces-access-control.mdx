@@ -75,7 +75,6 @@ Additionally, owners can also:
 Owners can modify which contract a `World` uses for each `System`.
 Note: once ownership of a namespace is burned (i.e. transferred to `address(0)`), no new access can be granted or revoked, ownership can't be transferred again, and `System`s can't be added, removed, or upgraded (unless the `System` is itself a [proxy](https://blog.openzeppelin.com/proxy-patterns)).
 
-
 ## Modifying access control
 
 By default access to a namespace is granted to:
@@ -102,7 +101,6 @@ import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { CounterTableId } from "../src/codegen/index.sol";
 
 contract Permissions is Script {
-
   function run() external {
     address worldAddress = 0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342;
 
