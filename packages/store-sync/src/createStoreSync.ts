@@ -1,5 +1,5 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
-import { Hex, TransactionReceiptNotFoundError, encodeAbiParameters, parseAbiParameters } from "viem";
+import { Hex, TransactionReceiptNotFoundError } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -7,9 +7,7 @@ import {
   SyncFilter,
   SyncOptions,
   SyncResult,
-  TableWithRecords,
   internalTableIds,
-  storeTables,
 } from "./common";
 import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
@@ -33,7 +31,7 @@ import {
 import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
 import { SyncStep } from "./SyncStep";
-import { chunk, isDefined } from "@latticexyz/common/utils";
+import { bigIntMax, chunk, isDefined } from "@latticexyz/common/utils";
 import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
 import { tableToLog } from "./tableToLog";
 
@@ -62,50 +60,70 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   startBlock: initialStartBlock = 0n,
   maxBlockRange,
   initialState,
+  initialBlockLogs,
   indexerUrl,
 }: CreateStoreSyncOptions<TConfig>): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
       : [];
-  const initialState$ = defer(
-    async (): Promise<
-      | {
-          blockNumber: bigint | null;
-          tables: TableWithRecords[];
-        }
-      | undefined
-    > => {
-      if (initialState) return initialState;
-      if (!indexerUrl) return;
 
-      debug("fetching initial state from indexer", indexerUrl);
+  if (initialBlockLogs && initialState) {
+    throw new Error("Only one of initialBlockLogs or initialState should be provided.");
+  }
 
-      onProgress?.({
-        step: SyncStep.SNAPSHOT,
-        percentage: 0,
-        latestBlockNumber: 0n,
-        lastBlockNumberProcessed: 0n,
-        message: "Fetching snapshot from indexer",
-      });
+  const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
+    if (initialBlockLogs) return initialBlockLogs;
 
-      const indexer = createIndexerClient({ url: indexerUrl });
-      const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
-      const result = await indexer.findAll.query({ chainId, address, filters });
-
-      onProgress?.({
-        step: SyncStep.SNAPSHOT,
-        percentage: 100,
-        latestBlockNumber: 0n,
-        lastBlockNumberProcessed: 0n,
-        message: "Fetched snapshot from indexer",
-      });
-
-      return result;
+    // Backwards compatibility with previous indexer snapshot format
+    if (initialState) {
+      const logs: StorageAdapterLog[] = [
+        ...initialState.tables.map(tableToLog),
+        ...initialState.tables.flatMap((table) =>
+          table.records.map(
+            (record): StorageAdapterLog => ({
+              eventName: "Store_SetRecord",
+              address: table.address,
+              args: {
+                tableId: table.tableId,
+                keyTuple: encodeKey(table.keySchema, record.key),
+                ...encodeValueArgs(table.valueSchema, record.value),
+              },
+            })
+          )
+        ),
+      ];
+      return { blockNumber: initialState.blockNumber, logs };
     }
-  ).pipe(
+
+    if (!indexerUrl) return;
+
+    debug("fetching logs from indexer", indexerUrl);
+
+    onProgress?.({
+      step: SyncStep.SNAPSHOT,
+      percentage: 0,
+      latestBlockNumber: 0n,
+      lastBlockNumberProcessed: 0n,
+      message: "Fetching snapshot from indexer",
+    });
+
+    const indexer = createIndexerClient({ url: indexerUrl });
+    const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+    const result = await indexer.getLogs.query({ chainId, address, filters });
+
+    onProgress?.({
+      step: SyncStep.SNAPSHOT,
+      percentage: 100,
+      latestBlockNumber: 0n,
+      lastBlockNumberProcessed: 0n,
+      message: "Fetched snapshot from indexer",
+    });
+
+    return result;
+  }).pipe(
     catchError((error) => {
-      debug("error fetching initial state from indexer", error);
+      debug("error fetching logs from indexer", error);
 
       onProgress?.({
         step: SyncStep.SNAPSHOT,
@@ -120,19 +138,10 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     shareReplay(1)
   );
 
-  const startBlock$ = initialState$.pipe(
-    map((initialState) => initialState?.blockNumber ?? initialStartBlock),
-    // TODO: if start block is still 0, find via deploy event
-    tap((startBlock) => debug("starting sync from block", startBlock))
-  );
-
-  const initialLogs$ = initialState$.pipe(
-    filter(
-      (initialState): initialState is { blockNumber: bigint; tables: TableWithRecords[] } =>
-        initialState != null && initialState.blockNumber != null && initialState.tables.length > 0
-    ),
-    concatMap(async ({ blockNumber, tables }) => {
-      debug("hydrating from initial state to block", blockNumber);
+  const storedInitialBlockLogs$ = initialBlockLogs$.pipe(
+    filter(isDefined),
+    concatMap(async ({ blockNumber, logs }) => {
+      debug("hydrating", logs.length, "logs to block", blockNumber);
 
       onProgress?.({
         step: SyncStep.SNAPSHOT,
@@ -141,23 +150,6 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         lastBlockNumberProcessed: blockNumber,
         message: "Hydrating from snapshot",
       });
-
-      const logs: StorageAdapterLog[] = [
-        ...tables.map(tableToLog),
-        ...tables.flatMap((table) =>
-          table.records.map(
-            (record): StorageAdapterLog => ({
-              eventName: "Store_SetRecord",
-              address: table.address,
-              args: {
-                tableId: table.tableId,
-                keyTuple: encodeKey(table.keySchema, record.key),
-                ...encodeValueArgs(table.valueSchema, record.value),
-              },
-            })
-          )
-        ),
-      ];
 
       // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
       // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
@@ -187,6 +179,12 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       return { blockNumber, logs };
     }),
     shareReplay(1)
+  );
+
+  const startBlock$ = storedInitialBlockLogs$.pipe(
+    map((storedBlockLogs) => bigIntMax(storedBlockLogs.blockNumber, initialStartBlock)),
+    // TODO: if start block is still 0, find via deploy event
+    tap((startBlock) => debug("starting sync from block", startBlock))
   );
 
   const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" }).pipe(shareReplay(1));
@@ -231,7 +229,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
   let lastBlockNumberProcessed: bigint | null = null;
   const storedBlockLogs$ = concat(
-    initialLogs$,
+    storedInitialBlockLogs$,
     blockLogs$.pipe(
       concatMap(async (block) => {
         await storageAdapter(block);
