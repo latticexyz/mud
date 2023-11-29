@@ -181,8 +181,8 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     shareReplay(1)
   );
 
-  const startBlock$ = storedInitialBlockLogs$.pipe(
-    map((storedBlockLogs) => bigIntMax(storedBlockLogs.blockNumber, initialStartBlock)),
+  const startBlock$ = initialBlockLogs$.pipe(
+    map((block) => bigIntMax(block?.blockNumber ?? 0n, initialStartBlock)),
     // TODO: if start block is still 0, find via deploy event
     tap((startBlock) => debug("starting sync from block", startBlock))
   );
