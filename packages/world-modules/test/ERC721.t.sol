@@ -596,4 +596,32 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
     token.ownerOf(id);
   }
+
+  function testMintGas() public {
+    testMint(1e18, address(0xABCD));
+  }
+
+  function testBurnGas() public {
+    testBurn(1e18, address(0xABCD));
+  }
+
+  function testTransferFromGas() public {
+    testTransferFrom(address(0xABCD), address(0xBEEF), 1e18);
+  }
+
+  function testApproveGas() public {
+    testApprove(address(0xABCD), 1e18, address(0xBEEF));
+  }
+
+  function testApproveAllGas() public {
+    testApproveAll(address(0xABCD), address(0xBEEF), true);
+  }
+
+  function testSafeTransferFromToEOAGas() public {
+    testSafeTransferFromToEOA(1, address(0xABCD), address(0xBEEF), address(0xDEFE));
+  }
+
+  function testSafeMintToEOAGas() public {
+    testSafeMintToEOA(1, address(0xABCD));
+  }
 }
