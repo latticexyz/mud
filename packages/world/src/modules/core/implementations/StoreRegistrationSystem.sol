@@ -14,8 +14,6 @@ import { AccessControl } from "../../../AccessControl.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
 
-import { Systems } from "../../../codegen/tables/Systems.sol";
-
 import { IWorldErrors } from "../../../IWorldErrors.sol";
 
 import { CORE_SYSTEM_ID } from "../constants.sol";
@@ -51,20 +49,8 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     // Require the name to not be the namespace's root name
     if (tableId.getName() == ROOT_NAME) revert World_InvalidResourceId(tableId, tableId.toString());
 
-    // If the namespace doesn't exist yet, register it
-    ResourceId namespaceId = tableId.getNamespaceId();
-    if (!ResourceIds._getExists(namespaceId)) {
-      // Since this is a root system, we're in the context of the World contract already,
-      // so we can use delegatecall to register the namespace
-      address coreSystemAddress = Systems._getSystem(CORE_SYSTEM_ID);
-      (bool success, bytes memory data) = coreSystemAddress.delegatecall(
-        abi.encodeCall(WorldRegistrationSystem.registerNamespace, (namespaceId))
-      );
-      if (!success) revertWithBytes(data);
-    } else {
-      // otherwise require caller to own the namespace
-      AccessControl.requireOwner(namespaceId, _msgSender());
-    }
+    // Require the caller to own the table's namespace
+    AccessControl.requireOwner(tableId, _msgSender());
 
     // Register the table
     StoreCore.registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);

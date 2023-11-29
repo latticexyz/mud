@@ -127,14 +127,9 @@ contract WorldRegistrationSystem is System, IWorldErrors {
       revert World_SystemAlreadyExists(address(system));
     }
 
-    // If the namespace doesn't exist yet, register it
+    // Require the caller to own the namespace
     ResourceId namespaceId = systemId.getNamespaceId();
-    if (!ResourceIds._getExists(namespaceId)) {
-      registerNamespace(namespaceId);
-    } else {
-      // otherwise require caller to own the namespace
-      AccessControl.requireOwner(namespaceId, _msgSender());
-    }
+    AccessControl.requireOwner(namespaceId, _msgSender());
 
     // Check if a system already exists at this system ID
     address existingSystem = Systems._getSystem(systemId);
