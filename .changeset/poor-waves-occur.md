@@ -14,7 +14,11 @@ unique([1, 2, 1, 4, 3, 2]);
 ```ts
 import { groupBy } from "@latticexyz/common/utils";
 
-const records = [{ type: "cat", name: "Bob" }, { type: "cat", name: "Spot" }, { type: "dog", name: "Rover" }];
+const records = [
+  { type: "cat", name: "Bob" },
+  { type: "cat", name: "Spot" },
+  { type: "dog", name: "Rover" },
+];
 Object.fromEntries(groupBy(records, (record) => record.type));
 // {
 //   "cat": [{ type: "cat", name: "Bob" }, { type: "cat", name: "Spot" }],
