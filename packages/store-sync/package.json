@@ -12,6 +12,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./postgres": "./dist/postgres/index.js",
+    "./postgres-decoded": "./dist/postgres-decoded/index.js",
     "./recs": "./dist/recs/index.js",
     "./sqlite": "./dist/sqlite/index.js",
     "./trpc-indexer": "./dist/trpc-indexer/index.js",
@@ -24,6 +25,9 @@
       ],
       "postgres": [
         "./src/postgres/index.ts"
+      ],
+      "postgres-decoded": [
+        "./src/postgres-decoded/index.ts"
       ],
       "recs": [
         "./src/recs/index.ts"
