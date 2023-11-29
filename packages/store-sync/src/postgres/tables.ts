@@ -9,7 +9,7 @@ const schemaName = transformSchemaName("mud");
  */
 const chainTable = pgSchema(schemaName).table("chain", {
   chainId: asNumber("chain_id", "bigint").notNull().primaryKey(),
-  lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric"),
+  lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric").notNull(),
 });
 
 const recordsTable = pgSchema(schemaName).table(
@@ -27,7 +27,7 @@ const recordsTable = pgSchema(schemaName).table(
     encodedLengths: asHex("encoded_lengths"),
     dynamicData: asHex("dynamic_data"),
     isDeleted: boolean("is_deleted"),
-    lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric"),
+    lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric").notNull(),
   },
   (table) => ({
     pk: primaryKey(table.address, table.tableId, table.keyBytes),
