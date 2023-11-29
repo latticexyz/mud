@@ -308,6 +308,7 @@ contract WorldTest is Test, GasReporter {
       name: "testSystem"
     });
 
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, false);
     bytes memory result = world.call(systemId, abi.encodeCall(WorldTestSystem.getStoreAddress, ()));
 
@@ -477,6 +478,7 @@ contract WorldTest is Test, GasReporter {
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
+    world.registerNamespace(systemId.getNamespaceId());
 
     startGasReport("register a system");
     world.registerSystem(systemId, system, false);
@@ -506,14 +508,14 @@ contract WorldTest is Test, GasReporter {
     assertTrue(ResourceAccess.get({ resourceId: namespaceId, caller: address(system) }));
 
     ResourceId newNamespaceId = WorldResourceIdLib.encodeNamespace("newNamespace");
-    // Expect the namespace to be created if it doesn't exist yet
+    // Expect the registration to fail if the namespace does not exist yet
     assertEq(NamespaceOwner.get(newNamespaceId), address(0));
+    _expectAccessDenied(address(this), "newNamespace", "", RESOURCE_NAMESPACE);
     world.registerSystem(
       WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "newNamespace", name: "testSystem" }),
       new System(),
       false
     );
-    assertEq(NamespaceOwner.get(newNamespaceId), address(this));
 
     // Expect an error when registering an existing system at a new system ID
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_SystemAlreadyExists.selector, address(system)));
@@ -591,6 +593,7 @@ contract WorldTest is Test, GasReporter {
       namespace: namespace,
       name: systemName
     });
+    world.registerNamespace(systemId.getNamespaceId());
 
     // Register a system
     System oldSystem = new System();
@@ -631,6 +634,10 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testInvalidIds() public {
+    // Register the namespaces
+    world.registerNamespace(WorldResourceIdLib.encodeNamespace("namespace"));
+    world.registerNamespace(WorldResourceIdLib.encodeNamespace("namespace2"));
+
     // Register a new table
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "namespace", name: "name" });
     world.registerTable(
