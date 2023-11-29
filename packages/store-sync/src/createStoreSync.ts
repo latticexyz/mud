@@ -112,6 +112,8 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
     const result = await indexer.getLogs.query({ chainId, address, filters });
 
+    // TODO: fetch from `findAll` if `getLogs` is not available (i.e. older indexers)?
+
     onProgress?.({
       step: SyncStep.SNAPSHOT,
       percentage: 100,
