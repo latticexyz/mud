@@ -1,11 +1,11 @@
 {
-  "name": "mud-example-indexer-client",
+  "name": "mud-example-faucer-client",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "read-indexer": "tsx index.ts"
+    "drip": "tsx index.ts"
   },
   "dependencies": {
     "@latticexyz/faucet": "2.0.0-next.14",
