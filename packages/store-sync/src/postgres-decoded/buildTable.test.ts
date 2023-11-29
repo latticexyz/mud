@@ -21,37 +21,44 @@ describe("buildTable", () => {
         name: column.name,
         dataType: column.dataType,
         sqlName: column.sqlName,
+        notNull: column.notNull,
       }))
     ).toMatchInlineSnapshot(`
       {
         "__keyBytes": {
           "dataType": "custom",
           "name": "__key_bytes",
+          "notNull": true,
           "sqlName": "bytea",
         },
         "__lastUpdatedBlockNumber": {
           "dataType": "custom",
           "name": "__last_updated_block_number",
+          "notNull": false,
           "sqlName": "numeric",
         },
         "addr": {
           "dataType": "custom",
           "name": "addr",
+          "notNull": true,
           "sqlName": "bytea",
         },
         "name": {
           "dataType": "string",
           "name": "name",
+          "notNull": true,
           "sqlName": undefined,
         },
         "x": {
           "dataType": "custom",
           "name": "x",
+          "notNull": true,
           "sqlName": "integer",
         },
         "y": {
           "dataType": "custom",
           "name": "y",
+          "notNull": true,
           "sqlName": "integer",
         },
       }
