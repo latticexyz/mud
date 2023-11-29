@@ -31,24 +31,37 @@ export async function getLogs(
     ? [eq(tables.recordsTable.address, address)]
     : [];
 
+  // Query for the block number that the indexer (i.e. chain) is at, in case the
+  // indexer is further along in the chain than a given store/table's last updated
+  // block number. We'll then take the highest block number between the indexer's
+  // chain state and all the records in the query (in case the records updated
+  // between these queries). Using just the highest block number from the queries
+  // could potentially signal to the client an older-than-necessary block number,
+  // for stores/tables that haven't seen recent activity.
+  // TODO: move the block number query into the records query for atomicity so we don't have to merge them here
   const chainState = await database
     .select()
     .from(tables.chainTable)
     .where(eq(tables.chainTable.chainId, chainId))
+    .limit(1)
     .execute()
+    // Get the first record in a way that returns a possible `undefined`
+    // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
     .then((rows) => rows.find(() => true));
-  let blockNumber = chainState?.lastUpdatedBlockNumber ?? 0n;
+  const indexerBlockNumber = chainState?.lastUpdatedBlockNumber ?? 0n;
 
   const records = await database
     .select()
     .from(tables.recordsTable)
     .where(or(...conditions));
-  blockNumber = bigIntMax(
-    blockNumber,
-    records.reduce((max, record) => bigIntMax(max, record.lastUpdatedBlockNumber ?? 0n), 0n)
+
+  const blockNumber = records.reduce(
+    (max, record) => bigIntMax(max, record.lastUpdatedBlockNumber ?? 0n),
+    indexerBlockNumber
   );
 
   const logs = records
+    // TODO: add this to the query, assuming we can optimize with an index
     .filter((record) => !record.isDeleted)
     .map(
       (record) =>

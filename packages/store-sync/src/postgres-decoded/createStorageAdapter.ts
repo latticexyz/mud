@@ -84,6 +84,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               )
             )
             .limit(1)
+            // Get the first record in a way that returns a possible `undefined`
+            // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
             .then((rows) => rows.find(() => true));
           if (!record) {
             const { namespace, name } = hexToResource(log.args.tableId);

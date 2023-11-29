@@ -82,6 +82,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
             )
             .limit(1)
             .execute()
+            // Get the first record in a way that returns a possible `undefined`
+            // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
             .then((rows) => rows.find(() => true));
 
           const previousStaticData = previousValue?.staticData ?? "0x";
@@ -129,6 +131,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
             )
             .limit(1)
             .execute()
+            // Get the first record in a way that returns a possible `undefined`
+            // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
             .then((rows) => rows.find(() => true));
 
           const previousDynamicData = previousValue?.dynamicData ?? "0x";
