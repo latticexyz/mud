@@ -1,19 +1,19 @@
 import { customType } from "drizzle-orm/pg-core";
-import superjson from "superjson";
 import { Address, ByteArray, bytesToHex, getAddress, Hex, hexToBytes } from "viem";
+import { deserialize, serialize } from "wagmi";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const asJson = <TData>(name: string) =>
   customType<{ data: TData; driverData: string }>({
     dataType() {
-      // TODO: move to json column type? if we do, we'll prob wanna choose something other than superjson since it adds one level of depth (json/meta keys)
+      // TODO: move to json column type?
       return "text";
     },
     toDriver(data: TData): string {
-      return superjson.stringify(data);
+      return serialize(data);
     },
     fromDriver(driverData: string): TData {
-      return superjson.parse(driverData);
+      return deserialize(driverData);
     },
   })(name);
 
