@@ -5,6 +5,7 @@ import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 import { QueryAdapter } from "@latticexyz/store-sync/trpc-indexer";
 import { debug } from "../debug";
 import { getLogs } from "./getLogs";
+import { groupBy } from "@latticexyz/common/utils";
 
 /**
  * Creates a query adapter for the tRPC server/client to query data from Postgres.
@@ -27,13 +28,14 @@ export async function createQueryAdapter(database: PgDatabase<any>): Promise<Que
 
       const tables = logs.filter(isTableRegistrationLog).map(logToTable);
 
+      const logsByTable = groupBy(logs, (log) => `${getAddress(log.address)}:${log.args.tableId}`);
+
       const tablesWithRecords: TableWithRecords[] = tables.map((table) => {
-        const records = logs
-          .filter((log) => getAddress(log.address) === getAddress(table.address) && log.args.tableId === table.tableId)
-          .map((log) => ({
-            key: decodeKey(table.keySchema, log.args.keyTuple),
-            value: decodeValueArgs(table.valueSchema, log.args),
-          }));
+        const tableLogs = logsByTable.get(`${getAddress(table.address)}:${table.tableId}`) ?? [];
+        const records = tableLogs.map((log) => ({
+          key: decodeKey(table.keySchema, log.args.keyTuple),
+          value: decodeValueArgs(table.valueSchema, log.args),
+        }));
 
         return {
           ...table,
