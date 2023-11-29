@@ -5,6 +5,7 @@
 !out/**/*.abi.json.d.ts
 !src/**
 !ts/**
+!mud.config.ts
 !package.json
 !README.md
 !dist/**
