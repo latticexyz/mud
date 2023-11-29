@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-indexer",
-  "version": "2.0.0-next.12",
+  "version": "2.0.0-next.14",
   "description": "Minimal Typescript indexer for Store",
   "repository": {
     "type": "git",
@@ -14,6 +14,7 @@
   },
   "types": "src/index.ts",
   "bin": {
+    "postgres-frontend": "./dist/bin/postgres-frontend.js",
     "postgres-indexer": "./dist/bin/postgres-indexer.js",
     "sqlite-indexer": "./dist/bin/sqlite-indexer.js"
   },
@@ -24,12 +25,12 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "start:postgres": "tsx bin/postgres-indexer",
-    "start:postgres:local": "DEBUG=mud:store-sync:createStoreSync DATABASE_URL=postgres://127.0.0.1/postgres RPC_HTTP_URL=http://127.0.0.1:8545 pnpm start:postgres",
-    "start:postgres:testnet": "DEBUG=mud:store-sync:createStoreSync DATABASE_URL=postgres://127.0.0.1/postgres RPC_HTTP_URL=https://follower.testnet-chain.linfra.xyz pnpm start:postgres",
+    "start:postgres": "concurrently -n indexer,frontend -c cyan,magenta 'tsx bin/postgres-indexer' 'tsx bin/postgres-frontend'",
+    "start:postgres:local": "DATABASE_URL=postgres://127.0.0.1/postgres RPC_HTTP_URL=http://127.0.0.1:8545 pnpm start:postgres",
+    "start:postgres:testnet": "DATABASE_URL=postgres://127.0.0.1/postgres RPC_HTTP_URL=https://rpc.holesky.redstone.xyz pnpm start:postgres",
     "start:sqlite": "tsx bin/sqlite-indexer",
-    "start:sqlite:local": "DEBUG=mud:store-sync:createStoreSync SQLITE_FILENAME=anvil.db RPC_HTTP_URL=http://127.0.0.1:8545 pnpm start:sqlite",
-    "start:sqlite:testnet": "DEBUG=mud:store-sync:createStoreSync SQLITE_FILENAME=testnet.db RPC_HTTP_URL=https://follower.testnet-chain.linfra.xyz pnpm start:sqlite",
+    "start:sqlite:local": "SQLITE_FILENAME=anvil.db RPC_HTTP_URL=http://127.0.0.1:8545 pnpm start:sqlite",
+    "start:sqlite:testnet": "SQLITE_FILENAME=testnet.db RPC_HTTP_URL=https://rpc.holesky.redstone.xyz pnpm start:sqlite",
     "test": "tsc --noEmit --skipLibCheck",
     "test:ci": "pnpm run test"
   },
@@ -42,7 +43,6 @@
     "@latticexyz/store-sync": "workspace:*",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
-    "@wagmi/chains": "^0.2.22",
     "better-sqlite3": "^8.6.0",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
@@ -58,6 +58,7 @@
     "@types/better-sqlite3": "^7.6.4",
     "@types/cors": "^2.8.13",
     "@types/debug": "^4.1.7",
+    "concurrently": "^8.2.2",
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "vitest": "0.31.4"

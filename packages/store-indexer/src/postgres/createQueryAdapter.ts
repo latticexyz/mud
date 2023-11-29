@@ -1,10 +1,11 @@
-import { eq } from "drizzle-orm";
+import { getAddress } from "viem";
 import { PgDatabase } from "drizzle-orm/pg-core";
-import { buildTable, buildInternalTables, getTables } from "@latticexyz/store-sync/postgres";
+import { TableWithRecords, isTableRegistrationLog, logToTable, storeTables } from "@latticexyz/store-sync";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 import { QueryAdapter } from "@latticexyz/store-sync/trpc-indexer";
 import { debug } from "../debug";
-import { getAddress } from "viem";
-import { decodeDynamicField } from "@latticexyz/protocol-parser";
+import { getLogs } from "./getLogs";
+import { groupBy } from "@latticexyz/common/utils";
 
 /**
  * Creates a query adapter for the tRPC server/client to query data from Postgres.
@@ -14,55 +15,40 @@ import { decodeDynamicField } from "@latticexyz/protocol-parser";
  */
 export async function createQueryAdapter(database: PgDatabase<any>): Promise<QueryAdapter> {
   const adapter: QueryAdapter = {
-    async findAll({ chainId, address, filters = [] }) {
-      // If _any_ filter has a table ID, this will filter down all data to just those tables. Which mean we can't yet mix table filters with key-only filters.
-      // TODO: improve this so we can express this in the query (need to be able to query data across tables more easily)
-      const tableIds = Array.from(new Set(filters.map((filter) => filter.tableId)));
-      const tables = (await getTables(database))
-        .filter((table) => address == null || getAddress(address) === getAddress(table.address))
-        .filter((table) => !tableIds.length || tableIds.includes(table.tableId));
+    async getLogs(opts) {
+      return getLogs(database, opts);
+    },
+    async findAll(opts) {
+      const filters = opts.filters ?? [];
+      const { blockNumber, logs } = await getLogs(database, {
+        ...opts,
+        // make sure we're always retrieving `store.Tables` table, so we can decode table values
+        filters: filters.length > 0 ? [...filters, { tableId: storeTables.Tables.tableId }] : [],
+      });
 
-      const tablesWithRecords = await Promise.all(
-        tables.map(async (table) => {
-          const sqliteTable = buildTable(table);
-          const records = await database.select().from(sqliteTable).where(eq(sqliteTable.__isDeleted, false)).execute();
-          const filteredRecords = !filters.length
-            ? records
-            : records.filter((record) => {
-                const keyTuple = decodeDynamicField("bytes32[]", record.__key);
-                return filters.some(
-                  (filter) =>
-                    filter.tableId === table.tableId &&
-                    (filter.key0 == null || filter.key0 === keyTuple[0]) &&
-                    (filter.key1 == null || filter.key1 === keyTuple[1])
-                );
-              });
-          return {
-            ...table,
-            records: filteredRecords.map((record) => ({
-              key: Object.fromEntries(Object.entries(table.keySchema).map(([name]) => [name, record[name]])),
-              value: Object.fromEntries(Object.entries(table.valueSchema).map(([name]) => [name, record[name]])),
-            })),
-          };
-        })
-      );
+      const tables = logs.filter(isTableRegistrationLog).map(logToTable);
 
-      const internalTables = buildInternalTables();
-      const metadata = await database
-        .select()
-        .from(internalTables.chain)
-        .where(eq(internalTables.chain.chainId, chainId))
-        .execute();
-      const { lastUpdatedBlockNumber } = metadata[0] ?? {};
+      const logsByTable = groupBy(logs, (log) => `${getAddress(log.address)}:${log.args.tableId}`);
 
-      const result = {
-        blockNumber: lastUpdatedBlockNumber ?? null,
+      const tablesWithRecords: TableWithRecords[] = tables.map((table) => {
+        const tableLogs = logsByTable.get(`${getAddress(table.address)}:${table.tableId}`) ?? [];
+        const records = tableLogs.map((log) => ({
+          key: decodeKey(table.keySchema, log.args.keyTuple),
+          value: decodeValueArgs(table.valueSchema, log.args),
+        }));
+
+        return {
+          ...table,
+          records,
+        };
+      });
+
+      debug("findAll: decoded %d logs across %d tables", logs.length, tables.length);
+
+      return {
+        blockNumber,
         tables: tablesWithRecords,
       };
-
-      debug("findAll", chainId, address, result);
-
-      return result;
     },
   };
   return adapter;

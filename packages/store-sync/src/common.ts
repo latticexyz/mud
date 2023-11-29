@@ -1,10 +1,20 @@
 import { Address, Block, Hex, Log, PublicClient } from "viem";
-import { StoreConfig, StoreEventsAbiItem, StoreEventsAbi, resolveUserTypes } from "@latticexyz/store";
-import storeConfig from "@latticexyz/store/mud.config";
+import { StoreConfig, StoreEventsAbiItem, StoreEventsAbi, resolveConfig } from "@latticexyz/store";
 import { Observable } from "rxjs";
-import { resourceToHex } from "@latticexyz/common";
 import { UnionPick } from "@latticexyz/common/type-utils";
 import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser";
+import storeConfig from "@latticexyz/store/mud.config";
+import worldConfig from "@latticexyz/world/mud.config";
+import { flattenSchema } from "./flattenSchema";
+
+/** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
+export const storeTables = resolveConfig(storeConfig).tables;
+/** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
+export const worldTables = resolveConfig(worldConfig).tables;
+
+export const internalTableIds = [...Object.values(storeTables), ...Object.values(worldTables)].map(
+  (table) => table.tableId
+);
 
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
@@ -101,15 +111,10 @@ export type StorageAdapterLog = Partial<StoreEventsLog> & UnionPick<StoreEventsL
 export type StorageAdapterBlock = { blockNumber: BlockLogs["blockNumber"]; logs: StorageAdapterLog[] };
 export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
 
-// TODO: adjust when we get namespace support (https://github.com/latticexyz/mud/issues/994) and when table has namespace key (https://github.com/latticexyz/mud/issues/1201)
-// TODO: adjust when schemas are automatically resolved
+export const schemasTableId = storeTables.Tables.tableId;
 export const schemasTable = {
-  ...storeConfig.tables.Tables,
-  valueSchema: resolveUserTypes(storeConfig.tables.Tables.valueSchema, storeConfig.userTypes),
+  ...storeTables.Tables,
+  // TODO: remove once we've got everything using the new Table shape
+  keySchema: flattenSchema(storeTables.Tables.keySchema),
+  valueSchema: flattenSchema(storeTables.Tables.valueSchema),
 };
-
-export const schemasTableId = resourceToHex({
-  type: schemasTable.offchainOnly ? "offchainTable" : "table",
-  namespace: storeConfig.namespace,
-  name: schemasTable.name,
-});

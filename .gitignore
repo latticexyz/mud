@@ -14,3 +14,5 @@ yarn-error.log
 # We don't want projects created from templates to ignore their lockfiles, but we don't
 # want to check them in here, so we'll ignore them from the root.
 templates/*/pnpm-lock.yaml
+
+.env

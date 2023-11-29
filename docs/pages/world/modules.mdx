@@ -1,171 +1,38 @@
-## Modules
+# Modules
 
-Modules are on-chain scripts that can be executed on the World. They are used to install tables, systems, hooks, and new entry point to a World in order to extend its capabilities.
+Modules are onchain installation scripts that create resources and their associated configuration when called by a `World`.
+This is somewhat similar to one of the use cases for [foundry scripts](https://book.getfoundry.sh/tutorials/solidity-scripting), except that modules are deployed onchain and can be used by any `World` on the same chain.
 
-Currently the code of each module you want to use need to exist in your project, but we are paving the way to having an on-chain module registry à la NPM.
+## Module installation
 
-### Default modules
+Modules can be installed using [`World.installModule(address moduleAddress, bytes memory initData)`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/ModuleInstallationSystem.sol#L17-L37).
+When you do this, the `World` calls the module's `install` function with `initData` as the argument(s).
+Because this is a call, the module does not have any administrative permissions on the `World`.
 
-Currently, [`CoreModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/CoreModule.sol) is installed on each World.
+Alternatively, the owner of the root namespace can install modules using [`World.installRootModule(address moduleAddress, bytes memory initData)`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L90-L119).
+In this case, the `World` uses delegatecall and module has all the permissions of a `System` in the root namespace.
 
-It adds critical tables and systems to the World, which are externalized to keep the World contract size within the limit.
+## Writing modules
 
-See [World internals](/world/internals) for table and system details.
+The common use for a module is to add functionality to a `World`.
+In most cases we expect that a module would:
 
-#### **`UniqueEntityModule`**
+1. Create a [namespace](./namespaces-access-control.mdx) for the new functionality.
+1. Create the [tables](./.tables) and [`System`s](./systems) for the new functionality.
+1. Create any access permissions required (beyond the default, which is that a `System` has access to its own namespace).
+1. Either assign the ownership of the new namespace to an entity that would administer it (a user, a multisig, etc.) or burn it by assigning the namespace ownership to `address(0)`.
 
-The [`UniqueEntityModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/uniqueentity/UniqueEntityModule.sol) installs a system that always returns a unique `bytes32` key. It is designed for tables that have one key (eg: ECS components).
+Root modules run with the same permission as `System`s in the root namespace, so they do not need to create a namespace for themselves.
+They can just create their own tables and `System`s as needed.
 
-It exposes a single method:
+## Sample modules
 
-- `function getUniqueEntity() returns (bytes32 uniqueEntity)` increments and returns an entity nonce
+MUD comes with several modules you can use or inspect to help you write your own:
 
-Using `getUniqueEntity` to create a new unit:
-
-```solidity
-import { getUniqueEntity } from "@latticexyz/world/src/modules/uniqueentity/getUniqueEntity.sol";
-import { Soldier } from "../codegen/tables/Soldier.sol";
-
-...
-
-function spawnSoldier() public {
-  bytes32 key = getUniqueEntity();
-
-  Soldier.setHealth(key, 100);
-}
-```
-
-### Querying modules
-
-The `KeysInTableModule` and `KeysWithValueModule` modules index information about tables on-chain. Their functionality is leveraged in `query` to allow on-chain querying.
-
-#### **`KeysInTableModule`**
-
-The [`KeysInTableModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/keysintable/KeysInTableModule.sol) allows for querying for all keys that are in a given table. It can only be used on tables that have one key (eg: ECS components).
-
-For example, it can be used to fetch all keys in the "Position" table (if the table models `key → Position`).
-
-It offers two methods:
-
-- `getKeysInTable(bytes32 tableId)` returns all keys in a table
-- `hasKey(bytes32 tableId, bytes32[] memory keyTuple)` returns whether a given keyTuple is in a table (with O(1) gas)
-
-Using `getKeysInTable` to retrieve all keys in the Player table:
-
-```solidity
-// assumes a boolean flag indicates a player:
-// { Player: "bool" }
-//
-import { getKeysInTable } from "@latticexyz/world/src/modules/keysintable/getKeysInTable.sol";
-import { Player, PlayerTableId } from "../codegen/tables/Player.sol";
-// get all players
-bytes32[][] memory players = getKeysInTable(world, PlayerTableId);
-```
-
-Using `hasKey` to check if a keyTuple is in the Player table:
-
-```solidity
-// assumes a boolean flag indicates a player:
-// { Player: "bool" }
-//
-import { hasKey } from "@latticexyz/world/src/modules/keysintable/hasKey.sol";
-import { Player, PlayerTableId } from "../codegen/tables/Player.sol";
-bytes32[] memory keyTuple = new bytes32[](1);
-keyTuple[0] = "bob";
-// check if key "bob" is a player
-bool memory isPlayer = hasKey(world, PlayerTableId, keyTuple);
-```
-
-Internally, it works by installing a [hook](https://v2.mud.dev/store/advanced-features#storage-hooks) that maintains:
-
-- an array of all keys in the table
-- an index or "**reverse mapping**" of whether a given keyTuple is in the table
-
-#### **`KeysWithValueModule`**
-
-The [`KeysWithValueModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/keyswithvalue/KeysWithValueModule.sol) allows for querying for all keys that have a given value in a table. It can only be used on tables that have one key (eg: ECS components).
-
-As an example, this can be used to ask for all NFTs owned by a specific user (if the table models `NFT ID → Owner`), or all units on a specific position (if the ECS component is modeled as `entity → Position`)
-
-It offers a single method:
-
-- `getKeysWithValue(uint256 tableId, bytes memory value)` returns all keys with the given value in a table
-
-Using `getKeysWithValue` to retrieve all NFTs owned by a specific address:
-
-```solidity
-// assumes this ownership table:
-// Owners: {
-//   valueSchema: "address",
-//   keySchema: { nftId: "uint256" }
-// }
-import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
-import { Owners, OwnersId } from "../codegen/tables/Owners.sol";
-// get all nfts (as bytes, need to convert to uint256) owned by address 0x42
-bytes32[] memory keysWithValue = getKeysWithValue(world, OwnersId, Owners.encode(address(42)));
-```
-
-Internally, it works by installing a [hook](/store/advanced-features#storage-hooks) that maintains an array of all keys in the table.
-
-#### **`query`**
-
-`query` provides a simple API to get a list of keys matching certain specified criteria. It is not a standalone module, but requires `KeysInTable` and `KeysWithValue` to be installed.
-
-A query consists of a list of query fragments. A query fragment is a struct with three fields:
-
-```solidity
-struct QueryFragment {
-  QueryType queryType;
-  bytes32 tableId;
-  bytes value;
-}
-```
-
-Available query fragments are:
-
-- `Has`: filter for keys that are in the specified table. The value field in the query fragment is ignored.
-- `HasValue`: filter for keys that are in the specified table with the specified value.
-- `Not`: filter for keys that are not in the specified table. The value field in th query fragment is ignored.
-- `NotValue`: filter for keys that are not in the specified table with the specified value.
-
-The query fragments are executed from left to right and are concatenated with a logical AND. For performance reasons, the most restrictive query fragment should be first in the list of query fragments, in order to reduce the number of keys the next query fragment needs to be checked for.
-
-Example: Query for all keys in the movable table at position (0,0):
-
-```solidity
-import { query, QueryFragment, QueryType } from "@latticexyz/world/src/modules/keysintable/query.sol";
-
-QueryFragment[] memory fragments = new QueryFragment[](2);
-
-// Specify the more restrictive filter first for performance reasons
-fragments[0] = QueryFragment(QueryType.HasValue, positionTableId, abi.encode(Coord(0,0)));
-
-// The value argument is ignored in Has query fragments
-fragments[1] = QueryFragment(QueryType.Has, movableTableId, new bytes(0));
-
-bytes32[][] memory keyTuples = query(fragments);
-```
-
-### Installing a module
-
-To install a module, create an entry in the **`modules`** field of your config, and specify whether it should be a root module with the `root` key. The arguments sent to the `install` functions are listed in the `args` key, and you can use dynamic functions that resolve to resources in the World (currently only `resolveTableId` is available).
-
-```tsx
-import { mudConfig } from "@latticexyz/world/register";
-import { resolveTableId } from "@latticexyz/config";
-
-export default mudConfig({
-  tables: {
-    MyTable: {
-      valueSchema: "uint32",
-    },
-  },
-  modules: [
-    {
-      name: "KeysWithValueModule",
-      root: true,
-      args: [resolveTableId("MyTable")],
-    },
-  ],
-});
-```
+- [`KeysInTable`](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/keysintable) - automatically tracks the keys in a table to make them enumerable.
+- [`KeysWithValue`](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/keyswithvalue) - automatically tracks a reverse mapping for a table that maps a value hash to a list of keys with this value.
+- [`Puppet`](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/puppet) - installs the PuppetDelegationControl to allow creating Puppet contracts, eg used by the ERC20 and ERC721 modules.
+- [`ERC20`](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/erc20-puppet) - installs an ERC20 token into a namespace in a World.
+- [`ERC721`](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/erc721-puppet) - installs an ERC721 token into a namespace in a World.
+- [`UniqueEntity`](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/uniqueentity) - add methods to get a unique entity ID.
+- [`Standard Delegations`](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/std-delegations) - add delegations limited by time or number of calls.

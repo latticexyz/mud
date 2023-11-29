@@ -1,5 +1,54 @@
 # Change Log
 
+## 2.0.0-next.14
+
+### Minor Changes
+
+- bdb46fe3: Deploys now validate contract size before deploying and warns when a contract is over or close to the size limit (24kb). This should help identify the most common cause of "evm revert" errors during system and module contract deploys.
+
+### Patch Changes
+
+- 1feecf49: Added `--worldAddress` argument to `dev-contracts` CLI command so that you can develop against an existing world.
+- Updated dependencies [aacffcb5]
+- Updated dependencies [b2d2aa71]
+- Updated dependencies [bb91edaa]
+- Updated dependencies [bb91edaa]
+- Updated dependencies [fdbba6d8]
+  - @latticexyz/common@2.0.0-next.14
+  - @latticexyz/store@2.0.0-next.14
+  - @latticexyz/world@2.0.0-next.14
+  - @latticexyz/schema-type@2.0.0-next.14
+  - @latticexyz/world-modules@2.0.0-next.14
+  - @latticexyz/config@2.0.0-next.14
+  - @latticexyz/protocol-parser@2.0.0-next.14
+  - @latticexyz/abi-ts@2.0.0-next.14
+  - @latticexyz/gas-report@2.0.0-next.14
+  - @latticexyz/services@2.0.0-next.14
+  - @latticexyz/utils@2.0.0-next.14
+
+## 2.0.0-next.13
+
+### Patch Changes
+
+- 21a626ae: Changed `mud` CLI import order so that environment variables from the `.env` file are loaded before other imports.
+- Updated dependencies [52182f70]
+- Updated dependencies [d7325e51]
+- Updated dependencies [35348f83]
+- Updated dependencies [83638373]
+- Updated dependencies [3e057061]
+- Updated dependencies [b1d41727]
+  - @latticexyz/utils@2.0.0-next.13
+  - @latticexyz/world-modules@2.0.0-next.13
+  - @latticexyz/common@2.0.0-next.13
+  - @latticexyz/config@2.0.0-next.13
+  - @latticexyz/protocol-parser@2.0.0-next.13
+  - @latticexyz/store@2.0.0-next.13
+  - @latticexyz/world@2.0.0-next.13
+  - @latticexyz/abi-ts@2.0.0-next.13
+  - @latticexyz/gas-report@2.0.0-next.13
+  - @latticexyz/schema-type@2.0.0-next.13
+  - @latticexyz/services@2.0.0-next.13
+
 ## 2.0.0-next.12
 
 ### Major Changes

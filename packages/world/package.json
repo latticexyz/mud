@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world",
-  "version": "2.0.0-next.12",
+  "version": "2.0.0-next.14",
   "description": "World framework",
   "repository": {
     "type": "git",
@@ -11,10 +11,10 @@
   "type": "module",
   "exports": {
     ".": "./dist/ts/index.js",
+    "./mud.config": "./dist/mud.config.js",
     "./register": "./dist/ts/register/index.js",
     "./node": "./dist/ts/node/index.js",
-    "./out/*": "./out/*",
-    "./*": "./dist/*"
+    "./out/*": "./out/*"
   },
   "typesVersions": {
     "*": {

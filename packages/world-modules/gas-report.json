@@ -1,5 +1,35 @@
 [
   {
+    "file": "test/ERC20.t.sol",
+    "test": "testApprove",
+    "name": "approve",
+    "gasUsed": 114329
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testBurn",
+    "name": "burn",
+    "gasUsed": 75866
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testMint",
+    "name": "mint",
+    "gasUsed": 161705
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTransfer",
+    "name": "transfer",
+    "gasUsed": 92948
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTransferFrom",
+    "name": "transferFrom",
+    "gasUsed": 130250
+  },
+  {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallComposite",
     "name": "install keys in table module",
@@ -195,7 +225,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromCallboundDelegation",
     "name": "register a callbound delegation",
-    "gasUsed": 117420
+    "gasUsed": 117426
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -205,9 +235,21 @@
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
+    "test": "testCallFromSystemDelegation",
+    "name": "register a systembound delegation",
+    "gasUsed": 114982
+  },
+  {
+    "file": "test/StandardDelegationsModule.t.sol",
+    "test": "testCallFromSystemDelegation",
+    "name": "call a system via a systembound delegation",
+    "gasUsed": 33831
+  },
+  {
+    "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromTimeboundDelegation",
     "name": "register a timebound delegation",
-    "gasUsed": 111914
+    "gasUsed": 111920
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",

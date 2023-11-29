@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.0.0-next.14
+
+### Minor Changes
+
+- bb91edaa: Added `isSchemaAbiType` helper function to check and narrow an unknown string to the `SchemaAbiType` type
+
+## 2.0.0-next.13
+
 ## 2.0.0-next.12
 
 ## 2.0.0-next.11

@@ -12,6 +12,11 @@ ResourceId constant CALLBOUND_DELEGATION = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("callbound")))
 );
 
+// Systembound delegation
+ResourceId constant SYSTEMBOUND_DELEGATION = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("systembound")))
+);
+
 // Timebound delegation
 ResourceId constant TIMEBOUND_DELEGATION = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("timebound")))

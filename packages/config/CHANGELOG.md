@@ -1,5 +1,24 @@
 # Change Log
 
+## 2.0.0-next.14
+
+### Patch Changes
+
+- Updated dependencies [aacffcb5]
+- Updated dependencies [bb91edaa]
+  - @latticexyz/common@2.0.0-next.14
+  - @latticexyz/schema-type@2.0.0-next.14
+
+## 2.0.0-next.13
+
+### Patch Changes
+
+- 3e057061: Removed chalk usage from modules imported in client fix downstream client builds (vite in particular).
+- Updated dependencies [3e057061]
+- Updated dependencies [b1d41727]
+  - @latticexyz/common@2.0.0-next.13
+  - @latticexyz/schema-type@2.0.0-next.13
+
 ## 2.0.0-next.12
 
 ### Patch Changes

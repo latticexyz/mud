@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.0-next.12",
+  "version": "2.0.0-next.14",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -11,11 +11,11 @@
   "type": "module",
   "exports": {
     ".": "./dist/ts/index.js",
+    "./mud.config": "./dist/mud.config.js",
     "./codegen": "./dist/ts/codegen/index.js",
     "./config": "./dist/ts/config/index.js",
     "./register": "./dist/ts/register/index.js",
-    "./out/*": "./out/*",
-    "./*": "./dist/*"
+    "./out/*": "./out/*"
   },
   "typesVersions": {
     "*": {
@@ -55,6 +55,7 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "abitype": "0.9.8",
+    "viem": "1.14.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

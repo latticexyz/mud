@@ -3,7 +3,12 @@ import { StoreConfig, TableConfig, UserTypesConfig } from "../storeConfig";
 import { UserType } from "@latticexyz/common/codegen";
 import { mapObject } from "@latticexyz/common/utils";
 import { resourceToHex } from "@latticexyz/common";
+import { SchemaAbiType } from "@latticexyz/schema-type";
 
+/**
+ * @internal Internal only
+ * @deprecated Internal only
+ */
 export type ResolvedStoreConfig<TStoreConfig extends StoreConfig> = {
   tables: {
     [TableKey in keyof TStoreConfig["tables"] & string]: ResolvedTableConfig<
@@ -16,13 +21,13 @@ export type ResolvedStoreConfig<TStoreConfig extends StoreConfig> = {
   };
 };
 
-export type ResolvedTableConfig<
+type ResolvedTableConfig<
   TTableConfig extends TableConfig,
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion,
   TNamespace extends string = string,
   TName extends string = string
-> = Omit<TTableConfig, "keySchema" | "valueSchema"> & {
+> = {
   keySchema: ResolvedKeySchema<TTableConfig["keySchema"], TUserTypes, TEnumNames>;
   valueSchema: ResolvedValueSchema<TTableConfig["valueSchema"], TUserTypes, TEnumNames>;
   namespace: TNamespace;
@@ -30,25 +35,27 @@ export type ResolvedTableConfig<
   tableId: `0x${string}`;
 };
 
-export type ResolvedKeySchema<
+type ResolvedKeySchema<
   TKeySchema extends TableConfig["keySchema"],
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion
 > = ResolvedSchema<TKeySchema, TUserTypes, TEnumNames>;
 
-export type ResolvedValueSchema<
+type ResolvedValueSchema<
   TValueSchema extends TableConfig["valueSchema"],
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion
 > = ResolvedSchema<Exclude<TValueSchema, string>, TUserTypes, TEnumNames>;
 
-export type ResolvedSchema<
+type ResolvedSchema<
   TSchema extends Exclude<TableConfig["keySchema"] | TableConfig["valueSchema"], string>,
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion
 > = {
   [key in keyof TSchema]: {
-    type: TSchema[key] extends keyof TUserTypes
+    type: TSchema[key] extends SchemaAbiType
+      ? TSchema[key]
+      : TSchema[key] extends keyof TUserTypes
       ? TUserTypes[TSchema[key]] extends UserType
         ? // Note: we mistakenly named the plain ABI type "internalType",
           // while in Solidity ABIs the plain ABI type is called "type" and
@@ -58,7 +65,7 @@ export type ResolvedSchema<
         : never
       : TSchema[key] extends TEnumNames
       ? "uint8"
-      : TSchema[key];
+      : never;
     internalType: TSchema[key];
   };
 };
@@ -100,10 +107,9 @@ function resolveTable<
   namespace: TNamespace,
   name: TName
 ): ResolvedTableConfig<typeof tableConfig, TUserTypes, TEnums[number]> {
-  const { keySchema, valueSchema, ...rest } = tableConfig;
+  const { keySchema, valueSchema } = tableConfig;
 
   return {
-    ...rest,
     keySchema: resolveKeySchema(keySchema, userTypes, enums),
     valueSchema: resolveValueSchema(valueSchema, userTypes, enums) as ResolvedSchema<
       Exclude<TTableConfig["valueSchema"], string>,
@@ -112,7 +118,7 @@ function resolveTable<
     >,
     namespace,
     name,
-    tableId: resourceToHex({ type: "table", namespace, name }),
+    tableId: resourceToHex({ type: tableConfig.offchainOnly ? "offchainTable" : "table", namespace, name }),
   };
 }
 

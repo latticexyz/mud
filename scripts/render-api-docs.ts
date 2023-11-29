@@ -8,7 +8,7 @@ import { readFileSync, readdirSync, writeFileSync } from "fs";
 import path from "path";
 import prettierOptions from "../.prettierrc.js";
 
-const DOCS_ROOT = "next-docs/pages";
+const DOCS_ROOT = "docs/pages";
 
 // Config for API docs input/output and filter/processing
 const PUBLIC_APIS: PublicApis = {
@@ -140,6 +140,7 @@ async function renderDocs() {
           .map((input) => {
             const docsPath = getDocsPath(input.source);
             const docsFiles = readdirSync(docsPath);
+            docsFiles.sort();
             return docsFiles
               .filter(input.filterFiles ?? identity)
               .map((fileName) => readFileSync(path.join(docsPath, fileName), { encoding: "utf8" }));
