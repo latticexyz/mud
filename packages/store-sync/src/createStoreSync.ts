@@ -1,14 +1,6 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
 import { Hex, TransactionReceiptNotFoundError } from "viem";
-import {
-  StorageAdapter,
-  StorageAdapterBlock,
-  StorageAdapterLog,
-  SyncFilter,
-  SyncOptions,
-  SyncResult,
-  internalTableIds,
-} from "./common";
+import { StorageAdapter, StorageAdapterBlock, SyncFilter, SyncOptions, SyncResult, internalTableIds } from "./common";
 import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
   filter,
@@ -28,13 +20,9 @@ import {
   scan,
   identity,
 } from "rxjs";
-import isPromise from "is-promise";
 import { debug as parentDebug } from "./debug";
-import { createIndexerClient } from "./trpc-indexer";
 import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined } from "@latticexyz/common/utils";
-import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
-import { tableToLog } from "./tableToLog";
 import { getSnapshot } from "./getSnapshot";
 
 const debug = parentDebug.extend("createStoreSync");
