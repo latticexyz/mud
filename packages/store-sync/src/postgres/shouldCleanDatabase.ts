@@ -8,25 +8,25 @@ const debug = parentDebug.extend("shouldCleanDatabase");
 /**
  * @internal
  */
-export async function shouldCleanDatabase(db: PgDatabase<any>): Promise<boolean> {
+export async function shouldCleanDatabase(db: PgDatabase<any>, expectedChainId: number): Promise<boolean> {
   try {
-    const currentVersion = (
-      await db.select({ version: tables.configTable.version }).from(tables.configTable).limit(1).execute()
-    )
-      .map((row) => row.version)
-      .find(() => true);
+    const config = (await db.select().from(tables.configTable).limit(1).execute()).find(() => true);
 
-    if (currentVersion == null) {
+    if (!config) {
       debug("no record found in config table");
       return true;
     }
 
-    if (currentVersion !== expectedVersion) {
-      debug(`current version (${currentVersion}) did not match expected version (${expectedVersion})`);
+    if (config.version !== expectedVersion) {
+      debug(`configured version (${config.version}) did not match expected version (${expectedVersion})`);
       return true;
     }
 
-    debug("database shape appears to be up to date");
+    if (config.chainId !== expectedChainId) {
+      debug(`configured chain ID (${config.chainId}) did not match expected chain ID (${expectedChainId})`);
+      return true;
+    }
+
     return false;
   } catch (error) {
     console.error(error);
