@@ -58,7 +58,7 @@ describe("Sync from indexer", async () => {
     await waitForInitialSync(page);
 
     expect(asyncErrorHandler.getErrors()).toHaveLength(1);
-    expect(asyncErrorHandler.getErrors()[0]).toContain("error fetching initial state from indexer");
+    expect(asyncErrorHandler.getErrors()[0]).toContain("error getting snapshot");
   });
 
   describe.each([["sqlite"], ["postgres"]] as const)("%s indexer", (indexerType) => {
