@@ -1,11 +1,10 @@
-import { StorageAdapterBlock, StorageAdapterLog, SyncOptions, TableWithRecords } from "./common";
+import { StorageAdapterBlock, SyncOptions } from "./common";
 import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
-import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
-import { tableToLog } from "./tableToLog";
 import { TRPCClientError } from "@trpc/client";
+import { tablesWithRecordsToLogs } from "./tablesWithRecordsToLogs";
 
-const debug = parentDebug.extend("getInitialBlockLogs");
+const debug = parentDebug.extend("getSnapshot");
 
 type GetSnapshotOptions = Pick<
   SyncOptions,
@@ -13,25 +12,6 @@ type GetSnapshotOptions = Pick<
 > & {
   chainId: number;
 };
-
-function tablesWithRecordsToLogs(tables: readonly TableWithRecords[]): StorageAdapterLog[] {
-  return [
-    ...tables.map(tableToLog),
-    ...tables.flatMap((table) =>
-      table.records.map(
-        (record): StorageAdapterLog => ({
-          eventName: "Store_SetRecord",
-          address: table.address,
-          args: {
-            tableId: table.tableId,
-            keyTuple: encodeKey(table.keySchema, record.key),
-            ...encodeValueArgs(table.valueSchema, record.value),
-          },
-        })
-      )
-    ),
-  ];
-}
 
 export async function getSnapshot({
   chainId,
