@@ -5,7 +5,7 @@ import { Hex, getAddress } from "viem";
 import { decodeDynamicField } from "@latticexyz/protocol-parser";
 import { SyncFilter, TableWithRecords } from "@latticexyz/store-sync";
 
-// TODO: refactor sqlite and replace this with getLogs to match postgres
+// TODO: refactor sqlite and replace this with getLogs to match postgres (https://github.com/latticexyz/mud/issues/1970)
 
 /**
  * @deprecated
