@@ -151,6 +151,66 @@ export default withNextra({
         destination: "/guides/emojimon/1-preface-the-ecs-model",
         permanent: false,
       },
+      {
+        source: "/tutorials/emojimon/getting-started",
+        destination: "/guides/emojimon/2-getting-started",
+        permanent: false
+      },
+      {
+        source: "/tutorials/emojimon/players-and-movement",
+        destination: "/guides/emojimon/3-players-and-movement",
+        permanent: false
+      },      
+      {
+        source: "/tutorials/emojimon/map-and-terrain",
+        destination: "/guides/emojimon/4-map-and-terrain",
+        permanent: false
+      },
+      {
+        source: "/tutorials/emojimon/a-wild-emojimon-appears",
+        destination: "/guides/emojimon/5-a-wild-emojimon-appears",
+        permanent: false
+      },      
+      {
+        source: "/tutorials/emojimon/make-it-multiplayer",
+        destination: "/guides/emojimon/6-advanced#make-it-multiplayer",
+        permanent: false
+      },
+      {
+        source: "/tutorials/emojimon/deploy-to-testnet",
+        destination: "/cli/deploy",
+        permanent: false
+      },      
+      {
+        source: "/tutorials/minimal",
+        destination: "/guides/hello-world",
+        permanent: false
+      },
+      {
+        source: "/tutorials/minimal/add-table",
+        destination: "/guides/hello-world/add-table",
+        permanent: false
+      },      
+      {
+        source: "/tutorials/minimal/add-system",
+        destination: "/guides/hello-world/add-system",
+        permanent: false
+      },
+      {
+        source: "/tutorials/minimal/deploy",
+        destination: "/cli/deploy",
+        permanent: false
+      },      
+      {
+        source: "/tutorials/walkthrough/minimal-onchain",
+        destination: "/templates/typescript/contracts",
+        permanent: false
+      },
+      {
+        source: "/reference",
+        destination: "/",
+        permanent: false
+      },
     ];
   },
 });
