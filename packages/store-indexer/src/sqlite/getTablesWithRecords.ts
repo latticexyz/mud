@@ -1,10 +1,15 @@
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { buildTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
 import { Hex, getAddress } from "viem";
 import { decodeDynamicField } from "@latticexyz/protocol-parser";
 import { SyncFilter, TableWithRecords } from "@latticexyz/store-sync";
 
+// TODO: refactor sqlite and replace this with getLogs to match postgres
+
+/**
+ * @deprecated
+ * */
 export function getTablesWithRecords(
   database: BaseSQLiteDatabase<"sync", any>,
   {
@@ -34,7 +39,12 @@ export function getTablesWithRecords(
 
   const tablesWithRecords = tables.map((table) => {
     const sqliteTable = buildTable(table);
-    const records = database.select().from(sqliteTable).where(eq(sqliteTable.__isDeleted, false)).all();
+    const records = database
+      .select()
+      .from(sqliteTable)
+      .where(eq(sqliteTable.__isDeleted, false))
+      .orderBy(asc(sqliteTable.__lastUpdatedBlockNumber))
+      .all();
     const filteredRecords = !filters.length
       ? records
       : records.filter((record) => {
