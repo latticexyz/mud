@@ -70,6 +70,12 @@ export async function getSnapshot({
       // TODO: remove in the future
       debug("failed to fetch logs, fetching table records instead", indexerUrl);
       const result = await indexer.findAll.query({ chainId, address, filters });
+      // warn after we fetch from old endpoint so we know that the indexer is accessible
+      console.warn(
+        `The indexer at ${indexerUrl} appears to be outdated. Consider upgrading to a recent version for better performance.`
+      );
+
+      // if the indexer returns no block number, it hasn't indexed this chain
       if (result.blockNumber == null) {
         return;
       }
