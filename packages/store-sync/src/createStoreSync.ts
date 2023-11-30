@@ -28,12 +28,14 @@ import {
   scan,
   identity,
 } from "rxjs";
+import isPromise from "is-promise";
 import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
 import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined } from "@latticexyz/common/utils";
 import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
 import { tableToLog } from "./tableToLog";
+import { getSnapshot } from "./getSnapshot";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -68,71 +70,45 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
       : [];
 
-  if (initialBlockLogs && initialState) {
-    throw new Error("Only one of initialBlockLogs or initialState should be provided.");
-  }
-
   const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
-    if (initialBlockLogs) return initialBlockLogs;
-
-    // Backwards compatibility with previous indexer snapshot format
-    if (initialState) {
-      const logs: StorageAdapterLog[] = [
-        ...initialState.tables.map(tableToLog),
-        ...initialState.tables.flatMap((table) =>
-          table.records.map(
-            (record): StorageAdapterLog => ({
-              eventName: "Store_SetRecord",
-              address: table.address,
-              args: {
-                tableId: table.tableId,
-                keyTuple: encodeKey(table.keySchema, record.key),
-                ...encodeValueArgs(table.valueSchema, record.value),
-              },
-            })
-          )
-        ),
-      ];
-      return { blockNumber: initialState.blockNumber, logs };
-    }
-
-    if (!indexerUrl) return;
-
-    debug("fetching logs from indexer", indexerUrl);
+    const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
 
     onProgress?.({
       step: SyncStep.SNAPSHOT,
       percentage: 0,
       latestBlockNumber: 0n,
       lastBlockNumberProcessed: 0n,
-      message: "Fetching snapshot from indexer",
+      message: "Getting snapshot",
     });
 
-    const indexer = createIndexerClient({ url: indexerUrl });
-    const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
-    const result = await indexer.getLogs.query({ chainId, address, filters });
-
-    // TODO: fetch from `findAll` if `getLogs` is not available (i.e. older indexers)?
+    const snapshot = await getSnapshot({
+      chainId,
+      address,
+      filters,
+      initialState,
+      initialBlockLogs,
+      indexerUrl,
+    });
 
     onProgress?.({
       step: SyncStep.SNAPSHOT,
       percentage: 100,
       latestBlockNumber: 0n,
       lastBlockNumberProcessed: 0n,
-      message: "Fetched snapshot from indexer",
+      message: "Got snapshot",
     });
 
-    return result;
+    return snapshot;
   }).pipe(
     catchError((error) => {
-      debug("error fetching logs from indexer", error);
+      debug("error getting snapshot", error);
 
       onProgress?.({
         step: SyncStep.SNAPSHOT,
         percentage: 100,
         latestBlockNumber: 0n,
         lastBlockNumberProcessed: initialStartBlock,
-        message: "Failed to fetch snapshot from indexer",
+        message: "Failed to get snapshot",
       });
 
       return of(undefined);
