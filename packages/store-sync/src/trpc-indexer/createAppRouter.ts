@@ -2,12 +2,12 @@ import { z } from "zod";
 import { QueryAdapter } from "./common";
 import { isHex } from "viem";
 import { initTRPC } from "@trpc/server";
-import { transformer } from "./transformer";
+import superjson from "superjson";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createAppRouter() {
   const t = initTRPC.context<{ queryAdapter: QueryAdapter }>().create({
-    transformer,
+    transformer: superjson,
   });
 
   return t.router({

@@ -1,6 +1,6 @@
 import { createTRPCProxyClient, httpBatchLink, CreateTRPCProxyClient } from "@trpc/client";
+import superjson from "superjson";
 import type { AppRouter } from "./createAppRouter";
-import { transformer } from "./transformer";
 
 type CreateIndexerClientOptions = {
   /**
@@ -17,7 +17,7 @@ type CreateIndexerClientOptions = {
  */
 export function createIndexerClient({ url }: CreateIndexerClientOptions): CreateTRPCProxyClient<AppRouter> {
   return createTRPCProxyClient<AppRouter>({
-    transformer,
+    transformer: superjson,
     links: [httpBatchLink({ url })],
   });
 }

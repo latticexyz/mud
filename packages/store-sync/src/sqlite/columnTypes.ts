@@ -1,6 +1,6 @@
 import { customType } from "drizzle-orm/sqlite-core";
+import superjson from "superjson";
 import { Address, Hex, getAddress } from "viem";
-import { deserialize, serialize } from "wagmi";
 
 // TODO: migrate these to same patterns in postgres/columnTypes
 
@@ -11,10 +11,10 @@ export const json = <TData>(name: string) =>
       return "text";
     },
     toDriver(data: TData): string {
-      return serialize(data);
+      return superjson.stringify(data);
     },
     fromDriver(driverData: string): TData {
-      return deserialize(driverData);
+      return superjson.parse(driverData);
     },
   })(name);
 
