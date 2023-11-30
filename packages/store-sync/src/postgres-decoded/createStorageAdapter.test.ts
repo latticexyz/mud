@@ -106,8 +106,8 @@ describe("createStorageAdapter", async () => {
           "__keyBytes": "0x",
           "__lastUpdatedBlockNumber": 12n,
           "value": [
-            0,
-            0,
+            420,
+            69,
           ],
         },
       ]
