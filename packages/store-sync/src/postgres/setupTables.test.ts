@@ -17,7 +17,7 @@ describe("setupTables", async () => {
 
   describe("before running", () => {
     it("should be missing schemas", async () => {
-      await expect(db.select().from(tables.configTable)).rejects.toThrow(/relation "\w+mud.chain" does not exist/);
+      await expect(db.select().from(tables.configTable)).rejects.toThrow(/relation "\w+mud.config" does not exist/);
       await expect(db.select().from(tables.recordsTable)).rejects.toThrow(/relation "\w+mud.records" does not exist/);
     });
   });
