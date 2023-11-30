@@ -45,7 +45,7 @@ describe("createStorageAdapter", async () => {
       await storageAdapter.storageAdapter(block);
     }
 
-    expect(await db.select().from(storageAdapter.tables.chainTable)).toMatchInlineSnapshot(`
+    expect(await db.select().from(storageAdapter.tables.configTable)).toMatchInlineSnapshot(`
       [
         {
           "chainId": 31337,

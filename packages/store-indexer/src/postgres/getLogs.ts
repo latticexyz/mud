@@ -41,8 +41,8 @@ export async function getLogs(
   // TODO: move the block number query into the records query for atomicity so we don't have to merge them here
   const chainState = await database
     .select()
-    .from(tables.chainTable)
-    .where(eq(tables.chainTable.chainId, chainId))
+    .from(tables.configTable)
+    .where(eq(tables.configTable.chainId, chainId))
     .limit(1)
     .execute()
     // Get the first record in a way that returns a possible `undefined`

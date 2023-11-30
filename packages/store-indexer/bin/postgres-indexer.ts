@@ -7,7 +7,7 @@ import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { createStorageAdapter } from "@latticexyz/store-sync/postgres";
+import { cleanDatabase, createStorageAdapter, shouldCleanDatabase } from "@latticexyz/store-sync/postgres";
 import { createStoreSync } from "@latticexyz/store-sync";
 import { indexerEnvSchema, parseEnv } from "./parseEnv";
 
@@ -37,6 +37,11 @@ const publicClient = createPublicClient({
 const chainId = await publicClient.getChainId();
 const database = drizzle(postgres(env.DATABASE_URL));
 
+if (await shouldCleanDatabase(database)) {
+  console.log("outdated database detected, clearing data to start fresh");
+  cleanDatabase(database);
+}
+
 const { storageAdapter, tables } = await createStorageAdapter({ database, publicClient });
 
 let startBlock = env.START_BLOCK;
@@ -46,8 +51,8 @@ let startBlock = env.START_BLOCK;
 try {
   const chainState = await database
     .select()
-    .from(tables.chainTable)
-    .where(eq(tables.chainTable.chainId, chainId))
+    .from(tables.configTable)
+    .where(eq(tables.configTable.chainId, chainId))
     .limit(1)
     .execute()
     // Get the first record in a way that returns a possible `undefined`
