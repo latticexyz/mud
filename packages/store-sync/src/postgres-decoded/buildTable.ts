@@ -1,18 +1,13 @@
 import { PgColumnBuilderBase, PgTableWithColumns, pgSchema } from "drizzle-orm/pg-core";
-import { buildColumn } from "./buildColumn";
 import { Address, getAddress } from "viem";
-import { transformSchemaName } from "./transformSchemaName";
 import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
+import { asBigInt, asHex } from "../postgres/columnTypes";
+import { transformSchemaName } from "../postgres/transformSchemaName";
+import { buildColumn } from "./buildColumn";
 
-// TODO: convert camel case to snake case for DB storage?
 export const metaColumns = {
-  __key: buildColumn("__key", "bytes").primaryKey(),
-  __staticData: buildColumn("__staticData", "bytes"),
-  __encodedLengths: buildColumn("__encodedLengths", "bytes"),
-  __dynamicData: buildColumn("__dynamicData", "bytes"),
-  __lastUpdatedBlockNumber: buildColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
-  // TODO: last updated block hash?
-  __isDeleted: buildColumn("__isDeleted", "bool").notNull(),
+  __keyBytes: asHex("__key_bytes").primaryKey(),
+  __lastUpdatedBlockNumber: asBigInt("__last_updated_block_number", "numeric"),
 } as const satisfies Record<string, PgColumnBuilderBase>;
 
 type PgTableFromSchema<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = PgTableWithColumns<{
@@ -62,7 +57,6 @@ export function buildTable<TKeySchema extends KeySchema, TValueSchema extends Va
   );
 
   // TODO: make sure there are no meta columns that overlap with key/value columns
-  // TODO: index meta columns?
 
   const columns = {
     ...keyColumns,

@@ -7,7 +7,7 @@ import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { cleanDatabase, postgresStorage, schemaVersion } from "@latticexyz/store-sync/postgres";
+import { createStorageAdapter } from "@latticexyz/store-sync/postgres";
 import { createStoreSync } from "@latticexyz/store-sync";
 import { indexerEnvSchema, parseEnv } from "./parseEnv";
 
@@ -37,37 +37,29 @@ const publicClient = createPublicClient({
 const chainId = await publicClient.getChainId();
 const database = drizzle(postgres(env.DATABASE_URL));
 
-const { storageAdapter, internalTables } = await postgresStorage({ database, publicClient });
+const { storageAdapter, tables } = await createStorageAdapter({ database, publicClient });
 
 let startBlock = env.START_BLOCK;
 
 // Resume from latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
+// TODO: query if the DB exists instead of try/catch
 try {
-  const currentChainStates = await database
+  const chainState = await database
     .select()
-    .from(internalTables.chain)
-    .where(eq(internalTables.chain.chainId, chainId))
-    .execute();
-  // TODO: replace this type workaround with `noUncheckedIndexedAccess: true` when we can fix all the issues related (https://github.com/latticexyz/mud/issues/1212)
-  const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
+    .from(tables.chainTable)
+    .where(eq(tables.chainTable.chainId, chainId))
+    .limit(1)
+    .execute()
+    // Get the first record in a way that returns a possible `undefined`
+    // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
+    .then((rows) => rows.find(() => true));
 
-  if (currentChainState != null) {
-    if (currentChainState.schemaVersion != schemaVersion) {
-      console.log(
-        "schema version changed from",
-        currentChainState.schemaVersion,
-        "to",
-        schemaVersion,
-        "cleaning database"
-      );
-      await cleanDatabase(database);
-    } else if (currentChainState.lastUpdatedBlockNumber != null) {
-      console.log("resuming from block number", currentChainState.lastUpdatedBlockNumber + 1n);
-      startBlock = currentChainState.lastUpdatedBlockNumber + 1n;
-    }
+  if (chainState?.lastUpdatedBlockNumber != null) {
+    startBlock = chainState.lastUpdatedBlockNumber + 1n;
+    console.log("resuming from block number", startBlock);
   }
 } catch (error) {
-  // ignore errors, this is optional
+  // ignore errors for now
 }
 
 const { latestBlockNumber$, storedBlockLogs$ } = await createStoreSync({

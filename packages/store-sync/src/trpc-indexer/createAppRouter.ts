@@ -11,6 +11,28 @@ export function createAppRouter() {
   });
 
   return t.router({
+    getLogs: t.procedure
+      .input(
+        z.object({
+          chainId: z.number(),
+          address: z.string().refine(isHex).optional(),
+          filters: z
+            .array(
+              z.object({
+                tableId: z.string().refine(isHex),
+                key0: z.string().refine(isHex).optional(),
+                key1: z.string().refine(isHex).optional(),
+              })
+            )
+            .optional(),
+        })
+      )
+      .query(async (opts): ReturnType<QueryAdapter["getLogs"]> => {
+        const { queryAdapter } = opts.ctx;
+        const { chainId, address, filters } = opts.input;
+        return queryAdapter.getLogs({ chainId, address, filters });
+      }),
+
     findAll: t.procedure
       .input(
         z.object({
