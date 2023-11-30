@@ -1,5 +1,5 @@
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
-import { inArray } from "drizzle-orm";
+import { asc, inArray } from "drizzle-orm";
 import { Table } from "../common";
 import { getTableName } from "./getTableName";
 import { mudStoreTables } from "./internalTables";
@@ -15,6 +15,8 @@ export function getTables(
     .select()
     .from(mudStoreTables)
     .where(ids.length ? inArray(mudStoreTables.id, ids) : undefined)
+    // TODO: add logIndex and use that to sort instead of address/tableId? (https://github.com/latticexyz/mud/issues/1979)
+    .orderBy(asc(mudStoreTables.lastUpdatedBlockNumber), asc(mudStoreTables.address), asc(mudStoreTables.tableId))
     .all();
 
   return tables;
