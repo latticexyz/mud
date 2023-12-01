@@ -25,6 +25,9 @@ import { WorldDeploy } from "./deploy/common";
 import { tablegen } from "@latticexyz/store/codegen";
 import { worldgen } from "@latticexyz/world/node";
 import { getExistingContracts } from "./utils/getExistingContracts";
+import { debug as parentDebug } from "./debug";
+
+const debug = parentDebug.extend("runDeploy");
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
@@ -75,11 +78,13 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     const forgeConfig = await getForgeConfig(profile);
     if (forgeConfig.cache) {
       const cacheFilePath = path.join(forgeConfig.cache_path, "solidity-files-cache.json");
-      const worldInterfacePath = path.join(outPath, "world", "IWorld.sol");
-
-      const solidityFilesCache = JSON.parse(readFileSync(cacheFilePath, "utf8"));
-      solidityFilesCache["files"][worldInterfacePath]["contentHash"] = "00000000000000000000000000000000";
-      writeFileSync(cacheFilePath, JSON.stringify(solidityFilesCache, undefined, 2));
+      if (existsSync(cacheFilePath)) {
+        debug("Unsetting cached content hash of IWorld.sol to force it to regenerate");
+        const solidityFilesCache = JSON.parse(readFileSync(cacheFilePath, "utf8"));
+        const worldInterfacePath = path.join(outPath, "world", "IWorld.sol");
+        solidityFilesCache["files"][worldInterfacePath]["contentHash"] = "";
+        writeFileSync(cacheFilePath, JSON.stringify(solidityFilesCache, null, 2));
+      }
     }
 
     await forge(["build"], { profile });
