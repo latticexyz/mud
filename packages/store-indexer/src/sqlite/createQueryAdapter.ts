@@ -14,6 +14,10 @@ import { decodeDynamicField } from "@latticexyz/protocol-parser";
  */
 export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", any>): Promise<QueryAdapter> {
   const adapter: QueryAdapter = {
+    async getLogs(opts) {
+      // TODO
+      throw new Error("Not implemented");
+    },
     async findAll({ chainId, address, filters = [] }) {
       // If _any_ filter has a table ID, this will filter down all data to just those tables. Which mean we can't yet mix table filters with key-only filters.
       // TODO: improve this so we can express this in the query (need to be able to query data across tables more easily)

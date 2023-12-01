@@ -19,10 +19,17 @@ const config: DocsThemeConfig = {
       <meta property="title" content="MUD documentation" />
     </>
   ),
+  darkMode: false,
+  nextThemes: {
+    defaultTheme: "dark",
+  },
   footer: {
     text: "MIT 2023 © MUD",
   },
   primaryHue: 28,
+  sidebar: {
+    defaultMenuCollapseLevel: 1,
+  },
 };
 
 export default config;
