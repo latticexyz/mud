@@ -47,12 +47,10 @@ export function buildTable<TKeySchema extends KeySchema, TValueSchema extends Va
   keySchema,
   valueSchema,
 }: BuildTableOptions<TKeySchema, TValueSchema>): BuildTableResult<TKeySchema, TValueSchema> {
-  // We snake case the schema name and table name for ergonomics in querying
-  // (no need to double-quote), but this is destructive and may lead to
-  // overlapping namespaces (both `MyNamespace` and `my_namespace` snake case
-  // to the same value).
-  // TODO: consider not snake casing these
-  const schemaName = transformSchemaName(`${address.toLowerCase()}__${snakeCase(namespace)}`);
+  // We intentionally do not snake case the namespace due to potential conflicts
+  // with namespaces of a similar name (e.g. `MyNamespace` vs. `my_namespace`).
+  // TODO: consider snake case when we resolve https://github.com/latticexyz/mud/issues/1991
+  const schemaName = transformSchemaName(`${address.toLowerCase()}__${namespace}`);
   const tableName = snakeCase(name);
 
   // Column names, however, are safe to snake case because they're scoped to tables, defined once per table, and there's a limited number of fields in total.

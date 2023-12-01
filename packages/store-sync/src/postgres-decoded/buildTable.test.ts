@@ -8,14 +8,14 @@ describe("buildTable", () => {
   it("should create table from schema", async () => {
     const table = buildTable({
       address: "0xffffffffffffffffffffffffffffffffffffffff",
-      namespace: "test",
-      name: "users",
+      namespace: "testNS",
+      name: "UsersTable",
       keySchema: { x: "uint32", y: "uint32" },
       valueSchema: { name: "string", walletAddress: "address" },
     });
 
-    expect(getTableConfig(table).schema).toMatch(/0xffffffffffffffffffffffffffffffffffffffff__test$/);
-    expect(getTableConfig(table).name).toMatchInlineSnapshot('"users"');
+    expect(getTableConfig(table).schema).toMatch(/0xffffffffffffffffffffffffffffffffffffffff__testNS$/);
+    expect(getTableConfig(table).name).toMatchInlineSnapshot('"users_table"');
     expect(
       mapObject(getTableColumns(table), (column) => ({
         name: column.name,
@@ -68,14 +68,14 @@ describe("buildTable", () => {
   it("can create a singleton table", async () => {
     const table = buildTable({
       address: "0xffffffffffffffffffffffffffffffffffffffff",
-      namespace: "test",
-      name: "users",
+      namespace: "testNS",
+      name: "UsersTable",
       keySchema: {},
       valueSchema: { addrs: "address[]" },
     });
 
-    expect(getTableConfig(table).schema).toMatch(/0xffffffffffffffffffffffffffffffffffffffff__test$/);
-    expect(getTableConfig(table).name).toMatchInlineSnapshot('"users"');
+    expect(getTableConfig(table).schema).toMatch(/0xffffffffffffffffffffffffffffffffffffffff__testNS$/);
+    expect(getTableConfig(table).name).toMatchInlineSnapshot('"users_table"');
     expect(
       mapObject(getTableColumns(table), (column) => ({
         name: column.name,
