@@ -103,12 +103,6 @@ We can solve this with [volumes](https://docs.docker.com/storage/volumes/):
       pnpm start:sqlite
    ```
 
-1. Run this command to test next indexer.
-
-   ```sh copy
-   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
-   ```
-
 1. You can stop the docker container and restart it, or start a separate container using the same database.
 
 1. When you are done, you have to delete the docker containers that used it before you can delete the volume.
@@ -161,11 +155,44 @@ The command to start the indexer in PostgreSQL mode is `pnpm start:postgres`.
 
 To verify that the indexer runs correctly ensure you have [`jq`](https://jqlang.github.io/jq/) installed and run
 
-```bash copy
-curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
+Run this command to test the indexer.
+
+```sh copy
+curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' | jq
 ```
 
 The result should be nicely formatted (and long) JSON output with all the data stored in the `World`.
+
+<details>
+
+<summary>Where does this value come from?</summary>
+
+The query has these parameters:
+
+| Parameter | Value                 | Explanation                                    |
+| --------- | --------------------- | ---------------------------------------------- |
+| Server    | http://localhost:3001 | By default the indexer listens on port 3001    |
+| Path      | trpc/findAll          | Return all entries (based on the input filter) |
+| `batch`   | `1`                   | A required field                               |
+| `input`   | `%7B%22 ... %7D%7D`   | See below                                      |
+
+The input is the JSON filter that tells the server what we need.
+It is [URL encoded](https://en.wikipedia.org/wiki/Percent-encoding), you can decode it [using an online calculator](https://www.urldecoder.org/).
+
+```json
+{
+  "0": {
+    "json": {
+      "chainId": 31337,
+      "address": "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342"
+    }
+  }
+}
+```
+
+Meaning that query 0 is for everything in the `World` at address `0x6e9474e9c83676b9a71133ff96db43e7aa0a4342`, on the chain with chain ID `31337`.
+
+</details>
 
 ## Resetting the database
 
