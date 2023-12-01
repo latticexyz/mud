@@ -63,6 +63,7 @@
     "@latticexyz/world": "workspace:*",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
+    "change-case": "^5.2.0",
     "debug": "^4.3.4",
     "drizzle-orm": "^0.28.5",
     "kysely": "^0.26.3",
