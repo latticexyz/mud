@@ -13,7 +13,7 @@ import { createInput } from "./createInput";
 import { deferred } from "@latticexyz/utils";
 
 export async function createPhaserEngine<S extends ScenesConfig>(options: PhaserEngineConfig<S>) {
-  const { scale, sceneConfig, cameraConfig, cullingChunkSize } = options;
+  const { scale, sceneConfig, cameraConfig, cullingChunkSize, renderOverrides } = options;
 
   // Set up Phaser scenes
   const sceneConstructors = Object.keys(sceneConfig).map((key) => {
@@ -21,7 +21,7 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
     return defineScene({ key, preload, create, update });
   });
 
-  const phaserConfig = definePhaserConfig({ scenes: sceneConstructors, scale });
+  const phaserConfig = definePhaserConfig({ scenes: sceneConstructors, scale, renderOverrides });
   const game = new Phaser.Game(phaserConfig);
 
   // Wait for phaser to boot

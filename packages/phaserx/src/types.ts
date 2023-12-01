@@ -209,4 +209,5 @@ export type PhaserEngineConfig<S extends ScenesConfig> = {
   scale: Phaser.Types.Core.ScaleConfig;
   cameraConfig: CameraConfig;
   cullingChunkSize: number;
+  renderOverrides?: Partial<Phaser.Types.Core.RenderConfig>;
 };
