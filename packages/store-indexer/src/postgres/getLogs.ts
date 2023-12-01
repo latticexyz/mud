@@ -55,10 +55,8 @@ export async function getLogs(
     .from(tables.recordsTable)
     .where(or(...conditions))
     .orderBy(
-      asc(tables.recordsTable.lastUpdatedBlockNumber),
-      // TODO: add logIndex and use that to sort instead of address/tableId? (https://github.com/latticexyz/mud/issues/1979)
-      asc(tables.recordsTable.address),
-      asc(tables.recordsTable.tableId)
+      asc(tables.recordsTable.lastUpdatedBlockNumber)
+      // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
     );
 
   const blockNumber = records.reduce(
