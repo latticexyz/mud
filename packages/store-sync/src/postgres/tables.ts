@@ -1,4 +1,4 @@
-import { boolean, index, pgSchema, primaryKey } from "drizzle-orm/pg-core";
+import { boolean, index, pgSchema, primaryKey, varchar } from "drizzle-orm/pg-core";
 import { transformSchemaName } from "./transformSchemaName";
 import { asAddress, asBigInt, asHex, asNumber } from "./columnTypes";
 
@@ -7,7 +7,8 @@ const schemaName = transformSchemaName("mud");
 /**
  * Singleton table for the state of the chain we're indexing
  */
-const chainTable = pgSchema(schemaName).table("chain", {
+const configTable = pgSchema(schemaName).table("config", {
+  version: varchar("version").notNull(),
   chainId: asNumber("chain_id", "bigint").notNull().primaryKey(),
   lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric").notNull(),
 });
@@ -39,6 +40,6 @@ const recordsTable = pgSchema(schemaName).table(
 );
 
 export const tables = {
-  chainTable,
+  configTable,
   recordsTable,
 };

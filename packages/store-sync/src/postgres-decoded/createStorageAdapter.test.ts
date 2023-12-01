@@ -47,11 +47,12 @@ describe("createStorageAdapter", async () => {
       await storageAdapter.storageAdapter(block);
     }
 
-    expect(await db.select().from(storageAdapter.tables.chainTable)).toMatchInlineSnapshot(`
+    expect(await db.select().from(storageAdapter.tables.configTable)).toMatchInlineSnapshot(`
       [
         {
           "chainId": 31337,
           "lastUpdatedBlockNumber": 12n,
+          "version": "0.0.1",
         },
       ]
     `);

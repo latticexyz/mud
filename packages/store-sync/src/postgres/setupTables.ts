@@ -2,8 +2,10 @@ import { AnyPgColumn, PgTableWithColumns, PgDatabase, getTableConfig } from "dri
 import { getTableColumns, sql } from "drizzle-orm";
 import { ColumnDataType } from "kysely";
 import { isDefined, unique } from "@latticexyz/common/utils";
-import { debug } from "./debug";
+import { debug as parentDebug } from "./debug";
 import { pgDialect } from "./pgDialect";
+
+const debug = parentDebug.extend("setupTables");
 
 export async function setupTables(
   db: PgDatabase<any>,
