@@ -1,5 +1,6 @@
 import { PgColumnBuilderBase, PgTableWithColumns, pgSchema } from "drizzle-orm/pg-core";
 import { Address, getAddress } from "viem";
+import { snakeCase } from "change-case";
 import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 import { asBigInt, asHex } from "../postgres/columnTypes";
 import { transformSchemaName } from "../postgres/transformSchemaName";
@@ -46,14 +47,21 @@ export function buildTable<TKeySchema extends KeySchema, TValueSchema extends Va
   keySchema,
   valueSchema,
 }: BuildTableOptions<TKeySchema, TValueSchema>): BuildTableResult<TKeySchema, TValueSchema> {
-  const schemaName = transformSchemaName(`${getAddress(address)}__${namespace}`);
+  // We snake case the schema name and table name for ergonomics in querying
+  // (no need to double-quote), but this is destructive and may lead to
+  // overlapping namespaces (both `MyNamespace` and `my_namespace` snake case
+  // to the same value).
+  // TODO: consider not snake casing these
+  const schemaName = transformSchemaName(`${address.toLowerCase()}__${snakeCase(namespace)}`);
+  const tableName = snakeCase(name);
+
+  // Column names, however, are safe to snake case because they're scoped to tables, defined once per table, and there's a limited number of fields in total.
 
   const keyColumns = Object.fromEntries(
-    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(name, type).notNull()])
+    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()])
   );
-
   const valueColumns = Object.fromEntries(
-    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(name, type).notNull()])
+    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()])
   );
 
   // TODO: make sure there are no meta columns that overlap with key/value columns
@@ -64,7 +72,7 @@ export function buildTable<TKeySchema extends KeySchema, TValueSchema extends Va
     ...metaColumns,
   };
 
-  const table = pgSchema(schemaName).table(name, columns);
+  const table = pgSchema(schemaName).table(tableName, columns);
 
   return table as PgTableFromSchema<TKeySchema, TValueSchema>;
 }

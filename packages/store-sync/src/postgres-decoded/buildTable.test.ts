@@ -11,10 +11,10 @@ describe("buildTable", () => {
       namespace: "test",
       name: "users",
       keySchema: { x: "uint32", y: "uint32" },
-      valueSchema: { name: "string", addr: "address" },
+      valueSchema: { name: "string", walletAddress: "address" },
     });
 
-    expect(getTableConfig(table).schema).toMatch(/^test_\d+__0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test$/);
+    expect(getTableConfig(table).schema).toMatch(/0xffffffffffffffffffffffffffffffffffffffff__test$/);
     expect(getTableConfig(table).name).toMatchInlineSnapshot('"users"');
     expect(
       mapObject(getTableColumns(table), (column) => ({
@@ -37,17 +37,17 @@ describe("buildTable", () => {
           "notNull": false,
           "sqlName": "numeric",
         },
-        "addr": {
-          "dataType": "custom",
-          "name": "addr",
-          "notNull": true,
-          "sqlName": "bytea",
-        },
         "name": {
           "dataType": "string",
           "name": "name",
           "notNull": true,
           "sqlName": undefined,
+        },
+        "walletAddress": {
+          "dataType": "custom",
+          "name": "wallet_address",
+          "notNull": true,
+          "sqlName": "bytea",
         },
         "x": {
           "dataType": "custom",
@@ -74,7 +74,7 @@ describe("buildTable", () => {
       valueSchema: { addrs: "address[]" },
     });
 
-    expect(getTableConfig(table).schema).toMatch(/^test_\d+__0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test$/);
+    expect(getTableConfig(table).schema).toMatch(/0xffffffffffffffffffffffffffffffffffffffff__test$/);
     expect(getTableConfig(table).name).toMatchInlineSnapshot('"users"');
     expect(
       mapObject(getTableColumns(table), (column) => ({

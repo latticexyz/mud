@@ -933,6 +933,9 @@ importers:
       '@trpc/server':
         specifier: 10.34.0
         version: 10.34.0
+      change-case:
+        specifier: ^5.2.0
+        version: 5.2.0
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
@@ -4559,6 +4562,10 @@ packages:
   /chalk@5.3.0:
     resolution: {integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+    dev: false
+
+  /change-case@5.2.0:
+    resolution: {integrity: sha512-L6VzznESnMIKKdKhVzCG+KPz4+x1FWbjOs1AdhoHStV3qo8aySMRGPUoqC0aL1ThKaQNGhAu6ZfHL/QAyQRuiw==}
     dev: false
 
   /char-regex@1.0.2:
