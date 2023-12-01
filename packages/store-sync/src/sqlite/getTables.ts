@@ -15,8 +15,10 @@ export function getTables(
     .select()
     .from(mudStoreTables)
     .where(ids.length ? inArray(mudStoreTables.id, ids) : undefined)
-    // TODO: add logIndex and use that to sort instead of address/tableId? (https://github.com/latticexyz/mud/issues/1979)
-    .orderBy(asc(mudStoreTables.lastUpdatedBlockNumber), asc(mudStoreTables.address), asc(mudStoreTables.tableId))
+    .orderBy(
+      asc(mudStoreTables.lastUpdatedBlockNumber)
+      // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
+    )
     .all();
 
   return tables;

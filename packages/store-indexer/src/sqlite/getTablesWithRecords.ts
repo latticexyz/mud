@@ -43,7 +43,10 @@ export function getTablesWithRecords(
       .select()
       .from(sqliteTable)
       .where(eq(sqliteTable.__isDeleted, false))
-      .orderBy(asc(sqliteTable.__lastUpdatedBlockNumber))
+      .orderBy(
+        asc(sqliteTable.__lastUpdatedBlockNumber)
+        // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
+      )
       .all();
     const filteredRecords = !filters.length
       ? records

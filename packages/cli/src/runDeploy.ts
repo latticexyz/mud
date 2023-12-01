@@ -7,7 +7,14 @@ import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
-import { forge, getOutDirectory, getRemappings, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
+import {
+  forge,
+  getForgeConfig,
+  getOutDirectory,
+  getRemappings,
+  getRpcUrl,
+  getSrcDirectory,
+} from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { execa } from "execa";
 import { MUDError } from "@latticexyz/common/errors";
@@ -18,6 +25,9 @@ import { WorldDeploy } from "./deploy/common";
 import { tablegen } from "@latticexyz/store/codegen";
 import { worldgen } from "@latticexyz/world/node";
 import { getExistingContracts } from "./utils/getExistingContracts";
+import { debug as parentDebug } from "./debug";
+
+const debug = parentDebug.extend("runDeploy");
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
@@ -63,6 +73,20 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   if (!opts.skipBuild) {
     const outPath = path.join(srcDir, config.codegenDirectory);
     await Promise.all([tablegen(config, outPath, remappings), worldgen(config, getExistingContracts(srcDir), outPath)]);
+
+    // TODO remove when https://github.com/foundry-rs/foundry/issues/6241 is resolved
+    const forgeConfig = await getForgeConfig(profile);
+    if (forgeConfig.cache) {
+      const cacheFilePath = path.join(forgeConfig.cache_path, "solidity-files-cache.json");
+      if (existsSync(cacheFilePath)) {
+        debug("Unsetting cached content hash of IWorld.sol to force it to regenerate");
+        const solidityFilesCache = JSON.parse(readFileSync(cacheFilePath, "utf8"));
+        const worldInterfacePath = path.join(outPath, "world", "IWorld.sol");
+        solidityFilesCache["files"][worldInterfacePath]["contentHash"] = "";
+        writeFileSync(cacheFilePath, JSON.stringify(solidityFilesCache, null, 2));
+      }
+    }
+
     await forge(["build"], { profile });
     await execa("mud", ["abi-ts"], { stdio: "inherit" });
   }
