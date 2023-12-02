@@ -158,6 +158,7 @@ The directions here apply to the `vanilla` client template, if you use anything 
    components.Counter.update$.subscribe((update) => {
      const [nextValue, prevValue] = update.value;
      console.log("Counter updated", update, { nextValue, prevValue });
+     document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
    });
 
    components.History.update$.subscribe((update) => {
