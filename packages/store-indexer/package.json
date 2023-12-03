@@ -47,6 +47,7 @@
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
     "better-sqlite3": "^8.6.0",
+    "compressible": "^2.0.18",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
     "drizzle-orm": "^0.28.5",
@@ -62,6 +63,7 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.4",
+    "@types/compressible": "^2.0.2",
     "@types/cors": "^2.8.13",
     "@types/debug": "^4.1.7",
     "@types/koa": "^2.13.12",
