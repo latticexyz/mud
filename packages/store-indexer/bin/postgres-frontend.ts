@@ -37,6 +37,9 @@ router.get("/readyz", (ctx) => {
   ctx.status = 200;
 });
 
+server.use(router.routes());
+server.use(router.allowedMethods());
+
 server.use(
   createKoaMiddleware({
     prefix: "/trpc",
