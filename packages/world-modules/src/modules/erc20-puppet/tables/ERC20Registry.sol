@@ -73,7 +73,7 @@ library ERC20Registry {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
-    fieldNames[0] = "erc20Address";
+    fieldNames[0] = "tokenAddress";
   }
 
   /**
@@ -91,9 +91,9 @@ library ERC20Registry {
   }
 
   /**
-   * @notice Get erc20Address.
+   * @notice Get tokenAddress.
    */
-  function getErc20Address(ResourceId _tableId, ResourceId namespaceId) internal view returns (address erc20Address) {
+  function getTokenAddress(ResourceId _tableId, ResourceId namespaceId) internal view returns (address tokenAddress) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
@@ -102,9 +102,9 @@ library ERC20Registry {
   }
 
   /**
-   * @notice Get erc20Address.
+   * @notice Get tokenAddress.
    */
-  function _getErc20Address(ResourceId _tableId, ResourceId namespaceId) internal view returns (address erc20Address) {
+  function _getTokenAddress(ResourceId _tableId, ResourceId namespaceId) internal view returns (address tokenAddress) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
@@ -113,9 +113,9 @@ library ERC20Registry {
   }
 
   /**
-   * @notice Get erc20Address.
+   * @notice Get tokenAddress.
    */
-  function get(ResourceId _tableId, ResourceId namespaceId) internal view returns (address erc20Address) {
+  function get(ResourceId _tableId, ResourceId namespaceId) internal view returns (address tokenAddress) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
@@ -124,9 +124,9 @@ library ERC20Registry {
   }
 
   /**
-   * @notice Get erc20Address.
+   * @notice Get tokenAddress.
    */
-  function _get(ResourceId _tableId, ResourceId namespaceId) internal view returns (address erc20Address) {
+  function _get(ResourceId _tableId, ResourceId namespaceId) internal view returns (address tokenAddress) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
@@ -135,43 +135,43 @@ library ERC20Registry {
   }
 
   /**
-   * @notice Set erc20Address.
+   * @notice Set tokenAddress.
    */
-  function setErc20Address(ResourceId _tableId, ResourceId namespaceId, address erc20Address) internal {
+  function setTokenAddress(ResourceId _tableId, ResourceId namespaceId, address tokenAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((erc20Address)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((tokenAddress)), _fieldLayout);
   }
 
   /**
-   * @notice Set erc20Address.
+   * @notice Set tokenAddress.
    */
-  function _setErc20Address(ResourceId _tableId, ResourceId namespaceId, address erc20Address) internal {
+  function _setTokenAddress(ResourceId _tableId, ResourceId namespaceId, address tokenAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((erc20Address)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((tokenAddress)), _fieldLayout);
   }
 
   /**
-   * @notice Set erc20Address.
+   * @notice Set tokenAddress.
    */
-  function set(ResourceId _tableId, ResourceId namespaceId, address erc20Address) internal {
+  function set(ResourceId _tableId, ResourceId namespaceId, address tokenAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((erc20Address)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((tokenAddress)), _fieldLayout);
   }
 
   /**
-   * @notice Set erc20Address.
+   * @notice Set tokenAddress.
    */
-  function _set(ResourceId _tableId, ResourceId namespaceId, address erc20Address) internal {
+  function _set(ResourceId _tableId, ResourceId namespaceId, address tokenAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((erc20Address)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((tokenAddress)), _fieldLayout);
   }
 
   /**
@@ -198,8 +198,8 @@ library ERC20Registry {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(address erc20Address) internal pure returns (bytes memory) {
-    return abi.encodePacked(erc20Address);
+  function encodeStatic(address tokenAddress) internal pure returns (bytes memory) {
+    return abi.encodePacked(tokenAddress);
   }
 
   /**
@@ -208,8 +208,8 @@ library ERC20Registry {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(address erc20Address) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(erc20Address);
+  function encode(address tokenAddress) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+    bytes memory _staticData = encodeStatic(tokenAddress);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
