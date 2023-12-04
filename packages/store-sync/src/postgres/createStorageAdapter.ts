@@ -2,12 +2,14 @@ import { PublicClient, encodePacked, size } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
 import { StoreConfig } from "@latticexyz/store";
-import { debug } from "./debug";
 import { tables } from "./tables";
 import { spliceHex } from "@latticexyz/common";
 import { setupTables } from "./setupTables";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { version } from "./version";
+import { debug as parentDebug } from "./debug";
+
+const debug = parentDebug.extend("createStorageAdapter");
 
 // Currently assumes one DB per chain ID
 
@@ -37,11 +39,12 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
         const keyBytes = encodePacked(["bytes32[]"], [log.args.keyTuple]);
 
         if (log.eventName === "Store_SetRecord") {
-          debug("upserting record", {
-            address: log.address,
-            tableId: log.args.tableId,
-            keyTuple: log.args.keyTuple,
-          });
+          // debug("upserting record", {
+          //   blockNumber,
+          //   address: log.address,
+          //   tableId: log.args.tableId,
+          //   keyTuple: log.args.keyTuple,
+          // });
 
           await tx
             .insert(tables.recordsTable)
@@ -90,11 +93,12 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           const previousStaticData = previousValue?.staticData ?? "0x";
           const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
 
-          debug("upserting record via splice static", {
-            address: log.address,
-            tableId: log.args.tableId,
-            keyTuple: log.args.keyTuple,
-          });
+          // debug("upserting record via splice static", {
+          //   blockNumber,
+          //   address: log.address,
+          //   tableId: log.args.tableId,
+          //   keyTuple: log.args.keyTuple,
+          // });
 
           await tx
             .insert(tables.recordsTable)
@@ -139,11 +143,12 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           const previousDynamicData = previousValue?.dynamicData ?? "0x";
           const newDynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);
 
-          debug("upserting record via splice dynamic", {
-            address: log.address,
-            tableId: log.args.tableId,
-            keyTuple: log.args.keyTuple,
-          });
+          // debug("upserting record via splice dynamic", {
+          //   blockNumber,
+          //   address: log.address,
+          //   tableId: log.args.tableId,
+          //   keyTuple: log.args.keyTuple,
+          // });
 
           await tx
             .insert(tables.recordsTable)
@@ -169,11 +174,12 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
             })
             .execute();
         } else if (log.eventName === "Store_DeleteRecord") {
-          debug("deleting record", {
-            address: log.address,
-            tableId: log.args.tableId,
-            keyTuple: log.args.keyTuple,
-          });
+          // debug("deleting record", {
+          //   blockNumber,
+          //   address: log.address,
+          //   tableId: log.args.tableId,
+          //   keyTuple: log.args.keyTuple,
+          // });
 
           await tx
             .update(tables.recordsTable)

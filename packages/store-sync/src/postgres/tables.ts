@@ -9,7 +9,7 @@ const schemaName = transformSchemaName("mud");
  */
 const configTable = pgSchema(schemaName).table("config", {
   version: varchar("version").notNull(),
-  chainId: asNumber("chain_id", "bigint").notNull().primaryKey(),
+  chainId: asNumber("chain_id", "numeric").notNull().primaryKey(),
   lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric").notNull(),
 });
 

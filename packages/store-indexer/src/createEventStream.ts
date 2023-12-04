@@ -17,7 +17,8 @@ export function createEventStream<events extends Events = Events>(): CreateEvent
       stream.push(`event: ${eventName}\ndata: ${JSON.stringify(data)}\n\n`);
     },
     end() {
-      stream.end(":end\n\n");
+      stream.push("event: close\ndata:\n\n:end\n\n");
+      stream.end();
     },
   };
 

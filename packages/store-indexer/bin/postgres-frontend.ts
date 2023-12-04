@@ -11,7 +11,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { frontendEnvSchema, parseEnv } from "./parseEnv";
 import { queryLogs } from "../src/postgres/queryLogs";
-import { StorageAdapterLog } from "@latticexyz/store-sync";
+import { StorageAdapterLog, storeTables } from "@latticexyz/store-sync";
 import { decodeDynamicField } from "@latticexyz/protocol-parser";
 import { compress } from "../src/compress";
 import { eventStream } from "../src/eventStream";
@@ -49,13 +49,16 @@ router.get("/readyz", (ctx) => {
 router.get(
   "/sse/logs",
   eventStream<{
-    config: { indexerVersion: string; chainId: string; lastUpdatedBlockNumber: string };
+    config: { indexerVersion: string; chainId: string; lastUpdatedBlockNumber: string; totalRows: number };
     log: StorageAdapterLog;
   }>(),
   async (ctx) => {
-    const opts = typeof ctx.query.input === "string" ? input.parse(JSON.parse(ctx.query.input)) : null;
+    const opts = input.parse(typeof ctx.query.input === "string" ? JSON.parse(ctx.query.input) : {});
+    opts.filters = opts.filters.length > 0 ? [...opts.filters, { tableId: storeTables.Tables.tableId }] : [];
 
     let hasEmittedConfig = false;
+
+    // TODO: emit record block number via `id: ...` so we get free retries via `Last-Event-ID` header
 
     await queryLogs(pg, opts ?? {}).cursor(100, async (rows) => {
       if (!hasEmittedConfig && rows.length) {
@@ -63,6 +66,7 @@ router.get(
           indexerVersion: rows[0].indexerVersion,
           chainId: rows[0].chainId,
           lastUpdatedBlockNumber: rows[0].chainBlockNumber,
+          totalRows: rows[0].totalRows,
         });
         hasEmittedConfig = true;
       }
@@ -70,7 +74,7 @@ router.get(
       rows.forEach((row) => {
         ctx.send("log", {
           // TODO: either properly encode bigints in a JSON-safe way or fix these types
-          blockNumber: row.lastUpdatedBlockNumber as unknown as bigint,
+          blockNumber: row.chainBlockNumber as unknown as bigint,
           address: row.address,
           eventName: "Store_SetRecord",
           args: {

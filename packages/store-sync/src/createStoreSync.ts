@@ -12,18 +12,21 @@ import {
   concatMap,
   share,
   firstValueFrom,
-  defer,
   of,
-  catchError,
   shareReplay,
   combineLatest,
   scan,
   identity,
+  empty,
+  bufferCount,
+  first,
+  finalize,
+  defer,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
-import { bigIntMax, chunk, isDefined } from "@latticexyz/common/utils";
-import { getSnapshot } from "./getSnapshot";
+import { bigIntMax, isDefined, waitForIdle } from "@latticexyz/common/utils";
+import { createEventStream } from "./createEventStream";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -58,99 +61,151 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
       : [];
 
-  const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
-    const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+  // const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
+  //   const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
 
-    onProgress?.({
-      step: SyncStep.SNAPSHOT,
-      percentage: 0,
-      latestBlockNumber: 0n,
-      lastBlockNumberProcessed: 0n,
-      message: "Getting snapshot",
-    });
+  //   onProgress?.({
+  //     step: SyncStep.SNAPSHOT,
+  //     percentage: 0,
+  //     latestBlockNumber: 0n,
+  //     lastBlockNumberProcessed: 0n,
+  //     message: "Getting snapshot",
+  //   });
 
-    const snapshot = await getSnapshot({
-      chainId,
-      address,
-      filters,
-      initialState,
-      initialBlockLogs,
-      indexerUrl,
-    });
+  //   const snapshot = await getSnapshot({
+  //     chainId,
+  //     address,
+  //     filters,
+  //     initialState,
+  //     initialBlockLogs,
+  //     indexerUrl,
+  //   });
 
-    onProgress?.({
-      step: SyncStep.SNAPSHOT,
-      percentage: 100,
-      latestBlockNumber: 0n,
-      lastBlockNumberProcessed: 0n,
-      message: "Got snapshot",
-    });
+  //   onProgress?.({
+  //     step: SyncStep.SNAPSHOT,
+  //     percentage: 100,
+  //     latestBlockNumber: 0n,
+  //     lastBlockNumberProcessed: 0n,
+  //     message: "Got snapshot",
+  //   });
 
-    return snapshot;
-  }).pipe(
-    catchError((error) => {
-      debug("error getting snapshot", error);
+  //   return snapshot;
+  // }).pipe(
+  //   catchError((error) => {
+  //     debug("error getting snapshot", error);
 
-      onProgress?.({
-        step: SyncStep.SNAPSHOT,
-        percentage: 100,
-        latestBlockNumber: 0n,
-        lastBlockNumberProcessed: initialStartBlock,
-        message: "Failed to get snapshot",
-      });
+  //     onProgress?.({
+  //       step: SyncStep.SNAPSHOT,
+  //       percentage: 100,
+  //       latestBlockNumber: 0n,
+  //       lastBlockNumberProcessed: initialStartBlock,
+  //       message: "Failed to get snapshot",
+  //     });
 
-      return of(undefined);
-    }),
-    shareReplay(1)
-  );
+  //     return of(undefined);
+  //   }),
+  //   shareReplay(1)
+  // );
 
-  const storedInitialBlockLogs$ = initialBlockLogs$.pipe(
-    filter(isDefined),
-    concatMap(async ({ blockNumber, logs }) => {
-      debug("hydrating", logs.length, "logs to block", blockNumber);
+  // const storedInitialBlockLogs$ = initialBlockLogs$.pipe(
+  //   filter(isDefined),
+  //   concatMap(async ({ blockNumber, logs }) => {
+  //     debug("hydrating", logs.length, "logs to block", blockNumber);
 
-      onProgress?.({
-        step: SyncStep.SNAPSHOT,
-        percentage: 0,
-        latestBlockNumber: 0n,
-        lastBlockNumberProcessed: blockNumber,
-        message: "Hydrating from snapshot",
-      });
+  //     onProgress?.({
+  //       step: SyncStep.SNAPSHOT,
+  //       percentage: 0,
+  //       latestBlockNumber: 0n,
+  //       lastBlockNumberProcessed: blockNumber,
+  //       message: "Hydrating from snapshot",
+  //     });
 
-      // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
-      // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
-      //
-      // Split into 50 equal chunks (for better `onProgress` updates) but only if we have 100+ items per chunk
-      const chunkSize = Math.max(100, Math.floor(logs.length / 50));
-      const chunks = Array.from(chunk(logs, chunkSize));
-      for (const [i, chunk] of chunks.entries()) {
-        await storageAdapter({ blockNumber, logs: chunk });
+  //     // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
+  //     // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
+  //     //
+  //     // Split into 50 equal chunks (for better `onProgress` updates) but only if we have 100+ items per chunk
+  //     const chunkSize = Math.max(100, Math.floor(logs.length / 50));
+  //     const chunks = Array.from(chunk(logs, chunkSize));
+  //     for (const [i, chunk] of chunks.entries()) {
+  //       await storageAdapter({ blockNumber, logs: chunk });
+  //       onProgress?.({
+  //         step: SyncStep.SNAPSHOT,
+  //         percentage: ((i + chunk.length) / chunks.length) * 100,
+  //         latestBlockNumber: 0n,
+  //         lastBlockNumberProcessed: blockNumber,
+  //         message: "Hydrating from snapshot",
+  //       });
+  //     }
+
+  //     onProgress?.({
+  //       step: SyncStep.SNAPSHOT,
+  //       percentage: 100,
+  //       latestBlockNumber: 0n,
+  //       lastBlockNumberProcessed: blockNumber,
+  //       message: "Hydrated from snapshot",
+  //     });
+
+  //     return { blockNumber, logs };
+  //   }),
+  //   shareReplay(1)
+  // );
+
+  const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+  const eventStream = indexerUrl ? await createEventStream({ indexerUrl, chainId, address, filters }) : null;
+
+  let count = 0;
+  const storedInitialLogs$ = eventStream
+    ? defer(() => {
+        debug("hydrating", eventStream.totalLogs, "logs to block", eventStream.blockNumber);
         onProgress?.({
           step: SyncStep.SNAPSHOT,
-          percentage: ((i + chunk.length) / chunks.length) * 100,
+          percentage: 0,
           latestBlockNumber: 0n,
-          lastBlockNumberProcessed: blockNumber,
+          lastBlockNumberProcessed: 0n,
           message: "Hydrating from snapshot",
         });
-      }
+        return eventStream.log$;
+      }).pipe(
+        bufferCount(100),
+        concatMap(async (logs) => {
+          count += logs.length;
 
-      onProgress?.({
-        step: SyncStep.SNAPSHOT,
-        percentage: 100,
-        latestBlockNumber: 0n,
-        lastBlockNumberProcessed: blockNumber,
-        message: "Hydrated from snapshot",
-      });
+          const block = { blockNumber: eventStream.blockNumber, logs };
+          await storageAdapter(block);
+          await waitForIdle();
 
-      return { blockNumber, logs };
-    }),
-    shareReplay(1)
-  );
+          onProgress?.({
+            step: SyncStep.SNAPSHOT,
+            percentage: (count / eventStream.totalLogs) * 100,
+            latestBlockNumber: 0n,
+            lastBlockNumberProcessed: 0n,
+            message: "Hydrating from snapshot",
+          });
 
-  const startBlock$ = initialBlockLogs$.pipe(
+          return block;
+        }),
+        finalize(() => {
+          debug("hydrated", eventStream.totalLogs, "logs to block", eventStream.blockNumber);
+          onProgress?.({
+            step: SyncStep.SNAPSHOT,
+            percentage: 100,
+            latestBlockNumber: 0n,
+            lastBlockNumberProcessed: eventStream.blockNumber,
+            message: "Hydrating from snapshot",
+          });
+        }),
+        shareReplay(1)
+      )
+    : empty();
+
+  const startBlock$ = concat(storedInitialLogs$, of(undefined)).pipe(
+    first(),
     map((block) => bigIntMax(block?.blockNumber ?? 0n, initialStartBlock)),
     // TODO: if start block is still 0, find via deploy event
-    tap((startBlock) => debug("starting sync from block", startBlock))
+    tap((startBlock) => {
+      console.log("starting sync from block", startBlock);
+      debug("starting sync from block", startBlock);
+    })
   );
 
   const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" }).pipe(shareReplay(1));
@@ -164,6 +219,8 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
   let startBlock: bigint | null = null;
   let endBlock: bigint | null = null;
+  let lastBlockNumberProcessed: bigint | null = null;
+
   const blockLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     tap((range) => {
@@ -193,9 +250,8 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     share()
   );
 
-  let lastBlockNumberProcessed: bigint | null = null;
   const storedBlockLogs$ = concat(
-    storedInitialBlockLogs$,
+    storedInitialLogs$,
     blockLogs$.pipe(
       concatMap(async (block) => {
         await storageAdapter(block);

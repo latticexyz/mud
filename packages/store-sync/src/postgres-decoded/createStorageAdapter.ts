@@ -100,6 +100,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           });
 
           debug("upserting record", {
+            blockNumber,
             namespace: table.namespace,
             name: table.name,
             key,
@@ -123,6 +124,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
             .execute();
         } else if (log.eventName === "Store_DeleteRecord") {
           debug("deleting record", {
+            blockNumber,
             namespace: table.namespace,
             name: table.name,
             key,

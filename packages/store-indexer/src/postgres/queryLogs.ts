@@ -16,6 +16,7 @@ type Record = {
   indexerVersion: string;
   chainId: string;
   chainBlockNumber: string;
+  totalRows: number;
   address: Hex;
   tableId: Hex;
   keyBytes: Hex;
