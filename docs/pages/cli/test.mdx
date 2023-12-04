@@ -1,3 +1,43 @@
 # mud test
 
-**Coming soon**
+This command runs the tests in a MUD project. This requires several steps:
+
+1. Start an [`anvil`](https://book.getfoundry.sh/reference/anvil/) instance.
+   {/* This could be either an empty blockchain, or one that can be forked for a [fork test](https://book.getfoundry.sh/forge/fork-testing). */}
+1. Deploy the `World` and all related `System`s using [`mud deploy`](./deploy).
+1. Run tests using [`forge test`](https://book.getfoundry.sh/forge/tests).
+
+## Command line options
+
+| Option                  | Meaning                                        | Type                            | Default value                                              |
+| ----------------------- | ---------------------------------------------- | ------------------------------- | ---------------------------------------------------------- | ---- |
+| `--version`             | Show version number                            | boolean                         | `false`                                                    |
+| `--configPath`          | Path to the config file                        | string                          | `mud.config.ts`                                            |
+| `--printConfig`         | Print the resolved config                      | boolean                         | `false`                                                    |
+| `--saveDeployment`      | Save the deployment info to a file             | boolean                         | `true`                                                     |
+| `--profile`             | The foundry profile to use                     | string                          | `local`                                                    |
+| `--srcDir`              | Source directory                               | string                          | Foundry `src` directory                                    |
+| `--skipBuild`           | Skip rebuilding the contracts before deploying | boolean                         | `false`                                                    |
+| `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy       | boolean                         | `false` (run the script only when deploying a new `World`) |
+| `--port`                | Port for the testing `anvil` instance          | number                          | 4242                                                       |
+| `--help`                | Show help                                      | boolean                         | `false`                                                    |
+| {/\*                    | `--forgeOptions`                               | Options to pass to `forge test` | string                                                     | \*/} |
+
+(1) The hostname `localhost` may not work. If that is the case, use `127.0.0.1` instead.
+
+{/\*
+
+### Additional command-line options only applicable to fork tests
+
+| Option              | Meaning                                                                         | Type   | Default value               |
+| ------------------- | ------------------------------------------------------------------------------- | ------ | --------------------------- |
+| `--rpc`<sup>1</sup> | The RPC URL to use                                                              | string | RPC url from `foundry.toml` |
+| `--worldAddress`    | Address of an existing `World` contract, only meaningful when using a fork test | string | Empty, deploy new `World`   |
+
+\*/}
+
+## Examples
+
+```sh copy
+pnpm mud test
+```
