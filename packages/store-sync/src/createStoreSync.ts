@@ -1,7 +1,7 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
 import { Hex, TransactionReceiptNotFoundError } from "viem";
 import { StorageAdapter, StorageAdapterBlock, SyncFilter, SyncOptions, SyncResult, internalTableIds } from "./common";
-import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
+import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber, fetchLogs } from "@latticexyz/block-logs-stream";
 import {
   filter,
   map,
@@ -25,8 +25,9 @@ import {
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
-import { bigIntMax, isDefined, waitForIdle } from "@latticexyz/common/utils";
+import { bigIntMax, isDefined, wait, waitForIdle } from "@latticexyz/common/utils";
 import { createEventStream } from "./createEventStream";
+import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -221,42 +222,43 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
 
-  const blockLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
+  const storedBlock$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     tap((range) => {
       startBlock = range.startBlock;
       endBlock = range.endBlock;
     }),
-    blockRangeToLogs({
-      publicClient,
-      address,
-      events: storeEventsAbi,
-      // TODO: pass filters in here so we can filter at RPC level
-      maxBlockRange,
+    concatMap((range) => {
+      const storedBlocks = fetchAndStoreLogs({
+        publicClient,
+        address,
+        events: storeEventsAbi,
+        maxBlockRange: 10n,
+        fromBlock: lastBlockNumberProcessed
+          ? bigIntMax(range.startBlock, lastBlockNumberProcessed + 1n)
+          : range.startBlock,
+        toBlock: range.endBlock,
+        storageAdapter,
+        // TODO: translate filters to log topics to filter at rpc level
+        logFilter: filters.length
+          ? (log): boolean =>
+              filters.some(
+                (filter) =>
+                  filter.tableId === log.args.tableId &&
+                  (filter.key0 == null || filter.key0 === log.args.keyTuple[0]) &&
+                  (filter.key1 == null || filter.key1 === log.args.keyTuple[1])
+              )
+          : undefined,
+      });
+
+      return from(storedBlocks);
     }),
-    map(({ toBlock, logs }) => {
-      if (!filters.length) return { toBlock, logs };
-      const filteredLogs = logs.filter((log) =>
-        filters.some(
-          (filter) =>
-            filter.tableId === log.args.tableId &&
-            (filter.key0 == null || filter.key0 === log.args.keyTuple[0]) &&
-            (filter.key1 == null || filter.key1 === log.args.keyTuple[1])
-        )
-      );
-      return { toBlock, logs: filteredLogs };
-    }),
-    mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock))),
     share()
   );
 
   const storedBlockLogs$ = concat(
     storedInitialLogs$,
-    blockLogs$.pipe(
-      concatMap(async (block) => {
-        await storageAdapter(block);
-        return block;
-      }),
+    storedBlock$.pipe(
       tap(({ blockNumber, logs }) => {
         debug("stored", logs.length, "logs for block", blockNumber);
         lastBlockNumberProcessed = blockNumber;
@@ -330,7 +332,6 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   return {
     latestBlock$,
     latestBlockNumber$,
-    blockLogs$,
     storedBlockLogs$,
     waitForTransaction,
   };

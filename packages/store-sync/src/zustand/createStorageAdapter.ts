@@ -35,12 +35,12 @@ export function createStorageAdapter<tables extends Tables>({
       const id = getId(log.args);
 
       if (log.eventName === "Store_SetRecord") {
-        debug("setting record", {
-          namespace: table.namespace,
-          name: table.name,
-          id,
-          log,
-        });
+        // debug("setting record", {
+        //   namespace: table.namespace,
+        //   name: table.name,
+        //   id,
+        //   log,
+        // });
         updatedIds.push(id);
         store.setState({
           rawRecords: {
@@ -56,12 +56,12 @@ export function createStorageAdapter<tables extends Tables>({
           },
         });
       } else if (log.eventName === "Store_SpliceStaticData") {
-        debug("splicing static data", {
-          namespace: table.namespace,
-          name: table.name,
-          id,
-          log,
-        });
+        // debug("splicing static data", {
+        //   namespace: table.namespace,
+        //   name: table.name,
+        //   id,
+        //   log,
+        // });
         updatedIds.push(id);
         const previousRecord = (store.getState().rawRecords[id] as RawRecord | undefined) ?? {
           id,
@@ -82,12 +82,12 @@ export function createStorageAdapter<tables extends Tables>({
           },
         });
       } else if (log.eventName === "Store_SpliceDynamicData") {
-        debug("splicing dynamic data", {
-          namespace: table.namespace,
-          name: table.name,
-          id,
-          log,
-        });
+        // debug("splicing dynamic data", {
+        //   namespace: table.namespace,
+        //   name: table.name,
+        //   id,
+        //   log,
+        // });
         updatedIds.push(id);
         const previousRecord = (store.getState().rawRecords[id] as RawRecord | undefined) ?? {
           id,
@@ -110,12 +110,12 @@ export function createStorageAdapter<tables extends Tables>({
           },
         });
       } else if (log.eventName === "Store_DeleteRecord") {
-        debug("deleting record", {
-          namespace: table.namespace,
-          name: table.name,
-          id,
-          log,
-        });
+        // debug("deleting record", {
+        //   namespace: table.namespace,
+        //   name: table.name,
+        //   id,
+        //   log,
+        // });
         deletedIds.push(id);
         const { [id]: deletedRecord, ...rawRecords } = store.getState().rawRecords;
         store.setState({ rawRecords });
