@@ -2,10 +2,8 @@
 import "dotenv/config";
 import { z } from "zod";
 import Koa from "koa";
-import compress from "koa-compress";
 import cors from "@koa/cors";
 import Router from "@koa/router";
-import compressible from "compressible";
 import { createKoaMiddleware } from "trpc-koa-adapter";
 import { createAppRouter, input } from "@latticexyz/store-sync/trpc-indexer";
 import { createQueryAdapter } from "../src/postgres/createQueryAdapter";
@@ -13,9 +11,10 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { frontendEnvSchema, parseEnv } from "./parseEnv";
 import { queryLogs } from "../src/postgres/queryLogs";
-import { PassThrough } from "node:stream";
 import { StorageAdapterLog } from "@latticexyz/store-sync";
 import { decodeDynamicField } from "@latticexyz/protocol-parser";
+import { compress } from "../src/compress";
+import { eventStream } from "../src/eventStream";
 
 const env = parseEnv(
   z.intersection(
@@ -34,16 +33,7 @@ const pg = postgres(env.DATABASE_URL, {
 const database = drizzle(pg);
 
 const server = new Koa();
-server.use(
-  compress({
-    // TODO: figure out if we can force compression to flush during streaming
-    // TODO: this seems to be bypassed by trpc
-    filter: (mimeType) => {
-      if (/^application\/json$/.test(mimeType)) return true;
-      return compressible(mimeType) ?? false;
-    },
-  })
-);
+server.use(compress());
 server.use(cors());
 
 const router = new Router();
@@ -56,62 +46,47 @@ router.get("/readyz", (ctx) => {
   ctx.status = 200;
 });
 
-router.get("/sse/logs", async (ctx) => {
-  const opts = typeof ctx.query.input === "string" ? input.parse(JSON.parse(ctx.query.input)) : null;
+router.get(
+  "/sse/logs",
+  eventStream<{
+    config: { indexerVersion: string; chainId: string; lastUpdatedBlockNumber: string };
+    log: StorageAdapterLog;
+  }>(),
+  async (ctx) => {
+    const opts = typeof ctx.query.input === "string" ? input.parse(JSON.parse(ctx.query.input)) : null;
 
-  ctx.request.socket.setTimeout(0);
-  ctx.req.socket.setNoDelay(true);
-  ctx.req.socket.setKeepAlive(true);
+    let hasEmittedConfig = false;
 
-  ctx.set({
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
-    Connection: "keep-alive",
-  });
+    await queryLogs(pg, opts ?? {}).cursor(100, async (rows) => {
+      if (!hasEmittedConfig && rows.length) {
+        ctx.send("config", {
+          indexerVersion: rows[0].indexerVersion,
+          chainId: rows[0].chainId,
+          lastUpdatedBlockNumber: rows[0].chainBlockNumber,
+        });
+        hasEmittedConfig = true;
+      }
 
-  const stream = new PassThrough();
+      rows.forEach((row) => {
+        ctx.send("log", {
+          // TODO: either properly encode bigints in a JSON-safe way or fix these types
+          blockNumber: row.lastUpdatedBlockNumber as unknown as bigint,
+          address: row.address,
+          eventName: "Store_SetRecord",
+          args: {
+            tableId: row.tableId,
+            keyTuple: decodeDynamicField("bytes32[]", row.keyBytes),
+            staticData: row.staticData ?? "0x",
+            encodedLengths: row.encodedLengths ?? "0x",
+            dynamicData: row.dynamicData ?? "0x",
+          },
+        });
+      });
+    });
 
-  ctx.status = 200;
-  ctx.body = stream;
-
-  let hasEmittedConfig = false;
-
-  await queryLogs(pg, opts ?? {}).forEach((row) => {
-    if (!hasEmittedConfig) {
-      stream.write("event: config\n");
-      stream.write(
-        `data: ${JSON.stringify({
-          indexerVersion: row.indexerVersion,
-          chainId: row.chainId,
-          lastUpdatedBlockNumber: row.chainBlockNumber,
-        })}\n`
-      );
-      stream.write("\n");
-      hasEmittedConfig = true;
-    }
-
-    stream.write("event: log\n");
-    stream.write(
-      `data: ${JSON.stringify({
-        address: row.address,
-        eventName: "Store_SetRecord",
-        args: {
-          tableId: row.tableId,
-          keyTuple: decodeDynamicField("bytes32[]", row.keyBytes),
-          staticData: row.staticData ?? "0x",
-          encodedLengths: row.encodedLengths ?? "0x",
-          dynamicData: row.dynamicData ?? "0x",
-        },
-      } as const satisfies StorageAdapterLog)}\n`
-    );
-    stream.write("\n");
-  });
-
-  // TODO: subscribe + continue writing
-
-  stream.write(":end\n\n");
-  stream.end();
-});
+    // TODO: subscribe + continue writing
+  }
+);
 
 server.use(router.routes());
 server.use(router.allowedMethods());
