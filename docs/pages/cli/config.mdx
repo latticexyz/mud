@@ -8,8 +8,8 @@ The config is used to define:
 - The tables in your project in the `tables` object of your configuration.
   See [the `Store` documentation](/store/tables) for more information on table and their format.
 - The [namespace](/world/namespaces-access-control) the [`System`s](/world/systems) and tables will be deployed in.
-- The `System`s in your project. 
-  By default, the deployer will find all Solidity matching `*System*.sol` (so any file containing `System` with a `.sol` extension, in any folder) and deploy them as `System`. 
+- The `System`s in your project.
+  By default, the deployer will find all Solidity matching `*System*.sol` (so any file containing `System` with a `.sol` extension, in any folder) and deploy them as `System`.
   If you want greater control over your systems (to change their public access or their name), you can use the `systems` object in the config
 - The [modules](/world/modules) that will be installed on the `World`.
 
@@ -51,14 +51,13 @@ export default mudConfig({
 
 All of these global configuration keys are optional.
 
-- **`namespace`**: a `string`: which namespace to deploy the resources defined in the config into. 
+- **`namespace`**: a `string`: which namespace to deploy the resources defined in the config into.
   The default value is the ROOT namespace.
 
 - **`excludeSystems`**: an array of `string`: which systems to not deploy, even if their name includes “system”.
 
 - **`worldContractName`**: a `string`: the name of a contract in your project implementing the `IWorld` interface.
   Useful if you want to modify the default World implementation, but potentially dangerous.
-  
 - **`deploysDirectory`** a `string`: which folder to put the deployment artifacts into after deployment.
 
 - **`modules`** an array of module definitions: each module definition has a `name`, `root` (optional), and `args` key.
