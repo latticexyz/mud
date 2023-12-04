@@ -35,8 +35,9 @@ export async function createEventStream({
   return new Promise<CreateEventStreamResult>((resolve) => {
     // TODO: we may need to replace this with our own stream/parser to apply backpressure to avoid memory issues
     //       but last time I tried this (using eventsource-parser package), it was significantly slower
+    //       maybe try this one? https://github.com/lukas-reining/eventsource/blob/main/src/parse.ts
 
-    console.log("attempting to connect to indexer SSE", url);
+    console.log("attempting to connect to indexer SSE", url.toString());
     // TODO: make EventSource strongly typed
     const eventSource = new EventSource(url);
 
