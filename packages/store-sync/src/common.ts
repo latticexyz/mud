@@ -109,7 +109,6 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
 export type SyncResult = {
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
-  blockLogs$: Observable<BlockLogs>;
   storedBlockLogs$: Observable<StorageAdapterBlock>;
   waitForTransaction: (tx: Hex) => Promise<void>;
 };
