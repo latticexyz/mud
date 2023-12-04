@@ -96,7 +96,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           const value = decodeValueArgs(table.valueSchema, {
             staticData: record.staticData ?? "0x",
             encodedLengths: record.encodedLengths ?? "0x",
-            dynamicData: record.encodedLengths ?? "0x",
+            dynamicData: record.dynamicData ?? "0x",
           });
 
           debug("upserting record", {

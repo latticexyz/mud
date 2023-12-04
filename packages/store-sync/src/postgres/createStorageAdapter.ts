@@ -7,6 +7,7 @@ import { tables } from "./tables";
 import { spliceHex } from "@latticexyz/common";
 import { setupTables } from "./setupTables";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
+import { version } from "./version";
 
 // Currently assumes one DB per chain ID
 
@@ -195,13 +196,14 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
       }
 
       await tx
-        .insert(tables.chainTable)
+        .insert(tables.configTable)
         .values({
+          version,
           chainId,
           lastUpdatedBlockNumber: blockNumber,
         })
         .onConflictDoUpdate({
-          target: [tables.chainTable.chainId],
+          target: [tables.configTable.chainId],
           set: {
             lastUpdatedBlockNumber: blockNumber,
           },

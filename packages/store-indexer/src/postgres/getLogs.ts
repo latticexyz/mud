@@ -2,7 +2,7 @@ import { PgDatabase } from "drizzle-orm/pg-core";
 import { Hex } from "viem";
 import { StorageAdapterLog, SyncFilter } from "@latticexyz/store-sync";
 import { tables } from "@latticexyz/store-sync/postgres";
-import { and, eq, or } from "drizzle-orm";
+import { and, asc, eq, or } from "drizzle-orm";
 import { decodeDynamicField } from "@latticexyz/protocol-parser";
 import { bigIntMax } from "@latticexyz/common/utils";
 
@@ -41,8 +41,8 @@ export async function getLogs(
   // TODO: move the block number query into the records query for atomicity so we don't have to merge them here
   const chainState = await database
     .select()
-    .from(tables.chainTable)
-    .where(eq(tables.chainTable.chainId, chainId))
+    .from(tables.configTable)
+    .where(eq(tables.configTable.chainId, chainId))
     .limit(1)
     .execute()
     // Get the first record in a way that returns a possible `undefined`
@@ -53,7 +53,11 @@ export async function getLogs(
   const records = await database
     .select()
     .from(tables.recordsTable)
-    .where(or(...conditions));
+    .where(or(...conditions))
+    .orderBy(
+      asc(tables.recordsTable.lastUpdatedBlockNumber)
+      // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
+    );
 
   const blockNumber = records.reduce(
     (max, record) => bigIntMax(max, record.lastUpdatedBlockNumber ?? 0n),

@@ -23,8 +23,10 @@ const database = drizzle(postgres(env.DATABASE_URL));
 // @see https://fastify.dev/docs/latest/
 const server = fastify({
   maxParamLength: 5000,
+  logger: true,
 });
 
+await server.register(import("@fastify/compress"));
 await server.register(import("@fastify/cors"));
 
 // k8s healthchecks
