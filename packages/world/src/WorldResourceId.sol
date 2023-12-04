@@ -10,9 +10,6 @@ import { RESOURCE_NAMESPACE, MASK_RESOURCE_NAMESPACE } from "./worldResourceType
 uint256 constant NAMESPACE_BITS = 14 * 8;
 uint256 constant NAME_BITS = 16 * 8;
 
-bytes14 constant ROOT_NAMESPACE_STRING = bytes14("ROOT_NAMESPACE");
-bytes16 constant ROOT_NAME_STRING = bytes16("ROOT_NAME");
-
 bytes32 constant NAMESPACE_MASK = bytes32(~bytes14("")) >> (TYPE_BITS);
 
 /**
@@ -102,9 +99,9 @@ library WorldResourceIdInstance {
         abi.encodePacked(
           resourceType,
           ":",
-          resourceNamespace == ROOT_NAMESPACE ? ROOT_NAMESPACE_STRING : resourceNamespace,
+          resourceNamespace == bytes14("") ? bytes14("root") : resourceNamespace,
           ":",
-          resourceName == ROOT_NAME ? ROOT_NAME_STRING : resourceName
+          resourceName == bytes16("") ? bytes16("root") : resourceName
         )
       );
   }
