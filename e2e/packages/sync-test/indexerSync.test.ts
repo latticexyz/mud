@@ -58,7 +58,7 @@ describe("Sync from indexer", async () => {
     await waitForInitialSync(page);
 
     expect(asyncErrorHandler.getErrors()).toHaveLength(1);
-    expect(asyncErrorHandler.getErrors()[0]).toContain("error fetching initial state from indexer");
+    expect(asyncErrorHandler.getErrors()[0]).toContain("error getting snapshot");
   });
 
   describe.each([["sqlite"], ["postgres"]] as const)("%s indexer", (indexerType) => {
@@ -128,18 +128,21 @@ describe("Sync from indexer", async () => {
       await waitForInitialSync(page);
 
       const entities = await callPageFunction(page, "getKeys", ["Position"]);
-      expect(entities).toEqual([
-        {
-          x: 1,
-          y: 1,
-          zone: "0x6d61703100000000000000000000000000000000000000000000000000000000",
-        },
-        {
-          x: 2,
-          y: -2,
-          zone: "0x6d61703100000000000000000000000000000000000000000000000000000000",
-        },
-      ]);
+      expect(entities).toEqual(
+        // TODO: figure out how to make this consistently return the same order? may require https://github.com/latticexyz/mud/issues/1979
+        expect.arrayContaining([
+          {
+            x: 1,
+            y: 1,
+            zone: "0x6d61703100000000000000000000000000000000000000000000000000000000",
+          },
+          {
+            x: 2,
+            y: -2,
+            zone: "0x6d61703100000000000000000000000000000000000000000000000000000000",
+          },
+        ])
+      );
 
       // Should not have thrown errors
       asyncErrorHandler.expectNoAsyncErrors();

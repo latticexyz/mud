@@ -53,7 +53,7 @@ MUD is MIT-licensed, open source and free to use.
 ## Quickstart
 
 ```
-pnpm create mud@canary my-project
+pnpm create mud@next my-project
 ```
 
 For more information on how to get started, have a look at the [MUD documentation](https://mud.dev/quick-start).
