@@ -233,7 +233,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         publicClient,
         address,
         events: storeEventsAbi,
-        maxBlockRange: 10n,
+        maxBlockRange,
         fromBlock: lastBlockNumberProcessed
           ? bigIntMax(range.startBlock, lastBlockNumberProcessed + 1n)
           : range.startBlock,
