@@ -1,18 +1,17 @@
 import { AnyPgColumn, PgTableWithColumns, PgDatabase, getTableConfig } from "drizzle-orm/pg-core";
 import { getTableColumns, sql } from "drizzle-orm";
 import { ColumnDataType } from "kysely";
-import { isDefined } from "@latticexyz/common/utils";
-import { debug } from "./debug";
+import { isDefined, unique } from "@latticexyz/common/utils";
+import { debug as parentDebug } from "./debug";
 import { pgDialect } from "./pgDialect";
+
+const debug = parentDebug.extend("setupTables");
 
 export async function setupTables(
   db: PgDatabase<any>,
   tables: PgTableWithColumns<any>[]
 ): Promise<() => Promise<void>> {
-  // TODO: add table to internal tables here
-  // TODO: look up table schema and check if it matches expected schema, drop if not
-
-  const schemaNames = [...new Set(tables.map((table) => getTableConfig(table).schema).filter(isDefined))];
+  const schemaNames = unique(tables.map((table) => getTableConfig(table).schema).filter(isDefined));
 
   await db.transaction(async (tx) => {
     for (const schemaName of schemaNames) {
@@ -39,13 +38,33 @@ export async function setupTables(
         });
       }
 
-      const primaryKeys = columns.filter((column) => column.primary).map((column) => column.name);
-      if (primaryKeys.length) {
-        query = query.addPrimaryKeyConstraint(`${tableConfig.name}__pk`, primaryKeys as any);
+      const primaryKeyColumns = columns.filter((column) => column.primary).map((column) => column.name);
+      if (primaryKeyColumns.length) {
+        query = query.addPrimaryKeyConstraint(
+          `${tableConfig.name}_${primaryKeyColumns.join("_")}_pk`,
+          primaryKeyColumns as any
+        );
+      }
+
+      for (const pk of tableConfig.primaryKeys) {
+        query = query.addPrimaryKeyConstraint(pk.getName(), pk.columns.map((col) => col.name) as any);
       }
 
       debug(`creating table ${tableConfig.name} in namespace ${tableConfig.schema}`);
       await tx.execute(sql.raw(query.compile().sql));
+
+      for (const index of tableConfig.indexes) {
+        const columnNames = index.config.columns.map((col) => col.name);
+        let query = scopedDb.schema
+          .createIndex(index.config.name ?? `${tableConfig.name}_${columnNames.join("_")}_index`)
+          .on(tableConfig.name)
+          .columns(columnNames)
+          .ifNotExists();
+        if (index.config.unique) {
+          query = query.unique();
+        }
+        await tx.execute(sql.raw(query.compile().sql));
+      }
     }
   });
 

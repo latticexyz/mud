@@ -1,18 +1,14 @@
 import { PgColumnBuilderBase, PgTableWithColumns, pgSchema } from "drizzle-orm/pg-core";
-import { buildColumn } from "./buildColumn";
 import { Address, getAddress } from "viem";
-import { transformSchemaName } from "./transformSchemaName";
+import { snakeCase } from "change-case";
 import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
+import { asBigInt, asHex } from "../postgres/columnTypes";
+import { transformSchemaName } from "../postgres/transformSchemaName";
+import { buildColumn } from "./buildColumn";
 
-// TODO: convert camel case to snake case for DB storage?
 export const metaColumns = {
-  __key: buildColumn("__key", "bytes").primaryKey(),
-  __staticData: buildColumn("__staticData", "bytes"),
-  __encodedLengths: buildColumn("__encodedLengths", "bytes"),
-  __dynamicData: buildColumn("__dynamicData", "bytes"),
-  __lastUpdatedBlockNumber: buildColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
-  // TODO: last updated block hash?
-  __isDeleted: buildColumn("__isDeleted", "bool").notNull(),
+  __keyBytes: asHex("__key_bytes").primaryKey(),
+  __lastUpdatedBlockNumber: asBigInt("__last_updated_block_number", "numeric"),
 } as const satisfies Record<string, PgColumnBuilderBase>;
 
 type PgTableFromSchema<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = PgTableWithColumns<{
@@ -51,18 +47,22 @@ export function buildTable<TKeySchema extends KeySchema, TValueSchema extends Va
   keySchema,
   valueSchema,
 }: BuildTableOptions<TKeySchema, TValueSchema>): BuildTableResult<TKeySchema, TValueSchema> {
-  const schemaName = transformSchemaName(`${getAddress(address)}__${namespace}`);
+  // We intentionally do not snake case the namespace due to potential conflicts
+  // with namespaces of a similar name (e.g. `MyNamespace` vs. `my_namespace`).
+  // TODO: consider snake case when we resolve https://github.com/latticexyz/mud/issues/1991
+  const schemaName = transformSchemaName(`${address.toLowerCase()}__${namespace}`);
+  const tableName = snakeCase(name);
+
+  // Column names, however, are safe to snake case because they're scoped to tables, defined once per table, and there's a limited number of fields in total.
 
   const keyColumns = Object.fromEntries(
-    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(name, type).notNull()])
+    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()])
   );
-
   const valueColumns = Object.fromEntries(
-    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(name, type).notNull()])
+    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()])
   );
 
   // TODO: make sure there are no meta columns that overlap with key/value columns
-  // TODO: index meta columns?
 
   const columns = {
     ...keyColumns,
@@ -70,7 +70,7 @@ export function buildTable<TKeySchema extends KeySchema, TValueSchema extends Va
     ...metaColumns,
   };
 
-  const table = pgSchema(schemaName).table(name, columns);
+  const table = pgSchema(schemaName).table(tableName, columns);
 
   return table as PgTableFromSchema<TKeySchema, TValueSchema>;
 }

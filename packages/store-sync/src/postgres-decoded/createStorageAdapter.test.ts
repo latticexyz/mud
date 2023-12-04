@@ -1,17 +1,17 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { DefaultLogger, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { Hex, RpcLog, createPublicClient, decodeEventLog, formatLog, http } from "viem";
 import { foundry } from "viem/chains";
-import * as transformSchemaNameExports from "./transformSchemaName";
 import { getTables } from "./getTables";
-import { PostgresStorageAdapter, postgresStorage } from "./postgresStorage";
+import { PostgresStorageAdapter, createStorageAdapter } from "./createStorageAdapter";
 import { buildTable } from "./buildTable";
 import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import { storeEventsAbi } from "@latticexyz/store";
 import { StoreEventsLog } from "../common";
 import worldRpcLogs from "../../../../test-data/world-logs.json";
+import { resourceToHex } from "@latticexyz/common";
 
 const blocks = groupLogsByBlockNumber(
   worldRpcLogs.map((log) => {
@@ -25,11 +25,7 @@ const blocks = groupLogsByBlockNumber(
   })
 );
 
-vi.spyOn(transformSchemaNameExports, "transformSchemaName").mockImplementation(
-  (schemaName) => `${process.pid}_${process.env.VITEST_POOL_ID}__${schemaName}`
-);
-
-describe("postgresStorage", async () => {
+describe("createStorageAdapter", async () => {
   const db = drizzle(postgres(process.env.DATABASE_URL!), {
     logger: new DefaultLogger(),
   });
@@ -42,7 +38,7 @@ describe("postgresStorage", async () => {
   let storageAdapter: PostgresStorageAdapter;
 
   beforeEach(async () => {
-    storageAdapter = await postgresStorage({ database: db, publicClient });
+    storageAdapter = await createStorageAdapter({ database: db, publicClient });
     return storageAdapter.cleanUp;
   });
 
@@ -51,13 +47,12 @@ describe("postgresStorage", async () => {
       await storageAdapter.storageAdapter(block);
     }
 
-    expect(await db.select().from(storageAdapter.internalTables.chain)).toMatchInlineSnapshot(`
+    expect(await db.select().from(storageAdapter.tables.configTable)).toMatchInlineSnapshot(`
       [
         {
           "chainId": 31337,
-          "lastError": null,
           "lastUpdatedBlockNumber": 12n,
-          "schemaVersion": 1,
+          "version": "0.0.2",
         },
       ]
     `);
@@ -65,23 +60,26 @@ describe("postgresStorage", async () => {
     expect(
       await db
         .select()
-        .from(storageAdapter.internalTables.tables)
-        .where(eq(storageAdapter.internalTables.tables.name, "NumberList"))
+        .from(storageAdapter.tables.recordsTable)
+        .where(
+          eq(
+            storageAdapter.tables.recordsTable.tableId,
+            resourceToHex({ type: "table", namespace: "", name: "NumberList" })
+          )
+        )
     ).toMatchInlineSnapshot(`
       [
         {
           "address": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342",
-          "key": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342::NumberList",
-          "keySchema": {},
-          "lastError": null,
+          "dynamicData": "0x000001a400000045",
+          "encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
+          "isDeleted": false,
+          "key0": null,
+          "key1": null,
+          "keyBytes": "0x",
           "lastUpdatedBlockNumber": 12n,
-          "name": "NumberList",
-          "namespace": "",
-          "schemaVersion": 1,
+          "staticData": null,
           "tableId": "0x746200000000000000000000000000004e756d6265724c697374000000000000",
-          "valueSchema": {
-            "value": "uint32[]",
-          },
         },
       ]
     `);
@@ -91,13 +89,9 @@ describe("postgresStorage", async () => {
       [
         {
           "address": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342",
-          "key": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342::NumberList",
           "keySchema": {},
-          "lastError": null,
-          "lastUpdatedBlockNumber": 12n,
           "name": "NumberList",
           "namespace": "",
-          "schemaVersion": 1,
           "tableId": "0x746200000000000000000000000000004e756d6265724c697374000000000000",
           "valueSchema": {
             "value": "uint32[]",
@@ -110,12 +104,8 @@ describe("postgresStorage", async () => {
     expect(await db.select().from(sqlTable)).toMatchInlineSnapshot(`
       [
         {
-          "__dynamicData": "0x000001a400000045",
-          "__encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
-          "__isDeleted": false,
-          "__key": "0x",
+          "__keyBytes": "0x",
           "__lastUpdatedBlockNumber": 12n,
-          "__staticData": null,
           "value": [
             420,
             69,

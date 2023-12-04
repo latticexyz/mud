@@ -92,6 +92,7 @@ const server = fastify({
   maxParamLength: 5000,
 });
 
+await server.register(import("@fastify/compress"));
 await server.register(import("@fastify/cors"));
 
 // k8s healthchecks
