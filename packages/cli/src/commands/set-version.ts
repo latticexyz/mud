@@ -76,11 +76,6 @@ const commandModule: CommandModule<Options, Options> = {
 };
 
 async function resolveVersion(options: Options) {
-  // If the --link flag is used, we return the current version without requesting npm
-  if (options.link) {
-    return options.mudVersion;
-  }
-
   // Backwards compatibility to previous behavior of this script where passing "canary" as the version resolved to the latest commit on main
   if (options.mudVersion === "canary") options.tag = "main";
 
