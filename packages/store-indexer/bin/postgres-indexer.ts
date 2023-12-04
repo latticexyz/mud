@@ -91,15 +91,38 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
   });
 
 if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
-  const { default: fastify } = await import("fastify");
+  const { default: Koa } = await import("koa");
+  const { default: cors } = await import("@koa/cors");
+  const { default: Router } = await import("@koa/router");
 
-  const server = fastify();
+  const server = new Koa();
+  server.use(cors());
+
+  const router = new Router();
+
+  router.get("/", (ctx) => {
+    ctx.body = "emit HelloWorld();";
+  });
 
   // k8s healthchecks
-  server.get("/healthz", (req, res) => res.code(200).send());
-  server.get("/readyz", (req, res) => (isCaughtUp ? res.code(200).send("ready") : res.code(424).send("backfilling")));
-
-  server.listen({ host: env.HEALTHCHECK_HOST, port: env.HEALTHCHECK_PORT }, (error, address) => {
-    console.log(`postgres indexer healthcheck server listening on ${address}`);
+  router.get("/healthz", (ctx) => {
+    ctx.status = 200;
   });
+  router.get("/readyz", (ctx) => {
+    if (isCaughtUp) {
+      ctx.status = 200;
+      ctx.body = "ready";
+    } else {
+      ctx.status = 424;
+      ctx.body = "backfilling";
+    }
+  });
+
+  server.use(router.routes());
+  server.use(router.allowedMethods());
+
+  server.listen({ host: env.HEALTHCHECK_HOST, port: env.HEALTHCHECK_PORT });
+  console.log(
+    `postgres indexer healthcheck server listening on http://${env.HEALTHCHECK_HOST}:${env.HEALTHCHECK_PORT}`
+  );
 }
