@@ -171,7 +171,7 @@ export default mudConfig({
         namespaceId: "ResourceId",
       },
       valueSchema: {
-        erc20Address: "address",
+        tokenAddress: "address",
       },
       tableIdArgument: true,
     },
@@ -237,7 +237,7 @@ export default mudConfig({
         namespaceId: "ResourceId",
       },
       valueSchema: {
-        erc20Address: "address",
+        tokenAddress: "address",
       },
       tableIdArgument: true,
     },

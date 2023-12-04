@@ -30,6 +30,48 @@
     "gasUsed": 130250
   },
   {
+    "file": "test/ERC721.t.sol",
+    "test": "testApproveAllGas",
+    "name": "setApprovalForAll",
+    "gasUsed": 113956
+  },
+  {
+    "file": "test/ERC721.t.sol",
+    "test": "testApproveGas",
+    "name": "approve",
+    "gasUsed": 87965
+  },
+  {
+    "file": "test/ERC721.t.sol",
+    "test": "testBurnGas",
+    "name": "burn",
+    "gasUsed": 101835
+  },
+  {
+    "file": "test/ERC721.t.sol",
+    "test": "testMintGas",
+    "name": "mint",
+    "gasUsed": 169433
+  },
+  {
+    "file": "test/ERC721.t.sol",
+    "test": "testSafeMintToEOAGas",
+    "name": "safeMint",
+    "gasUsed": 169704
+  },
+  {
+    "file": "test/ERC721.t.sol",
+    "test": "testSafeTransferFromToEOAGas",
+    "name": "safeTransferFrom",
+    "gasUsed": 143638
+  },
+  {
+    "file": "test/ERC721.t.sol",
+    "test": "testTransferFromGas",
+    "name": "transferFrom",
+    "gasUsed": 136798
+  },
+  {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallComposite",
     "name": "install keys in table module",
