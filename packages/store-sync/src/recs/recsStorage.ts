@@ -90,12 +90,12 @@ export function recsStorage<tables extends Record<string, Table>>({
 
       if (log.eventName === "Store_SetRecord") {
         const value = decodeValueArgs(table.valueSchema, log.args);
-        debug("setting component", {
-          namespace: table.namespace,
-          name: table.name,
-          entity,
-          value,
-        });
+        // debug("setting component", {
+        //   namespace: table.namespace,
+        //   name: table.name,
+        //   entity,
+        //   value,
+        // });
         setComponent(
           component,
           entity,
@@ -117,15 +117,15 @@ export function recsStorage<tables extends Record<string, Table>>({
           encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
           dynamicData: (previousValue?.__dynamicData as Hex) ?? "0x",
         });
-        debug("setting component via splice static", {
-          namespace: table.namespace,
-          name: table.name,
-          entity,
-          previousStaticData,
-          newStaticData,
-          previousValue,
-          newValue,
-        });
+        // debug("setting component via splice static", {
+        //   namespace: table.namespace,
+        //   name: table.name,
+        //   entity,
+        //   previousStaticData,
+        //   newStaticData,
+        //   previousValue,
+        //   newValue,
+        // });
         setComponent(
           component,
           entity,
@@ -146,15 +146,15 @@ export function recsStorage<tables extends Record<string, Table>>({
           encodedLengths: log.args.encodedLengths,
           dynamicData: newDynamicData,
         });
-        debug("setting component via splice dynamic", {
-          namespace: table.namespace,
-          name: table.name,
-          entity,
-          previousDynamicData,
-          newDynamicData,
-          previousValue,
-          newValue,
-        });
+        // debug("setting component via splice dynamic", {
+        //   namespace: table.namespace,
+        //   name: table.name,
+        //   entity,
+        //   previousDynamicData,
+        //   newDynamicData,
+        //   previousValue,
+        //   newValue,
+        // });
         setComponent(
           component,
           entity,
@@ -166,11 +166,11 @@ export function recsStorage<tables extends Record<string, Table>>({
           { skipUpdateStream: shouldSkipUpdateStream?.() }
         );
       } else if (log.eventName === "Store_DeleteRecord") {
-        debug("deleting component", {
-          namespace: table.namespace,
-          name: table.name,
-          entity,
-        });
+        // debug("deleting component", {
+        //   namespace: table.namespace,
+        //   name: table.name,
+        //   entity,
+        // });
         removeComponent(component, entity, { skipUpdateStream: shouldSkipUpdateStream?.() });
       }
     }
