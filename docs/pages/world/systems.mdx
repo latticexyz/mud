@@ -72,7 +72,7 @@ If you need to call a `System` from a `System` in the root namespace you can use
       SystemSwitch.call(
         abi.encodeWithSignature("increment()")
       ),
-      (uint32) 
+      (uint32)
     );
    ```
 
@@ -94,14 +94,14 @@ If you need to call a `System` from a `System` in the root namespace you can use
    )
    ```
 
-   Using `SystemSwitch.call` with the calldata created by `abi.encodeWithSignature`. 
+   Using `SystemSwitch.call` with the calldata created by `abi.encodeWithSignature`.
    `SystemSwitch.call` takes care of figuring out details, such as what type of call to use.
 
    ```solidity
    uint32 retval = abi.decode(
       SystemSwitch.call(...),
-      (uint32) 
-   );   
+      (uint32)
+   );
    ```
 
    Use [`abi.decode`](https://docs.soliditylang.org/en/latest/cheatsheet.html#abi-encoding-and-decoding-functions) to decode the call's return value.
