@@ -56,8 +56,11 @@ const commandModule: CommandModule<Options, Options> = {
         throw new MUDError(`These options are mutually exclusive: ${mutuallyExclusiveOptions.join(", ")}`);
       }
 
+      // If the --link flag is not set, we call resolveVersion to get the version
       // Resolve the version number from available options like `tag` or `commit`
-      options.mudVersion = await resolveVersion(options);
+      if (!options.link) {
+        options.mudVersion = await resolveVersion(options);
+      }
 
       // Update all package.json below the current working directory (except in node_modules)
       const packageJsons = glob.sync("**/package.json").filter((p) => !p.includes("node_modules"));
@@ -73,6 +76,11 @@ const commandModule: CommandModule<Options, Options> = {
 };
 
 async function resolveVersion(options: Options) {
+  // If the --link flag is used, we return the current version without requesting npm
+  if (options.link) {
+    return options.mudVersion;
+  }
+
   // Backwards compatibility to previous behavior of this script where passing "canary" as the version resolved to the latest commit on main
   if (options.mudVersion === "canary") options.tag = "main";
 
