@@ -300,7 +300,7 @@ The easiest way to create the Solidity code is to use the MUD template:
            ResourceId systemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "MessageSystem");
    ```
 
-   We don't *have* to name the system the same as the contract name, but it makes writing the client code later easier.
+   We don't _have_ to name the system the same as the contract name, but it makes writing the client code later easier.
 
    Among other things, a MUD `World` is a `WorldRegistrationSystem`, so it has the appropriate functions.
    A `ResourceId` is a 32 byte value that uniquely identifies a resource in a MUD `World`.
@@ -508,23 +508,23 @@ Here we modify the template UI to so it will run properly.
 
    <CollapseCode>
 
-    ```ts filename="vite.config.ts" copy showLineNumbers {5}
-    import { defineConfig } from "vite";
+   ```ts filename="vite.config.ts" copy showLineNumbers {5}
+   import { defineConfig } from "vite";
 
-    export default defineConfig({
-      server: {
-        port: 3001,
-        fs: {
-          strict: false,
-        },
-      },
-      build: {
-        target: "es2022",
-        minify: true,
-        sourcemap: true,
-      },
-    });
-    ```    
+   export default defineConfig({
+     server: {
+       port: 3001,
+       fs: {
+         strict: false,
+       },
+     },
+     build: {
+       target: "es2022",
+       minify: true,
+       sourcemap: true,
+     },
+   });
+   ```
 
    </CollapseCode>
 
@@ -542,67 +542,67 @@ Here we modify the template UI to so it will run properly.
 
    <CollapseCode>
 
-    ```ts filename="index.ts" copy showLineNumbers {10-17}
-    import { setup } from "./mud/setup";
-    import mudConfig from "contracts/mud.config";
+   ```ts filename="index.ts" copy showLineNumbers {10-17}
+   import { setup } from "./mud/setup";
+   import mudConfig from "contracts/mud.config";
 
-    const {
-      components,
-      systemCalls: { increment },
-      network,
-    } = await setup();
+   const {
+     components,
+     systemCalls: { increment },
+     network,
+   } = await setup();
 
-    /*
-    // Components expose a stream that triggers when the component is updated.
-    components.Counter.update$.subscribe((update) => {
-      const [nextValue, prevValue] = update.value;
-      console.log("Counter updated", update, { nextValue, prevValue });
-      document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
-    });
-    */
+   /*
+   // Components expose a stream that triggers when the component is updated.
+   components.Counter.update$.subscribe((update) => {
+     const [nextValue, prevValue] = update.value;
+     console.log("Counter updated", update, { nextValue, prevValue });
+     document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+   });
+   */
 
-    // Just for demonstration purposes: we create a global function that can be
-    // called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
-    (window as any).increment = async () => {
-      console.log("new counter value:", await increment());
-    };
+   // Just for demonstration purposes: we create a global function that can be
+   // called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
+   (window as any).increment = async () => {
+     console.log("new counter value:", await increment());
+   };
 
-    // https://vitejs.dev/guide/env-and-mode.html
-    if (import.meta.env.DEV) {
-      const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
-      mountDevTools({
-        config: mudConfig,
-        publicClient: network.publicClient,
-        walletClient: network.walletClient,
-        latestBlock$: network.latestBlock$,
-        storedBlockLogs$: network.storedBlockLogs$, 
-        worldAddress: network.worldContract.address,
-        worldAbi: network.worldContract.abi,
-        write$: network.write$,  
-        recsWorld: network.world,
-      });
-    }
-    ```
+   // https://vitejs.dev/guide/env-and-mode.html
+   if (import.meta.env.DEV) {
+     const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
+     mountDevTools({
+       config: mudConfig,
+       publicClient: network.publicClient,
+       walletClient: network.walletClient,
+       latestBlock$: network.latestBlock$,
+       storedBlockLogs$: network.storedBlockLogs$,
+       worldAddress: network.worldContract.address,
+       worldAbi: network.worldContract.abi,
+       write$: network.write$,
+       recsWorld: network.world,
+     });
+   }
+   ```
 
    </CollapseCode>
 
-1. The network configuration does not have the correct `World` address. 
+1. The network configuration does not have the correct `World` address.
    Get the `World` address from the application being extended.
    By default, you can do see this application on URL [http://localhost:3000](http://localhost:3000).
-   Edit `src/mud/getNetworkConfig.ts` to set the `World` address.   
+   Edit `src/mud/getNetworkConfig.ts` to set the `World` address.
 
    Note: If you followed the directions above to create `extendMe`, the `World` address is `0x6e9474e9c83676b9a71133ff96db43e7aa0a4342`.
 
    <CollapseCode>
 
-    ```ts fileName="getNetworkConfig.ts" copy showLineNumbers {22-26}
-    /*
+   ```ts fileName="getNetworkConfig.ts" copy showLineNumbers {22-26}
+   /*
     * Network specific configuration for the client.
     * By default connect to the anvil test network.
     *
     */
 
-    /*
+   /*
     * By default the template just creates a temporary wallet
     * (called a burner wallet) and uses a faucet (on our test net)
     * to get ETH for it.
@@ -610,39 +610,39 @@ Here we modify the template UI to so it will run properly.
     * See https://mud.dev/tutorials/minimal/deploy#wallet-managed-address
     * for how to use the user's own address instead.
     */
-    import { getBurnerPrivateKey } from "@latticexyz/common";
+   import { getBurnerPrivateKey } from "@latticexyz/common";
 
-    /*
+   /*
     * Import the addresses of the World, possibly on multiple chains,
     * from packages/contracts/worlds.json. When the contracts package
     * deploys a new `World`, it updates this file.
     */
-    const worlds = {
-      "31337": {
-        "address": "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342"
-      }
-    }
-      
-    /*
+   const worlds = {
+     "31337": {
+       address: "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342",
+     },
+   };
+
+   /*
     * The supported chains.
     * By default, there are only two chains here:
-    * 
+    *
     * - mudFoundry, the chain running on anvil that pnpm dev
-    *   starts by default. It is similar to the viem anvil chain  
+    *   starts by default. It is similar to the viem anvil chain
     *   (see https://viem.sh/docs/clients/test.html), but with the
     *   basefee set to zero to avoid transaction fees.
     * - latticeTestnet, our public test network.
-    * 
+    *
     * See https://mud.dev/tutorials/minimal/deploy#run-the-user-interface
     * for instructions on how to add networks.
     */
 
-    import { supportedChains } from "./supportedChains";
-    
-    export async function getNetworkConfig() {
-      const params = new URLSearchParams(window.location.search);
-      
-      /*
+   import { supportedChains } from "./supportedChains";
+
+   export async function getNetworkConfig() {
+     const params = new URLSearchParams(window.location.search);
+
+     /*
       * The chain ID is the first item available from this list:
       * 1. chainId query parameter
       * 2. chainid query parameter
@@ -650,49 +650,50 @@ Here we modify the template UI to so it will run properly.
       *    vite dev server was started or client was built
       * 4. The default, 31337 (anvil)
       */
-      const chainId = Number(params.get("chainId") || params.get("chainid") || import.meta.env.VITE_CHAIN_ID || 31337)
-      
-      /*
+     const chainId = Number(params.get("chainId") || params.get("chainid") || import.meta.env.VITE_CHAIN_ID || 31337);
+
+     /*
       * Find the chain (unless it isn't in the list of supported chains).
       */
-      const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
-      const chain = supportedChains[chainIndex];
-      if (!chain) {
-        throw new Error(`Chain ${chainId} not found`);
-      }
+     const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
+     const chain = supportedChains[chainIndex];
+     if (!chain) {
+       throw new Error(`Chain ${chainId} not found`);
+     }
 
-       /*
-        * Get the address of the World. If you want to use a
-        * different address than the one in worlds.json,
-        * provide it as worldAddress in the query string.
-        */
-        const world = worlds[chain.id.toString()];
-        const worldAddress = params.get("worldAddress") || world?.address;
-        if (!worldAddress) {
-          throw new Error(`No world address found for chain ${chainId}. Did you run \`mud  deploy\`?`);
-        }
-      
-        /* 
-        * MUD clients use events to synchronize the database, meaning
-        * they need to look as far back as when the World was started.
-        * The block number for the World start can be specified either
-        * on the URL (as initialBlockNumber) or in the worlds.json
-        * file. If neither has it, it starts at the first block, zero.
-        */
-        const initialBlockNumber = params.has("initialBlockNumber")
-          ? Number(params.get("initialBlockNumber"))
-          : world?.blockNumber ?? 0n;
+     /*
+      * Get the address of the World. If you want to use a
+      * different address than the one in worlds.json,
+      * provide it as worldAddress in the query string.
+      */
+     const world = worlds[chain.id.toString()];
+     const worldAddress = params.get("worldAddress") || world?.address;
+     if (!worldAddress) {
+       throw new Error(`No world address found for chain ${chainId}. Did you run \`mud  deploy\`?`);
+     }
 
-        return {
-          privateKey: getBurnerPrivateKey(),
-          chainId,
-          chain,
-          faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
-          worldAddress,
-          initialBlockNumber,
-        };
-      }
-    ```
+     /*
+      * MUD clients use events to synchronize the database, meaning
+      * they need to look as far back as when the World was started.
+      * The block number for the World start can be specified either
+      * on the URL (as initialBlockNumber) or in the worlds.json
+      * file. If neither has it, it starts at the first block, zero.
+      */
+     const initialBlockNumber = params.has("initialBlockNumber")
+       ? Number(params.get("initialBlockNumber"))
+       : world?.blockNumber ?? 0n;
+
+     return {
+       privateKey: getBurnerPrivateKey(),
+       chainId,
+       chain,
+       faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
+       worldAddress,
+       initialBlockNumber,
+     };
+   }
+   ```
+
     </CollapseCode>
 
 Note that while at this point you can access the user interface, the counter value is inaccurate and if you click **Increment** you get an error.
@@ -703,7 +704,6 @@ We will fix these problems now.
 Edit `src/mud/createSystemCalls.ts` to use the new `messaging_MessageSystem_incrementMessage` function instead of `increment`.
 Also, we don't have access to the `Counter` component, so we comment out the code that uses it.
 
-
    <CollapseCode>
 
     ```ts filename="createSystemCalls.ts" copy showLineNumbers {43-44,46}
@@ -711,21 +711,21 @@ Also, we don't have access to the `Counter` component, so we comment out the cod
     * Create the system calls that the client can use to ask
     * for changes in the World state (using the System contracts).
     */
-      
+
     import { getComponentValue } from "@latticexyz/recs";
     import { ClientComponents } from "./createClientComponents";
     import { SetupNetworkResult } from "./setupNetwork";
     import { singletonEntity } from "@latticexyz/store-sync/recs";
-      
+
     export type SystemCalls = ReturnType<typeof createSystemCalls>;
-      
+
     export function createSystemCalls(
-      /*  
+      /*
       * The parameter list informs TypeScript that:
       *
       * - The first parameter is expected to be a
       *   SetupNetworkResult, as defined in setupNetwork.ts
-      *   
+      *
       *   Out of this parameter, we only care about two fields:
       *   - worldContract (which comes from getContract, see
       *     https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L63-L69).
@@ -754,11 +754,11 @@ Also, we don't have access to the `Counter` component, so we comment out the cod
           await waitForTransaction(tx);
           // return getComponentValue(Counter, singletonEntity);
       };
-        
+
       return {
         increment,
       };
-    }     
+    }
     ```
 
    </CollapseCode>
@@ -777,47 +777,56 @@ We will now fix this.
 
    ```ts sh copy
    pnpm add @latticexyz/store@next
-   ``` 
+   ```
 
 1. Copy the `mud.config.ts` to `src/mud/counter.config.ts`.
 
-    ```ts filename="counter.config.ts" copy
-    import { mudConfig } from "@latticexyz/world/register";
+   ```ts filename="counter.config.ts" copy
+   import { mudConfig } from "@latticexyz/world/register";
 
-    export default mudConfig({
-      tables: {
-        Counter: {
-          keySchema: {},
-          valueSchema: "uint32",
-        },
-      },
-    });
-    ```
+   export default mudConfig({
+     tables: {
+       Counter: {
+         keySchema: {},
+         valueSchema: "uint32",
+       },
+     },
+   });
+   ```
 
 1. Edit `src/mud/setupNetwork.ts` to add a `tables` parameter with the `Counter` object to the `syncToRecs` call.
 
    <CollapseCode>
 
-    ```ts filename="setupNetwork.ts" copy showLineNumbers {17,28,84}
-    /*
+   ```ts filename="setupNetwork.ts" copy showLineNumbers {17,28,84}
+   /*
     * The MUD client code is built on top of viem
     * (https://viem.sh/docs/getting-started.html).
     * This line imports the functions we need from it.
     */
-    import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
-    import { createFaucetService } from "@latticexyz/services/faucet";
-    import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
+   import {
+     createPublicClient,
+     fallback,
+     webSocket,
+     http,
+     createWalletClient,
+     Hex,
+     parseEther,
+     ClientConfig,
+   } from "viem";
+   import { createFaucetService } from "@latticexyz/services/faucet";
+   import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 
-    import { getNetworkConfig } from "./getNetworkConfig";
-    import { world } from "./world";
-    import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
-    import { createBurnerAccount, getContract, transportObserver, ContractWrite } from "@latticexyz/common";
-      
-    import { Subject, share } from "rxjs";
-      
-    import { resolveConfig } from "@latticexyz/store";
-        
-    /*
+   import { getNetworkConfig } from "./getNetworkConfig";
+   import { world } from "./world";
+   import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
+   import { createBurnerAccount, getContract, transportObserver, ContractWrite } from "@latticexyz/common";
+
+   import { Subject, share } from "rxjs";
+
+   import { resolveConfig } from "@latticexyz/store";
+
+   /*
     * Import our MUD config, which includes strong types for
     * our tables and other config options. We use this to generate
     * things like RECS components and get back strong types for them.
@@ -825,112 +834,112 @@ We will now fix this.
     * See https://mud.dev/templates/typescript/contracts#mudconfigts
     * for the source of this information.
     */
-    import mudConfig from "contracts/mud.config";
-    import counterConfig from "./counter.config";
-      
-    export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
-        
-    export async function setupNetwork() {
-      const networkConfig = await getNetworkConfig();
-        
-      /*
+   import mudConfig from "contracts/mud.config";
+   import counterConfig from "./counter.config";
+
+   export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
+
+   export async function setupNetwork() {
+     const networkConfig = await getNetworkConfig();
+
+     /*
       * Create a viem public (read only) client
       * (https://viem.sh/docs/clients/public.html)
       */
-      const clientOptions = {
-        chain: networkConfig.chain,
-        transport: transportObserver(fallback([webSocket(), http()])),
-        pollingInterval: 1000,
-      } as const satisfies ClientConfig; 
+     const clientOptions = {
+       chain: networkConfig.chain,
+       transport: transportObserver(fallback([webSocket(), http()])),
+       pollingInterval: 1000,
+     } as const satisfies ClientConfig;
 
-      const publicClient = createPublicClient(clientOptions);
-        
-      /*
+     const publicClient = createPublicClient(clientOptions);
+
+     /*
       * Create a temporary wallet and a viem client for it
       * (see https://viem.sh/docs/clients/wallet.html).
       */
-      const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
-      const burnerWalletClient = createWalletClient({
-        ...clientOptions,
-        account: burnerAccount,
-      });
-        
-      /*
+     const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+     const burnerWalletClient = createWalletClient({
+       ...clientOptions,
+       account: burnerAccount,
+     });
+
+     /*
       * Create an observable for contract writes that we can
       * pass into MUD dev tools for transaction observability.
       */
-      const write$ = new Subject<ContractWrite>();
-      
-      /*
-      * Create an object for communicating with the deployed World.  
+     const write$ = new Subject<ContractWrite>();
+
+     /*
+      * Create an object for communicating with the deployed World.
       */
-      const worldContract = getContract({
-        address: networkConfig.worldAddress as Hex,
-        abi: IWorldAbi,
-        publicClient,
-        walletClient: burnerWalletClient,
-        onWrite: (write) => write$.next(write),
-      });
-        
-      /*
+     const worldContract = getContract({
+       address: networkConfig.worldAddress as Hex,
+       abi: IWorldAbi,
+       publicClient,
+       walletClient: burnerWalletClient,
+       onWrite: (write) => write$.next(write),
+     });
+
+     /*
       * Sync on-chain state into RECS and keeps our client in sync.
       * Uses the MUD indexer if available, otherwise falls back
       * to the viem publicClient to make RPC calls to fetch MUD
       * events from the chain.
       */
-      
-      const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
-        world,
-        config: mudConfig,
-        tables: resolveConfig(counterConfig).tables,
-        address: networkConfig.worldAddress as Hex, 
-        publicClient,
-        startBlock: BigInt(networkConfig.initialBlockNumber),
-      });
-        
-      /*
+
+     const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
+       world,
+       config: mudConfig,
+       tables: resolveConfig(counterConfig).tables,
+       address: networkConfig.worldAddress as Hex,
+       publicClient,
+       startBlock: BigInt(networkConfig.initialBlockNumber),
+     });
+
+     /*
       * If there is a faucet, request (test) ETH if you have
       * less than 1 ETH. Repeat every 20 seconds to ensure you don't
       * run out.
       */
-      if (networkConfig.faucetServiceUrl) {
-        const address = burnerAccount.address;
-        console.info("[Dev Faucet]: Player address -> ", address);  
-      
-        const faucet = createFaucetService(networkConfig.faucetServiceUrl);
-      
-        const requestDrip = async () => {
-          const balance = await publicClient.getBalance({ address });
-          console.info(`[Dev Faucet]: Player balance -> ${balance}`);
-          const lowBalance = balance < parseEther("1");
-          if (lowBalance) {
-            console.info("[Dev Faucet]: Balance is low, dripping funds to player");
-            // Double drip
-            await faucet.dripDev({ address });
-            await faucet.dripDev({ address });
-          }
-        };     
+     if (networkConfig.faucetServiceUrl) {
+       const address = burnerAccount.address;
+       console.info("[Dev Faucet]: Player address -> ", address);
 
-        requestDrip();
-        // Request a drip every 20 seconds
-        setInterval(requestDrip, 20000);
-      }
-        
-      return {
-        world,
-        components,
-        playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
-        publicClient,
-        walletClient: burnerWalletClient,
-        latestBlock$,
-        storedBlockLogs$,
-        waitForTransaction,
-        worldContract,
-        write$: write$.asObservable().pipe(share()),
-      };
-    }    
-    ```
-  
+       const faucet = createFaucetService(networkConfig.faucetServiceUrl);
+
+       const requestDrip = async () => {
+         const balance = await publicClient.getBalance({ address });
+         console.info(`[Dev Faucet]: Player balance -> ${balance}`);
+         const lowBalance = balance < parseEther("1");
+         if (lowBalance) {
+           console.info("[Dev Faucet]: Balance is low, dripping funds to player");
+           // Double drip
+           await faucet.dripDev({ address });
+           await faucet.dripDev({ address });
+         }
+       };
+
+       requestDrip();
+       // Request a drip every 20 seconds
+       setInterval(requestDrip, 20000);
+     }
+
+     return {
+       world,
+       components,
+       playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
+       publicClient,
+       walletClient: burnerWalletClient,
+       latestBlock$,
+       storedBlockLogs$,
+       waitForTransaction,
+       worldContract,
+       write$: write$.asObservable().pipe(share()),
+     };
+   }
+   ```
+
    </CollapseCode>
 
 1. Now that `Counter` is available again, undo the edits that removed it.
@@ -940,66 +949,66 @@ We will now fix this.
      <CollapseCode>
 
      ```ts filename="index.ts" copy showLineNumbers {10-15}
-      import { setup } from "./mud/setup";
-      import mudConfig from "contracts/mud.config";
+     import { setup } from "./mud/setup";
+     import mudConfig from "contracts/mud.config";
 
-      const {
-        components,
-        systemCalls: { increment },
-        network,
-      } = await setup();
+     const {
+       components,
+       systemCalls: { increment },
+       network,
+     } = await setup();
 
-      // Components expose a stream that triggers when the component is updated.
-      components.Counter.update$.subscribe((update) => {
-        const [nextValue, prevValue] = update.value;
-        console.log("Counter updated", update, { nextValue, prevValue });
-        document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
-      });
+     // Components expose a stream that triggers when the component is updated.
+     components.Counter.update$.subscribe((update) => {
+       const [nextValue, prevValue] = update.value;
+       console.log("Counter updated", update, { nextValue, prevValue });
+       document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+     });
 
-      // Just for demonstration purposes: we create a global function that can be
-      // called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
-      (window as any).increment = async () => {
-        console.log("new counter value:", await increment());
-      };
+     // Just for demonstration purposes: we create a global function that can be
+     // called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
+     (window as any).increment = async () => {
+       console.log("new counter value:", await increment());
+     };
 
-      // https://vitejs.dev/guide/env-and-mode.html
-      if (import.meta.env.DEV) {
-        const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
-        mountDevTools({
-          config: mudConfig,
-          publicClient: network.publicClient,
-          walletClient: network.walletClient,
-          latestBlock$: network.latestBlock$,
-          storedBlockLogs$: network.storedBlockLogs$,
-          worldAddress: network.worldContract.address,
-          worldAbi: network.worldContract.abi,
-          write$: network.write$,
-          recsWorld: network.world,
-        });
-      }
+     // https://vitejs.dev/guide/env-and-mode.html
+     if (import.meta.env.DEV) {
+       const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
+       mountDevTools({
+         config: mudConfig,
+         publicClient: network.publicClient,
+         walletClient: network.walletClient,
+         latestBlock$: network.latestBlock$,
+         storedBlockLogs$: network.storedBlockLogs$,
+         worldAddress: network.worldContract.address,
+         worldAbi: network.worldContract.abi,
+         write$: network.write$,
+         recsWorld: network.world,
+       });
+     }
      ```
 
      </CollapseCode>
-   - `src/mud/createSystemCalls.ts`
 
+   - `src/mud/createSystemCalls.ts`
 
      <CollapseCode>
 
-      ```ts filename="createSystemCalls.ts" copy showLineNumbers {45}
-      /*
+     ```ts filename="createSystemCalls.ts" copy showLineNumbers {45}
+     /*
       * Create the system calls that the client can use to ask
       * for changes in the World state (using the System contracts).
       */
 
-      import { getComponentValue } from "@latticexyz/recs";
-      import { ClientComponents } from "./createClientComponents";
-      import { SetupNetworkResult } from "./setupNetwork";
-      import { singletonEntity } from "@latticexyz/store-sync/recs";
+     import { getComponentValue } from "@latticexyz/recs";
+     import { ClientComponents } from "./createClientComponents";
+     import { SetupNetworkResult } from "./setupNetwork";
+     import { singletonEntity } from "@latticexyz/store-sync/recs";
 
-      export type SystemCalls = ReturnType<typeof createSystemCalls>;
+     export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
-      export function createSystemCalls(
-        /*
+     export function createSystemCalls(
+       /*
         * The parameter list informs TypeScript that:
         *
         * - The first parameter is expected to be a
@@ -1018,26 +1027,26 @@ We will now fix this.
         *   syncToRecs
         *   (https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L77-L83).
         */
-        { worldContract, waitForTransaction }: SetupNetworkResult,
-        { Counter }: ClientComponents
-      ) {
-        const increment = async () => {
-          /*
+       { worldContract, waitForTransaction }: SetupNetworkResult,
+       { Counter }: ClientComponents
+     ) {
+       const increment = async () => {
+         /*
           * Because IncrementSystem
           * (https://mud.dev/templates/typescript/contracts#incrementsystemsol)
           * is in the root namespace, `.increment` can be called directly
           * on the World contract.
           */
-          const tx = await worldContract.write.messaging_MessageSystem_incrementMessage([`message at ${Date()}`]);
-          await waitForTransaction(tx);
-          return getComponentValue(Counter, singletonEntity);
-        };
+         const tx = await worldContract.write.messaging_MessageSystem_incrementMessage([`message at ${Date()}`]);
+         await waitForTransaction(tx);
+         return getComponentValue(Counter, singletonEntity);
+       };
 
-        return {
-          increment,
-        };
-      }         
-      ```   
+       return {
+         increment,
+       };
+     }
+     ```
 
      </CollapseCode>
 
