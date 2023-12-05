@@ -1,4 +1,5 @@
 export * from "./common";
+export * from "./createBenchmark";
 export * from "./createBurnerAccount";
 export * from "./createNonceManager";
 export * from "./getContract";
