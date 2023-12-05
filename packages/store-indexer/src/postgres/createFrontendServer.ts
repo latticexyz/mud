@@ -12,6 +12,7 @@ import { StorageAdapterLog, storeTables } from "@latticexyz/store-sync";
 import { queryLogs } from "./queryLogs";
 import { decodeDynamicField } from "@latticexyz/protocol-parser";
 import { drizzle } from "drizzle-orm/postgres-js";
+import { helloWorld } from "../helloWorld";
 
 type CreateFrontendServerOptions = {
   database: Sql;
@@ -21,15 +22,7 @@ export function createFrontendServer({ database }: CreateFrontendServerOptions):
   const server = new Koa();
   server.use(cors());
   server.use(healthcheck());
-
-  server.use(async (ctx, next) => {
-    if (ctx.path === "/") {
-      ctx.status = 200;
-      ctx.body = "emit HelloWorld();";
-      return;
-    }
-    await next();
-  });
+  server.use(helloWorld());
 
   const router = new Router();
 

@@ -94,6 +94,7 @@ if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
   const { default: Koa } = await import("koa");
   const { default: cors } = await import("@koa/cors");
   const { healthcheck } = await import("../src/healthcheck");
+  const { helloWorld } = await import("../src/helloWorld");
 
   const server = new Koa();
   server.use(cors());
@@ -102,15 +103,7 @@ if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
       isReady: () => isCaughtUp,
     })
   );
-
-  server.use(async (ctx, next) => {
-    if (ctx.path === "/") {
-      ctx.status = 200;
-      ctx.body = "emit HelloWorld();";
-      return;
-    }
-    await next();
-  });
+  server.use(helloWorld());
 
   server.listen({ host: env.HEALTHCHECK_HOST, port: env.HEALTHCHECK_PORT });
   console.log(

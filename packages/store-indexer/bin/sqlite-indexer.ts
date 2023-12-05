@@ -16,6 +16,7 @@ import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
 import { healthcheck } from "../src/healthcheck";
+import { helloWorld } from "../src/helloWorld";
 
 const env = parseEnv(
   z.intersection(
@@ -96,15 +97,7 @@ server.use(
     isReady: () => isCaughtUp,
   })
 );
-
-server.use(async (ctx, next) => {
-  if (ctx.path === "/") {
-    ctx.status = 200;
-    ctx.body = "emit HelloWorld();";
-    return;
-  }
-  await next();
-});
+server.use(helloWorld());
 
 server.use(
   createKoaMiddleware({
