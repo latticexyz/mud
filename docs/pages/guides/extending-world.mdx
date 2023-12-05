@@ -535,10 +535,10 @@ Here we modify the template UI to so it will run properly.
    ```
 
 1. Open the application at [http://localhost:3001](http://localhost:3001).
-   At this point the server gives us web pages, but the JavaScript in them does not work, the next steps are to fix it.
+   The client will throw errors because we didn't update the client code to work with the new contracts yet - we'll fix that in the next steps.
 
 1. Because `Counter` is not defined in the extension's `mud.config.ts`, it isn't one of the components.
-   Comment out the lines that register a handled for updates on `components.Counter` in `src/index.ts`.
+   Comment out the lines that register a handler for updates on `components.Counter` in `src/index.ts`.
 
    <CollapseCode>
 
