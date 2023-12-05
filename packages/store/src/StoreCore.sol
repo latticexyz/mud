@@ -389,14 +389,6 @@ library StoreCore {
   function spliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 start, bytes memory data) internal {
     uint256 location = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
 
-    // Emit event to notify offchain indexers
-    emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
-
-    // Early return if the table is an offchain table
-    if (tableId.getType() != RESOURCE_TABLE) {
-      return;
-    }
-
     // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
@@ -409,6 +401,14 @@ library StoreCore {
           data: data
         });
       }
+    }
+
+    // Emit event to notify offchain indexers
+    emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
+
+    // Early return if the table is an offchain table
+    if (tableId.getType() != RESOURCE_TABLE) {
+      return;
     }
 
     // Store the provided value in storage
