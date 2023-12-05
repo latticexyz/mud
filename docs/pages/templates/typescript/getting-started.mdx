@@ -41,6 +41,11 @@ To run any of the TypeScript templates:
    pnpm dev
    ```
 
+   You may receive the error message: `[vite] Internal server error: Failed to resolve import "contracts/out/IWorld.sol/IWorld.abi.json" from "src/mud/setupNetwork.ts"`.
+   If so, ignore it.
+   It simply means the `contracts` package hasn't created the `IWorld.abi.json` file, which the `client` package needs, yet.
+   As soon as it is created, the `client` package will use it.
+
 ## Using the templates
 
 ### Code organization
