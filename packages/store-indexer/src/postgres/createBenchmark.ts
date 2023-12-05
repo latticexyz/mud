@@ -1,4 +1,6 @@
-import { debug } from "../debug";
+import createDebug from "debug";
+
+export const debug = createDebug("mud:store-indexer:benchmark");
 
 export function createBenchmark(): (stepName: string) => void {
   let start = performance.now();

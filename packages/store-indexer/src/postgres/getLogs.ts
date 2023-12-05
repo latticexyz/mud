@@ -2,11 +2,10 @@ import { PgDatabase } from "drizzle-orm/pg-core";
 import { Hex } from "viem";
 import { StorageAdapterLog, SyncFilter } from "@latticexyz/store-sync";
 import { tables } from "@latticexyz/store-sync/postgres";
-import { and, asc, eq, or } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { decodeDynamicField } from "@latticexyz/protocol-parser";
 import { bigIntMax } from "@latticexyz/common/utils";
 import { createBenchmark } from "./createBenchmark";
-import { debug } from "../debug";
 
 export async function getLogs(
   database: PgDatabase<any>,
@@ -37,10 +36,6 @@ export async function getLogs(
 
   benchmark("conditions");
 
-  // debug("conditions:", filters);
-  debug("first condition:", conditions[0]);
-  debug("address", address);
-
   // Query for the block number that the indexer (i.e. chain) is at, in case the
   // indexer is further along in the chain than a given store/table's last updated
   // block number. We'll then take the highest block number between the indexer's
@@ -62,23 +57,10 @@ export async function getLogs(
 
   benchmark("query chainState");
 
-  // const records = (
-  //   await Promise.all(
-  //     conditions.map(async (condition) => {
-  //       return database.select().from(tables.recordsTable).where(condition);
-  //     })
-  //   )
-  // ).flat();
-
   const records = await database
     .select()
     .from(tables.recordsTable)
     .where(or(...conditions));
-
-  // .orderBy(
-  //   asc(tables.recordsTable.lastUpdatedBlockNumber)
-  //   // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
-  // );
 
   benchmark("query records");
 
