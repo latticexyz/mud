@@ -6,11 +6,11 @@ import cors from "@koa/cors";
 import Router from "@koa/router";
 import { createKoaMiddleware } from "trpc-koa-adapter";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
-import { createQueryAdapter } from "../src/postgres/createQueryAdapter";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { frontendEnvSchema, parseEnv } from "./parseEnv";
-import { fetchLogs } from "../src/postgres/fetchLogs";
+import { createQueryAdapter } from "../src/postgres/deprecated/createQueryAdapter";
+import { getLogs } from "../src/postgres/getLogs";
 
 const env = parseEnv(
   z.intersection(
@@ -25,7 +25,7 @@ const database = postgres(env.DATABASE_URL);
 
 const server = new Koa();
 server.use(cors());
-server.use(fetchLogs(database));
+server.use(getLogs(database));
 
 const router = new Router();
 

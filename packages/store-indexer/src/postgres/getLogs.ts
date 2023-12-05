@@ -1,81 +1,74 @@
-import { PgDatabase } from "drizzle-orm/pg-core";
-import { Hex } from "viem";
-import { StorageAdapterLog, SyncFilter } from "@latticexyz/store-sync";
-import { tables } from "@latticexyz/store-sync/postgres";
-import { and, asc, eq, or } from "drizzle-orm";
-import { bigIntMax } from "@latticexyz/common/utils";
+import { Sql } from "postgres";
+import { Middleware } from "koa";
+import Router from "@koa/router";
+import compose from "koa-compose";
+import { input } from "@latticexyz/store-sync/trpc-indexer";
+import { storeTables } from "@latticexyz/store-sync";
+import { queryLogs } from "./queryLogs";
 import { recordToLog } from "./recordToLog";
+import { debug } from "../debug";
 import { createBenchmark } from "@latticexyz/common";
+import superjson from "superjson";
 
-export async function getLogs(
-  database: PgDatabase<any>,
-  {
-    chainId,
-    address,
-    filters = [],
-  }: {
-    readonly chainId: number;
-    readonly address?: Hex;
-    readonly filters?: readonly SyncFilter[];
-  }
-): Promise<{ blockNumber: bigint; logs: (StorageAdapterLog & { eventName: "Store_SetRecord" })[] }> {
-  const benchmark = createBenchmark("getLogs");
+export function getLogs(database: Sql): Middleware {
+  const router = new Router();
 
-  const conditions = filters.length
-    ? filters.map((filter) =>
-        and(
-          address != null ? eq(tables.recordsTable.address, address) : undefined,
-          eq(tables.recordsTable.tableId, filter.tableId),
-          filter.key0 != null ? eq(tables.recordsTable.key0, filter.key0) : undefined,
-          filter.key1 != null ? eq(tables.recordsTable.key1, filter.key1) : undefined
-        )
-      )
-    : address != null
-    ? [eq(tables.recordsTable.address, address)]
-    : [];
-  benchmark("parse config");
+  router.get("/get/logs", async (ctx) => {
+    const benchmark = createBenchmark("getLogs");
 
-  // Query for the block number that the indexer (i.e. chain) is at, in case the
-  // indexer is further along in the chain than a given store/table's last updated
-  // block number. We'll then take the highest block number between the indexer's
-  // chain state and all the records in the query (in case the records updated
-  // between these queries). Using just the highest block number from the queries
-  // could potentially signal to the client an older-than-necessary block number,
-  // for stores/tables that haven't seen recent activity.
-  // TODO: move the block number query into the records query for atomicity so we don't have to merge them here
-  const chainState = await database
-    .select()
-    .from(tables.configTable)
-    .where(eq(tables.configTable.chainId, chainId))
-    .limit(1)
-    .execute()
-    // Get the first record in a way that returns a possible `undefined`
-    // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
-    .then((rows) => rows.find(() => true));
-  const indexerBlockNumber = chainState?.lastUpdatedBlockNumber ?? 0n;
-  benchmark("query chainState");
+    try {
+      const opts = input.parse(typeof ctx.query.input === "string" ? JSON.parse(ctx.query.input) : {});
+      opts.filters = opts.filters.length > 0 ? [...opts.filters, { tableId: storeTables.Tables.tableId }] : [];
+      benchmark("parse config");
 
-  const records = await database
-    .select()
-    .from(tables.recordsTable)
-    .where(or(...conditions))
-    .orderBy(
-      asc(tables.recordsTable.lastUpdatedBlockNumber)
-      // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
-    );
-  benchmark("query records");
+      const records = await queryLogs(database, opts ?? {}).execute();
+      benchmark("query records");
 
-  const blockNumber = records.reduce(
-    (max, record) => bigIntMax(max, record.lastUpdatedBlockNumber ?? 0n),
-    indexerBlockNumber
-  );
-  benchmark("find block number");
+      const logs = records.map(recordToLog);
+      benchmark("map records to logs");
 
-  const logs = records
-    // TODO: add this to the query, assuming we can optimize with an index
-    .filter((record) => !record.isDeleted)
-    .map((record) => recordToLog({ ...record, lastUpdatedBlockNumber: record.lastUpdatedBlockNumber.toString() }));
-  benchmark("map records to logs");
+      const blockNumber = BigInt(records[0].chainBlockNumber);
 
-  return { blockNumber, logs };
+      ctx.status = 200;
+
+      // TODO: replace superjson with more efficient encoding
+      ctx.body = superjson.stringify({ blockNumber, logs });
+    } catch (error) {
+      ctx.status = 500;
+      ctx.body = error;
+      debug(error);
+    }
+
+    // .cursor(100, async (rows) => {
+    //   if (!hasEmittedConfig && rows.length) {
+    //     ctx.send("config", {
+    //       indexerVersion: rows[0].indexerVersion,
+    //       chainId: rows[0].chainId,
+    //       lastUpdatedBlockNumber: rows[0].chainBlockNumber,
+    //       totalRows: rows[0].totalRows,
+    //     });
+    //     hasEmittedConfig = true;
+    //   }
+
+    //   rows.forEach((row) => {
+    //     ctx.send("log", {
+    //       // TODO: either properly encode bigints in a JSON-safe way or fix these types
+    //       blockNumber: row.chainBlockNumber as unknown as bigint,
+    //       address: row.address,
+    //       eventName: "Store_SetRecord",
+    //       args: {
+    //         tableId: row.tableId,
+    //         keyTuple: decodeDynamicField("bytes32[]", row.keyBytes),
+    //         staticData: row.staticData ?? "0x",
+    //         encodedLengths: row.encodedLengths ?? "0x",
+    //         dynamicData: row.dynamicData ?? "0x",
+    //       },
+    //     });
+    //   });
+    // });
+
+    // TODO: subscribe + continue writing
+  });
+
+  return compose([router.routes(), router.allowedMethods()]) as Middleware;
 }

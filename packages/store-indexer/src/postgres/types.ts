@@ -7,13 +7,13 @@ export type RecordData = {
   staticData: Hex | null;
   encodedLengths: Hex | null;
   dynamicData: Hex | null;
-  lastUpdatedBlockNumber: string;
+  lastUpdatedBlockNumber: bigint;
 };
 
 export type RecordMetadata = {
   indexerVersion: string;
   chainId: string;
-  chainBlockNumber: string;
+  chainBlockNumber: bigint;
   totalRows: number;
 };
 
