@@ -6,6 +6,7 @@ import { QueryAdapter } from "@latticexyz/store-sync/trpc-indexer";
 import { debug } from "../debug";
 import { getLogs } from "./getLogs";
 import { groupBy } from "@latticexyz/common/utils";
+import { createBenchmark } from "./createBenchmark";
 
 /**
  * Creates a query adapter for the tRPC server/client to query data from Postgres.
@@ -19,6 +20,8 @@ export async function createQueryAdapter(database: PgDatabase<any>): Promise<Que
       return getLogs(database, opts);
     },
     async findAll(opts) {
+      const benchmark = createBenchmark();
+
       const filters = opts.filters ?? [];
       const { blockNumber, logs } = await getLogs(database, {
         ...opts,
@@ -26,9 +29,15 @@ export async function createQueryAdapter(database: PgDatabase<any>): Promise<Que
         filters: filters.length > 0 ? [...filters, { tableId: storeTables.Tables.tableId }] : [],
       });
 
+      benchmark("getLogs");
+
       const tables = logs.filter(isTableRegistrationLog).map(logToTable);
 
+      benchmark("filter");
+
       const logsByTable = groupBy(logs, (log) => `${getAddress(log.address)}:${log.args.tableId}`);
+
+      benchmark("groupBy");
 
       const tablesWithRecords: TableWithRecords[] = tables.map((table) => {
         const tableLogs = logsByTable.get(`${getAddress(table.address)}:${table.tableId}`) ?? [];
@@ -42,6 +51,8 @@ export async function createQueryAdapter(database: PgDatabase<any>): Promise<Que
           records,
         };
       });
+
+      benchmark("tablesWithRecords");
 
       debug("findAll: decoded %d logs across %d tables", logs.length, tables.length);
 
