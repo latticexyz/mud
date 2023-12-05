@@ -7,7 +7,8 @@ import { isTableRegistrationLog } from "./isTableRegistrationLog";
 import { getAddress } from "viem";
 import { logToTable } from "./logToTable";
 import { groupBy } from "@latticexyz/common/utils";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValueArgs, encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
+import { tableToLog } from "./tableToLog";
 
 const debug = parentDebug.extend("getSnapshot");
 
@@ -49,21 +50,25 @@ export async function getSnapshot({
   try {
     debug("fetching logs from indexer", indexerUrl);
 
-    // const benchmark = createBenchmark();
-
     const opts = { chainId, address, filters: filters ?? [] };
 
     const { blockNumber, logs } = await indexer.getLogs.query(opts);
-
-    // benchmark("getLogs");
+    // console.log("number of logs before encoding", logs.length);
 
     const tables = logs.filter(isTableRegistrationLog).map(logToTable);
 
-    // benchmark("filter");
+    // const tablesInLogs = new Set(logs.map((log) => log.args.tableId));
+    // const tablesWithoutRegistration = [...tablesInLogs].filter(
+    //   (tableIdInLogs) => !tables.find((table) => table.tableId === tableIdInLogs)
+    // );
+    // console.log("num tables with registration log", tables.length);
+    // console.log("num tables in logs", tablesInLogs.size);
+    // console.log("tables without registration log", tablesWithoutRegistration);
+
+    // const filteredLogs = logs.filter((log) => log.args.tableId !== tablesWithoutRegistration[0]);
+    // console.log("number of logs from tables with registration log", filteredLogs.length);
 
     const logsByTable = groupBy(logs, (log) => `${getAddress(log.address)}:${log.args.tableId}`);
-
-    // benchmark("groupBy");
 
     const tablesWithRecords: TableWithRecords[] = tables.map((table) => {
       const tableLogs = logsByTable.get(`${getAddress(table.address)}:${table.tableId}`) ?? [];
@@ -78,13 +83,39 @@ export async function getSnapshot({
       };
     });
 
-    // benchmark("tablesWithRecords");
+    const logsAfter = tablesWithRecordsToLogs(tablesWithRecords);
+    // const logsByTableFlat = [...logsByTable.values()].flat().reverse();
 
-    debug("findAll: decoded %d logs across %d tables", logs.length, tables.length);
+    // const decodedEncodedLogs = logsByTableFlat.map((log) => {
+    //   const table = tables.find((table) => table.tableId === log.args.tableId)!;
+
+    //   if (!table) {
+    //     console.warn("no tableid found for log with tableid", log.args.tableId);
+    //     return log;
+    //   }
+
+    //   const value = decodeValueArgs(table.valueSchema, log.args as any);
+    //   const key = decodeKey(table.keySchema, log.args.keyTuple);
+
+    //   return {
+    //     ...log,
+    //     args: {
+    //       tableId: table.tableId,
+    //       keyTuple: encodeKey(table.keySchema, key),
+    //       ...encodeValueArgs(table.valueSchema, value),
+    //     },
+    //   };
+    // }) as any;
+
+    // console.log(logsAfter);
+    // console.log(filteredLogs);
+    // console.log(logsByTableFlat);
+
+    // const logsWithRegistrationLogsFirst = [...tables.map(tableToLog), ...logs];
 
     return {
       blockNumber,
-      logs: tablesWithRecordsToLogs(tablesWithRecords),
+      logs, // logsWithRegistrationLogsFirst,
     };
 
     // return await indexer.getLogs.query({ chainId, address, filters });

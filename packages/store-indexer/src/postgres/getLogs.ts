@@ -2,7 +2,7 @@ import { PgDatabase } from "drizzle-orm/pg-core";
 import { Hex } from "viem";
 import { StorageAdapterLog, SyncFilter } from "@latticexyz/store-sync";
 import { tables } from "@latticexyz/store-sync/postgres";
-import { and, eq, or } from "drizzle-orm";
+import { and, eq, or, asc } from "drizzle-orm";
 import { decodeDynamicField } from "@latticexyz/protocol-parser";
 import { bigIntMax } from "@latticexyz/common/utils";
 import { createBenchmark } from "./createBenchmark";
@@ -60,7 +60,11 @@ export async function getLogs(
   const records = await database
     .select()
     .from(tables.recordsTable)
-    .where(or(...conditions));
+    .where(or(...conditions))
+    .orderBy(
+      asc(tables.recordsTable.lastUpdatedBlockNumber)
+      // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
+    );
 
   benchmark("query records");
 
