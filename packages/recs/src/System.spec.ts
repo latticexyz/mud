@@ -2,7 +2,7 @@ import { defineComponent, removeComponent, setComponent, withValue } from "./Com
 import { Type, UpdateType } from "./constants";
 import { createEntity } from "./Entity";
 import { Has } from "./Query";
-import { defineEnterSystem, defineExitSystem, defineSystem, defineUpdateSystem } from "./System";
+import { defineComponentSystem, defineEnterSystem, defineExitSystem, defineSystem, defineUpdateSystem } from "./System";
 import { Component, Entity, World } from "./types";
 import { createWorld } from "./World";
 
@@ -20,6 +20,35 @@ describe("System", () => {
     beforeEach(() => {
       Position = defineComponent(world, { x: Type.Number, y: Type.Number });
       entity = createEntity(world, [withValue(Position, { x: 1, y: 2 })]);
+    });
+
+    it("should react to initial and update events if runOnInit is true", () => {
+      const mock = jest.fn();
+      defineComponentSystem(world, Position, mock, { runOnInit: true });
+
+      expect(mock).toHaveBeenCalledTimes(1);
+      expect(mock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entity,
+          component: Position,
+          value: [{ x: 1, y: 2 }, undefined],
+          type: UpdateType.Enter,
+        })
+      );
+
+      setComponent(Position, entity, { x: 2, y: 3 });
+      expect(mock).toHaveBeenCalledTimes(2);
+      expect(mock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entity,
+          component: Position,
+          value: [
+            { x: 2, y: 3 },
+            { x: 1, y: 2 },
+          ],
+          type: UpdateType.Update,
+        })
+      );
     });
 
     it("defineSystem should rerun the system if the query result changes (enter, update, exit)", () => {
@@ -88,6 +117,35 @@ describe("System", () => {
 
       setComponent(Position, entity, { x: 3, y: 3 });
       expect(mock).toHaveBeenCalledTimes(4);
+    });
+
+    it("should react to initial and update events if runOnInit is true", () => {
+      const mock = jest.fn();
+      defineComponentSystem(world, Position, mock, { runOnInit: true });
+
+      expect(mock).toHaveBeenCalledTimes(1);
+      expect(mock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entity,
+          component: Position,
+          value: [{ x: 1, y: 2 }, undefined],
+          type: UpdateType.Enter,
+        })
+      );
+
+      setComponent(Position, entity, { x: 2, y: 3 });
+      expect(mock).toHaveBeenCalledTimes(2);
+      expect(mock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entity,
+          component: Position,
+          value: [
+            { x: 2, y: 3 },
+            { x: 1, y: 2 },
+          ],
+          type: UpdateType.Update,
+        })
+      );
     });
 
     it("defineEnterSystem should rerun once with entities matching the query for the first time", () => {

@@ -1,4 +1,4 @@
-import { concat, EMPTY, from, Observable } from "rxjs";
+import { concat, EMPTY, from, map, Observable } from "rxjs";
 import { getComponentEntities, removeComponent, setComponent } from "./Component";
 import { UpdateType } from "./constants";
 import { defineEnterQuery, defineExitQuery, defineQuery, defineUpdateQuery } from "./Query";
@@ -118,8 +118,16 @@ export function defineComponentSystem<S extends Schema>(
   system: (update: ComponentUpdate<S>) => void,
   options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
-  const initial$ = options?.runOnInit ? from(getComponentEntities(component)).pipe(toUpdateStream(component)) : EMPTY;
-  defineRxSystem(world, concat(initial$, component.update$), system);
+  const initial$ = options?.runOnInit
+    ? from(getComponentEntities(component)).pipe(
+        toUpdateStream(component),
+        map((update) => ({ ...update, type: UpdateType.Enter }))
+      )
+    : EMPTY;
+
+  const update$ = component.update$.pipe(map((update) => ({ ...update, type: UpdateType.Update })));
+
+  defineRxSystem(world, concat(initial$, update$), system);
 }
 
 /**
