@@ -5,6 +5,7 @@ import { tables } from "@latticexyz/store-sync/postgres";
 import { and, asc, eq, or } from "drizzle-orm";
 import { bigIntMax } from "@latticexyz/common/utils";
 import { recordToLog } from "./recordToLog";
+import { createBenchmark } from "@latticexyz/common";
 
 export async function getLogs(
   database: PgDatabase<any>,
@@ -18,6 +19,8 @@ export async function getLogs(
     readonly filters?: readonly SyncFilter[];
   }
 ): Promise<{ blockNumber: bigint; logs: (StorageAdapterLog & { eventName: "Store_SetRecord" })[] }> {
+  const benchmark = createBenchmark("getLogs");
+
   const conditions = filters.length
     ? filters.map((filter) =>
         and(
@@ -30,6 +33,7 @@ export async function getLogs(
     : address != null
     ? [eq(tables.recordsTable.address, address)]
     : [];
+  benchmark("parse config");
 
   // Query for the block number that the indexer (i.e. chain) is at, in case the
   // indexer is further along in the chain than a given store/table's last updated
@@ -49,6 +53,7 @@ export async function getLogs(
     // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
     .then((rows) => rows.find(() => true));
   const indexerBlockNumber = chainState?.lastUpdatedBlockNumber ?? 0n;
+  benchmark("query chainState");
 
   const records = await database
     .select()
@@ -58,16 +63,19 @@ export async function getLogs(
       asc(tables.recordsTable.lastUpdatedBlockNumber)
       // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
     );
+  benchmark("query records");
 
   const blockNumber = records.reduce(
     (max, record) => bigIntMax(max, record.lastUpdatedBlockNumber ?? 0n),
     indexerBlockNumber
   );
+  benchmark("find block number");
 
   const logs = records
     // TODO: add this to the query, assuming we can optimize with an index
     .filter((record) => !record.isDeleted)
     .map((record) => recordToLog({ ...record, lastUpdatedBlockNumber: record.lastUpdatedBlockNumber.toString() }));
+  benchmark("map records to logs");
 
   return { blockNumber, logs };
 }

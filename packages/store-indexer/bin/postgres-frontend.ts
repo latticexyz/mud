@@ -10,6 +10,7 @@ import { createQueryAdapter } from "../src/postgres/createQueryAdapter";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { frontendEnvSchema, parseEnv } from "./parseEnv";
+import { fetchLogs } from "../src/postgres/fetchLogs";
 
 const env = parseEnv(
   z.intersection(
@@ -20,10 +21,11 @@ const env = parseEnv(
   )
 );
 
-const database = drizzle(postgres(env.DATABASE_URL));
+const database = postgres(env.DATABASE_URL);
 
 const server = new Koa();
 server.use(cors());
+server.use(fetchLogs(database));
 
 const router = new Router();
 
@@ -47,7 +49,7 @@ server.use(
     prefix: "/trpc",
     router: createAppRouter(),
     createContext: async () => ({
-      queryAdapter: await createQueryAdapter(database),
+      queryAdapter: await createQueryAdapter(drizzle(database)),
     }),
   })
 );
