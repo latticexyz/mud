@@ -5,7 +5,7 @@ import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId
 
 import { System } from "../../../System.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
-import { WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
+import { WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";

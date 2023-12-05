@@ -2,35 +2,28 @@
 pragma solidity >=0.8.21;
 
 import { StoreData } from "@latticexyz/store/src/StoreData.sol";
-import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
-import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
 import { WORLD_VERSION } from "./version.sol";
 import { System } from "./System.sol";
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
-import { ROOT_NAMESPACE_ID, ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
+import { ROOT_NAMESPACE_ID } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { SystemCall } from "./SystemCall.sol";
 import { WorldContextProviderLib } from "./WorldContext.sol";
-import { revertWithBytes } from "./revertWithBytes.sol";
 import { Delegation } from "./Delegation.sol";
 import { requireInterface } from "./requireInterface.sol";
 
-import { NamespaceOwner } from "./codegen/tables/NamespaceOwner.sol";
 import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
 
 import { IModule, MODULE_INTERFACE_ID } from "./IModule.sol";
 import { IWorldKernel } from "./IWorldKernel.sol";
-import { IDelegationControl } from "./IDelegationControl.sol";
 
-import { Systems } from "./codegen/tables/Systems.sol";
-import { SystemHooks } from "./codegen/tables/SystemHooks.sol";
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
 import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
