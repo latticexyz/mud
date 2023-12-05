@@ -1,29 +1,15 @@
 import { Sql } from "postgres";
-import Koa from "koa";
-import cors from "@koa/cors";
+import { Middleware } from "koa";
 import Router from "@koa/router";
-import { createKoaMiddleware } from "trpc-koa-adapter";
-import { createAppRouter, input } from "@latticexyz/store-sync/trpc-indexer";
-import { createQueryAdapter } from "./createQueryAdapter";
+import compose from "koa-compose";
+import { input } from "@latticexyz/store-sync/trpc-indexer";
 import { compress } from "../compress";
-import { healthcheck } from "../healthcheck";
 import { eventStream } from "../eventStream";
 import { StorageAdapterLog, storeTables } from "@latticexyz/store-sync";
 import { queryLogs } from "./queryLogs";
 import { decodeDynamicField } from "@latticexyz/protocol-parser";
-import { drizzle } from "drizzle-orm/postgres-js";
-import { helloWorld } from "../helloWorld";
 
-type CreateFrontendServerOptions = {
-  database: Sql;
-};
-
-export function createFrontendServer({ database }: CreateFrontendServerOptions): Koa {
-  const server = new Koa();
-  server.use(cors());
-  server.use(healthcheck());
-  server.use(helloWorld());
-
+export function sse(database: Sql): Middleware {
   const router = new Router();
 
   router.get(
@@ -72,19 +58,5 @@ export function createFrontendServer({ database }: CreateFrontendServerOptions):
     }
   );
 
-  server.use(router.routes());
-  server.use(router.allowedMethods());
-
-  server.use(
-    createKoaMiddleware({
-      prefix: "/trpc",
-      router: createAppRouter(),
-      createContext: async () => ({
-        // TODO: update query adapter to take in postgres.Sql instead
-        queryAdapter: await createQueryAdapter(drizzle(database)),
-      }),
-    })
-  );
-
-  return server;
+  return compose([router.routes(), router.allowedMethods()]) as Middleware;
 }

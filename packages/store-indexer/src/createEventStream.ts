@@ -1,6 +1,10 @@
 import { PassThrough, Readable } from "node:stream";
 
-export type Events = { readonly [eventName: string]: any };
+export type Events = {
+  readonly [eventName: string]: {
+    readonly [key: string]: any; // TODO: refine to JSON-safe types?
+  };
+};
 
 export type CreateEventStreamResult<events extends Events = Events> = {
   stream: Readable;

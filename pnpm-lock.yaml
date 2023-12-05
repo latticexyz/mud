@@ -869,6 +869,9 @@ importers:
       koa:
         specifier: ^2.14.2
         version: 2.14.2
+      koa-compose:
+        specifier: ^4.1.0
+        version: 4.1.0
       postgres:
         specifier: ^3.3.5
         version: 3.3.5
@@ -900,6 +903,9 @@ importers:
       '@types/koa':
         specifier: ^2.13.12
         version: 2.13.12
+      '@types/koa-compose':
+        specifier: ^3.2.8
+        version: 3.2.8
       '@types/koa__cors':
         specifier: ^4.0.3
         version: 4.0.3
