@@ -190,6 +190,6 @@ DROP OWNED BY <see below>;
 ## Using the indexer
 
 The source code of a MUD client has a call either to [`syncToRecs`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/recs/syncToRecs.ts#L21-L82) or to [`syncToZustand`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/zustand/syncToZustand.ts#L33-L74), typically in [`setupNetwork.ts`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts#L74-L79).
-This call initializes the synchronization between the data source (blockchain or indexer) and the client's copy.
+This call initializes the synchronization between the data source (RPC or indexer) and the client's copy.
 
 To use the indexer, specify an `indexerUrl` parameter with the URL.
