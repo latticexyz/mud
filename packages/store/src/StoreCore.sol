@@ -298,14 +298,6 @@ library StoreCore {
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) internal {
-    // Emit event to notify indexers
-    emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
-
-    // Early return if the table is an offchain table
-    if (tableId.getType() != RESOURCE_TABLE) {
-      return;
-    }
-
     // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
@@ -320,6 +312,14 @@ library StoreCore {
           fieldLayout
         );
       }
+    }
+
+    // Emit event to notify indexers
+    emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
+
+    // Early return if the table is an offchain table
+    if (tableId.getType() != RESOURCE_TABLE) {
+      return;
     }
 
     // Store the static data at the static data location
