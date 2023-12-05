@@ -92,8 +92,8 @@ contract IncrementSystem is System {
 
 </CollapseCode>
 
-   <details>
-   <summary>Explanation</summary>
+<details>
+<summary>Explanation</summary>
 
 ```solidity
 import { Counter, History, HistoryData } from "../codegen/index.sol";
@@ -119,7 +119,7 @@ History.set(newValue, block.number, block.timestamp);
 Set the value.
 All MUD tables have a `<table>.set` function with the parameters being the key schema fields in order and then the value schema fields in order.
 
-    </details>
+</details>
 
 2. Run this command in `packages/contracts` to rebuild everything this package produces.
 
@@ -137,17 +137,16 @@ The directions here apply to the `vanilla` client template, if you use anything 
 
 1. Edit `packages/client/src/index.ts`.
 
-   - Import two more functions we need.
-   - In `components.Counter.update$.subscribe`, add code that updates the selection of history values.
-   - Add a function that is called when the user selects a different option.
+   - Import some additional definitions.
+   - Use `components.History.update$.subscribe` to update the history.
 
    <CollapseCode>
 
-   ```ts filename="index.ts" copy showLineNumbers {3-4,18-22,32-38}
+   ```ts filename="index.ts" copy showLineNumbers {3-4,18-29}
    import { setup } from "./mud/setup";
    import mudConfig from "contracts/mud.config";
-   import { encodeEntity } from "@latticexyz/store-sync/recs";
-   import { getComponentValueStrict } from "@latticexyz/recs";
+   import { encodeEntity, singletonEntity } from "@latticexyz/store-sync/recs";
+   import { getComponentValue } from "@latticexyz/recs";
 
    const {
      components,
@@ -159,13 +158,20 @@ The directions here apply to the `vanilla` client template, if you use anything 
    components.Counter.update$.subscribe((update) => {
      const [nextValue, prevValue] = update.value;
      console.log("Counter updated", update, { nextValue, prevValue });
-     document.getElementById("counter")!.innerHTML = nextValue?.value ?? "unset";
+     document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+   });
 
-     let options = "";
-     for (let i = 1; i <= nextValue?.value; i++) {
-       options += `<option value="${i}">${i}</option>`;
+   components.History.update$.subscribe((update) => {
+     const History = components.History;
+     var table = "<tr><th>Counter</th><th>Block</th><th>Time</th></tr>";
+     for (var i = 0; i <= getComponentValue(components.Counter, singletonEntity).value; i++) {
+       const key = encodeEntity(History.metadata.keySchema, { counterValue: i });
+       const value = getComponentValue(History, key);
+       if (value)
+         table +=
+           `<tr><td>${i}</td><td>${value.blockNumber}</td>` + `<td>${new Date(Number(value.time) * 1000)}</td></tr>\n`;
      }
-     document.getElementById("historyValue")!.innerHTML = options;
+     document.getElementById("history")!.innerHTML = `<table border>${table}</table>`;
    });
 
    // Just for demonstration purposes: we create a global function that can be
@@ -175,14 +181,6 @@ The directions here apply to the `vanilla` client template, if you use anything 
      console.log("new counter value:", await increment());
    };
 
-   (window as any).readHistory = async (counterValue) => {
-     const History = components.History;
-     const entity = encodeEntity(History.metadata.keySchema, { counterValue });
-     const { blockNumber, time } = getComponentValueStrict(History, entity);
-     document.getElementById("blockNumber")!.innerHTML = blockNumber;
-     document.getElementById("timeStamp")!.innerHTML = new Date(parseInt(Number(time) * 1000));
-   };
-
    if (import.meta.env.DEV) {
      const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
      mountDevTools({
@@ -190,7 +188,7 @@ The directions here apply to the `vanilla` client template, if you use anything 
        publicClient: network.publicClient,
        walletClient: network.walletClient,
        latestBlock$: network.latestBlock$,
-       blockStorageOperations$: network.blockStorageOperations$,
+       storedBlockLogs$: network.storedBlockLogs$,
        worldAddress: network.worldContract.address,
        worldAbi: network.worldContract.abi,
        write$: network.write$,
@@ -202,70 +200,67 @@ The directions here apply to the `vanilla` client template, if you use anything 
    </CollapseCode>
 
 <details>
+
 <summary>Explanation</summary>
 
 ```typescript
-let options = "";
+components.History.update$.subscribe((update) => {
 ```
 
-Create `options` as an empty string.
+Register a function to be called when the `History` component changes.
 
 ```typescript
-for (let i = 1; i <= nextValue?.value; i++) {
-  options += `<option value="${i}">${i}</option>`;
-}
+  const History = components.History;
+  var table = "<tr><th>Counter</th><th>Block</th><th>Time</th></tr>";
+  for(var i=0; i<=getComponentValue(components.Counter,singletonEntity).value; i++) {
 ```
 
-Create the list of options.
+To get the value of a component we use `getComponentValue` (or `getComponentValueStrict` if we want to throw an error if the value is not found).
+This function gets a component and a key.
+In the case of a singleton there is no key, so we use `singletonEntity`.
+The returned value includes multiple fields, but here we only care about the value.
 
 ```typescript
-document.getElementById("historyValue")!.innerHTML = options;
+const key = encodeEntity(History.metadata.keySchema, { counterValue: i });
+const value = getComponentValue(History, key);
 ```
 
-Set the internal HTML of the `historyValue` HTML tag to `options`.
-Notice the exclamation mark (`!`).
-`document.getElementById` may return either a tag that can be changed, or an empty value (if the parameter is not an id of any of the HTML tags).
-We know that `historyValue` exists in the HTML, but the TypeScript compiler does not.
-This exclamation point tells the compiler that it's OK, there will be a real value there.
-[TypeScript exclamation points are explained in greater detail in this link](https://blog.logrocket.com/understanding-exclamation-mark-typescript/).
+Reading a value from a table that has keys is a two-step process:
+
+1. Use `encodeEntity` to get the key.
+2. Use `getComponentValue` to get the value tied to that key.
 
 ```typescript
-(window as any).readHistory = async counterValue => {
-  const History = components.History
-  const entity = encodeEntity(History.metadata.keySchema, { counterValue });
+if (value)
+  table += `<tr><td>${i}</td><td>${value.blockNumber}</td>` + `<td>${new Date(Number(value.time) * 1000)}</td></tr>\n`;
 ```
 
-`encodeEntity` creates an entity key with the [encoding that MUD uses](/store/encoding).
-
-```typescript
-const { blockNumber, time } = getComponentValueStrict(History, entity);
-```
-
-Read the actual data.
-
-```typescript
-document.getElementById("blockNumber")!.innerHTML = blockNumber;
-```
-
-Update the value in the HTML table.
-
-```typescript
-  document.getElementById("timeStamp")!.innerHTML =
-    new Date(parseInt(Number(time) * 1000))
-}
-```
+If there is a value, add a line to the table.
 
 Solidity uses [Unix time](https://en.wikipedia.org/wiki/Unix_time).
 JavaScript uses a similar system, but it measures times in milliseconds.
 So to get a readable date, we take the time (which is a [`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)), multiply it by a thousand, and then convert it to a [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object.
 
+```typescript
+  }
+  document.getElementById("history")!.innerHTML = `<table border>${table}</table>`
+});
+```
+
+Set the internal HTML of the `history` HTML tag.
+Notice the exclamation mark (`!`).
+`document.getElementById` may return either a tag that can be changed, or an empty value (if the parameter is not an id of any of the HTML tags).
+We know that `history` exists in the HTML, but the TypeScript compiler does not.
+This exclamation point tells the compiler that it's OK, there will be a real value there.
+[See here for additional information](https://blog.logrocket.com/understanding-exclamation-mark-typescript/).
+
 </details>
 
-2. Edit `packages/clients/index.html`.
+2. Edit `packages/clients/index.html` to add a text area for the history.
 
    <CollapseCode>
 
-   ```html filename="index.html" copy showLineNumbers {12-26}
+   ```html filename="index.html" copy showLineNumbers {12-17}
    <!DOCTYPE html>
    <html lang="en">
      <head>
@@ -278,61 +273,13 @@ So to get a readable date, we take the time (which is a [`BigInt`](https://devel
        <div>Counter: <span id="counter">0</span></div>
        <button onclick="window.increment()">Increment</button>
        <hr />
-       <h2>
-         History for value:
-         <select id="historyValue" onInput="window.readHistory(value)"></select>
-       </h2>
-       <table border>
-         <tr>
-           <th>Block number</th>
-           <th>Time</th>
-         </tr>
-         <tr>
-           <td id="blockNumber"></td>
-           <td id="timeStamp"></td>
-         </tr>
-       </table>
+       <h2>History</h2>
+       <div id="history"></div>
      </body>
    </html>
    ```
 
    </CollapseCode>
 
-<details>
-<summary>Explanation</summary>
-
-```html
-<hr />
-<h2>
-  History for value:
-  <select id="historyValue" onInput="window.readHistory(value)"></select>
-</h2>
-```
-
-This is the [input field](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select) that lets the user select which counter value they'd like to get information about.
-The `id` attribute is used by `packages/client/src/index.ts` to set the options.
-The `onInput` attribute is the JavaScript code to execute when the value changes.
-
-```html
-<table border></table>
-```
-
-A standard [HTML table](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table).
-
-```html
-<tr>
-  <th>Block number</th>
-  <th>Time</th>
-</tr>
-<tr>
-  <td id="blockNumber"></td>
-  <td id="timeStamp"></td>
-</tr>
-```
-
-A location for the values, which is set by `window.readHistory` in `index.ts`.
-
-</details>
-
-3. Run `pnpm dev` in the application's root directory, browse to the app URL, and click **Increment** a few times.
-   Then select a counter value and see that the block number and correct time are written to the HTML table.
+1. Run `pnpm dev` in the application's root directory (or restart it if already running), browse to the app URL, and click **Increment** a few times.
+   See that the history table gets populated.
