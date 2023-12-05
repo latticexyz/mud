@@ -4,10 +4,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts",
-    "build:abi": "forge build",
-    "build:abi-ts": "mud abi-ts",
-    "build:mud": "rimraf src/codegen && mud tablegen && mud worldgen",
+    "build": "mud build",
+    "clean": "forge clean && rimraf src/codegen",
     "deploy:local": "pnpm run build && mud deploy",
     "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
     "dev": "pnpm mud dev-contracts",

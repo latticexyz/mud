@@ -7,7 +7,7 @@ import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { cleanDatabase, postgresStorage, schemaVersion } from "@latticexyz/store-sync/postgres";
+import { cleanDatabase, createStorageAdapter, shouldCleanDatabase } from "@latticexyz/store-sync/postgres";
 import { createStoreSync } from "@latticexyz/store-sync";
 import { indexerEnvSchema, parseEnv } from "./parseEnv";
 
@@ -37,37 +37,34 @@ const publicClient = createPublicClient({
 const chainId = await publicClient.getChainId();
 const database = drizzle(postgres(env.DATABASE_URL));
 
-const { storageAdapter, internalTables } = await postgresStorage({ database, publicClient });
+if (await shouldCleanDatabase(database, chainId)) {
+  console.log("outdated database detected, clearing data to start fresh");
+  cleanDatabase(database);
+}
+
+const { storageAdapter, tables } = await createStorageAdapter({ database, publicClient });
 
 let startBlock = env.START_BLOCK;
 
 // Resume from latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
+// TODO: query if the DB exists instead of try/catch
 try {
-  const currentChainStates = await database
+  const chainState = await database
     .select()
-    .from(internalTables.chain)
-    .where(eq(internalTables.chain.chainId, chainId))
-    .execute();
-  // TODO: replace this type workaround with `noUncheckedIndexedAccess: true` when we can fix all the issues related (https://github.com/latticexyz/mud/issues/1212)
-  const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
+    .from(tables.configTable)
+    .where(eq(tables.configTable.chainId, chainId))
+    .limit(1)
+    .execute()
+    // Get the first record in a way that returns a possible `undefined`
+    // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
+    .then((rows) => rows.find(() => true));
 
-  if (currentChainState != null) {
-    if (currentChainState.schemaVersion != schemaVersion) {
-      console.log(
-        "schema version changed from",
-        currentChainState.schemaVersion,
-        "to",
-        schemaVersion,
-        "cleaning database"
-      );
-      await cleanDatabase(database);
-    } else if (currentChainState.lastUpdatedBlockNumber != null) {
-      console.log("resuming from block number", currentChainState.lastUpdatedBlockNumber + 1n);
-      startBlock = currentChainState.lastUpdatedBlockNumber + 1n;
-    }
+  if (chainState?.lastUpdatedBlockNumber != null) {
+    startBlock = chainState.lastUpdatedBlockNumber + 1n;
+    console.log("resuming from block number", startBlock);
   }
 } catch (error) {
-  // ignore errors, this is optional
+  // ignore errors for now
 }
 
 const { latestBlockNumber$, storedBlockLogs$ } = await createStoreSync({
@@ -94,15 +91,38 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
   });
 
 if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
-  const { default: fastify } = await import("fastify");
+  const { default: Koa } = await import("koa");
+  const { default: cors } = await import("@koa/cors");
+  const { default: Router } = await import("@koa/router");
 
-  const server = fastify();
+  const server = new Koa();
+  server.use(cors());
+
+  const router = new Router();
+
+  router.get("/", (ctx) => {
+    ctx.body = "emit HelloWorld();";
+  });
 
   // k8s healthchecks
-  server.get("/healthz", (req, res) => res.code(200).send());
-  server.get("/readyz", (req, res) => (isCaughtUp ? res.code(200).send("ready") : res.code(424).send("backfilling")));
-
-  server.listen({ host: env.HEALTHCHECK_HOST, port: env.HEALTHCHECK_PORT }, (error, address) => {
-    console.log(`postgres indexer healthcheck server listening on ${address}`);
+  router.get("/healthz", (ctx) => {
+    ctx.status = 200;
   });
+  router.get("/readyz", (ctx) => {
+    if (isCaughtUp) {
+      ctx.status = 200;
+      ctx.body = "ready";
+    } else {
+      ctx.status = 424;
+      ctx.body = "backfilling";
+    }
+  });
+
+  server.use(router.routes());
+  server.use(router.allowedMethods());
+
+  server.listen({ host: env.HEALTHCHECK_HOST, port: env.HEALTHCHECK_PORT });
+  console.log(
+    `postgres indexer healthcheck server listening on http://${env.HEALTHCHECK_HOST}:${env.HEALTHCHECK_PORT}`
+  );
 }
