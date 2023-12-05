@@ -52,7 +52,7 @@ describe("createStorageAdapter", async () => {
         {
           "chainId": 31337,
           "lastUpdatedBlockNumber": 12n,
-          "version": "0.0.1",
+          "version": "0.0.2",
         },
       ]
     `);
