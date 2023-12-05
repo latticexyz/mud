@@ -989,6 +989,23 @@ library StoreCoreInternal {
     // Update the encoded length
     PackedCounter updatedEncodedLengths = previousEncodedLengths.setAtIndex(dynamicFieldIndex, updatedFieldLength);
 
+    // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = StoreHooks._get(tableId);
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA)) {
+        IStoreHook(hook.getAddress()).onBeforeSpliceDynamicData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          dynamicFieldIndex: dynamicFieldIndex,
+          startWithinField: startWithinField,
+          deleteCount: deleteCount,
+          encodedLengths: updatedEncodedLengths,
+          data: data
+        });
+      }
+    }
+
     {
       // Compute start index for the splice
       uint256 start = startWithinField;
@@ -1008,23 +1025,6 @@ library StoreCoreInternal {
         encodedLengths: updatedEncodedLengths,
         data: data
       });
-    }
-
-    // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA)) {
-        IStoreHook(hook.getAddress()).onBeforeSpliceDynamicData({
-          tableId: tableId,
-          keyTuple: keyTuple,
-          dynamicFieldIndex: dynamicFieldIndex,
-          startWithinField: startWithinField,
-          deleteCount: deleteCount,
-          encodedLengths: updatedEncodedLengths,
-          data: data
-        });
-      }
     }
 
     // Store the updated encoded lengths in storage

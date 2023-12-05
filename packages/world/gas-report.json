@@ -87,7 +87,7 @@
     "file": "test/World.t.sol",
     "test": "testPushToDynamicField",
     "name": "Push data to the table",
-    "gasUsed": 85811
+    "gasUsed": 85827
   },
   {
     "file": "test/World.t.sol",
@@ -135,25 +135,25 @@
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (cold)",
-    "gasUsed": 25602
+    "gasUsed": 25612
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (warm)",
-    "gasUsed": 12748
+    "gasUsed": 12758
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (cold)",
-    "gasUsed": 25953
+    "gasUsed": 25975
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (warm)",
-    "gasUsed": 13154
+    "gasUsed": 13176
   },
   {
     "file": "test/WorldResourceId.t.sol",
