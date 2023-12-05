@@ -93,33 +93,24 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
 if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
   const { default: Koa } = await import("koa");
   const { default: cors } = await import("@koa/cors");
-  const { default: Router } = await import("@koa/router");
+  const { healthcheck } = await import("../src/healthcheck");
 
   const server = new Koa();
   server.use(cors());
+  server.use(
+    healthcheck({
+      isReady: () => isCaughtUp,
+    })
+  );
 
-  const router = new Router();
-
-  router.get("/", (ctx) => {
-    ctx.body = "emit HelloWorld();";
-  });
-
-  // k8s healthchecks
-  router.get("/healthz", (ctx) => {
-    ctx.status = 200;
-  });
-  router.get("/readyz", (ctx) => {
-    if (isCaughtUp) {
+  server.use(async (ctx, next) => {
+    if (ctx.path === "/") {
       ctx.status = 200;
-      ctx.body = "ready";
-    } else {
-      ctx.status = 424;
-      ctx.body = "backfilling";
+      ctx.body = "emit HelloWorld();";
+      return;
     }
+    await next();
   });
-
-  server.use(router.routes());
-  server.use(router.allowedMethods());
 
   server.listen({ host: env.HEALTHCHECK_HOST, port: env.HEALTHCHECK_PORT });
   console.log(

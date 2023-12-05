@@ -58,7 +58,6 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.4",
-    "@types/cors": "^2.8.13",
     "@types/debug": "^4.1.7",
     "@types/koa": "^2.13.12",
     "@types/koa__cors": "^4.0.3",

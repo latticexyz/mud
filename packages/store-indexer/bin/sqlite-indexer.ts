@@ -8,7 +8,6 @@ import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
 import Koa from "koa";
 import cors from "@koa/cors";
-import Router from "@koa/router";
 import { createKoaMiddleware } from "trpc-koa-adapter";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
@@ -16,6 +15,7 @@ import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
 import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
+import { healthcheck } from "../src/healthcheck";
 
 const env = parseEnv(
   z.intersection(
@@ -91,29 +91,20 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
 
 const server = new Koa();
 server.use(cors());
+server.use(
+  healthcheck({
+    isReady: () => isCaughtUp,
+  })
+);
 
-const router = new Router();
-
-router.get("/", (ctx) => {
-  ctx.body = "emit HelloWorld();";
-});
-
-// k8s healthchecks
-router.get("/healthz", (ctx) => {
-  ctx.status = 200;
-});
-router.get("/readyz", (ctx) => {
-  if (isCaughtUp) {
+server.use(async (ctx, next) => {
+  if (ctx.path === "/") {
     ctx.status = 200;
-    ctx.body = "ready";
-  } else {
-    ctx.status = 424;
-    ctx.body = "backfilling";
+    ctx.body = "emit HelloWorld();";
+    return;
   }
+  await next();
 });
-
-server.use(router.routes());
-server.use(router.allowedMethods());
 
 server.use(
   createKoaMiddleware({
