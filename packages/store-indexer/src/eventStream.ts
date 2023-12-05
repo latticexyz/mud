@@ -1,7 +1,8 @@
 import Application, { Middleware } from "koa";
-import { CreateEventStreamResult, Events, createEventStream } from "./createEventStream";
+import { ServerSentEvents } from "@latticexyz/store-sync/sse";
+import { CreateEventStreamResult, createEventStream } from "./createEventStream";
 
-export function eventStream<events extends Events>(): Middleware<
+export function eventStream<events extends ServerSentEvents>(): Middleware<
   Application.DefaultState,
   Pick<CreateEventStreamResult<events>, "send">
 > {

@@ -15,6 +15,7 @@
     "./postgres-decoded": "./dist/postgres-decoded/index.js",
     "./recs": "./dist/recs/index.js",
     "./sqlite": "./dist/sqlite/index.js",
+    "./sse": "./dist/sse/index.js",
     "./trpc-indexer": "./dist/trpc-indexer/index.js",
     "./zustand": "./dist/zustand/index.js"
   },
@@ -34,6 +35,9 @@
       ],
       "sqlite": [
         "./src/sqlite/index.ts"
+      ],
+      "sse": [
+        "./src/sse/index.ts"
       ],
       "trpc-indexer": [
         "./src/trpc-indexer/index.ts"

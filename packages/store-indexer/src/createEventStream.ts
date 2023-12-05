@@ -1,18 +1,15 @@
+import { ServerSentEvents } from "@latticexyz/store-sync/sse";
 import { PassThrough, Readable } from "node:stream";
 
-export type Events = {
-  readonly [eventName: string]: {
-    readonly [key: string]: any; // TODO: refine to JSON-safe types?
-  };
-};
-
-export type CreateEventStreamResult<events extends Events = Events> = {
+export type CreateEventStreamResult<events extends ServerSentEvents = ServerSentEvents> = {
   stream: Readable;
   send: (eventName: keyof events & string, data: events[typeof eventName]) => void;
   end: () => void;
 };
 
-export function createEventStream<events extends Events = Events>(): CreateEventStreamResult<events> {
+export function createEventStream<
+  events extends ServerSentEvents = ServerSentEvents
+>(): CreateEventStreamResult<events> {
   const stream = new PassThrough();
 
   const result: CreateEventStreamResult<events> = {
