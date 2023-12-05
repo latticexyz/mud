@@ -16,12 +16,13 @@ To see the effects of filtering we need a table with entries to filter. To get s
 
 Edit `packages/client/src/mud/setupNetwork.ts`.
 
+- Import [`pad`](https://viem.sh/docs/utilities/pad.html) from viem.
 - Import [`resourceToHex`](https://github.com/latticexyz/mud/blob/main/packages/common/src/resourceToHex.ts) to create resource identifiers.
 - Add a `filters` field to the `syncToRecs` call.
 
 <CollapseCode>
 
-```ts filename="setupNetwork.ts" copy showLineNumbers {14,84-96}
+```ts filename="setupNetwork.ts" copy showLineNumbers {14-15,85-97}
 /*
  * The MUD client code is built on top of viem
  * (https://viem.sh/docs/getting-started.html).
@@ -36,6 +37,7 @@ import { world } from "./world";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, getContract, transportObserver, ContractWrite } from "@latticexyz/common";
 import { resourceToHex } from "@latticexyz/common";
+import { pad } from "viem";
 
 import { Subject, share } from "rxjs";
 
@@ -111,11 +113,11 @@ export async function setupNetwork() {
       },
       {
         tableId: resourceToHex({ type: "table", namespace: "", name: "History" }),
-        key0: "0x" + "1".padStart(64, "0"),
+        key0: pad("0x01"),
       },
       {
         tableId: resourceToHex({ type: "table", namespace: "", name: "History" }),
-        key0: "0x" + "5".padStart(64, "0"),
+        key0: pad("0x05"),
       },
     ],
   });
@@ -197,11 +199,11 @@ It's a singleton so there is only one row anyway.
 ```ts
       {
          tableId: resourceToHex({ type: "table", namespace: "", name: "History"}),
-         key0: "0x" + "1".padStart(64, "0")
+         key0: pad("0x01"),
       },
       {
          tableId: resourceToHex({ type: "table", namespace: "", name: "History"}),
-         key0: "0x" + "5".padStart(64, "0")
+         key0: pad("0x05"),
       },
     ],
 ```
@@ -216,7 +218,10 @@ We need a separate filter for every value, and here we have two we care about: `
 
 There are several limitations on filters.
 
-- We can only filter on the indexed topics, which in the case of MUD table changes are the table ID (`tableId`), the first key (`key0`), and the second key (`key1`).
+- We can only filter on these fields:
+  - The table ID (`tableId`)
+  - The first key (`key0`)
+  - The second key (`key1`)
 - We can only filter by checking for equality.
   We cannot check ranges, or get all values except for a specific one (inequality).
 
