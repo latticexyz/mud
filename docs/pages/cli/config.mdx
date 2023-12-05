@@ -9,9 +9,9 @@ The config is used to define:
   See [the `Store` documentation](/store/tables) for more information on table and their format.
 - The [namespace](/world/namespaces-access-control) the [`System`s](/world/systems) and tables will be deployed in.
 - The `System`s in your project.
-  By default, the deployer will find all Solidity matching `*System*.sol` (so any file containing `System` with a `.sol` extension, in any folder) and deploy them as `System`.
-  If you want greater control over your systems (to change their public access or their name), you can use the `systems` object in the config
-- The [modules](/world/modules) that will be installed on the `World`.
+  By default, the deployer will find all Solidity matching `*System.sol` (so any file ending in `System.sol`, in any folder) and deploy them as public `System`.
+  If you want greater control over your systems (to change their public access or their name), you can use the `systems` object in the config.
+- The [modules](/world/modules) that will be installed in the `World`.
 
 An example of a `World` config with all the different configuration keys and options used:
 
@@ -62,18 +62,18 @@ All of these global configuration keys are optional.
 
 - **`modules`** an array of module definitions: each module definition has a `name`, `root` (optional), and `args` key.
 
-  - `name`: Name of the module to instantiate. The same module can be instantiated multiple times. This should be the name of the contract file without `.sol` (eg: if the contract is named `DopeModule.sol`, the name of the module is `DopeModule`)
+  - `name`: Name of the module to install. The same module can be installed multiple times. This should be the name of the contract file without `.sol` (eg: if the file is named `DopeModule.sol`, the name of the module is `DopeModule`)
 
   - `root`: whether to create a `root` module or not. `root` modules have access to all tables and are not bound to namespace restrictions.
 
   - `args`: a list of arguments to be sent to the `install` function of the module. In this array, you can use the function `resolveTableId`. This function will turn a table name from your config into its low-level ID in the World. It is useful to pass references of a table to a module.
 
-- **`systems`**: a dictionary of system definitions. The keys in the array are file names without the `.sol` extension. For example, if your system is named `SystemA.sol`, use `SystemA` as the.
+- **`systems`**: a record of system definitions. The keys in the record are file names without the `.sol` extension. For example, if your system is named `SystemA.sol`, use `SystemA` as the key.
 
-  The value is a dictionary of system configuration properties:
+  The value is a record of system configuration properties:
 
   - `fileSelector` (optional): a `string`: the file selector for the system.
-  - `openAccess` (optional, default `true`): a `bool`: if set to `false`, only the systems in the same namespace and the addresses or systems listed from the accessList.
+  - `openAccess` (optional, default `true`): a `bool`: if set to `false`, only the systems in the same namespace and the addresses or systems listed in the the `accessList` array have access.
 
   - `accessList` (required if openAccess is `false`): an array of `string`. Each address in the array will be granted access to this system, allowing them to call it.
 
