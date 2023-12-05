@@ -17,7 +17,12 @@ import { createBenchmark } from "./createBenchmark";
 export async function createQueryAdapter(database: PgDatabase<any>): Promise<QueryAdapter> {
   const adapter: QueryAdapter = {
     async getLogs(opts) {
-      return getLogs(database, opts);
+      const filters = opts.filters ?? [];
+      return getLogs(database, {
+        ...opts,
+        // make sure we're always retrieving `store.Tables` table, so we can decode table values
+        filters: filters.length > 0 ? [...filters, { tableId: storeTables.Tables.tableId }] : [],
+      });
     },
     async findAll(opts) {
       const benchmark = createBenchmark();

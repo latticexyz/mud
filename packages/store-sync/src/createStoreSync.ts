@@ -96,6 +96,8 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       indexerUrl,
     });
 
+    console.log("snapshot size", snapshot?.logs.length);
+
     onProgress?.({
       step: SyncStep.SNAPSHOT,
       percentage: 100,

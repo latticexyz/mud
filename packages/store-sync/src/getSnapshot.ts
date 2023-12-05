@@ -1,8 +1,13 @@
-import { StorageAdapterBlock, SyncOptions } from "./common";
+import { StorageAdapterBlock, SyncOptions, TableWithRecords } from "./common";
 import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
 import { TRPCClientError } from "@trpc/client";
 import { tablesWithRecordsToLogs } from "./tablesWithRecordsToLogs";
+import { isTableRegistrationLog } from "./isTableRegistrationLog";
+import { getAddress } from "viem";
+import { logToTable } from "./logToTable";
+import { groupBy } from "@latticexyz/common/utils";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 
 const debug = parentDebug.extend("getSnapshot");
 
@@ -43,7 +48,46 @@ export async function getSnapshot({
 
   try {
     debug("fetching logs from indexer", indexerUrl);
-    return await indexer.getLogs.query({ chainId, address, filters });
+
+    // const benchmark = createBenchmark();
+
+    const opts = { chainId, address, filters: filters ?? [] };
+
+    const { blockNumber, logs } = await indexer.getLogs.query(opts);
+
+    // benchmark("getLogs");
+
+    const tables = logs.filter(isTableRegistrationLog).map(logToTable);
+
+    // benchmark("filter");
+
+    const logsByTable = groupBy(logs, (log) => `${getAddress(log.address)}:${log.args.tableId}`);
+
+    // benchmark("groupBy");
+
+    const tablesWithRecords: TableWithRecords[] = tables.map((table) => {
+      const tableLogs = logsByTable.get(`${getAddress(table.address)}:${table.tableId}`) ?? [];
+      const records = tableLogs.map((log) => ({
+        key: decodeKey(table.keySchema, log.args.keyTuple),
+        value: decodeValueArgs(table.valueSchema, log.args as any),
+      }));
+
+      return {
+        ...table,
+        records,
+      };
+    });
+
+    // benchmark("tablesWithRecords");
+
+    debug("findAll: decoded %d logs across %d tables", logs.length, tables.length);
+
+    return {
+      blockNumber,
+      logs: tablesWithRecordsToLogs(tablesWithRecords),
+    };
+
+    // return await indexer.getLogs.query({ chainId, address, filters });
   } catch (error) {
     if (error instanceof TRPCClientError) {
       // Backwards compatibility with older indexers
