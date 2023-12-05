@@ -1,11 +1,11 @@
 # mud test
 
-This command runs the tests in a MUD project. This requires several steps:
+This command runs the tests in a MUD project. Internally, it runs the following steps:
 
-1. Start an [`anvil`](https://book.getfoundry.sh/reference/anvil/) instance.
+1. Starts an [`anvil`](https://book.getfoundry.sh/reference/anvil/) instance.
    {/* This could be either an empty blockchain, or one that can be forked for a [fork test](https://book.getfoundry.sh/forge/fork-testing). */}
-1. Deploy the `World` and all related `System`s using [`mud deploy`](./deploy).
-1. Run tests using [`forge test`](https://book.getfoundry.sh/forge/tests).
+1. Deploys the `World` and all related `System`s using [`mud deploy`](./deploy).
+1. Runs tests using [`forge test`](https://book.getfoundry.sh/forge/tests) and passes the deployed world address to the tests via the `WORLD_ADDRESS` environment variable.
 
 ## Command line options
 
