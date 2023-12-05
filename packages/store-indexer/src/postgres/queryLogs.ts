@@ -1,8 +1,9 @@
 import { Hex } from "viem";
-import { SyncFilter } from "@latticexyz/store-sync";
 import { isNotNull } from "@latticexyz/common/utils";
 import { PendingQuery, Row, Sql } from "postgres";
 import { hexToBytes } from "viem";
+import { z } from "zod";
+import { input } from "@latticexyz/store-sync/trpc-indexer";
 
 function and(sql: Sql, conditions: PendingQuery<Row[]>[]): PendingQuery<Row[]> {
   return sql`(${conditions.reduce((query, condition) => sql`${query} AND ${condition}`)})`;
@@ -26,30 +27,21 @@ type Record = {
   lastUpdatedBlockNumber: string;
 };
 
-export function queryLogs(
-  sql: Sql,
-  {
-    address,
-    filters = [],
-  }: {
-    readonly address?: Hex;
-    readonly filters?: readonly SyncFilter[];
-  }
-): PendingQuery<Record[]> {
-  const conditions = filters.length
-    ? filters.map((filter) =>
+export function queryLogs(sql: Sql, opts: z.infer<typeof input>): PendingQuery<Record[]> {
+  const conditions = opts.filters.length
+    ? opts.filters.map((filter) =>
         and(
           sql,
           [
-            address != null ? sql`address = ${hexToBytes(address)}` : null,
+            opts.address != null ? sql`address = ${hexToBytes(opts.address)}` : null,
             sql`table_id = ${hexToBytes(filter.tableId)}`,
             filter.key0 != null ? sql`key0 = ${hexToBytes(filter.key0)}` : null,
             filter.key1 != null ? sql`key1 = ${hexToBytes(filter.key1)}` : null,
           ].filter(isNotNull)
         )
       )
-    : address != null
-    ? [sql`address = ${hexToBytes(address)}`]
+    : opts.address != null
+    ? [sql`address = ${hexToBytes(opts.address)}`]
     : [];
 
   const where = sql`WHERE ${and(
