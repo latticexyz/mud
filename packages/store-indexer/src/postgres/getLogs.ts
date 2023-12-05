@@ -9,11 +9,12 @@ import { recordToLog } from "./recordToLog";
 import { debug } from "../debug";
 import { createBenchmark } from "@latticexyz/common";
 import superjson from "superjson";
+import { compress } from "../compress";
 
 export function getLogs(database: Sql): Middleware {
   const router = new Router();
 
-  router.get("/get/logs", async (ctx) => {
+  router.get("/get/logs", compress(), async (ctx) => {
     const benchmark = createBenchmark("getLogs");
 
     try {
@@ -38,36 +39,6 @@ export function getLogs(database: Sql): Middleware {
       ctx.body = error;
       debug(error);
     }
-
-    // .cursor(100, async (rows) => {
-    //   if (!hasEmittedConfig && rows.length) {
-    //     ctx.send("config", {
-    //       indexerVersion: rows[0].indexerVersion,
-    //       chainId: rows[0].chainId,
-    //       lastUpdatedBlockNumber: rows[0].chainBlockNumber,
-    //       totalRows: rows[0].totalRows,
-    //     });
-    //     hasEmittedConfig = true;
-    //   }
-
-    //   rows.forEach((row) => {
-    //     ctx.send("log", {
-    //       // TODO: either properly encode bigints in a JSON-safe way or fix these types
-    //       blockNumber: row.chainBlockNumber as unknown as bigint,
-    //       address: row.address,
-    //       eventName: "Store_SetRecord",
-    //       args: {
-    //         tableId: row.tableId,
-    //         keyTuple: decodeDynamicField("bytes32[]", row.keyBytes),
-    //         staticData: row.staticData ?? "0x",
-    //         encodedLengths: row.encodedLengths ?? "0x",
-    //         dynamicData: row.dynamicData ?? "0x",
-    //       },
-    //     });
-    //   });
-    // });
-
-    // TODO: subscribe + continue writing
   });
 
   return compose([router.routes(), router.allowedMethods()]) as Middleware;
