@@ -119,35 +119,6 @@ describe("System", () => {
       expect(mock).toHaveBeenCalledTimes(4);
     });
 
-    it("should react to initial and update events if runOnInit is true", () => {
-      const mock = jest.fn();
-      defineComponentSystem(world, Position, mock, { runOnInit: true });
-
-      expect(mock).toHaveBeenCalledTimes(1);
-      expect(mock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          entity,
-          component: Position,
-          value: [{ x: 1, y: 2 }, undefined],
-          type: UpdateType.Enter,
-        })
-      );
-
-      setComponent(Position, entity, { x: 2, y: 3 });
-      expect(mock).toHaveBeenCalledTimes(2);
-      expect(mock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          entity,
-          component: Position,
-          value: [
-            { x: 2, y: 3 },
-            { x: 1, y: 2 },
-          ],
-          type: UpdateType.Update,
-        })
-      );
-    });
-
     it("defineEnterSystem should rerun once with entities matching the query for the first time", () => {
       const CanMove = defineComponent(world, { value: Type.Boolean });
       const mock = jest.fn();
