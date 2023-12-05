@@ -369,7 +369,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 719033
+    "gasUsed": 719047
   },
   {
     "file": "test/Mixed.t.sol",
@@ -759,7 +759,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 19761
+    "gasUsed": 19785
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -807,7 +807,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: register table",
-    "gasUsed": 640903
+    "gasUsed": 640929
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -873,7 +873,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "set static field (1 slot)",
-    "gasUsed": 31209
+    "gasUsed": 31237
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -885,7 +885,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "set static field (overlap 2 slot)",
-    "gasUsed": 29862
+    "gasUsed": 29893
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -1143,7 +1143,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 442404
+    "gasUsed": 442432
   },
   {
     "file": "test/Vector2.t.sol",

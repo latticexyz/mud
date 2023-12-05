@@ -69,7 +69,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 47623
+    "gasUsed": 47642
   },
   {
     "file": "test/World.t.sol",
@@ -99,7 +99,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 120887
+    "gasUsed": 120917
   },
   {
     "file": "test/World.t.sol",
@@ -111,19 +111,19 @@
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 162595
+    "gasUsed": 162627
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 637368
+    "gasUsed": 637426
   },
   {
     "file": "test/World.t.sol",
     "test": "testSetField",
     "name": "Write data to a table field",
-    "gasUsed": 36881
+    "gasUsed": 36903
   },
   {
     "file": "test/World.t.sol",
