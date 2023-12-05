@@ -1,22 +1,7 @@
-import { z } from "zod";
 import { QueryAdapter } from "./common";
-import { isHex } from "viem";
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
-
-export const input = z.object({
-  chainId: z.number(),
-  address: z.string().refine(isHex).optional(),
-  filters: z
-    .array(
-      z.object({
-        tableId: z.string().refine(isHex),
-        key0: z.string().refine(isHex).optional(),
-        key1: z.string().refine(isHex).optional(),
-      })
-    )
-    .default([]),
-});
+import { input } from "../indexer-client/input";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createAppRouter() {

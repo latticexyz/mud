@@ -2,13 +2,12 @@ import { Sql } from "postgres";
 import { Middleware } from "koa";
 import Router from "@koa/router";
 import compose from "koa-compose";
-import { input } from "@latticexyz/store-sync/trpc-indexer";
+import { input } from "@latticexyz/store-sync/indexer-client";
 import { storeTables } from "@latticexyz/store-sync";
 import { queryLogs } from "./queryLogs";
 import { recordToLog } from "./recordToLog";
 import { debug } from "../debug";
 import { createBenchmark } from "@latticexyz/common";
-import superjson from "superjson";
 import { compress } from "../compress";
 
 export function getLogs(database: Sql): Middleware {
@@ -28,12 +27,10 @@ export function getLogs(database: Sql): Middleware {
       const logs = records.map(recordToLog);
       benchmark("map records to logs");
 
-      const blockNumber = BigInt(records[0].chainBlockNumber);
+      const blockNumber = records[0].chainBlockNumber;
 
+      ctx.body = JSON.stringify({ blockNumber, logs });
       ctx.status = 200;
-
-      // TODO: replace superjson with more efficient encoding
-      ctx.body = superjson.stringify({ blockNumber, logs });
     } catch (error) {
       ctx.status = 500;
       ctx.body = error;

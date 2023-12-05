@@ -1,8 +1,8 @@
 import { StorageAdapterBlock, SyncOptions } from "./common";
 import { debug as parentDebug } from "./debug";
-import { createIndexerClient as createTrpcIndexerClient } from "./trpc-indexer";
 import { TRPCClientError } from "@trpc/client";
 import { tablesWithRecordsToLogs } from "./tablesWithRecordsToLogs";
+import { createIndexerClient as createTrpcIndexerClient } from "./trpc-indexer";
 import { createIndexerClient } from "./indexer-client";
 
 const debug = parentDebug.extend("getSnapshot");
@@ -40,9 +40,9 @@ export async function getSnapshot({
 
   if (!indexerUrl) return;
 
-  const url = new URL(indexerUrl);
-  const indexer = createIndexerClient({ url: url.origin });
-  const trpcIndexer = createTrpcIndexerClient({ url: `${url.origin}/trpc` });
+  const indexerOrigin = new URL(indexerUrl).origin;
+  const indexer = createIndexerClient({ url: indexerOrigin });
+  const trpcIndexer = createTrpcIndexerClient({ url: `${indexerOrigin}/trpc` });
 
   try {
     debug("fetching logs from indexer via get", indexerUrl);
