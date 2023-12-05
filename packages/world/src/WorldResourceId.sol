@@ -3,12 +3,13 @@ pragma solidity >=0.8.21;
 
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { ResourceId, ResourceIdInstance, TYPE_BITS } from "@latticexyz/store/src/ResourceId.sol";
+import { BYTE_TO_BITS } from "@latticexyz/store/src/constants.sol";
 
 import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
 import { RESOURCE_NAMESPACE, MASK_RESOURCE_NAMESPACE } from "./worldResourceTypes.sol";
 
-uint256 constant NAMESPACE_BITS = 14 * 8;
-uint256 constant NAME_BITS = 16 * 8;
+uint256 constant NAMESPACE_BITS = 14 * BYTE_TO_BITS;
+uint256 constant NAME_BITS = 16 * BYTE_TO_BITS;
 
 bytes16 constant ROOT_NAMESPACE_STRING = bytes16("ROOT_NAMESPACE");
 bytes16 constant ROOT_NAME_STRING = bytes16("ROOT_NAME");
