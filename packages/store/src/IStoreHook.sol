@@ -2,7 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { FieldLayout } from "./FieldLayout.sol";
-import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
+import { IERC165 } from "./IERC165.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { ResourceId } from "./ResourceId.sol";
 
@@ -14,8 +14,7 @@ bytes4 constant STORE_HOOK_INTERFACE_ID = IStoreHook.onBeforeSetRecord.selector 
   IStoreHook.onBeforeSpliceDynamicData.selector ^
   IStoreHook.onAfterSpliceDynamicData.selector ^
   IStoreHook.onBeforeDeleteRecord.selector ^
-  IStoreHook.onAfterDeleteRecord.selector ^
-  ERC165_INTERFACE_ID;
+  IStoreHook.onAfterDeleteRecord.selector;
 
 interface IStoreHook is IERC165 {
   /// @notice Error emitted when a function is not implemented.
