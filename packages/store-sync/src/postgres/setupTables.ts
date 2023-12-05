@@ -54,6 +54,7 @@ export async function setupTables(
       await tx.execute(sql.raw(query.compile().sql));
 
       for (const index of tableConfig.indexes) {
+        console.log("index", index);
         const columnNames = index.config.columns.map((col) => col.name);
         let query = scopedDb.schema
           .createIndex(index.config.name ?? `${tableConfig.name}_${columnNames.join("_")}_index`)

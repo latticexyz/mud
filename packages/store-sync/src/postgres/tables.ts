@@ -32,6 +32,7 @@ const recordsTable = pgSchema(schemaName).table(
   },
   (table) => ({
     pk: primaryKey(table.address, table.tableId, table.keyBytes),
+    tableIdIndex: index("table_id_index").on(table.address, table.tableId),
     key0Index: index("key0_index").on(table.address, table.tableId, table.key0),
     key1Index: index("key1_index").on(table.address, table.tableId, table.key1),
     // TODO: add indices for querying without table ID
