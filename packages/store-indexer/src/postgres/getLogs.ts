@@ -3,8 +3,8 @@ import { Hex } from "viem";
 import { StorageAdapterLog, SyncFilter } from "@latticexyz/store-sync";
 import { tables } from "@latticexyz/store-sync/postgres";
 import { and, asc, eq, or } from "drizzle-orm";
-import { decodeDynamicField } from "@latticexyz/protocol-parser";
 import { bigIntMax } from "@latticexyz/common/utils";
+import { recordToLog } from "./recordToLog";
 
 export async function getLogs(
   database: PgDatabase<any>,
@@ -67,20 +67,7 @@ export async function getLogs(
   const logs = records
     // TODO: add this to the query, assuming we can optimize with an index
     .filter((record) => !record.isDeleted)
-    .map(
-      (record) =>
-        ({
-          address: record.address,
-          eventName: "Store_SetRecord",
-          args: {
-            tableId: record.tableId,
-            keyTuple: decodeDynamicField("bytes32[]", record.keyBytes),
-            staticData: record.staticData ?? "0x",
-            encodedLengths: record.encodedLengths ?? "0x",
-            dynamicData: record.dynamicData ?? "0x",
-          },
-        } as const)
-    );
+    .map((record) => recordToLog({ ...record, lastUpdatedBlockNumber: record.lastUpdatedBlockNumber.toString() }));
 
   return { blockNumber, logs };
 }
