@@ -4,7 +4,7 @@ import { hexToBytes } from "viem";
 import { z } from "zod";
 import { input } from "@latticexyz/store-sync/indexer-client";
 import { transformSchemaName } from "@latticexyz/store-sync/postgres";
-import { Record } from "./types";
+import { Record } from "./common";
 
 const schemaName = transformSchemaName("mud");
 
