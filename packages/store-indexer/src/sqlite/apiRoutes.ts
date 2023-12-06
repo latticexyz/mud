@@ -9,10 +9,10 @@ import { compress } from "../compress";
 import { getTablesWithRecords } from "./getTablesWithRecords";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 
-export function getLogs(database: BaseSQLiteDatabase<"sync", any>): Middleware {
+export function apiRoutes(database: BaseSQLiteDatabase<"sync", any>): Middleware {
   const router = new Router();
 
-  router.get("/get/logs", compress(), async (ctx) => {
+  router.get("/api/logs", compress(), async (ctx) => {
     const benchmark = createBenchmark("sqliteGetLogs");
 
     try {
