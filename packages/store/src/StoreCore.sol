@@ -905,6 +905,10 @@ library StoreCore {
     uint256 start,
     uint256 end
   ) internal view returns (bytes memory) {
+    // Verify the slice bounds are valid
+    if (start > end) {
+      revert IStoreErrors.Store_InvalidBounds(start, end);
+    }
     // Verify the accessed data is within the bounds of the dynamic field.
     // This is necessary because we don't delete the dynamic data when a record is deleted,
     // but only decrease its length.
@@ -917,7 +921,9 @@ library StoreCore {
     // Get the length and storage location of the dynamic field
     uint256 location = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
 
-    return Storage.load({ storagePointer: location, length: end - start, offset: start });
+    unchecked {
+      return Storage.load({ storagePointer: location, length: end - start, offset: start });
+    }
   }
 }
 

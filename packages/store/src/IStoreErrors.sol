@@ -10,6 +10,7 @@ interface IStoreErrors {
   error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
 
   error Store_InvalidDynamicDataLength(uint256 expected, uint256 received);
+  error Store_InvalidBounds(uint256 start, uint256 end);
   error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
   error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
   error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);

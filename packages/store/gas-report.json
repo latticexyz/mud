@@ -621,25 +621,25 @@
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetDynamicFieldSlice",
     "name": "get field slice (cold, 1 slot)",
-    "gasUsed": 5609
+    "gasUsed": 5569
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetDynamicFieldSlice",
     "name": "get field slice (warm, 1 slot)",
-    "gasUsed": 1711
+    "gasUsed": 1671
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetDynamicFieldSlice",
     "name": "get field slice (semi-cold, 1 slot)",
-    "gasUsed": 3704
+    "gasUsed": 3664
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetDynamicFieldSlice",
     "name": "get field slice (warm, 2 slots)",
-    "gasUsed": 3931
+    "gasUsed": 3891
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
@@ -1059,7 +1059,7 @@
     "file": "test/StoreHooksColdLoad.t.sol",
     "test": "testGetItem",
     "name": "StoreHooks: get 1 element (cold)",
-    "gasUsed": 8486
+    "gasUsed": 8446
   },
   {
     "file": "test/StoreHooksColdLoad.t.sol",
