@@ -61,7 +61,7 @@ describe("Sync from indexer", async () => {
     expect(asyncErrorHandler.getErrors()[0]).toContain("error getting snapshot");
   });
 
-  describe.only.each([["postgres"]] as const)("%s indexer", (indexerType) => {
+  describe.each([["sqlite"], ["postgres"]] as const)("%s indexer", (indexerType) => {
     let indexerIteration = 1;
     let indexer: Awaited<ReturnType<typeof startIndexer>>;
 
@@ -83,7 +83,7 @@ describe("Sync from indexer", async () => {
       await indexer.kill();
     });
 
-    it.only("should sync test data", async () => {
+    it("should sync test data", async () => {
       await openClientWithRootAccount(page, { indexerUrl: indexer.url });
       await waitForInitialSync(page);
 
