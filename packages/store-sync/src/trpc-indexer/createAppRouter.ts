@@ -3,6 +3,9 @@ import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { input } from "../indexer-client/input";
 
+/**
+ * @deprecated
+ */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createAppRouter() {
   const t = initTRPC.context<{ queryAdapter: QueryAdapter }>().create({
