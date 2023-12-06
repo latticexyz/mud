@@ -22,6 +22,14 @@ type Comparison = {
   mismatchingRows: Record<Address, Record<TableId, Record<Key, Record<string, RecordData | null>>>>;
 };
 
+function normalize(data: RecordData): RecordData {
+  return {
+    staticData: data.staticData.padEnd(66, "0") as Hex,
+    encodedLengths: data.encodedLengths.padEnd(66, "0") as Hex,
+    dynamicData: data.dynamicData.padEnd(66, "0") as Hex,
+  };
+}
+
 function setRecord<Data>(
   state: Record<Address, Record<TableId, Record<Key, Data>>>,
   address: Address,
@@ -29,9 +37,9 @@ function setRecord<Data>(
   key: Key,
   data: Data
 ): void {
-  state[address] ??= {};
-  state[address][tableId] ??= {};
-  state[address][tableId][key] ??= data;
+  state[address.toLowerCase()] ??= {};
+  state[address.toLowerCase()][tableId] ??= {};
+  state[address.toLowerCase()][tableId][key] ??= data;
 }
 
 function getRecord<Data>(
@@ -70,7 +78,7 @@ async function syncToObject(indexerConfig: IndexerConfig): Promise<State> {
     }
     const { address } = log;
     const { tableId, keyTuple, staticData, dynamicData, encodedLengths } = log.args;
-    setRecord(state.rows, address, tableId, keyTuple.join("-"), { staticData, dynamicData, encodedLengths });
+    setRecord(state.rows, address, tableId, keyTuple.join("-"), normalize({ staticData, dynamicData, encodedLengths }));
   }
 
   return state;
