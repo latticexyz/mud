@@ -13,7 +13,7 @@ export function apiRoutes(database: BaseSQLiteDatabase<"sync", any>): Middleware
   const router = new Router();
 
   router.get("/api/logs", compress(), async (ctx) => {
-    const benchmark = createBenchmark("sqliteGetLogs");
+    const benchmark = createBenchmark("sqlite:logs");
 
     try {
       const opts = input.parse(typeof ctx.query.input === "string" ? JSON.parse(ctx.query.input) : {});
