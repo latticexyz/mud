@@ -10,7 +10,7 @@ import { RESOURCE_NAMESPACE, MASK_RESOURCE_NAMESPACE } from "./worldResourceType
 uint256 constant NAMESPACE_BITS = 14 * 8;
 uint256 constant NAME_BITS = 16 * 8;
 
-bytes16 constant ROOT_NAMESPACE_STRING = bytes16("ROOT_NAMESPACE");
+bytes14 constant ROOT_NAMESPACE_STRING = bytes14("ROOT_NAMESPACE");
 bytes16 constant ROOT_NAME_STRING = bytes16("ROOT_NAME");
 
 bytes32 constant NAMESPACE_MASK = bytes32(~bytes14("")) >> (TYPE_BITS);
