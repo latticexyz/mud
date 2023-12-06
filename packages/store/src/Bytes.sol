@@ -262,7 +262,7 @@ library Bytes {
    * @return The extracted bytes4 value from the specified position in the bytes32 value.
    */
   function slice4(bytes32 data, uint256 start) internal pure returns (bytes4) {
-    bytes2 output;
+    bytes4 output;
     assembly {
       output := shl(mul(8, start), data)
     }
