@@ -35,13 +35,13 @@ async function syncToObject(indexerUrl: string): Promise<State> {
 
 function compare(received: State, expected: State): void {
   expect(received.blockNumber).toBe(expected.blockNumber);
-  expect(Object.keys(received.rows).length).toBe(Object.keys(expected.rows).length);
-  for (const key of Object.keys(expected.rows)) {
+  // expect(received.rows.size).toBe(expected.rows.size);
+  for (const key of expected.rows.keys()) {
     const expectedValue = expected.rows.get(key);
     const receivedValue = received.rows.get(key);
-    expect(receivedValue?.staticData).toBe(expectedValue?.staticData);
-    expect(receivedValue?.encodedLengths).toBe(expectedValue?.encodedLengths);
-    expect(receivedValue?.dynamicData).toBe(expectedValue?.dynamicData);
+    expect(receivedValue?.staticData, `key: ${key}`).toBe(expectedValue?.staticData);
+    expect(receivedValue?.encodedLengths, `key: ${key}`).toBe(expectedValue?.encodedLengths);
+    expect(receivedValue?.dynamicData, `key: ${key}`).toBe(expectedValue?.dynamicData);
   }
 }
 
