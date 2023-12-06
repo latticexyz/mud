@@ -169,7 +169,7 @@ library Storage {
       // Store length
       mstore(result, length)
     }
-    load(storagePointer, length, offset, memoryPointer);
+    load(storagePointer, offset, memoryPointer, length);
     return result;
   }
 
@@ -180,7 +180,7 @@ library Storage {
    * @param offset Offset within the storage location.
    * @param memoryPointer Pointer to the location in memory to append the data.
    */
-  function load(uint256 storagePointer, uint256 length, uint256 offset, uint256 memoryPointer) internal view {
+  function load(uint256 storagePointer, uint256 offset, uint256 memoryPointer, uint256 length) internal view {
     if (offset > 0) {
       // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
       if (offset >= 32) {
