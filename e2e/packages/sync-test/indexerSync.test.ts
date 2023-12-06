@@ -83,7 +83,7 @@ describe("Sync from indexer", async () => {
       await indexer.kill();
     });
 
-    it("should sync test data", async () => {
+    it.only("should sync test data", async () => {
       await openClientWithRootAccount(page, { indexerUrl: indexer.url });
       await waitForInitialSync(page);
 

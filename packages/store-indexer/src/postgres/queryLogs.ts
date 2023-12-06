@@ -3,7 +3,10 @@ import { PendingQuery, Row, Sql } from "postgres";
 import { hexToBytes } from "viem";
 import { z } from "zod";
 import { input } from "@latticexyz/store-sync/indexer-client";
+import { transformSchemaName } from "@latticexyz/store-sync/postgres";
 import { Record } from "./types";
+
+const schemaName = transformSchemaName("mud");
 
 function and(sql: Sql, conditions: PendingQuery<Row[]>[]): PendingQuery<Row[]> {
   return sql`(${conditions.reduce((query, condition) => sql`${query} AND ${condition}`)})`;
@@ -44,7 +47,7 @@ export function queryLogs(sql: Sql, opts: z.infer<typeof input>): PendingQuery<R
           version AS "indexerVersion",
           chain_id AS "chainId",
           last_updated_block_number AS "chainBlockNumber"
-        FROM mud.config
+        FROM ${sql(`${schemaName}.config`)}
         LIMIT 1
       ),
       records AS (
@@ -56,7 +59,7 @@ export function queryLogs(sql: Sql, opts: z.infer<typeof input>): PendingQuery<R
           '0x' || encode(encoded_lengths, 'hex') AS "encodedLengths",
           '0x' || encode(dynamic_data, 'hex') AS "dynamicData",
           last_updated_block_number AS "recordBlockNumber"
-        FROM mud.records
+        FROM ${sql(`${schemaName}.records`)}
         ${where}
         ORDER BY last_updated_block_number ASC
       )

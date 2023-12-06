@@ -27,13 +27,13 @@ export function getLogs(database: Sql): Middleware {
       const logs = records.map(recordToLog);
       benchmark("map records to logs");
 
-      const blockNumber = records[0].chainBlockNumber;
+      const blockNumber = records[0]?.chainBlockNumber ?? "-1";
 
       ctx.body = JSON.stringify({ blockNumber, logs });
       ctx.status = 200;
     } catch (error) {
       ctx.status = 500;
-      ctx.body = error;
+      ctx.body = JSON.stringify(error);
       debug(error);
     }
   });
