@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { input } from "./input";
 import { StorageAdapterBlock } from "../common";
+import { Result } from "@latticexyz/common";
 
 type CreateIndexerClientOptions = {
   /**
@@ -10,7 +11,7 @@ type CreateIndexerClientOptions = {
 };
 
 type IndexerClient = {
-  getLogs: (opts: z.input<typeof input>) => Promise<StorageAdapterBlock>;
+  getLogs: (opts: z.input<typeof input>) => Promise<Result<StorageAdapterBlock>>;
 };
 
 /**
@@ -21,17 +22,17 @@ type IndexerClient = {
  */
 export function createIndexerClient({ url }: CreateIndexerClientOptions): IndexerClient {
   return {
-    getLogs: async (opts): Promise<StorageAdapterBlock> => {
+    getLogs: async (opts): Promise<Result<StorageAdapterBlock>> => {
       const input = encodeURIComponent(JSON.stringify(opts));
       const response = await fetch(`${url}/get/logs?input=${input}`, { method: "GET" });
 
       // TODO: could we return a readable stream here instead of fetching the entire response right away?
       const result = await response.json();
       if (!isStorageAdapterBlock(result)) {
-        throw new Error("Unexpected response:\n" + JSON.stringify(result));
+        return { error: "Unexpected response:\n" + JSON.stringify(result) };
       }
 
-      return { ...result, blockNumber: BigInt(result.blockNumber) };
+      return { ok: { ...result, blockNumber: BigInt(result.blockNumber) } };
     },
   };
 }
