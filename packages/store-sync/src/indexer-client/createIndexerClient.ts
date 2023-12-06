@@ -23,16 +23,20 @@ type IndexerClient = {
 export function createIndexerClient({ url }: CreateIndexerClientOptions): IndexerClient {
   return {
     getLogs: async (opts): Promise<Result<StorageAdapterBlock>> => {
-      const input = encodeURIComponent(JSON.stringify(opts));
-      const response = await fetch(`${url}/api/logs?input=${input}`, { method: "GET" });
+      try {
+        const input = encodeURIComponent(JSON.stringify(opts));
+        const response = await fetch(`${url}/api/logs?input=${input}`, { method: "GET" });
 
-      // TODO: could we return a readable stream here instead of fetching the entire response right away?
-      const result = await response.json();
-      if (!isStorageAdapterBlock(result)) {
-        return { error: "Unexpected response:\n" + JSON.stringify(result) };
+        // TODO: return a readable stream instead of fetching the entire response at once
+        const result = await response.json();
+        if (!isStorageAdapterBlock(result)) {
+          return { error: result };
+        }
+
+        return { ok: { ...result, blockNumber: BigInt(result.blockNumber) } };
+      } catch (error) {
+        return { error };
       }
-
-      return { ok: { ...result, blockNumber: BigInt(result.blockNumber) } };
     },
   };
 }
