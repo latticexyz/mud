@@ -57,8 +57,10 @@ describe("Sync from indexer", async () => {
     await openClientWithRootAccount(page, { indexerUrl: `http://127.0.0.1:9999/trpc` });
     await waitForInitialSync(page);
 
-    expect(asyncErrorHandler.getErrors()).toHaveLength(1);
-    expect(asyncErrorHandler.getErrors()[0]).toContain("error getting snapshot");
+    const errors = asyncErrorHandler.getErrors();
+    expect(errors).toHaveLength(2);
+    expect(errors[0]).toContain("Failed to fetch");
+    expect(errors[1]).toContain("error getting snapshot");
   });
 
   describe.each([["sqlite"], ["postgres"]] as const)("%s indexer", (indexerType) => {
