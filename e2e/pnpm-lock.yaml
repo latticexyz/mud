@@ -171,6 +171,9 @@ importers:
       happy-dom:
         specifier: ^12.10.3
         version: 12.10.3
+      postgres:
+        specifier: 3.3.5
+        version: 3.3.5
       typescript:
         specifier: 5.1.6
         version: 5.1.6
@@ -1473,6 +1476,10 @@ packages:
       nanoid: 3.3.6
       picocolors: 1.0.0
       source-map-js: 1.0.2
+    dev: true
+
+  /postgres@3.3.5:
+    resolution: {integrity: sha512-+JD93VELV9gHkqpV5gdL5/70HdGtEw4/XE1S4BC8f1mcPmdib3K5XsKVbnR1XcAyC41zOnifJ+9YRKxdIsXiUw==}
     dev: true
 
   /prettier@2.6.2:

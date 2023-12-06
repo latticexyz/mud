@@ -20,16 +20,61 @@ import { push, pushRange, pop } from "./data/numberListSystem";
 import { setContractData } from "./data/setContractData";
 import { testData1, testData2 } from "./data/testData";
 import { waitForInitialSync } from "./data/waitForInitialSync";
+import { databaseExists } from "@latticexyz/store-sync/postgres";
+import postgres from "postgres";
+
+let indexerIteration = 1;
 
 const env = z
   .object({
-    DATABASE_URL: z.string().default("postgres://127.0.0.1/postgres"),
+    ROOT_DATABASE_URL: z.string().default("postgres://127.0.0.1/postgres"),
+    DATABASE_URL: z.string().default("postgres://127.0.0.1/postgres_e2e"),
   })
   .parse(process.env, {
     errorMap: (issue) => ({
       message: `Missing or invalid environment variable: ${issue.path.join(".")}`,
     }),
   });
+
+if (env.DATABASE_URL === env.ROOT_DATABASE_URL) {
+  throw new Error(
+    "indexer database can not be the same as root database, as indexer database is dropped after the test"
+  );
+}
+
+describe("Setup indexer", async () => {
+  const asyncErrorHandler = createAsyncErrorHandler();
+
+  it("should create and drop the e2e database", async () => {
+    const sql = postgres(env.ROOT_DATABASE_URL);
+    const databaseName = new URL(env.DATABASE_URL).pathname.split("/")[1];
+
+    // Expect the e2e database to not exist yet
+    expect(await databaseExists(sql, databaseName)).toBe(false);
+
+    // Start indexer
+    const port = 3000 + indexerIteration++;
+    const indexer = startIndexer({
+      port,
+      rpcHttpUrl,
+      reportError: asyncErrorHandler.reportError,
+      indexer: "postgres",
+      databaseUrl: env.DATABASE_URL,
+      rootDatabaseUrl: env.ROOT_DATABASE_URL,
+    });
+
+    await indexer.doneSyncing;
+
+    // Expect the e2e database to exist
+    expect(await databaseExists(sql, databaseName)).toBe(true);
+
+    // Kill the indexer
+    await indexer.kill();
+
+    // Expect the e2e database to be dropped
+    expect(await databaseExists(sql, databaseName)).toBe(false);
+  });
+});
 
 describe("Sync from indexer", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
@@ -62,7 +107,6 @@ describe("Sync from indexer", async () => {
   });
 
   describe.each([["sqlite"], ["postgres"]] as const)("%s indexer", (indexerType) => {
-    let indexerIteration = 1;
     let indexer: ReturnType<typeof startIndexer>;
 
     beforeEach(async () => {
@@ -73,7 +117,7 @@ describe("Sync from indexer", async () => {
         rpcHttpUrl,
         reportError: asyncErrorHandler.reportError,
         ...(indexerType === "postgres"
-          ? { indexer: "postgres", databaseUrl: env.DATABASE_URL }
+          ? { indexer: "postgres", databaseUrl: env.DATABASE_URL, rootDatabaseUrl: env.ROOT_DATABASE_URL }
           : { indexer: "sqlite", sqliteFilename: path.join(__dirname, `anvil-${port}.db`) }),
       });
       await indexer.doneSyncing;

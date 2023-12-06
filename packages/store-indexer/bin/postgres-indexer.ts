@@ -7,7 +7,13 @@ import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { cleanDatabase, createStorageAdapter, shouldCleanDatabase } from "@latticexyz/store-sync/postgres";
+import {
+  cleanDatabase,
+  createDatabase,
+  createStorageAdapter,
+  databaseExists,
+  shouldCleanDatabase,
+} from "@latticexyz/store-sync/postgres";
 import { createStoreSync } from "@latticexyz/store-sync";
 import { indexerEnvSchema, parseEnv } from "./parseEnv";
 
@@ -15,12 +21,26 @@ const env = parseEnv(
   z.intersection(
     indexerEnvSchema,
     z.object({
+      ROOT_DATABASE_URL: z.string().optional(),
       DATABASE_URL: z.string(),
       HEALTHCHECK_HOST: z.string().optional(),
       HEALTHCHECK_PORT: z.coerce.number().optional(),
     })
   )
 );
+
+const indexerDatabaseName = new URL(env.DATABASE_URL).pathname.split("/")[1];
+
+// If a root database URL is provided, we can create the indexer database if it doesn't exist yet
+if (env.ROOT_DATABASE_URL) {
+  const sql = postgres(env.ROOT_DATABASE_URL);
+
+  // Create the database if it doesn't exist yet
+  if (!(await databaseExists(sql, indexerDatabaseName))) {
+    console.log(`indexer database ${indexerDatabaseName} doesn't exist yet, creating`);
+    await createDatabase(sql, indexerDatabaseName);
+  }
+}
 
 const transports: Transport[] = [
   // prefer WS when specified

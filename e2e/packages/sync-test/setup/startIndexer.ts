@@ -2,6 +2,9 @@ import chalk from "chalk";
 import { execa } from "execa";
 import { rmSync } from "node:fs";
 import path from "node:path";
+import { dropDatabase } from "@latticexyz/store-sync/postgres";
+import postgres from "postgres";
+import { deferred } from "@latticexyz/utils";
 
 type IndexerOptions =
   | {
@@ -11,6 +14,7 @@ type IndexerOptions =
   | {
       indexer: "postgres";
       databaseUrl: string;
+      rootDatabaseUrl: string;
     };
 
 type StartIndexerOptions = {
@@ -34,6 +38,7 @@ export function startIndexer(opts: StartIndexerOptions) {
     RPC_HTTP_URL: opts.rpcHttpUrl,
     SQLITE_FILENAME: opts.indexer === "sqlite" ? opts.sqliteFilename : undefined,
     DATABASE_URL: opts.indexer === "postgres" ? opts.databaseUrl : undefined,
+    ROOT_DATABASE_URL: opts.indexer === "postgres" ? opts.rootDatabaseUrl : undefined,
   };
   console.log(chalk.magenta("[indexer]:"), "starting indexer", env);
 
@@ -67,37 +72,49 @@ export function startIndexer(opts: StartIndexerOptions) {
   proc.stdout?.on("data", (data) => onLog(data.toString()));
   proc.stderr?.on("data", (data) => onLog(data.toString()));
 
-  function cleanUp() {
+  // Create a promise to indicate the process is killed and cleaned up
+  const [resolveKilled, , killed] = deferred<void>();
+
+  // Call clean up if the process is killed
+  proc.once("exit", cleanUp);
+
+  // Clean up databases and resolved the `killed` promise at the end
+  async function cleanUp() {
     // attempt to clean up sqlite file
     if (opts.indexer === "sqlite") {
       try {
-        rmSync(opts.sqliteFilename);
+        return rmSync(opts.sqliteFilename);
       } catch (error) {
         console.log("could not delete", opts.sqliteFilename, error);
       }
     }
-  }
 
-  let exited = false;
-  proc.once("exit", () => {
-    exited = true;
-    cleanUp();
-  });
+    // attempt to drop the test database
+    if (opts.indexer === "postgres") {
+      const databaseName = new URL(opts.databaseUrl).pathname.split("/")[1];
+      try {
+        console.log("dropping database", databaseName);
+        const sql = postgres(opts.rootDatabaseUrl);
+        await dropDatabase(sql, databaseName);
+      } catch (error) {
+        console.log("could not drop database", databaseName, error);
+      }
+    }
+
+    resolveKilled();
+  }
 
   return {
     url: `http://127.0.0.1:${opts.port}/trpc`,
     doneSyncing,
     process: proc,
-    kill: () =>
-      new Promise<void>((resolve) => {
-        if (exited) {
-          return resolve();
-        }
-        proc.once("exit", resolve);
-        proc.kill("SIGTERM", {
-          forceKillAfterTimeout: 5000,
-        });
-      }),
+    kill: () => {
+      // Initiate the kill sequence, the returned promise resolves once clean up is complete
+      proc.kill("SIGTERM", {
+        forceKillAfterTimeout: 5000,
+      });
+      return killed;
+    },
   };
 }
 
