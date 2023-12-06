@@ -68,7 +68,7 @@ If you need to call a `System` from a `System` in the root namespace you can use
    For example, here is how you can call [`IncrementSystem.increment()`](http://localhost:3000/templates/typescript/contracts#incrementsystemsol).
 
    ```solidity copy
-    uint32 retval = abi.decode(
+    uint32 returnValue = abi.decode(
       SystemSwitch.call(
         abi.encodeWithSignature("increment()")
       ),
