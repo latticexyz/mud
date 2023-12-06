@@ -64,13 +64,19 @@ If you need to call a `System` from a `System` in the root namespace you can use
    import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.sol";
    ```
 
+1. Import the interface for the system you wish to call.
+
+   ```solidity copy
+   import { IIncrementSystem } from "../codegen/world/IIncrementSystem.sol";
+   ```
+
 1. Call the function using `SystemSwitch.call`.
-   For example, here is how you can call [`IncrementSystem.increment()`](http://localhost:3000/templates/typescript/contracts#incrementsystemsol).
+   For example, here is how you can call [`IncrementSystem.increment()`](/templates/typescript/contracts#incrementsystemsol).
 
    ```solidity copy
     uint32 returnValue = abi.decode(
       SystemSwitch.call(
-        abi.encodeWithSignature("increment()")
+        abi.encodeCall(IIncrementSystem.increment, ())
       ),
       (uint32)
     );
@@ -81,20 +87,23 @@ If you need to call a `System` from a `System` in the root namespace you can use
    <summary>Explanation</summary>
 
    ```solidity
-   abi.encodeWithSignature("increment()")
+   abi.encodeCall(IIncrementSystem.increment, ())
    ```
 
-   Use [`abi.encodeWithSignature`](https://docs.soliditylang.org/en/latest/cheatsheet.html#abi-encoding-and-decoding-functions) to create the calldata.
-   The first parameter is [the function name with the parameter types](https://docs.soliditylang.org/en/v0.8.23/abi-spec.html#function-selector).
-   If the function gets any parameters, they are specified as extra parameters.
+   Use [`abi.encodeCall`](https://docs.soliditylang.org/en/latest/cheatsheet.html#abi-encoding-and-decoding-functions) to create the calldata.
+   The first parameter is a pointer to the function.
+   The second parameter is a [tuple](https://docs.soliditylang.org/en/latest/control-structures.html#destructuring-assignments-and-returning-multiple-values) with the function parameters.
+   In this case, there aren't any.
+
+   The advantage of `abi.encodeCall` is that it checks the types of the function parameters are correct.
 
    ```solidity
    SystemSwitch.call(
-        abi.encodeWithSignature(...)
+        abi.encodeCall(...)
    )
    ```
 
-   Using `SystemSwitch.call` with the calldata created by `abi.encodeWithSignature`.
+   Using `SystemSwitch.call` with the calldata created by `abi.encodeCall`.
    `SystemSwitch.call` takes care of figuring out details, such as what type of call to use.
 
    ```solidity
