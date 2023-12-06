@@ -5,7 +5,7 @@ import { Result } from "@latticexyz/common";
 
 type CreateIndexerClientOptions = {
   /**
-   * tRPC endpoint URL like `https://indexer.dev.linfra.xyz/trpc`.
+   * Indexer endpoint URL like `https://indexer.holesky.redstone.xyz`.
    */
   url: string;
 };
