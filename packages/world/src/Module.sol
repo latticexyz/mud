@@ -2,6 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { WorldContextConsumer } from "./WorldContext.sol";
+import { WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "./IWorldContextConsumer.sol";
 import { IModule, MODULE_INTERFACE_ID } from "./IModule.sol";
 import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
 
@@ -19,6 +20,9 @@ abstract contract Module is IModule, WorldContextConsumer {
   function supportsInterface(
     bytes4 interfaceId
   ) public pure virtual override(IERC165, WorldContextConsumer) returns (bool) {
-    return interfaceId == MODULE_INTERFACE_ID || interfaceId == ERC165_INTERFACE_ID;
+    return
+      interfaceId == MODULE_INTERFACE_ID ||
+      interfaceId == WORLD_CONTEXT_CONSUMER_INTERFACE_ID ||
+      interfaceId == ERC165_INTERFACE_ID;
   }
 }
