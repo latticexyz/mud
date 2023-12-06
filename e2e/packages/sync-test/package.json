@@ -4,9 +4,11 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "setup": "psql postgres://127.0.0.1/postgres -c \"CREATE DATABASE postgres_e2e;\"",
-    "test": "DATABASE_URL=postgres://127.0.0.1/postgres_e2e vitest --run",
-    "test:ci": "vitest --run"
+    "setup:local": "psql postgres://127.0.0.1/postgres -c \"CREATE DATABASE postgres_e2e;\"",
+    "test": "vitest --run",
+    "test:ci": "pnpm run test",
+    "test:compare": "vitest --run --dir compare",
+    "test:local": "DATABASE_URL=postgres://127.0.0.1/postgres_e2e pnpm run test"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",

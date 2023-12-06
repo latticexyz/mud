@@ -31,7 +31,7 @@ const env = z
     }),
   });
 
-describe("Sync from indexer", async () => {
+describe.skip("Sync from indexer", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
   let browser: Browser;

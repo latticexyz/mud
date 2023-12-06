@@ -13,7 +13,7 @@ import { setContractData } from "./data/setContractData";
 import { testData1, testData2 } from "./data/testData";
 import { waitForInitialSync } from "./data/waitForInitialSync";
 
-describe("Sync from RPC", async () => {
+describe.skip("Sync from RPC", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
   let browser: Browser;

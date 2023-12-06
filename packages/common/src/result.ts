@@ -8,3 +8,10 @@ export function isOk<Ok, Err>(result: Result<Ok, Err>): result is { ok: Ok } {
 export function isError<Ok, Err>(result: Result<Ok, Err>): result is { error: Err } {
   return "error" in result;
 }
+
+export function unwrap<Ok, Err>(result: Result<Ok, Err>): Ok {
+  if (isError(result)) {
+    throw result.error;
+  }
+  return result.ok;
+}
