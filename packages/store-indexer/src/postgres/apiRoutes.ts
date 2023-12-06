@@ -10,10 +10,10 @@ import { debug } from "../debug";
 import { createBenchmark } from "@latticexyz/common";
 import { compress } from "../compress";
 
-export function getLogs(database: Sql): Middleware {
+export function apiRoutes(database: Sql): Middleware {
   const router = new Router();
 
-  router.get("/get/logs", compress(), async (ctx) => {
+  router.get("/api/logs", compress(), async (ctx) => {
     const benchmark = createBenchmark("getLogs");
 
     try {

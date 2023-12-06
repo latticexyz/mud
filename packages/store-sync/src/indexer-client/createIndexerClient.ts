@@ -24,7 +24,7 @@ export function createIndexerClient({ url }: CreateIndexerClientOptions): Indexe
   return {
     getLogs: async (opts): Promise<Result<StorageAdapterBlock>> => {
       const input = encodeURIComponent(JSON.stringify(opts));
-      const response = await fetch(`${url}/get/logs?input=${input}`, { method: "GET" });
+      const response = await fetch(`${url}/api/logs?input=${input}`, { method: "GET" });
 
       // TODO: could we return a readable stream here instead of fetching the entire response right away?
       const result = await response.json();

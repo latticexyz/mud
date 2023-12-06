@@ -10,7 +10,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { frontendEnvSchema, parseEnv } from "./parseEnv";
 import { createQueryAdapter } from "../src/postgres/deprecated/createQueryAdapter";
-import { getLogs } from "../src/postgres/getLogs";
+import { apiRoutes } from "../src/postgres/apiRoutes";
 
 const env = parseEnv(
   z.intersection(
@@ -25,7 +25,7 @@ const database = postgres(env.DATABASE_URL);
 
 const server = new Koa();
 server.use(cors());
-server.use(getLogs(database));
+server.use(apiRoutes(database));
 
 const router = new Router();
 
