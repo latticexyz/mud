@@ -51,7 +51,7 @@
     "drizzle-orm": "^0.28.5",
     "koa": "^2.14.2",
     "koa-compose": "^4.1.0",
-    "postgres": "^3.3.5",
+    "postgres": "3.3.5",
     "rxjs": "7.5.5",
     "superjson": "^1.12.4",
     "trpc-koa-adapter": "^1.1.3",

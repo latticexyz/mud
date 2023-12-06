@@ -39,7 +39,7 @@ const database = drizzle(postgres(env.DATABASE_URL));
 
 if (await shouldCleanDatabase(database, chainId)) {
   console.log("outdated database detected, clearing data to start fresh");
-  cleanDatabase(database);
+  await cleanDatabase(database);
 }
 
 const { storageAdapter, tables } = await createStorageAdapter({ database, publicClient });
