@@ -18,7 +18,7 @@ async function syncToObject(indexerUrl: string): Promise<State> {
 
   const indexer = createIndexerClient({ url: indexerUrl });
   const result = unwrap(await indexer.getLogs(options));
-  console.log("Done fetching snapshot from", indexerUrl);
+  console.log(`Fetched ${result.logs.length} logs from`, indexerUrl);
   state.blockNumber = result.blockNumber;
 
   for (const log of result.logs) {
