@@ -10,7 +10,7 @@ const schemaName = transformSchemaName("mud");
 const configTable = pgSchema(schemaName).table("config", {
   version: varchar("version").notNull(),
   chainId: asNumber("chain_id", "bigint").notNull().primaryKey(),
-  lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric").notNull(),
+  blockNumber: asBigInt("block_number", "numeric").notNull(),
 });
 
 const recordsTable = pgSchema(schemaName).table(
@@ -28,8 +28,7 @@ const recordsTable = pgSchema(schemaName).table(
     encodedLengths: asHex("encoded_lengths"),
     dynamicData: asHex("dynamic_data"),
     isDeleted: boolean("is_deleted"),
-    lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric").notNull(),
-    transactionIndex: asNumber("transaction_index", "numeric").notNull(),
+    blockNumber: asBigInt("block_number", "numeric").notNull(),
     logIndex: asNumber("log_index", "numeric").notNull(),
   },
   (table) => ({

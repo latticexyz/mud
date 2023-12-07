@@ -7,7 +7,8 @@ export type RecordData = {
   staticData: Hex | null;
   encodedLengths: Hex | null;
   dynamicData: Hex | null;
-  lastUpdatedBlockNumber: string;
+  recordBlockNumber: string;
+  logIndex: number;
 };
 
 export type RecordMetadata = {
