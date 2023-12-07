@@ -55,6 +55,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               encodedLengths: log.args.encodedLengths,
               dynamicData: log.args.dynamicData,
               lastUpdatedBlockNumber: blockNumber,
+              transactionIndex: log.transactionIndex ?? 0,
+              logIndex: log.logIndex ?? 0,
               isDeleted: false,
             })
             .onConflictDoUpdate({
@@ -106,6 +108,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               key1: log.args.keyTuple[1],
               staticData: newStaticData,
               lastUpdatedBlockNumber: blockNumber,
+              transactionIndex: log.transactionIndex ?? 0,
+              logIndex: log.logIndex ?? 0,
               isDeleted: false,
             })
             .onConflictDoUpdate({
@@ -156,6 +160,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               encodedLengths: log.args.encodedLengths,
               dynamicData: newDynamicData,
               lastUpdatedBlockNumber: blockNumber,
+              transactionIndex: log.transactionIndex ?? 0,
+              logIndex: log.logIndex ?? 0,
               isDeleted: false,
             })
             .onConflictDoUpdate({

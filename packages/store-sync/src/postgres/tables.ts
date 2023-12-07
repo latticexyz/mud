@@ -29,6 +29,8 @@ const recordsTable = pgSchema(schemaName).table(
     dynamicData: asHex("dynamic_data"),
     isDeleted: boolean("is_deleted"),
     lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric").notNull(),
+    transactionIndex: asNumber("transaction_index", "numeric").notNull(),
+    logIndex: asNumber("log_index", "numeric").notNull(),
   },
   (table) => ({
     pk: primaryKey(table.address, table.tableId, table.keyBytes),

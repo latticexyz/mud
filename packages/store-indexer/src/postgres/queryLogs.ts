@@ -58,10 +58,12 @@ export function queryLogs(sql: Sql, opts: z.infer<typeof input>): PendingQuery<R
           '0x' || encode(static_data, 'hex') AS "staticData",
           '0x' || encode(encoded_lengths, 'hex') AS "encodedLengths",
           '0x' || encode(dynamic_data, 'hex') AS "dynamicData",
-          last_updated_block_number AS "recordBlockNumber"
+          last_updated_block_number AS "recordBlockNumber",
+          transaction_index AS "transactionIndex",
+          log_index AS "logIndex"
         FROM ${sql(`${schemaName}.records`)}
         ${where}
-        ORDER BY last_updated_block_number ASC
+        ORDER BY last_updated_block_number, transaction_index, log_index ASC
       )
     SELECT
       (SELECT COUNT(*) FROM records) AS "totalRows",
