@@ -15,14 +15,22 @@ export function apiRoutes(database: BaseSQLiteDatabase<"sync", any>): Middleware
   router.get("/api/logs", compress(), async (ctx) => {
     const benchmark = createBenchmark("sqlite:logs");
 
+    let options: ReturnType<typeof input.parse>;
+
     try {
-      const opts = input.parse(typeof ctx.query.input === "string" ? JSON.parse(ctx.query.input) : {});
-      opts.filters = opts.filters.length > 0 ? [...opts.filters, { tableId: storeTables.Tables.tableId }] : [];
+      options = input.parse(typeof ctx.query.input === "string" ? JSON.parse(ctx.query.input) : {});
+    } catch (error) {
+      ctx.status = 400;
+      ctx.body = JSON.stringify(error);
+      debug(error);
+      return;
+    }
+
+    try {
+      options.filters = options.filters.length > 0 ? [...options.filters, { tableId: storeTables.Tables.tableId }] : [];
       benchmark("parse config");
-
-      const { blockNumber, tables } = getTablesWithRecords(database, opts);
+      const { blockNumber, tables } = getTablesWithRecords(database, options);
       benchmark("query tables with records");
-
       const logs = tablesWithRecordsToLogs(tables);
       benchmark("convert records to logs");
 

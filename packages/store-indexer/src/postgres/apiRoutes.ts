@@ -15,18 +15,23 @@ export function apiRoutes(database: Sql): Middleware {
 
   router.get("/api/logs", compress(), async (ctx) => {
     const benchmark = createBenchmark("postgres:logs");
+    let options: ReturnType<typeof input.parse>;
 
     try {
-      const opts = input.parse(typeof ctx.query.input === "string" ? JSON.parse(ctx.query.input) : {});
-      opts.filters = opts.filters.length > 0 ? [...opts.filters, { tableId: storeTables.Tables.tableId }] : [];
-      benchmark("parse config");
+      options = input.parse(typeof ctx.query.input === "string" ? JSON.parse(ctx.query.input) : {});
+    } catch (error) {
+      ctx.status = 400;
+      ctx.body = JSON.stringify(error);
+      debug(error);
+      return;
+    }
 
-      const records = await queryLogs(database, opts ?? {}).execute();
+    try {
+      options.filters = options.filters.length > 0 ? [...options.filters, { tableId: storeTables.Tables.tableId }] : [];
+      const records = await queryLogs(database, options ?? {}).execute();
       benchmark("query records");
-
       const logs = records.map(recordToLog);
       benchmark("map records to logs");
-
       const blockNumber = records[0]?.chainBlockNumber ?? "-1";
 
       ctx.body = JSON.stringify({ blockNumber, logs });
