@@ -16,6 +16,7 @@ import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
 import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
+import { apiRoutes } from "../src/sqlite/apiRoutes";
 
 const env = parseEnv(
   z.intersection(
@@ -91,6 +92,7 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
 
 const server = new Koa();
 server.use(cors());
+server.use(apiRoutes(database));
 
 const router = new Router();
 
