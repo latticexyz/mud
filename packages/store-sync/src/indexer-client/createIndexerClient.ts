@@ -3,14 +3,14 @@ import { input } from "./input";
 import { StorageAdapterBlock } from "../common";
 import { Result } from "@latticexyz/common";
 
-type CreateIndexerClientOptions = {
+export type CreateIndexerClientOptions = {
   /**
    * Indexer endpoint URL like `https://indexer.holesky.redstone.xyz`.
    */
   url: string;
 };
 
-type IndexerClient = {
+export type IndexerClient = {
   getLogs: (opts: z.input<typeof input>) => Promise<Result<StorageAdapterBlock>>;
 };
 
