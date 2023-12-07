@@ -46,7 +46,7 @@ export function queryLogs(sql: Sql, opts: z.infer<typeof input>): PendingQuery<R
         SELECT
           version AS "indexerVersion",
           chain_id AS "chainId",
-          last_updated_block_number AS "chainBlockNumber"
+          block_number AS "chainBlockNumber"
         FROM ${sql(`${schemaName}.config`)}
         LIMIT 1
       ),
@@ -58,10 +58,11 @@ export function queryLogs(sql: Sql, opts: z.infer<typeof input>): PendingQuery<R
           '0x' || encode(static_data, 'hex') AS "staticData",
           '0x' || encode(encoded_lengths, 'hex') AS "encodedLengths",
           '0x' || encode(dynamic_data, 'hex') AS "dynamicData",
-          last_updated_block_number AS "recordBlockNumber"
+          block_number AS "recordBlockNumber",
+          log_index AS "logIndex"
         FROM ${sql(`${schemaName}.records`)}
         ${where}
-        ORDER BY last_updated_block_number ASC
+        ORDER BY block_number, log_index ASC
       )
     SELECT
       (SELECT COUNT(*) FROM records) AS "totalRows",

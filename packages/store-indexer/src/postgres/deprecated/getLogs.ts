@@ -55,7 +55,7 @@ export async function getLogs(
     // Get the first record in a way that returns a possible `undefined`
     // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
     .then((rows) => rows.find(() => true));
-  const indexerBlockNumber = chainState?.lastUpdatedBlockNumber ?? 0n;
+  const indexerBlockNumber = chainState?.blockNumber ?? 0n;
   benchmark("query chainState");
 
   const records = await database
@@ -63,21 +63,18 @@ export async function getLogs(
     .from(tables.recordsTable)
     .where(or(...conditions))
     .orderBy(
-      asc(tables.recordsTable.lastUpdatedBlockNumber)
+      asc(tables.recordsTable.blockNumber)
       // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
     );
   benchmark("query records");
 
-  const blockNumber = records.reduce(
-    (max, record) => bigIntMax(max, record.lastUpdatedBlockNumber ?? 0n),
-    indexerBlockNumber
-  );
+  const blockNumber = records.reduce((max, record) => bigIntMax(max, record.blockNumber ?? 0n), indexerBlockNumber);
   benchmark("find block number");
 
   const logs = records
     // TODO: add this to the query, assuming we can optimize with an index
     .filter((record) => !record.isDeleted)
-    .map((record) => recordToLog({ ...record, lastUpdatedBlockNumber: record.lastUpdatedBlockNumber.toString() }));
+    .map(recordToLog);
   benchmark("map records to logs");
 
   return { blockNumber, logs };
