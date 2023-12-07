@@ -76,22 +76,6 @@ The global configuration keys are all optional.
 
   - `accessList` (required if openAccess is `false`): an array of `string`. Each address in the array will be granted access to this system, allowing them to call it.
 
-  Example:
-
-  ```tsx
-  import { mudConfig } from "@latticexyz/world/register";
-
-  export default mudConfig({
-    systems: {
-      SystemA: {
-        name: "systema",
-        openAccess: true,
-      },
-    },
-    tables: {},
-  });
-  ```
-
 - **`tables`**: a record of tables. The keys in the record are table names.
   The value is a record of [table properties](https://github.com/latticexyz/mud/blob/main/packages/store/ts/config/storeConfig.ts#L110-L135).
 
