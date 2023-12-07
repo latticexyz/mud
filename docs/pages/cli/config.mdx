@@ -6,14 +6,13 @@ This file needs to be named `mud.config.ts` and be in the same folder as your `f
 The config is used to define:
 
 - The tables in your project in the `tables` object of your configuration.
-  See [the `Store` documentation](/store/tables) for more information on table and their format.
 - The [namespace](/world/namespaces-access-control) the [`System`s](/world/systems) and tables will be deployed in.
 - The `System`s in your project.
   By default, the deployer will find all Solidity matching `*System.sol` (so any file ending in `System.sol`, in any folder) and deploy them as public `System`.
   If you want greater control over your systems (to change their public access or their name), you can use the `systems` object in the config.
 - The [modules](/world/modules) that will be installed in the `World`.
 
-An example of a `World` config with all the different configuration keys and options used:
+The is an example of a `World` config:
 
 ```tsx
 import { mudConfig } from "@latticexyz/world/register";
@@ -49,12 +48,12 @@ export default mudConfig({
 
 ## Global configuration keys
 
-All of these global configuration keys are optional.
+The global configuration keys are all optional.
 
 - **`namespace`**: a `string`: which namespace to deploy the resources defined in the config into.
   The default value is the ROOT namespace.
 
-- **`excludeSystems`**: an array of `string`: which systems to not deploy, even if their name includes “system”.
+- **`excludeSystems`**: an array of `string`: which systems to not deploy, even if their name ends with “System”.
 
 - **`worldContractName`**: a `string`: the name of a contract in your project implementing the `IWorld` interface.
   Useful if you want to modify the default World implementation, but potentially dangerous.
@@ -92,3 +91,48 @@ All of these global configuration keys are optional.
     tables: {},
   });
   ```
+
+- **`tables`**: a record of tables. The keys in the record are table names.
+  The value is a record of [table properties](https://github.com/latticexyz/mud/blob/main/packages/store/ts/config/storeConfig.ts#L110-L135).
+
+  - **`valueSchema`** (record):
+    The keys of this record are the field names of the value (which should start with a lowercase letter).
+    The values are strings that contain the data types of the fields.
+    Note that this is the sole required field, all the others are optional.
+
+  - **`keySchema`** (record):
+    The keys of this record are the field names of the key (which should start with a lowercase letter).
+    The values are strings that contain the data types of the fields.
+
+    The default value is:
+
+    ```json
+    { "key": "bytes32" }
+    ```
+
+    For a singleton table (one that contains a single row), use `{}` as the key schema.
+
+  - **`directory`** (string):
+    Directory in which to create the table.
+    The default is `tables`, so by default tables are created in `src/codegen/tables`.
+
+  - **`tableIdArgument`** (bool):
+    Make methods accept `tableId` argument instead of it being a hardcoded constant.
+    The default is `false` because you can achieve the same result using [`StoreSwitch`](/store/table-libraries#storeswitch).
+
+  - **`storeArgument`** (bool):
+    Include methods that accept a manual `IStore` argument.
+    The default is `true`.
+
+  - **`dataStruct`**: (bool):
+    Include a [data struct](https://docs.soliditylang.org/en/v0.8.23/types.html#structs) and methods for it.
+    Default is false for 1-column tables; true for multi-column tables.
+
+    Sample code for using a table library with `dataStruct`:
+
+    ```solidity
+    // no data struct
+    MyTable.set(keccak256("some.key"), 1, 12, "foo");
+    // data struct
+    MyTable.set(keccak256("some.key"), { field1: 1, field2: 12, stringField: "foo" });
+    ```
