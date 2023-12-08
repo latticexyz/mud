@@ -36,6 +36,7 @@ export function apiRoutes(database: Sql): Middleware {
       if (records.length === 0) {
         ctx.status = 404;
         ctx.body = "no logs found";
+        debug(`no logs found for chainId ${options.chainId}, address ${options.address}, filters ${options.filters}`);
         return;
       }
 
