@@ -118,10 +118,10 @@ error Store_TableNotFound(ResourceId tableId, string tableIdString);
 error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
 ```
 
-### Store_InvalidDynamicDataLength
+### Store_InvalidStaticDataLength
 
 ```solidity
-error Store_InvalidDynamicDataLength(uint256 expected, uint256 received);
+error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
 ```
 
 ### Store_IndexOutOfBounds
@@ -146,6 +146,18 @@ error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
 
 ```solidity
 error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
+```
+
+### Store_InvalidValueSchemaStaticLength
+
+```solidity
+error Store_InvalidValueSchemaStaticLength(uint256 expected, uint256 received);
+```
+
+### Store_InvalidValueSchemaDynamicLength
+
+```solidity
+error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
 ```
 
 ### Store_InvalidSplice
