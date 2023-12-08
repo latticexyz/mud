@@ -171,8 +171,11 @@ library SchemaInstance {
     // No static field can be after a dynamic field
     uint256 countStaticFields;
     uint256 countDynamicFields;
+    uint256 _staticDataLength;
     for (uint256 i; i < _numTotalFields; ) {
-      if (schema.atIndex(i).getStaticByteLength() > 0) {
+      uint256 staticByteLength = schema.atIndex(i).getStaticByteLength();
+      if (staticByteLength > 0) {
+        _staticDataLength += staticByteLength;
         // Static field in dynamic part
         if (i >= _numStaticFields) revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
         unchecked {
@@ -188,6 +191,10 @@ library SchemaInstance {
       unchecked {
         i++;
       }
+    }
+    // Static length sums must match
+    if (_staticDataLength != schema.staticDataLength()) {
+      revert SchemaLib.SchemaLib_InvalidLength(schema.staticDataLength());
     }
 
     // Number of static fields must match
