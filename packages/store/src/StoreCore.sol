@@ -205,6 +205,28 @@ library StoreCore {
     if (valueSchema.numFields() != fieldLayout.numFields()) {
       revert IStoreErrors.Store_InvalidValueSchemaLength(fieldLayout.numFields(), valueSchema.numFields());
     }
+    if (valueSchema.numStaticFields() != fieldLayout.numStaticFields()) {
+      revert IStoreErrors.Store_InvalidValueSchemaStaticLength(
+        fieldLayout.numStaticFields(),
+        valueSchema.numStaticFields()
+      );
+    }
+    if (valueSchema.numDynamicFields() != fieldLayout.numDynamicFields()) {
+      revert IStoreErrors.Store_InvalidValueSchemaDynamicLength(
+        fieldLayout.numDynamicFields(),
+        valueSchema.numDynamicFields()
+      );
+    }
+
+    // Verify that static field lengths are consistent between Schema and FieldLayout
+    for (uint256 i; i < fieldLayout.numStaticFields(); i++) {
+      if (fieldLayout.atIndex(i) != valueSchema.atIndex(i).getStaticByteLength()) {
+        revert IStoreErrors.Store_InvalidStaticDataLength(
+          fieldLayout.atIndex(i),
+          valueSchema.atIndex(i).getStaticByteLength()
+        );
+      }
+    }
 
     // Verify there is no resource with this ID yet
     if (ResourceIds._getExists(tableId)) {
