@@ -1,4 +1,4 @@
-import { PublicClient, encodePacked, size } from "viem";
+import { PublicClient, encodePacked, getAddress, size } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
 import { StoreConfig } from "@latticexyz/store";
@@ -8,6 +8,9 @@ import { spliceHex } from "@latticexyz/common";
 import { setupTables } from "./setupTables";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { version } from "./version";
+import { uniqueBy } from "@latticexyz/common/utils";
+import StoreAbi from "@latticexyz/store/out/IStore.sol/IStore.abi.json";
+import { error } from "../debug";
 
 // Currently assumes one DB per chain ID
 
@@ -217,6 +220,77 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
         })
         .execute();
     });
+
+    const updatedRecords = uniqueBy(
+      logs.map((log) => ({
+        address: getAddress(log.address),
+        tableId: log.args.tableId,
+        keyTuple: log.args.keyTuple,
+        keyBytes: encodePacked(["bytes32[]"], [log.args.keyTuple]),
+      })),
+      (record) => `${record.address}:${record.tableId}:${record.keyBytes}`
+    );
+
+    await Promise.all(
+      updatedRecords.map(async (record) => {
+        const row = await database
+          .select()
+          .from(tables.recordsTable)
+          .where(
+            and(
+              eq(tables.recordsTable.address, record.address),
+              eq(tables.recordsTable.tableId, record.tableId),
+              eq(tables.recordsTable.keyBytes, record.keyBytes)
+            )
+          )
+          .limit(1)
+          .execute()
+          // Get the first record in a way that returns a possible `undefined`
+          // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
+          .then((rows) => rows.find(() => true));
+        const databaseStaticData = row?.staticData ?? "0x";
+        const databaseEncodedLengths = row?.encodedLengths ?? "0x";
+        const databaseDynamicData = row?.dynamicData ?? "0x";
+
+        const [chainStaticData, chainEncodedLengths, chainDynamicData] = await publicClient.readContract({
+          address: record.address,
+          abi: StoreAbi,
+          functionName: "getRecord",
+          args: [record.tableId, record.keyTuple],
+        });
+
+        if (databaseStaticData !== chainStaticData) {
+          error("Static data in database did not match chain state", {
+            address: record.address,
+            tableId: record.tableId,
+            keyTuple: record.keyTuple,
+            databaseRecord: [databaseStaticData, databaseEncodedLengths, databaseDynamicData],
+            chainRecord: [chainStaticData, chainEncodedLengths, chainDynamicData],
+          });
+          throw new Error("Static data in database did not match chain state");
+        }
+        if (databaseEncodedLengths !== chainEncodedLengths) {
+          error("Encoded lengths in database did not match chain state", {
+            address: record.address,
+            tableId: record.tableId,
+            keyTuple: record.keyTuple,
+            databaseRecord: [databaseStaticData, databaseEncodedLengths, databaseDynamicData],
+            chainRecord: [chainStaticData, chainEncodedLengths, chainDynamicData],
+          });
+          throw new Error("Encoded lengths in database did not match chain state");
+        }
+        if (databaseDynamicData !== chainDynamicData) {
+          error("Dynamic data in database did not match chain state", {
+            address: record.address,
+            tableId: record.tableId,
+            keyTuple: record.keyTuple,
+            databaseRecord: [databaseStaticData, databaseEncodedLengths, databaseDynamicData],
+            chainRecord: [chainStaticData, chainEncodedLengths, chainDynamicData],
+          });
+          throw new Error("Dynamic data in database did not match chain state");
+        }
+      })
+    );
   }
 
   return {
