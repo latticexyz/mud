@@ -46,7 +46,7 @@ if (await shouldCleanDatabase(database, chainId)) {
 const { storageAdapter, tables } = await createStorageAdapter({
   database,
   publicClient,
-  verifyRecords: env.VERIFY_RECORDS,
+  shouldVerifyRecords: env.VERIFY_RECORDS,
 });
 
 let startBlock = env.START_BLOCK;
