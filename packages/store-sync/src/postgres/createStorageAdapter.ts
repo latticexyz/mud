@@ -248,46 +248,26 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           // Get the first record in a way that returns a possible `undefined`
           // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
           .then((rows) => rows.find(() => true));
-        const databaseStaticData = row?.staticData ?? "0x";
-        const databaseEncodedLengths = row?.encodedLengths ?? "0x";
-        const databaseDynamicData = row?.dynamicData ?? "0x";
 
-        const [chainStaticData, chainEncodedLengths, chainDynamicData] = await publicClient.readContract({
+        const databaseRecord = [row?.staticData ?? "0x", row?.encodedLengths ?? "0x", row?.dynamicData ?? "0x"];
+        const chainRecord = await publicClient.readContract({
           address: record.address,
           abi: StoreAbi,
           functionName: "getRecord",
           args: [record.tableId, record.keyTuple],
         });
 
-        if (databaseStaticData !== chainStaticData) {
-          error("Static data in database did not match chain state", {
-            address: record.address,
-            tableId: record.tableId,
-            keyTuple: record.keyTuple,
-            databaseRecord: [databaseStaticData, databaseEncodedLengths, databaseDynamicData],
-            chainRecord: [chainStaticData, chainEncodedLengths, chainDynamicData],
-          });
-          throw new Error("Static data in database did not match chain state");
-        }
-        if (databaseEncodedLengths !== chainEncodedLengths) {
-          error("Encoded lengths in database did not match chain state", {
-            address: record.address,
-            tableId: record.tableId,
-            keyTuple: record.keyTuple,
-            databaseRecord: [databaseStaticData, databaseEncodedLengths, databaseDynamicData],
-            chainRecord: [chainStaticData, chainEncodedLengths, chainDynamicData],
-          });
-          throw new Error("Encoded lengths in database did not match chain state");
-        }
-        if (databaseDynamicData !== chainDynamicData) {
-          error("Dynamic data in database did not match chain state", {
-            address: record.address,
-            tableId: record.tableId,
-            keyTuple: record.keyTuple,
-            databaseRecord: [databaseStaticData, databaseEncodedLengths, databaseDynamicData],
-            chainRecord: [chainStaticData, chainEncodedLengths, chainDynamicData],
-          });
-          throw new Error("Dynamic data in database did not match chain state");
+        if (JSON.stringify(databaseRecord) !== JSON.stringify(chainRecord)) {
+          error(
+            "database record did not match chain state",
+            JSON.stringify({
+              address: record.address,
+              tableId: record.tableId,
+              keyTuple: record.keyTuple,
+              databaseRecord,
+              chainRecord,
+            })
+          );
         }
       })
     );
