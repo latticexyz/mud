@@ -23,10 +23,12 @@ export type PostgresStorageAdapter = {
 export async function createStorageAdapter<TConfig extends StoreConfig = StoreConfig>({
   database,
   publicClient,
+  verifyRecords,
 }: {
   database: PgDatabase<QueryResultHKT>;
   publicClient: PublicClient;
   config?: TConfig;
+  verifyRecords?: boolean;
 }): Promise<PostgresStorageAdapter> {
   const cleanUp: (() => Promise<void>)[] = [];
 
@@ -221,56 +223,58 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
         .execute();
     });
 
-    const updatedRecords = uniqueBy(
-      logs.map((log) => ({
-        address: getAddress(log.address),
-        tableId: log.args.tableId,
-        keyTuple: log.args.keyTuple,
-        keyBytes: encodePacked(["bytes32[]"], [log.args.keyTuple]),
-      })),
-      (record) => `${record.address}:${record.tableId}:${record.keyBytes}`
-    );
+    if (verifyRecords) {
+      const updatedRecords = uniqueBy(
+        logs.map((log) => ({
+          address: getAddress(log.address),
+          tableId: log.args.tableId,
+          keyTuple: log.args.keyTuple,
+          keyBytes: encodePacked(["bytes32[]"], [log.args.keyTuple]),
+        })),
+        (record) => `${record.address}:${record.tableId}:${record.keyBytes}`
+      );
 
-    await Promise.all(
-      updatedRecords.map(async (record) => {
-        const row = await database
-          .select()
-          .from(tables.recordsTable)
-          .where(
-            and(
-              eq(tables.recordsTable.address, record.address),
-              eq(tables.recordsTable.tableId, record.tableId),
-              eq(tables.recordsTable.keyBytes, record.keyBytes)
+      await Promise.all(
+        updatedRecords.map(async (record) => {
+          const row = await database
+            .select()
+            .from(tables.recordsTable)
+            .where(
+              and(
+                eq(tables.recordsTable.address, record.address),
+                eq(tables.recordsTable.tableId, record.tableId),
+                eq(tables.recordsTable.keyBytes, record.keyBytes)
+              )
             )
-          )
-          .limit(1)
-          .execute()
-          // Get the first record in a way that returns a possible `undefined`
-          // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
-          .then((rows) => rows.find(() => true));
+            .limit(1)
+            .execute()
+            // Get the first record in a way that returns a possible `undefined`
+            // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
+            .then((rows) => rows.find(() => true));
 
-        const databaseRecord = [row?.staticData ?? "0x", row?.encodedLengths ?? "0x", row?.dynamicData ?? "0x"];
-        const chainRecord = await publicClient.readContract({
-          address: record.address,
-          abi: StoreAbi,
-          functionName: "getRecord",
-          args: [record.tableId, record.keyTuple],
-        });
+          const databaseRecord = [row?.staticData ?? "0x", row?.encodedLengths ?? "0x", row?.dynamicData ?? "0x"];
+          const chainRecord = await publicClient.readContract({
+            address: record.address,
+            abi: StoreAbi,
+            functionName: "getRecord",
+            args: [record.tableId, record.keyTuple],
+          });
 
-        if (JSON.stringify(databaseRecord) !== JSON.stringify(chainRecord)) {
-          error(
-            "database record did not match chain state",
-            JSON.stringify({
-              address: record.address,
-              tableId: record.tableId,
-              keyTuple: record.keyTuple,
-              databaseRecord,
-              chainRecord,
-            })
-          );
-        }
-      })
-    );
+          if (JSON.stringify(databaseRecord) !== JSON.stringify(chainRecord)) {
+            error(
+              "database record did not match chain state",
+              JSON.stringify({
+                address: record.address,
+                tableId: record.tableId,
+                keyTuple: record.keyTuple,
+                databaseRecord,
+                chainRecord,
+              })
+            );
+          }
+        })
+      );
+    }
   }
 
   return {

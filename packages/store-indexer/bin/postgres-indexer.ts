@@ -18,6 +18,7 @@ const env = parseEnv(
       DATABASE_URL: z.string(),
       HEALTHCHECK_HOST: z.string().optional(),
       HEALTHCHECK_PORT: z.coerce.number().optional(),
+      VERIFY_RECORDS: z.coerce.boolean().optional(),
     })
   )
 );
@@ -42,7 +43,11 @@ if (await shouldCleanDatabase(database, chainId)) {
   await cleanDatabase(database);
 }
 
-const { storageAdapter, tables } = await createStorageAdapter({ database, publicClient });
+const { storageAdapter, tables } = await createStorageAdapter({
+  database,
+  publicClient,
+  verifyRecords: env.VERIFY_RECORDS,
+});
 
 let startBlock = env.START_BLOCK;
 
