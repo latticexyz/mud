@@ -40,11 +40,11 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
         const keyBytes = encodePacked(["bytes32[]"], [log.args.keyTuple]);
 
         if (log.eventName === "Store_SetRecord") {
-          debug("upserting record", {
-            address: log.address,
-            tableId: log.args.tableId,
-            keyTuple: log.args.keyTuple,
-          });
+          // debug("upserting record", {
+          //   address: log.address,
+          //   tableId: log.args.tableId,
+          //   keyTuple: log.args.keyTuple,
+          // });
 
           await tx
             .insert(tables.recordsTable)
@@ -95,11 +95,11 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           const previousStaticData = previousValue?.staticData ?? "0x";
           const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
 
-          debug("upserting record via splice static", {
-            address: log.address,
-            tableId: log.args.tableId,
-            keyTuple: log.args.keyTuple,
-          });
+          // debug("upserting record via splice static", {
+          //   address: log.address,
+          //   tableId: log.args.tableId,
+          //   keyTuple: log.args.keyTuple,
+          // });
 
           await tx
             .insert(tables.recordsTable)
@@ -146,11 +146,11 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           const previousDynamicData = previousValue?.dynamicData ?? "0x";
           const newDynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);
 
-          debug("upserting record via splice dynamic", {
-            address: log.address,
-            tableId: log.args.tableId,
-            keyTuple: log.args.keyTuple,
-          });
+          // debug("upserting record via splice dynamic", {
+          //   address: log.address,
+          //   tableId: log.args.tableId,
+          //   keyTuple: log.args.keyTuple,
+          // });
 
           await tx
             .insert(tables.recordsTable)
@@ -178,11 +178,11 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
             })
             .execute();
         } else if (log.eventName === "Store_DeleteRecord") {
-          debug("deleting record", {
-            address: log.address,
-            tableId: log.args.tableId,
-            keyTuple: log.args.keyTuple,
-          });
+          // debug("deleting record", {
+          //   address: log.address,
+          //   tableId: log.args.tableId,
+          //   keyTuple: log.args.keyTuple,
+          // });
 
           await tx
             .update(tables.recordsTable)
@@ -222,7 +222,11 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
     });
 
     if (shouldVerifyRecords) {
-      await verifyRecords({ block: { blockNumber, logs }, publicClient, database });
+      await verifyRecords({
+        block: { blockNumber, logs },
+        publicClient,
+        database,
+      });
     }
   }
 
