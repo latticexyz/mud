@@ -9,6 +9,8 @@ import { recordToLog } from "./recordToLog";
 import { debug, error } from "../debug";
 import { createBenchmark } from "@latticexyz/common";
 import { compress } from "../compress";
+import { query } from "./query";
+import { queryTestLogs } from "./queryTestLogs";
 
 export function apiRoutes(database: Sql): Middleware {
   const router = new Router();
@@ -41,6 +43,28 @@ export function apiRoutes(database: Sql): Middleware {
             options.filters
           )}`
         );
+        return;
+      }
+
+      const blockNumber = records[0].chainBlockNumber;
+      ctx.body = JSON.stringify({ blockNumber, logs });
+      ctx.status = 200;
+    } catch (e) {
+      ctx.status = 500;
+      ctx.body = JSON.stringify(e);
+      error(e);
+    }
+  });
+
+  router.get("/api/test/logs", compress(), async (ctx) => {
+    try {
+      const records = await queryTestLogs(database).execute();
+      const logs = records.map(recordToLog);
+
+      if (records.length === 0) {
+        ctx.status = 404;
+        ctx.body = "no logs found";
+        error("no logs found");
         return;
       }
 
