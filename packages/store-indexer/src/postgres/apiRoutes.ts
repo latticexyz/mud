@@ -9,7 +9,6 @@ import { recordToLog } from "./recordToLog";
 import { debug, error } from "../debug";
 import { createBenchmark } from "@latticexyz/common";
 import { compress } from "../compress";
-import { query } from "./query";
 import { queryTestLogs } from "./queryTestLogs";
 
 export function apiRoutes(database: Sql): Middleware {
@@ -59,6 +58,7 @@ export function apiRoutes(database: Sql): Middleware {
   router.get("/api/test/logs", compress(), async (ctx) => {
     try {
       const records = await queryTestLogs(database).execute();
+      console.log("records", records);
       const logs = records.map(recordToLog);
 
       if (records.length === 0) {
