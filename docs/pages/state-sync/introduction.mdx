@@ -1,3 +1,17 @@
 # Introduction
 
-**Coming soon**
+The client has to know the content of the tables.
+There are two ways to achieve this:
+
+1. We can synchronize directly from the blockchain.
+   This method has the advantage of getting trusted results, because by definition whatever is written on the blockchain is correct.
+   However, it requires the client to use [`eth_getFilterLogs`](https://docs.alchemy.com/reference/eth-getfilterlogs-1) going all the way back to when the `World` was deployed.
+   This can be slow and expensive.
+1. We can synchronize the initial state from an indexer.
+   This method has the advantage of being quick and cheap (only one query), but it relies on a centralized component.
+1. Use a module (either [`KeysInTable`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/keysintable/KeysInTableModule.sol) or [`KeysWithValue`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/keyswithvalue/KeysWithValueModule.sol)).
+   This method allows for quick (a few function calls) synchronization from the trusted blockchain.
+   However, it significantly increases the gas cost of _any_ transaction that writes to a table.
+   Also, the `World` owner needs to implement the module.
+
+![The different options](./sync-intro.svg)
