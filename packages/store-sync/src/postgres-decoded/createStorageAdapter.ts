@@ -80,7 +80,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               and(
                 eq(internalTables.recordsTable.address, log.address),
                 eq(internalTables.recordsTable.tableId, log.args.tableId),
-                eq(internalTables.recordsTable.keyBytes, keyBytes)
+                eq(internalTables.recordsTable.keyBytes, keyBytes),
+                eq(internalTables.recordsTable.blockNumber, blockNumber)
               )
             )
             .limit(1)
@@ -114,7 +115,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               ...value,
             })
             .onConflictDoUpdate({
-              target: sqlTable.__keyBytes,
+              target: [sqlTable.__keyBytes, sqlTable.__lastUpdatedBlockNumber],
               set: {
                 __lastUpdatedBlockNumber: blockNumber,
                 ...value,
@@ -128,7 +129,10 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
             key,
           });
 
-          await tx.delete(sqlTable).where(eq(sqlTable.__keyBytes, keyBytes)).execute();
+          await tx
+            .delete(sqlTable)
+            .where(and(eq(sqlTable.__keyBytes, keyBytes), eq(sqlTable.__lastUpdatedBlockNumber, blockNumber)))
+            .execute();
         }
       }
     });

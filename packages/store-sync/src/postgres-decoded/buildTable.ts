@@ -8,7 +8,7 @@ import { buildColumn } from "./buildColumn";
 
 export const metaColumns = {
   __keyBytes: asHex("__key_bytes").primaryKey(),
-  __lastUpdatedBlockNumber: asBigInt("__last_updated_block_number", "numeric"),
+  __lastUpdatedBlockNumber: asBigInt("__last_updated_block_number", "numeric").primaryKey(),
 } as const satisfies Record<string, PgColumnBuilderBase>;
 
 type PgTableFromSchema<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = PgTableWithColumns<{
