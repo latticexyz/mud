@@ -22,7 +22,7 @@ const env = parseEnv(
   )
 );
 
-const database = postgres(env.DATABASE_URL);
+const database = postgres(env.DATABASE_URL, { prepare: false });
 
 const server = new Koa();
 
