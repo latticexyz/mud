@@ -28,4 +28,18 @@ contract CounterTest is MudTest {
     counter = Counter.get();
     assertEq(counter, 2);
   }
+
+  function testFailCounterSet() public {
+    // These tests are sent by FOUNDRY_SENDER by default.
+    // FOUNDRY_SENDER is not the deployer, so it does not have the right to set the counter.
+    Counter.set(0);
+  }
+
+  function testCounterSet() public {
+    // Run as the deployer address, which is allowed to set the counter.
+    vm.prank(address(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266));
+    Counter.set(0);
+    uint32 counter = Counter.get();
+    assertEq(counter, 0);
+  }
 }

@@ -27,4 +27,24 @@ contract TasksTest is MudTest {
     IWorld(worldAddress).completeTask("1");
     assertEq(Tasks.getCompletedAt("1"), block.timestamp);
   }
+
+  function testFailSet() public {
+    // These tests are sent by FOUNDRY_SENDER by default.
+    // FOUNDRY_SENDER is not the deployer, so it does not have the right to set the counter.
+    bytes32 taskKey = bytes32(uint256(100));
+    Tasks.set(taskKey, uint256(0), uint256(0), "Extra task");
+  }
+
+  function testSet() public {
+    // Run as the deployer address, which is allowed to set the counter.
+    vm.prank(address(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266));
+
+    bytes32 taskKey = bytes32("100");
+    Tasks.set(taskKey, uint256(1), uint256(1), "Extra task");
+
+    // Verify the task
+    TasksData memory task = Tasks.get(taskKey);
+    assertEq(task.description, "Extra task");
+    assertEq(task.completedAt, 1);
+  }
 }
