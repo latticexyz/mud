@@ -20,39 +20,151 @@ Having such a database allows clients to quickly and efficiently query the oncha
 
 These environment variables need to be provided to the indexer to work:
 
-| Type                          | Variable        | Meaning                                                                                                  | Sample value (using `anvil` running on the host)          |
-| ----------------------------- | --------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| Needed                        | RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              | http://host.docker.internal:8545 (when running in Docker) |
-| Optional                      | RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
-| Optional                      | START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                         |
-| Optional                      | DEBUG=mud:\*    | Turn on debugging                                                                                        |                                                           |
-| Optional, only for SQLite     | SQLITE_FILENAME | Name of database                                                                                         | `anvil.db`                                                |
-| Optional, only for PostgreSQL | DATABASE_URL    | URL for the database, of the form `postgres://<host>/<database>`                                         |
+| Type                      | Variable        | Meaning                                                                                                  | Sample value (using `anvil` running on the host)          |
+| ------------------------- | --------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Needed                    | RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              | http://host.docker.internal:8545 (when running in Docker) |
+| Optional                  | RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
+| Optional                  | START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                         |
+| Optional                  | DEBUG=mud:\*    | Turn on debugging                                                                                        |                                                           |
+| Optional, only for SQLite | SQLITE_FILENAME | Name of database                                                                                         | `indexer.db`                                              |
+| Required for PostgreSQL   | DATABASE_URL    | URL for the database, of the form `postgres://<host>/<database>`                                         |
 
-### Running directly
+### Running directly with SQLite
 
-To run the indexer directly on your computer:
-
-1. Build the MUD repository, [as per the directions](/contribute).
+To run the indexer directly on your computer using SQLite:
 
 1. Start a `World` to index.
    An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
 
-1. Run the indexer from the build MUD repository.
-   For example, to start the indexer with SQLite, use these commands.
+1. Install the indexer.
 
    ```bash copy
-   cd packages/store-indexer
-   export RPC_HTTP_URL=http://localhost:8545
-   pnpm start:sqlite
+   pnpm install @latticexyz/store-indexer@next
    ```
 
-   Alternatively, you can start the indexer for the local blockchain using `pnpm start:sqlite:local`, in which case you don't need to specify `RPC_HTTP_URL`.
+1. Set `RPC_HTTP_URL` and run the indexer.
 
-**Note:** The `anvil.db` is persistent if you stop and restart the indexer.
+   ```bash copy
+   export RPC_HTTP_URL=http://127.0.0.1:8545
+   pnpm sqlite-indexer
+   ```
+
+**Note:** The `indexer.db` is persistent if you stop and restart the indexer.
 If that is not the desired behavior (for example, because you restarted the blockchain itself), delete it before starting the indexer.
 
-### Docker
+### Running directly with PostgreSQL storage
+
+This is the method to use PostgreSQL as merely a data storage solution.
+It has better performance, but the format of the data in PostgreSQL is opaque, you have to use our front end to understand the data.
+
+1. Start a `World` to index.
+   An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
+
+1. Install the indexer.
+
+   ```bash copy
+   pnpm install @latticexyz/store-indexer@next
+   ```
+
+1. Set the environment variables and start the indexer.
+
+   ```bash copy
+   export RPC_HTTP_URL=http://127.0.0.1:8545
+   export DATABASE_URL=postgres://127.0.0.1/postgres
+   pnpm postgres-indexer
+   ```
+
+1. Run the front end, which is responsible for serving the data, in a separate command-line window.
+
+   ```bash copy
+   export DATABASE_URL=postgres://127.0.0.1/postgres
+   pnpm postgres-frontend
+   ```
+
+### Running directly with PostgreSQL queries
+
+This is the method to store the table information in PostgreSQL, with a table corresponding to each MUD table.
+Use this method when you want to use SQL queries to view the data.
+
+1. Start a `World` to index.
+   An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
+
+1. Install the indexer.
+
+   ```bash copy
+   pnpm install @latticexyz/store-indexer@next
+   ```
+
+1. Set the environment variables and start the indexer.
+
+   ```bash copy
+   export RPC_HTTP_URL=http://127.0.0.1:8545
+   export DATABASE_URL=postgres://127.0.0.1/postgres
+   pnpm postgres-decoded-indexer
+   ```
+
+1. To verify the installation, but `psql` and then:
+
+   - List the schemas.
+
+     ```sql copy
+     \dn
+     ```
+
+     Result:
+
+     ```
+                                     List of schemas
+                          Name                         |       Owner
+     --------------------------------------------------+-------------------
+     0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__      | qbzzt
+     0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__store | qbzzt
+     0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__world | qbzzt
+     mud                                               | qbzzt
+     public                                            | pg_database_owner
+     (5 rows)
+     ```
+
+   - Connect to the schema for your world.
+
+     ```sql copy
+     set search_path to "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__";
+     ```
+
+   - Get the list of tables.
+
+     ```sql copy
+     \dt
+     ```
+
+     Result (When using the React template):
+
+     ```
+                             List of relations
+                       Schema                      | Name  | Type  | Owner
+     ----------------------------------------------+-------+-------+-------
+     0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__  | tasks | table | qbzzt
+     (1 row)
+     ```
+
+   - Read the actual data.
+
+     ```sql copy
+     select * from tasks;
+     ```
+
+     Result:
+
+     ```
+                                   key                                  | created_at | completed_at |    description     |                            __key_bytes                             | __last_updated_block_number
+     --------------------------------------------------------------------+------------+--------------+--------------------+--------------------------------------------------------------------+-----------------------------
+     \x3100000000000000000000000000000000000000000000000000000000000000 | 1702401236 |            0 | Walk the dog       | \x3100000000000000000000000000000000000000000000000000000000000000 |                          17
+     \x5e9c11602057fbf149cca23095b1863f7ffa8d0d0bd9434005a344ad612488a7 | 1702401238 |            0 | Take out the trash | \x5e9c11602057fbf149cca23095b1863f7ffa8d0d0bd9434005a344ad612488a7 |                          17
+     \x0c9151148be227a42be8d3e3e7e61da28a532f2340b0ad9ca8bc747703ec2417 | 1702401238 |   1702401238 | Do the dishes      | \x0c9151148be227a42be8d3e3e7e61da28a532f2340b0ad9ca8bc747703ec2417 |                          17
+     (3 rows)
+     ```
+
+### Docker - coming soon
 
 The indexer Docker image is available [on github](https://github.com/latticexyz/mud/pkgs/container/store-indexer).
 
@@ -96,7 +208,7 @@ We can solve this with [volumes](https://docs.docker.com/storage/volumes/):
    docker run \
       --platform linux/amd64 \
       -e RPC_HTTP_URL=http://host.docker.internal:8545 \
-      -e SQLITE_FILENAME=/dbase/anvil.db \
+      -e SQLITE_FILENAME=/dbase/indexer.db \
       -v sqlite-db-file:/dbase \
       -p 3001:3001  \
       ghcr.io/latticexyz/store-indexer:latest  \
@@ -199,7 +311,7 @@ Here are the directions how to do it.
 
 ### SQLite
 
-Delete the database file (by default `anvil.db`).
+Delete the database file (by default `indexer.db`).
 
 ### PostgreSQL
 
