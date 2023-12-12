@@ -164,7 +164,7 @@ Use this method when you want to use SQL queries to view the data.
      (3 rows)
      ```
 
-### Docker - coming soon
+### Docker
 
 The indexer Docker image is available [on github](https://github.com/latticexyz/mud/pkgs/container/store-indexer).
 
@@ -228,9 +228,10 @@ We can solve this with [volumes](https://docs.docker.com/storage/volumes/):
    **Note:** You should do this every time you restart the blockchain.
    Otherwise your index will include data from multiple blockchains, and make no sense.
 
-#### PostgreSQL
+#### PostgreSQL as storage
 
 The command to start the indexer in PostgreSQL mode is `pnpm start:postgres`.
+This command starts both the indexer and the front end.
 
 1. The docker instance identifies itself to PostgreSQL as `root`.
    To give this user permissions on the database, enter `psql` and run this command.
@@ -255,17 +256,37 @@ The command to start the indexer in PostgreSQL mode is `pnpm start:postgres`.
      pnpm start:postgres
    ```
 
-1. The PostgreSQL database is persistent.
-   If you restart the blockchain you have to delete the content of this database, otherwise the indexer will include old information.
-   To delete the database content, enter `psql` and run this command.
+#### PostgreSQL for queries
+
+The command to start the indexer in PostgreSQL mode is `pnpm start:postgres-decoded`.
+This command starts both the indexer and the front end.
+
+1. The docker instance identifies itself to PostgreSQL as `root`.
+   To give this user permissions on the database, enter `psql` and run this command.
 
    ```sql copy
-   DROP OWNED BY root;
+   CREATE ROLE root SUPERUSER LOGIN;
+   ```
+
+   **Note:** This is assuming a database that is isolated from the internet and only used by trusted entities.
+   In a production system you will use at least a password as authentication, and limit the user's authority.
+
+1. Start the docker container.
+   For example, to index an `anvil` instance running to the host to the database `postgres` on the host, use.
+
+   ```sh copy
+   docker run \
+     --platform linux/amd64 \
+     -e RPC_HTTP_URL=http://host.docker.internal:8545 \
+     -e DATABASE_URL=postgres://host.docker.internal/postgres \
+     -p 3001:3001  \
+     ghcr.io/latticexyz/store-indexer:latest  \
+     pnpm start:postgres-decoded
    ```
 
 ### Verification
 
-Run this command to test the indexer.
+If you use either SQLite or PostgreSQL with the front-end (using PostgreSQL only as storage), you can run this command to test the indexer.
 
 ```sh copy
 curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' | jq
@@ -304,22 +325,14 @@ Meaning that query 0 is for everything in the `World` at address `0x6e9474e9c836
 
 </details>
 
-## Resetting the database
+## Some examples
 
-When you restart the blockchain you _have_ to reset the database, otherwise you'll get a mix of old and new information.
-Here are the directions how to do it.
+### SQLite to view the tasks from the React template
 
-### SQLite
+- Start the indexer
 
-Delete the database file (by default `indexer.db`).
-
-### PostgreSQL
-
-Run `psql` and run this command:
-
-```sql
-DROP OWNED BY <see below>;
-```
-
-- If you are running the indexer locally, the owner of the tablespaces is your user name.
-- If you are using Docker, the owner of the tablespaces is `root`.
+  ```sh copy
+  pnpm install @latticexyz/store-indexer@next
+  export RPC_HTTP_URL=http://127.0.0.1:8545
+  pnpm sqlite-indexer
+  ```
