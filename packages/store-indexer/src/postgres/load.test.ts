@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import { IndexerClient } from "@latticexyz/store-sync/indexer-client";
 
 const numRequests = 10;
-export const indexerUrl = "https://17001-postgres-indexer.quarry.linfra.xyz";
+// export const indexerUrl = "https://17001-postgres-indexer-vercel.quarry.linfra.xyz";
+// export const indexerUrl = "https://17001-postgres-indexer.quarry.linfra.xyz";
+export const indexerUrl = "http://localhost:3001";
 
 describe("Load", () => {
   it("should not return empty results on high load", async () => {
@@ -11,6 +13,8 @@ describe("Load", () => {
     for (let i = 0; i < numRequests; i++) {
       requests.push(
         (async (): Promise<number> => {
+          console.log("requesting");
+          const start = performance.now();
           try {
             const input = encodeURIComponent(JSON.stringify(options));
             const urlOrigin = new URL(indexerUrl).origin;
@@ -20,6 +24,7 @@ describe("Load", () => {
               return 0;
             }
             const result = await response.json();
+            console.log("Request took", (performance.now() - start) / 1000, "seconds");
             return result?.logs?.length;
           } catch (e) {
             console.error(e);
