@@ -329,10 +329,47 @@ Meaning that query 0 is for everything in the `World` at address `0x6e9474e9c836
 
 ### SQLite to view the tasks from the React template
 
-- Start the indexer
+- Start the indexer.
 
   ```sh copy
   pnpm install @latticexyz/store-indexer@next
   export RPC_HTTP_URL=http://127.0.0.1:8545
   pnpm sqlite-indexer
   ```
+
+- Read the data.
+
+  ```sh copy
+  curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' | \
+  jq '.[0].result.data.json.tables' | \
+  jq -c '.[] | select (.name=="Tasks")' | \
+  jq .records | more
+  ```
+
+### Read data from SkyStrife season 0
+
+Here we can use the existing Redstone testnet indexer.
+
+1. Read the data from the indexer.
+
+   ```sh copy
+   INDEXER_URL=https://indexer.holesky.redstone.xyz/trpc
+   WORLD_ADDRESS=0x7203e7adfdf38519e1ff4f8da7dcdc969371f377
+   CHAIN_ID=17001
+   JSON='{"0":{"json":{"chainId":'$CHAIN_ID', "address":"'$WORLD_ADDRESS'"}}}'
+   ENCODED_JSON=`echo "console.log(encodeURI('$JSON'))" | node`
+   curl $INDEXER_URL'/findAll?batch=1&input='$ENCODED_JSON > data.json
+   ```
+
+1. Obtain the list of tables.
+
+   ```sh copy
+   TABLES=`cat data.json | jq '.[0].result.data.json.tables'`
+   echo $TABLES | jq '.[].name'
+   ```
+
+1. Get the match names.
+
+   ```sh copy
+   echo $TABLES | jq '.[] | select (.name=="MatchName")'
+   ```
