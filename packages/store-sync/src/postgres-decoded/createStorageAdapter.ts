@@ -123,6 +123,12 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
             })
             .execute();
         } else if (log.eventName === "Store_DeleteRecord") {
+          const value = decodeValueArgs(table.valueSchema, {
+            staticData: "0x",
+            encodedLengths: "0x",
+            dynamicData: "0x",
+          });
+
           debug("deleting record", {
             namespace: table.namespace,
             name: table.name,
@@ -130,8 +136,20 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           });
 
           await tx
-            .delete(sqlTable)
-            .where(and(eq(sqlTable.__keyBytes, keyBytes), eq(sqlTable.__lastUpdatedBlockNumber, blockNumber)))
+            .insert(sqlTable)
+            .values({
+              __keyBytes: keyBytes,
+              __lastUpdatedBlockNumber: blockNumber,
+              ...key,
+              ...value,
+            })
+            .onConflictDoUpdate({
+              target: [sqlTable.__keyBytes, sqlTable.__lastUpdatedBlockNumber],
+              set: {
+                __lastUpdatedBlockNumber: blockNumber,
+                ...value,
+              },
+            })
             .execute();
         }
       }
