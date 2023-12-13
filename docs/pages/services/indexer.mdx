@@ -26,6 +26,7 @@ These environment variables need to be provided to the indexer to work:
 | Optional                  | RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
 | Optional                  | START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                         |
 | Optional                  | DEBUG=mud:\*    | Turn on debugging                                                                                        |                                                           |
+| Optional                  | STORE_ADDRESS   | Only index tables from this `World`                                                                      |
 | Optional, only for SQLite | SQLITE_FILENAME | Name of database                                                                                         | `indexer.db`                                              |
 | Required for PostgreSQL   | DATABASE_URL    | URL for the database, of the form `postgres://<host>/<database>`                                         |
 
