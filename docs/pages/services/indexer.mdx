@@ -36,17 +36,17 @@ To run the indexer directly on your computer using SQLite:
 1. Start a `World` to index.
    An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
 
-1. Install the indexer.
-
-   ```bash copy
-   pnpm install @latticexyz/store-indexer@next
-   ```
-
-1. Set `RPC_HTTP_URL` and run the indexer.
+1. Set `RPC_HTTP_URL`.
 
    ```bash copy
    export RPC_HTTP_URL=http://127.0.0.1:8545
-   pnpm sqlite-indexer
+   ```
+
+1. Run the indexer.
+   If necessary, install it first.
+
+   ```bash copy
+   npx -y -p @latticexyz/store-indexer@next sqlite-indexer
    ```
 
 **Note:** The `indexer.db` is persistent if you stop and restart the indexer.
@@ -62,25 +62,26 @@ The main purpose of this variant of the indexer is to efficiently hydrate a MUD 
 1. Start a `World` to index.
    An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
 
-1. Install the indexer.
-
-   ```bash copy
-   pnpm install @latticexyz/store-indexer@next
-   ```
-
-1. Set the environment variables and start the indexer.
+1. Set the environment variables.
 
    ```bash copy
    export RPC_HTTP_URL=http://127.0.0.1:8545
    export DATABASE_URL=postgres://127.0.0.1/postgres
-   pnpm postgres-indexer
    ```
 
-1. Run the indexer frontend, which is responsible for serving the data to the client, in a separate command-line window.
+1. Run the indexer.
+   Install it first if necessary.
+
+   ```bash copy
+   npx -y -p @latticexyz/store-indexer@next postgres-indexer
+   ```
+
+1. Open a separate command line.
+   In it, specify the database and run the indexer frontend, which is responsible for serving the data to the client.
 
    ```bash copy
    export DATABASE_URL=postgres://127.0.0.1/postgres
-   pnpm postgres-frontend
+   npx -y -p @latticexyz/store-indexer@next postgres-frontend
    ```
 
 ### Schemaful indexing with PostgreSQL via pnpm
@@ -92,18 +93,12 @@ This approach doesn't scale well to all tables of a chain, but it is a convenien
 1. Start a `World` to index.
    An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
 
-1. Install the indexer.
-
-   ```bash copy
-   pnpm install @latticexyz/store-indexer@next
-   ```
-
-1. Set the environment variables and start the indexer.
+1. Set the environment variables and start the indexer, installing it if necessary.
 
    ```bash copy
    export RPC_HTTP_URL=http://127.0.0.1:8545
    export DATABASE_URL=postgres://127.0.0.1/postgres
-   pnpm postgres-decoded-indexer
+   npx -y -p @latticexyz/store-indexer@next postgres-decoded-indexer
    ```
 
 1. To verify the installation, run `psql` and then:
@@ -340,60 +335,44 @@ Meaning that query 0 is for everything in the `World` at address `0x6e9474e9c836
 
 </details>
 
-## Some examples
+## Usage examples
 
 ### SQLite to view the tasks from the React template
 
 1. Start the indexer.
 
    ```sh copy
-   pnpm install @latticexyz/store-indexer@next
    export RPC_HTTP_URL=http://127.0.0.1:8545
-   pnpm sqlite-indexer
+   npx -y -p @latticexyz/store-indexer@next sqlite-indexer
    ```
 
-1. Get the tasks.
-   There are two ways to do this.
+1. Get the list of tables.
+   To do that, we read all the data and filter it locally.
 
-   - Read all the data and filter it locally.
+   ```sh copy
+   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' > alldata.json
+   cat alldata.json | jq '.[0].result.data.json.tables[]' > tables.json
+   cat tables.json | jq '.name + " " + .tableId'
+   ```
 
-     ```sh copy
-     curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' > alldata.json
-     cat alldata.json | jq '.[0].result.data.json.tables' > tables.json
-     cat tables.json | jq -c '.[] | select (.name=="Tasks")' > tasks-table.json
-     cat tasks-table.json | jq .records | more
-     ```
+1. Ask the indexer for only the information in a specific table (which requires you to know the `tableId` for it).
 
-     You can also get additional table information, for example the `tableId`:
+   ```sh copy
+   INDEXER_URL=http://localhost:3001/trpc
+   WORLD_ADDRESS=0x6e9474e9c83676b9a71133ff96db43e7aa0a4342
+   TABLE_ID=0x746200000000000000000000000000005461736b730000000000000000000000
+   CHAIN_ID=31337
+   JSON='{"0":{"json":{"chainId": '$CHAIN_ID', "address": "'$WORLD_ADDRESS'", "filters": [{"tableId": "'$TABLE_ID'"}]}}}'
+   ENCODED_JSON=`echo "console.log(encodeURI('$JSON'))" | node`
+   curl $INDEXER_URL'/findAll?batch=1&input='$ENCODED_JSON > data.json
+   cat data.json |  jq '.[0].result.data.json.tables[0].records'
+   ```
 
-     ```sh copy
-     cat tasks-table.json | jq .tableId
-     ```
+   To see that the only table returned is `Tasks`, run this command:
 
-     To see all the tables in the data, you can use:
-
-     ```sh copy
-     cat alldata.json | jq '.[0].result.data.json.tables[].name'
-     ```
-
-   - Ask the indexer for only the information in a specific table (which requires you to know the `tableId` for it).
-
-     ```sh copy
-     INDEXER_URL=http://localhost:3001/trpc
-     WORLD_ADDRESS=0x6e9474e9c83676b9a71133ff96db43e7aa0a4342
-     TABLE_ID=0x746200000000000000000000000000005461736b730000000000000000000000
-     CHAIN_ID=31337
-     JSON='{"0":{"json":{"chainId": '$CHAIN_ID', "address": "'$WORLD_ADDRESS'", "filters": [{"tableId": "'$TABLE_ID'"}]}}}'
-     ENCODED_JSON=`echo "console.log(encodeURI('$JSON'))" | node`
-     curl $INDEXER_URL'/findAll?batch=1&input='$ENCODED_JSON > data.json
-     cat data.json |  jq '.[0].result.data.json.tables[0].records'
-     ```
-
-     To see that the only table returned is `Tasks`, run this command:
-
-     ```sh copy
-     cat data.json | jq '.[0].result.data.json.tables[].name'
-     ```
+   ```sh copy
+   cat data.json | jq '.[0].result.data.json.tables[].name'
+   ```
 
 ### Postgres to read data from SkyStrife season 0
 
