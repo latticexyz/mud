@@ -256,6 +256,18 @@ This command starts both the indexer and the front end.
      pnpm start:postgres
    ```
 
+   If you want to create additional front ends (for reliability and load balancing), use these commands:
+
+   ```sh copy
+   HOST_PORT=3002
+   docker run \
+     --platform linux/amd64 \
+     -e DATABASE_URL=postgres://host.docker.internal/postgres \
+     -p $HOST_PORT:3001  \
+     ghcr.io/latticexyz/store-indexer:latest  \
+     node dist/bin/postgres-frontend.js
+   ```
+
 #### PostgreSQL for queries
 
 The command to start the indexer in PostgreSQL mode is `pnpm start:postgres-decoded`.
@@ -346,14 +358,31 @@ Meaning that query 0 is for everything in the `World` at address `0x6e9474e9c836
   jq .records | more
   ```
 
-### Read data from SkyStrife season 0
+### Postgres to read data from SkyStrife season 0
 
-Here we can use the existing Redstone testnet indexer.
+1. If necessary, start Docker and PostgreSQL.
+
+1. Start the Postgres Docker container.
+
+   ```sh copy
+   docker run \
+      --platform linux/amd64 \
+      -e RPC_HTTP_URL=https://rpc.holesky.redstone.xyz \
+      -e RPC_WS_URL=wss://rpc.holesky.redstone.xyz/ws \
+      -e DATABASE_URL=postgres://host.docker.internal/postgres \
+      -e START_BLOCK=895629 \
+      -p 3001:3001  \
+      ghcr.io/latticexyz/store-indexer:latest  \
+      pnpm start:postgres
+   ```
+
+1. It will take a while until the indexer synchronizes all the way to the present.
+   However, we can already read information and it will give us the latest it has.
 
 1. Read the data from the indexer.
 
    ```sh copy
-   INDEXER_URL=https://indexer.holesky.redstone.xyz/trpc
+   INDEXER_URL=http://localhost:3001/trpc
    WORLD_ADDRESS=0x7203e7adfdf38519e1ff4f8da7dcdc969371f377
    CHAIN_ID=17001
    JSON='{"0":{"json":{"chainId":'$CHAIN_ID', "address":"'$WORLD_ADDRESS'"}}}'
@@ -368,8 +397,8 @@ Here we can use the existing Redstone testnet indexer.
    echo $TABLES | jq '.[].name'
    ```
 
-1. Get the match names.
+1. Get the combatant entities.
 
    ```sh copy
-   echo $TABLES | jq '.[] | select (.name=="MatchName")'
+   echo $TABLES | jq '.[] | select (.name=="Combat")'
    ```
