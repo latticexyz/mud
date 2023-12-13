@@ -1,7 +1,8 @@
 export default {
   introduction: "Introduction",
   typescript: "TypeScript",
-  unity: "Unity",
   godot: "Godot",
-  swift: "Swift"
+  swift: "Swift",
+  svelte: "Svelte",
+  unity: "Unity",
 };
