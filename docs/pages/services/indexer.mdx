@@ -29,7 +29,7 @@ These environment variables need to be provided to the indexer to work:
 | Optional, only for SQLite | SQLITE_FILENAME | Name of database                                                                                         | `indexer.db`                                              |
 | Required for PostgreSQL   | DATABASE_URL    | URL for the database, of the form `postgres://<host>/<database>`                                         |
 
-### Running directly with SQLite
+### Schemaful indexing to SQLite via pnpm
 
 To run the indexer directly on your computer using SQLite:
 
@@ -52,10 +52,12 @@ To run the indexer directly on your computer using SQLite:
 **Note:** The `indexer.db` is persistent if you stop and restart the indexer.
 If that is not the desired behavior (for example, because you restarted the blockchain itself), delete it before starting the indexer.
 
-### Running directly with PostgreSQL storage
+### Schemaless indexing to PostgreSQL via pnpm
 
-This is the method to use PostgreSQL as merely a data storage solution.
-It has better performance, but the format of the data in PostgreSQL is opaque, you have to use our front end to understand the data.
+The schemaless indexer stores MUD table records into a single monolithic table.
+This allows it to index the data of all tables of all MUD Worlds on a chain efficiently, but querying for data is limited to filters on `address`, `tableId`, and the record's key.
+Since the record's `data` is stored as encoded bytes blob, it's harder to query based on it in SQL.
+The main purpose of this variant of the indexer is to efficiently hydrate a MUD client, which decodes the data.
 
 1. Start a `World` to index.
    An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
@@ -74,17 +76,18 @@ It has better performance, but the format of the data in PostgreSQL is opaque, y
    pnpm postgres-indexer
    ```
 
-1. Run the front end, which is responsible for serving the data, in a separate command-line window.
+1. Run the indexer frontend, which is responsible for serving the data to the client, in a separate command-line window.
 
    ```bash copy
    export DATABASE_URL=postgres://127.0.0.1/postgres
    pnpm postgres-frontend
    ```
 
-### Running directly with PostgreSQL queries
+### Schemaful indexing with PostgreSQL via pnpm
 
-This is the method to store the table information in PostgreSQL, with a table corresponding to each MUD table.
-Use this method when you want to use SQL queries to view the data.
+The schemaful indexer dynamically creates a PostgreSQL table every time it encounters a new MUD table.
+It then decodes the MUD events and stores it in the PostgreSQL table with a matching schema.
+This approach doesn't scale well to all tables of a chain, but it is a convenient way to index the tables of a particular MUD World and have access to powerful SQL queries on its data.
 
 1. Start a `World` to index.
    An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
@@ -103,7 +106,7 @@ Use this method when you want to use SQL queries to view the data.
    pnpm postgres-decoded-indexer
    ```
 
-1. To verify the installation, but `psql` and then:
+1. To verify the installation, run `psql` and then:
 
    - List the schemas.
 
@@ -228,10 +231,10 @@ We can solve this with [volumes](https://docs.docker.com/storage/volumes/):
    **Note:** You should do this every time you restart the blockchain.
    Otherwise your index will include data from multiple blockchains, and make no sense.
 
-#### PostgreSQL as storage
+#### Schemaless indexing with PostgreSQL via Docker
 
 The command to start the indexer in PostgreSQL mode is `pnpm start:postgres`.
-This command starts both the indexer and the front end.
+This command starts both the indexer and query frontends.
 
 1. The docker instance identifies itself to PostgreSQL as `root`.
    To give this user permissions on the database, enter `psql` and run this command.
@@ -268,10 +271,10 @@ This command starts both the indexer and the front end.
      node dist/bin/postgres-frontend.js
    ```
 
-#### PostgreSQL for queries
+#### Schemaful indexing with PostgreSQL via Docker
 
 The command to start the indexer in PostgreSQL mode is `pnpm start:postgres-decoded`.
-This command starts both the indexer and the front end.
+This command starts both the indexer and the query frontend.
 
 1. The docker instance identifies itself to PostgreSQL as `root`.
    To give this user permissions on the database, enter `psql` and run this command.
@@ -298,7 +301,7 @@ This command starts both the indexer and the front end.
 
 ### Verification
 
-If you use either SQLite or PostgreSQL with the front-end (using PostgreSQL only as storage), you can run this command to test the indexer.
+If you use either SQLite or PostgreSQL with the query frontend (using PostgreSQL only as storage), you can run this command to test the indexer.
 
 ```sh copy
 curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' | jq
