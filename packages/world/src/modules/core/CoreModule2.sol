@@ -20,7 +20,7 @@ import { NamespaceDelegationControl } from "../../codegen/tables/NamespaceDelega
 
 import { CoreSystem } from "./CoreSystem.sol";
 import { CoreSystem2 } from "./CoreSystem2.sol";
-import { CORE_MODULE_NAME, CORE_SYSTEM_ID, CORE_SYSTEM_2_ID } from "./constants.sol";
+import { CORE_MODULE_NAME, CORE_MODULE_2_NAME, CORE_SYSTEM_ID, CORE_SYSTEM_2_ID } from "./constants.sol";
 
 import { Systems } from "../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../codegen/tables/FunctionSelectors.sol";
@@ -37,17 +37,16 @@ import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSyst
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
 /**
- * @title Core Module
+ * @title Core Module 2
  * @notice Registers internal World tables, the CoreSystem, and its function selectors.
  * @dev This module only supports `installRoot` because it installs root tables, systems and function selectors.
  */
 
-contract CoreModule is Module {
+contract CoreModule2 is Module {
   /**
    * @dev Since the CoreSystem only exists once per World and writes to
    * known tables, we can deploy it once and register it in multiple Worlds.
    */
-  address immutable coreSystem = address(new CoreSystem());
   address immutable coreSystem2 = address(new CoreSystem2());
 
   /**
@@ -55,7 +54,7 @@ contract CoreModule is Module {
    * @return Module name as bytes16.
    */
   function getName() public pure returns (bytes16) {
-    return CORE_MODULE_NAME;
+    return CORE_MODULE_2_NAME;
   }
 
   /**
@@ -63,10 +62,8 @@ contract CoreModule is Module {
    * @dev Registers core tables, systems, and function selectors in the World.
    */
   function installRoot(bytes memory) public override {
-    _registerCoreTables();
-    _registerCoreSystems();
-    _registerFunctionSelectors1();
-    _registerFunctionSelectors2();
+    _registerCoreSystem();
+    _registerFunctionSelectors();
   }
 
   /**
@@ -78,48 +75,11 @@ contract CoreModule is Module {
   }
 
   /**
-   * @notice Register core tables in the World.
-   * @dev This internal function registers various tables and sets initial permissions.
+   * @notice Register the CoreSystem2 in the World.
+   * @dev Uses the CoreSystem2's `registerSystem` implementation to register itself on the World.
    */
-  function _registerCoreTables() internal {
-    StoreCore.registerCoreTables();
-    NamespaceOwner.register();
-    Balances.register();
-    InstalledModules.register();
-    UserDelegationControl.register();
-    NamespaceDelegationControl.register();
-    ResourceAccess.register();
-    Systems.register();
-    FunctionSelectors.register();
-    FunctionSignatures.register();
-    SystemHooks.register();
-    SystemRegistry.register();
-
-    ResourceIds._setExists(ROOT_NAMESPACE_ID, true);
-    NamespaceOwner._set(ROOT_NAMESPACE_ID, _msgSender());
-    ResourceAccess._set(ROOT_NAMESPACE_ID, _msgSender(), true);
-
-    ResourceIds._setExists(STORE_NAMESPACE_ID, true);
-    NamespaceOwner._set(STORE_NAMESPACE_ID, _msgSender());
-    ResourceAccess._set(STORE_NAMESPACE_ID, _msgSender(), true);
-
-    ResourceIds._setExists(WORLD_NAMESPACE_ID, true);
-    NamespaceOwner._set(WORLD_NAMESPACE_ID, _msgSender());
-    ResourceAccess._set(WORLD_NAMESPACE_ID, _msgSender(), true);
-  }
-
-  /**
-   * @notice Register the CoreSystem in the World.
-   * @dev Uses the CoreSystem's `registerSystem` implementation to register itself on the World.
-   */
-  function _registerCoreSystems() internal {
-    WorldContextProviderLib.delegatecallWithContextOrRevert({
-      msgSender: _msgSender(),
-      msgValue: 0,
-      target: coreSystem,
-      callData: abi.encodeCall(WorldRegistrationSystem.registerSystem, (CORE_SYSTEM_ID, CoreSystem(coreSystem), true))
-    });
-
+  function _registerCoreSystem() internal {
+    (address coreSystem, ) = Systems.get(CORE_SYSTEM_ID);
     WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
       msgValue: 0,
@@ -132,55 +92,10 @@ contract CoreModule is Module {
   }
 
   /**
-   * @notice Register function selectors for all CoreSystem functions in the World.
-   * @dev Iterates through known function signatures and registers them.
-   */
-  function _registerFunctionSelectors1() internal {
-    string[17] memory functionSignatures = [
-      // --- AccessManagementSystem ---
-      "grantAccess(bytes32,address)",
-      "revokeAccess(bytes32,address)",
-      "transferOwnership(bytes32,address)",
-      // --- BatchCallSystem ---
-      "batchCall((bytes32,bytes)[])",
-      "batchCallFrom((address,bytes32,bytes)[])",
-      // --- ModuleInstallationSystem ---
-      "installModule(address,bytes)",
-      // --- StoreRegistrationSystem ---
-      "registerTable(bytes32,bytes32,bytes32,bytes32,string[],string[])",
-      "registerStoreHook(bytes32,address,uint8)",
-      "unregisterStoreHook(bytes32,address)",
-      // --- WorldRegistrationSystem ---
-      "registerNamespace(bytes32)",
-      "registerSystemHook(bytes32,address,uint8)",
-      "unregisterSystemHook(bytes32,address)",
-      "registerSystem(bytes32,address,bool)",
-      "registerFunctionSelector(bytes32,string)",
-      "registerRootFunctionSelector(bytes32,string,bytes4)",
-      "registerDelegation(address,bytes32,bytes)",
-      "registerNamespaceDelegation(bytes32,bytes32,bytes)"
-    ];
-
-    for (uint256 i = 0; i < functionSignatures.length; i++) {
-      // Use the CoreSystem's `registerRootFunctionSelector` to register the
-      // root function selectors in the World.
-      WorldContextProviderLib.delegatecallWithContextOrRevert({
-        msgSender: _msgSender(),
-        msgValue: 0,
-        target: coreSystem,
-        callData: abi.encodeCall(
-          WorldRegistrationSystem.registerRootFunctionSelector,
-          (CORE_SYSTEM_ID, functionSignatures[i], bytes4(keccak256(bytes(functionSignatures[i]))))
-        )
-      });
-    }
-  }
-
-  /**
    * @notice Register function selectors for all CoreSystem2 functions in the World.
    * @dev Iterates through known function signatures and registers them.
    */
-  function _registerFunctionSelectors2() internal {
+  function _registerFunctionSelectors() internal {
     string[2] memory functionSignatures = [
       // --- BalanceTransferSystem ---
       "transferBalanceToNamespace(bytes32,bytes32,uint256)",
@@ -193,7 +108,7 @@ contract CoreModule is Module {
       WorldContextProviderLib.delegatecallWithContextOrRevert({
         msgSender: _msgSender(),
         msgValue: 0,
-        target: coreSystem,
+        target: coreSystem2,
         callData: abi.encodeCall(
           WorldRegistrationSystem.registerRootFunctionSelector,
           (CORE_SYSTEM_2_ID, functionSignatures[i], bytes4(keccak256(bytes(functionSignatures[i]))))

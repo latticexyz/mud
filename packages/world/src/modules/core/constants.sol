@@ -13,9 +13,17 @@ import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
 bytes16 constant CORE_MODULE_NAME = bytes16("core");
 
 /**
- * @dev Resource ID for the core system.
- * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the CORE_MODULE_NAME.
+ * @dev Resource ID for core system 1.
+ * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and a suffixed CORE_MODULE_NAME.
  */
 ResourceId constant CORE_SYSTEM_ID = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, CORE_MODULE_NAME))
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("core1")))
+);
+
+/**
+ * @dev Resource ID for core system 2.
+ * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and a suffixed CORE_MODULE_NAME.
+ */
+ResourceId constant CORE_SYSTEM_2_ID = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("core2")))
 );

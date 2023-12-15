@@ -37,7 +37,8 @@ import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { CoreSystem } from "../src/modules/core/CoreSystem.sol";
-import { CORE_SYSTEM_ID } from "../src/modules/core/constants.sol";
+import { CoreSystem2 } from "../src/modules/core/CoreSystem2.sol";
+import { CORE_SYSTEM_ID, CORE_SYSTEM_2_ID } from "../src/modules/core/constants.sol";
 import { Systems } from "../src/codegen/tables/Systems.sol";
 import { SystemRegistry } from "../src/codegen/tables/SystemRegistry.sol";
 import { FunctionSelectors } from "../src/codegen/tables/FunctionSelectors.sol";
@@ -218,14 +219,15 @@ contract WorldTest is Test, GasReporter {
 
     // Should have registered the core system function selectors
     CoreSystem coreSystem = CoreSystem(Systems.getSystem(CORE_SYSTEM_ID));
+    CoreSystem2 coreSystem2 = CoreSystem2(Systems.getSystem(CORE_SYSTEM_2_ID));
     bytes4[19] memory coreFunctionSignatures = [
       // --- AccessManagementSystem ---
       coreSystem.grantAccess.selector,
       coreSystem.revokeAccess.selector,
       coreSystem.transferOwnership.selector,
       // --- BalanceTransferSystem ---
-      coreSystem.transferBalanceToNamespace.selector,
-      coreSystem.transferBalanceToAddress.selector,
+      coreSystem2.transferBalanceToNamespace.selector,
+      coreSystem2.transferBalanceToAddress.selector,
       // --- BatchCallSystem ---
       coreSystem.batchCall.selector,
       coreSystem.batchCallFrom.selector,
