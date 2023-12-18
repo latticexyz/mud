@@ -12,7 +12,7 @@ import { debug } from "./debug";
 import { Hex } from "viem";
 
 export const deployerObj = {
-  deployer: `0x${deployment.address}` as Hex,
+  deployer: "0x" as Hex,
 };
 
 export async function ensureDeployer(
@@ -22,18 +22,25 @@ export async function ensureDeployer(
   let deployer: Address;
 
   try {
-    deployer = await ensureClassicDeployer(client);
+    if (customDeployer) {
+      deployer = await ensureExistDeployer(client, customDeployer);
+    } else {
+      deployer = await ensureExistDeployer(client, `0x${deployment.address}` as Address);
+    }
   } catch (e) {
-    debug("deploying classic deployer fail, try to deploy an custom deployer");
+    debug("use existing deployer fail, try to deploy an custom deployer");
 
-    deployer = await ensureCustomDeployer(client, customDeployer);
+    deployer = await ensureIndependentDeployer(client, customDeployer);
   }
 
   debug(`using ${deployer} as create2 deployer`);
+  deployerObj.deployer = deployer;
 }
 
-async function ensureClassicDeployer(client: Client<Transport, Chain | undefined, Account>): Promise<Address> {
-  const deployer = deployerObj.deployer;
+async function ensureExistDeployer(
+  client: Client<Transport, Chain | undefined, Account>,
+  deployer: Address
+): Promise<Address> {
   const bytecode = await getBytecode(client, { address: deployer });
   if (bytecode) {
     debug("found create2 deployer at", deployer);
@@ -65,7 +72,7 @@ async function ensureClassicDeployer(client: Client<Transport, Chain | undefined
   return deployer;
 }
 
-async function ensureCustomDeployer(
+async function ensureIndependentDeployer(
   client: Client<Transport, Chain | undefined, Account>,
   customDeployer?: Address
 ): Promise<Address> {

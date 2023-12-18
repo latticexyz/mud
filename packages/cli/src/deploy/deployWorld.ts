@@ -6,6 +6,7 @@ import { writeContract } from "@latticexyz/common";
 import { debug } from "./debug";
 import { logsToWorldDeploy } from "./logsToWorldDeploy";
 import { WorldDeploy } from "./common";
+import { deployerObj } from "./ensureDeployer";
 
 export async function deployWorld(client: Client<Transport, Chain | undefined, Account>): Promise<WorldDeploy> {
   await ensureWorldFactory(client);
@@ -13,7 +14,7 @@ export async function deployWorld(client: Client<Transport, Chain | undefined, A
   debug("deploying world");
   const tx = await writeContract(client, {
     chain: client.chain ?? null,
-    address: worldFactory,
+    address: worldFactory(deployerObj.deployer),
     abi: WorldFactoryAbi,
     functionName: "deployWorld",
   });
