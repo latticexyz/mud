@@ -89,13 +89,13 @@ async function ensureIndependentDeployer(
     data: customDeployment.data as Hex,
   });
 
-  const receipt = await getTransactionReceipt(client, { hash: tx });
+  const receipt = await waitForTransactionReceipt(client, { hash: tx });
 
   if (!receipt.contractAddress) {
     throw new Error("deploy custom deployer fails");
   }
 
-  debug(`deploy custom create2 deployer at ${receipt.contractAddress}, please config it manually for contract upgrade`);
+  debug(`deploy custom create2 deployer at ${receipt.contractAddress}, please config it manually for world upgrade`);
 
   return receipt.contractAddress;
 }
