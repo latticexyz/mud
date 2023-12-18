@@ -21,26 +21,18 @@ export async function ensureDeployer(
 ): Promise<void> {
   let deployer: Address;
 
-  try {
-    if (customDeployer) {
-      deployer = await ensureExistDeployer(client, customDeployer);
-    } else {
-      deployer = await ensureExistDeployer(client, `0x${deployment.address}` as Address);
-    }
-  } catch (e) {
-    debug("use existing deployer fail, try to deploy an custom deployer");
-
-    deployer = await ensureIndependentDeployer(client, customDeployer);
+  if (customDeployer) {
+    deployer = await ensureCustomDeployer(client, customDeployer);
+  } else {
+    deployer = await ensureClassicDeployer(client);
   }
 
   debug(`using ${deployer} as create2 deployer`);
   deployerObj.deployer = deployer;
 }
 
-async function ensureExistDeployer(
-  client: Client<Transport, Chain | undefined, Account>,
-  deployer: Address
-): Promise<Address> {
+async function ensureClassicDeployer(client: Client<Transport, Chain | undefined, Account>): Promise<Address> {
+  const deployer = `0x${deployment.address}` as Address;
   const bytecode = await getBytecode(client, { address: deployer });
   if (bytecode) {
     debug("found create2 deployer at", deployer);
@@ -72,7 +64,7 @@ async function ensureExistDeployer(
   return deployer;
 }
 
-async function ensureIndependentDeployer(
+async function ensureCustomDeployer(
   client: Client<Transport, Chain | undefined, Account>,
   customDeployer?: Address
 ): Promise<Address> {
