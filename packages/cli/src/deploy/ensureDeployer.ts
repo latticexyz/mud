@@ -24,10 +24,10 @@ export async function ensureDeployer(
   try {
     deployer = await ensureClassicDeployer(client);
   } catch (e) {
-    debug("try to deploy classic deployer fail, retry to deploy an independent deployer");
-  }
+    debug("deploying classic deployer fail, try to deploy an custom deployer");
 
-  deployer = await ensureCustomDeployer(client, customDeployer);
+    deployer = await ensureCustomDeployer(client, customDeployer);
+  }
 
   debug(`using ${deployer} as create2 deployer`);
 }
