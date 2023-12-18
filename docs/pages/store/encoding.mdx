@@ -325,7 +325,7 @@ It is used as an onchain gas optimization for storage operations on static lengt
 Example: `FieldLayout` with 3 fields (`uint64`, `uint40`, `address[]`).
 
 ```
-0x 0010 02 01 08080000000000000000000000000000000000000000000000000000
+0x 000D 02 01 08080000000000000000000000000000000000000000000000000000
   |----|--|--|--------------------------------------------------------|
   |    |  |  | Up to 28 static byte lengths, one byte each            |
   |    |  |  | 8 (uint64), 5 (uint40), 0 (address[])                  |
