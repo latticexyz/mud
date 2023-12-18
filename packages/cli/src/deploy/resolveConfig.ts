@@ -18,7 +18,7 @@ import { getExistingContracts } from "../utils/getExistingContracts";
 import { defaultModuleContracts } from "../utils/modules/constants";
 import { getContractData } from "../utils/utils/getContractData";
 import { configToTables } from "./configToTables";
-import { deployer } from "./ensureDeployer";
+import { deployerObj } from "./ensureDeployer";
 import { resourceLabel } from "./resourceLabel";
 
 // TODO: this should be replaced by https://github.com/latticexyz/mud/issues/1668
@@ -73,7 +73,7 @@ export function resolveConfig<config extends ConfigInput>({
       allowedSystemIds: system.accessListSystems.map((name) =>
         resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name })
       ),
-      address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
+      address: getCreate2Address({ from: deployerObj.deployer, bytecode: contractData.bytecode, salt }),
       bytecode: contractData.bytecode,
       deployedBytecodeSize: contractData.deployedBytecodeSize,
       abi: contractData.abi,
@@ -136,7 +136,7 @@ export function resolveConfig<config extends ConfigInput>({
       name: mod.name,
       installAsRoot: mod.root,
       installData: installArgs.length === 0 ? "0x" : installArgs[0],
-      address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
+      address: getCreate2Address({ from: deployerObj.deployer, bytecode: contractData.bytecode, salt }),
       bytecode: contractData.bytecode,
       deployedBytecodeSize: contractData.deployedBytecodeSize,
       abi: contractData.abi,

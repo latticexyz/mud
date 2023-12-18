@@ -1,6 +1,6 @@
 import { Client, Transport, Chain, Account, concatHex, getCreate2Address, Hex, size } from "viem";
 import { getBytecode } from "viem/actions";
-import { deployer } from "./ensureDeployer";
+import { deployerObj } from "./ensureDeployer";
 import { contractSizeLimit, salt } from "./common";
 import { sendTransaction } from "@latticexyz/common";
 import { debug } from "./debug";
@@ -21,7 +21,7 @@ export async function ensureContract({
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
 } & Contract): Promise<readonly Hex[]> {
-  const address = getCreate2Address({ from: deployer, salt, bytecode });
+  const address = getCreate2Address({ from: deployerObj.deployer, salt, bytecode });
 
   const contractCode = await getBytecode(client, { address, blockTag: "pending" });
   if (contractCode) {
@@ -45,7 +45,7 @@ export async function ensureContract({
       () =>
         sendTransaction(client, {
           chain: client.chain ?? null,
-          to: deployer,
+          to: deployerObj.deployer,
           data: concatHex([salt, bytecode]),
         }),
       {

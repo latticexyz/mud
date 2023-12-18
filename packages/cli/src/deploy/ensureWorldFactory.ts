@@ -1,7 +1,7 @@
 import coreModuleBuild from "@latticexyz/world/out/CoreModule.sol/CoreModule.json" assert { type: "json" };
 import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json" assert { type: "json" };
 import { Client, Transport, Chain, Account, Hex, parseAbi, getCreate2Address, encodeDeployData, size } from "viem";
-import { deployer } from "./ensureDeployer";
+import { deployerObj } from "./ensureDeployer";
 import { salt } from "./common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { Contract } from "./ensureContract";
@@ -12,7 +12,7 @@ export const coreModuleBytecode = encodeDeployData({
   abi: [],
 });
 
-export const coreModule = getCreate2Address({ from: deployer, bytecode: coreModuleBytecode, salt });
+export const coreModule = getCreate2Address({ from: deployerObj.deployer, bytecode: coreModuleBytecode, salt });
 
 export const worldFactoryDeployedBytecodeSize = size(worldFactoryBuild.deployedBytecode.object as Hex);
 export const worldFactoryBytecode = encodeDeployData({
@@ -21,7 +21,7 @@ export const worldFactoryBytecode = encodeDeployData({
   args: [coreModule],
 });
 
-export const worldFactory = getCreate2Address({ from: deployer, bytecode: worldFactoryBytecode, salt });
+export const worldFactory = getCreate2Address({ from: deployerObj.deployer, bytecode: worldFactoryBytecode, salt });
 
 export const worldFactoryContracts: readonly Contract[] = [
   {
