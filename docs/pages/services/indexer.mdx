@@ -102,6 +102,12 @@ This approach doesn't scale well to all tables of a chain, but it is a convenien
    npx -y -p @latticexyz/store-indexer@next postgres-decoded-indexer
    ```
 
+   Note: If the `npx` command does not work, use:
+
+   ```bash copy
+   npx -y -p @latticexyz/store-indexer@main postgres-decoded-indexer
+   ```
+
 1. To verify the installation, run `psql` and then:
 
    - List the schemas.
