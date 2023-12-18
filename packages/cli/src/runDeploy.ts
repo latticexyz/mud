@@ -80,7 +80,7 @@ in your contracts directory to use the default anvil private key.`
   });
   console.log("Deploying from", client.account.address);
 
-  await ensureDeployer(client, (opts.create2Deployer as Hex) || undefined);
+  await ensureDeployer(client, opts.create2Deployer as Hex);
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
