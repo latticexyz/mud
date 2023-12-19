@@ -108,6 +108,10 @@ The global configuration keys are all optional.
     Include methods that accept a manual `IStore` argument.
     The default is `true`.
 
+  - **`offchainOnly`**: (bool):
+    Table's information is available offchain (using [events](https://docs.soliditylang.org/en/latest/contracts.html#events)), but don't store in onchain.
+    These tables require a lot less gas.
+
   - **`dataStruct`**: (bool):
     Include a [data struct](https://docs.soliditylang.org/en/v0.8.23/types.html#structs) and methods for it.
     Default is false for 1-column tables; true for multi-column tables.
