@@ -22,3 +22,12 @@ if grep -r -E 'link:' ./dist/templates; then
   echo "Linked dependencies found in dist/templates"
   exit 1
 fi
+
+# Since npm-packlist does not include ".gitignore" files in the packaging process,
+# these files are renamed to "gitignore".
+# create-create-app automatically renames them back to ".gitignore" upon execution.
+find ./dist/templates/* -name ".gitignore" -type f | while read -r file; do
+  newfile="$(dirname "$file")/gitignore"
+  echo "Renaming $file to $newfile"
+  mv "$file" "$newfile"
+done

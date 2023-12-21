@@ -6,6 +6,7 @@
 !src/**
 !test/MudTest.t.sol
 !ts/**
+!mud.config.ts
 !package.json
 !README.md
 !dist/**

@@ -199,7 +199,12 @@ library Storage {
           wordRemainder = 32 - offset;
         }
 
-        uint256 mask = leftMask(wordRemainder);
+        uint256 mask;
+        if (length < wordRemainder) {
+          mask = leftMask(length);
+        } else {
+          mask = leftMask(wordRemainder);
+        }
         /// @solidity memory-safe-assembly
         assembly {
           // Load data from storage and offset it to match memory

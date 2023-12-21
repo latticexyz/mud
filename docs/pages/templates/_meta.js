@@ -1,7 +1,12 @@
 export default {
   introduction: "Introduction",
   typescript: "TypeScript",
-  unity: "Unity",
   godot: "Godot",
-  swift: "Swift"
+  pwa: "Progressive Web App (for mobile)",
+  swift: "Swift",
+  svelte: "Svelte",
+  unity: "Unity",
+  disclaimer: {
+    "display": "hidden"
+  },
 };

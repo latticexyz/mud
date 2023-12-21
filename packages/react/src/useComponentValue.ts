@@ -33,7 +33,7 @@ export function useComponentValue<S extends Schema>(
     setValue(entity != null ? getComponentValue(component, entity) : undefined);
     if (entity == null) return;
 
-    const queryResult = defineQuery([Has(component)], { runOnInit: false });
+    const queryResult = defineQuery([Has(component)], { runOnInit: true });
     const subscription = queryResult.update$.subscribe((update) => {
       if (isComponentUpdate(update, component) && update.entity === entity) {
         const [nextValue] = update.value;

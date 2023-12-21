@@ -7,6 +7,8 @@ export interface ForgeConfig {
   script: string;
   out: string;
   libs: string[];
+  cache: boolean;
+  cache_path: string;
   eth_rpc_url: string | null;
 
   // compiler

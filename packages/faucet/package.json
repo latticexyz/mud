@@ -28,6 +28,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
+    "@fastify/compress": "^6.5.0",
     "@fastify/cors": "^8.3.0",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",

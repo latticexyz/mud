@@ -1,6 +1,9 @@
 import chalk from "chalk";
 import { execa } from "execa";
 import { rmSync } from "node:fs";
+import { cleanDatabase } from "@latticexyz/store-sync/postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import path from "node:path";
 
 type IndexerOptions =
@@ -19,7 +22,7 @@ type StartIndexerOptions = {
   reportError: (error: string) => void;
 } & IndexerOptions;
 
-export function startIndexer(opts: StartIndexerOptions) {
+export async function startIndexer(opts: StartIndexerOptions) {
   let resolve: () => void;
   let reject: (reason?: string) => void;
   const doneSyncing = new Promise<void>((res, rej) => {
@@ -36,6 +39,9 @@ export function startIndexer(opts: StartIndexerOptions) {
     DATABASE_URL: opts.indexer === "postgres" ? opts.databaseUrl : undefined,
   };
   console.log(chalk.magenta("[indexer]:"), "starting indexer", env);
+
+  // Clean the test db
+  await cleanUp();
 
   const proc = execa("pnpm", opts.indexer === "postgres" ? ["start:postgres"] : ["start:sqlite"], {
     cwd: path.join(__dirname, "..", "..", "..", "..", "packages", "store-indexer"),
@@ -67,13 +73,22 @@ export function startIndexer(opts: StartIndexerOptions) {
   proc.stdout?.on("data", (data) => onLog(data.toString()));
   proc.stderr?.on("data", (data) => onLog(data.toString()));
 
-  function cleanUp() {
+  async function cleanUp() {
     // attempt to clean up sqlite file
     if (opts.indexer === "sqlite") {
       try {
         rmSync(opts.sqliteFilename);
       } catch (error) {
-        console.log("could not delete", opts.sqliteFilename, error);
+        console.log("could not delete", opts.sqliteFilename);
+      }
+    }
+
+    // attempt to clean up the postgres db
+    if (opts.indexer === "postgres") {
+      try {
+        await cleanDatabase(drizzle(postgres(opts.databaseUrl)));
+      } catch (error) {
+        console.log("could not clean postgres database");
       }
     }
   }

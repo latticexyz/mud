@@ -7,17 +7,14 @@ import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
-import { forge, getOutDirectory, getRemappings, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
+import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import chalk from "chalk";
-import { execa } from "execa";
 import { MUDError } from "@latticexyz/common/errors";
 import { resolveConfig } from "./deploy/resolveConfig";
 import { getChainId } from "viem/actions";
 import { postDeploy } from "./utils/utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
-import { tablegen } from "@latticexyz/store/codegen";
-import { worldgen } from "@latticexyz/world/node";
-import { getExistingContracts } from "./utils/getExistingContracts";
+import { build } from "./build";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
@@ -50,7 +47,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   const srcDir = opts.srcDir ?? (await getSrcDirectory(profile));
   const outDir = await getOutDirectory(profile);
-  const remappings = await getRemappings();
 
   const rpc = opts.rpc ?? (await getRpcUrl(profile));
   console.log(
@@ -61,10 +57,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   // Run build
   if (!opts.skipBuild) {
-    const outPath = path.join(srcDir, config.codegenDirectory);
-    await Promise.all([tablegen(config, outPath, remappings), worldgen(config, getExistingContracts(srcDir), outPath)]);
-    await forge(["build"], { profile });
-    await execa("mud", ["abi-ts"], { stdio: "inherit" });
+    await build({ config, srcDir, foundryProfile: profile });
   }
 
   const privateKey = process.env.PRIVATE_KEY as Hex;

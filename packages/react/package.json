@@ -19,8 +19,8 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "test": "tsc --noEmit && vitest --run",
-    "test:ci": "pnpm run test"
+    "test": "tsc --noEmit && vitest",
+    "test:ci": "tsc --noEmit && vitest --run"
   },
   "dependencies": {
     "@latticexyz/recs": "workspace:*",

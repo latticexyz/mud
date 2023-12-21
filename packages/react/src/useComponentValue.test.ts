@@ -40,6 +40,11 @@ describe("useComponentValue", () => {
       removeComponent(Position, entity);
     });
     expect(result.current).toBe(undefined);
+
+    act(() => {
+      setComponent(Position, entity, { x: 0, y: 0 });
+    });
+    expect(result.current).toEqual({ x: 0, y: 0 });
   });
 
   it("should re-render only when Position changes for entity", () => {
@@ -68,6 +73,23 @@ describe("useComponentValue", () => {
     });
     expect(result.all.length).toBe(4);
     expect(result.current).toBe(undefined);
+  });
+
+  it("should re-render when Position is removed", () => {
+    const entity = createEntity(world, [withValue(Position, { x: 1, y: 1 })]);
+
+    const { result } = renderHook(() => useComponentValue(Position, entity));
+    expect(result.current).toEqual({ x: 1, y: 1 });
+
+    act(() => {
+      removeComponent(Position, entity);
+    });
+    expect(result.current).toBe(undefined);
+
+    act(() => {
+      setComponent(Position, entity, { x: 0, y: 0 });
+    });
+    expect(result.current).toEqual({ x: 0, y: 0 });
   });
 
   it("should return default value when Position is not set", () => {
