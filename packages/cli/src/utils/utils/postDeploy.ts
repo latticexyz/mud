@@ -14,7 +14,7 @@ export async function postDeploy(
   if (existsSync(postDeployPath)) {
     console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
     await forge(
-      ["script", postDeployScript, "--sig", "run(address)", worldAddress, "--broadcast", "--rpc-url", rpc, "-vvv"],
+      ["script", postDeployScript, "--sig", "run(address)", worldAddress, "--broadcast", "--legacy", "--rpc-url", rpc, "-vvv"],
       {
         profile: profile,
       }
