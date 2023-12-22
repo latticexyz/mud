@@ -432,7 +432,7 @@ importers:
         specifier: ^8.3.0
         version: 8.3.0
       '@latticexyz/common':
-        specifier: workspace:2.0.0-next.14
+        specifier: workspace:*
         version: link:../common
       '@trpc/client':
         specifier: 10.34.0
