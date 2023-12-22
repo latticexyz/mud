@@ -4,7 +4,7 @@ import fastify from "fastify";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import { http, createClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { AppRouter, createAppRouter } from "../src/createAppRouter";
+import { AppRouter, createAppRouter } from "../src";
 import { parseEnv } from "./parseEnv";
 
 const env = parseEnv();

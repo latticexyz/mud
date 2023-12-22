@@ -30,6 +30,7 @@
   "dependencies": {
     "@fastify/compress": "^6.5.0",
     "@fastify/cors": "^8.3.0",
+    "@latticexyz/common": "workspace:2.0.0-next.14",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
     "debug": "^4.3.4",
