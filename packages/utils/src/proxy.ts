@@ -20,6 +20,10 @@ function deepAccess(target: Record<string, unknown>, path: string[]): any {
  * @returns Cached<T>
  */
 export function cacheUntilReady<T extends Record<string, any> | undefined>(target$: BehaviorSubject<T>): Cached<T> {
+  // The call queue contains the path and arguments of calls to the
+  // proxiedTarget while the target was not available yet.
+  // It also contains resolve and reject methods to fulfil the promise
+  // returned when calling the proxiedTarget once the target becomes available.
   const callQueue: {
     path: string[];
     args?: any[];
@@ -27,15 +31,23 @@ export function cacheUntilReady<T extends Record<string, any> | undefined>(targe
     reject: (e: Error) => void;
   }[] = [];
 
+  // The proxiedTarget proxies all calls to the target.
+  // If a function is called on the proxiedTarget while the target is not
+  // available, a promise is returned and the call will be stored in the callQueue
+  // until the target becomes available and the promise is fulfilled.
   const proxiedTarget = new DeepProxy(
     {},
     {
       get(_t, prop) {
         const targetReady = target$.getValue();
         if (targetReady) {
+          // If the target is ready, relay all calls directly to the target
+          // (Except for the "proxied" key, which indicates whether the object is currently proxied)
           if (prop === "proxied") return false;
           return Reflect.get(targetReady, prop);
         } else {
+          // Note: if the target is not available, accessing a property returns another proxy,
+          // not a Promise. It is possible to check whether a value is currently proxied using the proxied key.
           if (prop === "proxied") return true;
           if (prop === "name") return "ProxiedTarget";
           if (prop === "toJSON") return () => ({ proxied: true });
@@ -45,10 +57,13 @@ export function cacheUntilReady<T extends Record<string, any> | undefined>(targe
       apply(_, thisArg, args) {
         const targetReady = target$.getValue();
         if (targetReady) {
+          // If the target is ready, relay all calls directly to the target
           const targetFunc = deepAccess(targetReady, this.path);
           if (!isFunction(targetFunc)) throw new Error("Target is not callable");
           return Reflect.apply(targetFunc, thisArg, args);
         } else {
+          // Otherwise store the call and relay it to the target later once it's ready.
+          // The return value of this call is a promise, that gets resolved once the target is ready.
           const [resolve, reject, promise] = deferred();
           callQueue.push({ path: this.path, args, resolve, reject });
           return promise;
@@ -59,6 +74,7 @@ export function cacheUntilReady<T extends Record<string, any> | undefined>(targe
 
   target$.subscribe((targetReady) => {
     if (!targetReady) return;
+    // Move all entries from callQueue to queuedCalls
     const queuedCalls = callQueue.splice(0);
     for (const { path, args, resolve, reject } of queuedCalls) {
       const target = deepAccess(targetReady, path);
