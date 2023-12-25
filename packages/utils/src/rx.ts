@@ -1,4 +1,5 @@
 import {
+  BehaviorSubject,
   concatMap,
   delay,
   filter,
@@ -8,14 +9,11 @@ import {
   of,
   OperatorFunction,
   pipe,
-  ReplaySubject,
   scan,
   Timestamp,
   timestamp,
 } from "rxjs";
-import { computed, IComputedValue, IObservableValue, observable, reaction, runInAction, toJS } from "mobx";
 import { deferred } from "./deferred";
-import { awaitValue } from "./mobx";
 
 export function filterNullish<T>(): OperatorFunction<T, NonNullable<T>> {
   return pipe<Observable<T>, Observable<NonNullable<T>>>(
@@ -54,46 +52,27 @@ export function stretch<T>(spacingDelayMs: number) {
   );
 }
 
-export function observableToComputed<T>(obs: IObservableValue<T>): IComputedValue<T> {
-  return computed(() => obs.get());
+export function observableToBehaviorSubject<T>(obs: T): BehaviorSubject<T> {
+  return new BehaviorSubject<T>(obs);
 }
 
-export function computedToStream<T>(comp: IComputedValue<T> | IObservableValue<T>): Observable<T> {
-  const stream = new ReplaySubject<T>(1);
-  reaction(
-    () => comp.get(),
-    (value) => {
-      if (value != null) stream.next(value);
-    },
-    { fireImmediately: true }
-  );
-  return stream;
+export function valueToStream<T>(value: T): Observable<T> {
+  return new Observable<T>((observer) => {
+    observer.next(value);
+    observer.complete();
+  });
 }
 
-export function observableToStream<T>(obs: T): Observable<T> {
-  const stream = new ReplaySubject<T>(1);
-  reaction(
-    () => toJS(obs),
-    (value) => {
-      if (value != null) stream.next(value);
-    },
-    { fireImmediately: true }
-  );
-  return stream;
+export function streamToBehaviorSubject<T>(stream$: Observable<T>): BehaviorSubject<T | undefined> {
+  const subject = new BehaviorSubject<T | undefined>(undefined);
+  stream$.subscribe((val) => subject.next(val));
+  return subject;
 }
 
-export function streamToComputed<T>(stream$: Observable<T>): IComputedValue<T | undefined> {
-  const value = observable.box<T | undefined>();
-  stream$.subscribe((val) => runInAction(() => value.set(val)));
-  return computed(() => value.get());
-}
-
-export async function streamToDefinedComputed<T>(stream$: Observable<T>): Promise<IComputedValue<T>> {
-  const value = observable.box<T>();
-  stream$.subscribe((val) => runInAction(() => value.set(val)));
-  const computedValue = computed(() => value.get());
-  await awaitValue(computedValue);
-  return computedValue as IComputedValue<T>;
+export function streamToDefinedBehaviorSubject<T>(stream$: Observable<T>): BehaviorSubject<T> {
+  const subject = new BehaviorSubject<T>(undefined as unknown as T);
+  stream$.subscribe((val) => subject.next(val));
+  return subject;
 }
 
 /**
