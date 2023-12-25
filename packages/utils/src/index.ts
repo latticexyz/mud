@@ -1,6 +1,5 @@
 export * from "./arrays";
 export * from "./deferred";
-export * from "./mobx";
 export * from "./guards";
 export * from "./proxy";
 export * from "./enums";
