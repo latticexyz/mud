@@ -1,4 +1,3 @@
-import { computed, observe, reaction } from "mobx";
 import { BehaviorSubject, distinctUntilChanged, from, map, mergeMap, pipe, tap } from "rxjs";
 import { filterNullish } from "@latticexyz/utils";
 import { Camera, ChunkCoord, Chunks, Coord, EmbodiedEntity, ObjectPool } from "./types";
@@ -54,11 +53,17 @@ export function createCulling(objectPool: ObjectPool, camera: Camera, chunks: Ch
   );
 
   // Spawn entities when their chunk appears in the viewport
-  const addedChunkSub = chunks.addedChunks$.pipe(chunkToEntity).subscribe((entity) => entity.spawn());
-
+  const addedChunkSub = chunks.addedChunks$.pipe(chunkToEntity).subscribe((entityObservable) => {
+    entityObservable.subscribe((entity) => {
+      if (entity) entity.spawn();
+    });
+  });
   // Despawn entites when their chunk disappears from the viewport
-  const removedChunkSub = chunks.removedChunks$.pipe(chunkToEntity).subscribe((entity) => entity.despawn());
-
+  const removedChunkSub = chunks.removedChunks$.pipe(chunkToEntity).subscribe((entityObservable) => {
+    entityObservable.subscribe((entity) => {
+      if (entity) entity.despawn();
+    });
+  });
   // Keep track of entity's chunk
   function trackEntity(entity: EmbodiedEntity<never>) {
     const entityPosition$ = new BehaviorSubject<ChunkCoord>(pixelToChunkCoord(entity.position, chunks.chunkSize));
@@ -87,22 +92,28 @@ export function createCulling(objectPool: ObjectPool, camera: Camera, chunks: Ch
   }
 
   // Setup tracking of entity chunks
-  const disposeObjectPoolObserver = observe(objectPool.objects, (change) => {
-    if (change.type === "add") {
-      trackEntity(change.newValue as EmbodiedEntity<never>);
-    }
-    if (change.type === "delete") {
-      chunkRegistry.remove(change.oldValue.id);
-      const dispose = disposer.get(change.oldValue.id);
-      if (dispose) dispose();
-      disposer.delete(change.oldValue.id);
-    }
+  const objectPoolSub = objectPool.objects.subscribe((newObjects) => {
+    newObjects.forEach((entity, id) => {
+      if (!disposer.has(id)) {
+        trackEntity(entity as EmbodiedEntity<never>);
+      }
+    });
+
+    // Handling removals
+    Array.from(disposer.keys()).forEach((id) => {
+      if (!newObjects.has(id)) {
+        chunkRegistry.remove(id);
+        const dispose = disposer.get(id);
+        if (dispose) dispose();
+        disposer.delete(id);
+      }
+    });
   });
 
   return {
     dispose: () => {
       for (const d of disposer.values()) d();
-      disposeObjectPoolObserver();
+      objectPoolSub.unsubscribe();
       addedChunkSub.unsubscribe();
       removedChunkSub.unsubscribe();
     },
