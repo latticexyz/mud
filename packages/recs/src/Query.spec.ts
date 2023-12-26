@@ -599,13 +599,13 @@ describe("Query", () => {
       setComponent(OwnedByEntity, Depth4, { value: Depth3 });
       setComponent(OwnedByEntity, Depth5, { value: Depth4 });
 
-      expect(new Set([...query1.matching])).toEqual(new Set([Depth1]));
-      expect(new Set([...query2.matching])).toEqual(new Set([Depth1]));
-      expect(new Set([...query3.matching])).toEqual(new Set([Depth1, Depth2]));
-      expect(new Set([...query4.matching])).toEqual(new Set([Depth1, Depth2, Depth3]));
-      expect(new Set([...query5.matching])).toEqual(new Set([Depth1, Depth2, Depth3, Depth4]));
-      expect(new Set([...query6.matching])).toEqual(new Set([Depth1, Depth2, Depth3, Depth4, Depth5]));
-      expect(new Set([...query7.matching])).toEqual(new Set([Depth1, Depth2, Depth3, Depth4, Depth5]));
+      expect(new Set([...query1.matching.value])).toEqual(new Set([Depth1]));
+      expect(new Set([...query2.matching.value])).toEqual(new Set([Depth1]));
+      expect(new Set([...query3.matching.value])).toEqual(new Set([Depth1, Depth2]));
+      expect(new Set([...query4.matching.value])).toEqual(new Set([Depth1, Depth2, Depth3]));
+      expect(new Set([...query5.matching.value])).toEqual(new Set([Depth1, Depth2, Depth3, Depth4]));
+      expect(new Set([...query6.matching.value])).toEqual(new Set([Depth1, Depth2, Depth3, Depth4, Depth5]));
+      expect(new Set([...query7.matching.value])).toEqual(new Set([Depth1, Depth2, Depth3, Depth4, Depth5]));
     });
 
     it("should return entites owned by an entity with Name component Alice", () => {
@@ -670,18 +670,18 @@ describe("Query", () => {
       setComponent(OwnedByEntity, Depth3, { value: Depth2 });
       setComponent(OwnedByEntity, Depth4, { value: Depth3 });
 
-      expect(new Set([...query1.matching])).toEqual(new Set([Depth1]));
-      expect(new Set([...query2.matching])).toEqual(new Set([Depth1]));
-      expect(new Set([...query3.matching])).toEqual(new Set([Depth1, Depth2, Depth3, Depth4]));
+      expect(new Set([...query1.matching.value])).toEqual(new Set([Depth1]));
+      expect(new Set([...query2.matching.value])).toEqual(new Set([Depth1]));
+      expect(new Set([...query3.matching.value])).toEqual(new Set([Depth1, Depth2, Depth3, Depth4]));
 
       // Get all entities from the initial set [Depth3] that have an indirect owner called Alice
-      expect(new Set([...query4.matching])).toEqual(new Set([Depth3]));
+      expect(new Set([...query4.matching.value])).toEqual(new Set([Depth3]));
 
       // Get all entities that have an indirect owner called Alice
-      expect(new Set([...query5.matching])).toEqual(new Set([Depth1, Depth2, Depth3, Depth4]));
+      expect(new Set([...query5.matching.value])).toEqual(new Set([Depth1, Depth2, Depth3, Depth4]));
 
       // Get all entities from the initial set [Depth3] that have an indirect owner called Alice and their direct child
-      expect(new Set([...query6.matching])).toEqual(new Set([Depth2, Depth3]));
+      expect(new Set([...query6.matching.value])).toEqual(new Set([Depth2, Depth3]));
     });
 
     it("should return all entities with CanMove component on themselves or their Prototype", () => {
@@ -710,9 +710,9 @@ describe("Query", () => {
 
       setComponent(Position, instance3, { x: 1, y: 1 });
 
-      expect(new Set([...query1.matching])).toEqual(new Set([instance1, instance2]));
-      expect(new Set([...query2.matching])).toEqual(new Set([instance1, instance2]));
-      expect(new Set([...query3.matching])).toEqual(new Set([instance1, instance2]));
+      expect(new Set([...query1.matching.value])).toEqual(new Set([instance1, instance2]));
+      expect(new Set([...query2.matching.value])).toEqual(new Set([instance1, instance2]));
+      expect(new Set([...query3.matching.value])).toEqual(new Set([instance1, instance2]));
     });
 
     it("should return all entities with Position component that can't move", () => {
@@ -735,7 +735,7 @@ describe("Query", () => {
 
       setComponent(Position, entity3, { x: 1, y: 1 });
 
-      expect(new Set([...query.matching])).toEqual(new Set([entity3]));
+      expect(new Set([...query.matching.value])).toEqual(new Set([entity3]));
     });
 
     it("should return all movable entities not owned by Alice", () => {
@@ -805,7 +805,7 @@ describe("Query", () => {
       setComponent(OwnedByEntity, Entity8, { value: Player2 });
       setComponent(Position, Entity8, { x: 1, y: 1 });
 
-      expect(new Set([...query.matching])).toEqual(new Set([Instance3, Entity8]));
+      expect(new Set([...query.matching.value])).toEqual(new Set([Instance3, Entity8]));
     });
   });
 });
