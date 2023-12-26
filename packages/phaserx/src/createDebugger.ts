@@ -45,7 +45,7 @@ export function createDebugger(
 
     if (options.logObjectStats) {
       console.log(
-        `Entities: ${objectPool.objects.size} / Pool size: ${Object.values(objectPool.groups).reduce(
+        `Entities: ${objectPool.objects.value.size} / Pool size: ${Object.values(objectPool.groups).reduce(
           (acc, curr) => acc + curr.getChildren().length,
           0
         )} / Pool active: ${Object.values(objectPool.groups).reduce((acc, curr) => acc + curr.countActive(), 0)}`
