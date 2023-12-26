@@ -438,11 +438,6 @@ export function defineQuery(
 
   const matching = new BehaviorSubject(initialSet);
 
-  const initial$ = from(matching).pipe(
-    mergeMap((entities) => from(entities)), // Convert Set<Entity> to an Entity stream
-    toUpdateStream(fragments[0].component)
-  );
-
   const containsProxy =
     fragments.findIndex((v) => [QueryFragmentType.ProxyExpand, QueryFragmentType.ProxyRead].includes(v.type)) !== -1;
 
@@ -531,7 +526,7 @@ export function defineQuery(
 
   return {
     matching,
-    update$: concat(initial$, internal$).pipe(share()),
+    update$: internal$.pipe(share()),
   };
 }
 
