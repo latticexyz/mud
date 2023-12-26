@@ -1,5 +1,5 @@
 import { computed, observe, reaction } from "mobx";
-import { from, map, mergeMap, pipe } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, from, map, mergeMap, pipe, tap } from "rxjs";
 import { filterNullish } from "@latticexyz/utils";
 import { Camera, ChunkCoord, Chunks, Coord, EmbodiedEntity, ObjectPool } from "./types";
 import { pixelToChunkCoord, coordEq } from "./utils";
@@ -61,25 +61,29 @@ export function createCulling(objectPool: ObjectPool, camera: Camera, chunks: Ch
 
   // Keep track of entity's chunk
   function trackEntity(entity: EmbodiedEntity<never>) {
-    if (disposer.get(entity.id)) console.error("Entity is being tracked multiple times", entity);
-    const chunk = computed(() => pixelToChunkCoord(entity.position, chunks.chunkSize), { equals: coordEq });
-    const dispose = reaction(
-      () => chunk.get(),
-      (newChunk) => {
-        // Register the new chunk position
-        chunkRegistry.set(entity.id, newChunk);
+    const entityPosition$ = new BehaviorSubject<ChunkCoord>(pixelToChunkCoord(entity.position, chunks.chunkSize));
 
-        // Check whether entity is in the viewport if it switched chunks
-        const visible = chunks.visibleChunks.current.get(newChunk);
-        if (visible) {
-          entity.spawn();
-        } else {
-          entity.despawn();
-        }
-      },
-      { fireImmediately: true }
-    );
-    disposer.set(entity.id, dispose);
+    // Subscribe to entity position changes
+    const entityPositionSub = entityPosition$
+      .pipe(
+        distinctUntilChanged((prev, curr) => coordEq(prev, curr)), // Игнорировать, если координаты не изменились
+        tap((newChunk) => {
+          // Registering a new chunk position
+          chunkRegistry.set(entity.id, newChunk);
+
+          // Checking the visibility of the new chunk
+          const isVisible = chunks.visibleChunks.current.get(newChunk);
+          if (isVisible) {
+            entity.spawn();
+          } else {
+            entity.despawn();
+          }
+        })
+      )
+      .subscribe();
+
+    // Saving a subscription for later unsubscription
+    disposer.set(entity.id, () => entityPositionSub.unsubscribe());
   }
 
   // Setup tracking of entity chunks
