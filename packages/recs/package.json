@@ -35,7 +35,6 @@
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/utils": "workspace:*",
-    "mobx": "^6.7.0",
     "rxjs": "7.5.5"
   },
   "devDependencies": {
