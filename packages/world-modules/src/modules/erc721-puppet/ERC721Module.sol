@@ -33,18 +33,16 @@ contract ERC721Module is Module {
     return MODULE_NAME;
   }
 
-  function _requireDependencies() internal {
+  function _requireDependencies() internal view {
     // Require PuppetModule to be installed
-    if (InstalledModules.get(PUPPET_MODULE_NAME, keccak256(new bytes(0))) == address(0)) {
+    if (!isInstalled(PUPPET_MODULE_NAME, new bytes(0))) {
       revert Module_MissingDependency(string(bytes.concat(PUPPET_MODULE_NAME)));
     }
   }
 
   function install(bytes memory args) public {
     // Require the module to not be installed with these args yet
-    if (InstalledModules.get(MODULE_NAME, keccak256(args)) != address(0)) {
-      revert Module_AlreadyInstalled();
-    }
+    requireNotInstalled(MODULE_NAME, args);
 
     // Extract args
     (bytes14 namespace, ERC721MetadataData memory metadata) = abi.decode(args, (bytes14, ERC721MetadataData));
