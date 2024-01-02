@@ -20,11 +20,11 @@ export function useEntityQuery(fragments: QueryFragment[], options?: { updateOnV
 
   const stableFragments = useDeepMemo(fragments);
   const query = useMemo(() => defineQuery(stableFragments, { runOnInit: true }), [stableFragments]);
-  const [entities, setEntities] = useState([...query.matching.value]);
+  const [entities, setEntities] = useState([...query.matching]);
 
   useEffect(() => {
-    setEntities([...query.matching.value]);
-    let observable = query.update$.pipe(map(() => [...query.matching.value]));
+    setEntities([...query.matching]);
+    let observable = query.update$.pipe(map(() => [...query.matching]));
     if (!updateOnValueChange) {
       // re-render only on entity array changes
       observable = observable.pipe(distinctUntilChanged((a, b) => isEqual(a, b)));

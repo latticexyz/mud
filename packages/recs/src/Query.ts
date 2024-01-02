@@ -431,12 +431,13 @@ export function defineQuery(
   options?: { runOnInit?: boolean; initialSet?: Set<Entity> }
 ): {
   update$: Observable<ComponentUpdate & { type: UpdateType }>;
-  matching: BehaviorSubject<Set<Entity>>;
+  matching: Set<Entity>;
 } {
   const initialSet =
     options?.runOnInit || options?.initialSet ? runQuery(fragments, options.initialSet) : new Set<Entity>();
 
   const matching = new BehaviorSubject(initialSet);
+  const matchingValue = matching.value;
 
   const containsProxy =
     fragments.findIndex((v) => [QueryFragmentType.ProxyExpand, QueryFragmentType.ProxyRead].includes(v.type)) !== -1;
@@ -525,7 +526,7 @@ export function defineQuery(
     );
 
   return {
-    matching,
+    matching: matchingValue,
     update$: internal$.pipe(share()),
   };
 }
