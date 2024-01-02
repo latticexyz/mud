@@ -31,7 +31,7 @@ contract ERC20Module is Module {
 
   function _requireDependencies() internal view {
     // Require PuppetModule to be installed
-    if (!isInstalled(PUPPET_MODULE_NAME, abi.encode(keccak256(new bytes(0))))) {
+    if (!isInstalled(PUPPET_MODULE_NAME, new bytes(0))) {
       revert Module_MissingDependency(string(bytes.concat(PUPPET_MODULE_NAME)));
     }
   }
