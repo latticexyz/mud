@@ -11,7 +11,7 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/s
 
 // Resource that identifies a namespace, a container belonging to a
 // specific address (not necessarily the original deployer of the World).
-// A namespace can includes tables and systems.
+// A namespace can include tables and systems.
 bytes2 constant RESOURCE_NAMESPACE = "ns";
 
 // Resource that identifies a module, an on-chain script that
