@@ -1,4 +1,5 @@
-import { BehaviorSubject, distinctUntilChanged, from, map, mergeMap, pipe, tap } from "rxjs";
+import { computed, observe, reaction } from "mobx";
+import { from, map, mergeMap, pipe } from "rxjs";
 import { filterNullish } from "@latticexyz/utils";
 import { Camera, ChunkCoord, Chunks, Coord, EmbodiedEntity, ObjectPool } from "./types";
 import { pixelToChunkCoord, coordEq } from "./utils";
@@ -53,67 +54,51 @@ export function createCulling(objectPool: ObjectPool, camera: Camera, chunks: Ch
   );
 
   // Spawn entities when their chunk appears in the viewport
-  const addedChunkSub = chunks.addedChunks$.pipe(chunkToEntity).subscribe((entityObservable) => {
-    entityObservable.subscribe((entity) => {
-      if (entity) entity.spawn();
-    });
-  });
+  const addedChunkSub = chunks.addedChunks$.pipe(chunkToEntity).subscribe((entity) => entity.spawn());
+
   // Despawn entites when their chunk disappears from the viewport
-  const removedChunkSub = chunks.removedChunks$.pipe(chunkToEntity).subscribe((entityObservable) => {
-    entityObservable.subscribe((entity) => {
-      if (entity) entity.despawn();
-    });
-  });
+  const removedChunkSub = chunks.removedChunks$.pipe(chunkToEntity).subscribe((entity) => entity.despawn());
+
   // Keep track of entity's chunk
   function trackEntity(entity: EmbodiedEntity<never>) {
-    const entityPosition$ = new BehaviorSubject<ChunkCoord>(pixelToChunkCoord(entity.position, chunks.chunkSize));
+    if (disposer.get(entity.id)) console.error("Entity is being tracked multiple times", entity);
+    const chunk = computed(() => pixelToChunkCoord(entity.position, chunks.chunkSize), { equals: coordEq });
+    const dispose = reaction(
+      () => chunk.get(),
+      (newChunk) => {
+        // Register the new chunk position
+        chunkRegistry.set(entity.id, newChunk);
 
-    // Subscribe to entity position changes
-    const entityPositionSub = entityPosition$
-      .pipe(
-        distinctUntilChanged((prev, curr) => coordEq(prev, curr)), // Игнорировать, если координаты не изменились
-        tap((newChunk) => {
-          // Registering a new chunk position
-          chunkRegistry.set(entity.id, newChunk);
-
-          // Checking the visibility of the new chunk
-          const isVisible = chunks.visibleChunks.current.get(newChunk);
-          if (isVisible) {
-            entity.spawn();
-          } else {
-            entity.despawn();
-          }
-        })
-      )
-      .subscribe();
-
-    // Saving a subscription for later unsubscription
-    disposer.set(entity.id, () => entityPositionSub.unsubscribe());
+        // Check whether entity is in the viewport if it switched chunks
+        const visible = chunks.visibleChunks.current.get(newChunk);
+        if (visible) {
+          entity.spawn();
+        } else {
+          entity.despawn();
+        }
+      },
+      { fireImmediately: true }
+    );
+    disposer.set(entity.id, dispose);
   }
 
   // Setup tracking of entity chunks
-  const objectPoolSub = objectPool.objects.subscribe((newObjects) => {
-    newObjects.forEach((entity, id) => {
-      if (!disposer.has(id)) {
-        trackEntity(entity as EmbodiedEntity<never>);
-      }
-    });
-
-    // Handling removals
-    Array.from(disposer.keys()).forEach((id) => {
-      if (!newObjects.has(id)) {
-        chunkRegistry.remove(id);
-        const dispose = disposer.get(id);
-        if (dispose) dispose();
-        disposer.delete(id);
-      }
-    });
+  const disposeObjectPoolObserver = observe(objectPool.objects, (change) => {
+    if (change.type === "add") {
+      trackEntity(change.newValue as EmbodiedEntity<never>);
+    }
+    if (change.type === "delete") {
+      chunkRegistry.remove(change.oldValue.id);
+      const dispose = disposer.get(change.oldValue.id);
+      if (dispose) dispose();
+      disposer.delete(change.oldValue.id);
+    }
   });
 
   return {
     dispose: () => {
       for (const d of disposer.values()) d();
-      objectPoolSub.unsubscribe();
+      disposeObjectPoolObserver();
       addedChunkSub.unsubscribe();
       removedChunkSub.unsubscribe();
     },

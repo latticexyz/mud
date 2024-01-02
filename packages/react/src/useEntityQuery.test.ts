@@ -94,7 +94,8 @@ describe("useEntityQuery", () => {
     act(() => {
       setComponent(Position, entity2, { x: 0, y: 0 });
     });
-
+    console.log("result:", result.all);
+    console.log("resultOnValueChange:", resultOnValueChange.all);
     expect(result.all).toHaveLength(2);
     expect(resultOnValueChange.all).toHaveLength(3);
 

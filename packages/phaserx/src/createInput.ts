@@ -1,5 +1,4 @@
 import {
-  BehaviorSubject,
   bufferCount,
   distinctUntilChanged,
   filter,
@@ -12,6 +11,7 @@ import {
   Subject,
   throttleTime,
 } from "rxjs";
+import { observable, reaction, runInAction } from "mobx";
 import { Area } from "./types";
 import { filterNullish } from "@latticexyz/utils";
 
@@ -19,16 +19,16 @@ export type Key = keyof typeof Phaser.Input.Keyboard.KeyCodes | "POINTER_LEFT" |
 
 export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   const disposers = new Set<() => void>();
-  const enabled = new BehaviorSubject<boolean>(true);
+  const enabled = { current: true };
 
   inputPlugin.mouse?.disableContextMenu();
 
   function disableInput() {
-    enabled.next(false);
+    enabled.current = false;
   }
 
   function enableInput() {
-    enabled.next(true);
+    enabled.current = true;
   }
 
   function setCursor(cursor: string) {
@@ -38,7 +38,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   const keyboard$ = new Subject<Phaser.Input.Keyboard.Key>();
 
   const pointermove$ = fromEvent(document, "mousemove").pipe(
-    filter(() => enabled.value),
+    filter(() => enabled.current),
     map(() => {
       return { pointer: inputPlugin.manager?.activePointer };
     }),
@@ -49,7 +49,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     document,
     "mousedown"
   ).pipe(
-    filter(() => enabled.value),
+    filter(() => enabled.current),
     map((event) => ({ pointer: inputPlugin.manager?.activePointer, event: event as MouseEvent })),
     filterNullish()
   );
@@ -58,14 +58,14 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     document,
     "mouseup"
   ).pipe(
-    filter(() => enabled.value),
+    filter(() => enabled.current),
     map((event) => ({ pointer: inputPlugin.manager?.activePointer, event: event as MouseEvent })),
     filterNullish()
   );
 
   // Click stream
   const click$ = merge(pointerdown$, pointerup$).pipe(
-    filter(() => enabled.value),
+    filter(() => enabled.current),
     map<{ pointer: Phaser.Input.Pointer; event: MouseEvent }, [boolean, number]>(({ event }) => [
       event.type === "mousedown" && event.button === 0,
       Date.now(),
@@ -78,7 +78,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
 
   // Double click stream
   const doubleClick$ = pointerdown$.pipe(
-    filter(() => enabled.value),
+    filter(() => enabled.current),
     map(() => Date.now()), // Get current timestamp
     bufferCount(2, 1), // Store the last two timestamps
     filter(([prev, now]) => now - prev < 500), // Filter clicks with more than 500ms distance
@@ -89,7 +89,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
 
   // Right click stream
   const rightClick$ = merge(pointerdown$, pointerup$).pipe(
-    filter(({ pointer }) => enabled.value && pointer.rightButtonDown()),
+    filter(({ pointer }) => enabled.current && pointer.rightButtonDown()),
     map(() => inputPlugin.manager?.activePointer), // Return the current pointer
     filterNullish()
   );
@@ -112,38 +112,37 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
       filter((area) => Math.abs(area.width) > 10 && Math.abs(area.height) > 10) // Prevent clicking to be mistaken as a drag
     )
   ).pipe(
-    filter(() => enabled.value),
+    filter(() => enabled.current),
     distinctUntilChanged() // Prevent same value to be emitted in a row
   );
 
+  const pressedKeys = observable(new Set<Key>());
   const phaserKeyboard = inputPlugin.keyboard;
   const codeToKey = new Map<number, Key>();
-  const pressedKeys = new BehaviorSubject<Set<Key>>(new Set<Key>());
 
   // Listen to all keys
   for (const key of Object.keys(Phaser.Input.Keyboard.KeyCodes)) addKey(key);
 
   // Subscriptions
-  const keySub = keyboard$.pipe(filter(() => enabled.value)).subscribe((key) => {
+  const keySub = keyboard$.pipe(filter(() => enabled.current)).subscribe((key) => {
     const keyName = codeToKey.get(key.keyCode);
     if (!keyName) return;
-    const newPressedKeys = new Set(pressedKeys.value);
-    if (key.isDown) newPressedKeys.add(keyName);
-    if (key.isUp) newPressedKeys.delete(keyName);
-    pressedKeys.next(newPressedKeys);
+    runInAction(() => {
+      if (key.isDown) pressedKeys.add(keyName);
+      if (key.isUp) pressedKeys.delete(keyName);
+    });
   });
   disposers.add(() => keySub?.unsubscribe());
 
   const pointerSub = merge(pointerdown$, pointerup$).subscribe(({ pointer }) => {
-    const newPressedKeys = new Set(pressedKeys.value);
+    runInAction(() => {
+      if (pointer.leftButtonDown()) pressedKeys.add("POINTER_LEFT");
+      else pressedKeys.delete("POINTER_LEFT");
 
-    if (pointer.leftButtonDown()) newPressedKeys.add("POINTER_LEFT");
-    else newPressedKeys.delete("POINTER_LEFT");
-
-    if (pointer.rightButtonDown()) newPressedKeys.add("POINTER_RIGHT");
-    else newPressedKeys.delete("POINTER_RIGHT");
-
-    pressedKeys.next(newPressedKeys);
+      if (pointer.rightButtonDown()) pressedKeys.add("POINTER_RIGHT");
+      else pressedKeys.delete("POINTER_RIGHT");
+    });
+    //
   });
   disposers.add(() => pointerSub?.unsubscribe());
 
@@ -166,8 +165,14 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   }
 
   function onKeyPress(keySelector: (pressedKeys: Set<Key>) => boolean, callback: () => void) {
-    const disposer = pressedKeys.pipe(filter(keySelector)).subscribe(() => callback());
-    disposers.add(() => disposer.unsubscribe());
+    const disposer = reaction(
+      () => keySelector(pressedKeys),
+      (passes) => {
+        if (passes) callback();
+      },
+      { fireImmediately: true }
+    );
+    disposers.add(disposer);
   }
 
   function dispose() {

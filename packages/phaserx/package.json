@@ -25,6 +25,7 @@
   "dependencies": {
     "@latticexyz/utils": "workspace:*",
     "@use-gesture/vanilla": "10.2.9",
+    "mobx": "^6.7.0",
     "phaser": "3.60.0-beta.14",
     "rxjs": "7.5.5"
   },

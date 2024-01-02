@@ -1,3 +1,4 @@
+import { observable, runInAction } from "mobx";
 import { isRectangle, isSprite } from "./guards";
 import {
   EmbodiedEntity,
@@ -8,7 +9,6 @@ import {
   PixelCoord,
 } from "./types";
 import { removeAllTweens } from "./utils";
-import { BehaviorSubject } from "rxjs";
 
 export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
   id: string,
@@ -16,7 +16,7 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
   type: Type,
   currentCameraFilter = 0
 ): EmbodiedEntity<Type> {
-  const position: BehaviorSubject<PixelCoord> = new BehaviorSubject({ x: 0, y: 0 });
+  const position: PixelCoord = observable({ x: 0, y: 0 });
   const onOnce = new Map<string, GameObjectFunction<Type>>();
   const onUpdate = new Map<string, GameObjectFunction<Type>>();
   let activeGameObject: GameObject<Type> | undefined;
@@ -30,7 +30,10 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
 
     return (gameObject) => {
       func(gameObject);
-      position.next({ x: gameObject.x, y: gameObject.y });
+      runInAction(() => {
+        position.x = gameObject.x;
+        position.y = gameObject.y;
+      });
     };
   }
 
@@ -45,10 +48,9 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
     // Handle position update when setting the component
     const newPosition = once && modifiesPosition(once);
     if (newPosition) {
-      const currentPosition = position.value;
-      position.next({
-        x: newPosition.x ?? currentPosition.x,
-        y: newPosition.y ?? currentPosition.y,
+      runInAction(() => {
+        position.x = newPosition.x ?? position.x;
+        position.y = newPosition.y ?? position.y;
       });
     }
 
@@ -129,21 +131,7 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
     activeGameObject = undefined;
   }
 
-  function getPosition(): PixelCoord {
-    return position.value;
-  }
-
-  return {
-    setComponent,
-    hasComponent,
-    removeComponent,
-    spawn,
-    despawn,
-    position: getPosition(),
-    id,
-    setCameraFilter,
-    type,
-  };
+  return { setComponent, hasComponent, removeComponent, spawn, despawn, position, id, setCameraFilter, type };
 }
 
 function executeGameObjectFunctions<Type extends keyof GameObjectTypes>(
