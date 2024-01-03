@@ -2,7 +2,6 @@
 pragma solidity >=0.8.21;
 
 import { Memory } from "./Memory.sol";
-import { DecodeSlice } from "./tightcoder/DecodeSlice.sol";
 
 // Acknowledgements:
 // Based on @dk1a's Slice.sol library (https://github.com/dk1a/solidity-stringutils/blob/main/src/Slice.sol)
@@ -11,7 +10,6 @@ import { DecodeSlice } from "./tightcoder/DecodeSlice.sol";
 type Slice is uint256;
 
 using SliceInstance for Slice global;
-using DecodeSlice for Slice global;
 
 /**
  * @title Static functions for Slice
