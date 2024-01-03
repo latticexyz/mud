@@ -111,7 +111,7 @@ library PackedCounterLib {
    * @param b The length of the second dynamic field's data.
    * @param c The length of the third dynamic field's data.
    * @param d The length of the fourth dynamic field's data.
-   * @param e The length of the fourth dynamic field's data.
+   * @param e The length of the fifth dynamic field's data.
    * @return The resulting PackedCounter containing the encoded values.
    */
   function pack(uint256 a, uint256 b, uint256 c, uint256 d, uint256 e) internal pure returns (PackedCounter) {
