@@ -7,7 +7,6 @@ import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { WorldContextProviderLib } from "./WorldContext.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { ROOT_NAMESPACE } from "./constants.sol";
-import { WorldContextProviderLib } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "./systemHookTypes.sol";
 

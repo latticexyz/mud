@@ -23,7 +23,7 @@ import { waitForInitialSync } from "./data/waitForInitialSync";
 
 const env = z
   .object({
-    DATABASE_URL: z.string().default("postgres://127.0.0.1/postgres"),
+    DATABASE_URL: z.string().default("postgres://127.0.0.1/postgres_e2e"),
   })
   .parse(process.env, {
     errorMap: (issue) => ({
@@ -57,18 +57,20 @@ describe("Sync from indexer", async () => {
     await openClientWithRootAccount(page, { indexerUrl: `http://127.0.0.1:9999/trpc` });
     await waitForInitialSync(page);
 
-    expect(asyncErrorHandler.getErrors()).toHaveLength(1);
-    expect(asyncErrorHandler.getErrors()[0]).toContain("error getting snapshot");
+    const errors = asyncErrorHandler.getErrors();
+    expect(errors).toHaveLength(2);
+    expect(errors[0]).toContain("Failed to fetch");
+    expect(errors[1]).toContain("error getting snapshot");
   });
 
   describe.each([["sqlite"], ["postgres"]] as const)("%s indexer", (indexerType) => {
     let indexerIteration = 1;
-    let indexer: ReturnType<typeof startIndexer>;
+    let indexer: Awaited<ReturnType<typeof startIndexer>>;
 
     beforeEach(async () => {
       // Start indexer
       const port = 3000 + indexerIteration++;
-      indexer = startIndexer({
+      indexer = await startIndexer({
         port,
         rpcHttpUrl,
         reportError: asyncErrorHandler.reportError,
