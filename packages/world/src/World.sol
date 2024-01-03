@@ -8,7 +8,6 @@ import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
 import { WORLD_VERSION } from "./version.sol";
-import { System } from "./System.sol";
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
