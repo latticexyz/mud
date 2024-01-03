@@ -65,7 +65,7 @@ contract BalanceTransferSystem is System, IWorldErrors {
     // Get current namespace balance
     uint256 balance = Balances._get(fromNamespaceId);
 
-    // Require the balance balance to be greater or equal to the amount to transfer
+    // Require the balance to be greater or equal to the amount to transfer
     if (amount > balance) revert World_InsufficientBalance(balance, amount);
 
     // Update the balances

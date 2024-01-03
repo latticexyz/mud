@@ -11,6 +11,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
+    "./indexer-client": "./dist/indexer-client/index.js",
     "./postgres": "./dist/postgres/index.js",
     "./postgres-decoded": "./dist/postgres-decoded/index.js",
     "./recs": "./dist/recs/index.js",
@@ -22,6 +23,9 @@
     "*": {
       "index": [
         "./src/index.ts"
+      ],
+      "indexer-client": [
+        "./src/indexer-client/index.ts"
       ],
       "postgres": [
         "./src/postgres/index.ts"
