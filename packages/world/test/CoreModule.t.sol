@@ -5,11 +5,11 @@ import { Test } from "forge-std/Test.sol";
 
 import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { Tables } from "@latticexyz/store/src/codegen/index.sol";
 
 import { WorldContextProviderLib } from "../src/WorldContext.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { ResourceId, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 
 contract WorldMock is StoreRead {
   constructor() {
@@ -45,10 +45,10 @@ contract CoreModuleTest is Test {
 
     // Confirm that each tableId is registered
     for (uint256 i; i < tableIds.length; i++) {
-      bytes32 tableId = tableIds[i];
+      ResourceId resourceId = ResourceId.wrap(tableIds[i]);
       assertFalse(
-        Tables.getFieldLayout(ResourceId.wrap(tableId)).isEmpty(),
-        string.concat("table should be registered: ", string(abi.encodePacked(tableId)))
+        Tables.getFieldLayout(resourceId).isEmpty(),
+        string.concat("table should be registered: ", WorldResourceIdInstance.toString(resourceId))
       );
     }
   }
