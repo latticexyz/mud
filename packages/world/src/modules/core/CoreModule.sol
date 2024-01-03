@@ -46,7 +46,7 @@ contract CoreModule is Module {
    * @dev Since the CoreSystem only exists once per World and writes to
    * known tables, we can deploy it once and register it in multiple Worlds.
    */
-  address immutable coreSystem = address(new CoreSystem());
+  address internal immutable coreSystem = address(new CoreSystem());
 
   /**
    * @notice Get the name of the module.
