@@ -1,5 +1,4 @@
 ---
-"@latticexyz/world-modules": patch
 "@latticexyz/world": patch
 ---
 
