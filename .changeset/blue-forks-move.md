@@ -2,4 +2,4 @@
 "@latticexyz/store": patch
 ---
 
-Changed the return type of the `slice4` function to `bytes4`.
+Changed the type of the output variable in the `slice4` function to `bytes4`.
