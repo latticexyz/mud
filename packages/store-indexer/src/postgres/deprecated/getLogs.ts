@@ -3,9 +3,13 @@ import { Hex } from "viem";
 import { StorageAdapterLog, SyncFilter } from "@latticexyz/store-sync";
 import { tables } from "@latticexyz/store-sync/postgres";
 import { and, asc, eq, or } from "drizzle-orm";
-import { decodeDynamicField } from "@latticexyz/protocol-parser";
 import { bigIntMax } from "@latticexyz/common/utils";
+import { recordToLog } from "../recordToLog";
+import { createBenchmark } from "@latticexyz/common";
 
+/**
+ * @deprecated
+ */
 export async function getLogs(
   database: PgDatabase<any>,
   {
@@ -18,6 +22,8 @@ export async function getLogs(
     readonly filters?: readonly SyncFilter[];
   }
 ): Promise<{ blockNumber: bigint; logs: (StorageAdapterLog & { eventName: "Store_SetRecord" })[] }> {
+  const benchmark = createBenchmark("drizzleGetLogs");
+
   const conditions = filters.length
     ? filters.map((filter) =>
         and(
@@ -30,6 +36,7 @@ export async function getLogs(
     : address != null
     ? [eq(tables.recordsTable.address, address)]
     : [];
+  benchmark("parse config");
 
   // Query for the block number that the indexer (i.e. chain) is at, in case the
   // indexer is further along in the chain than a given store/table's last updated
@@ -48,39 +55,27 @@ export async function getLogs(
     // Get the first record in a way that returns a possible `undefined`
     // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
     .then((rows) => rows.find(() => true));
-  const indexerBlockNumber = chainState?.lastUpdatedBlockNumber ?? 0n;
+  const indexerBlockNumber = chainState?.blockNumber ?? 0n;
+  benchmark("query chainState");
 
   const records = await database
     .select()
     .from(tables.recordsTable)
     .where(or(...conditions))
     .orderBy(
-      asc(tables.recordsTable.lastUpdatedBlockNumber)
+      asc(tables.recordsTable.blockNumber)
       // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
     );
+  benchmark("query records");
 
-  const blockNumber = records.reduce(
-    (max, record) => bigIntMax(max, record.lastUpdatedBlockNumber ?? 0n),
-    indexerBlockNumber
-  );
+  const blockNumber = records.reduce((max, record) => bigIntMax(max, record.blockNumber ?? 0n), indexerBlockNumber);
+  benchmark("find block number");
 
   const logs = records
     // TODO: add this to the query, assuming we can optimize with an index
     .filter((record) => !record.isDeleted)
-    .map(
-      (record) =>
-        ({
-          address: record.address,
-          eventName: "Store_SetRecord",
-          args: {
-            tableId: record.tableId,
-            keyTuple: decodeDynamicField("bytes32[]", record.keyBytes),
-            staticData: record.staticData ?? "0x",
-            encodedLengths: record.encodedLengths ?? "0x",
-            dynamicData: record.dynamicData ?? "0x",
-          },
-        } as const)
-    );
+    .map(recordToLog);
+  benchmark("map records to logs");
 
   return { blockNumber, logs };
 }
