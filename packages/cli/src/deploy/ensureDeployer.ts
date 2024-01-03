@@ -87,7 +87,9 @@ async function ensureCustomDeployer(
     throw new Error("deploy custom deployer fails");
   }
 
-  debug(`deploy custom create2 deployer at ${receipt.contractAddress}, please config it manually for world upgrade`);
+  console.log(
+    `deploy custom create2 deployer at ${receipt.contractAddress}, please config it manually for world upgrade`
+  );
 
   return receipt.contractAddress;
 }
