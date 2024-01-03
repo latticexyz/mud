@@ -1,17 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
+import { IERC165 } from "./IERC165.sol";
 import { ResourceId } from "./WorldResourceId.sol";
 
 /**
  * @dev Calculation for ERC-165 interface ID for the ISystemHook functions.
- * Combines the selector for each function with the ERC165_INTERFACE_ID.
  * See: https://eips.ethereum.org/EIPS/eip-165
  */
 bytes4 constant SYSTEM_HOOK_INTERFACE_ID = ISystemHook.onBeforeCallSystem.selector ^
-  ISystemHook.onAfterCallSystem.selector ^
-  ERC165_INTERFACE_ID;
+  ISystemHook.onAfterCallSystem.selector;
 
 /**
  * @title ISystemHook
