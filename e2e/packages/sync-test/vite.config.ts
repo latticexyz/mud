@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig, configDefaults } from "vitest/config";
 
 export default defineConfig({
   test: {
@@ -7,5 +7,6 @@ export default defineConfig({
     hookTimeout: 1000 * 60 * 2,
     singleThread: true,
     globalSetup: ["./setup/globalSetup.ts"],
+    exclude: [...configDefaults.exclude, "compare"],
   },
 });

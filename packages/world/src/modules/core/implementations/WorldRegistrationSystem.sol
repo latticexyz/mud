@@ -20,7 +20,7 @@ import { UserDelegationControl } from "../../../codegen/tables/UserDelegationCon
 import { NamespaceDelegationControl } from "../../../codegen/tables/NamespaceDelegationControl.sol";
 import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../../../ISystemHook.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";
-import { IDelegationControl, DELEGATION_CONTROL_INTERFACE_ID } from "../../../IDelegationControl.sol";
+import { DELEGATION_CONTROL_INTERFACE_ID } from "../../../IDelegationControl.sol";
 
 import { SystemHooks, SystemHooksTableId } from "../../../codegen/tables/SystemHooks.sol";
 import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";

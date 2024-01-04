@@ -111,7 +111,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 162594
+    "gasUsed": 164238
   },
   {
     "file": "test/World.t.sol",
