@@ -1,5 +1,28 @@
 # Change Log
 
+## 2.0.0-next.15
+
+### Patch Changes
+
+- d8c8f66b: Exclude ERC165 interface ID from custom interface ID's.
+- 1b86eac0: Changed the type of the output variable in the `slice4` function to `bytes4`.
+- 1077c7f5: Fixed an issue where `mud.config.ts` source file was not included in the package, causing TS errors downstream.
+- 59054203: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- 6db95ce1: Fixed `StoreCore` to pass `previousEncodedLengths` into `onBeforeSpliceDynamicData`.
+- 5d737cf2: Updated the `debug` util to pipe to `stdout` and added an additional util to explicitly pipe to `stderr` when needed.
+- 5ac4c97f: Fixed M-04 Memory Corruption on Load From Storage
+  It only affected external use of `Storage.load` with a `memoryPointer` argument
+- e4817174: Removed unused imports from various files in the `store` and `world` packages.
+- Updated dependencies [933b54b5]
+- Updated dependencies [59054203]
+- Updated dependencies [1b5eb0d0]
+- Updated dependencies [5d737cf2]
+- Updated dependencies [4c1dcd81]
+- Updated dependencies [5df1f31b]
+  - @latticexyz/common@2.0.0-next.15
+  - @latticexyz/config@2.0.0-next.15
+  - @latticexyz/schema-type@2.0.0-next.15
+
 ## 2.0.0-next.14
 
 ### Patch Changes
