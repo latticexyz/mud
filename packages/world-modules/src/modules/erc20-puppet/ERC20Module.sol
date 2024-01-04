@@ -6,7 +6,6 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
-import { InstalledModules } from "@latticexyz/world/src/codegen/tables/InstalledModules.sol";
 
 import { Puppet } from "../puppet/Puppet.sol";
 import { createPuppet } from "../puppet/createPuppet.sol";
@@ -32,16 +31,14 @@ contract ERC20Module is Module {
 
   function _requireDependencies() internal view {
     // Require PuppetModule to be installed
-    if (InstalledModules.get(PUPPET_MODULE_NAME, keccak256(new bytes(0))) == address(0)) {
+    if (!isInstalled(PUPPET_MODULE_NAME, new bytes(0))) {
       revert Module_MissingDependency(string(bytes.concat(PUPPET_MODULE_NAME)));
     }
   }
 
   function install(bytes memory args) public {
     // Require the module to not be installed with these args yet
-    if (InstalledModules.get(MODULE_NAME, keccak256(args)) != address(0)) {
-      revert Module_AlreadyInstalled();
-    }
+    requireNotInstalled(MODULE_NAME, args);
 
     // Extract args
     (bytes14 namespace, ERC20MetadataData memory metadata) = abi.decode(args, (bytes14, ERC20MetadataData));

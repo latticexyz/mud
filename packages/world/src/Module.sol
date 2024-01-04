@@ -5,6 +5,7 @@ import { WorldContextConsumer } from "./WorldContext.sol";
 import { WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "./IWorldContextConsumer.sol";
 import { IModule, MODULE_INTERFACE_ID } from "./IModule.sol";
 import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
+import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 
 /**
  * @title Module
@@ -24,5 +25,26 @@ abstract contract Module is IModule, WorldContextConsumer {
       interfaceId == MODULE_INTERFACE_ID ||
       interfaceId == WORLD_CONTEXT_CONSUMER_INTERFACE_ID ||
       interfaceId == ERC165_INTERFACE_ID;
+  }
+
+  /**
+   * @dev Check if a module with the given name and arguments is installed.
+   * @param moduleName The name of the module.
+   * @param args The arguments for the module installation.
+   * @return true if the module is installed, false otherwise.
+   */
+  function isInstalled(bytes16 moduleName, bytes memory args) internal view returns (bool) {
+    return InstalledModules.get(moduleName, keccak256(args)) != address(0);
+  }
+
+  /**
+   * @dev Revert if the module with the given name and arguments is already installed.
+   * @param moduleName The name of the module.
+   * @param args The arguments for the module installation.
+   */
+  function requireNotInstalled(bytes16 moduleName, bytes memory args) internal view {
+    if (isInstalled(moduleName, args)) {
+      revert Module_AlreadyInstalled();
+    }
   }
 }

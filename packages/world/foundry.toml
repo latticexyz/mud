@@ -1,6 +1,6 @@
 [profile.default]
 solc = "0.8.21"
-ffi = false
+ffi = true
 fuzz_runs = 256
 optimizer = true
 optimizer_runs = 3000

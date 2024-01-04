@@ -16,12 +16,15 @@ import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
 import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
+import { apiRoutes } from "../src/sqlite/apiRoutes";
+import { registerSentryMiddlewares } from "../src/sentry";
 
 const env = parseEnv(
   z.intersection(
     z.intersection(indexerEnvSchema, frontendEnvSchema),
     z.object({
       SQLITE_FILENAME: z.string().default("indexer.db"),
+      SENTRY_DSN: z.string().optional(),
     })
   )
 );
@@ -91,6 +94,11 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
 
 const server = new Koa();
 server.use(cors());
+server.use(apiRoutes(database));
+
+if (env.SENTRY_DSN) {
+  registerSentryMiddlewares(server);
+}
 
 const router = new Router();
 

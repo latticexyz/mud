@@ -7,14 +7,12 @@ import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { WorldContextProviderLib } from "./WorldContext.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { ROOT_NAMESPACE } from "./constants.sol";
-import { WorldContextProviderLib } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "./systemHookTypes.sol";
 
 import { IWorldErrors } from "./IWorldErrors.sol";
 import { ISystemHook } from "./ISystemHook.sol";
 
-import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Systems } from "./codegen/tables/Systems.sol";
 import { SystemHooks } from "./codegen/tables/SystemHooks.sol";
 import { Balances } from "./codegen/tables/Balances.sol";

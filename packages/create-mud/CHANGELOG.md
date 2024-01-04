@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.0.0-next.15
+
+### Minor Changes
+
+- f6133591: Replaced usage of `window` global in vanilla JS template with an event listener on the button.
+
+### Patch Changes
+
+- 6963a9e8: Templates now correctly include their respective `.gitignore` files
+
 ## 2.0.0-next.14
 
 ### Minor Changes
