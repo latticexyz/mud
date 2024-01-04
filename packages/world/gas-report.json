@@ -93,7 +93,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 83240
+    "gasUsed": 83149
   },
   {
     "file": "test/World.t.sol",
@@ -111,13 +111,13 @@
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 164329
+    "gasUsed": 164238
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 636538
+    "gasUsed": 636447
   },
   {
     "file": "test/World.t.sol",
