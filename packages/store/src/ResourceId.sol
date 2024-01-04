@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { BYTE_TO_BITS } from "./constants.sol";
-
 /**
  * @title ResourceId type definition and related utilities
  * @dev A ResourceId is a bytes32 data structure that consists of a
@@ -11,9 +9,9 @@ import { BYTE_TO_BITS } from "./constants.sol";
 type ResourceId is bytes32;
 
 /// @dev Number of bits reserved for the type in the ResourceId.
-uint256 constant TYPE_BITS = 2 * BYTE_TO_BITS;
+uint256 constant TYPE_BITS = 2 * 8; // BYTE_TO_BITS
 /// @dev Number of bits reserved for the name in the ResourceId.
-uint256 constant NAME_BITS = 32 * BYTE_TO_BITS - TYPE_BITS;
+uint256 constant NAME_BITS = 32 * 8 - TYPE_BITS; // BYTE_TO_BITS
 
 /// @dev Bitmask to extract the type from the ResourceId.
 bytes32 constant TYPE_MASK = bytes32(hex"ffff");

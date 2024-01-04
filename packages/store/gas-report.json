@@ -459,7 +459,7 @@
     "file": "test/ResourceId.t.sol",
     "test": "testEncode",
     "name": "encode table ID with name and type",
-    "gasUsed": 185
+    "gasUsed": 80
   },
   {
     "file": "test/ResourceId.t.sol",
