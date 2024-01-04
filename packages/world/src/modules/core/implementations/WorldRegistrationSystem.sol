@@ -249,7 +249,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // If the delegation is limited...
     if (Delegation.isLimited(delegationControlId) && initCallData.length > 0) {
       // Require the delegationControl contract to implement the IDelegationControl interface
-      (address delegationControl, ) = Systems._get(delegationControlId);
+      address delegationControl = Systems._getSystem(delegationControlId);
       requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
 
       // Call the delegation control contract's init function
@@ -288,7 +288,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     AccessControl.requireOwner(namespaceId, _msgSender());
 
     // Require the delegationControl contract to implement the IDelegationControl interface
-    (address delegationControl, ) = Systems._get(delegationControlId);
+    address delegationControl = Systems._getSystem(delegationControlId);
     requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
 
     // Register the delegation control
