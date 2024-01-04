@@ -4,7 +4,6 @@
 
 feat: allow custom create2 deployer address and auto deploy create2 deployer
 
-
 To deploy contracts via a custom create2 deployer
 
 ```shell
