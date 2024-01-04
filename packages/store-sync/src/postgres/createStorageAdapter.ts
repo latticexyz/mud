@@ -54,7 +54,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               staticData: log.args.staticData,
               encodedLengths: log.args.encodedLengths,
               dynamicData: log.args.dynamicData,
-              lastUpdatedBlockNumber: blockNumber,
+              blockNumber,
+              logIndex: log.logIndex ?? 0,
               isDeleted: false,
             })
             .onConflictDoUpdate({
@@ -63,7 +64,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
                 staticData: log.args.staticData,
                 encodedLengths: log.args.encodedLengths,
                 dynamicData: log.args.dynamicData,
-                lastUpdatedBlockNumber: blockNumber,
+                blockNumber,
+                logIndex: log.logIndex ?? 0,
                 isDeleted: false,
               },
             })
@@ -105,14 +107,16 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               key0: log.args.keyTuple[0],
               key1: log.args.keyTuple[1],
               staticData: newStaticData,
-              lastUpdatedBlockNumber: blockNumber,
+              blockNumber,
+              logIndex: log.logIndex ?? 0,
               isDeleted: false,
             })
             .onConflictDoUpdate({
               target: [tables.recordsTable.address, tables.recordsTable.tableId, tables.recordsTable.keyBytes],
               set: {
                 staticData: newStaticData,
-                lastUpdatedBlockNumber: blockNumber,
+                blockNumber,
+                logIndex: log.logIndex,
                 isDeleted: false,
               },
             })
@@ -155,7 +159,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               key1: log.args.keyTuple[1],
               encodedLengths: log.args.encodedLengths,
               dynamicData: newDynamicData,
-              lastUpdatedBlockNumber: blockNumber,
+              blockNumber,
+              logIndex: log.logIndex ?? 0,
               isDeleted: false,
             })
             .onConflictDoUpdate({
@@ -163,7 +168,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               set: {
                 encodedLengths: log.args.encodedLengths,
                 dynamicData: newDynamicData,
-                lastUpdatedBlockNumber: blockNumber,
+                blockNumber: blockNumber,
+                logIndex: log.logIndex ?? 0,
                 isDeleted: false,
               },
             })
@@ -181,7 +187,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               staticData: null,
               encodedLengths: null,
               dynamicData: null,
-              lastUpdatedBlockNumber: blockNumber,
+              blockNumber,
+              logIndex: log.logIndex ?? 0,
               isDeleted: true,
             })
             .where(
@@ -200,12 +207,12 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
         .values({
           version,
           chainId,
-          lastUpdatedBlockNumber: blockNumber,
+          blockNumber,
         })
         .onConflictDoUpdate({
           target: [tables.configTable.chainId],
           set: {
-            lastUpdatedBlockNumber: blockNumber,
+            blockNumber,
           },
         })
         .execute();

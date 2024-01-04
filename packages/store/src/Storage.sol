@@ -268,7 +268,7 @@ library Storage {
   /**
    * @notice Load up to 32 bytes from storage at a given pointer and offset.
    * @dev Since fields are tightly packed, they can span more than one slot.
-   * Since the they're max 32 bytes, they can span at most 2 slots.
+   * Since they're max 32 bytes, they can span at most 2 slots.
    * @param storagePointer The base storage location.
    * @param length Length of the data in bytes.
    * @param offset Offset within the storage location.

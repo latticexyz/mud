@@ -6,6 +6,13 @@ import { debug as parentDebug } from "./debug";
 import { pgDialect } from "./pgDialect";
 
 const debug = parentDebug.extend("setupTables");
+const error = parentDebug.extend("setupTables");
+
+// Pipe debug output to stdout instead of stderr
+debug.log = console.debug.bind(console);
+
+// Pipe error output to stderr
+error.log = console.error.bind(console);
 
 export async function setupTables(
   db: PgDatabase<any>,
@@ -73,8 +80,8 @@ export async function setupTables(
       try {
         debug(`dropping namespace ${schemaName} and all of its tables`);
         await db.execute(sql.raw(pgDialect.schema.dropSchema(schemaName).ifExists().cascade().compile().sql));
-      } catch (error) {
-        debug(`failed to drop namespace ${schemaName}`, error);
+      } catch (e) {
+        error(`failed to drop namespace ${schemaName}`, e);
       }
     }
   };
