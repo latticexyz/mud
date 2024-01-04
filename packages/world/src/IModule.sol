@@ -1,17 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
+import { IERC165 } from "./IERC165.sol";
 
 /**
  * @dev Calculation for ERC-165 interface ID for the IModule functions.
- * Combines the selector for each function with the ERC165_INTERFACE_ID.
  * See: https://eips.ethereum.org/EIPS/eip-165
  */
 bytes4 constant MODULE_INTERFACE_ID = IModule.getName.selector ^
   IModule.installRoot.selector ^
-  IModule.install.selector ^
-  ERC165_INTERFACE_ID;
+  IModule.install.selector;
 
 /**
  * @title IModule
