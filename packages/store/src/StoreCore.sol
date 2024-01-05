@@ -1000,7 +1000,7 @@ library StoreCoreInternal {
           dynamicFieldIndex: dynamicFieldIndex,
           startWithinField: startWithinField,
           deleteCount: deleteCount,
-          encodedLengths: updatedEncodedLengths,
+          encodedLengths: previousEncodedLengths,
           data: data
         });
       }
