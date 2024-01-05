@@ -583,9 +583,6 @@ library StoreCore {
    * @param fieldLayout The field layout for the record.
    */
   function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
-    // Emit event to notify indexers
-    emit Store_DeleteRecord(tableId, keyTuple);
-
     // Early return if the table is an offchain table
     if (tableId.getType() != RESOURCE_TABLE) {
       return;
@@ -599,6 +596,9 @@ library StoreCore {
         IStoreHook(hook.getAddress()).onBeforeDeleteRecord(tableId, keyTuple, fieldLayout);
       }
     }
+
+    // Emit event to notify indexers
+    emit Store_DeleteRecord(tableId, keyTuple);
 
     // Delete static data
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
