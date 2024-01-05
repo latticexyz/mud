@@ -263,13 +263,18 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
 
    ```sh copy
    pnpm create mud@next rewards
+   ```
+
+1. Remove the definitions that are not needed for our purpose.
+
+   ```sh copy
    cd rewards/packages
    rm -rf client
    cd contracts
-   rm test/CounterTest.t.sol script/PostDeploy.s.sol
+   rm test/CounterTest.t.sol script/PostDeploy.s.sol src/systems/IncrementSystem.sol
    ```
 
-1. Replace `mud.config.ts` with this file, which includes the two singletons we need (one for the token address and the other for the size of the reward) and specifies that `RewardSystem` is not publically accessible.
+1. Replace `mud.config.ts` with this file, which includes the singletons we need.
 
    ```ts mud.config.ts copy
    import { mudConfig } from "@latticexyz/world/register";
@@ -286,11 +291,6 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
          valueSchema: "uint256",
        },
      },
-     systems: {
-       RewardSystem: {
-         openAccess: false,
-       },
-     },
    });
    ```
 
@@ -301,13 +301,16 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
    pragma solidity >=0.8.21;
 
    import { System } from "@latticexyz/world/src/System.sol";
+   import { IWorld } from "../codegen/world/IWorld.sol";
+   import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+   import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
    import { Token, RewardSize } from "../codegen/index.sol";
    import { IERC20Mintable } from "@latticexyz/world-modules/src/modules/erc20-puppet/IERC20Mintable.sol";
 
    contract RewardSystem is System {
      function giveReward(address recipient) public {
        IERC20Mintable token = IERC20Mintable(Token.get());
-       token.mint(recipient, RewardSize.get());
+       token.transfer(recipient, RewardSize.get());
      }
    }
    ```
@@ -336,8 +339,6 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
    TOKEN_ADDRESS=0x249f0909E1Dd4b8811B0d7b19d2778Cef7C58399
    ```
 
-# STUCK: Need to figure how to permit RewardSystem to mint tokens.
-
 1. Create `script/Deploy-RewardSystem.s.sol`.
 
    ```solidity copy filename="Deploy-RewardSystem.s.sol"
@@ -346,9 +347,15 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
 
    import { Script } from "forge-std/Script.sol";
    import { console } from "forge-std/console.sol";
+
+   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+   import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+   import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
    import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
    import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+   import { IERC20Mintable } from "@latticexyz/world-modules/src/modules/erc20-puppet/IERC20Mintable.sol";
 
    import { Token, RewardSize } from "../src/codegen/index.sol";
    import { RewardSystem } from "../src/systems/RewardSystem.sol";
@@ -381,11 +388,15 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
        RewardSystem rewardSystem = new RewardSystem();
        console.log("RewardSystem address: ", address(rewardSystem));
 
-       world.registerSystem(systemResource, rewardSystem, true);
+       world.registerSystem(systemResource, rewardSystem, false);
        world.registerFunctionSelector(systemResource, "giveReward(address)");
 
        // Allow systems in the root namespace to access rewardSystem.
        world.grantAccess(systemResource, worldAddress);
+
+       // Mint a million tokens for rewardSystem.
+       IERC20Mintable token = IERC20Mintable(tokenAddress);
+       token.mint(address(rewardSystem), 10 ** 6 * RewardSize.get());
 
        vm.stopBroadcast();
      }
@@ -399,24 +410,63 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
    forge script script/Deploy-RewardSystem.s.sol --rpc-url http://localhost:8545 --broadcast
    ```
 
-1. Verify the reward system works:
+### Verify the reward system works
 
-   1. Source `.env` to set environment variables.
+1. Source `.env` to set environment variables.
 
-      ```sh copy
-      source .env
-      ```
+   ```sh copy
+   source .env
+   ```
 
-   1. Check the balance of `$MY_ADDRESS` (for example).
+1. Check the balance of `$MY_ADDRESS` (for example).
 
-      ```sh copy
-      cast call $TOKEN_ADDRESS "balanceOf(address)" $MY_ADDRESS
-      ```
+   ```sh copy
+   cast call $TOKEN_ADDRESS "balanceOf(address)" $MY_ADDRESS
+   ```
 
-   1. Give `$MY_ADDRESS` a reward.
+1. Scroll up, get the address for `RewardSystem`, and check that balance.
 
-      ```sh copy
-      cast send --private-key $PRIVATE_KEY $WORLD_ADDRESS "DDDD_RewardSystem_giveReward(address)" $MY_ADDRESS
-      ```
+   ```sh copy
+   cast call $TOKEN_ADDRESS "balanceOf(address)" 0x7a2088a1bFc9d81c55368AE168C2C02570cB814F | cast --from-wei
+   ```
 
-## Show balance in the UI
+1. Give `$MY_ADDRESS` a reward.
+
+   ```sh copy
+   cast send --private-key $PRIVATE_KEY $WORLD_ADDRESS "DDDD_RewardSystem_giveReward(address)" $MY_ADDRESS
+   ```
+
+1. Check the balances for `$MY_ADDRESS` and `RewardSystem`.
+   See that one token has been transferred.
+
+   ```sh copy
+   cast call $TOKEN_ADDRESS "balanceOf(address)" $MY_ADDRESS | cast --from-wei
+   cast call $TOKEN_ADDRESS "balanceOf(address)" 0x7a2088a1bFc9d81c55368AE168C2C02570cB814F | cast --from-wei
+   ```
+
+1. We were allowed to call `giveReward` because the default `anvil` account, which we use, is the namespace owner.
+   However, if we try to use a different account it fails.
+
+   ```sh copy
+   cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d $WORLD_ADDRESS "DDDD_RewardSystem_giveReward(address)" $MY_ADDRESS
+   ```
+
+### Tie `RewardSystem` to finished tasks
+
+Finally, we need to give rewards to users when they earn them by finishing a task.
+There are two ways we can do this:
+
+- Modify the application to call `RewardSystem`.
+- Use a hook that is called when the relevant table, `:Tasks`, is modified.
+
+For the sake of simplicity here we will modify the application.
+
+1. Back in the original application, edit `packages/contracts/src/systems/TasksSystem.sol`.
+
+   <CollapseCode>
+
+   ```solidity filename="TasksSystem.sol" showLineNumbers copy {17-18}
+
+   ```
+
+   </CollapseCode>
