@@ -1049,7 +1049,7 @@ library StoreCoreInternal {
           dynamicFieldIndex: dynamicFieldIndex,
           startWithinField: startWithinField,
           deleteCount: deleteCount,
-          encodedLengths: previousEncodedLengths,
+          encodedLengths: updatedEncodedLengths,
           data: data
         });
       }
