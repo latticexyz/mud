@@ -45,7 +45,7 @@
     "file": "test/BatchCall.t.sol",
     "test": "testBatchCallFromReturnData",
     "name": "call systems with batchCallFrom",
-    "gasUsed": 46466
+    "gasUsed": 46336
   },
   {
     "file": "test/BatchCall.t.sol",
@@ -63,7 +63,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromNamespaceDelegation",
     "name": "call a system via a namespace fallback delegation",
-    "gasUsed": 26143
+    "gasUsed": 26078
   },
   {
     "file": "test/World.t.sol",
@@ -75,13 +75,13 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 12806
+    "gasUsed": 12741
   },
   {
     "file": "test/World.t.sol",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 9837
+    "gasUsed": 9859
   },
   {
     "file": "test/World.t.sol",
@@ -117,7 +117,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 646118
+    "gasUsed": 646150
   },
   {
     "file": "test/World.t.sol",
@@ -147,13 +147,13 @@
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (cold)",
-    "gasUsed": 25953
+    "gasUsed": 25975
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (warm)",
-    "gasUsed": 13154
+    "gasUsed": 13176
   },
   {
     "file": "test/WorldResourceId.t.sol",
