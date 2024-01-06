@@ -9,6 +9,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World } from "@latticexyz/world/src/World.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
+import { CoreModule2 } from "@latticexyz/world/src/modules/core/CoreModule2.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -31,7 +32,7 @@ contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world.initialize(new CoreModule(), new CoreModule2());
     world.installModule(new PuppetModule(), new bytes(0));
     StoreSwitch.setStoreAddress(address(world));
 

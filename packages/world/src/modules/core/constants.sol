@@ -11,6 +11,7 @@ import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
  * @dev Represented as a bytes16 constant.
  */
 bytes16 constant CORE_MODULE_NAME = bytes16("core");
+bytes16 constant CORE_MODULE_2_NAME = bytes16("core2");
 
 /**
  * @dev Resource ID for core system 1.

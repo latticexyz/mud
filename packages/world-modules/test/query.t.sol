@@ -18,6 +18,7 @@ import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
 import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
+import { CoreModule2 } from "@latticexyz/world/src/modules/core/CoreModule2.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
 import { query, QueryFragment, QueryType } from "../src/modules/keysintable/query.sol";
@@ -53,7 +54,7 @@ contract QueryTest is Test, GasReporter {
     tableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
     tableValueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
     world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world.initialize(new CoreModule(), new CoreModule2());
 
     key1[0] = "test1";
     key2[0] = "test2";

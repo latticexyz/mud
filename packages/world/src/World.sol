@@ -33,7 +33,7 @@ import { Systems } from "./codegen/tables/Systems.sol";
 import { SystemHooks } from "./codegen/tables/SystemHooks.sol";
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
-import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
+import { CORE_MODULE_NAME, CORE_MODULE_2_NAME } from "./modules/core/constants.sol";
 
 /**
  * @title World Contract
@@ -70,9 +70,10 @@ contract World is StoreData, IWorldKernel {
   /**
    * @notice Initializes the World by installing the core module.
    * @param coreModule The core module to initialize the World with.
+   * @param coreModule2 The second core module to initialize the World with.
    * @dev Only the initial creator can initialize. This can be done only once.
    */
-  function initialize(IModule coreModule) public requireNoCallback {
+  function initialize(IModule coreModule, IModule coreModule2) public requireNoCallback {
     // Only the initial creator of the World can initialize it
     if (msg.sender != creator) {
       revert World_AccessDenied(ROOT_NAMESPACE_ID.toString(), msg.sender);
@@ -85,6 +86,8 @@ contract World is StoreData, IWorldKernel {
 
     // Initialize the World by installing the core module
     _installRootModule(coreModule, new bytes(0));
+    // Initialize the World by installing the second core module
+    _installRootModule(coreModule2, new bytes(0));
   }
 
   /**

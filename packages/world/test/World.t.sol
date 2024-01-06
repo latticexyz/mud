@@ -36,6 +36,7 @@ import { NamespaceOwner, NamespaceOwnerTableId } from "../src/codegen/tables/Nam
 import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { CoreModule2 } from "../src/modules/core/CoreModule2.sol";
 import { CoreSystem } from "../src/modules/core/CoreSystem.sol";
 import { CoreSystem2 } from "../src/modules/core/CoreSystem2.sol";
 import { CORE_SYSTEM_ID, CORE_SYSTEM_2_ID } from "../src/modules/core/constants.sol";
@@ -171,7 +172,7 @@ contract WorldTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world.initialize(new CoreModule(), new CoreModule2());
     StoreSwitch.setStoreAddress(address(world));
 
     key = "testKey";
@@ -194,6 +195,7 @@ contract WorldTest is Test, GasReporter {
 
   function testConstructorAndInitialize() public {
     CoreModule coreModule = new CoreModule();
+    CoreModule2 coreModule2 = new CoreModule2();
 
     vm.expectEmit(true, true, true, true);
     emit HelloWorld(WORLD_VERSION);
@@ -212,10 +214,10 @@ contract WorldTest is Test, GasReporter {
         address(0x4242)
       )
     );
-    newWorld.initialize(coreModule);
+    newWorld.initialize(coreModule, coreModule2);
 
     // Expect the creator to be able to initialize the World
-    newWorld.initialize(coreModule);
+    newWorld.initialize(coreModule, coreModule2);
 
     // Should have registered the core system function selectors
     CoreSystem coreSystem = CoreSystem(Systems.getSystem(CORE_SYSTEM_ID));
@@ -267,7 +269,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect it to not be possible to initialize the World again
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AlreadyInitialized.selector));
-    newWorld.initialize(coreModule);
+    newWorld.initialize(coreModule, coreModule2);
   }
 
   function testRegisterModuleRevertInterfaceNotSupported() public {

@@ -1,4 +1,5 @@
 import coreModuleBuild from "@latticexyz/world/out/CoreModule.sol/CoreModule.json" assert { type: "json" };
+import coreModule2Build from "@latticexyz/world/out/CoreModule2.sol/CoreModule2.json" assert { type: "json" };
 import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json" assert { type: "json" };
 import { Client, Transport, Chain, Account, Hex, parseAbi, getCreate2Address, encodeDeployData, size } from "viem";
 import { deployer } from "./ensureDeployer";
@@ -12,13 +13,27 @@ export const coreModuleBytecode = encodeDeployData({
   abi: [],
 });
 
+export const coreModule2DeployedBytecodeSize = size(coreModule2Build.deployedBytecode.object as Hex);
+export const coreModule2Bytecode = encodeDeployData({
+  bytecode: coreModule2Build.bytecode.object as Hex,
+  abi: [],
+});
+
 export const coreModule = getCreate2Address({ from: deployer, bytecode: coreModuleBytecode, salt });
+
+export const coreModule2 = getCreate2Address({ from: deployer, bytecode: coreModule2Bytecode, salt });
 
 export const worldFactoryDeployedBytecodeSize = size(worldFactoryBuild.deployedBytecode.object as Hex);
 export const worldFactoryBytecode = encodeDeployData({
   bytecode: worldFactoryBuild.bytecode.object as Hex,
   abi: parseAbi(["constructor(address)"]),
   args: [coreModule],
+});
+
+export const worldFactoryBytecode2 = encodeDeployData({
+  bytecode: worldFactoryBuild.bytecode.object as Hex,
+  abi: parseAbi(["constructor(address)"]),
+  args: [coreModule2],
 });
 
 export const worldFactory = getCreate2Address({ from: deployer, bytecode: worldFactoryBytecode, salt });
@@ -28,6 +43,11 @@ export const worldFactoryContracts: readonly Contract[] = [
     bytecode: coreModuleBytecode,
     deployedBytecodeSize: coreModuleDeployedBytecodeSize,
     label: "core module",
+  },
+  {
+    bytecode: coreModule2Bytecode,
+    deployedBytecodeSize: coreModule2DeployedBytecodeSize,
+    label: "core module2",
   },
   {
     bytecode: worldFactoryBytecode,

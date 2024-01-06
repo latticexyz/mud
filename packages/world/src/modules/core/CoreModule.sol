@@ -48,7 +48,6 @@ contract CoreModule is Module {
    * known tables, we can deploy it once and register it in multiple Worlds.
    */
   address immutable coreSystem = address(new CoreSystem());
-  address immutable coreSystem2 = address(new CoreSystem2());
 
   /**
    * @notice Get the name of the module.
@@ -65,8 +64,7 @@ contract CoreModule is Module {
   function installRoot(bytes memory) public override {
     _registerCoreTables();
     _registerCoreSystems();
-    _registerFunctionSelectors1();
-    _registerFunctionSelectors2();
+    _registerFunctionSelectors();
   }
 
   /**
@@ -119,23 +117,13 @@ contract CoreModule is Module {
       target: coreSystem,
       callData: abi.encodeCall(WorldRegistrationSystem.registerSystem, (CORE_SYSTEM_ID, CoreSystem(coreSystem), true))
     });
-
-    WorldContextProviderLib.delegatecallWithContextOrRevert({
-      msgSender: _msgSender(),
-      msgValue: 0,
-      target: coreSystem,
-      callData: abi.encodeCall(
-        WorldRegistrationSystem.registerSystem,
-        (CORE_SYSTEM_2_ID, CoreSystem2(coreSystem2), true)
-      )
-    });
   }
 
   /**
    * @notice Register function selectors for all CoreSystem functions in the World.
    * @dev Iterates through known function signatures and registers them.
    */
-  function _registerFunctionSelectors1() internal {
+  function _registerFunctionSelectors() internal {
     string[17] memory functionSignatures = [
       // --- AccessManagementSystem ---
       "grantAccess(bytes32,address)",
@@ -171,32 +159,6 @@ contract CoreModule is Module {
         callData: abi.encodeCall(
           WorldRegistrationSystem.registerRootFunctionSelector,
           (CORE_SYSTEM_ID, functionSignatures[i], bytes4(keccak256(bytes(functionSignatures[i]))))
-        )
-      });
-    }
-  }
-
-  /**
-   * @notice Register function selectors for all CoreSystem2 functions in the World.
-   * @dev Iterates through known function signatures and registers them.
-   */
-  function _registerFunctionSelectors2() internal {
-    string[2] memory functionSignatures = [
-      // --- BalanceTransferSystem ---
-      "transferBalanceToNamespace(bytes32,bytes32,uint256)",
-      "transferBalanceToAddress(bytes32,address,uint256)"
-    ];
-
-    for (uint256 i = 0; i < functionSignatures.length; i++) {
-      // Use the CoreSystem's `registerRootFunctionSelector` to register the
-      // root function selectors in the World.
-      WorldContextProviderLib.delegatecallWithContextOrRevert({
-        msgSender: _msgSender(),
-        msgValue: 0,
-        target: coreSystem,
-        callData: abi.encodeCall(
-          WorldRegistrationSystem.registerRootFunctionSelector,
-          (CORE_SYSTEM_2_ID, functionSignatures[i], bytes4(keccak256(bytes(functionSignatures[i]))))
         )
       });
     }

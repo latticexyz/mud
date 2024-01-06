@@ -96,6 +96,8 @@ contract CoreModule2 is Module {
    * @dev Iterates through known function signatures and registers them.
    */
   function _registerFunctionSelectors() internal {
+    (address coreSystem, ) = Systems.get(CORE_SYSTEM_ID);
+
     string[2] memory functionSignatures = [
       // --- BalanceTransferSystem ---
       "transferBalanceToNamespace(bytes32,bytes32,uint256)",
@@ -108,7 +110,7 @@ contract CoreModule2 is Module {
       WorldContextProviderLib.delegatecallWithContextOrRevert({
         msgSender: _msgSender(),
         msgValue: 0,
-        target: coreSystem2,
+        target: coreSystem,
         callData: abi.encodeCall(
           WorldRegistrationSystem.registerRootFunctionSelector,
           (CORE_SYSTEM_2_ID, functionSignatures[i], bytes4(keccak256(bytes(functionSignatures[i]))))

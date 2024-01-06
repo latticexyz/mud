@@ -54,7 +54,7 @@ interface IWorldCall {
  * @title World Kernel Interface
  * @notice The IWorldKernel interface includes all methods that are part of the World contract's
  * internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
- * registered functions selectors from the `CoreModule`.
+ * registered functions selectors from the `CoreModule` and `CoreModule2`.
  */
 interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors {
   /**
@@ -79,6 +79,7 @@ interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors {
    * @notice Initializes the World.
    * @dev Can only be called once by the creator.
    * @param coreModule The CoreModule to be installed during initialization.
+   * @param coreModule2 The CoreModule2 to be installed during initialization.
    */
-  function initialize(IModule coreModule) external;
+  function initialize(IModule coreModule, IModule coreModule2) external;
 }

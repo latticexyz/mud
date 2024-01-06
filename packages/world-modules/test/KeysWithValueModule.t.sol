@@ -22,6 +22,7 @@ import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
 import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
+import { CoreModule2 } from "@latticexyz/world/src/modules/core/CoreModule2.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
 import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
@@ -56,7 +57,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
 
     world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world.initialize(new CoreModule(), new CoreModule2());
     StoreSwitch.setStoreAddress(address(world));
 
     keyTuple1 = new bytes32[](1);

@@ -13,6 +13,7 @@ import { System } from "@latticexyz/world/src/System.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
+import { CoreModule2 } from "@latticexyz/world/src/modules/core/CoreModule2.sol";
 import { UniqueEntityModule } from "../src/modules/uniqueentity/UniqueEntityModule.sol";
 import { UniqueEntity } from "../src/modules/uniqueentity/tables/UniqueEntity.sol";
 import { getUniqueEntity } from "../src/modules/uniqueentity/getUniqueEntity.sol";
@@ -37,7 +38,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world.initialize(new CoreModule(), new CoreModule2());
     StoreSwitch.setStoreAddress(address(world));
   }
 
