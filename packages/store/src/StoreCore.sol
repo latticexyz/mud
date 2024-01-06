@@ -952,7 +952,7 @@ library StoreCoreInternal {
   using ResourceIdInstance for ResourceId;
 
   bytes32 internal constant SLOT = keccak256("mud.store");
-  bytes32 internal constant DYNMAIC_DATA_SLOT = keccak256("mud.store.dynamicData");
+  bytes32 internal constant DYNAMIC_DATA_SLOT = keccak256("mud.store.dynamicData");
   bytes32 internal constant DYNAMIC_DATA_LENGTH_SLOT = keccak256("mud.store.dynamicDataLength");
 
   /************************************************************************
@@ -1043,7 +1043,7 @@ library StoreCoreInternal {
           dynamicFieldIndex: dynamicFieldIndex,
           startWithinField: startWithinField,
           deleteCount: deleteCount,
-          encodedLengths: updatedEncodedLengths,
+          encodedLengths: previousEncodedLengths,
           data: data
         });
       }
@@ -1189,7 +1189,7 @@ library StoreCoreInternal {
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex
   ) internal pure returns (uint256) {
-    return uint256(DYNMAIC_DATA_SLOT ^ bytes1(dynamicFieldIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
+    return uint256(DYNAMIC_DATA_SLOT ^ bytes1(dynamicFieldIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
   }
 
   /**

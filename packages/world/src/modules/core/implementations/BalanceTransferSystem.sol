@@ -5,7 +5,7 @@ import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId
 
 import { System } from "../../../System.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
-import { WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
+import { WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";
@@ -65,7 +65,7 @@ contract BalanceTransferSystem is System, IWorldErrors {
     // Get current namespace balance
     uint256 balance = Balances._get(fromNamespaceId);
 
-    // Require the balance balance to be greater or equal to the amount to transfer
+    // Require the balance to be greater or equal to the amount to transfer
     if (amount > balance) revert World_InsufficientBalance(balance, amount);
 
     // Update the balances
