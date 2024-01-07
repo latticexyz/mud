@@ -99,9 +99,9 @@ library WorldResourceIdInstance {
         abi.encodePacked(
           resourceType,
           ":",
-          resourceNamespace == bytes14("") ? "<root>" : WorldResourceIdLib.toTrimmedString(resourceNamespace),
+          resourceNamespace == ROOT_NAMESPACE ? "<root>" : WorldResourceIdLib.toTrimmedString(resourceNamespace),
           ":",
-          resourceName == bytes16("") ? "<root>" : WorldResourceIdLib.toTrimmedString(resourceName)
+          resourceName == ROOT_NAME ? "<root>" : WorldResourceIdLib.toTrimmedString(resourceName)
         )
       );
   }

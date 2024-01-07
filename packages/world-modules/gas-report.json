@@ -3,85 +3,85 @@
     "file": "test/ERC20.t.sol",
     "test": "testApprove",
     "name": "approve",
-    "gasUsed": 114329
+    "gasUsed": 114332
   },
   {
     "file": "test/ERC20.t.sol",
     "test": "testBurn",
     "name": "burn",
-    "gasUsed": 75866
+    "gasUsed": 75872
   },
   {
     "file": "test/ERC20.t.sol",
     "test": "testMint",
     "name": "mint",
-    "gasUsed": 161705
+    "gasUsed": 161711
   },
   {
     "file": "test/ERC20.t.sol",
     "test": "testTransfer",
     "name": "transfer",
-    "gasUsed": 92948
+    "gasUsed": 92954
   },
   {
     "file": "test/ERC20.t.sol",
     "test": "testTransferFrom",
     "name": "transferFrom",
-    "gasUsed": 130250
+    "gasUsed": 130262
   },
   {
     "file": "test/ERC721.t.sol",
     "test": "testApproveAllGas",
     "name": "setApprovalForAll",
-    "gasUsed": 113956
+    "gasUsed": 113959
   },
   {
     "file": "test/ERC721.t.sol",
     "test": "testApproveGas",
     "name": "approve",
-    "gasUsed": 87965
+    "gasUsed": 87971
   },
   {
     "file": "test/ERC721.t.sol",
     "test": "testBurnGas",
     "name": "burn",
-    "gasUsed": 101835
+    "gasUsed": 101847
   },
   {
     "file": "test/ERC721.t.sol",
     "test": "testMintGas",
     "name": "mint",
-    "gasUsed": 169433
+    "gasUsed": 169442
   },
   {
     "file": "test/ERC721.t.sol",
     "test": "testSafeMintToEOAGas",
     "name": "safeMint",
-    "gasUsed": 169704
+    "gasUsed": 169713
   },
   {
     "file": "test/ERC721.t.sol",
     "test": "testSafeTransferFromToEOAGas",
     "name": "safeTransferFrom",
-    "gasUsed": 143638
+    "gasUsed": 143653
   },
   {
     "file": "test/ERC721.t.sol",
     "test": "testTransferFromGas",
     "name": "transferFrom",
-    "gasUsed": 136798
+    "gasUsed": 136810
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallComposite",
     "name": "install keys in table module",
-    "gasUsed": 1409435
+    "gasUsed": 1409438
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallGas",
     "name": "install keys in table module",
-    "gasUsed": 1409435
+    "gasUsed": 1409438
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -93,13 +93,13 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallSingleton",
     "name": "install keys in table module",
-    "gasUsed": 1409435
+    "gasUsed": 1409438
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "install keys in table module",
-    "gasUsed": 1409435
+    "gasUsed": 1409438
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -117,7 +117,7 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "install keys in table module",
-    "gasUsed": 1409435
+    "gasUsed": 1409438
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -135,7 +135,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testGetKeysWithValueGas",
     "name": "install keys with value module",
-    "gasUsed": 650708
+    "gasUsed": 650711
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -153,7 +153,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testInstall",
     "name": "install keys with value module",
-    "gasUsed": 650708
+    "gasUsed": 650711
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -165,7 +165,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetAndDeleteRecordHook",
     "name": "install keys with value module",
-    "gasUsed": 650708
+    "gasUsed": 650711
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -183,7 +183,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetField",
     "name": "install keys with value module",
-    "gasUsed": 650708
+    "gasUsed": 650711
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -315,7 +315,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 644433
+    "gasUsed": 644436
   },
   {
     "file": "test/UniqueEntityModule.t.sol",

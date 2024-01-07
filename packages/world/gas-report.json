@@ -177,6 +177,6 @@
     "file": "test/WorldResourceId.t.sol",
     "test": "testToString",
     "name": "convert resource ID to string",
-    "gasUsed": 3287
+    "gasUsed": 3313
   }
 ]
