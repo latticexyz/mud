@@ -35,7 +35,7 @@ const publicClient = createPublicClient({
 });
 
 const chainId = await publicClient.getChainId();
-const database = drizzle(postgres(env.DATABASE_URL));
+const database = drizzle(postgres(env.DATABASE_URL, { prepare: false }));
 
 if (await shouldCleanDatabase(database, chainId)) {
   console.log("outdated database detected, clearing data to start fresh");

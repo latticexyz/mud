@@ -2,6 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { IERC165 } from "./IERC165.sol";
+import { ERC165Checker } from "./ERC165Checker.sol";
 import { IWorldErrors } from "./IWorldErrors.sol";
 
 /**
@@ -17,11 +18,7 @@ import { IWorldErrors } from "./IWorldErrors.sol";
  * @param interfaceId The interface ID to verify.
  */
 function requireInterface(address contractAddress, bytes4 interfaceId) view {
-  try IERC165(contractAddress).supportsInterface(interfaceId) returns (bool supported) {
-    if (!supported) {
-      revert IWorldErrors.World_InterfaceNotSupported(contractAddress, interfaceId);
-    }
-  } catch {
+  if (!ERC165Checker.supportsInterface(contractAddress, interfaceId)) {
     revert IWorldErrors.World_InterfaceNotSupported(contractAddress, interfaceId);
   }
 }

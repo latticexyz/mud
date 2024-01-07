@@ -1,5 +1,103 @@
 # @latticexyz/store-sync
 
+## 2.0.0-next.15
+
+### Major Changes
+
+- 504e25dc: `lastUpdatedBlockNumber` columns in Postgres storage adapters are no longer nullable
+- e48fb3b0: Renamed singleton `chain` table to `config` table for clarity.
+- 85b94614: The postgres indexer is now storing the `logIndex` of the last update of a record to be able to return the snapshot logs in the order they were emitted onchain.
+- a4aff73c: Previously, all `store-sync` strategies were susceptible to a potential memory leak where the stream that fetches logs from the RPC would get ahead of the stream that stores the logs in the provided storage adapter. We saw this most often when syncing to remote Postgres servers, where inserting records was much slower than we retrieving them from the RPC. In these cases, the stream would build up a backlog of items until the machine ran out of memory.
+
+  This is now fixed by waiting for logs to be stored before fetching the next batch of logs from the RPC. To make this strategy work, we no longer return `blockLogs# @latticexyz/store-sync (stream of logs fetched from RPC but before they're stored) and instead just return `storedBlockLogs# @latticexyz/store-sync (stream of logs fetched from RPC after they're stored).
+
+- 1b5eb0d0: `syncToPostgres` from `@latticexyz/store-sync/postgres` now uses a single table to store all records in their bytes form (`staticData`, `encodedLengths`, and `dynamicData`), more closely mirroring onchain state and enabling more scalability and stability for automatic indexing of many worlds.
+
+  The previous behavior, where schemaful SQL tables are created and populated for each MUD table, has been moved to a separate `@latticexyz/store-sync/postgres-decoded` export bundle. This approach is considered less stable and is intended to be used for analytics purposes rather than hydrating clients. Some previous metadata columns on these tables have been removed in favor of the bytes records table as the source of truth for onchain state.
+
+  This overhaul is considered breaking and we recommend starting a fresh database when syncing with either of these strategies.
+
+- 7b73f44d: Postgres storage adapter now uses snake case for decoded table names and column names. This allows for better SQL ergonomics when querying these tables.
+
+  To avoid naming conflicts for now, schemas are still case-sensitive and need to be queried with double quotes. We may change this in the future with [namespace validation](https://github.com/latticexyz/mud/issues/1991).
+
+### Minor Changes
+
+- 5df1f31b: Refactored how we fetch snapshots from an indexer, preferring the new `getLogs` endpoint and falling back to the previous `findAll` if it isn't available. This refactor also prepares for an easier entry point for adding client caching of snapshots.
+
+  The `initialState` option for various sync methods (`syncToPostgres`, `syncToRecs`, etc.) is now deprecated in favor of `initialBlockLogs`. For now, we'll automatically convert `initialState` into `initialBlockLogs`, but if you want to update your code, you can do:
+
+  ```ts
+  import { tablesWithRecordsToLogs } from "@latticexyz/store-sync";
+
+  const initialBlockLogs = {
+    blockNumber: initialState.blockNumber,
+    logs: tablesWithRecordsToLogs(initialState.tables),
+  };
+  ```
+
+- 7eabd06f: Added and populated `syncProgress` key in Zustand store for sync progress, like we do for RECS sync. This will let apps using `syncToZustand` render a loading state while initial client hydration is in progress.
+
+  ```tsx
+  const syncProgress = useStore((state) => state.syncProgress);
+
+  if (syncProgress.step !== SyncStep.LIVE) {
+    return <>Loading ({Math.floor(syncProgress.percentage)}%)</>;
+  }
+  ```
+
+- 4c1dcd81: - Improved query performance by 10x by moving from drizzle ORM to handcrafted SQL.
+
+  - Moved away from `trpc` for more granular control over the transport layer.
+    Added an `/api/logs` endpoint using the new query and gzip compression for 40x less data transferred over the wire.
+    Deprecated the `/trpc/getLogs` and `/trpc/findAll` endpoints.
+  - Added a `createIndexerClient` client for the new `/api` indexer API exported from `@latticexyz/store-sync/indexer-client`.
+    The `createIndexerClient` export from `@latticexyz/store-sync/trpc-indexer` is deprecated.
+
+  ```diff
+  - import { createIndexerClient } from "@latticexyz/store-sync/trpc-indexer";
+  + import { createIndexerClient } from "@latticexyz/store-sync/indexer-client";
+
+  - const indexer = createIndexerClient({ url: "https://indexer.holesky.redstone.xyz/trpc" });
+  + const indexer = createIndexerClient({ url: "https://indexer.holesky.redstone.xyz" });
+
+  - const snapshot = indexer.getLogs.query(options);
+  + const snapshot = indexer.getLogs(options);
+  ```
+
+### Patch Changes
+
+- 0a3b9b1c: Added explicit error logs for unexpected situations.
+  Previously all `debug` logs were going to `stderr`, which made it hard to find the unexpected errors.
+  Now `debug` logs go to `stdout` and we can add explicit `stderr` logs.
+- 712866f5: `createStoreSync` now correctly creates table registration logs from indexer records.
+- 59054203: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- 5d737cf2: Updated the `debug` util to pipe to `stdout` and added an additional util to explicitly pipe to `stderr` when needed.
+- 34203e4e: Fixed invalid value when decoding records in `postgres-decoded` storage adapter
+- Updated dependencies [d8c8f66b]
+- Updated dependencies [1b86eac0]
+- Updated dependencies [1077c7f5]
+- Updated dependencies [933b54b5]
+- Updated dependencies [f8dab733]
+- Updated dependencies [1a0fa797]
+- Updated dependencies [eb384bb0]
+- Updated dependencies [e5a962bc]
+- Updated dependencies [59054203]
+- Updated dependencies [1b5eb0d0]
+- Updated dependencies [6db95ce1]
+- Updated dependencies [5d737cf2]
+- Updated dependencies [5ac4c97f]
+- Updated dependencies [e4817174]
+- Updated dependencies [4c1dcd81]
+- Updated dependencies [5df1f31b]
+  - @latticexyz/store@2.0.0-next.15
+  - @latticexyz/world@2.0.0-next.15
+  - @latticexyz/common@2.0.0-next.15
+  - @latticexyz/block-logs-stream@2.0.0-next.15
+  - @latticexyz/protocol-parser@2.0.0-next.15
+  - @latticexyz/recs@2.0.0-next.15
+  - @latticexyz/schema-type@2.0.0-next.15
+
 ## 2.0.0-next.14
 
 ### Major Changes

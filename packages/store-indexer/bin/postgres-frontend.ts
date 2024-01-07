@@ -11,6 +11,7 @@ import postgres from "postgres";
 import { frontendEnvSchema, parseEnv } from "./parseEnv";
 import { createQueryAdapter } from "../src/postgres/deprecated/createQueryAdapter";
 import { apiRoutes } from "../src/postgres/apiRoutes";
+import { registerSentryMiddlewares } from "../src/sentry";
 
 const env = parseEnv(
   z.intersection(
@@ -21,9 +22,14 @@ const env = parseEnv(
   )
 );
 
-const database = postgres(env.DATABASE_URL);
+const database = postgres(env.DATABASE_URL, { prepare: false });
 
 const server = new Koa();
+
+if (process.env.SENTRY_DSN) {
+  registerSentryMiddlewares(server);
+}
+
 server.use(cors());
 server.use(apiRoutes(database));
 

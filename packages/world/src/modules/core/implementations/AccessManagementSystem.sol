@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { IModule } from "../../../IModule.sol";
 import { System } from "../../../System.sol";
 import { AccessControl } from "../../../AccessControl.sol";
-import { ResourceId, WorldResourceIdLib } from "../../../WorldResourceId.sol";
+import { ResourceId } from "../../../WorldResourceId.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
-import { InstalledModules } from "../../../codegen/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 
 /**
