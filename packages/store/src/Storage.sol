@@ -199,7 +199,12 @@ library Storage {
           wordRemainder = 32 - offset;
         }
 
-        uint256 mask = leftMask(wordRemainder);
+        uint256 mask;
+        if (length < wordRemainder) {
+          mask = leftMask(length);
+        } else {
+          mask = leftMask(wordRemainder);
+        }
         /// @solidity memory-safe-assembly
         assembly {
           // Load data from storage and offset it to match memory
@@ -262,7 +267,7 @@ library Storage {
   /**
    * @notice Load up to 32 bytes from storage at a given pointer and offset.
    * @dev Since fields are tightly packed, they can span more than one slot.
-   * Since the they're max 32 bytes, they can span at most 2 slots.
+   * Since they're max 32 bytes, they can span at most 2 slots.
    * @param storagePointer The base storage location.
    * @param length Length of the data in bytes.
    * @param offset Offset within the storage location.
