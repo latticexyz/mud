@@ -4,7 +4,6 @@ pragma solidity >=0.8.21;
 import { IWorldErrors } from "../../IWorldErrors.sol";
 
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
-import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
 import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
@@ -18,7 +17,6 @@ import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSyst
 contract CoreSystem is
   IWorldErrors,
   AccessManagementSystem,
-  BatchCallSystem,
   ModuleInstallationSystem,
   StoreRegistrationSystem,
   WorldRegistrationSystem

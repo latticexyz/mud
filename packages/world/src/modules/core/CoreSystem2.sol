@@ -4,6 +4,7 @@ pragma solidity >=0.8.21;
 import { IWorldErrors } from "../../IWorldErrors.sol";
 
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
+import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
 
 /**
  * @title Core System for World
@@ -11,6 +12,6 @@ import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.s
  * @dev Aggregates multiple system implementations for the World.
  * Split into multiple systems because of the bytecode size limit.
  */
-contract CoreSystem2 is BalanceTransferSystem {
+contract CoreSystem2 is BalanceTransferSystem, BatchCallSystem {
   // Currently, no additional functionality is added in this aggregate contract.
 }

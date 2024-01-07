@@ -115,14 +115,11 @@ contract CoreModule is Module {
    * @dev Iterates through known function signatures and registers them.
    */
   function _registerFunctionSelectors() internal {
-    string[17] memory functionSignatures = [
+    string[15] memory functionSignatures = [
       // --- AccessManagementSystem ---
       "grantAccess(bytes32,address)",
       "revokeAccess(bytes32,address)",
       "transferOwnership(bytes32,address)",
-      // --- BatchCallSystem ---
-      "batchCall((bytes32,bytes)[])",
-      "batchCallFrom((address,bytes32,bytes)[])",
       // --- ModuleInstallationSystem ---
       "installModule(address,bytes)",
       // --- StoreRegistrationSystem ---

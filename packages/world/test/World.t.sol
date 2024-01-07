@@ -231,8 +231,8 @@ contract WorldTest is Test, GasReporter {
       coreSystem2.transferBalanceToNamespace.selector,
       coreSystem2.transferBalanceToAddress.selector,
       // --- BatchCallSystem ---
-      coreSystem.batchCall.selector,
-      coreSystem.batchCallFrom.selector,
+      coreSystem2.batchCall.selector,
+      coreSystem2.batchCallFrom.selector,
       // --- ModuleInstallationSystem ---
       coreSystem.installModule.selector,
       // --- StoreRegistrationSystem ---
