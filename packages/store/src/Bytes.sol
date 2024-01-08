@@ -6,22 +6,6 @@ pragma solidity >=0.8.21;
  * @notice Utility functions for bytes.
  */
 library Bytes {
-  /**
-   * @dev Converts a `bytes` memory blob to a single `bytes32` memory value, starting at the given byte offset.
-   * @param input The `bytes` blob to read from.
-   * @param offset The byte offset at which to start reading.
-   * @return output The `bytes32` value.
-   */
-  function toBytes32(bytes memory input, uint256 offset) internal pure returns (bytes32 output) {
-    assembly {
-      // input is a pointer to the start of the bytes array
-      // in memory, the first 32 bytes are the length of the array
-      // so we add 32 to the pointer to get to the start of the data
-      // then we add the start offset to get to the start of the desired word
-      output := mload(add(input, add(0x20, offset)))
-    }
-  }
-
   /************************************************************************
    *
    *    UTILS

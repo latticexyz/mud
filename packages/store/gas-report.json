@@ -48,18 +48,6 @@
     "gasUsed": 68
   },
   {
-    "file": "test/Bytes.t.sol",
-    "test": "testToBytes32",
-    "name": "create bytes32 from bytes memory with offset 0",
-    "gasUsed": 25
-  },
-  {
-    "file": "test/Bytes.t.sol",
-    "test": "testToBytes32CrossWord",
-    "name": "create bytes32 from bytes memory with offset 16",
-    "gasUsed": 36
-  },
-  {
     "file": "test/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "Callbacks: set field",

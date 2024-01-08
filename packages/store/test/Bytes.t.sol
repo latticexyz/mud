@@ -6,30 +6,6 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Bytes } from "../src/Bytes.sol";
 
 contract BytesTest is Test, GasReporter {
-  function testToBytes32() public {
-    bytes memory input = new bytes(32);
-    input[0] = 0x01;
-    input[31] = 0x02;
-
-    startGasReport("create bytes32 from bytes memory with offset 0");
-    bytes32 output = Bytes.toBytes32(input, 0);
-    endGasReport();
-
-    assertEq(uint256(output), 0x0100000000000000000000000000000000000000000000000000000000000002);
-  }
-
-  function testToBytes32CrossWord() public {
-    bytes memory input = new bytes(64);
-    input[0 + 16] = 0x01;
-    input[31 + 16] = 0x02;
-
-    startGasReport("create bytes32 from bytes memory with offset 16");
-    bytes32 output = Bytes.toBytes32(input, 16);
-    endGasReport();
-
-    assertEq(uint256(output), 0x0100000000000000000000000000000000000000000000000000000000000002);
-  }
-
   function testEquals() public {
     bytes memory a = bytes("a");
     bytes memory b = bytes("a");
