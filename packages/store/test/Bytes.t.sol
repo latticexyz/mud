@@ -6,34 +6,6 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Bytes } from "../src/Bytes.sol";
 
 contract BytesTest is Test, GasReporter {
-  function testEquals() public {
-    bytes memory a = bytes("a");
-    bytes memory b = bytes("a");
-
-    startGasReport("compare equal bytes");
-    bool equals = Bytes.equals(a, b);
-    endGasReport();
-
-    assertTrue(equals);
-  }
-
-  function testEqualsFalse() public {
-    bytes memory a = bytes("a");
-    bytes memory b = bytes("b");
-
-    startGasReport("compare unequal bytes");
-    bool equals = Bytes.equals(a, b);
-    endGasReport();
-
-    assertFalse(equals);
-  }
-
-  function testEqualsFalseDiffLength() public {
-    bytes memory a = bytes("a");
-    bytes memory b = bytes("aa");
-    assertFalse(Bytes.equals(a, b));
-  }
-
   // TODO: add tests for other sliceX functions
   function testSlice3() public {
     bytes memory a = new bytes(5);
@@ -62,51 +34,6 @@ contract BytesTest is Test, GasReporter {
     endGasReport();
 
     assertEq(output, original);
-  }
-
-  function testSetBytes1() public {
-    bytes32 input = bytes32(0);
-
-    startGasReport("set bytes1 in bytes32");
-    bytes32 output = Bytes.setBytes1(input, 8, 0xff);
-    endGasReport();
-
-    assertEq(output, hex"0000000000000000ff");
-    assertEq(Bytes.setBytes1(input, 0, 0x01), bytes32(bytes1(0x01)));
-    assertEq(Bytes.setBytes1(input, 31, 0x01), bytes32(uint256(0x01)));
-  }
-
-  function testSetBytes2() public {
-    bytes32 input = bytes32(0);
-
-    startGasReport("set bytes2 in bytes32");
-    bytes32 output = Bytes.setBytes2(input, 8, 0xffff);
-    endGasReport();
-
-    assertEq(output, hex"0000000000000000ffff");
-    assertEq(Bytes.setBytes2(input, 0, 0xffff), bytes32(bytes2(0xffff)));
-    assertEq(Bytes.setBytes2(input, 30, 0xffff), bytes32(uint256(0xffff)));
-  }
-
-  function testSetBytes4() public {
-    bytes32 input = bytes32(0);
-
-    startGasReport("set bytes4 in bytes32");
-    bytes32 output = Bytes.setBytes4(input, 8, 0xffffffff);
-    endGasReport();
-
-    assertEq(output, hex"0000000000000000ffffffff");
-    assertEq(Bytes.setBytes4(input, 0, 0xffffffff), bytes32(bytes4(0xffffffff)));
-    assertEq(Bytes.setBytes4(input, 30, 0xffffffff), bytes32(uint256(0xffff)));
-    assertEq(Bytes.setBytes4(input, 28, 0xffffffff), bytes32(uint256(0xffffffff)));
-
-    bytes32 input2 = bytes32(0x0000000a000a0000000000000000000000000000000000000000000000000000);
-    bytes4 overwrite = bytes4(0x0000006d);
-
-    assertEq(
-      Bytes.setBytes4(input2, 0, overwrite),
-      bytes32(0x0000006d000a0000000000000000000000000000000000000000000000000000)
-    );
   }
 
   function testSetBytes4Memory() public {

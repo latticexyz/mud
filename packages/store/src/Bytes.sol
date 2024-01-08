@@ -13,19 +13,6 @@ library Bytes {
    ************************************************************************/
 
   /**
-   * @dev Compares two bytes blobs for equality.
-   * @param a First bytes blob.
-   * @param b Second bytes blob.
-   * @return True if the two bytes blobs are equal, false otherwise.
-   */
-  function equals(bytes memory a, bytes memory b) internal pure returns (bool) {
-    if (a.length != b.length) {
-      return false;
-    }
-    return keccak256(a) == keccak256(b);
-  }
-
-  /**
    * @dev Sets the length of a bytes blob in memory.
    * This function does not resize the memory allocation; it only changes the length
    * field, which affects operations that access the length property.
@@ -47,57 +34,6 @@ library Bytes {
    ************************************************************************/
 
   /**
-   * @dev Sets a specific byte in a bytes32 value.
-   * @param input The bytes32 data in which a specific byte is to be altered.
-   * @param index The position of the byte to be altered. Index starts from the left.
-   * @param overwrite The new byte value to be set at the specified index.
-   * @return output The modified bytes32 data with the new byte value at the specified index.
-   */
-  function setBytes1(bytes32 input, uint256 index, bytes1 overwrite) internal pure returns (bytes32 output) {
-    bytes1 mask = 0xff;
-    assembly {
-      mask := shr(mul(8, index), mask) // create a mask by shifting 0xff right by index bytes
-      output := and(input, not(mask)) // zero out the byte at index
-      output := or(output, shr(mul(8, index), overwrite)) // set the byte at index
-    }
-    return output;
-  }
-
-  /**
-   * @dev Sets a specific 2-byte sequence in a bytes32 variable.
-   * @param input The bytes32 data in which a specific 2-byte sequence is to be altered.
-   * @param index The position of the 2-byte sequence to be altered. Index starts from the left.
-   * @param overwrite The new 2-byte value to be set at the specified index.
-   * @return output The modified bytes32 data with the new 2-byte value at the specified index.
-   */
-  function setBytes2(bytes32 input, uint256 index, bytes2 overwrite) internal pure returns (bytes32 output) {
-    bytes2 mask = 0xffff;
-    assembly {
-      mask := shr(mul(8, index), mask) // create a mask by shifting 0xffff right by index bytes
-      output := and(input, not(mask)) // zero out the byte at index
-      output := or(output, shr(mul(8, index), overwrite)) // set the byte at index
-    }
-    return output;
-  }
-
-  /**
-   * @dev Sets a specific 4-byte sequence in a bytes32 variable.
-   * @param input The bytes32 data in which a specific 4-byte sequence is to be altered.
-   * @param index The position of the 4-byte sequence to be altered. Index starts from the left.
-   * @param overwrite The new 4-byte value to be set at the specified index.
-   * @return output The modified bytes32 data with the new 4-byte value at the specified index.
-   */
-  function setBytes4(bytes32 input, uint256 index, bytes4 overwrite) internal pure returns (bytes32 output) {
-    bytes4 mask = 0xffffffff;
-    assembly {
-      mask := shr(mul(8, index), mask) // create a mask by shifting 0xffffffff right by index bytes
-      output := and(input, not(mask)) // zero out the byte at index
-      output := or(output, shr(mul(8, index), overwrite)) // set the byte at index
-    }
-    return output;
-  }
-
-  /**
    * @dev Sets a specific 4-byte sequence in a bytes blob at a given index.
    * @param input The bytes blob in which a specific 4-byte sequence is to be altered.
    * @param index The position within the bytes blob to start altering the 4-byte sequence. Index starts from the left.
@@ -113,40 +49,6 @@ library Bytes {
       mstore(add(add(input, 0x20), index), value) // store the new value
     }
     return input;
-  }
-
-  /**
-   * @dev Sets a specific 5-byte sequence in a bytes32 variable.
-   * @param input The bytes32 data in which a specific 5-byte sequence is to be altered.
-   * @param index The position of the 5-byte sequence to be altered. Index starts from the left.
-   * @param overwrite The new 5-byte value to be set at the specified index.
-   * @return output The modified bytes32 data with the new 5-byte value at the specified index.
-   */
-  function setBytes5(bytes32 input, uint256 index, bytes5 overwrite) internal pure returns (bytes32 output) {
-    bytes5 mask = bytes5(type(uint40).max);
-    assembly {
-      mask := shr(mul(8, index), mask) // create a mask by shifting 0xff...ff right by index bytes
-      output := and(input, not(mask)) // zero out the byte at index
-      output := or(output, shr(mul(8, index), overwrite)) // set the byte at index
-    }
-    return output;
-  }
-
-  /**
-   * @dev Sets a specific 7-byte sequence in a bytes32 variable.
-   * @param input The bytes32 data in which a specific 7-byte sequence is to be altered.
-   * @param index The position of the 7-byte sequence to be altered. Index starts from the left.
-   * @param overwrite The new 7-byte value to be set at the specified index.
-   * @return output The modified bytes32 data with the new 7-byte value at the specified index.
-   */
-  function setBytes7(bytes32 input, uint256 index, bytes7 overwrite) internal pure returns (bytes32 output) {
-    bytes7 mask = bytes7(type(uint56).max);
-    assembly {
-      mask := shr(mul(8, index), mask) // create a mask by shifting 0xff...ff right by index bytes
-      output := and(input, not(mask)) // zero out the byte at index
-      output := or(output, shr(mul(8, index), overwrite)) // set the byte at index
-    }
-    return output;
   }
 
   /************************************************************************
