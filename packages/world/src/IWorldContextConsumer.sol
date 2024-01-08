@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
+import { IERC165 } from "./IERC165.sol";
 
 /**
  * @dev World Context Consumer Interface
@@ -12,8 +12,7 @@ import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
 
 bytes4 constant WORLD_CONTEXT_CONSUMER_INTERFACE_ID = IWorldContextConsumer._msgSender.selector ^
   IWorldContextConsumer._msgValue.selector ^
-  IWorldContextConsumer._world.selector ^
-  ERC165_INTERFACE_ID;
+  IWorldContextConsumer._world.selector;
 
 /**
  * @title WorldContextConsumer - Extracting trusted context values from appended calldata.

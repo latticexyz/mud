@@ -29,9 +29,7 @@ contract UniqueEntityModule is Module {
   function installRoot(bytes memory args) public {
     // Naive check to ensure this is only installed once
     // TODO: only revert if there's nothing to do
-    if (InstalledModules.getModuleAddress(getName(), keccak256(args)) != address(0)) {
-      revert Module_AlreadyInstalled();
-    }
+    requireNotInstalled(getName(), args);
 
     IBaseWorld world = IBaseWorld(_world());
 
@@ -54,9 +52,7 @@ contract UniqueEntityModule is Module {
   function install(bytes memory args) public {
     // Naive check to ensure this is only installed once
     // TODO: only revert if there's nothing to do
-    if (InstalledModules.getModuleAddress(getName(), keccak256(args)) != address(0)) {
-      revert Module_AlreadyInstalled();
-    }
+    requireNotInstalled(getName(), args);
 
     IBaseWorld world = IBaseWorld(_world());
 

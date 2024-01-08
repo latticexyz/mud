@@ -1,5 +1,34 @@
 # Change Log
 
+## 2.0.0-next.15
+
+### Patch Changes
+
+- d8c8f66b: Exclude ERC165 interface ID from custom interface ID's.
+- 1077c7f5: Fixed an issue where `mud.config.ts` source file was not included in the package, causing TS errors downstream.
+- f8dab733: Added explicit `internal` visibility to the `coreSystem` variable in `CoreModule`.
+- 1a0fa797: Fixed `requireInterface` to correctly specify ERC165.
+- eb384bb0: Added `isInstalled` and `requireNotInstalled` helpers to `Module` base contract.
+- e5a962bc: `World` now correctly registers the `FunctionSignatures` table.
+- 59054203: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- e4817174: Removed unused imports from various files in the `store` and `world` packages.
+- Updated dependencies [d8c8f66b]
+- Updated dependencies [1b86eac0]
+- Updated dependencies [1077c7f5]
+- Updated dependencies [933b54b5]
+- Updated dependencies [59054203]
+- Updated dependencies [1b5eb0d0]
+- Updated dependencies [6db95ce1]
+- Updated dependencies [5d737cf2]
+- Updated dependencies [5ac4c97f]
+- Updated dependencies [e4817174]
+- Updated dependencies [4c1dcd81]
+- Updated dependencies [5df1f31b]
+  - @latticexyz/store@2.0.0-next.15
+  - @latticexyz/common@2.0.0-next.15
+  - @latticexyz/config@2.0.0-next.15
+  - @latticexyz/schema-type@2.0.0-next.15
+
 ## 2.0.0-next.14
 
 ### Patch Changes
