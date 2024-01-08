@@ -107,7 +107,7 @@ library SliceInstance {
     data = new bytes(_length);
     uint256 toPointer;
     assembly {
-      toPointer := add(data, 32)
+      toPointer := add(data, 0x20)
     }
     // Copy the slice contents to the array
     Memory.copy(fromPointer, toPointer, _length);

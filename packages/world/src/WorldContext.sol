@@ -65,7 +65,7 @@ library WorldContextConsumerLib {
       // Load 32 bytes from calldata at position calldatasize() - context size,
       // then shift left 96 bits (to right-align the address)
       // 96 = 256 - 20 * 8
-      sender := shr(96, calldataload(sub(calldatasize(), CONTEXT_BYTES)))
+      sender := shr(0x60, calldataload(sub(calldatasize(), CONTEXT_BYTES)))
     }
     if (sender == address(0)) sender = msg.sender;
   }
@@ -78,7 +78,7 @@ library WorldContextConsumerLib {
   function _msgValue() internal pure returns (uint256 value) {
     assembly {
       // Load 32 bytes from calldata at position calldatasize() - 32 bytes,
-      value := calldataload(sub(calldatasize(), 32))
+      value := calldataload(sub(calldatasize(), 0x20))
     }
   }
 
