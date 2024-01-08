@@ -45,7 +45,7 @@ library FieldLayoutLib {
     if (numDynamicFields > MAX_DYNAMIC_FIELDS) revert FieldLayoutLib_InvalidLength(numDynamicFields);
 
     // Compute the total static length and store the field lengths in the encoded fieldLayout
-    for (uint256 i = 0; i < _staticFields.length; ) {
+    for (uint256 i; i < _staticFields.length; ) {
       uint256 staticByteLength = _staticFields[i];
       if (staticByteLength == 0) {
         revert FieldLayoutLib_StaticLengthIsZero();

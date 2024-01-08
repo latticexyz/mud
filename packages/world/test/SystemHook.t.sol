@@ -10,7 +10,7 @@ import { ISystemHook } from "../src/ISystemHook.sol";
 
 contract SystemHookTest is Test, GasReporter {
   function testFuzzEncode(address hookAddress, bool enableBeforeCallSystem, bool enableAfterCallSystem) public {
-    uint8 enabledHooksBitmap = 0;
+    uint8 enabledHooksBitmap;
     if (enableBeforeCallSystem) enabledHooksBitmap |= BEFORE_CALL_SYSTEM;
     if (enableAfterCallSystem) enabledHooksBitmap |= AFTER_CALL_SYSTEM;
 
@@ -21,7 +21,7 @@ contract SystemHookTest is Test, GasReporter {
   }
 
   function testFuzzIsEnabled(address hookAddress, bool enableBeforeCallSystem, bool enableAfterCallSystem) public {
-    uint8 enabledHooksBitmap = 0;
+    uint8 enabledHooksBitmap;
     if (enableBeforeCallSystem) enabledHooksBitmap |= BEFORE_CALL_SYSTEM;
     if (enableAfterCallSystem) enabledHooksBitmap |= AFTER_CALL_SYSTEM;
 
@@ -36,7 +36,7 @@ contract SystemHookTest is Test, GasReporter {
     bool enableBeforeCallSystem,
     bool enableAfterCallSystem
   ) public {
-    uint8 enabledHooksBitmap = 0;
+    uint8 enabledHooksBitmap;
     if (enableBeforeCallSystem) enabledHooksBitmap |= BEFORE_CALL_SYSTEM;
     if (enableAfterCallSystem) enabledHooksBitmap |= AFTER_CALL_SYSTEM;
 
