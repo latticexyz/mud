@@ -1,3 +1,115 @@
 # mud test
 
-**Coming soon**
+This command runs the tests in a MUD project. Internally, it runs the following steps:
+
+1. Starts an [`anvil`](https://book.getfoundry.sh/reference/anvil/) instance.
+   {/* This could be either an empty blockchain, or one that can be forked for a [fork test](https://book.getfoundry.sh/forge/fork-testing). */}
+1. Deploys the `World` and all related `System`s using [`mud deploy`](./deploy).
+1. Runs tests using [`forge test`](https://book.getfoundry.sh/forge/tests) and passes the deployed world address to the tests via the `WORLD_ADDRESS` environment variable.
+
+## Command line options
+
+| Option                  | Meaning                                        | Type    | Default value                                              |
+| ----------------------- | ---------------------------------------------- | ------- | ---------------------------------------------------------- |
+| `--version`             | Show version number                            | boolean | `false`                                                    |
+| `--configPath`          | Path to the config file                        | string  | `mud.config.ts`                                            |
+| `--printConfig`         | Print the resolved config                      | boolean | `false`                                                    |
+| `--saveDeployment`      | Save the deployment info to a file             | boolean | `true`                                                     |
+| `--profile`             | The foundry profile to use                     | string  | `local`                                                    |
+| `--srcDir`              | Source directory                               | string  | Foundry `src` directory                                    |
+| `--skipBuild`           | Skip rebuilding the contracts before deploying | boolean | `false`                                                    |
+| `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy       | boolean | `false` (run the script only when deploying a new `World`) |
+| `--port`                | Port for the testing `anvil` instance          | number  | 4242                                                       |
+| `--help`                | Show help                                      | boolean | `false`                                                    |
+
+## Examples
+
+```sh copy
+pnpm mud test
+```
+
+## Writing MUD tests
+
+MUD test contracts inherit from [`MudTest`](https://github.com/latticexyz/mud/blob/main/packages/world/test/MudTest.t.sol).
+This contract gets the `World` address from the `$WORLD_ADDRESS` environment variable and sets it as the `Store` address.
+
+<details>
+
+<summary>Line by line explanation of a test</summary>
+
+This is an explanation of [the test](https://github.com/latticexyz/mud/blob/main/templates/react/packages/contracts/test/TasksTest.t.sol) for the [React template](https://github.com/latticexyz/mud/tree/main/templates/react) contracts.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import "forge-std/Test.sol";
+import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
+```
+
+Import the general definitions required in all MUD tests.
+
+```solidity
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { Tasks, TasksData } from "../src/codegen/index.sol";
+```
+
+Import the definitions required for this test, the `World` we can access and the tables we'll use.
+
+```solidity
+contract TasksTest is MudTest {
+  function testWorldExists() public {
+```
+
+MUD tests are [Foundry tests](https://book.getfoundry.sh/forge/tests).
+Any public function that starts with `test` is a test that gets executed.
+
+```solidity
+    uint256 codeSize;
+    address addr = worldAddress;
+```
+
+The `World` address comes from the [`MudTest`](https://github.com/latticexyz/mud/blob/main/packages/world/test/MudTest.t.sol#L11).
+
+```solidity
+    assembly {
+      codeSize := extcodesize(addr)
+    }
+    assertTrue(codeSize > 0);
+  }
+```
+
+Use [`extcodesize`](https://www.evm.codes/#3b?fork=shanghai) to get the size of the `World` contract.
+If the deploy process failed, there wouldn't be any code there.
+
+```solidity
+  function testTasks() public {
+    // Expect task to exist that we created during PostDeploy script
+    TasksData memory task = Tasks.get("1");
+```
+
+Use the structure for a table entry's values that is created as part of code generation.
+
+```solidity
+    assertEq(task.description, "Walk the dog");
+    assertEq(task.completedAt, 0);
+```
+
+Verify the information that is prepopulated by [the `PostDeploy.s.sol` script](https://github.com/latticexyz/mud/blob/main/templates/react/packages/contracts/script/PostDeploy.s.sol).
+
+```solidity
+    // Expect the task to be completed after calling completeTask from our TasksSystem
+    IWorld(worldAddress).completeTask("1");
+```
+
+Call a `System` to modify the table data.
+
+```solidity
+    assertEq(Tasks.getCompletedAt("1"), block.timestamp);
+  }
+}
+```
+
+Verify that the call changed the data correctly.
+
+</details>
