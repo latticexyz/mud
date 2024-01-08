@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "@latticexyz/store/src/IStoreHook.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
@@ -71,7 +71,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
 
   function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
     // Require the hook to implement the store hook interface
-    requireInterface(address(hookAddress), STORE_HOOK_INTERFACE_ID);
+    requireInterface(address(hookAddress), type(IStoreHook).interfaceId);
 
     // Require caller to own the namespace
     AccessControl.requireOwner(tableId, _msgSender());

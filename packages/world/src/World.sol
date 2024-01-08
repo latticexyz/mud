@@ -20,7 +20,7 @@ import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
 
-import { IModule, MODULE_INTERFACE_ID } from "./IModule.sol";
+import { IModule, IModule } from "./IModule.sol";
 import { IWorldKernel } from "./IWorldKernel.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
@@ -97,7 +97,7 @@ contract World is StoreData, IWorldKernel {
    */
   function _installRootModule(IModule module, bytes memory args) internal {
     // Require the provided address to implement the IModule interface
-    requireInterface(address(module), MODULE_INTERFACE_ID);
+    requireInterface(address(module), type(IModule).interfaceId);
 
     WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: msg.sender,

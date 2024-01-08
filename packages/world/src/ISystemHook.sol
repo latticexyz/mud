@@ -5,13 +5,6 @@ import { IERC165 } from "./IERC165.sol";
 import { ResourceId } from "./WorldResourceId.sol";
 
 /**
- * @dev Calculation for ERC-165 interface ID for the ISystemHook functions.
- * See: https://eips.ethereum.org/EIPS/eip-165
- */
-bytes4 constant SYSTEM_HOOK_INTERFACE_ID = ISystemHook.onBeforeCallSystem.selector ^
-  ISystemHook.onAfterCallSystem.selector;
-
-/**
  * @title ISystemHook
  * @dev Interface defining system hooks for external functionality.
  * Provides pre and post hooks that can be triggered before and after a system call respectively.
