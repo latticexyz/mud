@@ -4,7 +4,7 @@ pragma solidity >=0.8.21;
 /**
  * @dev Calculation for ERC-165 interface ID for the `supportsInterface` function.
  */
-bytes4 constant ERC165_INTERFACE_ID = IERC165.supportsInterface.selector;
+bytes4 constant ERC165_INTERFACE_ID = type(IERC165).interfaceId;
 
 /**
  * @title IERC165

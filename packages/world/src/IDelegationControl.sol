@@ -8,8 +8,7 @@ import { ResourceId } from "./WorldResourceId.sol";
  * @dev Calculation for ERC-165 interface ID for the IDelegationControl interface.
  * Combines the selector of the `verify` function with the interface ID of IWorldContextConsumer.
  */
-bytes4 constant DELEGATION_CONTROL_INTERFACE_ID = IDelegationControl.verify.selector ^
-  WORLD_CONTEXT_CONSUMER_INTERFACE_ID;
+bytes4 constant DELEGATION_CONTROL_INTERFACE_ID = type(IDelegationControl).interfaceId;
 
 /**
  * @title IDelegationControl

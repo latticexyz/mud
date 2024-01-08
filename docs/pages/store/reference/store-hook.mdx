@@ -7,14 +7,7 @@
 ### STORE_HOOK_INTERFACE_ID
 
 ```solidity
-bytes4 constant STORE_HOOK_INTERFACE_ID = IStoreHook.onBeforeSetRecord.selector ^
-  IStoreHook.onAfterSetRecord.selector ^
-  IStoreHook.onBeforeSpliceStaticData.selector ^
-  IStoreHook.onAfterSpliceStaticData.selector ^
-  IStoreHook.onBeforeSpliceDynamicData.selector ^
-  IStoreHook.onAfterSpliceDynamicData.selector ^
-  IStoreHook.onBeforeDeleteRecord.selector ^
-  IStoreHook.onAfterDeleteRecord.selector;
+bytes4 constant STORE_HOOK_INTERFACE_ID = type(IStoreHook).interfaceId;
 ```
 
 ## IStoreHook

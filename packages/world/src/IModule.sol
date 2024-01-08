@@ -7,9 +7,7 @@ import { IERC165 } from "./IERC165.sol";
  * @dev Calculation for ERC-165 interface ID for the IModule functions.
  * See: https://eips.ethereum.org/EIPS/eip-165
  */
-bytes4 constant MODULE_INTERFACE_ID = IModule.getName.selector ^
-  IModule.installRoot.selector ^
-  IModule.install.selector;
+bytes4 constant MODULE_INTERFACE_ID = type(IModule).interfaceId;
 
 /**
  * @title IModule
