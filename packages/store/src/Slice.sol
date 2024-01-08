@@ -121,7 +121,7 @@ library SliceInstance {
    * @return result The bytes32 representation of the provided Slice.
    */
   function toBytes32(Slice self) internal pure returns (bytes32 result) {
-    uint256 memoryPointer = self.pointer();
+    uint256 memoryPointer = pointer(self);
     /// @solidity memory-safe-assembly
     assembly {
       result := mload(memoryPointer)
