@@ -15,20 +15,20 @@ library Create2 {
    *
    * Requirements:
    *
-   * - `bytecode` must not be empty.
-   * - `salt` must have not been used for `bytecode` already.
+   * - `creationCode` must not be empty.
+   * - `salt` must have not been used for `creationCode` already.
    *
-   * @param byteCode The bytecode of the contract to be deployed.
+   * @param creationCode The bytecode of the contract to be deployed.
    * @param salt A 256-bit value that, combined with the bytecode, determines the address.
    * @return addr The address of the newly deployed contract.
    * @dev If the CREATE2 fails, reverts
    */
-  function deploy(bytes memory byteCode, uint256 salt) internal returns (address addr) {
+  function deploy(bytes memory creationCode, uint256 salt) internal returns (address addr) {
     assembly {
       // byteCode is one word (0x20 bytes) with the length, followed by the actual
       // code for the constructor. So the code starts at byteCode+0x20, and is mload(byteCode)
       // bytes long.
-      addr := create2(0, add(byteCode, 0x20), mload(byteCode), salt)
+      addr := create2(0, add(creationCode, 0x20), mload(creationCode), salt)
       if iszero(extcodesize(addr)) {
         revert(0, 0)
       }
