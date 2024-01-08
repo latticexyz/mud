@@ -54,6 +54,70 @@ There are two ways to call one `System` from another one.
 | `_msgValue()`                                | zero                                                                                                                                            | can use [`WorldContextProvider`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L180-L203) to transfer the correct information |
 | Can be used by systems in the root namespace | No (it's a security measure)                                                                                                                    | Yes                                                                                                                                                             |
 
+#### Calling from a root `System`
+
+If you need to call a `System` from a `System` in the root namespace you can use [`SystemSwitch`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/utils/SystemSwitch.sol).
+
+1. Import `SystemSwitch`.
+
+   ```solidity copy
+   import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.sol";
+   ```
+
+1. Import the interface for the system you wish to call.
+
+   ```solidity copy
+   import { IIncrementSystem } from "../codegen/world/IIncrementSystem.sol";
+   ```
+
+1. Call the function using `SystemSwitch.call`.
+   For example, here is how you can call [`IncrementSystem.increment()`](/templates/typescript/contracts#incrementsystemsol).
+
+   ```solidity copy
+    uint32 returnValue = abi.decode(
+      SystemSwitch.call(
+        abi.encodeCall(IIncrementSystem.increment, ())
+      ),
+      (uint32)
+    );
+   ```
+
+   <details>
+
+   <summary>Explanation</summary>
+
+   ```solidity
+   abi.encodeCall(IIncrementSystem.increment, ())
+   ```
+
+   Use [`abi.encodeCall`](https://docs.soliditylang.org/en/latest/cheatsheet.html#abi-encoding-and-decoding-functions) to create the calldata.
+   The first parameter is a pointer to the function.
+   The second parameter is a [tuple](https://docs.soliditylang.org/en/latest/control-structures.html#destructuring-assignments-and-returning-multiple-values) with the function parameters.
+   In this case, there aren't any.
+
+   The advantage of `abi.encodeCall` is that it checks the types of the function parameters are correct.
+
+   ```solidity
+   SystemSwitch.call(
+        abi.encodeCall(...)
+   )
+   ```
+
+   Using `SystemSwitch.call` with the calldata created by `abi.encodeCall`.
+   `SystemSwitch.call` takes care of figuring out details, such as what type of call to use.
+
+   ```solidity
+   uint32 retval = abi.decode(
+      SystemSwitch.call(...),
+      (uint32)
+   );
+   ```
+
+   Use [`abi.decode`](https://docs.soliditylang.org/en/latest/cheatsheet.html#abi-encoding-and-decoding-functions) to decode the call's return value.
+   The second parameter is the data type (or types if there are multiple return values).
+
+   </details>
+
 ## Registering systems
 
 For a `System` to be callable from a `World` it has to be [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L97-L201).
