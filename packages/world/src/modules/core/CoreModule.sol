@@ -2,15 +2,11 @@
 pragma solidity >=0.8.21;
 
 import { WorldContextProviderLib } from "../../WorldContext.sol";
-import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID, STORE_NAMESPACE_ID, WORLD_NAMESPACE_ID } from "../../constants.sol";
+import { ROOT_NAMESPACE_ID, STORE_NAMESPACE_ID, WORLD_NAMESPACE_ID } from "../../constants.sol";
 import { Module } from "../../Module.sol";
-
-import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
 
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
-import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../../WorldResourceId.sol";
-import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
 
 import { NamespaceOwner } from "../../codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../codegen/tables/ResourceAccess.sol";
@@ -28,11 +24,6 @@ import { SystemHooks } from "../../codegen/tables/SystemHooks.sol";
 import { SystemRegistry } from "../../codegen/tables/SystemRegistry.sol";
 import { Balances } from "../../codegen/tables/Balances.sol";
 
-import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
-import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
-import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
-import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
-import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
 /**
@@ -46,7 +37,7 @@ contract CoreModule is Module {
    * @dev Since the CoreSystem only exists once per World and writes to
    * known tables, we can deploy it once and register it in multiple Worlds.
    */
-  address immutable coreSystem = address(new CoreSystem());
+  address internal immutable coreSystem = address(new CoreSystem());
 
   /**
    * @notice Get the name of the module.
