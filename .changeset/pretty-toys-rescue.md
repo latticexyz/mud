@@ -2,7 +2,7 @@
 "@latticexyz/store": patch
 ---
 
-Aligned the order of function arguments in the `Storage`` library.
+Aligned the order of function arguments in the `Storage` library.
 
 ```solidity
 store(uint256 storagePointer, uint256 offset, bytes memory data)
