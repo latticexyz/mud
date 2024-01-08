@@ -105,7 +105,7 @@
     "file": "test/FieldLayout.t.sol",
     "test": "testGetNumFields",
     "name": "get number of all fields from field layout",
-    "gasUsed": 34
+    "gasUsed": 734
   },
   {
     "file": "test/FieldLayout.t.sol",
@@ -369,7 +369,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 719017
+    "gasUsed": 720401
   },
   {
     "file": "test/Mixed.t.sol",
@@ -807,7 +807,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: register table",
-    "gasUsed": 640899
+    "gasUsed": 642283
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -1143,7 +1143,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 442403
+    "gasUsed": 443787
   },
   {
     "file": "test/Vector2.t.sol",

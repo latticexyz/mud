@@ -126,9 +126,7 @@ library FieldLayoutInstance {
    */
   function numFields(FieldLayout fieldLayout) internal pure returns (uint256) {
     unchecked {
-      return
-        uint8(uint256(fieldLayout.unwrap()) >> LayoutOffsets.NUM_STATIC_FIELDS) +
-        uint8(uint256(fieldLayout.unwrap()) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
+      return numStaticFields(fieldLayout) + numDynamicFields(fieldLayout);
     }
   }
 
