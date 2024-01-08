@@ -57,7 +57,7 @@ library SliceLib {
    */
   function getSubslice(bytes memory data, uint256 start, uint256 end) internal pure returns (Slice) {
     // TODO this check helps catch bugs and can eventually be removed
-    if (!(start <= end && end <= data.length)) revert Slice_OutOfBounds(data, start, end);
+    if (start > end || end > data.length) revert Slice_OutOfBounds(data, start, end);
 
     uint256 _pointer;
     assembly {
