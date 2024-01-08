@@ -30,7 +30,7 @@ library TightCoder {
     assembly {
       // Solidity's YulUtilFunctions::roundUpFunction
       function round_up_to_mul_of_32(value) -> _result {
-        _result := and(add(value, 31), not(31))
+        _result := and(add(value, 0x1F), not(0x1F))
       }
 
       // Allocate memory
@@ -84,7 +84,7 @@ library TightCoder {
       // Allocate memory
       array := mload(0x40)
       let arrayPointer := add(array, 0x20)
-      mstore(0x40, add(arrayPointer, mul(arrayLength, 32)))
+      mstore(0x40, add(arrayPointer, mul(arrayLength, 0x20)))
       // Store length
       mstore(array, arrayLength)
 
