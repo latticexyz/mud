@@ -8,6 +8,8 @@ pragma solidity >=0.8.21;
  */
 type ResourceId is bytes32;
 
+using ResourceIdInstance for ResourceId global;
+
 /// @dev Number of bits reserved for the type in the ResourceId.
 uint256 constant TYPE_BITS = 2 * 8;
 /// @dev Number of bits reserved for the name in the ResourceId.

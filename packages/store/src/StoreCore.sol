@@ -16,7 +16,7 @@ import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
-import { ResourceId, ResourceIdInstance } from "./ResourceId.sol";
+import { ResourceId } from "./ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.sol";
 
 /**
@@ -24,7 +24,6 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.so
  * @notice This library includes implementations for all IStore methods and events related to the store actions.
  */
 library StoreCore {
-  using ResourceIdInstance for ResourceId;
   /**
    * @notice Emitted when a new record is set in the store.
    * @param tableId The ID of the table where the record is set.
@@ -927,8 +926,6 @@ library StoreCore {
  * They are not intended to be used directly by consumers of StoreCore.
  */
 library StoreCoreInternal {
-  using ResourceIdInstance for ResourceId;
-
   bytes32 internal constant SLOT = keccak256("mud.store");
   bytes32 internal constant DYNAMIC_DATA_SLOT = keccak256("mud.store.dynamicData");
   bytes32 internal constant DYNAMIC_DATA_LENGTH_SLOT = keccak256("mud.store.dynamicDataLength");
