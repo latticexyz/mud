@@ -7,12 +7,6 @@
   },
   {
     "file": "test/Bytes.t.sol",
-    "test": "testSlice3",
-    "name": "slice bytes3 with offset 1",
-    "gasUsed": 68
-  },
-  {
-    "file": "test/Bytes.t.sol",
     "test": "testSlice32",
     "name": "slice bytes32 with offset 10",
     "gasUsed": 68
