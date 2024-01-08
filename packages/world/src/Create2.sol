@@ -25,8 +25,8 @@ library Create2 {
    */
   function deploy(bytes memory creationCode, uint256 salt) internal returns (address addr) {
     assembly {
-      // byteCode is one word (0x20 bytes) with the length, followed by the actual
-      // code for the constructor. So the code starts at byteCode+0x20, and is mload(byteCode)
+      // creationCode is one word (0x20 bytes) with the length, followed by the actual
+      // code for the constructor. So the code starts at creationCode+0x20, and is mload(creationCode)
       // bytes long.
       addr := create2(0, add(creationCode, 0x20), mload(creationCode), salt)
       if iszero(extcodesize(addr)) {
