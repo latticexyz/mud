@@ -29,7 +29,7 @@ library Create2 {
       // code for the constructor. So the code starts at creationCode+0x20, and is mload(creationCode)
       // bytes long.
       addr := create2(0, add(creationCode, 0x20), mload(creationCode), salt)
-      if iszero(extcodesize(addr)) {
+      if iszero(addr) {
         revert(0, 0)
       }
     }
