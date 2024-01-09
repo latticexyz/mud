@@ -10,7 +10,8 @@ type SyncToPostgresOptions<TConfig extends StoreConfig = StoreConfig> = SyncOpti
    *
    * [0]: https://orm.drizzle.team/docs/installation-and-db-connection/postgresql/postgresjs
    */
-  database: PgDatabase<any>;
+  readDatabase: PgDatabase<any>;
+  writeDatabase: PgDatabase<any>;
   startSync?: boolean;
 };
 
@@ -26,12 +27,18 @@ type SyncToPostgresResult = SyncResult & {
  */
 export async function syncToPostgres<TConfig extends StoreConfig = StoreConfig>({
   config,
-  database,
+  readDatabase,
+  writeDatabase,
   publicClient,
   startSync = true,
   ...syncOptions
 }: SyncToPostgresOptions<TConfig>): Promise<SyncToPostgresResult> {
-  const { storageAdapter } = await createStorageAdapter({ database, publicClient, config });
+  const { storageAdapter } = await createStorageAdapter({
+    readDatabase,
+    writeDatabase,
+    publicClient,
+    config,
+  });
   const storeSync = await createStoreSync({
     storageAdapter,
     config,
