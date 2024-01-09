@@ -271,7 +271,7 @@ library Storage {
    * @param storagePointer The base storage location.
    * @param length Length of the data in bytes.
    * @param offset Offset within the storage location.
-   * @return result The loaded bytes, left-aligned bytes. Bytes beyond the length are zeroed.
+   * @return result The loaded bytes, left-aligned bytes. Bytes beyond the length are not zeroed.
    */
   function loadField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32 result) {
     if (offset >= 32) {
