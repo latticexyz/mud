@@ -275,11 +275,25 @@ contract WorldBalanceTest is Test, GasReporter {
   }
 
   function testTransferBalanceToNamespaceRevertResourceNotFound() public {
-    uint256 value = 1 ether;
-
     bytes14 toNamespace = "bad_namespace";
     ResourceId toNamespaceId = WorldResourceIdLib.encodeNamespace(toNamespace);
 
+    uint256 value = 1 ether;
+
+    // Expect the root namespace to have no balance
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
+
+    // Send balance to root namespace
+    vm.deal(caller, value);
+    vm.prank(caller);
+    (bool success, bytes memory data) = address(world).call{ value: value }("");
+    assertTrue(success);
+    assertEq(data.length, 0);
+
+    // Expect the root namespace to have the value as balance
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
+
+    // Expect revert when attempting to transfer to a non-existent namespace
     vm.expectRevert(
       abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, toNamespaceId, toNamespaceId.toString())
     );
