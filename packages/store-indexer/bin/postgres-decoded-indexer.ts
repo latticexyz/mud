@@ -15,8 +15,9 @@ const env = parseEnv(
   z.intersection(
     indexerEnvSchema,
     z.object({
-      READ_DATABASE_URL: z.string(),
-      WRITE_DATABASE_URL: z.string(),
+      DATABASE_URL: z.string().optional(),
+      READ_DATABASE_URL: z.string().optional(),
+      WRITE_DATABASE_URL: z.string().optional(),
       HEALTHCHECK_HOST: z.string().optional(),
       HEALTHCHECK_PORT: z.coerce.number().optional(),
     })
@@ -36,8 +37,24 @@ const publicClient = createPublicClient({
 });
 
 const chainId = await publicClient.getChainId();
-const readDatabase = drizzle(postgres(env.READ_DATABASE_URL, { prepare: false }));
-const writeDatabase = drizzle(postgres(env.WRITE_DATABASE_URL, { prepare: false }));
+
+let readDatabaseUrl = env.READ_DATABASE_URL;
+let writeDatabaseUrl = env.WRITE_DATABASE_URL;
+
+if (env.DATABASE_URL) {
+  console.log("warning, DATABASE_URL is deprecated");
+
+  readDatabaseUrl = env.DATABASE_URL;
+  writeDatabaseUrl = env.DATABASE_URL;
+} else if (env.READ_DATABASE_URL && env.WRITE_DATABASE_URL) {
+  readDatabaseUrl = env.READ_DATABASE_URL;
+  writeDatabaseUrl = env.WRITE_DATABASE_URL;
+} else {
+  throw new Error("no database URL defined");
+}
+
+const readDatabase = drizzle(postgres(readDatabaseUrl, { prepare: false }));
+const writeDatabase = drizzle(postgres(writeDatabaseUrl, { prepare: false }));
 
 const { storageAdapter, tables } = await createStorageAdapter({
   readDatabase: readDatabase,
