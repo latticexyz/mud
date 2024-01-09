@@ -26,14 +26,8 @@ export const coreModule2 = getCreate2Address({ from: deployer, bytecode: coreMod
 export const worldFactoryDeployedBytecodeSize = size(worldFactoryBuild.deployedBytecode.object as Hex);
 export const worldFactoryBytecode = encodeDeployData({
   bytecode: worldFactoryBuild.bytecode.object as Hex,
-  abi: parseAbi(["constructor(address)"]),
-  args: [coreModule],
-});
-
-export const worldFactoryBytecode2 = encodeDeployData({
-  bytecode: worldFactoryBuild.bytecode.object as Hex,
-  abi: parseAbi(["constructor(address)"]),
-  args: [coreModule2],
+  abi: parseAbi(["constructor(address,address)"]),
+  args: [coreModule, coreModule2],
 });
 
 export const worldFactory = getCreate2Address({ from: deployer, bytecode: worldFactoryBytecode, salt });
