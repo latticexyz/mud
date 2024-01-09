@@ -75,6 +75,11 @@ contract World is StoreData, IWorldKernel {
       revert World_AlreadyInitialized();
     }
 
+    // Require the module name to be core
+    if (coreModule.getName() != CORE_MODULE_NAME) {
+      revert("Module is not the core module");
+    }
+
     // Initialize the World by installing the core module
     _installRootModule(coreModule, new bytes(0));
   }
