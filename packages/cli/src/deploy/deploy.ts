@@ -9,7 +9,7 @@ import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
 import { Table } from "./configToTables";
-import { assertNamespaceOwner } from "./assertNamespaceOwner";
+import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { uniqueBy } from "@latticexyz/common/utils";
@@ -67,7 +67,7 @@ export async function deploy<configInput extends ConfigInput>({
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
 
-  await assertNamespaceOwner({
+  await ensureNamespaceOwner({
     client,
     worldDeploy,
     resourceIds: [...tables.map((table) => table.tableId), ...systems.map((system) => system.systemId)],
