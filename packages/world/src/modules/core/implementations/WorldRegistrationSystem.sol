@@ -247,7 +247,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     });
 
     // If the delegation is limited...
-    if (Delegation.isLimited(delegationControlId) && initCallData.length > 0) {
+    if (Delegation.isLimited(delegationControlId)) {
       // Require the delegationControl contract to implement the IDelegationControl interface
       address delegationControl = Systems._getSystem(delegationControlId);
       requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
@@ -260,6 +260,13 @@ contract WorldRegistrationSystem is System, IWorldErrors {
         value: 0
       });
     }
+  }
+
+  function unregisterDelegation(address delegatee) public {
+    // Delete the delegation control contract address
+    UserDelegationControl.deleteRecord({ delegator: _msgSender(), delegatee: delegatee });
+
+    // TODO: clear the specific delegation control
   }
 
   /**
