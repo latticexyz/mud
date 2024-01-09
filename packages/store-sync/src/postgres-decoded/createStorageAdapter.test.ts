@@ -38,7 +38,7 @@ describe("createStorageAdapter", async () => {
   let storageAdapter: PostgresStorageAdapter;
 
   beforeEach(async () => {
-    storageAdapter = await createStorageAdapter({ database: db, publicClient });
+    storageAdapter = await createStorageAdapter({ readDatabase: db, writeDatabase: db, publicClient });
     return storageAdapter.cleanUp;
   });
 
