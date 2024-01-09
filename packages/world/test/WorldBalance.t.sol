@@ -275,7 +275,7 @@ contract WorldBalanceTest is Test, GasReporter {
   }
 
   function testTransferBalanceToNamespaceRevertResourceNotFound() public {
-    bytes14 toNamespace = "bad_namespace";
+    bytes14 toNamespace = "not_registered";
     ResourceId toNamespaceId = WorldResourceIdLib.encodeNamespace(toNamespace);
 
     uint256 value = 1 ether;
