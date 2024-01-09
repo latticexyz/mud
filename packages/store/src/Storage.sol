@@ -213,9 +213,9 @@ library Storage {
           mstore(
             memoryPointer,
             or(
-              // store the middle part
+              // store the left part
               and(offsetData, mask),
-              // preserve the surrounding parts
+              // preserve the right parts
               and(mload(memoryPointer), not(mask))
             )
           )
