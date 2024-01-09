@@ -53,7 +53,7 @@ contract CoreModule is Module {
    */
   function installRoot(bytes memory) public override {
     _registerCoreTables();
-    _registerCoreSystems();
+    _registerCoreSystem();
     _registerFunctionSelectors();
   }
 
@@ -100,7 +100,7 @@ contract CoreModule is Module {
    * @notice Register the CoreSystem in the World.
    * @dev Uses the CoreSystem's `registerSystem` implementation to register itself on the World.
    */
-  function _registerCoreSystems() internal {
+  function _registerCoreSystem() internal {
     WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
       msgValue: 0,
@@ -114,11 +114,14 @@ contract CoreModule is Module {
    * @dev Iterates through known function signatures and registers them.
    */
   function _registerFunctionSelectors() internal {
-    string[15] memory functionSignatures = [
+    string[17] memory functionSignatures = [
       // --- AccessManagementSystem ---
       "grantAccess(bytes32,address)",
       "revokeAccess(bytes32,address)",
       "transferOwnership(bytes32,address)",
+      // --- BatchCallSystem ---
+      "batchCall((bytes32,bytes)[])",
+      "batchCallFrom((address,bytes32,bytes)[])",
       // --- ModuleInstallationSystem ---
       "installModule(address,bytes)",
       // --- StoreRegistrationSystem ---

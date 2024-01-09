@@ -11,8 +11,6 @@ import { Systems } from "../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../codegen/tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "../../codegen/tables/FunctionSignatures.sol";
 
-import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
-import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
 /**
@@ -77,13 +75,10 @@ contract CoreModule2 is Module {
   function _registerFunctionSelectors() internal {
     (address coreSystem, ) = Systems.get(CORE_SYSTEM_ID);
 
-    string[4] memory functionSignatures = [
+    string[2] memory functionSignatures = [
       // --- BalanceTransferSystem ---
       "transferBalanceToNamespace(bytes32,bytes32,uint256)",
-      "transferBalanceToAddress(bytes32,address,uint256)",
-      // --- BatchCallSystem ---
-      "batchCall((bytes32,bytes)[])",
-      "batchCallFrom((address,bytes32,bytes)[])"
+      "transferBalanceToAddress(bytes32,address,uint256)"
     ];
 
     for (uint256 i = 0; i < functionSignatures.length; i++) {
