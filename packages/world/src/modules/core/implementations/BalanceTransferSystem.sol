@@ -39,7 +39,7 @@ contract BalanceTransferSystem is System, IWorldErrors {
     }
 
     // Require the namespace to exist
-    if (ResourceIds.getExists(toNamespaceId)) revert World_ResourceNotFound(toNamespaceId, toNamespaceId.toString());
+    if (!ResourceIds.getExists(toNamespaceId)) revert World_ResourceNotFound(toNamespaceId, toNamespaceId.toString());
 
     // Require caller to have access to the namespace
     AccessControl.requireAccess(fromNamespaceId, _msgSender());
