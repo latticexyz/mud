@@ -15,7 +15,6 @@ import { UserDelegationControl } from "../../codegen/tables/UserDelegationContro
 import { NamespaceDelegationControl } from "../../codegen/tables/NamespaceDelegationControl.sol";
 
 import { CoreSystem } from "./CoreSystem.sol";
-import { CoreSystem2 } from "./CoreSystem2.sol";
 import { CORE_MODULE_NAME, CORE_SYSTEM_ID } from "./constants.sol";
 
 import { Systems } from "../../codegen/tables/Systems.sol";

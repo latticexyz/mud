@@ -2,49 +2,28 @@
 pragma solidity >=0.8.21;
 
 import { WorldContextProviderLib } from "../../WorldContext.sol";
-import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID, STORE_NAMESPACE_ID, WORLD_NAMESPACE_ID } from "../../constants.sol";
 import { Module } from "../../Module.sol";
 
-import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
-
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
-import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../../WorldResourceId.sol";
-import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
-
-import { NamespaceOwner } from "../../codegen/tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../codegen/tables/ResourceAccess.sol";
-import { InstalledModules } from "../../codegen/tables/InstalledModules.sol";
-import { UserDelegationControl } from "../../codegen/tables/UserDelegationControl.sol";
-import { NamespaceDelegationControl } from "../../codegen/tables/NamespaceDelegationControl.sol";
-
-import { CoreSystem } from "./CoreSystem.sol";
 import { CoreSystem2 } from "./CoreSystem2.sol";
-import { CORE_MODULE_NAME, CORE_MODULE_2_NAME, CORE_SYSTEM_ID, CORE_SYSTEM_2_ID } from "./constants.sol";
+import { CORE_MODULE_2_NAME, CORE_SYSTEM_ID, CORE_SYSTEM_2_ID } from "./constants.sol";
 
 import { Systems } from "../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../codegen/tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "../../codegen/tables/FunctionSignatures.sol";
-import { SystemHooks } from "../../codegen/tables/SystemHooks.sol";
-import { SystemRegistry } from "../../codegen/tables/SystemRegistry.sol";
-import { Balances } from "../../codegen/tables/Balances.sol";
 
-import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
 import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
-import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
-import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
 /**
  * @title Core Module 2
- * @notice Registers internal World tables, the CoreSystem, and its function selectors.
+ * @notice Registers internal World tables, the CoreSystem2, and its function selectors.
  * @dev This module only supports `installRoot` because it installs root tables, systems and function selectors.
  */
 
 contract CoreModule2 is Module {
   /**
-   * @dev Since the CoreSystem only exists once per World and writes to
+   * @dev Since the CoreSystem2 only exists once per World and writes to
    * known tables, we can deploy it once and register it in multiple Worlds.
    */
   address immutable coreSystem2 = address(new CoreSystem2());
@@ -62,7 +41,7 @@ contract CoreModule2 is Module {
    * @dev Registers core tables, systems, and function selectors in the World.
    */
   function installRoot(bytes memory) public override {
-    _registerCoreSystem();
+    _registerCoreSystem2();
     _registerFunctionSelectors();
   }
 
@@ -78,7 +57,7 @@ contract CoreModule2 is Module {
    * @notice Register the CoreSystem2 in the World.
    * @dev Uses the CoreSystem2's `registerSystem` implementation to register itself on the World.
    */
-  function _registerCoreSystem() internal {
+  function _registerCoreSystem2() internal {
     (address coreSystem, ) = Systems.get(CORE_SYSTEM_ID);
     WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
