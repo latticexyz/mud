@@ -274,6 +274,18 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(Balances.get(invalidNamespace), 0);
   }
 
+  function testTransferBalanceToNamespaceRevertResourceNotFound() public {
+    uint256 value = 1 ether;
+
+    bytes14 toNamespace = "bad_namespace";
+    ResourceId toNamespaceId = WorldResourceIdLib.encodeNamespace(toNamespace);
+
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, toNamespaceId, toNamespaceId.toString())
+    );
+    world.transferBalanceToNamespace(ROOT_NAMESPACE_ID, toNamespaceId, value);
+  }
+
   function testTransferBalanceToAddress() public {
     uint256 value = 1 ether;
 
