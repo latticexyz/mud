@@ -42,7 +42,7 @@ let readDatabaseUrl = env.READ_DATABASE_URL;
 let writeDatabaseUrl = env.WRITE_DATABASE_URL;
 
 if (env.DATABASE_URL) {
-  console.log("warning, DATABASE_URL is deprecated");
+  console.warn("DATABASE_URL is deprecated. Please use READ_DATABASE_URL and WRITE_DATABASE_URL");
 
   readDatabaseUrl = env.DATABASE_URL;
   writeDatabaseUrl = env.DATABASE_URL;
