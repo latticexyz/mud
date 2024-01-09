@@ -23,15 +23,17 @@ export type PostgresStorageAdapter = {
 };
 
 export async function createStorageAdapter<TConfig extends StoreConfig = StoreConfig>({
-  database,
+  readDatabase,
+  writeDatabase,
   publicClient,
   config,
 }: {
-  database: PgDatabase<QueryResultHKT>;
+  readDatabase: PgDatabase<QueryResultHKT>;
+  writeDatabase: PgDatabase<QueryResultHKT>;
   publicClient: PublicClient;
   config?: TConfig;
 }): Promise<PostgresStorageAdapter> {
-  const bytesStorageAdapter = await createBytesStorageAdapter({ database, publicClient, config });
+  const bytesStorageAdapter = await createBytesStorageAdapter({ database: readDatabase, publicClient, config });
   const cleanUp: (() => Promise<void>)[] = [];
 
   async function postgresStorageAdapter({ blockNumber, logs }: StorageAdapterBlock): Promise<void> {
@@ -39,11 +41,11 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
 
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
     const newSqlTables = newTables.map(buildTable);
-    cleanUp.push(await setupTables(database, newSqlTables));
+    cleanUp.push(await setupTables(readDatabase, newSqlTables));
 
     // TODO: cache these inside `getTables`?
     const tables = await getTables(
-      database,
+      readDatabase,
       logs.map((log) => ({ address: log.address, tableId: log.args.tableId }))
     );
 
@@ -53,7 +55,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
     // This may need to change if we decide to put multiple worlds into one DB (e.g. a namespace per world, but all under one DB).
     // If so, we'll probably want to wrap the entire block worth of operations in a transaction.
 
-    await database.transaction(async (tx) => {
+    await writeDatabase.transaction(async (tx) => {
       for (const log of logs) {
         const table = tables.find(
           (table) => getAddress(table.address) === getAddress(log.address) && table.tableId === log.args.tableId
@@ -73,7 +75,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           log.eventName === "Store_SpliceStaticData" ||
           log.eventName === "Store_SpliceDynamicData"
         ) {
-          const record = await database
+          const record = await readDatabase
             .select()
             .from(internalTables.recordsTable)
             .where(

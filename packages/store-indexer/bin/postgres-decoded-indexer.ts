@@ -15,7 +15,8 @@ const env = parseEnv(
   z.intersection(
     indexerEnvSchema,
     z.object({
-      DATABASE_URL: z.string(),
+      READ_DATABASE_URL: z.string(),
+      WRITE_DATABASE_URL: z.string(),
       HEALTHCHECK_HOST: z.string().optional(),
       HEALTHCHECK_PORT: z.coerce.number().optional(),
     })
@@ -35,16 +36,21 @@ const publicClient = createPublicClient({
 });
 
 const chainId = await publicClient.getChainId();
-const database = drizzle(postgres(env.DATABASE_URL, { prepare: false }));
+const readDatabase = drizzle(postgres(env.READ_DATABASE_URL, { prepare: false }));
+const writeDatabase = drizzle(postgres(env.WRITE_DATABASE_URL, { prepare: false }));
 
-const { storageAdapter, tables } = await createStorageAdapter({ database, publicClient });
+const { storageAdapter, tables } = await createStorageAdapter({
+  readDatabase: readDatabase,
+  writeDatabase: writeDatabase,
+  publicClient,
+});
 
 let startBlock = env.START_BLOCK;
 
 // Resume from latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
 // TODO: query if the DB exists instead of try/catch
 try {
-  const chainState = await database
+  const chainState = await readDatabase
     .select()
     .from(tables.configTable)
     .where(eq(tables.configTable.chainId, chainId))
