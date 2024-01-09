@@ -19,6 +19,8 @@ export async function assertNamespaceOwner({
     new Set(existingResourceIds.map((resourceId) => hexToResource(resourceId).namespace))
   );
 
+  // TODO: change to `ensureNamespaceOwner` and register the namespaces that don't exist yet
+
   const namespaces = desiredNamespaces.filter((namespace) => existingNamespaces.includes(namespace));
   const namespaceOwners = await Promise.all(
     namespaces.map(async (namespace) => {
