@@ -1,5 +1,5 @@
 ---
-"@latticexyz/world": patch
+"@latticexyz/world": major
 ---
 
 - Added `CoreSystem2` and moved `BalanceTransferSystem` from `CoreSystem` to `CoreSystem2`
