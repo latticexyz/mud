@@ -121,7 +121,7 @@ library Storage {
   /**
    * @notice Set multiple storage locations to zero.
    * @param storagePointer The starting storage location.
-   * @param length The number of storage locations to set to zero.
+   * @param length The number of storage locations to set to zero, in bytes
    */
   function zero(uint256 storagePointer, uint256 length) internal {
     // Ceil division to round up to the nearest word
