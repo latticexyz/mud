@@ -4,19 +4,6 @@ import { stripUrlQueryAndFragment } from "@sentry/utils";
 import { debug } from "./debug";
 import Koa from "koa";
 
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  integrations: [
-    // Automatically instrument Node.js libraries and frameworks
-    ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations(),
-    new ProfilingIntegration(),
-  ],
-  // Performance Monitoring
-  tracesSampleRate: 1.0,
-  // Set sampling rate for profiling - this is relative to tracesSampleRate
-  profilesSampleRate: 1.0,
-});
-
 const requestHandler: Koa.Middleware = (ctx, next) => {
   return new Promise<void>((resolve, reject) => {
     Sentry.runWithAsyncContext(async () => {
@@ -96,7 +83,22 @@ const errorHandler: Koa.Middleware = async (ctx, next) => {
   }
 };
 
-export const registerSentryMiddlewares = (server: Koa): void => {
+export const registerSentryMiddlewares = (server: Koa, dsn: string): void => {
+  debug("Setting up Sentry");
+
+  Sentry.init({
+    dsn,
+    integrations: [
+      // Automatically instrument Node.js libraries and frameworks
+      ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations(),
+      new ProfilingIntegration(),
+    ],
+    // Performance Monitoring
+    tracesSampleRate: 1.0,
+    // Set sampling rate for profiling - this is relative to tracesSampleRate
+    profilesSampleRate: 1.0,
+  });
+
   debug("Registering Sentry middlewares");
 
   server.use(errorHandler);

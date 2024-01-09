@@ -4,7 +4,7 @@ import accepts from "accepts";
 import { Zlib, createBrotliCompress, createDeflate, createGzip } from "node:zlib";
 import { includes } from "@latticexyz/common/utils";
 
-// Loosely based on https://github.com/holic/koa-compress/blob/master/lib/index.js
+// Loosely based on https://github.com/koajs/compress/blob/41d501bd5db02d810572cfe154088c5fa6fcb957/lib/index.js
 // with better handling of streams better with occasional flushing
 
 const encodings = {

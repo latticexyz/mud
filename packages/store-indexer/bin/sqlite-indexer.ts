@@ -97,7 +97,7 @@ server.use(cors());
 server.use(apiRoutes(database));
 
 if (env.SENTRY_DSN) {
-  registerSentryMiddlewares(server);
+  registerSentryMiddlewares(server, env.SENTRY_DSN);
 }
 
 const router = new Router();

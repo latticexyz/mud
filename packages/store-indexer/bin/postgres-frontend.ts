@@ -27,7 +27,7 @@ const database = postgres(env.DATABASE_URL, { prepare: false });
 const server = new Koa();
 
 if (process.env.SENTRY_DSN) {
-  registerSentryMiddlewares(server);
+  registerSentryMiddlewares(server, process.env.SENTRY_DSN);
 }
 
 server.use(cors());
