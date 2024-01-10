@@ -4,7 +4,7 @@ services:
     region: ohio
     runtime: node
     rootDir: packages/store-indexer
-    buildCommand: pnpm install && pnpm turbo run build
+    buildCommand: pnpm foundryup && pnpm install && pnpm turbo run build
     startCommand: pnpm start:postgres-decoded
     envVars:
       - key: DATABASE_URL
