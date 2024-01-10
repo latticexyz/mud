@@ -1,9 +1,12 @@
-import { Hex } from "viem";
 import { isNotNull } from "@latticexyz/common/utils";
 import { PendingQuery, Row, Sql } from "postgres";
 import { hexToBytes } from "viem";
 import { z } from "zod";
-import { input } from "@latticexyz/store-sync/trpc-indexer";
+import { input } from "@latticexyz/store-sync/indexer-client";
+import { transformSchemaName } from "@latticexyz/store-sync/postgres";
+import { Record } from "./common";
+
+const schemaName = transformSchemaName("mud");
 
 function and(sql: Sql, conditions: PendingQuery<Row[]>[]): PendingQuery<Row[]> {
   return sql`(${conditions.reduce((query, condition) => sql`${query} AND ${condition}`)})`;
@@ -12,20 +15,6 @@ function and(sql: Sql, conditions: PendingQuery<Row[]>[]): PendingQuery<Row[]> {
 function or(sql: Sql, conditions: PendingQuery<Row[]>[]): PendingQuery<Row[]> {
   return sql`(${conditions.reduce((query, condition) => sql`${query} OR ${condition}`)})`;
 }
-
-type Record = {
-  indexerVersion: string;
-  chainId: string;
-  chainBlockNumber: string;
-  totalRows: number;
-  address: Hex;
-  tableId: Hex;
-  keyBytes: Hex;
-  staticData: Hex | null;
-  encodedLengths: Hex | null;
-  dynamicData: Hex | null;
-  lastUpdatedBlockNumber: string;
-};
 
 export function queryLogs(sql: Sql, opts: z.infer<typeof input>): PendingQuery<Record[]> {
   const conditions = opts.filters.length
@@ -50,15 +39,14 @@ export function queryLogs(sql: Sql, opts: z.infer<typeof input>): PendingQuery<R
   )}`;
 
   // TODO: implement bytea <> hex columns via custom types: https://github.com/porsager/postgres#custom-types
-  // TODO: sort by logIndex (https://github.com/latticexyz/mud/issues/1979)
   return sql<Record[]>`
     WITH
       config AS (
         SELECT
           version AS "indexerVersion",
           chain_id AS "chainId",
-          last_updated_block_number AS "chainBlockNumber"
-        FROM mud.config
+          block_number AS "chainBlockNumber"
+        FROM ${sql(`${schemaName}.config`)}
         LIMIT 1
       ),
       records AS (
@@ -69,12 +57,12 @@ export function queryLogs(sql: Sql, opts: z.infer<typeof input>): PendingQuery<R
           '0x' || encode(static_data, 'hex') AS "staticData",
           '0x' || encode(encoded_lengths, 'hex') AS "encodedLengths",
           '0x' || encode(dynamic_data, 'hex') AS "dynamicData",
-          last_updated_block_number AS "recordBlockNumber"
-        FROM mud.records
+          block_number AS "recordBlockNumber",
+          log_index AS "logIndex"
+        FROM ${sql(`${schemaName}.records`)}
         ${where}
-        ORDER BY last_updated_block_number ASC
+        ORDER BY block_number, log_index ASC
       )
-
     SELECT
       (SELECT COUNT(*) FROM records) AS "totalRows",
       *

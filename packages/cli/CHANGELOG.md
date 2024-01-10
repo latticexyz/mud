@@ -1,5 +1,45 @@
 # Change Log
 
+## 2.0.0-next.15
+
+### Minor Changes
+
+- 59d78c93: Added a `mud build` command that generates table libraries, system interfaces, and typed ABIs.
+
+### Patch Changes
+
+- 854de076: Using `mud set-version --link` will no longer attempt to fetch the latest version from npm.
+- 2699630c: Deploys will now always rebuild `IWorld.sol` interface (a workaround for https://github.com/foundry-rs/foundry/issues/6241)
+- 5d737cf2: Updated the `debug` util to pipe to `stdout` and added an additional util to explicitly pipe to `stderr` when needed.
+- Updated dependencies [d8c8f66b]
+- Updated dependencies [1b86eac0]
+- Updated dependencies [1077c7f5]
+- Updated dependencies [933b54b5]
+- Updated dependencies [f8dab733]
+- Updated dependencies [1a0fa797]
+- Updated dependencies [eb384bb0]
+- Updated dependencies [e5a962bc]
+- Updated dependencies [59054203]
+- Updated dependencies [1b5eb0d0]
+- Updated dependencies [6db95ce1]
+- Updated dependencies [5d737cf2]
+- Updated dependencies [5ac4c97f]
+- Updated dependencies [e4817174]
+- Updated dependencies [747d8d1b]
+- Updated dependencies [4c1dcd81]
+- Updated dependencies [5df1f31b]
+  - @latticexyz/store@2.0.0-next.15
+  - @latticexyz/world@2.0.0-next.15
+  - @latticexyz/common@2.0.0-next.15
+  - @latticexyz/world-modules@2.0.0-next.15
+  - @latticexyz/abi-ts@2.0.0-next.15
+  - @latticexyz/config@2.0.0-next.15
+  - @latticexyz/gas-report@2.0.0-next.15
+  - @latticexyz/protocol-parser@2.0.0-next.15
+  - @latticexyz/schema-type@2.0.0-next.15
+  - @latticexyz/services@2.0.0-next.15
+  - @latticexyz/utils@2.0.0-next.15
+
 ## 2.0.0-next.14
 
 ### Minor Changes

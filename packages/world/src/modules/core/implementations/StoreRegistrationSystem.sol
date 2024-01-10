@@ -9,18 +9,12 @@ import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.so
 
 import { System } from "../../../System.sol";
 import { ResourceId, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
+import { ROOT_NAME } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
-import { WorldContextProviderLib } from "../../../WorldContext.sol";
 
-import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
-import { SystemHooks } from "../../../codegen/tables/SystemHooks.sol";
-import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
 import { Systems } from "../../../codegen/tables/Systems.sol";
-import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
 
 import { IWorldErrors } from "../../../IWorldErrors.sol";
 
@@ -62,7 +56,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     if (!ResourceIds._getExists(namespaceId)) {
       // Since this is a root system, we're in the context of the World contract already,
       // so we can use delegatecall to register the namespace
-      (address coreSystemAddress, ) = Systems._get(CORE_SYSTEM_ID);
+      address coreSystemAddress = Systems._getSystem(CORE_SYSTEM_ID);
       (bool success, bytes memory data) = coreSystemAddress.delegatecall(
         abi.encodeCall(WorldRegistrationSystem.registerNamespace, (namespaceId))
       );

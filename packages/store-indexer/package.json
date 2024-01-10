@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-indexer",
-  "version": "2.0.0-next.14",
+  "version": "2.0.0-next.15",
   "description": "Minimal Typescript indexer for Store",
   "repository": {
     "type": "git",
@@ -14,6 +14,7 @@
   },
   "types": "src/index.ts",
   "bin": {
+    "postgres-decoded-indexer": "./dist/bin/postgres-decoded-indexer.js",
     "postgres-frontend": "./dist/bin/postgres-frontend.js",
     "postgres-indexer": "./dist/bin/postgres-indexer.js",
     "sqlite-indexer": "./dist/bin/sqlite-indexer.js"
@@ -26,6 +27,9 @@
     "dev": "tsup --watch",
     "lint": "eslint .",
     "start:postgres": "concurrently -n indexer,frontend -c cyan,magenta 'tsx bin/postgres-indexer' 'tsx bin/postgres-frontend'",
+    "start:postgres-decoded": "tsx bin/postgres-decoded-indexer",
+    "start:postgres-decoded:local": "DATABASE_URL=postgres://127.0.0.1/postgres RPC_HTTP_URL=http://127.0.0.1:8545 pnpm start:postgres-decoded",
+    "start:postgres-decoded:testnet": "DATABASE_URL=postgres://127.0.0.1/postgres RPC_HTTP_URL=https://rpc.holesky.redstone.xyz pnpm start:postgres-decoded",
     "start:postgres:local": "DATABASE_URL=postgres://127.0.0.1/postgres RPC_HTTP_URL=http://127.0.0.1:8545 pnpm start:postgres",
     "start:postgres:testnet": "DATABASE_URL=postgres://127.0.0.1/postgres RPC_HTTP_URL=https://rpc.holesky.redstone.xyz pnpm start:postgres",
     "start:sqlite": "tsx bin/sqlite-indexer",
@@ -42,6 +46,9 @@
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/store-sync": "workspace:*",
+    "@sentry/node": "^7.86.0",
+    "@sentry/profiling-node": "^1.2.6",
+    "@sentry/utils": "^7.86.0",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
     "accepts": "^1.3.8",
@@ -51,7 +58,7 @@
     "drizzle-orm": "^0.28.5",
     "koa": "^2.14.2",
     "koa-compose": "^4.1.0",
-    "postgres": "^3.3.5",
+    "postgres": "3.3.5",
     "rxjs": "7.5.5",
     "superjson": "^1.12.4",
     "trpc-koa-adapter": "^1.1.3",

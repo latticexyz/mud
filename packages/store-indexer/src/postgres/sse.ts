@@ -2,13 +2,13 @@ import { Sql } from "postgres";
 import { Middleware } from "koa";
 import Router from "@koa/router";
 import compose from "koa-compose";
-import { input } from "@latticexyz/store-sync/trpc-indexer";
 import { compress } from "../compress";
 import { eventStream } from "../eventStream";
 import { storeTables } from "@latticexyz/store-sync";
 import { queryLogs } from "./queryLogs";
 import { decodeDynamicField } from "@latticexyz/protocol-parser";
 import { Events } from "@latticexyz/store-sync/sse";
+import { input } from "@latticexyz/store-sync/indexer-client";
 
 export function sse(database: Sql): Middleware {
   const router = new Router();

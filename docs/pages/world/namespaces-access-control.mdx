@@ -1,3 +1,5 @@
+import { CollapseCode } from "../../components/CollapseCode";
+
 # Namespaces and Access Control
 
 Access control in a `World` is based on namespaces.
@@ -72,3 +74,48 @@ Additionally, owners can also:
 
 Owners can modify which contract a `World` uses for each `System`.
 Note: once ownership of a namespace is burned (i.e. transferred to `address(0)`), no new access can be granted or revoked, ownership can't be transferred again, and `System`s can't be added, removed, or upgraded (unless the `System` is itself a [proxy](https://blog.openzeppelin.com/proxy-patterns)).
+
+## Modifying access control
+
+By default access to a namespace is granted to:
+
+- The namespace owner
+- The `System`s of that namespace
+
+Namespace access provides access to all the resources within the namespace, so there is no need, by default, for access to the resources within the namespace.
+
+If that is insufficient, [`AccessManagementSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/AccessManagementSystem.sol) lets you [`grantAccess`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/AccessManagementSystem.sol#L17-L29), [`revokeAccess`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/AccessManagementSystem.sol#L31-L43), and [`transferOwnership`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/AccessManagementSystem.sol#L45-L63) of a namespace.
+
+For example, here is a script that grants access to the `Counter` table to one address and revokes it for another.
+
+<CollapseCode>
+
+```solidity filename="Permissions.s.sol" copy {21-22}
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { CounterTableId } from "../src/codegen/index.sol";
+
+contract Permissions is Script {
+  function run() external {
+    address worldAddress = 0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342;
+
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 namespaceOwnerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    // Start broadcasting transactions from the account owning the namespace
+    vm.startBroadcast(namespaceOwnerPrivateKey);
+
+    IWorld(worldAddress).grantAccess(CounterTableId, address(0));
+    IWorld(worldAddress).revokeAccess(CounterTableId, address(1));
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>

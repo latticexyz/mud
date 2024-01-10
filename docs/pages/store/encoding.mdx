@@ -325,17 +325,17 @@ It is used as an onchain gas optimization for storage operations on static lengt
 Example: `FieldLayout` with 3 fields (`uint64`, `uint40`, `address[]`).
 
 ```
-0x 0010 02 01 08080000000000000000000000000000000000000000000000000000
+0x 000D 02 01 08050000000000000000000000000000000000000000000000000000
   |----|--|--|--------------------------------------------------------|
   |    |  |  | Up to 28 static byte lengths, one byte each            |
-  |    |  |  | 8 (uint64), 5 (uint40), 0 (address[])                  |
+  |    |  |  | 8 (uint64), 5 (uint40)                  |
   |----|--|--|--------------------------------------------------------|
   |    |  | Number of dynamic length fields                           |
   |    |  | 1                                                         |
-  |----|--|--|--------------------------------------------------------|
+  |----|--|-----------------------------------------------------------|
   |    | Number of static length fields                               |
   |    | 2                                                            |
-  |----|--|--|--------------------------------------------------------|
+  |----|--------------------------------------------------------------|
   | Total byte length of all static length fields                     |
   | 13                                                                |
 ```
@@ -370,7 +370,7 @@ function _getDynamicDataLocation(
   bytes32[] memory keyTuple,
   uint8 dynamicFieldIndex
 ) internal pure returns (uint256) {
-  return uint256(DYNMAIC_DATA_SLOT ^ bytes1(dynamicFieldIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
+  return uint256(DYNAMIC_DATA_SLOT ^ bytes1(dynamicFieldIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
 }
 ```
 

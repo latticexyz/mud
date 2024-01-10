@@ -17,12 +17,15 @@ import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
 import { healthcheck } from "../src/healthcheck";
 import { helloWorld } from "../src/helloWorld";
+import { apiRoutes } from "../src/sqlite/apiRoutes";
+import { registerSentryMiddlewares } from "../src/sentry";
 
 const env = parseEnv(
   z.intersection(
     z.intersection(indexerEnvSchema, frontendEnvSchema),
     z.object({
       SQLITE_FILENAME: z.string().default("indexer.db"),
+      SENTRY_DSN: z.string().optional(),
     })
   )
 );
@@ -91,6 +94,11 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
   });
 
 const server = new Koa();
+
+if (env.SENTRY_DSN) {
+  registerSentryMiddlewares(server);
+}
+
 server.use(cors());
 server.use(
   healthcheck({
@@ -98,6 +106,7 @@ server.use(
   })
 );
 server.use(helloWorld());
+server.use(apiRoutes(database));
 
 server.use(
   createKoaMiddleware({

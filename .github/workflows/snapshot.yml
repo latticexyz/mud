@@ -53,3 +53,9 @@ jobs:
   docker:
     uses: ./.github/workflows/docker.yml
     needs: release-snapshot
+
+  test-snapshot:
+    uses: ./.github/workflows/test-published-packages.yml
+    needs: release-snapshot
+    with:
+      tag-or-version: ${{ github.ref_name }}

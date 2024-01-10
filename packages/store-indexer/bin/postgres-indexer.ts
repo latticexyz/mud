@@ -35,11 +35,11 @@ const publicClient = createPublicClient({
 });
 
 const chainId = await publicClient.getChainId();
-const database = drizzle(postgres(env.DATABASE_URL));
+const database = drizzle(postgres(env.DATABASE_URL, { prepare: false }));
 
 if (await shouldCleanDatabase(database, chainId)) {
   console.log("outdated database detected, clearing data to start fresh");
-  cleanDatabase(database);
+  await cleanDatabase(database);
 }
 
 const { storageAdapter, tables } = await createStorageAdapter({ database, publicClient });
@@ -59,8 +59,8 @@ try {
     // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
     .then((rows) => rows.find(() => true));
 
-  if (chainState?.lastUpdatedBlockNumber != null) {
-    startBlock = chainState.lastUpdatedBlockNumber + 1n;
+  if (chainState?.blockNumber != null) {
+    startBlock = chainState.blockNumber + 1n;
     console.log("resuming from block number", startBlock);
   }
 } catch (error) {
