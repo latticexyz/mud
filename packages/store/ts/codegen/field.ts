@@ -253,10 +253,9 @@ function renderCastStaticBytesToType(field: RenderType, staticBytes: string) {
 
 /** bytes/string are dynamic, but aren't really arrays */
 function fieldPortionData(field: RenderField) {
-  const methodNameSuffix = "";
   if (field.arrayElement) {
     const name = "_element";
-    const elementFieldData = { ...field.arrayElement, arrayElement: undefined, name, methodNameSuffix };
+    const elementFieldData = { ...field.arrayElement, arrayElement: undefined, name };
     return {
       typeWithLocation: field.arrayElement.typeWithLocation,
       name: "_element",
@@ -267,7 +266,7 @@ function fieldPortionData(field: RenderField) {
     };
   } else {
     const name = "_slice";
-    const elementFieldData = { ...field, name, methodNameSuffix };
+    const elementFieldData = { ...field, name };
     return {
       typeWithLocation: `${field.typeId} memory`,
       name,
