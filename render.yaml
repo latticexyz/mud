@@ -12,6 +12,12 @@ services:
           property: connectionString
       - key: RPC_HTTP_URL
         value: https://rpc.holesky.redstone.xyz
+      - key: DEBUG
+        value: mud:store-sync:createStoreSync
+      - key: STORE_ADDRESS
+        value: "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377"
+      - key: START_BLOCK
+        value: 895629
 
 databases:
   - name: skystrife-indexer-db
