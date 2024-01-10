@@ -5,7 +5,6 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile
     dockerContext: ./
-    dockerCommand: cd /app/packages/store-indexer && pnpm start:postgres-decoded
     envVars:
       - key: DATABASE_URL
         fromDatabase:
