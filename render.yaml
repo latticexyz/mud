@@ -3,9 +3,8 @@ services:
     name: skystrife-indexer
     region: ohio
     runtime: node
-    rootDir: packages/store-indexer
-    buildCommand: pnpm foundryup && pnpm install && pnpm turbo run build
-    startCommand: pnpm start:postgres-decoded
+    buildCommand: pnpm foundryup && pnpm install && pnpm build
+    startCommand: cd packages/store-indexer && pnpm start:postgres-decoded
     envVars:
       - key: DATABASE_URL
         fromDatabase:
