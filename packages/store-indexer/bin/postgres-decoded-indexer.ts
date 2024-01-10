@@ -38,19 +38,13 @@ const publicClient = createPublicClient({
 
 const chainId = await publicClient.getChainId();
 
-let readDatabaseUrl = env.READ_DATABASE_URL;
-let writeDatabaseUrl = env.WRITE_DATABASE_URL;
+const readDatabaseUrl = env.READ_DATABASE_URL ?? env.DATABASE_URL;
+const writeDatabaseUrl = env.WRITE_DATABASE_URL ?? env.DATABASE_URL;
 
-if (env.DATABASE_URL) {
-  console.warn("DATABASE_URL is deprecated. Please use READ_DATABASE_URL and WRITE_DATABASE_URL");
-
-  readDatabaseUrl = env.DATABASE_URL;
-  writeDatabaseUrl = env.DATABASE_URL;
-} else if (env.READ_DATABASE_URL && env.WRITE_DATABASE_URL) {
-  readDatabaseUrl = env.READ_DATABASE_URL;
-  writeDatabaseUrl = env.WRITE_DATABASE_URL;
-} else {
-  throw new Error("no database URL defined");
+if (!readDatabaseUrl || !writeDatabaseUrl) {
+  throw new Error(
+    "No database URL defined. Please provide either `DATABASE_URL` or `READ_DATABASE_URL` and `WRITE_DATABASE_URL` environment variables."
+  );
 }
 
 const readDatabase = drizzle(postgres(readDatabaseUrl, { prepare: false }));
