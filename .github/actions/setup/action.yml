@@ -15,7 +15,7 @@ runs:
 
     - name: Install node dependencies
       shell: bash
-      run: pnpm run install:ci
+      run: pnpm run install:ci:frozen
 
     # Workaround for parallel building with forge:
     # https://github.com/foundry-rs/foundry/issues/4736
