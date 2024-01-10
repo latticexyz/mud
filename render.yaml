@@ -2,9 +2,10 @@ services:
   - type: web
     name: skystrife-indexer
     region: ohio
-    runtime: node
-    buildCommand: pnpm foundryup && pnpm install && pnpm build
-    startCommand: cd packages/store-indexer && pnpm start:postgres-decoded
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    dockerCommand: cd /app/packages/store-indexer && pnpm start:postgres-decoded
     envVars:
       - key: DATABASE_URL
         fromDatabase:
