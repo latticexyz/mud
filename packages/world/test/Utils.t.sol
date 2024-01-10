@@ -10,8 +10,7 @@ import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { CoreModule2 } from "../src/modules/core/CoreModule2.sol";
+import { createCoreModule } from "./createCoreModule.sol";
 
 contract UtilsTestSystem is System {
   function systemNamespace() public view returns (bytes16) {
@@ -27,7 +26,7 @@ contract UtilsTest is Test {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule(), new CoreModule2());
+    world.initialize(createCoreModule());
   }
 
   function _registerAndGetNamespace(bytes14 namespace) internal returns (bytes16 returnedNamespace) {

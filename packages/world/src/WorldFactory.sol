@@ -16,21 +16,17 @@ import { ROOT_NAMESPACE_ID } from "./constants.sol";
 contract WorldFactory is IWorldFactory {
   /// @notice Address of the core module to be set in the World instances.
   IModule public coreModule;
-  /// @notice Address of the second core module to be set in the World instances.
-  IModule public coreModule2;
 
   /// @notice Counter to keep track of the number of World instances deployed.
   uint256 public worldCount;
 
   /// @param _coreModule The address of the core module.
-  /// @param _coreModule2 The address of the second core module.
-  constructor(IModule _coreModule, IModule _coreModule2) {
+  constructor(IModule _coreModule) {
     coreModule = _coreModule;
-    coreModule2 = _coreModule2;
   }
 
   /**
-   * @notice Deploys a new World instance, installs the CoreModule and CoreModule2 and transfers ownership to the caller.
+   * @notice Deploys a new World instance, installs the CoreModule and transfers ownership to the caller.
    * @dev Uses the Create2 for deterministic deployment.
    * @return worldAddress The address of the newly deployed World contract.
    */
@@ -41,7 +37,7 @@ contract WorldFactory is IWorldFactory {
     IBaseWorld world = IBaseWorld(worldAddress);
 
     // Initialize the World and transfer ownership to the caller
-    world.initialize(coreModule, coreModule2);
+    world.initialize(coreModule);
     world.transferOwnership(ROOT_NAMESPACE_ID, msg.sender);
 
     emit WorldDeployed(worldAddress);

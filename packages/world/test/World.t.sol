@@ -35,11 +35,13 @@ import { Module, MODULE_INTERFACE_ID } from "../src/Module.sol";
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
 
+import { AccessManagementSystem } from "../src/modules/core/implementations/AccessManagementSystem.sol";
+import { BalanceTransferSystem } from "../src/modules/core/implementations/BalanceTransferSystem.sol";
+import { BatchCallSystem } from "../src/modules/core/implementations/BatchCallSystem.sol";
+
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { CoreModule2 } from "../src/modules/core/CoreModule2.sol";
-import { CoreSystem } from "../src/modules/core/CoreSystem.sol";
-import { CoreSystem2 } from "../src/modules/core/CoreSystem2.sol";
-import { CORE_SYSTEM_ID, CORE_SYSTEM_2_ID } from "../src/modules/core/constants.sol";
+import { CoreRegistrationSystem } from "../src/modules/core/CoreRegistrationSystem.sol";
+import { CORE_REGISTRATION_SYSTEM_ID } from "../src/modules/core/constants.sol";
 import { Systems } from "../src/codegen/tables/Systems.sol";
 import { SystemRegistry } from "../src/codegen/tables/SystemRegistry.sol";
 import { FunctionSelectors } from "../src/codegen/tables/FunctionSelectors.sol";
@@ -52,6 +54,7 @@ import { Bool } from "./codegen/tables/Bool.sol";
 import { TwoFields, TwoFieldsData } from "./codegen/tables/TwoFields.sol";
 import { AddressArray } from "./codegen/tables/AddressArray.sol";
 import { DelegationControlMock } from "./DelegationControlMock.sol";
+import { createCoreModule } from "./createCoreModule.sol";
 
 interface IWorldTestSystem {
   function testNamespace_testSystem_err(string memory input) external pure;
@@ -172,7 +175,7 @@ contract WorldTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule(), new CoreModule2());
+    world.initialize(createCoreModule());
     StoreSwitch.setStoreAddress(address(world));
 
     key = "testKey";
@@ -194,8 +197,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testConstructorAndInitialize() public {
-    CoreModule coreModule = new CoreModule();
-    CoreModule2 coreModule2 = new CoreModule2();
+    CoreModule coreModule = createCoreModule();
 
     vm.expectEmit(true, true, true, true);
     emit HelloWorld(WORLD_VERSION);
@@ -214,40 +216,41 @@ contract WorldTest is Test, GasReporter {
         address(0x4242)
       )
     );
-    newWorld.initialize(coreModule, coreModule2);
+    newWorld.initialize(coreModule);
 
     // Expect the creator to be able to initialize the World
-    newWorld.initialize(coreModule, coreModule2);
+    newWorld.initialize(coreModule);
 
     // Should have registered the core system function selectors
-    CoreSystem coreSystem = CoreSystem(Systems.getSystem(CORE_SYSTEM_ID));
-    CoreSystem2 coreSystem2 = CoreSystem2(Systems.getSystem(CORE_SYSTEM_2_ID));
+    CoreRegistrationSystem coreRegistrationSystem = CoreRegistrationSystem(
+      Systems.getSystem(CORE_REGISTRATION_SYSTEM_ID)
+    );
     bytes4[19] memory coreFunctionSignatures = [
       // --- AccessManagementSystem ---
-      coreSystem.grantAccess.selector,
-      coreSystem.revokeAccess.selector,
-      coreSystem.transferOwnership.selector,
+      AccessManagementSystem.grantAccess.selector,
+      AccessManagementSystem.revokeAccess.selector,
+      AccessManagementSystem.transferOwnership.selector,
       // --- BalanceTransferSystem ---
-      coreSystem2.transferBalanceToNamespace.selector,
-      coreSystem2.transferBalanceToAddress.selector,
+      BalanceTransferSystem.transferBalanceToNamespace.selector,
+      BalanceTransferSystem.transferBalanceToAddress.selector,
       // --- BatchCallSystem ---
-      coreSystem.batchCall.selector,
-      coreSystem.batchCallFrom.selector,
+      BatchCallSystem.batchCall.selector,
+      BatchCallSystem.batchCallFrom.selector,
       // --- ModuleInstallationSystem ---
-      coreSystem.installModule.selector,
+      coreRegistrationSystem.installModule.selector,
       // --- StoreRegistrationSystem ---
-      coreSystem.registerTable.selector,
-      coreSystem.registerStoreHook.selector,
-      coreSystem.unregisterStoreHook.selector,
+      coreRegistrationSystem.registerTable.selector,
+      coreRegistrationSystem.registerStoreHook.selector,
+      coreRegistrationSystem.unregisterStoreHook.selector,
       // --- WorldRegistrationSystem ---
-      coreSystem.registerNamespace.selector,
-      coreSystem.registerSystemHook.selector,
-      coreSystem.unregisterSystemHook.selector,
-      coreSystem.registerSystem.selector,
-      coreSystem.registerFunctionSelector.selector,
-      coreSystem.registerRootFunctionSelector.selector,
-      coreSystem.registerDelegation.selector,
-      coreSystem.registerNamespaceDelegation.selector
+      coreRegistrationSystem.registerNamespace.selector,
+      coreRegistrationSystem.registerSystemHook.selector,
+      coreRegistrationSystem.unregisterSystemHook.selector,
+      coreRegistrationSystem.registerSystem.selector,
+      coreRegistrationSystem.registerFunctionSelector.selector,
+      coreRegistrationSystem.registerRootFunctionSelector.selector,
+      coreRegistrationSystem.registerDelegation.selector,
+      coreRegistrationSystem.registerNamespaceDelegation.selector
     ];
 
     for (uint256 i; i < coreFunctionSignatures.length; i++) {
@@ -269,7 +272,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect it to not be possible to initialize the World again
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AlreadyInitialized.selector));
-    newWorld.initialize(coreModule, coreModule2);
+    newWorld.initialize(coreModule);
   }
 
   function testRegisterModuleRevertInterfaceNotSupported() public {

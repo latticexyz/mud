@@ -11,20 +11,35 @@ import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
  * @dev Represented as a bytes16 constant.
  */
 bytes16 constant CORE_MODULE_NAME = bytes16("core");
-bytes16 constant CORE_MODULE_2_NAME = bytes16("core2");
 
 /**
- * @dev Resource ID for core system 1.
+ * @dev Resource ID for access management system.
  * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and a suffixed CORE_MODULE_NAME.
  */
-ResourceId constant CORE_SYSTEM_ID = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("core1")))
+ResourceId constant ACCESS_MANAGEMENT_SYSTEM_ID = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("AccessManagement")))
 );
 
 /**
- * @dev Resource ID for core system 2.
+ * @dev Resource ID for balance transfer system.
  * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and a suffixed CORE_MODULE_NAME.
  */
-ResourceId constant CORE_SYSTEM_2_ID = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("core2")))
+ResourceId constant BALANCE_TRANSFER_SYSTEM_ID = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("BalanceTransfer")))
+);
+
+/**
+ * @dev Resource ID for batch call system.
+ * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and a suffixed CORE_MODULE_NAME.
+ */
+ResourceId constant BATCH_CALL_SYSTEM_ID = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("BatchCall")))
+);
+
+/**
+ * @dev Resource ID for core registration system.
+ * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and a suffixed CORE_MODULE_NAME.
+ */
+ResourceId constant CORE_REGISTRATION_SYSTEM_ID = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("CoreRegistration")))
 );

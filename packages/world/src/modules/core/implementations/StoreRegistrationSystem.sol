@@ -18,7 +18,7 @@ import { Systems } from "../../../codegen/tables/Systems.sol";
 
 import { IWorldErrors } from "../../../IWorldErrors.sol";
 
-import { CORE_SYSTEM_ID } from "../constants.sol";
+import { CORE_REGISTRATION_SYSTEM_ID } from "../constants.sol";
 
 import { WorldRegistrationSystem } from "./WorldRegistrationSystem.sol";
 
@@ -56,8 +56,8 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     if (!ResourceIds._getExists(namespaceId)) {
       // Since this is a root system, we're in the context of the World contract already,
       // so we can use delegatecall to register the namespace
-      address coreSystemAddress = Systems._getSystem(CORE_SYSTEM_ID);
-      (bool success, bytes memory data) = coreSystemAddress.delegatecall(
+      address coreRegistrationSystemAddress = Systems._getSystem(CORE_REGISTRATION_SYSTEM_ID);
+      (bool success, bytes memory data) = coreRegistrationSystemAddress.delegatecall(
         abi.encodeCall(WorldRegistrationSystem.registerNamespace, (namespaceId))
       );
       if (!success) revertWithBytes(data);
