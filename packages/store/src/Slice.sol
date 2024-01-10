@@ -100,7 +100,7 @@ library SliceInstance {
    * @param self The Slice to be converted to bytes.
    * @return data The bytes representation of the provided Slice.
    */
-  function toBytes(Slice self) internal pure returns (bytes memory data) {
+  function toBytes(Slice self) internal view returns (bytes memory data) {
     uint256 fromPointer = pointer(self);
     uint256 _length = length(self);
 

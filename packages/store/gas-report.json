@@ -189,7 +189,7 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom decode",
-    "gasUsed": 1954
+    "gasUsed": 2032
   },
   {
     "file": "test/Gas.t.sol",
@@ -399,7 +399,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteExternal",
     "name": "get record from Mixed (external, warm)",
-    "gasUsed": 6977
+    "gasUsed": 7060
   },
   {
     "file": "test/Mixed.t.sol",
@@ -417,7 +417,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteInternal",
     "name": "get record from Mixed (internal, warm)",
-    "gasUsed": 6663
+    "gasUsed": 6746
   },
   {
     "file": "test/Mixed.t.sol",
@@ -561,37 +561,37 @@
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
     "name": "Slice (0 bytes) to bytes memory",
-    "gasUsed": 298
+    "gasUsed": 295
   },
   {
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
     "name": "Slice (2 bytes) to bytes memory",
-    "gasUsed": 531
+    "gasUsed": 482
   },
   {
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
     "name": "Slice (32 bytes) to bytes memory",
-    "gasUsed": 545
+    "gasUsed": 888
   },
   {
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
     "name": "Slice (34 bytes) to bytes memory",
-    "gasUsed": 747
+    "gasUsed": 1044
   },
   {
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
     "name": "Slice (1024 bytes) to bytes memory",
-    "gasUsed": 7264
+    "gasUsed": 18333
   },
   {
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
     "name": "Slice (1024x1024 bytes) to bytes memory",
-    "gasUsed": 9205065
+    "gasUsed": 20542790
   },
   {
     "file": "test/Slice.t.sol",

@@ -1492,7 +1492,7 @@ library KeysInTable {
     bytes memory _blob
   )
     internal
-    pure
+    view
     returns (
       bytes32[] memory keys0,
       bytes32[] memory keys1,
@@ -1543,7 +1543,7 @@ library KeysInTable {
     bytes memory,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (KeysInTableData memory _table) {
+  ) internal view returns (KeysInTableData memory _table) {
     (_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4) = decodeDynamic(
       _encodedLengths,
       _dynamicData

@@ -618,7 +618,7 @@ library Mixed {
   function decodeDynamic(
     PackedCounter _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (uint32[] memory a32, string memory s) {
+  ) internal view returns (uint32[] memory a32, string memory s) {
     uint256 _start;
     uint256 _end;
     unchecked {
@@ -643,7 +643,7 @@ library Mixed {
     bytes memory _staticData,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (MixedData memory _table) {
+  ) internal view returns (MixedData memory _table) {
     (_table.u32, _table.u128) = decodeStatic(_staticData);
 
     (_table.a32, _table.s) = decodeDynamic(_encodedLengths, _dynamicData);

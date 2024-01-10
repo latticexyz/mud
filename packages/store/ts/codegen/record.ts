@@ -197,7 +197,7 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
       /**
        * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
        */
-      function decodeDynamic(PackedCounter _encodedLengths, bytes memory _blob) internal pure returns (${renderArguments(
+      function decodeDynamic(PackedCounter _encodedLengths, bytes memory _blob) internal view returns (${renderArguments(
         dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
       )}) {
         ${renderList(
@@ -240,7 +240,7 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
       bytes memory ${staticFields.length > 0 ? "_staticData" : ""},
       PackedCounter ${dynamicFields.length > 0 ? "_encodedLengths" : ""},
       bytes memory ${dynamicFields.length > 0 ? "_dynamicData" : ""}
-    ) internal pure returns (${renderedDecodedRecord}) {
+    ) internal view returns (${renderedDecodedRecord}) {
   `;
 
   if (staticFields.length > 0) {

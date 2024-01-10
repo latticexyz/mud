@@ -763,7 +763,7 @@ library UserTyped {
     bytes memory _staticData,
     PackedCounter,
     bytes memory
-  ) internal pure returns (UserTypedData memory _table) {
+  ) internal view returns (UserTypedData memory _table) {
     (_table.v1, _table.v2, _table.v3, _table.v4, _table.v5) = decodeStatic(_staticData);
   }
 

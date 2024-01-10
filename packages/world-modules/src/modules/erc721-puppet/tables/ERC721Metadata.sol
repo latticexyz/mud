@@ -625,7 +625,7 @@ library ERC721Metadata {
   function decodeDynamic(
     PackedCounter _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (string memory name, string memory symbol, string memory baseURI) {
+  ) internal view returns (string memory name, string memory symbol, string memory baseURI) {
     uint256 _start;
     uint256 _end;
     unchecked {
@@ -656,7 +656,7 @@ library ERC721Metadata {
     bytes memory,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (ERC721MetadataData memory _table) {
+  ) internal view returns (ERC721MetadataData memory _table) {
     (_table.name, _table.symbol, _table.baseURI) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 

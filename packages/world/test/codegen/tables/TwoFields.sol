@@ -271,7 +271,7 @@ library TwoFields {
     bytes memory _staticData,
     PackedCounter,
     bytes memory
-  ) internal pure returns (TwoFieldsData memory _table) {
+  ) internal view returns (TwoFieldsData memory _table) {
     (_table.value1, _table.value2) = decodeStatic(_staticData);
   }
 

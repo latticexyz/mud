@@ -292,7 +292,7 @@ library Vector2 {
     bytes memory _staticData,
     PackedCounter,
     bytes memory
-  ) internal pure returns (Vector2Data memory _table) {
+  ) internal view returns (Vector2Data memory _table) {
     (_table.x, _table.y) = decodeStatic(_staticData);
   }
 

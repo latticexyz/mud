@@ -680,7 +680,7 @@ library Dynamics2 {
   function decodeDynamic(
     PackedCounter _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (uint64[] memory u64, string memory str, bytes memory b) {
+  ) internal view returns (uint64[] memory u64, string memory str, bytes memory b) {
     uint256 _start;
     uint256 _end;
     unchecked {
@@ -711,7 +711,7 @@ library Dynamics2 {
     bytes memory,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (Dynamics2Data memory _table) {
+  ) internal view returns (Dynamics2Data memory _table) {
     (_table.u64, _table.str, _table.b) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 

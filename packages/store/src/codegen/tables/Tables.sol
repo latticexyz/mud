@@ -686,7 +686,7 @@ library Tables {
   function decodeDynamic(
     PackedCounter _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (bytes memory abiEncodedKeyNames, bytes memory abiEncodedFieldNames) {
+  ) internal view returns (bytes memory abiEncodedKeyNames, bytes memory abiEncodedFieldNames) {
     uint256 _start;
     uint256 _end;
     unchecked {
@@ -711,7 +711,7 @@ library Tables {
     bytes memory _staticData,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (TablesData memory _table) {
+  ) internal view returns (TablesData memory _table) {
     (_table.fieldLayout, _table.keySchema, _table.valueSchema) = decodeStatic(_staticData);
 
     (_table.abiEncodedKeyNames, _table.abiEncodedFieldNames) = decodeDynamic(_encodedLengths, _dynamicData);

@@ -526,7 +526,7 @@ library ERC20Metadata {
   function decodeDynamic(
     PackedCounter _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (string memory name, string memory symbol) {
+  ) internal view returns (string memory name, string memory symbol) {
     uint256 _start;
     uint256 _end;
     unchecked {
@@ -551,7 +551,7 @@ library ERC20Metadata {
     bytes memory _staticData,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (ERC20MetadataData memory _table) {
+  ) internal view returns (ERC20MetadataData memory _table) {
     (_table.decimals) = decodeStatic(_staticData);
 
     (_table.name, _table.symbol) = decodeDynamic(_encodedLengths, _dynamicData);

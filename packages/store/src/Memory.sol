@@ -30,35 +30,29 @@ library Memory {
    * @param toPointer The memory location to copy to.
    * @param length The number of bytes to copy.
    */
-  function copy(uint256 fromPointer, uint256 toPointer, uint256 length) internal pure {
+  function copy(uint256 fromPointer, uint256 toPointer, uint256 length) internal view {
     // Copy 32-byte chunks
     while (length >= 32) {
-      /// @solidity memory-safe-assembly
+      // Use the identity precompile to copy 32 bytes
       assembly {
-        mstore(toPointer, mload(fromPointer))
+        let success := staticcall(gas(), 0x04, fromPointer, 32, toPointer, 32)
+        if iszero(success) {
+          revert(0, 0)
+        }
       }
-      // Safe because total addition will be <= length (ptr+len is implicitly safe)
-      unchecked {
-        toPointer += 32;
-        fromPointer += 32;
-        length -= 32;
-      }
+      toPointer += 32;
+      fromPointer += 32;
+      length -= 32;
     }
-    if (length == 0) return;
 
-    // Copy the 0-31 length tail
-    uint256 mask = rightMask(length);
-    /// @solidity memory-safe-assembly
-    assembly {
-      mstore(
-        toPointer,
-        or(
-          // store the left part
-          and(mload(fromPointer), not(mask)),
-          // preserve the right part
-          and(mload(toPointer), mask)
-        )
-      )
+    if (length > 0) {
+      // Use the identity precompile to copy the remaining bytes
+      assembly {
+        let success := staticcall(gas(), 0x04, fromPointer, length, toPointer, length)
+        if iszero(success) {
+          revert(0, 0)
+        }
+      }
     }
   }
 }

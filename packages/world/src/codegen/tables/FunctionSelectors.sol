@@ -260,7 +260,7 @@ library FunctionSelectors {
     bytes memory _staticData,
     PackedCounter,
     bytes memory
-  ) internal pure returns (ResourceId systemId, bytes4 systemFunctionSelector) {
+  ) internal view returns (ResourceId systemId, bytes4 systemFunctionSelector) {
     (systemId, systemFunctionSelector) = decodeStatic(_staticData);
   }
 

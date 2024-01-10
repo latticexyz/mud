@@ -114,7 +114,7 @@ function renderUnwrapperStaticArray(
      */ 
     function ${functionName}(
       ${elementType}[${staticLength}] memory _value
-    ) pure returns (
+    ) view returns (
       ${internalTypeId} memory _result
     ) {
       _result = new ${internalTypeId}(${staticLength});

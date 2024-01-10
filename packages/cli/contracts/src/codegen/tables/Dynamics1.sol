@@ -1050,7 +1050,7 @@ library Dynamics1 {
     bytes memory _blob
   )
     internal
-    pure
+    view
     returns (
       bytes32[1] memory staticB32,
       int32[2] memory staticI32,
@@ -1101,7 +1101,7 @@ library Dynamics1 {
     bytes memory,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (Dynamics1Data memory _table) {
+  ) internal view returns (Dynamics1Data memory _table) {
     (_table.staticB32, _table.staticI32, _table.staticU128, _table.staticAddrs, _table.staticBools) = decodeDynamic(
       _encodedLengths,
       _dynamicData
@@ -1319,7 +1319,7 @@ function toStaticArray_bool_5(bool[] memory _value) pure returns (bool[5] memory
  * @param _value The static array to copy.
  * @return _result The dynamic array.
  */
-function fromStaticArray_bytes32_1(bytes32[1] memory _value) pure returns (bytes32[] memory _result) {
+function fromStaticArray_bytes32_1(bytes32[1] memory _value) view returns (bytes32[] memory _result) {
   _result = new bytes32[](1);
   uint256 fromPointer;
   uint256 toPointer;
@@ -1336,7 +1336,7 @@ function fromStaticArray_bytes32_1(bytes32[1] memory _value) pure returns (bytes
  * @param _value The static array to copy.
  * @return _result The dynamic array.
  */
-function fromStaticArray_int32_2(int32[2] memory _value) pure returns (int32[] memory _result) {
+function fromStaticArray_int32_2(int32[2] memory _value) view returns (int32[] memory _result) {
   _result = new int32[](2);
   uint256 fromPointer;
   uint256 toPointer;
@@ -1353,7 +1353,7 @@ function fromStaticArray_int32_2(int32[2] memory _value) pure returns (int32[] m
  * @param _value The static array to copy.
  * @return _result The dynamic array.
  */
-function fromStaticArray_uint128_3(uint128[3] memory _value) pure returns (uint128[] memory _result) {
+function fromStaticArray_uint128_3(uint128[3] memory _value) view returns (uint128[] memory _result) {
   _result = new uint128[](3);
   uint256 fromPointer;
   uint256 toPointer;
@@ -1370,7 +1370,7 @@ function fromStaticArray_uint128_3(uint128[3] memory _value) pure returns (uint1
  * @param _value The static array to copy.
  * @return _result The dynamic array.
  */
-function fromStaticArray_address_4(address[4] memory _value) pure returns (address[] memory _result) {
+function fromStaticArray_address_4(address[4] memory _value) view returns (address[] memory _result) {
   _result = new address[](4);
   uint256 fromPointer;
   uint256 toPointer;
@@ -1387,7 +1387,7 @@ function fromStaticArray_address_4(address[4] memory _value) pure returns (addre
  * @param _value The static array to copy.
  * @return _result The dynamic array.
  */
-function fromStaticArray_bool_5(bool[5] memory _value) pure returns (bool[] memory _result) {
+function fromStaticArray_bool_5(bool[5] memory _value) view returns (bool[] memory _result) {
   _result = new bool[](5);
   uint256 fromPointer;
   uint256 toPointer;

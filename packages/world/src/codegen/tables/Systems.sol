@@ -260,7 +260,7 @@ library Systems {
     bytes memory _staticData,
     PackedCounter,
     bytes memory
-  ) internal pure returns (address system, bool publicAccess) {
+  ) internal view returns (address system, bool publicAccess) {
     (system, publicAccess) = decodeStatic(_staticData);
   }
 

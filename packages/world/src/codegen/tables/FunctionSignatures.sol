@@ -126,7 +126,7 @@ library FunctionSignatures {
   function decodeDynamic(
     PackedCounter _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (string memory functionSignature) {
+  ) internal view returns (string memory functionSignature) {
     uint256 _start;
     uint256 _end;
     unchecked {
@@ -145,7 +145,7 @@ library FunctionSignatures {
     bytes memory,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (string memory functionSignature) {
+  ) internal view returns (string memory functionSignature) {
     (functionSignature) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 

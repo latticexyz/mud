@@ -685,7 +685,7 @@ library Statics {
     bytes memory _staticData,
     PackedCounter,
     bytes memory
-  ) internal pure returns (StaticsData memory _table) {
+  ) internal view returns (StaticsData memory _table) {
     (_table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6) = decodeStatic(_staticData);
   }
 

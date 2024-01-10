@@ -363,7 +363,7 @@ library UsedKeysIndex {
     bytes memory _staticData,
     PackedCounter,
     bytes memory
-  ) internal pure returns (bool has, uint40 index) {
+  ) internal view returns (bool has, uint40 index) {
     (has, index) = decodeStatic(_staticData);
   }
 

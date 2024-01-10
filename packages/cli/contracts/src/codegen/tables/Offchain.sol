@@ -155,7 +155,7 @@ library Offchain {
    *
    *
    */
-  function decode(bytes memory _staticData, PackedCounter, bytes memory) internal pure returns (uint256 value) {
+  function decode(bytes memory _staticData, PackedCounter, bytes memory) internal view returns (uint256 value) {
     (value) = decodeStatic(_staticData);
   }
 

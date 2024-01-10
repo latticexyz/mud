@@ -647,7 +647,7 @@ library Singleton {
   function decodeDynamic(
     PackedCounter _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
+  ) internal view returns (uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
     uint256 _start;
     uint256 _end;
     unchecked {
@@ -678,7 +678,7 @@ library Singleton {
     bytes memory _staticData,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
+  ) internal view returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
     (v1) = decodeStatic(_staticData);
 
     (v2, v3, v4) = decodeDynamic(_encodedLengths, _dynamicData);
@@ -822,7 +822,7 @@ function toStaticArray_uint32_1(uint32[] memory _value) pure returns (uint32[1] 
  * @param _value The static array to copy.
  * @return _result The dynamic array.
  */
-function fromStaticArray_uint32_2(uint32[2] memory _value) pure returns (uint32[] memory _result) {
+function fromStaticArray_uint32_2(uint32[2] memory _value) view returns (uint32[] memory _result) {
   _result = new uint32[](2);
   uint256 fromPointer;
   uint256 toPointer;
@@ -839,7 +839,7 @@ function fromStaticArray_uint32_2(uint32[2] memory _value) pure returns (uint32[
  * @param _value The static array to copy.
  * @return _result The dynamic array.
  */
-function fromStaticArray_uint32_1(uint32[1] memory _value) pure returns (uint32[] memory _result) {
+function fromStaticArray_uint32_1(uint32[1] memory _value) view returns (uint32[] memory _result) {
   _result = new uint32[](1);
   uint256 fromPointer;
   uint256 toPointer;
