@@ -36,17 +36,12 @@ export function renderCommonData({
   staticResourceData?: StaticResourceData;
   keyTuple: RenderKeyTuple[];
 }): {
-  _tableId: string;
   _typedTableId: string;
-  _keyArgs: string;
   _typedKeyArgs: string;
   _keyTupleDefinition: string;
 } {
   // static resource means static tableId as well, and no tableId arguments
-  const _tableId = staticResourceData ? "" : "_tableId";
   const _typedTableId = staticResourceData ? "" : "ResourceId _tableId";
-
-  const _keyArgs = renderArguments(keyTuple.map(({ name }) => name));
   const _typedKeyArgs = renderArguments(keyTuple.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
 
   const _keyTupleDefinition = `
@@ -55,9 +50,7 @@ export function renderCommonData({
   `;
 
   return {
-    _tableId,
     _typedTableId,
-    _keyArgs,
     _typedKeyArgs,
     _keyTupleDefinition,
   };

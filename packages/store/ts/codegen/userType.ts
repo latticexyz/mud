@@ -8,8 +8,6 @@ import { parseStaticArray } from "@latticexyz/config";
 import { ImportDatum, RenderType, SolidityUserDefinedType } from "@latticexyz/common/codegen";
 import { StoreConfig } from "../config";
 
-export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
-
 /**
  * Resolve an abi or user type into a SchemaType and RenderType
  */
