@@ -43,5 +43,4 @@ RUN pnpm run -r build
 FROM mud AS store-indexer
 WORKDIR /app/packages/store-indexer
 EXPOSE 3001
-ENV DEBUG="mud:store-sync:createStoreSync"
 CMD pnpm start:postgres-decoded
