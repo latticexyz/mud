@@ -15,8 +15,6 @@
     "docs:generate:api": "bun scripts/render-api-docs.ts",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "gas-report": "pnpm run --recursive --parallel gas-report",
-    "install:ci": "pnpm install --ignore-scripts",
-    "install:ci:frozen": "pnpm install --ignore-scripts --frozen-lockfile",
     "lint": "pnpm prettier:check && eslint . --ext .ts --ext .tsx",
     "prepare": "husky install && (forge --version || pnpm foundryup)",
     "prettier": "prettier --write '**/*.{ts,tsx,css,md,mdx,sol}'",
