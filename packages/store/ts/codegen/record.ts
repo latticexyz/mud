@@ -17,7 +17,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
   if (options.withGetters) {
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+      ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
         /**
          * @notice Get the full data${_commentSuffix}.
          */
@@ -39,20 +39,18 @@ export function renderRecordMethods(options: RenderTableOptions) {
     );
   }
 
-  result += renderWithStore(
-    storeArgument,
-    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
-      const externalArguments = renderArguments([
-        _typedStore,
-        _typedTableId,
-        _typedKeyArgs,
-        renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
-      ]);
+  result += renderWithStore(storeArgument, ({ _typedStore, _store, _commentSuffix, _methodNamePrefix, _internal }) => {
+    const externalArguments = renderArguments([
+      _typedStore,
+      _typedTableId,
+      _typedKeyArgs,
+      renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
+    ]);
 
-      const internalArguments =
-        "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" + (_internal ? ", _fieldLayout" : "");
+    const internalArguments =
+      "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" + (_internal ? ", _fieldLayout" : "");
 
-      return `
+    return `
         /** 
          * @notice Set the full data using individual values${_commentSuffix}.
          */
@@ -64,13 +62,12 @@ export function renderRecordMethods(options: RenderTableOptions) {
           ${_store}.setRecord(${internalArguments});
         }
     `;
-    }
-  );
+  });
 
   if (structName !== undefined) {
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+      ({ _typedStore, _store, _commentSuffix, _methodNamePrefix, _internal }) => {
         const externalArguments = renderArguments([
           _typedStore,
           _typedTableId,
@@ -137,13 +134,11 @@ export function renderDeleteRecordMethods(options: RenderTableOptions) {
   const { storeArgument } = options;
   const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
 
-  return renderWithStore(
-    storeArgument,
-    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
-      const externalArguments = renderArguments([_typedStore, _typedTableId, _typedKeyArgs]);
-      const internalArguments = "_tableId, _keyTuple" + (_internal ? ", _fieldLayout" : "");
+  return renderWithStore(storeArgument, ({ _typedStore, _store, _commentSuffix, _methodNamePrefix, _internal }) => {
+    const externalArguments = renderArguments([_typedStore, _typedTableId, _typedKeyArgs]);
+    const internalArguments = "_tableId, _keyTuple" + (_internal ? ", _fieldLayout" : "");
 
-      return `
+    return `
       /** 
        * @notice Delete all data for given keys${_commentSuffix}.
        */
@@ -152,8 +147,7 @@ export function renderDeleteRecordMethods(options: RenderTableOptions) {
         ${_store}.deleteRecord(${internalArguments});
       }
     `;
-    }
-  );
+  });
 }
 
 // Renders the `decode` function that parses a bytes blob into the table data
