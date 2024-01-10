@@ -33,7 +33,7 @@ jobs:
 
       - name: Install example dependencies
         working-directory: ./examples/${{ matrix.example }}
-        run: pnpm install
+        run: pnpm run install:ci
 
       - name: Clean example
         working-directory: ./examples/${{ matrix.example }}

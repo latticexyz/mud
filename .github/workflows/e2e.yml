@@ -31,7 +31,7 @@ jobs:
 
       - name: Install end-to-end testing dependencies
         working-directory: ./e2e
-        run: pnpm install
+        run: pnpm run install:ci
 
       - name: Install Playwright Dependencies
         working-directory: ./e2e

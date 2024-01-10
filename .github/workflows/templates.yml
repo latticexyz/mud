@@ -33,7 +33,7 @@ jobs:
 
       - name: Install template dependencies
         working-directory: ./templates/${{ matrix.template }}
-        run: pnpm install
+        run: pnpm run install:ci
 
       - name: Build template
         working-directory: ./templates/${{ matrix.template }}
