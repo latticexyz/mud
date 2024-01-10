@@ -29,19 +29,19 @@ library SchemaLib {
 
   /**
    * @notice Encodes a given schema into a single bytes32.
-   * @param _schema The list of SchemaTypes that constitute the schema.
+   * @param schemas The list of SchemaTypes that constitute the schema.
    * @return The encoded Schema.
    */
-  function encode(SchemaType[] memory _schema) internal pure returns (Schema) {
-    if (_schema.length > MAX_TOTAL_FIELDS) revert SchemaLib_InvalidLength(_schema.length);
+  function encode(SchemaType[] memory schemas) internal pure returns (Schema) {
+    if (schemas.length > MAX_TOTAL_FIELDS) revert SchemaLib_InvalidLength(schemas.length);
     uint256 schema;
     uint256 totalLength;
     uint256 dynamicFields;
 
     // Compute the length of the schema and the number of static fields
     // and store the schema types in the encoded schema
-    for (uint256 i = 0; i < _schema.length; ) {
-      uint256 staticByteLength = _schema[i].getStaticByteLength();
+    for (uint256 i = 0; i < schemas.length; ) {
+      uint256 staticByteLength = schemas[i].getStaticByteLength();
 
       if (staticByteLength == 0) {
         // Increase the dynamic field count if the field is dynamic
@@ -59,7 +59,7 @@ library SchemaLib {
         totalLength += staticByteLength;
         // Sequentially store schema types after the first 4 bytes (which are reserved for length and field numbers)
         // (safe because of the initial _schema.length check)
-        schema |= uint256(_schema[i]) << ((WORD_LAST_INDEX - 4 - i) * BYTE_TO_BITS);
+        schema |= uint256(schemas[i]) << ((WORD_LAST_INDEX - 4 - i) * BYTE_TO_BITS);
         i++;
       }
     }
@@ -70,7 +70,7 @@ library SchemaLib {
     // Get the static field count
     uint256 staticFields;
     unchecked {
-      staticFields = _schema.length - dynamicFields;
+      staticFields = schemas.length - dynamicFields;
     }
 
     // Store total static length in the first 2 bytes,
