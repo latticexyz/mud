@@ -1,5 +1,5 @@
 services:
-  - type: web
+  - type: worker
     name: skystrife-indexer
     region: ohio
     runtime: docker
