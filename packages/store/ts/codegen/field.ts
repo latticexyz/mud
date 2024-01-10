@@ -259,7 +259,7 @@ function fieldPortionData(field: RenderField) {
     const elementFieldData = { ...field.arrayElement, arrayElement: undefined, name, methodNameSuffix };
     return {
       typeWithLocation: field.arrayElement.typeWithLocation,
-      name: "_element",
+      name,
       encoded: renderEncodeFieldSingle(elementFieldData),
       decoded: renderDecodeFieldSingle(elementFieldData),
       title: "an element",
