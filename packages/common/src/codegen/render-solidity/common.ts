@@ -194,11 +194,11 @@ export function renderValueTypeToBytes32(name: string, { typeUnwrap, internalTyp
 
   if (internalTypeId === "bytes32") {
     return innerText;
-  } else if (internalTypeId.match(/^bytes\d{1,2}$/)) {
+  } else if (/^bytes\d{1,2}$/.test(internalTypeId)) {
     return `bytes32(${innerText})`;
-  } else if (internalTypeId.match(/^uint\d{1,3}$/)) {
+  } else if (/^uint\d{1,3}$/.test(internalTypeId)) {
     return `bytes32(uint256(${innerText}))`;
-  } else if (internalTypeId.match(/^int\d{1,3}$/)) {
+  } else if (/^int\d{1,3}$/.test(internalTypeId)) {
     return `bytes32(uint256(int256(${innerText})))`;
   } else if (internalTypeId === "address") {
     return `bytes32(uint256(uint160(${innerText})))`;
@@ -210,7 +210,7 @@ export function renderValueTypeToBytes32(name: string, { typeUnwrap, internalTyp
 }
 
 export function isLeftAligned(field: Pick<RenderType, "internalTypeId">): boolean {
-  return field.internalTypeId.match(/^bytes\d{1,2}$/) !== null;
+  return /^bytes\d{1,2}$/.test(field.internalTypeId);
 }
 
 export function getLeftPaddingBits(field: Pick<RenderType, "internalTypeId" | "staticByteLength">): number {
