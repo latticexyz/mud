@@ -131,8 +131,9 @@ contract StoreCoreTest is Test, StoreMock {
 
     vm.expectRevert(
       abi.encodeWithSelector(
-        FieldLayoutLib.FieldLayoutLib_InvalidLength.selector,
-        invalidFieldLayout.numDynamicFields()
+        FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields.selector,
+        invalidFieldLayout.numDynamicFields(),
+        5
       )
     );
     IStore(this).registerTable(
