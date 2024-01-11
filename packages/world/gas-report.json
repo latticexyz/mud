@@ -69,7 +69,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 47623
+    "gasUsed": 47638
   },
   {
     "file": "test/World.t.sol",
@@ -81,13 +81,13 @@
     "file": "test/World.t.sol",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 9837
+    "gasUsed": 9852
   },
   {
     "file": "test/World.t.sol",
     "test": "testPushToDynamicField",
     "name": "Push data to the table",
-    "gasUsed": 85811
+    "gasUsed": 85826
   },
   {
     "file": "test/World.t.sol",
@@ -99,7 +99,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 120905
+    "gasUsed": 120950
   },
   {
     "file": "test/World.t.sol",
@@ -111,19 +111,19 @@
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 164256
+    "gasUsed": 164301
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 636483
+    "gasUsed": 636543
   },
   {
     "file": "test/World.t.sol",
     "test": "testSetField",
     "name": "Write data to a table field",
-    "gasUsed": 36881
+    "gasUsed": 36896
   },
   {
     "file": "test/World.t.sol",
@@ -135,25 +135,25 @@
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (cold)",
-    "gasUsed": 25602
+    "gasUsed": 25617
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (warm)",
-    "gasUsed": 12748
+    "gasUsed": 12763
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (cold)",
-    "gasUsed": 25953
+    "gasUsed": 25968
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (warm)",
-    "gasUsed": 13154
+    "gasUsed": 13169
   },
   {
     "file": "test/WorldResourceId.t.sol",

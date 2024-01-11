@@ -1,3 +1,5 @@
+import { CollapseCode } from "../../components/CollapseCode";
+
 # Indexer
 
 The MUD Indexer is an offchain indexer for onchain applications built with MUD.
@@ -180,7 +182,7 @@ The easiest way to test the indexer is to [run the template as a world](/templat
 #### SQLite
 
 The command to start the indexer in SQLite mode is `pnpm start:sqlite`.
-To index an `anvil` instance running to the host, use:
+To index an `anvil` instance running to the host you can use this command.
 
 ```sh copy
 docker run \
@@ -335,6 +337,28 @@ It is [URL encoded](https://en.wikipedia.org/wiki/Percent-encoding), you can dec
 Meaning that query 0 is for everything in the `World` at address `0x6e9474e9c83676b9a71133ff96db43e7aa0a4342`, on the chain with chain ID `31337`.
 
 </details>
+
+## Using the indexer
+
+The source code of a MUD client has a call either to [`syncToRecs`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/recs/syncToRecs.ts#L21-L82) or to [`syncToZustand`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/zustand/syncToZustand.ts#L33-L74), typically in [`setupNetwork.ts`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts#L74-L79).
+This call initializes the synchronization between the data source (RPC or indexer) and the client's copy.
+
+To use the indexer, specify an `indexerUrl` parameter with the URL.
+
+<CollapseCode>
+
+```ts {7}
+const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
+  world,
+  config: mudConfig,
+  address: networkConfig.worldAddress as Hex,
+  publicClient,
+  startBlock: BigInt(networkConfig.initialBlockNumber),
+  indexerUrl: "http://127.0.0.1:3001",
+});
+```
+
+</CollapseCode>
 
 ## Usage examples
 
