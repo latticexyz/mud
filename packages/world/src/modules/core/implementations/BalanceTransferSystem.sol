@@ -20,7 +20,6 @@ import { LimitedCallContext } from "../LimitedCallContext.sol";
  * @dev A system contract that facilitates balance transfers in the World and outside of the World.
  */
 contract BalanceTransferSystem is System, IWorldErrors, LimitedCallContext {
-  using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
   /**
