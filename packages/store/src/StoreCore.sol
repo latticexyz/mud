@@ -328,8 +328,8 @@ library StoreCore {
     Storage.store({
       storagePointer: staticDataLocation,
       offset: 0,
-      memoryPointer: memoryPointer,
-      length: staticData.length
+      length: staticData.length,
+      memoryPointer: memoryPointer
     });
 
     // Set the dynamic data if there are dynamic fields
@@ -350,8 +350,8 @@ library StoreCore {
         Storage.store({
           storagePointer: dynamicDataLocation,
           offset: 0,
-          memoryPointer: memoryPointer,
-          length: dynamicDataLength
+          length: dynamicDataLength,
+          memoryPointer: memoryPointer
         });
         memoryPointer += dynamicDataLength; // move the memory pointer to the start of the next dynamic data
         unchecked {
@@ -740,7 +740,7 @@ library StoreCore {
       for (uint8 i; i < numDynamicFields; i++) {
         uint256 dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, i);
         uint256 length = encodedLengths.atIndex(i);
-        Storage.load({ storagePointer: dynamicDataLocation, length: length, offset: 0, memoryPointer: memoryPointer });
+        Storage.load({ storagePointer: dynamicDataLocation, offset: 0, length: length, memoryPointer: memoryPointer });
         // Advance memoryPointer by the length of this dynamic field
         memoryPointer += length;
       }
@@ -828,8 +828,8 @@ library StoreCore {
     return
       Storage.load({
         storagePointer: StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex),
-        length: StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple).atIndex(dynamicFieldIndex),
-        offset: 0
+        offset: 0,
+        length: StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple).atIndex(dynamicFieldIndex)
       });
   }
 
@@ -917,7 +917,7 @@ library StoreCore {
     // Get the length and storage location of the dynamic field
     uint256 location = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
 
-    return Storage.load({ storagePointer: location, length: end - start, offset: start });
+    return Storage.load({ storagePointer: location, offset: start, length: end - start });
   }
 }
 
@@ -1078,7 +1078,7 @@ library StoreCoreInternal {
 
     // Load the data from storage
     uint256 location = _getStaticDataLocation(tableId, keyTuple);
-    return Storage.load({ storagePointer: location, length: length, offset: 0 });
+    return Storage.load({ storagePointer: location, offset: 0, length: length });
   }
 
   /**
@@ -1100,8 +1100,8 @@ library StoreCoreInternal {
     return
       Storage.load({
         storagePointer: _getStaticDataLocation(tableId, keyTuple),
-        length: fieldLayout.atIndex(fieldIndex),
-        offset: _getStaticDataOffset(fieldLayout, fieldIndex)
+        offset: _getStaticDataOffset(fieldLayout, fieldIndex),
+        length: fieldLayout.atIndex(fieldIndex)
       });
   }
 
