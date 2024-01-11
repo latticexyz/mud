@@ -265,8 +265,6 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   function unregisterDelegation(address delegatee) public {
     // Delete the delegation control contract address
     UserDelegationControl.deleteRecord({ delegator: _msgSender(), delegatee: delegatee });
-
-    // TODO: clear the specific delegation control
   }
 
   /**
