@@ -28,23 +28,6 @@ export async function ensureNamespaceOwner({
     );
   }
 
-  // Register missing namespaces
-  const missingNamespaces = desiredNamespaces.filter((namespace) => !existingNamespaces.has(namespace));
-  if (missingNamespaces.length > 0) {
-    debug("registering namespaces", Array.from(missingNamespaces).join(", "));
-  }
-  const registrationTxs = Promise.all(
-    missingNamespaces.map((namespace) =>
-      writeContract(client, {
-        chain: client.chain ?? null,
-        address: worldDeploy.address,
-        abi: worldAbi,
-        functionName: "registerNamespace",
-        args: [resourceToHex({ namespace, type: "namespace", name: "" })],
-      })
-    )
-  );
-
   // Assert ownership of existing namespaces
   const existingDesiredNamespaces = desiredNamespaces.filter((namespace) => existingNamespaces.has(namespace));
   const namespaceOwners = await Promise.all(
@@ -66,6 +49,23 @@ export async function ensureNamespaceOwner({
   if (unauthorizedNamespaces.length) {
     throw new Error(`You are attempting to deploy to namespaces you do not own: ${unauthorizedNamespaces.join(", ")}`);
   }
+
+  // Register missing namespaces
+  const missingNamespaces = desiredNamespaces.filter((namespace) => !existingNamespaces.has(namespace));
+  if (missingNamespaces.length > 0) {
+    debug("registering namespaces", Array.from(missingNamespaces).join(", "));
+  }
+  const registrationTxs = Promise.all(
+    missingNamespaces.map((namespace) =>
+      writeContract(client, {
+        chain: client.chain ?? null,
+        address: worldDeploy.address,
+        abi: worldAbi,
+        functionName: "registerNamespace",
+        args: [resourceToHex({ namespace, type: "namespace", name: "" })],
+      })
+    )
+  );
 
   return registrationTxs;
 }
