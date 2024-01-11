@@ -14,8 +14,8 @@ export function encodeFieldLayout(fields: RenderType[]) {
   let totalLength = 0;
   const totalFields = fields.length;
 
-  if (totalFields > MAX_TOTAL_FIELDS) throw new Error(`FieldLayout: invalid length ${totalFields}`);
-  if (numDynamicFields > MAX_DYNAMIC_FIELDS) throw new Error(`FieldLayout: invalid length ${numDynamicFields}`);
+  if (totalFields > MAX_TOTAL_FIELDS) throw new Error("FieldLayout: too many fields");
+  if (numDynamicFields > MAX_DYNAMIC_FIELDS) throw new Error("FieldLayout: too many dynamic fields");
 
   for (let i = 0; i < staticFields.length; i++) {
     const { isDynamic, staticByteLength } = fields[i];
