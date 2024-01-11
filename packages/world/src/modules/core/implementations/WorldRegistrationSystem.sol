@@ -29,11 +29,14 @@ import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol
 import { FunctionSignatures } from "../../../codegen/tables/FunctionSignatures.sol";
 import { requireNamespace } from "../../../requireNamespace.sol";
 
+import { LimitedCallContext } from "../LimitedCallContext.sol";
+
 /**
  * @title WorldRegistrationSystem
  * @dev This contract provides functions related to registering resources other than tables in the World.
  */
-contract WorldRegistrationSystem is System, IWorldErrors {
+contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
+  using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
   /**
@@ -41,7 +44,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @dev Creates a new namespace resource with the given ID
    * @param namespaceId The unique identifier for the new namespace
    */
-  function registerNamespace(ResourceId namespaceId) public virtual {
+  function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall {
     // Require namespace to be a valid namespace ID
     requireNamespace(namespaceId);
 
@@ -67,7 +70,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param hookAddress The address of the hook being registered
    * @param enabledHooksBitmap Bitmap indicating which hooks are enabled
    */
-  function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) public virtual {
+  function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) public virtual onlyDelegatecall {
     // Require the provided system ID to have type RESOURCE_SYSTEM
     if (systemId.getType() != RESOURCE_SYSTEM) {
       revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
@@ -92,7 +95,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param systemId The ID of the system
    * @param hookAddress The address of the hook being unregistered
    */
-  function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) public virtual {
+  function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) public virtual onlyDelegatecall {
     // Require caller to own the namespace
     AccessControl.requireOwner(systemId, _msgSender());
 
@@ -113,7 +116,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param system The system being registered
    * @param publicAccess Flag indicating if access control check is bypassed
    */
-  function registerSystem(ResourceId systemId, System system, bool publicAccess) public virtual {
+  function registerSystem(ResourceId systemId, System system, bool publicAccess) public virtual onlyDelegatecall{
     // Require the provided system ID to have type RESOURCE_SYSTEM
     if (systemId.getType() != RESOURCE_SYSTEM) {
       revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
@@ -175,7 +178,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   function registerFunctionSelector(
     ResourceId systemId,
     string memory systemFunctionSignature
-  ) public returns (bytes4 worldFunctionSelector) {
+  ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
     // Require the provided system ID to have type RESOURCE_SYSTEM
     if (systemId.getType() != RESOURCE_SYSTEM) {
       revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
@@ -224,7 +227,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceId systemId,
     string memory worldFunctionSignature,
     bytes4 systemFunctionSelector
-  ) public returns (bytes4 worldFunctionSelector) {
+  ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the root namespace
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, _msgSender());
 
@@ -250,7 +253,11 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param delegationControlId The ID controlling the delegation
    * @param initCallData The initialization data for the delegation
    */
-  function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData) public {
+  function registerDelegation(
+    address delegatee,
+    ResourceId delegationControlId,
+    bytes memory initCallData
+  ) public onlyDelegatecall {
     // Store the delegation control contract address
     UserDelegationControl._set({
       delegator: _msgSender(),
@@ -290,7 +297,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceId namespaceId,
     ResourceId delegationControlId,
     bytes memory initCallData
-  ) public {
+  ) public onlyDelegatecall {
     // Require namespace to be a valid namespace ID
     requireNamespace(namespaceId);
 

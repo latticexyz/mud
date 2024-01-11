@@ -13,11 +13,14 @@ import { IWorldErrors } from "../../../IWorldErrors.sol";
 import { Balances } from "../../../codegen/tables/Balances.sol";
 import { requireNamespace } from "../../../requireNamespace.sol";
 
+import { LimitedCallContext } from "../LimitedCallContext.sol";
+
 /**
  * @title Balance Transfer System
  * @dev A system contract that facilitates balance transfers in the World and outside of the World.
  */
-contract BalanceTransferSystem is System, IWorldErrors {
+contract BalanceTransferSystem is System, IWorldErrors, LimitedCallContext {
+  using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
   /**
@@ -31,7 +34,7 @@ contract BalanceTransferSystem is System, IWorldErrors {
     ResourceId fromNamespaceId,
     ResourceId toNamespaceId,
     uint256 amount
-  ) public virtual {
+  ) public virtual onlyDelegatecall {
     // Require the from namespace to be a valid namespace ID
     requireNamespace(fromNamespaceId);
     // Require the to namespace to be a valid namespace ID
@@ -61,7 +64,11 @@ contract BalanceTransferSystem is System, IWorldErrors {
    * @param toAddress The target address where the balance will be sent.
    * @param amount The amount to transfer.
    */
-  function transferBalanceToAddress(ResourceId fromNamespaceId, address toAddress, uint256 amount) public virtual {
+  function transferBalanceToAddress(
+    ResourceId fromNamespaceId,
+    address toAddress,
+    uint256 amount
+  ) public virtual onlyDelegatecall {
     // Require caller to have access to the namespace
     AccessControl.requireAccess(fromNamespaceId, _msgSender());
 
