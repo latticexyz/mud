@@ -12,10 +12,9 @@ To mitigate this issue, the side effect of registering a namespace in `registerS
 Calls to these functions now expect the respective namespace to exist and the caller to own the namespace, otherwise they revert.
 
 Changes in consuming projects are only necessary if tables or systems are registered manually.
-If only the MUD deployer is used to register tables and systems, no chagnes are necessary, as the MUD deployer has been updated accordingly.
+If only the MUD deployer is used to register tables and systems, no changes are necessary, as the MUD deployer has been updated accordingly.
 
 ```diff
-
 +  world.registerNamespace(namespaceId);
    world.registerSystem(systemId, system, true);
 ```
