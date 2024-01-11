@@ -113,6 +113,15 @@ contract WorldRegistrationSystem is System, IWorldErrors {
       revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
     }
 
+    // Require the system's namespace to exist
+    ResourceId namespaceId = systemId.getNamespaceId();
+    if (!ResourceIds._getExists(namespaceId)) {
+      revert World_ResourceNotFound(namespaceId, namespaceId.toString());
+    }
+
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(namespaceId, _msgSender());
+
     // Require the provided address to implement the WorldContextConsumer interface
     requireInterface(address(system), WORLD_CONTEXT_CONSUMER_INTERFACE_ID);
 
@@ -126,10 +135,6 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ) {
       revert World_SystemAlreadyExists(address(system));
     }
-
-    // Require the caller to own the namespace
-    ResourceId namespaceId = systemId.getNamespaceId();
-    AccessControl.requireOwner(namespaceId, _msgSender());
 
     // Check if a system already exists at this system ID
     address existingSystem = Systems._getSystem(systemId);

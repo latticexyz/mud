@@ -507,16 +507,22 @@ contract WorldTest is Test, GasReporter {
     // Expect the system to have access to its own namespace
     assertTrue(ResourceAccess.get({ resourceId: namespaceId, caller: address(system) }));
 
-    ResourceId newNamespaceId = WorldResourceIdLib.encodeNamespace("newNamespace");
     // Expect the registration to fail if the namespace does not exist yet
-    assertEq(NamespaceOwner.get(newNamespaceId), address(0));
     System newSystem = new System();
-    _expectAccessDenied(address(this), "newNamespace", "", RESOURCE_NAMESPACE);
-    world.registerSystem(
-      WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "newNamespace", name: "testSystem" }),
-      newSystem,
-      false
+    ResourceId invalidNamespaceSystemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "newNamespace",
+      name: "testSystem"
+    });
+    assertEq(NamespaceOwner.get(invalidNamespaceSystemId.getNamespaceId()), address(0));
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_ResourceNotFound.selector,
+        invalidNamespaceSystemId.getNamespaceId(),
+        invalidNamespaceSystemId.getNamespaceId().toString()
+      )
     );
+    world.registerSystem(invalidNamespaceSystemId, newSystem, false);
 
     // Expect an error when registering an existing system at a new system ID
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_SystemAlreadyExists.selector, address(system)));
@@ -578,7 +584,7 @@ contract WorldTest is Test, GasReporter {
       )
     );
     world.registerSystem(
-      WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "someNamespace", name: "invalidSystem" }),
+      WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "invalidSystem" }),
       System(address(world)),
       true
     );

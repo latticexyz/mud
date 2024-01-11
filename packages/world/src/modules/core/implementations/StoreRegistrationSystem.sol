@@ -47,7 +47,15 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     string[] calldata fieldNames
   ) public virtual {
     // Require the name to not be the namespace's root name
-    if (tableId.getName() == ROOT_NAME) revert World_InvalidResourceId(tableId, tableId.toString());
+    if (tableId.getName() == ROOT_NAME) {
+      revert World_InvalidResourceId(tableId, tableId.toString());
+    }
+
+    // Require the table's namespace to exist
+    ResourceId namespaceId = tableId.getNamespaceId();
+    if (!ResourceIds._getExists(namespaceId)) {
+      revert World_ResourceNotFound(namespaceId, namespaceId.toString());
+    }
 
     // Require the caller to own the table's namespace
     AccessControl.requireOwner(tableId, _msgSender());
