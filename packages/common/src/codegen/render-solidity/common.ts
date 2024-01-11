@@ -125,7 +125,7 @@ export function renderWithStore(
     _store: string;
     _commentSuffix: string;
     _methodNamePrefix: string;
-    _internal?: boolean;
+    _useExplicitFieldLayout?: boolean;
   }) => string
 ): string {
   let result = "";
@@ -135,7 +135,7 @@ export function renderWithStore(
     _store: "StoreCore",
     _commentSuffix: "",
     _methodNamePrefix: "_",
-    _internal: true,
+    _useExplicitFieldLayout: true,
   });
 
   if (storeArgument) {

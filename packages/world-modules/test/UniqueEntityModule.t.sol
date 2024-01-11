@@ -126,6 +126,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
       namespace: "somens",
       name: "echoUniqueEntity"
     });
+    world.registerNamespace(uniqueEntityTestSystemId.getNamespaceId());
     world.registerSystem(uniqueEntityTestSystemId, uniqueEntityTestSystem, true);
 
     // Execute `getUniqueEntity` from the context of a World

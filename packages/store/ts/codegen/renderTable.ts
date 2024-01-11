@@ -144,7 +144,7 @@ export function renderTable(options: RenderTableOptions) {
 
       ${renderEncodeStatic(staticFields)}
 
-      ${renderEncodedLengths(dynamicFields)}
+      ${renderEncodeLengths(dynamicFields)}
 
       ${renderEncodeDynamic(dynamicFields)}
 
@@ -191,7 +191,7 @@ function renderEncodeStatic(staticFields: RenderStaticField[]) {
   `;
 }
 
-function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
+function renderEncodeLengths(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length === 0) return "";
 
   return `

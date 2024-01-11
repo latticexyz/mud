@@ -69,7 +69,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 47638
+    "gasUsed": 47632
   },
   {
     "file": "test/World.t.sol",
@@ -93,7 +93,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 83149
+    "gasUsed": 83138
   },
   {
     "file": "test/World.t.sol",
@@ -105,19 +105,19 @@
     "file": "test/World.t.sol",
     "test": "testRegisterRootFunctionSelector",
     "name": "Register a root function selector",
-    "gasUsed": 80433
+    "gasUsed": 80444
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 164283
+    "gasUsed": 164317
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 636539
+    "gasUsed": 528393
   },
   {
     "file": "test/World.t.sol",
