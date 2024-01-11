@@ -146,7 +146,7 @@ export function getUserTypeInfo(
         isDynamic: false,
         typeWrap: `${typeId}.wrap`,
         typeUnwrap: `${typeId}.unwrap`,
-        internalTypeId: `${solidityUserType.internalTypeId}`,
+        internalTypeId: solidityUserType.internalTypeId,
       },
     };
   }

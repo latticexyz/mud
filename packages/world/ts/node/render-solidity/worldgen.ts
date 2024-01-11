@@ -72,5 +72,5 @@ export async function worldgen(
   });
   // write to file
   const fullOutputPath = path.join(worldgenBaseDirectory, config.worldInterfaceName + ".sol");
-  await formatAndWriteSolidity(output, fullOutputPath, "Generated system interface");
+  await formatAndWriteSolidity(output, fullOutputPath, "Generated world interface");
 }
