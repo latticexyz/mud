@@ -8,7 +8,7 @@ export function renderTableIndex(options: TableOptions[]) {
     ${renderList(options, ({ outputPath, tableName, renderOptions: { structName, staticResourceData } }) => {
       const imports = [tableName];
       if (structName) imports.push(structName);
-      if (staticResourceData) imports.push(`${tableName}TableId`);
+      if (staticResourceData) imports.push(staticResourceData.tableIdName);
 
       return `import { ${imports.join(", ")} } from "./${posixPath(outputPath)}";`;
     })}
