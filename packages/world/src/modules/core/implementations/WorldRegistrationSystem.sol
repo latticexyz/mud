@@ -115,9 +115,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
 
     // Require the system's namespace to exist
     ResourceId namespaceId = systemId.getNamespaceId();
-    if (!ResourceIds._getExists(namespaceId)) {
-      revert World_ResourceNotFound(namespaceId, namespaceId.toString());
-    }
+    AccessControl.requireExistence(namespaceId);
 
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespaceId, _msgSender());

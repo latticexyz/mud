@@ -5,7 +5,6 @@ import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "@latticexyz/store/src/IStor
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
 import { System } from "../../../System.sol";
 import { ResourceId, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
@@ -52,10 +51,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     }
 
     // Require the table's namespace to exist
-    ResourceId namespaceId = tableId.getNamespaceId();
-    if (!ResourceIds._getExists(namespaceId)) {
-      revert World_ResourceNotFound(namespaceId, namespaceId.toString());
-    }
+    AccessControl.requireExistence(tableId.getNamespaceId());
 
     // Require the caller to own the table's namespace
     AccessControl.requireOwner(tableId, _msgSender());
