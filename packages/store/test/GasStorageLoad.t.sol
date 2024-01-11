@@ -71,38 +71,38 @@ contract GasStorageLoadTest is Test, GasReporter {
     bytes32 encodedFieldPartial = valuePartial;
 
     startGasReport("MUD storage load (cold, 1 word)");
-    encodedSimple = Storage.load(SolidityStorage.STORAGE_SLOT_SIMPLE, encodedSimple.length, 0);
+    encodedSimple = Storage.load(SolidityStorage.STORAGE_SLOT_SIMPLE, 0, encodedSimple.length);
     endGasReport();
 
     startGasReport("MUD storage load (cold, 1 word, partial)");
-    encodedPartial = Storage.load(SolidityStorage.STORAGE_SLOT_PARTIAL, encodedPartial.length, 16);
+    encodedPartial = Storage.load(SolidityStorage.STORAGE_SLOT_PARTIAL, 16, encodedPartial.length);
     endGasReport();
 
     startGasReport("MUD storage load (cold, 10 words)");
-    encoded9Words = Storage.load(SolidityStorage.STORAGE_SLOT_BYTES, encoded9Words.length, 0);
+    encoded9Words = Storage.load(SolidityStorage.STORAGE_SLOT_BYTES, 0, encoded9Words.length);
     endGasReport();
 
     // warm
 
     startGasReport("MUD storage load (warm, 1 word)");
-    encodedSimple = Storage.load(SolidityStorage.STORAGE_SLOT_SIMPLE, encodedSimple.length, 0);
+    encodedSimple = Storage.load(SolidityStorage.STORAGE_SLOT_SIMPLE, 0, encodedSimple.length);
     endGasReport();
 
     startGasReport("MUD storage load field (warm, 1 word)");
-    encodedFieldSimple = Storage.loadField(SolidityStorage.STORAGE_SLOT_SIMPLE, encodedSimple.length, 0);
+    encodedFieldSimple = Storage.loadField(SolidityStorage.STORAGE_SLOT_SIMPLE, 0, encodedSimple.length);
     endGasReport();
 
     startGasReport("MUD storage load (warm, 1 word, partial)");
-    encodedPartial = Storage.load(SolidityStorage.STORAGE_SLOT_PARTIAL, encodedPartial.length, 16);
+    encodedPartial = Storage.load(SolidityStorage.STORAGE_SLOT_PARTIAL, 16, encodedPartial.length);
     endGasReport();
 
-    encodedFieldPartial = Storage.loadField(SolidityStorage.STORAGE_SLOT_PARTIAL, encodedSimple.length, 16);
+    encodedFieldPartial = Storage.loadField(SolidityStorage.STORAGE_SLOT_PARTIAL, 16, encodedSimple.length);
     startGasReport("MUD storage load field (warm, 1 word, partial)");
-    encodedFieldPartial = Storage.loadField(SolidityStorage.STORAGE_SLOT_PARTIAL, encodedSimple.length, 16);
+    encodedFieldPartial = Storage.loadField(SolidityStorage.STORAGE_SLOT_PARTIAL, 16, encodedSimple.length);
     endGasReport();
 
     startGasReport("MUD storage load (warm, 10 words)");
-    encoded9Words = Storage.load(SolidityStorage.STORAGE_SLOT_BYTES, encoded9Words.length, 0);
+    encoded9Words = Storage.load(SolidityStorage.STORAGE_SLOT_BYTES, 0, encoded9Words.length);
     endGasReport();
 
     // Do something in case the optimizer removes unused assignments
