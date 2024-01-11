@@ -39,6 +39,8 @@ contract WorldBalanceTest is Test, GasReporter {
     world.initialize(new CoreModule());
     StoreSwitch.setStoreAddress(address(world));
 
+    world.registerNamespace(namespaceId);
+
     world.registerSystem(rootSystemId, rootSystem, true);
     world.registerSystem(nonRootSystemId, nonRootSystem, true);
 
