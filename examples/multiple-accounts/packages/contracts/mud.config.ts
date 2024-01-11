@@ -9,7 +9,7 @@ export default mudConfig({
       },
       valueSchema: {
         callTime: "uint256",
-      }
+      },
     },
   },
 });

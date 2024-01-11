@@ -23,5 +23,5 @@ contract PostDeploy is Script {
     IWorld(worldAddress).LastCall_LastCallSystem_newCall();
 
     vm.stopBroadcast();
-  }  
+  }
 }
