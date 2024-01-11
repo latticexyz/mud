@@ -126,7 +126,7 @@ export function renderTable(options: RenderTableOptions) {
 
       ${renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+        ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
           /**
            * @notice Register the table with its config${_commentSuffix}.
            */

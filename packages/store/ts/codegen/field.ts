@@ -25,7 +25,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
       result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
         renderWithStore(
           storeArgument,
-          (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+          ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
             /**
              * @notice Get ${field.name}${_commentSuffix}.
              */
@@ -57,7 +57,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
     }
 
     result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-      renderWithStore(storeArgument, (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => {
+      renderWithStore(storeArgument, ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => {
         const externalArguments = renderArguments([_typedStore, _typedTableId, _typedKeyArgs, _typedFieldName]);
         const setFieldMethod = field.isDynamic ? "setDynamicField" : "setStaticField";
         const encodeFieldSingle = renderEncodeFieldSingle(field);
@@ -85,7 +85,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
           renderWithStore(
             storeArgument,
-            (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+            ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
               /**
                * @notice Get the length of ${field.name}${_commentSuffix}.
                */
@@ -107,7 +107,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
           renderWithStore(
             storeArgument,
-            (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+            ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
               /**
                * @notice Get an item of ${field.name}${_commentSuffix}.
                * @dev Reverts with Store_IndexOutOfBounds if \`_index\` is out of bounds for the array.
@@ -138,7 +138,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
       result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
         renderWithStore(
           storeArgument,
-          (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+          ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
               /**
                * @notice Push ${portionData.title} to ${field.name}${_commentSuffix}.
                */
@@ -158,7 +158,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
       result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
         renderWithStore(
           storeArgument,
-          (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+          ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
             /**
              * @notice Pop ${portionData.title} from ${field.name}${_commentSuffix}.
              */
@@ -175,7 +175,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
       );
 
       result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-        renderWithStore(storeArgument, (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => {
+        renderWithStore(storeArgument, ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => {
           const externalArguments = renderArguments([
             _typedStore,
             _typedTableId,
@@ -253,10 +253,9 @@ function renderCastStaticBytesToType(field: RenderType, staticBytes: string) {
 
 /** bytes/string are dynamic, but aren't really arrays */
 function fieldPortionData(field: RenderField) {
-  const methodNameSuffix = "";
   if (field.arrayElement) {
     const name = "_element";
-    const elementFieldData = { ...field.arrayElement, arrayElement: undefined, name, methodNameSuffix };
+    const elementFieldData = { ...field.arrayElement, arrayElement: undefined, name };
     return {
       typeWithLocation: field.arrayElement.typeWithLocation,
       name,
@@ -267,7 +266,7 @@ function fieldPortionData(field: RenderField) {
     };
   } else {
     const name = "_slice";
-    const elementFieldData = { ...field, name, methodNameSuffix };
+    const elementFieldData = { ...field, name };
     return {
       typeWithLocation: `${field.typeId} memory`,
       name,

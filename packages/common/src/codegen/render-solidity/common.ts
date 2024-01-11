@@ -36,17 +36,12 @@ export function renderCommonData({
   staticResourceData?: StaticResourceData;
   keyTuple: RenderKeyTuple[];
 }): {
-  _tableId: string;
   _typedTableId: string;
-  _keyArgs: string;
   _typedKeyArgs: string;
   _keyTupleDefinition: string;
 } {
   // static resource means static tableId as well, and no tableId arguments
-  const _tableId = staticResourceData ? "" : "_tableId";
   const _typedTableId = staticResourceData ? "" : "ResourceId _tableId";
-
-  const _keyArgs = renderArguments(keyTuple.map(({ name }) => name));
   const _typedKeyArgs = renderArguments(keyTuple.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
 
   const _keyTupleDefinition = `
@@ -55,9 +50,7 @@ export function renderCommonData({
   `;
 
   return {
-    _tableId,
     _typedTableId,
-    _keyArgs,
     _typedKeyArgs,
     _keyTupleDefinition,
   };
@@ -127,21 +120,33 @@ export function renderAbsoluteImports(imports: AbsoluteImportDatum[]): string {
 
 export function renderWithStore(
   storeArgument: boolean,
-  callback: (
-    _typedStore: string | undefined,
-    _store: string,
-    _commentSuffix: string,
-    _untypedStore: string | undefined,
-    _methodPrefix: string,
-    _internal?: boolean
-  ) => string
+  callback: (data: {
+    _typedStore: string | undefined;
+    _store: string;
+    _commentSuffix: string;
+    _methodNamePrefix: string;
+    _internal?: boolean;
+  }) => string
 ): string {
   let result = "";
-  result += callback(undefined, "StoreSwitch", "", undefined, "");
-  result += callback(undefined, "StoreCore", "", undefined, "_", true);
+  result += callback({ _typedStore: undefined, _store: "StoreSwitch", _commentSuffix: "", _methodNamePrefix: "" });
+  result += callback({
+    _typedStore: undefined,
+    _store: "StoreCore",
+    _commentSuffix: "",
+    _methodNamePrefix: "_",
+    _internal: true,
+  });
 
   if (storeArgument) {
-    result += "\n" + callback("IStore _store", "_store", " (using the specified store)", "_store", "");
+    result +=
+      "\n" +
+      callback({
+        _typedStore: "IStore _store",
+        _store: "_store",
+        _commentSuffix: " (using the specified store)",
+        _methodNamePrefix: "",
+      });
   }
 
   return result;
