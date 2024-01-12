@@ -5,22 +5,13 @@ import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "@latticexyz/store/src/IStor
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
 import { System } from "../../../System.sol";
 import { ResourceId, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
+import { ROOT_NAME } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
-import { WorldContextProviderLib } from "../../../WorldContext.sol";
-
-import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
-import { SystemHooks } from "../../../codegen/tables/SystemHooks.sol";
-import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
-import { Systems } from "../../../codegen/tables/Systems.sol";
-import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
 
 import { IWorldErrors } from "../../../IWorldErrors.sol";
 
@@ -55,22 +46,15 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     string[] calldata fieldNames
   ) public virtual {
     // Require the name to not be the namespace's root name
-    if (tableId.getName() == ROOT_NAME) revert World_InvalidResourceId(tableId, tableId.toString());
-
-    // If the namespace doesn't exist yet, register it
-    ResourceId namespaceId = tableId.getNamespaceId();
-    if (!ResourceIds._getExists(namespaceId)) {
-      // Since this is a root system, we're in the context of the World contract already,
-      // so we can use delegatecall to register the namespace
-      (address coreSystemAddress, ) = Systems._get(CORE_SYSTEM_ID);
-      (bool success, bytes memory data) = coreSystemAddress.delegatecall(
-        abi.encodeCall(WorldRegistrationSystem.registerNamespace, (namespaceId))
-      );
-      if (!success) revertWithBytes(data);
-    } else {
-      // otherwise require caller to own the namespace
-      AccessControl.requireOwner(namespaceId, _msgSender());
+    if (tableId.getName() == ROOT_NAME) {
+      revert World_InvalidResourceId(tableId, tableId.toString());
     }
+
+    // Require the table's namespace to exist
+    AccessControl.requireExistence(tableId.getNamespaceId());
+
+    // Require the caller to own the table's namespace
+    AccessControl.requireOwner(tableId, _msgSender());
 
     // Register the table
     StoreCore.registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);

@@ -1,3 +1,5 @@
+import { CollapseCode } from "../../components/CollapseCode";
+
 # Indexer
 
 The MUD Indexer is an offchain indexer for onchain applications built with MUD.
@@ -20,37 +22,148 @@ Having such a database allows clients to quickly and efficiently query the oncha
 
 These environment variables need to be provided to the indexer to work:
 
-| Type                          | Variable        | Meaning                                                                                                  | Sample value (using `anvil` running on the host)          |
-| ----------------------------- | --------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| Needed                        | RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              | http://host.docker.internal:8545 (when running in Docker) |
-| Optional                      | RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
-| Optional                      | START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                         |
-| Optional                      | DEBUG=mud:\*    | Turn on debugging                                                                                        |                                                           |
-| Optional, only for SQLite     | SQLITE_FILENAME | Name of database                                                                                         | `anvil.db`                                                |
-| Optional, only for PostgreSQL | DATABASE_URL    | URL for the database, of the form `postgres://<host>/<database>`                                         |
+| Type                      | Variable        | Meaning                                                                                                  | Sample value (using `anvil` running on the host)          |
+| ------------------------- | --------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Needed                    | RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              | http://host.docker.internal:8545 (when running in Docker) |
+| Optional                  | RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
+| Optional                  | START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                         |
+| Optional                  | DEBUG=mud:\*    | Turn on debugging                                                                                        |                                                           |
+| Optional                  | STORE_ADDRESS   | Only index tables from this `World`                                                                      |
+| Optional, only for SQLite | SQLITE_FILENAME | Name of database                                                                                         | `indexer.db`                                              |
+| Required for PostgreSQL   | DATABASE_URL    | URL for the database, of the form `postgres://<host>/<database>`                                         |
 
-### Running directly
+### Schemaful indexing to SQLite via npx
 
-To run the indexer directly on your computer:
-
-1. Build the MUD repository, [as per the directions](/contribute).
+To run the indexer directly on your computer using SQLite:
 
 1. Start a `World` to index.
    An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
 
-1. Run the indexer from the build MUD repository.
-   For example, to start the indexer with SQLite, use these commands.
+1. Set `RPC_HTTP_URL`.
 
    ```bash copy
-   cd packages/store-indexer
-   export RPC_HTTP_URL=http://localhost:8545
-   pnpm start:sqlite
+   export RPC_HTTP_URL=http://127.0.0.1:8545
    ```
 
-   Alternatively, you can start the indexer for the local blockchain using `pnpm start:sqlite:local`, in which case you don't need to specify `RPC_HTTP_URL`.
+1. Run the indexer.
+   If necessary, install it first.
 
-**Note:** The `anvil.db` is persistent if you stop and restart the indexer.
+   ```bash copy
+   npx -y -p @latticexyz/store-indexer@next sqlite-indexer
+   ```
+
+**Note:** The `indexer.db` is persistent if you stop and restart the indexer.
 If that is not the desired behavior (for example, because you restarted the blockchain itself), delete it before starting the indexer.
+
+### Schemaless indexing to PostgreSQL via npx
+
+The schemaless indexer stores MUD table records into a single monolithic table.
+This allows it to index the data of all tables of all MUD Worlds on a chain efficiently, but querying for data is limited to filters on `address`, `tableId`, and the record's key.
+Since the record's `data` is stored as encoded bytes blob, it's harder to query based on it in SQL.
+The main purpose of this variant of the indexer is to efficiently hydrate a MUD client, which decodes the data.
+
+1. Start a `World` to index.
+   An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
+
+1. Set the environment variables.
+
+   ```bash copy
+   export RPC_HTTP_URL=http://127.0.0.1:8545
+   export DATABASE_URL=postgres://127.0.0.1/postgres
+   ```
+
+1. Run the indexer.
+   Install it first if necessary.
+
+   ```bash copy
+   npx -y -p @latticexyz/store-indexer@next postgres-indexer
+   ```
+
+1. Open a separate command line.
+   In it, specify the database and run the indexer frontend, which is responsible for serving the data to the client.
+
+   ```bash copy
+   export DATABASE_URL=postgres://127.0.0.1/postgres
+   npx -y -p @latticexyz/store-indexer@next postgres-frontend
+   ```
+
+### Schemaful indexing with PostgreSQL via npx
+
+The schemaful indexer dynamically creates a PostgreSQL table every time it encounters a new MUD table.
+It then decodes the MUD events and stores it in the PostgreSQL table with a matching schema.
+This approach doesn't scale well to all tables of a chain, but it is a convenient way to index the tables of a particular MUD World and have access to powerful SQL queries on its data.
+
+1. Start a `World` to index.
+   An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
+
+1. Set the environment variables and start the indexer, installing it if necessary.
+
+   ```bash copy
+   export RPC_HTTP_URL=http://127.0.0.1:8545
+   export DATABASE_URL=postgres://127.0.0.1/postgres
+   npx -y -p @latticexyz/store-indexer@next postgres-decoded-indexer
+   ```
+
+1. To verify the installation, run `psql` and then:
+
+   - List the schemas.
+
+     ```sql copy
+     \dn
+     ```
+
+     Result:
+
+     ```
+                                     List of schemas
+                          Name                         |       Owner
+     --------------------------------------------------+-------------------
+     0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__      | qbzzt
+     0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__store | qbzzt
+     0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__world | qbzzt
+     mud                                               | qbzzt
+     public                                            | pg_database_owner
+     (5 rows)
+     ```
+
+   - Connect to the schema for your world.
+
+     ```sql copy
+     set search_path to "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__";
+     ```
+
+   - Get the list of tables.
+
+     ```sql copy
+     \dt
+     ```
+
+     Result (When using the React template):
+
+     ```
+                             List of relations
+                       Schema                      | Name  | Type  | Owner
+     ----------------------------------------------+-------+-------+-------
+     0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__  | tasks | table | qbzzt
+     (1 row)
+     ```
+
+   - Read the actual data.
+
+     ```sql copy
+     select * from tasks;
+     ```
+
+     Result:
+
+     ```
+                                   key                                  | created_at | completed_at |    description     |                            __key_bytes                             | __last_updated_block_number
+     --------------------------------------------------------------------+------------+--------------+--------------------+--------------------------------------------------------------------+-----------------------------
+     \x3100000000000000000000000000000000000000000000000000000000000000 | 1702401236 |            0 | Walk the dog       | \x3100000000000000000000000000000000000000000000000000000000000000 |                          17
+     \x5e9c11602057fbf149cca23095b1863f7ffa8d0d0bd9434005a344ad612488a7 | 1702401238 |            0 | Take out the trash | \x5e9c11602057fbf149cca23095b1863f7ffa8d0d0bd9434005a344ad612488a7 |                          17
+     \x0c9151148be227a42be8d3e3e7e61da28a532f2340b0ad9ca8bc747703ec2417 | 1702401238 |   1702401238 | Do the dishes      | \x0c9151148be227a42be8d3e3e7e61da28a532f2340b0ad9ca8bc747703ec2417 |                          17
+     (3 rows)
+     ```
 
 ### Docker
 
@@ -69,7 +182,7 @@ The easiest way to test the indexer is to [run the template as a world](/templat
 #### SQLite
 
 The command to start the indexer in SQLite mode is `pnpm start:sqlite`.
-To index an `anvil` instance running to the host, use:
+To index an `anvil` instance running to the host you can use this command.
 
 ```sh copy
 docker run \
@@ -96,17 +209,11 @@ We can solve this with [volumes](https://docs.docker.com/storage/volumes/):
    docker run \
       --platform linux/amd64 \
       -e RPC_HTTP_URL=http://host.docker.internal:8545 \
-      -e SQLITE_FILENAME=/dbase/anvil.db \
+      -e SQLITE_FILENAME=/dbase/indexer.db \
       -v sqlite-db-file:/dbase \
       -p 3001:3001  \
       ghcr.io/latticexyz/store-indexer:latest  \
       pnpm start:sqlite
-   ```
-
-1. Run this command to test next indexer.
-
-   ```sh copy
-   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
    ```
 
 1. You can stop the docker container and restart it, or start a separate container using the same database.
@@ -122,9 +229,10 @@ We can solve this with [volumes](https://docs.docker.com/storage/volumes/):
    **Note:** You should do this every time you restart the blockchain.
    Otherwise your index will include data from multiple blockchains, and make no sense.
 
-#### PostgreSQL
+#### Schemaless indexing with PostgreSQL via Docker
 
-The command to start the indexer in PostgreSQL mode is `pnpm start:postgres`.
+The command to start the indexer in schemaless PostgreSQL mode is `pnpm start:postgres`.
+This command starts both the indexer and query frontends.
 
 1. The docker instance identifies itself to PostgreSQL as `root`.
    To give this user permissions on the database, enter `psql` and run this command.
@@ -149,40 +257,189 @@ The command to start the indexer in PostgreSQL mode is `pnpm start:postgres`.
      pnpm start:postgres
    ```
 
-1. The PostgreSQL database is persistent.
-   If you restart the blockchain you have to delete the content of this database, otherwise the indexer will include old information.
-   To delete the database content, enter `psql` and run this command.
+   If you want to create additional query frontends (for reliability and load balancing), use these commands:
+
+   ```sh copy
+   HOST_PORT=3002
+   docker run \
+     --platform linux/amd64 \
+     -e DATABASE_URL=postgres://host.docker.internal/postgres \
+     -p $HOST_PORT:3001  \
+     ghcr.io/latticexyz/store-indexer:latest  \
+     node dist/bin/postgres-frontend.js
+   ```
+
+#### Schemaful indexing with PostgreSQL via Docker
+
+The command to start the indexer in schemaful PostgreSQL mode is `pnpm start:postgres-decoded`.
+This command starts both the indexer and the query frontend.
+
+1. The docker instance identifies itself to PostgreSQL as `root`.
+   To give this user permissions on the database, enter `psql` and run this command.
 
    ```sql copy
-   DROP OWNED BY root;
+   CREATE ROLE root SUPERUSER LOGIN;
+   ```
+
+   **Note:** This is assuming a database that is isolated from the internet and only used by trusted entities.
+   In a production system you will use at least a password as authentication, and limit the user's authority.
+
+1. Start the docker container.
+   For example, to index an `anvil` instance running to the host to the database `postgres` on the host, use.
+
+   ```sh copy
+   docker run \
+     --platform linux/amd64 \
+     -e RPC_HTTP_URL=http://host.docker.internal:8545 \
+     -e DATABASE_URL=postgres://host.docker.internal/postgres \
+     -p 3001:3001  \
+     ghcr.io/latticexyz/store-indexer:latest  \
+     pnpm start:postgres-decoded
    ```
 
 ### Verification
 
-To verify that the indexer runs correctly ensure you have [`jq`](https://jqlang.github.io/jq/) installed and run
+If you use either SQLite or PostgreSQL with the query frontend (using PostgreSQL only as storage), you can run this command to test the indexer.
 
-```bash copy
-curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
+```sh copy
+curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' | jq
 ```
 
 The result should be nicely formatted (and long) JSON output with all the data stored in the `World`.
 
-## Resetting the database
+<details>
 
-When you restart the blockchain you _have_ to reset the database, otherwise you'll get a mix of old and new information.
-Here are the directions how to do it.
+<summary>Where does this URL come from?</summary>
 
-### SQLite
+The URL has these parameters:
 
-Delete the database file (by default `anvil.db`).
+| Parameter | Value                 | Explanation                                    |
+| --------- | --------------------- | ---------------------------------------------- |
+| Server    | http://localhost:3001 | By default the indexer listens on port 3001    |
+| Path      | trpc/findAll          | Return all entries (based on the input filter) |
+| `batch`   | `1`                   | A required field                               |
+| `input`   | `%7B%22 ... %7D%7D`   | See below                                      |
 
-### PostgreSQL
+The input is the JSON filter that tells the server what we need.
+It is [URL encoded](https://en.wikipedia.org/wiki/Percent-encoding), you can decode it [using an online calculator](https://www.urldecoder.org/).
 
-Run `psql` and run this command:
-
-```sql
-DROP OWNED BY <see below>;
+```json
+{
+  "0": {
+    "json": {
+      "chainId": 31337,
+      "address": "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342"
+    }
+  }
+}
 ```
 
-- If you are running the indexer locally, the owner of the tablespaces is your user name.
-- If you are using Docker, the owner of the tablespaces is `root`.
+Meaning that query 0 is for everything in the `World` at address `0x6e9474e9c83676b9a71133ff96db43e7aa0a4342`, on the chain with chain ID `31337`.
+
+</details>
+
+## Using the indexer
+
+The source code of a MUD client has a call either to [`syncToRecs`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/recs/syncToRecs.ts#L21-L82) or to [`syncToZustand`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/zustand/syncToZustand.ts#L33-L74), typically in [`setupNetwork.ts`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts#L74-L79).
+This call initializes the synchronization between the data source (RPC or indexer) and the client's copy.
+
+To use the indexer, specify an `indexerUrl` parameter with the URL.
+
+<CollapseCode>
+
+```ts {7}
+const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
+  world,
+  config: mudConfig,
+  address: networkConfig.worldAddress as Hex,
+  publicClient,
+  startBlock: BigInt(networkConfig.initialBlockNumber),
+  indexerUrl: "http://127.0.0.1:3001",
+});
+```
+
+</CollapseCode>
+
+## Usage examples
+
+### SQLite to view the tasks from the React template
+
+1. Start the indexer.
+
+   ```sh copy
+   export RPC_HTTP_URL=http://127.0.0.1:8545
+   npx -y -p @latticexyz/store-indexer@next sqlite-indexer
+   ```
+
+1. Get the list of tables.
+   To do that, we read all the data and filter it locally.
+
+   ```sh copy
+   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' > alldata.json
+   cat alldata.json | jq '.[0].result.data.json.tables[]' > tables.json
+   cat tables.json | jq '.name + " " + .tableId'
+   ```
+
+1. Ask the indexer for only the information in a specific table (which requires you to know the `tableId` for it).
+
+   ```sh copy
+   INDEXER_URL=http://localhost:3001/trpc
+   WORLD_ADDRESS=0x6e9474e9c83676b9a71133ff96db43e7aa0a4342
+   TABLE_ID=0x746200000000000000000000000000005461736b730000000000000000000000
+   CHAIN_ID=31337
+   JSON='{"0":{"json":{"chainId": '$CHAIN_ID', "address": "'$WORLD_ADDRESS'", "filters": [{"tableId": "'$TABLE_ID'"}]}}}'
+   ENCODED_JSON=`echo "console.log(encodeURI('$JSON'))" | node`
+   curl $INDEXER_URL'/findAll?batch=1&input='$ENCODED_JSON > data.json
+   cat data.json |  jq '.[0].result.data.json.tables[0].records'
+   ```
+
+   To see that the only table returned is `Tasks`, run this command:
+
+   ```sh copy
+   cat data.json | jq '.[0].result.data.json.tables[].name'
+   ```
+
+### Postgres to read data from SkyStrife season 0
+
+1. If necessary, start Docker and PostgreSQL.
+
+1. Start the Postgres Docker container.
+
+   ```sh copy
+   docker run \
+      --platform linux/amd64 \
+      -e RPC_HTTP_URL=https://rpc.holesky.redstone.xyz \
+      -e RPC_WS_URL=wss://rpc.holesky.redstone.xyz/ws \
+      -e DATABASE_URL=postgres://host.docker.internal/postgres \
+      -e START_BLOCK=895629 \
+      -p 3001:3001  \
+      ghcr.io/latticexyz/store-indexer:latest  \
+      pnpm start:postgres
+   ```
+
+1. It will take a while until the indexer synchronizes all the way to the present.
+   However, we can already read information and it will give us the latest it has.
+
+1. Read the data from the indexer.
+
+   ```sh copy
+   INDEXER_URL=http://localhost:3001/trpc
+   WORLD_ADDRESS=0x7203e7adfdf38519e1ff4f8da7dcdc969371f377
+   CHAIN_ID=17001
+   JSON='{"0":{"json":{"chainId":'$CHAIN_ID', "address":"'$WORLD_ADDRESS'"}}}'
+   ENCODED_JSON=`echo "console.log(encodeURI('$JSON'))" | node`
+   curl $INDEXER_URL'/findAll?batch=1&input='$ENCODED_JSON > data.json
+   ```
+
+1. Obtain the list of tables.
+
+   ```sh copy
+   TABLES=`cat data.json | jq '.[0].result.data.json.tables'`
+   echo $TABLES | jq '.[].name'
+   ```
+
+1. Get the combatant entities.
+
+   ```sh copy
+   echo $TABLES | jq '.[] | select (.name=="Combat")'
+   ```

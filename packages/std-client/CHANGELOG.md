@@ -1,5 +1,7 @@
 # @latticexyz/std-client
 
+## 2.0.0-next.15
+
 ## 2.0.0-next.14
 
 ## 2.0.0-next.13

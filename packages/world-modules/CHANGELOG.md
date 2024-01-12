@@ -1,5 +1,34 @@
 # Change Log
 
+## 2.0.0-next.15
+
+### Patch Changes
+
+- eb384bb0: Added `isInstalled` and `requireNotInstalled` helpers to `Module` base contract.
+- 59054203: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- 747d8d1b: Renamed token address fields in ERC20 and ERC721 modules to `tokenAddress`
+- Updated dependencies [d8c8f66b]
+- Updated dependencies [1b86eac0]
+- Updated dependencies [1077c7f5]
+- Updated dependencies [933b54b5]
+- Updated dependencies [f8dab733]
+- Updated dependencies [1a0fa797]
+- Updated dependencies [eb384bb0]
+- Updated dependencies [e5a962bc]
+- Updated dependencies [59054203]
+- Updated dependencies [1b5eb0d0]
+- Updated dependencies [6db95ce1]
+- Updated dependencies [5d737cf2]
+- Updated dependencies [5ac4c97f]
+- Updated dependencies [e4817174]
+- Updated dependencies [4c1dcd81]
+- Updated dependencies [5df1f31b]
+  - @latticexyz/store@2.0.0-next.15
+  - @latticexyz/world@2.0.0-next.15
+  - @latticexyz/common@2.0.0-next.15
+  - @latticexyz/config@2.0.0-next.15
+  - @latticexyz/schema-type@2.0.0-next.15
+
 ## 2.0.0-next.14
 
 ### Minor Changes

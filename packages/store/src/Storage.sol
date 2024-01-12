@@ -27,7 +27,7 @@ library Storage {
    * @param data Bytes to store.
    */
   function store(uint256 storagePointer, uint256 offset, bytes memory data) internal {
-    store(storagePointer, offset, Memory.dataPointer(data), data.length);
+    store(storagePointer, offset, data.length, Memory.dataPointer(data));
   }
 
   /**
@@ -37,7 +37,7 @@ library Storage {
    * @param memoryPointer Pointer to the start of the data in memory.
    * @param length Length of the data in bytes.
    */
-  function store(uint256 storagePointer, uint256 offset, uint256 memoryPointer, uint256 length) internal {
+  function store(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer) internal {
     if (offset > 0) {
       // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
       if (offset >= 32) {
@@ -121,7 +121,7 @@ library Storage {
   /**
    * @notice Set multiple storage locations to zero.
    * @param storagePointer The starting storage location.
-   * @param length The number of storage locations to set to zero.
+   * @param length The number of storage locations to set to zero, in bytes
    */
   function zero(uint256 storagePointer, uint256 length) internal {
     // Ceil division to round up to the nearest word
@@ -153,7 +153,7 @@ library Storage {
    * @param offset Offset within the storage location.
    * @return result The loaded bytes of data.
    */
-  function load(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes memory result) {
+  function load(uint256 storagePointer, uint256 offset, uint256 length) internal view returns (bytes memory result) {
     uint256 memoryPointer;
     /// @solidity memory-safe-assembly
     assembly {
@@ -169,7 +169,7 @@ library Storage {
       // Store length
       mstore(result, length)
     }
-    load(storagePointer, length, offset, memoryPointer);
+    load(storagePointer, offset, length, memoryPointer);
     return result;
   }
 
@@ -180,7 +180,7 @@ library Storage {
    * @param offset Offset within the storage location.
    * @param memoryPointer Pointer to the location in memory to append the data.
    */
-  function load(uint256 storagePointer, uint256 length, uint256 offset, uint256 memoryPointer) internal view {
+  function load(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer) internal view {
     if (offset > 0) {
       // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
       if (offset >= 32) {
@@ -199,7 +199,12 @@ library Storage {
           wordRemainder = 32 - offset;
         }
 
-        uint256 mask = leftMask(wordRemainder);
+        uint256 mask;
+        if (length < wordRemainder) {
+          mask = leftMask(length);
+        } else {
+          mask = leftMask(wordRemainder);
+        }
         /// @solidity memory-safe-assembly
         assembly {
           // Load data from storage and offset it to match memory
@@ -208,9 +213,9 @@ library Storage {
           mstore(
             memoryPointer,
             or(
-              // store the middle part
+              // store the left part
               and(offsetData, mask),
-              // preserve the surrounding parts
+              // preserve the right parts
               and(mload(memoryPointer), not(mask))
             )
           )
@@ -262,11 +267,11 @@ library Storage {
   /**
    * @notice Load up to 32 bytes from storage at a given pointer and offset.
    * @dev Since fields are tightly packed, they can span more than one slot.
-   * Since the they're max 32 bytes, they can span at most 2 slots.
+   * Since they're max 32 bytes, they can span at most 2 slots.
    * @param storagePointer The base storage location.
    * @param length Length of the data in bytes.
    * @param offset Offset within the storage location.
-   * @return result The loaded bytes, left-aligned bytes. Bytes beyond the length are zeroed.
+   * @return result The loaded bytes, left-aligned bytes. Bytes beyond the length are not zeroed.
    */
   function loadField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32 result) {
     if (offset >= 32) {

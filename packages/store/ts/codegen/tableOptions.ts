@@ -75,18 +75,14 @@ export function getTableOptions(
 
     // With tableIdArgument: tableId is a dynamic argument for each method
     // Without tableIdArgument: tableId is a file-level constant generated from `staticResourceData`
-    const staticResourceData = (() => {
-      if (tableData.tableIdArgument) {
-        return;
-      } else {
-        return {
+    const staticResourceData = tableData.tableIdArgument
+      ? undefined
+      : {
           tableIdName: tableName + "TableId",
           namespace: config.namespace,
           name: tableData.name,
           offchainOnly: tableData.offchainOnly,
         };
-      }
-    })();
 
     options.push({
       outputPath: path.join(tableData.directory, `${tableName}.sol`),

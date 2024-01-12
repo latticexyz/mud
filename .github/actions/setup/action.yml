@@ -3,22 +3,8 @@ description: Common setup steps used by our workflows
 runs:
   using: composite
   steps:
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: 8.x
-
-    - name: Setup node
-      uses: actions/setup-node@v3
-      with:
-        node-version-file: .nvmrc
-        registry-url: https://registry.npmjs.org
-        cache: pnpm
-
-    - name: Setup foundry
-      uses: foundry-rs/foundry-toolchain@v1
-      with:
-        version: nightly
+    - name: Setup prerequisites
+      uses: ./.github/actions/setup-prerequisites
 
     # pnpm no longer runs this before the actual install (https://github.com/pnpm/pnpm/issues/3760)
     # but we need to create some placeholder files like bins so that the install step can find them and put references to them in the right spot
