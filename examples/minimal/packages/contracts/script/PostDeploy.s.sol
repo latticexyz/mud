@@ -4,7 +4,7 @@ pragma solidity >=0.8.21;
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { ResourceId, WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 import { MessageTable, MessageTableTableId } from "../src/codegen/index.sol";
@@ -12,6 +12,8 @@ import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { ChatNamespacedSystem } from "../src/systems/ChatNamespacedSystem.sol";
 
 contract PostDeploy is Script {
+  using WorldResourceIdInstance for ResourceId;
+
   function run(address worldAddress) external {
     // Specify a store so that you can use tables directly in PostDeploy
     StoreSwitch.setStoreAddress(worldAddress);
@@ -29,8 +31,10 @@ contract PostDeploy is Script {
       namespace: "namespace",
       name: "ChatNamespaced"
     });
+    IWorld(worldAddress).registerNamespace(systemId.getNamespaceId());
     IWorld(worldAddress).registerSystem(systemId, chatNamespacedSystem, true);
     IWorld(worldAddress).registerFunctionSelector(systemId, "sendMessage(string)");
+
     // Grant this system access to MessageTable
     IWorld(worldAddress).grantAccess(MessageTableTableId, address(chatNamespacedSystem));
 
