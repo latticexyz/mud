@@ -298,6 +298,13 @@ library StoreCore {
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) internal {
+    // Early return if the table is an offchain table
+    if (tableId.getType() == RESOURCE_OFFCHAIN_TABLE) {
+      // Emit event to notify indexers
+      emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
+      return;
+    }
+
     bytes21[] memory hooks = StoreHooks._get(tableId);
     // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     for (uint256 i; i < hooks.length; i++) {
@@ -316,11 +323,6 @@ library StoreCore {
 
     // Emit event to notify indexers
     emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
-
-    // Early return if the table is an offchain table
-    if (tableId.getType() != RESOURCE_TABLE) {
-      return;
-    }
 
     // Store the static data at the static data location
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
@@ -387,6 +389,13 @@ library StoreCore {
    * @param data The data to write to the static data of the record at the start byte.
    */
   function spliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 start, bytes memory data) internal {
+    // Early return if the table is an offchain table
+    if (tableId.getType() == RESOURCE_OFFCHAIN_TABLE) {
+      // Emit event to notify offchain indexers
+      emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
+      return;
+    }
+
     uint256 location = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
 
     bytes21[] memory hooks = StoreHooks._get(tableId);
@@ -405,11 +414,6 @@ library StoreCore {
 
     // Emit event to notify offchain indexers
     emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
-
-    // Early return if the table is an offchain table
-    if (tableId.getType() != RESOURCE_TABLE) {
-      return;
-    }
 
     // Store the provided value in storage
     Storage.store({ storagePointer: location, offset: start, data: data });
@@ -583,6 +587,13 @@ library StoreCore {
    * @param fieldLayout The field layout for the record.
    */
   function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
+    // Early return if the table is an offchain table
+    if (tableId.getType() == RESOURCE_OFFCHAIN_TABLE) {
+      // Emit event to notify indexers
+      emit Store_DeleteRecord(tableId, keyTuple);
+      return;
+    }
+
     bytes21[] memory hooks = StoreHooks._get(tableId);
     // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     for (uint256 i; i < hooks.length; i++) {
@@ -594,11 +605,6 @@ library StoreCore {
 
     // Emit event to notify indexers
     emit Store_DeleteRecord(tableId, keyTuple);
-
-    // Early return if the table is an offchain table
-    if (tableId.getType() != RESOURCE_TABLE) {
-      return;
-    }
 
     // Delete static data
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);

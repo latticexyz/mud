@@ -723,7 +723,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testDeleteDataOffchainTable",
     "name": "StoreCore: delete record in offchain table",
-    "gasUsed": 7017
+    "gasUsed": 4687
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -951,7 +951,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetDataOffchainTable",
     "name": "StoreCore: set record in offchain table",
-    "gasUsed": 12423
+    "gasUsed": 8093
   },
   {
     "file": "test/StoreCoreGas.t.sol",
