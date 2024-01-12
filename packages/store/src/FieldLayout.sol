@@ -35,21 +35,21 @@ library FieldLayoutLib {
    * @notice Encodes the given field layout into a single bytes32.
    * @dev Ensures various constraints on the length and size of the fields.
    * Reverts if total fields, static field length, or static byte length exceed allowed limits.
-   * @param _staticFields An array of static field lengths.
+   * @param _staticFieldLengths An array of static field lengths.
    * @param numDynamicFields The number of dynamic fields.
    * @return A FieldLayout structure containing the encoded field layout.
    */
-  function encode(uint256[] memory _staticFields, uint256 numDynamicFields) internal pure returns (FieldLayout) {
+  function encode(uint256[] memory _staticFieldLengths, uint256 numDynamicFields) internal pure returns (FieldLayout) {
     uint256 fieldLayout;
     uint256 totalLength;
-    uint256 totalFields = _staticFields.length + numDynamicFields;
+    uint256 totalFields = _staticFieldLengths.length + numDynamicFields;
     if (totalFields > MAX_TOTAL_FIELDS) revert FieldLayoutLib_TooManyFields(totalFields, MAX_TOTAL_FIELDS);
     if (numDynamicFields > MAX_DYNAMIC_FIELDS)
       revert FieldLayoutLib_TooManyDynamicFields(numDynamicFields, MAX_DYNAMIC_FIELDS);
 
     // Compute the total static length and store the field lengths in the encoded fieldLayout
-    for (uint256 i = 0; i < _staticFields.length; ) {
-      uint256 staticByteLength = _staticFields[i];
+    for (uint256 i = 0; i < _staticFieldLengths.length; ) {
+      uint256 staticByteLength = _staticFieldLengths[i];
       if (staticByteLength == 0) {
         revert FieldLayoutLib_StaticLengthIsZero();
       } else if (staticByteLength > WORD_SIZE) {
@@ -57,11 +57,11 @@ library FieldLayoutLib {
       }
 
       unchecked {
-        // (safe because 28 (max _staticFields.length) * 32 (max static length) < 2**16)
+        // (safe because 28 (max _staticFieldLengths.length) * 32 (max static length) < 2**16)
         totalLength += staticByteLength;
         // Sequentially store lengths after the first 4 bytes (which are reserved for total length and field numbers)
-        // (safe because of the initial _staticFields.length check)
-        fieldLayout |= uint256(_staticFields[i]) << ((WORD_LAST_INDEX - 4 - i) * BYTE_TO_BITS);
+        // (safe because of the initial _staticFieldLengths.length check)
+        fieldLayout |= uint256(_staticFieldLengths[i]) << ((WORD_LAST_INDEX - 4 - i) * BYTE_TO_BITS);
         i++;
       }
     }
@@ -71,7 +71,7 @@ library FieldLayoutLib {
     // number of dynamic fields in the 4th byte
     // (optimizer can handle this, no need for unchecked or single-line assignment)
     fieldLayout |= totalLength << LayoutOffsets.TOTAL_LENGTH;
-    fieldLayout |= _staticFields.length << LayoutOffsets.NUM_STATIC_FIELDS;
+    fieldLayout |= _staticFieldLengths.length << LayoutOffsets.NUM_STATIC_FIELDS;
     fieldLayout |= numDynamicFields << LayoutOffsets.NUM_DYNAMIC_FIELDS;
 
     return FieldLayout.wrap(bytes32(fieldLayout));
