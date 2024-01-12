@@ -39,7 +39,7 @@ SCHEMA
 Get the field layout for the given table ID.
 
 ```solidity
-function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout);
+function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout fieldLayout);
 ```
 
 **Parameters**
@@ -50,9 +50,9 @@ function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout);
 
 **Returns**
 
-| Name     | Type          | Description                              |
-| -------- | ------------- | ---------------------------------------- |
-| `<none>` | `FieldLayout` | The field layout for the given table ID. |
+| Name          | Type          | Description                              |
+| ------------- | ------------- | ---------------------------------------- |
+| `fieldLayout` | `FieldLayout` | The field layout for the given table ID. |
 
 ### getKeySchema
 

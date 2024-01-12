@@ -108,23 +108,16 @@ library StoreCore {
   /**
    * @notice Get the field layout for the given table ID.
    * @param tableId The ID of the table for which to get the field layout.
-   * @return The field layout for the given table ID.
+   * @return fieldLayout The field layout for the given table ID.
    */
-  function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout) {
+  function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout fieldLayout) {
     // Explicit check for the Tables table to solve the bootstraping issue
     // of the Tables table not having a field layout before it is registered
     // since the field layout is stored in the Tables table.
     if (ResourceId.unwrap(tableId) == ResourceId.unwrap(TablesTableId)) {
       return TablesTableFieldLayout;
     }
-    return
-      FieldLayout.wrap(
-        Storage.loadField({
-          storagePointer: StoreCoreInternal._getStaticDataLocation(TablesTableId, ResourceId.unwrap(tableId)),
-          length: 32,
-          offset: 0
-        })
-      );
+    fieldLayout = Tables._getFieldLayout(tableId);
   }
 
   /**

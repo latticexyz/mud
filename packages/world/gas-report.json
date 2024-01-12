@@ -57,13 +57,13 @@
     "file": "test/Factories.t.sol",
     "test": "testCreate2Factory",
     "name": "deploy contract via Create2",
-    "gasUsed": 4647128
+    "gasUsed": 4662164
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testWorldFactory",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 11932753
+    "gasUsed": 11947615
   },
   {
     "file": "test/World.t.sol",
@@ -93,7 +93,7 @@
     "file": "test/World.t.sol",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 9840
+    "gasUsed": 10401
   },
   {
     "file": "test/World.t.sol",
@@ -141,7 +141,7 @@
     "file": "test/World.t.sol",
     "test": "testSetRecord",
     "name": "Write data to the table",
-    "gasUsed": 39050
+    "gasUsed": 39612
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
