@@ -396,9 +396,9 @@ library StoreCore {
       return;
     }
 
-    // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
     uint256 location = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
 
+    // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
