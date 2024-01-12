@@ -369,7 +369,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 719207
+    "gasUsed": 719182
   },
   {
     "file": "test/Mixed.t.sol",
@@ -393,7 +393,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteExternal",
     "name": "set record in Mixed (external, cold)",
-    "gasUsed": 108593
+    "gasUsed": 108568
   },
   {
     "file": "test/Mixed.t.sol",
@@ -411,7 +411,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteInternal",
     "name": "set record in Mixed (internal, cold)",
-    "gasUsed": 103347
+    "gasUsed": 103322
   },
   {
     "file": "test/Mixed.t.sol",
@@ -759,7 +759,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 72515
+    "gasUsed": 72465
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -783,7 +783,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 165655
+    "gasUsed": 165605
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -813,7 +813,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: register table",
-    "gasUsed": 641089
+    "gasUsed": 641064
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -837,7 +837,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetDynamicData",
     "name": "set complex record with dynamic data (4 slots)",
-    "gasUsed": 102578
+    "gasUsed": 102553
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -927,7 +927,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetStaticData",
     "name": "set static record (1 slot)",
-    "gasUsed": 32847
+    "gasUsed": 32822
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -939,7 +939,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetStaticDataSpanningWords",
     "name": "set static record (2 slots)",
-    "gasUsed": 55354
+    "gasUsed": 55329
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -951,7 +951,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetDataOffchainTable",
     "name": "StoreCore: set record in offchain table",
-    "gasUsed": 12453
+    "gasUsed": 12428
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -1155,13 +1155,13 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 442592
+    "gasUsed": 442567
   },
   {
     "file": "test/Vector2.t.sol",
     "test": "testSetAndGet",
     "name": "set Vector2 record",
-    "gasUsed": 33749
+    "gasUsed": 33724
   },
   {
     "file": "test/Vector2.t.sol",
