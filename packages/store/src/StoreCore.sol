@@ -305,8 +305,8 @@ library StoreCore {
       return;
     }
 
-    bytes21[] memory hooks = StoreHooks._get(tableId);
     // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(BEFORE_SET_RECORD)) {
@@ -396,10 +396,10 @@ library StoreCore {
       return;
     }
 
+    // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
     uint256 location = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
 
     bytes21[] memory hooks = StoreHooks._get(tableId);
-    // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(BEFORE_SPLICE_STATIC_DATA)) {
@@ -594,8 +594,8 @@ library StoreCore {
       return;
     }
 
-    bytes21[] memory hooks = StoreHooks._get(tableId);
     // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(BEFORE_DELETE_RECORD)) {
