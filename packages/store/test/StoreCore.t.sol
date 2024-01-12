@@ -304,7 +304,7 @@ contract StoreCoreTest is Test, StoreMock {
       fieldLayout
     );
 
-    assertTrue(Bytes.equals(staticData, loadedStaticData));
+    assertEq(staticData, loadedStaticData);
     assertEq(_encodedLengths.unwrap(), bytes32(0));
     assertEq(_dynamicData, "");
   }
@@ -341,7 +341,7 @@ contract StoreCoreTest is Test, StoreMock {
       fieldLayout
     );
 
-    assertTrue(Bytes.equals(staticData, loadedStaticData));
+    assertEq(staticData, loadedStaticData);
     assertEq(_encodedLengths.unwrap(), bytes32(0));
     assertEq(_dynamicData, "");
   }

@@ -1,63 +1,15 @@
 [
   {
     "file": "test/Bytes.t.sol",
-    "test": "testEquals",
-    "name": "compare equal bytes",
-    "gasUsed": 196
-  },
-  {
-    "file": "test/Bytes.t.sol",
-    "test": "testEqualsFalse",
-    "name": "compare unequal bytes",
-    "gasUsed": 196
-  },
-  {
-    "file": "test/Bytes.t.sol",
-    "test": "testSetBytes1",
-    "name": "set bytes1 in bytes32",
-    "gasUsed": 16
-  },
-  {
-    "file": "test/Bytes.t.sol",
-    "test": "testSetBytes2",
-    "name": "set bytes2 in bytes32",
-    "gasUsed": 16
-  },
-  {
-    "file": "test/Bytes.t.sol",
-    "test": "testSetBytes4",
-    "name": "set bytes4 in bytes32",
-    "gasUsed": 16
-  },
-  {
-    "file": "test/Bytes.t.sol",
     "test": "testSetBytes4Memory",
     "name": "set bytes4 in bytes memory",
     "gasUsed": 37
   },
   {
     "file": "test/Bytes.t.sol",
-    "test": "testSlice3",
-    "name": "slice bytes3 with offset 1",
-    "gasUsed": 68
-  },
-  {
-    "file": "test/Bytes.t.sol",
     "test": "testSlice32",
     "name": "slice bytes32 with offset 10",
     "gasUsed": 68
-  },
-  {
-    "file": "test/Bytes.t.sol",
-    "test": "testToBytes32",
-    "name": "create bytes32 from bytes memory with offset 0",
-    "gasUsed": 25
-  },
-  {
-    "file": "test/Bytes.t.sol",
-    "test": "testToBytes32CrossWord",
-    "name": "create bytes32 from bytes memory with offset 16",
-    "gasUsed": 36
   },
   {
     "file": "test/Callbacks.t.sol",
