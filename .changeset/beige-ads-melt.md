@@ -2,4 +2,4 @@
 "@latticexyz/store": patch
 ---
 
-Fixes the functions in `StoreCore` to emit a storage event after calling the `beforeSetRecord` hook, ensuring that storage events are emitted in the same order that values are set on-chain.
+Storage events are now emitted after "before" hooks, so that the resulting logs are now correctly ordered and reflect onchain logic. This resolves issues with store writes and event emissions happening in "before" hooks.
