@@ -64,6 +64,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
     tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
 
     // Register a new table
+    world.registerNamespace(tableId.getNamespaceId());
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
     // Create data

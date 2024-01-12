@@ -8,7 +8,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { UNLIMITED_DELEGATION } from "../src/constants.sol";
-import { ResourceId, WorldResourceIdLib } from "../src/WorldResourceId.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
 import { IWorldErrors } from "../src/IWorldErrors.sol";
@@ -48,6 +48,8 @@ contract TestSystem is System {
 }
 
 contract BatchCallTest is Test, GasReporter {
+  using WorldResourceIdInstance for ResourceId;
+
   IBaseWorld world;
   bytes14 namespace = "namespace";
   bytes16 name = "testSystem";
@@ -57,6 +59,7 @@ contract BatchCallTest is Test, GasReporter {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(createCoreModule());
+    world.registerNamespace(systemId.getNamespaceId());
   }
 
   function testBatchCall() public {

@@ -50,9 +50,25 @@ contract PuppetModuleTest is Test, GasReporter {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(createCoreModule());
+  }
+
+  function _setupPuppet() internal {
     world.installModule(new PuppetModule(), new bytes(0));
 
+    // Register a new namespace and system
+    world.registerNamespace(systemId.getNamespaceId());
+    PuppetTestSystem system = new PuppetTestSystem();
+    world.registerSystem(systemId, system, true);
+
+    // Connect the puppet
+    puppet = PuppetTestSystem(createPuppet(world, systemId));
+  }
+
+  function _setupRootPuppet() internal {
+    world.installRootModule(new PuppetModule(), new bytes(0));
+
     // Register a new system
+    world.registerNamespace(systemId.getNamespaceId());
     PuppetTestSystem system = new PuppetTestSystem();
     world.registerSystem(systemId, system, true);
 
@@ -61,6 +77,8 @@ contract PuppetModuleTest is Test, GasReporter {
   }
 
   function testEmitOnPuppet() public {
+    _setupPuppet();
+
     vm.expectEmit(true, true, true, true);
     emit Hello("hello world");
     string memory result = puppet.echoAndEmit("hello world");
@@ -68,6 +86,23 @@ contract PuppetModuleTest is Test, GasReporter {
   }
 
   function testMsgSender() public {
+    _setupPuppet();
+
+    assertEq(puppet.msgSender(), address(this));
+  }
+
+  function testEmitOnRootPuppet() public {
+    _setupRootPuppet();
+
+    vm.expectEmit(true, true, true, true);
+    emit Hello("hello world");
+    string memory result = puppet.echoAndEmit("hello world");
+    assertEq(result, "hello world");
+  }
+
+  function testMsgSenderRootPuppet() public {
+    _setupRootPuppet();
+
     assertEq(puppet.msgSender(), address(this));
   }
 }

@@ -26,6 +26,7 @@ import { CALLBOUND_DELEGATION, SYSTEMBOUND_DELEGATION, TIMEBOUND_DELEGATION } fr
 import { WorldTestSystem, WorldTestSystemReturn } from "@latticexyz/world/test/World.t.sol";
 
 contract StandardDelegationsModuleTest is Test, GasReporter {
+  using WorldResourceIdInstance for ResourceId;
   IBaseWorld private world;
   ResourceId private systemId =
     WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "namespace", name: "testSystem" });
@@ -39,6 +40,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
   }
 

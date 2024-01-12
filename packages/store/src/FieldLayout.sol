@@ -25,7 +25,10 @@ using FieldLayoutInstance for FieldLayout global;
  * various constraints regarding the length and size of the fields.
  */
 library FieldLayoutLib {
-  error FieldLayoutLib_InvalidLength(uint256 length);
+  error FieldLayoutLib_TooManyFields(uint256 numFields, uint256 maxFields);
+  error FieldLayoutLib_TooManyDynamicFields(uint256 numFields, uint256 maxFields);
+  error FieldLayoutLib_Empty();
+  error FieldLayoutLib_InvalidStaticDataLength(uint256 staticDataLength, uint256 computedStaticDataLength);
   error FieldLayoutLib_StaticLengthIsZero(uint256 index);
   error FieldLayoutLib_StaticLengthIsNotZero(uint256 index);
   error FieldLayoutLib_StaticLengthDoesNotFitInAWord();
@@ -42,8 +45,9 @@ library FieldLayoutLib {
     uint256 fieldLayout;
     uint256 totalLength;
     uint256 totalFields = _staticFields.length + numDynamicFields;
-    if (totalFields > MAX_TOTAL_FIELDS) revert FieldLayoutLib_InvalidLength(totalFields);
-    if (numDynamicFields > MAX_DYNAMIC_FIELDS) revert FieldLayoutLib_InvalidLength(numDynamicFields);
+    if (totalFields > MAX_TOTAL_FIELDS) revert FieldLayoutLib_TooManyFields(totalFields, MAX_TOTAL_FIELDS);
+    if (numDynamicFields > MAX_DYNAMIC_FIELDS)
+      revert FieldLayoutLib_TooManyDynamicFields(numDynamicFields, MAX_DYNAMIC_FIELDS);
 
     // Compute the total static length and store the field lengths in the encoded fieldLayout
     for (uint256 i = 0; i < _staticFields.length; ) {
@@ -150,16 +154,18 @@ library FieldLayoutInstance {
    */
   function validate(FieldLayout fieldLayout, bool allowEmpty) internal pure {
     // FieldLayout must not be empty
-    if (!allowEmpty && fieldLayout.isEmpty()) revert FieldLayoutLib.FieldLayoutLib_InvalidLength(0);
+    if (!allowEmpty && fieldLayout.isEmpty()) revert FieldLayoutLib.FieldLayoutLib_Empty();
 
     // FieldLayout must have no more than MAX_DYNAMIC_FIELDS
     uint256 _numDynamicFields = fieldLayout.numDynamicFields();
-    if (_numDynamicFields > MAX_DYNAMIC_FIELDS) revert FieldLayoutLib.FieldLayoutLib_InvalidLength(_numDynamicFields);
+    if (_numDynamicFields > MAX_DYNAMIC_FIELDS)
+      revert FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields(_numDynamicFields, MAX_DYNAMIC_FIELDS);
 
     uint256 _numStaticFields = fieldLayout.numStaticFields();
     // FieldLayout must not have more than MAX_TOTAL_FIELDS in total
     uint256 _numTotalFields = _numStaticFields + _numDynamicFields;
-    if (_numTotalFields > MAX_TOTAL_FIELDS) revert FieldLayoutLib.FieldLayoutLib_InvalidLength(_numTotalFields);
+    if (_numTotalFields > MAX_TOTAL_FIELDS)
+      revert FieldLayoutLib.FieldLayoutLib_TooManyFields(_numTotalFields, MAX_TOTAL_FIELDS);
 
     // Static lengths must be valid
     uint256 _staticDataLength;
@@ -177,7 +183,7 @@ library FieldLayoutInstance {
     }
     // Static length sums must match
     if (_staticDataLength != fieldLayout.staticDataLength()) {
-      revert FieldLayoutLib.FieldLayoutLib_InvalidLength(fieldLayout.staticDataLength());
+      revert FieldLayoutLib.FieldLayoutLib_InvalidStaticDataLength(fieldLayout.staticDataLength(), _staticDataLength);
     }
     // Unused fields must be zero
     for (uint256 i = _numStaticFields; i < MAX_TOTAL_FIELDS; i++) {
