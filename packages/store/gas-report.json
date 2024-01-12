@@ -63,7 +63,7 @@
     "file": "test/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "Callbacks: set field",
-    "gasUsed": 56271
+    "gasUsed": 56286
   },
   {
     "file": "test/Callbacks.t.sol",
@@ -75,7 +75,7 @@
     "file": "test/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "Callbacks: push 1 element",
-    "gasUsed": 32530
+    "gasUsed": 32545
   },
   {
     "file": "test/FieldLayout.t.sol",
@@ -369,7 +369,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 719062
+    "gasUsed": 719207
   },
   {
     "file": "test/Mixed.t.sol",
@@ -381,19 +381,19 @@
     "file": "test/Mixed.t.sol",
     "test": "testDeleteExternalCold",
     "name": "delete record from Mixed (external, cold)",
-    "gasUsed": 24372
+    "gasUsed": 24437
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testDeleteInternalCold",
     "name": "delete record from Mixed (internal, cold)",
-    "gasUsed": 19168
+    "gasUsed": 19233
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteExternal",
     "name": "set record in Mixed (external, cold)",
-    "gasUsed": 108528
+    "gasUsed": 108593
   },
   {
     "file": "test/Mixed.t.sol",
@@ -405,13 +405,13 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteExternal",
     "name": "delete record from Mixed (external, warm)",
-    "gasUsed": 8688
+    "gasUsed": 8753
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteInternal",
     "name": "set record in Mixed (internal, cold)",
-    "gasUsed": 103282
+    "gasUsed": 103347
   },
   {
     "file": "test/Mixed.t.sol",
@@ -423,7 +423,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteInternal",
     "name": "delete record from Mixed (internal, warm)",
-    "gasUsed": 7481
+    "gasUsed": 7546
   },
   {
     "file": "test/PackedCounter.t.sol",
@@ -669,25 +669,25 @@
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromSecondField",
     "name": "pop from field (cold, 1 slot, 1 uint32 item)",
-    "gasUsed": 18041
+    "gasUsed": 18056
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromSecondField",
     "name": "pop from field (warm, 1 slot, 1 uint32 item)",
-    "gasUsed": 12049
+    "gasUsed": 12064
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromThirdField",
     "name": "pop from field (cold, 2 slots, 10 uint32 items)",
-    "gasUsed": 15810
+    "gasUsed": 15825
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromThirdField",
     "name": "pop from field (warm, 2 slots, 10 uint32 items)",
-    "gasUsed": 11818
+    "gasUsed": 11833
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -717,7 +717,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testDeleteData",
     "name": "delete record (complex data, 3 slots)",
-    "gasUsed": 8015
+    "gasUsed": 8080
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -747,67 +747,67 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "register subscriber",
-    "gasUsed": 57954
+    "gasUsed": 57984
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 72320
+    "gasUsed": 72450
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 19815
+    "gasUsed": 19945
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 18617
+    "gasUsed": 18747
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "register subscriber",
-    "gasUsed": 57954
+    "gasUsed": 57984
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 165460
+    "gasUsed": 165590
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 24491
+    "gasUsed": 24521
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 20283
+    "gasUsed": 20413
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testPushToDynamicField",
     "name": "push to field (1 slot, 1 uint32 item)",
-    "gasUsed": 9475
+    "gasUsed": 9490
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testPushToDynamicField",
     "name": "push to field (2 slots, 10 uint32 items)",
-    "gasUsed": 32150
+    "gasUsed": 32165
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: register table",
-    "gasUsed": 640944
+    "gasUsed": 641089
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -831,7 +831,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetDynamicData",
     "name": "set complex record with dynamic data (4 slots)",
-    "gasUsed": 102513
+    "gasUsed": 102578
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -873,7 +873,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "set static field (1 slot)",
-    "gasUsed": 31252
+    "gasUsed": 31317
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -885,7 +885,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "set static field (overlap 2 slot)",
-    "gasUsed": 29908
+    "gasUsed": 29973
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -897,7 +897,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "set dynamic field (1 slot, first dynamic field)",
-    "gasUsed": 53961
+    "gasUsed": 53976
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -909,7 +909,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "set dynamic field (1 slot, second dynamic field)",
-    "gasUsed": 32186
+    "gasUsed": 32201
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -921,7 +921,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetStaticData",
     "name": "set static record (1 slot)",
-    "gasUsed": 32782
+    "gasUsed": 32847
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -933,7 +933,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetStaticDataSpanningWords",
     "name": "set static record (2 slots)",
-    "gasUsed": 55289
+    "gasUsed": 55354
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -945,13 +945,13 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testUpdateInDynamicField",
     "name": "update in field (1 slot, 1 uint32 item)",
-    "gasUsed": 8835
+    "gasUsed": 8850
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testUpdateInDynamicField",
     "name": "push to field (2 slots, 6 uint64 items)",
-    "gasUsed": 9282
+    "gasUsed": 9297
   },
   {
     "file": "test/StoreHook.t.sol",
@@ -981,13 +981,13 @@
     "file": "test/StoreHooks.t.sol",
     "test": "testOneSlot",
     "name": "StoreHooks: set field with one elements (cold)",
-    "gasUsed": 58275
+    "gasUsed": 58290
   },
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: set field (cold)",
-    "gasUsed": 58275
+    "gasUsed": 58290
   },
   {
     "file": "test/StoreHooks.t.sol",
@@ -999,55 +999,55 @@
     "file": "test/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: push 1 element (cold)",
-    "gasUsed": 12626
+    "gasUsed": 12641
   },
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: pop 1 element (warm)",
-    "gasUsed": 9958
+    "gasUsed": 9973
   },
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: push 1 element (warm)",
-    "gasUsed": 10646
+    "gasUsed": 10661
   },
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: update 1 element (warm)",
-    "gasUsed": 29886
+    "gasUsed": 29901
   },
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: delete record (warm)",
-    "gasUsed": 10425
+    "gasUsed": 10490
   },
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: set field (warm)",
-    "gasUsed": 30427
+    "gasUsed": 30442
   },
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testThreeSlots",
     "name": "StoreHooks: set field with three elements (cold)",
-    "gasUsed": 80966
+    "gasUsed": 80981
   },
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testTwoSlots",
     "name": "StoreHooks: set field with two elements (cold)",
-    "gasUsed": 80878
+    "gasUsed": 80893
   },
   {
     "file": "test/StoreHooksColdLoad.t.sol",
     "test": "testDelete",
     "name": "StoreHooks: delete record (cold)",
-    "gasUsed": 19283
+    "gasUsed": 19348
   },
   {
     "file": "test/StoreHooksColdLoad.t.sol",
@@ -1071,13 +1071,13 @@
     "file": "test/StoreHooksColdLoad.t.sol",
     "test": "testPop",
     "name": "StoreHooks: pop 1 element (cold)",
-    "gasUsed": 18390
+    "gasUsed": 18405
   },
   {
     "file": "test/StoreHooksColdLoad.t.sol",
     "test": "testUpdate",
     "name": "StoreHooks: update 1 element (cold)",
-    "gasUsed": 20333
+    "gasUsed": 20348
   },
   {
     "file": "test/StoreSwitch.t.sol",
@@ -1143,13 +1143,13 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 442447
+    "gasUsed": 442592
   },
   {
     "file": "test/Vector2.t.sol",
     "test": "testSetAndGet",
     "name": "set Vector2 record",
-    "gasUsed": 33684
+    "gasUsed": 33749
   },
   {
     "file": "test/Vector2.t.sol",
