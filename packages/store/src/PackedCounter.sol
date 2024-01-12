@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
+import { BYTE_TO_BITS } from "./constants.sol";
+
 /**
  * @title PackedCounter Type Definition
  * @dev Describes how the packed counter is structured.
@@ -18,9 +20,9 @@ using PackedCounterInstance for PackedCounter global;
 // Constants for packed counter handling:
 
 // Number of bits for the 7-byte accumulator
-uint256 constant ACC_BITS = 7 * 8;
+uint256 constant ACC_BITS = 7 * BYTE_TO_BITS;
 // Number of bits for the 5-byte sections
-uint256 constant VAL_BITS = 5 * 8;
+uint256 constant VAL_BITS = 5 * BYTE_TO_BITS;
 // Maximum value of a 5-byte section
 uint256 constant MAX_VAL = type(uint40).max;
 

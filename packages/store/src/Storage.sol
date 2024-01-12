@@ -3,6 +3,7 @@ pragma solidity >=0.8.21;
 
 import { leftMask } from "./leftMask.sol";
 import { Memory } from "./Memory.sol";
+import { BYTE_TO_BITS } from "./constants.sol";
 
 /**
  * @title Storage Library
@@ -60,7 +61,7 @@ library Storage {
         /// @solidity memory-safe-assembly
         assembly {
           // Load data from memory and offset it to match storage
-          let bitOffset := mul(offset, 8)
+          let bitOffset := mul(offset, BYTE_TO_BITS)
           mask := shr(bitOffset, mask)
           let offsetData := shr(bitOffset, mload(memoryPointer))
 
@@ -208,7 +209,7 @@ library Storage {
         /// @solidity memory-safe-assembly
         assembly {
           // Load data from storage and offset it to match memory
-          let offsetData := shl(mul(offset, 8), sload(storagePointer))
+          let offsetData := shl(mul(offset, BYTE_TO_BITS), sload(storagePointer))
 
           mstore(
             memoryPointer,
@@ -284,7 +285,7 @@ library Storage {
     // Extra data past length is not truncated
     // This assumes that the caller will handle the overflow bits appropriately
     assembly {
-      result := shl(mul(offset, 8), sload(storagePointer))
+      result := shl(mul(offset, BYTE_TO_BITS), sload(storagePointer))
     }
 
     uint256 wordRemainder;
@@ -296,7 +297,7 @@ library Storage {
     // Read from the next slot if field spans 2 slots
     if (length > wordRemainder) {
       assembly {
-        result := or(result, shr(mul(wordRemainder, 8), sload(add(storagePointer, 1))))
+        result := or(result, shr(mul(wordRemainder, BYTE_TO_BITS), sload(add(storagePointer, 1))))
       }
     }
   }
