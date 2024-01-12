@@ -44,7 +44,7 @@ contract StoreCoreTest is Test, StoreMock {
   string[] defaultKeyNames = new string[](1);
   ResourceId _tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some table" });
   ResourceId _tableId2 = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some other table" });
-  ResourceId _tableId3 = ResourceIdLib.encode({ typeId: RESOURCE_OFFCHAIN_TABLE, name: "some table" });
+  ResourceId _tableId3 = ResourceIdLib.encode({ typeId: RESOURCE_OFFCHAIN_TABLE, name: "some offchain table" });
 
   function testGetStaticDataLocation() public {
     ResourceId tableId = _tableId;
