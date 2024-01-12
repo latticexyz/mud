@@ -126,7 +126,7 @@ export function renderTable(options: RenderTableOptions) {
 
       ${renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+        ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
           /**
            * @notice Register the table with its config${_commentSuffix}.
            */
@@ -144,7 +144,7 @@ export function renderTable(options: RenderTableOptions) {
 
       ${renderEncodeStatic(staticFields)}
 
-      ${renderEncodedLengths(dynamicFields)}
+      ${renderEncodeLengths(dynamicFields)}
 
       ${renderEncodeDynamic(dynamicFields)}
 
@@ -152,7 +152,7 @@ export function renderTable(options: RenderTableOptions) {
        * @notice Encode all of a record's fields.
        * @return The static (fixed length) data, encoded into a sequence of bytes.
        * @return The lengths of the dynamic fields (packed into a single bytes32 value).
-       * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
+       * @return The dynamic (variable length) data, encoded into a sequence of bytes.
        */
       function encode(${renderArguments(
         options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
@@ -191,7 +191,7 @@ function renderEncodeStatic(staticFields: RenderStaticField[]) {
   `;
 }
 
-function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
+function renderEncodeLengths(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length === 0) return "";
 
   return `

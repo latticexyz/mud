@@ -2,6 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
 import { System } from "../../../System.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
@@ -36,6 +37,9 @@ contract BalanceTransferSystem is System, IWorldErrors {
     if (toNamespaceId.getType() != RESOURCE_NAMESPACE) {
       revert World_InvalidResourceType(RESOURCE_NAMESPACE, toNamespaceId, toNamespaceId.toString());
     }
+
+    // Require the namespace to exist
+    AccessControl.requireExistence(toNamespaceId);
 
     // Require caller to have access to the namespace
     AccessControl.requireAccess(fromNamespaceId, _msgSender());

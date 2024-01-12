@@ -11,7 +11,7 @@ import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { UniqueEntity } from "./tables/UniqueEntity.sol";
 import { UniqueEntitySystem } from "./UniqueEntitySystem.sol";
 
-import { MODULE_NAME, TABLE_ID, SYSTEM_ID } from "./constants.sol";
+import { MODULE_NAME, TABLE_ID, SYSTEM_ID, NAMESPACE_ID } from "./constants.sol";
 
 /**
  * This module creates a table that stores a nonce, and
@@ -33,11 +33,17 @@ contract UniqueEntityModule is Module {
 
     IBaseWorld world = IBaseWorld(_world());
 
+    // Register namespace
+    (bool success, bytes memory data) = address(world).delegatecall(
+      abi.encodeCall(world.registerNamespace, (NAMESPACE_ID))
+    );
+    if (!success) revertWithBytes(data);
+
     // Register table
     UniqueEntity._register(TABLE_ID);
 
     // Register system
-    (bool success, bytes memory data) = address(world).delegatecall(
+    (success, data) = address(world).delegatecall(
       abi.encodeCall(world.registerSystem, (SYSTEM_ID, uniqueEntitySystem, true))
     );
     if (!success) revertWithBytes(data);
@@ -55,6 +61,9 @@ contract UniqueEntityModule is Module {
     requireNotInstalled(getName(), args);
 
     IBaseWorld world = IBaseWorld(_world());
+
+    // Register namespace
+    world.registerNamespace(NAMESPACE_ID);
 
     // Register table
     UniqueEntity.register(TABLE_ID);

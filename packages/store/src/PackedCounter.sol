@@ -50,7 +50,7 @@ library PackedCounterLib {
   }
 
   /**
-   * @notice Packs a single value into a PackedCounter.
+   * @notice Packs two values into a PackedCounter.
    * @dev Encodes the given values 'a'-'b' into the structure of a PackedCounter.
    * @param a The length of the first dynamic field's data.
    * @param b The length of the second dynamic field's data.
@@ -67,7 +67,7 @@ library PackedCounterLib {
   }
 
   /**
-   * @notice Packs a single value into a PackedCounter.
+   * @notice Packs three values into a PackedCounter.
    * @dev Encodes the given values 'a'-'c' into the structure of a PackedCounter.
    * @param a The length of the first dynamic field's data.
    * @param b The length of the second dynamic field's data.
@@ -86,7 +86,7 @@ library PackedCounterLib {
   }
 
   /**
-   * @notice Packs a single value into a PackedCounter.
+   * @notice Packs four values into a PackedCounter.
    * @dev Encodes the given values 'a'-'d' into the structure of a PackedCounter.
    * @param a The length of the first dynamic field's data.
    * @param b The length of the second dynamic field's data.
@@ -107,7 +107,7 @@ library PackedCounterLib {
   }
 
   /**
-   * @notice Packs a single value into a PackedCounter.
+   * @notice Packs five values into a PackedCounter.
    * @dev Encodes the given values 'a'-'e' into the structure of a PackedCounter.
    * @param a The length of the first dynamic field's data.
    * @param b The length of the second dynamic field's data.
