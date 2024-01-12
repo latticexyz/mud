@@ -298,23 +298,19 @@ library StoreCore {
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) internal {
-    bool isTable = tableId.getType() == RESOURCE_TABLE;
-
     bytes21[] memory hooks = StoreHooks._get(tableId);
-    if (isTable) {
-      // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-      for (uint256 i; i < hooks.length; i++) {
-        Hook hook = Hook.wrap(hooks[i]);
-        if (hook.isEnabled(BEFORE_SET_RECORD)) {
-          IStoreHook(hook.getAddress()).onBeforeSetRecord(
-            tableId,
-            keyTuple,
-            staticData,
-            encodedLengths,
-            dynamicData,
-            fieldLayout
-          );
-        }
+    // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(BEFORE_SET_RECORD)) {
+        IStoreHook(hook.getAddress()).onBeforeSetRecord(
+          tableId,
+          keyTuple,
+          staticData,
+          encodedLengths,
+          dynamicData,
+          fieldLayout
+        );
       }
     }
 
@@ -322,7 +318,7 @@ library StoreCore {
     emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
 
     // Early return if the table is an offchain table
-    if (!isTable) {
+    if (tableId.getType() != RESOURCE_TABLE) {
       return;
     }
 
@@ -391,22 +387,19 @@ library StoreCore {
    * @param data The data to write to the static data of the record at the start byte.
    */
   function spliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 start, bytes memory data) internal {
-    bool isTable = tableId.getType() == RESOURCE_TABLE;
     uint256 location = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
 
     bytes21[] memory hooks = StoreHooks._get(tableId);
-    if (isTable) {
-      // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
-      for (uint256 i; i < hooks.length; i++) {
-        Hook hook = Hook.wrap(hooks[i]);
-        if (hook.isEnabled(BEFORE_SPLICE_STATIC_DATA)) {
-          IStoreHook(hook.getAddress()).onBeforeSpliceStaticData({
-            tableId: tableId,
-            keyTuple: keyTuple,
-            start: start,
-            data: data
-          });
-        }
+    // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(BEFORE_SPLICE_STATIC_DATA)) {
+        IStoreHook(hook.getAddress()).onBeforeSpliceStaticData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: start,
+          data: data
+        });
       }
     }
 
@@ -414,7 +407,7 @@ library StoreCore {
     emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
 
     // Early return if the table is an offchain table
-    if (!isTable) {
+    if (tableId.getType() != RESOURCE_TABLE) {
       return;
     }
 
@@ -590,16 +583,12 @@ library StoreCore {
    * @param fieldLayout The field layout for the record.
    */
   function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
-    bool isTable = tableId.getType() == RESOURCE_TABLE;
-
     bytes21[] memory hooks = StoreHooks._get(tableId);
-    if (isTable) {
-      // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-      for (uint256 i; i < hooks.length; i++) {
-        Hook hook = Hook.wrap(hooks[i]);
-        if (hook.isEnabled(BEFORE_DELETE_RECORD)) {
-          IStoreHook(hook.getAddress()).onBeforeDeleteRecord(tableId, keyTuple, fieldLayout);
-        }
+    // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(BEFORE_DELETE_RECORD)) {
+        IStoreHook(hook.getAddress()).onBeforeDeleteRecord(tableId, keyTuple, fieldLayout);
       }
     }
 
@@ -607,7 +596,7 @@ library StoreCore {
     emit Store_DeleteRecord(tableId, keyTuple);
 
     // Early return if the table is an offchain table
-    if (!isTable) {
+    if (tableId.getType() != RESOURCE_TABLE) {
       return;
     }
 
