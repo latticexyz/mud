@@ -185,7 +185,7 @@ library StoreCore {
     }
 
     // Verify the field layout is valid
-    fieldLayout.validate({ allowEmpty: false });
+    fieldLayout.validate();
 
     // Verify the schema is valid
     keySchema.validate({ allowEmpty: true });

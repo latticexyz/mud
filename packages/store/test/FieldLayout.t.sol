@@ -176,12 +176,12 @@ contract FieldLayoutTest is Test, GasReporter {
     FieldLayout encodedFieldLayout = FieldLayoutLib.encode(fieldLayout, 5);
 
     startGasReport("validate field layout");
-    encodedFieldLayout.validate({ allowEmpty: false });
+    encodedFieldLayout.validate();
     endGasReport();
   }
 
   function testFailValidate() public pure {
-    FieldLayout.wrap(keccak256("some invalid field layout")).validate({ allowEmpty: false });
+    FieldLayout.wrap(keccak256("some invalid field layout")).validate();
   }
 
   function testIsEmptyTrue() public {

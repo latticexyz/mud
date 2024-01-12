@@ -148,22 +148,22 @@ library FieldLayoutInstance {
    * @notice Validate the field layout with various checks on the length and size of the fields.
    * @dev Reverts if total fields, static field length, or static byte length exceed allowed limits.
    * @param fieldLayout The FieldLayout to validate.
-   * @param allowEmpty A flag to determine if empty field layouts are allowed.
    */
-  function validate(FieldLayout fieldLayout, bool allowEmpty) internal pure {
-    // FieldLayout must not be empty
-    if (!allowEmpty && fieldLayout.isEmpty()) revert FieldLayoutLib.FieldLayoutLib_Empty();
+  function validate(FieldLayout fieldLayout) internal pure {
+    if (fieldLayout.isEmpty()) {
+      revert FieldLayoutLib.FieldLayoutLib_Empty();
+    }
 
-    // FieldLayout must have no more than MAX_DYNAMIC_FIELDS
     uint256 _numDynamicFields = fieldLayout.numDynamicFields();
-    if (_numDynamicFields > MAX_DYNAMIC_FIELDS)
+    if (_numDynamicFields > MAX_DYNAMIC_FIELDS) {
       revert FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields(_numDynamicFields, MAX_DYNAMIC_FIELDS);
+    }
 
     uint256 _numStaticFields = fieldLayout.numStaticFields();
-    // FieldLayout must not have more than MAX_TOTAL_FIELDS in total
     uint256 _numTotalFields = _numStaticFields + _numDynamicFields;
-    if (_numTotalFields > MAX_TOTAL_FIELDS)
+    if (_numTotalFields > MAX_TOTAL_FIELDS) {
       revert FieldLayoutLib.FieldLayoutLib_TooManyFields(_numTotalFields, MAX_TOTAL_FIELDS);
+    }
 
     // Static lengths must be valid
     for (uint256 i; i < _numStaticFields; ) {
