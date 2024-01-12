@@ -121,7 +121,7 @@ library Storage {
   /**
    * @notice Set multiple storage locations to zero.
    * @param storagePointer The starting storage location.
-   * @param length The number of storage locations to set to zero.
+   * @param length The number of storage locations to set to zero, in bytes
    */
   function zero(uint256 storagePointer, uint256 length) internal {
     // Ceil division to round up to the nearest word
@@ -213,9 +213,9 @@ library Storage {
           mstore(
             memoryPointer,
             or(
-              // store the middle part
+              // store the left part
               and(offsetData, mask),
-              // preserve the surrounding parts
+              // preserve the right parts
               and(mload(memoryPointer), not(mask))
             )
           )
@@ -271,7 +271,7 @@ library Storage {
    * @param storagePointer The base storage location.
    * @param length Length of the data in bytes.
    * @param offset Offset within the storage location.
-   * @return result The loaded bytes, left-aligned bytes. Bytes beyond the length are zeroed.
+   * @return result The loaded bytes, left-aligned bytes. Bytes beyond the length are not zeroed.
    */
   function loadField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32 result) {
     if (offset >= 32) {
