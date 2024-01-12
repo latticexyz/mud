@@ -61,139 +61,119 @@ library Bytes {
    * @dev Extracts a single byte from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a byte is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return The extracted bytes1 value from the specified position in the bytes blob.
+   * @return output The extracted bytes1 value from the specified position in the bytes blob.
    */
-  function slice1(bytes memory data, uint256 start) internal pure returns (bytes1) {
-    bytes1 output;
+  function slice1(bytes memory data, uint256 start) internal pure returns (bytes1 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
-    return output;
   }
 
   /**
    * @dev Extracts a single byte from a bytes32 value starting at a specific position.
    * @param data The bytes32 value from which a byte is to be extracted.
    * @param start The starting position within the bytes32 value for extraction.
-   * @return The extracted bytes1 value from the specified position in the bytes32 value.
+   * @return output The extracted bytes1 value from the specified position in the bytes32 value.
    */
-  function slice1(bytes32 data, uint256 start) internal pure returns (bytes1) {
-    bytes1 output;
+  function slice1(bytes32 data, uint256 start) internal pure returns (bytes1 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
-    return output;
   }
 
   /**
    * @dev Extracts a 2-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 2-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return The extracted bytes2 value from the specified position in the bytes blob.
+   * @return output The extracted bytes2 value from the specified position in the bytes blob.
    */
-  function slice2(bytes memory data, uint256 start) internal pure returns (bytes2) {
-    bytes2 output;
+  function slice2(bytes memory data, uint256 start) internal pure returns (bytes2 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
-    return output;
   }
 
   /**
    * @dev Extracts a 2-byte sequence from a bytes32 value starting at a specific position.
    * @param data The bytes32 value from which a 2-byte sequence is to be extracted.
    * @param start The starting position within the bytes32 value for extraction.
-   * @return The extracted bytes2 value from the specified position in the bytes32 value.
+   * @return output The extracted bytes2 value from the specified position in the bytes32 value.
    */
-  function slice2(bytes32 data, uint256 start) internal pure returns (bytes2) {
-    bytes2 output;
+  function slice2(bytes32 data, uint256 start) internal pure returns (bytes2 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
-    return output;
   }
 
   /**
    * @dev Extracts a 4-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 4-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return The extracted bytes4 value from the specified position in the bytes blob.
+   * @return output The extracted bytes4 value from the specified position in the bytes blob.
    */
-  function slice4(bytes memory data, uint256 start) internal pure returns (bytes4) {
-    bytes4 output;
+  function slice4(bytes memory data, uint256 start) internal pure returns (bytes4 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
-    return output;
   }
 
   /**
    * @dev Extracts a 5-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 5-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return The extracted bytes5 value from the specified position in the bytes blob.
+   * @return output The extracted bytes5 value from the specified position in the bytes blob.
    */
-  function slice5(bytes memory data, uint256 start) internal pure returns (bytes5) {
-    bytes5 output;
+  function slice5(bytes memory data, uint256 start) internal pure returns (bytes5 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
-    return output;
   }
 
   /**
    * @dev Extracts a 8-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 8-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return The extracted bytes8 value from the specified position in the bytes blob.
+   * @return output The extracted bytes8 value from the specified position in the bytes blob.
    */
-  function slice8(bytes memory data, uint256 start) internal pure returns (bytes8) {
-    bytes8 output;
+  function slice8(bytes memory data, uint256 start) internal pure returns (bytes8 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
-    return output;
   }
 
   /**
    * @dev Extracts a 16-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 16-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return The extracted bytes16 value from the specified position in the bytes blob.
+   * @return output The extracted bytes16 value from the specified position in the bytes blob.
    */
-  function slice16(bytes memory data, uint256 start) internal pure returns (bytes16) {
-    bytes16 output;
+  function slice16(bytes memory data, uint256 start) internal pure returns (bytes16 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
-    return output;
   }
 
   /**
    * @dev Extracts a 20-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 20-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return The extracted bytes20 value from the specified position in the bytes blob.
+   * @return output The extracted bytes20 value from the specified position in the bytes blob.
    */
-  function slice20(bytes memory data, uint256 start) internal pure returns (bytes20) {
-    bytes20 output;
+  function slice20(bytes memory data, uint256 start) internal pure returns (bytes20 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
-    return output;
   }
 
   /**
    * @dev Extracts a 32-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 32-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
-   * @return The extracted bytes32 value from the specified position in the bytes blob.
+   * @return output The extracted bytes32 value from the specified position in the bytes blob.
    */
-  function slice32(bytes memory data, uint256 start) internal pure returns (bytes32) {
-    bytes32 output;
+  function slice32(bytes memory data, uint256 start) internal pure returns (bytes32 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
-    return output;
   }
 }
