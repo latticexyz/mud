@@ -17,7 +17,7 @@ import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
 import { Tables, ResourceIds, TablesTableId } from "../src/codegen/index.sol";
 import { ResourceId, ResourceIdLib, ResourceIdInstance } from "../src/ResourceId.sol";
-import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
+import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../src/storeResourceTypes.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD, ALL, BEFORE_ALL, AFTER_ALL } from "../src/storeHookTypes.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
@@ -44,6 +44,7 @@ contract StoreCoreTest is Test, StoreMock {
   string[] defaultKeyNames = new string[](1);
   ResourceId _tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some table" });
   ResourceId _tableId2 = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some other table" });
+  ResourceId _tableId3 = ResourceIdLib.encode({ typeId: RESOURCE_OFFCHAIN_TABLE, name: "some table" });
 
   function testGetStaticDataLocation() public {
     ResourceId tableId = _tableId;
@@ -1317,5 +1318,32 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(loadedData.staticData, abi.encodePacked(bytes16(0)));
     assertEq(loadedData.encodedLengths.unwrap(), bytes32(0));
     assertEq(loadedData.dynamicData, "");
+  }
+
+  function testSetDataOffchainTable() public {
+    ResourceId tableId = _tableId3;
+
+    // Register offchain table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
+
+    IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
+
+    // Set data
+    bytes memory staticData = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
+
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = "some key";
+
+    // Expect a Store_SetRecord event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit Store_SetRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+
+    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
   }
 }
