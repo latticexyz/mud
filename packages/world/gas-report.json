@@ -117,7 +117,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 528422
+    "gasUsed": 528384
   },
   {
     "file": "test/World.t.sol",
