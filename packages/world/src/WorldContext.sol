@@ -5,7 +5,6 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
 import { ERC165_INTERFACE_ID } from "./IERC165.sol";
 import { IWorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "./IWorldContextConsumer.sol";
-import { console } from "forge-std/console.sol";
 
 // The context size is 20 bytes for msg.sender, and 32 bytes for msg.value
 uint256 constant CONTEXT_BYTES = 20 + 32;
