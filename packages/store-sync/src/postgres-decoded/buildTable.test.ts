@@ -34,7 +34,7 @@ describe("buildTable", () => {
         "__lastUpdatedBlockNumber": {
           "dataType": "custom",
           "name": "__last_updated_block_number",
-          "notNull": false,
+          "notNull": true,
           "sqlName": "numeric",
         },
         "name": {
