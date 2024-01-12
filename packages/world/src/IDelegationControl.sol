@@ -2,6 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { IWorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "./IWorldContextConsumer.sol";
+import { ISystem } from "./ISystem.sol";
 import { ResourceId } from "./WorldResourceId.sol";
 
 /**
@@ -16,6 +17,6 @@ bytes4 constant DELEGATION_CONTROL_INTERFACE_ID = IDelegationControl.verify.sele
  * @dev Interface for managing and verifying delegations within the context of a world.
  * Inherits functionalities from IWorldContextConsumer.
  */
-interface IDelegationControl is IWorldContextConsumer {
+interface IDelegationControl is ISystem {
   function verify(address delegator, ResourceId systemId, bytes memory callData) external returns (bool);
 }
