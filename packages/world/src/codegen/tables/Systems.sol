@@ -20,16 +20,19 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
+// Import user types
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+ResourceId constant _tableId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("world"), bytes16("Systems")))
+);
+ResourceId constant SystemsTableId = _tableId;
+
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0002020001010000000000000000000000000000000000000000000000000000
+  0x0015020014010000000000000000000000000000000000000000000000000000
 );
 
-struct TwoFieldsData {
-  bool value1;
-  bool value2;
-}
-
-library TwoFields {
+library Systems {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.
@@ -43,7 +46,8 @@ library TwoFields {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](0);
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.BYTES32;
 
     return SchemaLib.encode(_keySchema);
   }
@@ -54,7 +58,7 @@ library TwoFields {
    */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](2);
-    _valueSchema[0] = SchemaType.BOOL;
+    _valueSchema[0] = SchemaType.ADDRESS;
     _valueSchema[1] = SchemaType.BOOL;
 
     return SchemaLib.encode(_valueSchema);
@@ -65,7 +69,8 @@ library TwoFields {
    * @return keyNames An array of strings with the names of key fields.
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
-    keyNames = new string[](0);
+    keyNames = new string[](1);
+    keyNames[0] = "systemId";
   }
 
   /**
@@ -74,105 +79,114 @@ library TwoFields {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](2);
-    fieldNames[0] = "value1";
-    fieldNames[1] = "value2";
+    fieldNames[0] = "system";
+    fieldNames[1] = "publicAccess";
   }
 
   /**
    * @notice Register the table with its config.
    */
-  function register(ResourceId _tableId) internal {
+  function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /**
    * @notice Register the table with its config.
    */
-  function _register(ResourceId _tableId) internal {
+  function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /**
-   * @notice Get value1.
+   * @notice Get system.
    */
-  function getValue1(ResourceId _tableId) internal view returns (bool value1) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function getSystem(ResourceId systemId) internal view returns (address system) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
+    return (address(bytes20(_blob)));
   }
 
   /**
-   * @notice Get value1.
+   * @notice Get system.
    */
-  function _getValue1(ResourceId _tableId) internal view returns (bool value1) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _getSystem(ResourceId systemId) internal view returns (address system) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
+    return (address(bytes20(_blob)));
   }
 
   /**
-   * @notice Set value1.
+   * @notice Set system.
    */
-  function setValue1(ResourceId _tableId, bool value1) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function setSystem(ResourceId systemId, address system) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
   /**
-   * @notice Set value1.
+   * @notice Set system.
    */
-  function _setValue1(ResourceId _tableId, bool value1) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _setSystem(ResourceId systemId, address system) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value1)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
   /**
-   * @notice Get value2.
+   * @notice Get publicAccess.
    */
-  function getValue2(ResourceId _tableId) internal view returns (bool value2) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function getPublicAccess(ResourceId systemId) internal view returns (bool publicAccess) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
   /**
-   * @notice Get value2.
+   * @notice Get publicAccess.
    */
-  function _getValue2(ResourceId _tableId) internal view returns (bool value2) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _getPublicAccess(ResourceId systemId) internal view returns (bool publicAccess) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
   /**
-   * @notice Set value2.
+   * @notice Set publicAccess.
    */
-  function setValue2(ResourceId _tableId, bool value2) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function setPublicAccess(ResourceId systemId, bool publicAccess) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
   }
 
   /**
-   * @notice Set value2.
+   * @notice Set publicAccess.
    */
-  function _setValue2(ResourceId _tableId, bool value2) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _setPublicAccess(ResourceId systemId, bool publicAccess) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((value2)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
   }
 
   /**
    * @notice Get the full data.
    */
-  function get(ResourceId _tableId) internal view returns (TwoFieldsData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function get(ResourceId systemId) internal view returns (address system, bool publicAccess) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
@@ -185,8 +199,9 @@ library TwoFields {
   /**
    * @notice Get the full data.
    */
-  function _get(ResourceId _tableId) internal view returns (TwoFieldsData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _get(ResourceId systemId) internal view returns (address system, bool publicAccess) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
@@ -199,13 +214,14 @@ library TwoFields {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(ResourceId _tableId, bool value1, bool value2) internal {
-    bytes memory _staticData = encodeStatic(value1, value2);
+  function set(ResourceId systemId, address system, bool publicAccess) internal {
+    bytes memory _staticData = encodeStatic(system, publicAccess);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -213,41 +229,14 @@ library TwoFields {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(ResourceId _tableId, bool value1, bool value2) internal {
-    bytes memory _staticData = encodeStatic(value1, value2);
+  function _set(ResourceId systemId, address system, bool publicAccess) internal {
+    bytes memory _staticData = encodeStatic(system, publicAccess);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
-  }
-
-  /**
-   * @notice Set the full data using the data struct.
-   */
-  function set(ResourceId _tableId, TwoFieldsData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.value1, _table.value2);
-
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
-
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
-   * @notice Set the full data using the data struct.
-   */
-  function _set(ResourceId _tableId, TwoFieldsData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.value1, _table.value2);
-
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
-
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -255,10 +244,10 @@ library TwoFields {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (bool value1, bool value2) {
-    value1 = (_toBool(uint8(Bytes.slice1(_blob, 0))));
+  function decodeStatic(bytes memory _blob) internal pure returns (address system, bool publicAccess) {
+    system = (address(Bytes.slice20(_blob, 0)));
 
-    value2 = (_toBool(uint8(Bytes.slice1(_blob, 1))));
+    publicAccess = (_toBool(uint8(Bytes.slice1(_blob, 20))));
   }
 
   /**
@@ -271,15 +260,16 @@ library TwoFields {
     bytes memory _staticData,
     PackedCounter,
     bytes memory
-  ) internal pure returns (TwoFieldsData memory _table) {
-    (_table.value1, _table.value2) = decodeStatic(_staticData);
+  ) internal pure returns (address system, bool publicAccess) {
+    (system, publicAccess) = decodeStatic(_staticData);
   }
 
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(ResourceId _tableId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function deleteRecord(ResourceId systemId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -287,8 +277,9 @@ library TwoFields {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(ResourceId _tableId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _deleteRecord(ResourceId systemId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -297,8 +288,8 @@ library TwoFields {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(bool value1, bool value2) internal pure returns (bytes memory) {
-    return abi.encodePacked(value1, value2);
+  function encodeStatic(address system, bool publicAccess) internal pure returns (bytes memory) {
+    return abi.encodePacked(system, publicAccess);
   }
 
   /**
@@ -307,8 +298,8 @@ library TwoFields {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(bool value1, bool value2) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(value1, value2);
+  function encode(address system, bool publicAccess) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+    bytes memory _staticData = encodeStatic(system, publicAccess);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -319,8 +310,9 @@ library TwoFields {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple() internal pure returns (bytes32[] memory) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function encodeKeyTuple(ResourceId systemId) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = ResourceId.unwrap(systemId);
 
     return _keyTuple;
   }

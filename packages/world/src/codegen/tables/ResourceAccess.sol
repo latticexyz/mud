@@ -20,11 +20,19 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
+// Import user types
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+ResourceId constant _tableId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("world"), bytes16("ResourceAccess")))
+);
+ResourceId constant ResourceAccessTableId = _tableId;
+
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0001010001000000000000000000000000000000000000000000000000000000
 );
 
-library Bool {
+library ResourceAccess {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.
@@ -38,7 +46,9 @@ library Bool {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](0);
+    SchemaType[] memory _keySchema = new SchemaType[](2);
+    _keySchema[0] = SchemaType.BYTES32;
+    _keySchema[1] = SchemaType.ADDRESS;
 
     return SchemaLib.encode(_keySchema);
   }
@@ -59,7 +69,9 @@ library Bool {
    * @return keyNames An array of strings with the names of key fields.
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
-    keyNames = new string[](0);
+    keyNames = new string[](2);
+    keyNames[0] = "resourceId";
+    keyNames[1] = "caller";
   }
 
   /**
@@ -68,104 +80,122 @@ library Bool {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
-    fieldNames[0] = "value";
+    fieldNames[0] = "access";
   }
 
   /**
    * @notice Register the table with its config.
    */
-  function register(ResourceId _tableId) internal {
+  function register() internal {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /**
    * @notice Register the table with its config.
    */
-  function _register(ResourceId _tableId) internal {
+  function _register() internal {
     StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /**
-   * @notice Get value.
+   * @notice Get access.
    */
-  function getValue(ResourceId _tableId) internal view returns (bool value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function getAccess(ResourceId resourceId, address caller) internal view returns (bool access) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
   /**
-   * @notice Get value.
+   * @notice Get access.
    */
-  function _getValue(ResourceId _tableId) internal view returns (bool value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _getAccess(ResourceId resourceId, address caller) internal view returns (bool access) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
   /**
-   * @notice Get value.
+   * @notice Get access.
    */
-  function get(ResourceId _tableId) internal view returns (bool value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function get(ResourceId resourceId, address caller) internal view returns (bool access) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
   /**
-   * @notice Get value.
+   * @notice Get access.
    */
-  function _get(ResourceId _tableId) internal view returns (bool value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _get(ResourceId resourceId, address caller) internal view returns (bool access) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
   /**
-   * @notice Set value.
+   * @notice Set access.
    */
-  function setValue(ResourceId _tableId, bool value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function setAccess(ResourceId resourceId, address caller, bool access) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /**
-   * @notice Set value.
+   * @notice Set access.
    */
-  function _setValue(ResourceId _tableId, bool value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _setAccess(ResourceId resourceId, address caller, bool access) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /**
-   * @notice Set value.
+   * @notice Set access.
    */
-  function set(ResourceId _tableId, bool value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function set(ResourceId resourceId, address caller, bool access) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /**
-   * @notice Set value.
+   * @notice Set access.
    */
-  function _set(ResourceId _tableId, bool value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _set(ResourceId resourceId, address caller, bool access) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(ResourceId _tableId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function deleteRecord(ResourceId resourceId, address caller) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -173,8 +203,10 @@ library Bool {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(ResourceId _tableId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function _deleteRecord(ResourceId resourceId, address caller) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -183,8 +215,8 @@ library Bool {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(bool value) internal pure returns (bytes memory) {
-    return abi.encodePacked(value);
+  function encodeStatic(bool access) internal pure returns (bytes memory) {
+    return abi.encodePacked(access);
   }
 
   /**
@@ -193,8 +225,8 @@ library Bool {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(bool value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(value);
+  function encode(bool access) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+    bytes memory _staticData = encodeStatic(access);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -205,8 +237,10 @@ library Bool {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple() internal pure returns (bytes32[] memory) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+  function encodeKeyTuple(ResourceId resourceId, address caller) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(resourceId);
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     return _keyTuple;
   }
