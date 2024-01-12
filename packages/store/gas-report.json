@@ -721,6 +721,12 @@
   },
   {
     "file": "test/StoreCoreGas.t.sol",
+    "test": "testDeleteDataOffchainTable",
+    "name": "StoreCore: delete record in offchain table",
+    "gasUsed": 4687
+  },
+  {
+    "file": "test/StoreCoreGas.t.sol",
     "test": "testGetStaticDataLocation",
     "name": "get static data location (single key)",
     "gasUsed": 217
@@ -753,19 +759,19 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 72296
+    "gasUsed": 72361
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 19791
+    "gasUsed": 19813
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 18617
+    "gasUsed": 18595
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -777,19 +783,19 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 165451
+    "gasUsed": 165516
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 24469
+    "gasUsed": 24424
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 20283
+    "gasUsed": 20261
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -940,6 +946,12 @@
     "test": "testSetAndGetStaticDataSpanningWords",
     "name": "get static record (2 slots)",
     "gasUsed": 1740
+  },
+  {
+    "file": "test/StoreCoreGas.t.sol",
+    "test": "testSetDataOffchainTable",
+    "name": "StoreCore: set record in offchain table",
+    "gasUsed": 8082
   },
   {
     "file": "test/StoreCoreGas.t.sol",
