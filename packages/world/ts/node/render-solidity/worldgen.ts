@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { readFileSync, rmSync } from "fs";
 import path from "path";
 import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum } from "@latticexyz/common/codegen";
 import { StoreConfig } from "@latticexyz/store";
@@ -18,8 +18,11 @@ export async function worldgen(
   );
 
   const worldgenBaseDirectory = path.join(outputBaseDirectory, config.worldgenDirectory);
-  const systems = existingContracts.filter(({ basename }) => Object.keys(resolvedConfig.systems).includes(basename));
 
+  // clean up any existing files
+  rmSync(worldgenBaseDirectory, { recursive: true, force: true });
+
+  const systems = existingContracts.filter(({ basename }) => Object.keys(resolvedConfig.systems).includes(basename));
   const systemInterfaceImports: RelativeImportDatum[] = [];
   for (const system of systems) {
     const data = readFileSync(system.path, "utf8");
