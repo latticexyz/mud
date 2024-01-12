@@ -2,4 +2,4 @@
 "@latticexyz/world": patch
 ---
 
-Require that namespaces exist before transferring ETH to them.
+Namespace balances can no longer be transferred to non-existent namespaces.
