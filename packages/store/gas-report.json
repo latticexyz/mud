@@ -321,7 +321,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 719008
+    "gasUsed": 718596
   },
   {
     "file": "test/Mixed.t.sol",
@@ -477,7 +477,7 @@
     "file": "test/Schema.t.sol",
     "test": "testValidate",
     "name": "validate schema",
-    "gasUsed": 11497
+    "gasUsed": 10067
   },
   {
     "file": "test/Slice.t.sol",
@@ -765,7 +765,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: register table",
-    "gasUsed": 640890
+    "gasUsed": 640530
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -1107,7 +1107,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 442393
+    "gasUsed": 442189
   },
   {
     "file": "test/Vector2.t.sol",

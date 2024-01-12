@@ -169,32 +169,27 @@ library SchemaInstance {
     if (_numTotalFields > MAX_TOTAL_FIELDS) revert SchemaLib.SchemaLib_InvalidLength(_numTotalFields);
 
     // No static field can be after a dynamic field
-    uint256 countStaticFields;
-    uint256 countDynamicFields;
-    for (uint256 i; i < _numTotalFields; ) {
-      if (schema.atIndex(i).getStaticByteLength() > 0) {
-        // Static field in dynamic part
-        if (i >= _numStaticFields) revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
-        unchecked {
-          countStaticFields++;
-        }
-      } else {
+    for (uint256 i; i < _numStaticFields; ) {
+      if (schema.atIndex(i).getStaticByteLength() == 0) {
         // Dynamic field in static part
-        if (i < _numStaticFields) revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
-        unchecked {
-          countDynamicFields++;
-        }
+        revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
       }
+
       unchecked {
         i++;
       }
     }
 
-    // Number of static fields must match
-    if (countStaticFields != _numStaticFields) revert SchemaLib.SchemaLib_InvalidLength(countStaticFields);
+    for (uint256 i = _numStaticFields; i < _numTotalFields; ) {
+      if (schema.atIndex(i).getStaticByteLength() > 0) {
+        // Static field in dynamic part
+        revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
+      }
 
-    // Number of dynamic fields must match
-    if (countDynamicFields != _numDynamicFields) revert SchemaLib.SchemaLib_InvalidLength(countDynamicFields);
+      unchecked {
+        i++;
+      }
+    }
   }
 
   /**
