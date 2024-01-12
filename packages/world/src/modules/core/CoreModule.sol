@@ -34,10 +34,10 @@ import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSyst
  */
 
 contract CoreModule is Module {
-  address internal accessManagementSystem;
-  address internal balanceTransferSystem;
-  address internal batchCallSystem;
-  address internal coreRegistrationSystem;
+  address internal immutable accessManagementSystem;
+  address internal immutable balanceTransferSystem;
+  address internal immutable batchCallSystem;
+  address internal immutable coreRegistrationSystem;
 
   constructor(
     address _accessManagementSystem,
