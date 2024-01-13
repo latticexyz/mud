@@ -1,0 +1,605 @@
+import { CollapseCode } from "../../components/CollapseCode";
+
+# Adding delegation
+
+On this page you learn how to add [delegations](https://mud.dev/world/account-delegation) to enable addresses to act on behalf of other addresses.
+This is important, for example, because typically every game move is a transaction, but you wouldn't want the player to constantly have to confirm every move on the wallet extension.
+The common pattern is to create a burner address and have the wallet user address authorize it to play on its behalf.
+
+## The sample application
+
+The application is located [in our monorepository](https://github.com/latticexyz/mud/tree/main/examples/multiple-accounts).
+It creates multiple burner addresses, and keeps track onchain when they last submitted a transaction.
+
+There are the steps to run the initial application.
+
+1. Clone the monorepo, move the application out, and delete the monorepo again.
+
+   ```sh copy
+   git clone https://github.com/latticexyz/mud
+   mv mud/examples/multiple-accounts .
+   rm -rf mud
+   cd multiple-accounts
+   ```
+
+1. Create `packages/contracts/.env`.
+
+   ```sh copy filename=".env"
+   # This .env file is for demonstration purposes only.
+   #
+   # This should usually be excluded via .gitignore and the env vars attached to
+   # your deployment environment, but we're including this here for ease of local
+   # development. Please do not commit changes to this file!
+   #
+   # Enable debug logs for MUD CLI
+   DEBUG=mud:*
+   #
+   # Anvil default private key:
+   PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+   ```
+
+1. Install the Node packages and start the application.
+
+   ```sh copy
+   pnpm install
+   pnpm dev
+   ```
+
+1. [Browse to the application](http://localhost:3000).
+
+1. Click a few buttons to see the application in action.
+   Note that if you reload the page you get different burner addresses.
+
+## Deploy a delegation `System`
+
+MUD comes with some delegation `System` contracts.
+
+- [`SystemboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol) lets you specify the `System` to which you approve calls, and the number of calls that are approved.
+  You cannot specify an infinite number of calls.
+  However, the number of calls is `uint256`, so you can specify `type(uint256).max`, which is 2<sup>256</sup>-1. You are unlikely to need more than that.
+- [`CallboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/CallboundDelegationControl.sol) is similar, but the delegation includes the hash of the call data.
+  This means that you delegate not the right to call a specific `System`, but the right to call a specific function with specific parameters.
+- [`TimeboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/TimeboundDelegationControl.sol) lets you specify a time after which the delegation is no longer effective.
+
+If none of these fulfills the needs of your application, you can write your own.
+
+To deploy the delegation system:
+
+1.  Open a terminal and change to `packages/contracts`.
+
+    ```sh copy
+    cd packages/contracts
+    ```
+
+1.  Add the `World` addresss to `.env`. You new `.env` might look something like this:
+
+    <CollapseCode>
+
+    ```sh filename=".env" showLineNumbers {13} copy
+    # This .env file is for demonstration purposes only.
+    #
+    # This should usually be excluded via .gitignore and the env vars attached to
+    # your deployment environment, but we're including this here for ease of local
+    # development. Please do not commit changes to this file!
+    #
+    # Enable debug logs for MUD CLI
+    DEBUG=mud:*
+    #
+    # Anvil default private key:
+    PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+    WORLD_ADDRESS=0xc44504ab6a2c4df9a9ce82aecfc453fec3c8771c
+    ```
+
+    </CollapseCode>
+
+1.  Create this script in `packages/contracts/scripts/DeployDelegation.s.sol`
+
+    <CollapseCode>
+```solidity filename="DeployDelegation.s.sol" copy showLineNumbers {21-23}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+    import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+    
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+import { StandardDelegationsModule } from "@latticexyz/world-modules/src/module$
+
+    contract DeployDelegation is Script {
+    function run() external {
+
+        // Load the configuration
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+        vm.startBroadcast(deployerPrivateKey);
+        IWorld world = IWorld(worldAddress);
+
+        StandardDelegationsModule standardDelegationsModule =
+          new StandardDelegationsModule();
+        world.installRootModule(standardDelegationsModule, new bytes(0));
+
+        vm.stopBroadcast();
+
+    }
+    }
+
+    ````
+    </CollapseCode>
+
+    <details>
+
+    <summary>Explanation</summary>
+
+    Other than boilerplate, this script does two things.
+
+    ```solidity
+    StandardDelegationsModule standardDelegationsModule =
+      new StandardDelegationsModule();
+    ````
+
+    Deploy a new `StandardDelegationsModule` contract.
+    This contract, similar to a `System` contract, is stateless.
+    This means that if there is already a `StandardDelegationsModule` contract deployed on the blockchain you can just use it.
+
+    ```solidity
+    world.installRootModule(standardDelegationsModule, new bytes(0));
+    ```
+
+    Install the module.
+    This module can only be installed by the owner of the root namespace.
+
+    </details>
+
+1.  Execute the script
+
+    ```sh copy
+    forge script script/DeployDelegation.s.sol --broadcast --rpc-url http://127.0.0.1:8545
+    ```
+
+## Create and use a delegation
+
+Now that we have some delegations available, the next step is to see that we can actually delegate and run a delegation.
+
+### Using a forge script
+
+Before moving over to the client, we will verify things work as expected using a forge script.
+
+1. Add the following definitions to `.env`:
+
+   | Field          | Meaning                                      | Sample value                                                       |
+   | -------------- | -------------------------------------------- | ------------------------------------------------------------------ |
+   | PRIVATE_KEY_2  | Another private key                          | 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d |
+   | USER_ADDRESS   | The address corresponding to `PRIVATE_KEY`   | 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266                         |
+   | USER_ADDRESS_2 | The address corresponding to `PRIVATE_KEY_2` | 0x70997970C51812dc3A010C7d01b50e0d17dc79C8                         |
+
+   Your new `.env` might look something like this:
+
+   <CollapseCode>
+
+   ```sh filename=".env" showLineNumbers {12-16} copy
+   # This .env file is for demonstration purposes only.
+   #
+   # This should usually be excluded via .gitignore and the env vars attached to
+   # your deployment environment, but we're including this here for ease of local
+   # development. Please do not commit changes to this file!
+   #
+   # Enable debug logs for MUD CLI
+   DEBUG=mud:*
+   #
+   # Anvil default private keys:
+   PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+   PRIVATE_KEY_2=0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+
+   # Addresses corresponding to those keys:
+   USER_ADDRESS=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+   USER_ADDRESS_2=0x70997970C51812dc3A010C7d01b50e0d17dc79C8
+
+   WORLD_ADDRESS=0xc44504ab6a2c4df9a9ce82aecfc453fec3c8771c
+   ```
+
+   </CollapseCode>
+
+1. Create `scripts/TestDelegation.s.sol`.
+
+   ```solidity copy
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+
+   import { Script } from "forge-std/Script.sol";
+   import { console } from "forge-std/console.sol";
+
+   import { SystemboundDelegationControl } from "@latticexyz/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol";
+   import { SYSTEMBOUND_DELEGATION } from "@latticexyz/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol";
+   import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+   import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+   import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+   contract TestDelegation is Script {
+     using WorldResourceIdInstance for ResourceId;
+
+     function run() external {
+       // Load the configuration
+       uint256 userPrivateKey = vm.envUint("PRIVATE_KEY");
+       uint256 userPrivateKey2 = vm.envUint("PRIVATE_KEY_2");
+       address userAddress = vm.envAddress("USER_ADDRESS");
+       address userAddress2 = vm.envAddress("USER_ADDRESS_2");
+       address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+       IWorld world = IWorld(worldAddress);
+       ResourceId systemId = WorldResourceIdLib.encode({
+         typeId: RESOURCE_SYSTEM,
+         namespace: "LastCall",
+         name: "LastCallSystem"
+       });
+
+       // Run as the first address
+       vm.startBroadcast(userPrivateKey);
+
+       world.registerDelegation(
+         userAddress2,
+         SYSTEMBOUND_DELEGATION,
+         abi.encodeCall(SystemboundDelegationControl.initDelegation, (userAddress2, systemId, 2))
+       );
+
+       vm.stopBroadcast();
+
+       // Run as the second address
+       vm.startBroadcast(userPrivateKey2);
+
+       /* bytes memory returnData = */ world.callFrom(userAddress, systemId, abi.encodeWithSignature("newCall()"));
+
+       vm.stopBroadcast();
+     }
+   }
+   ```
+
+   <details>
+
+   <summary>Explanation</summary>
+
+   ```solidity copy
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+
+   import { Script } from "forge-std/Script.sol";
+   import { console } from "forge-std/console.sol";
+
+   import { SystemboundDelegationControl } from "@latticexyz/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol";
+   import { SYSTEMBOUND_DELEGATION } from "@latticexyz/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol";
+   ```
+
+   Import the contract definitions for the delegation system we use, [`SystemboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol), and the `System` identifier for that delegation type.
+
+   ```solidity
+   import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+   import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+   ```
+
+   We need to create the resource identifier for the target `System`, the one where `USER_ADDRESS` allows `USER_ADDRESS_2` to perform actions on its behalf.
+
+   ```solidity
+   import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+   contract TestDelegation is Script {
+     using WorldResourceIdInstance for ResourceId;
+
+     function run() external {
+
+       // Load the configuration
+       uint256 userPrivateKey = vm.envUint("PRIVATE_KEY");
+       uint256 userPrivateKey2 = vm.envUint("PRIVATE_KEY_2");
+       address userAddress = vm.envAddress("USER_ADDRESS");
+       address userAddress2 = vm.envAddress("USER_ADDRESS_2");
+       address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+       IWorld world = IWorld(worldAddress);
+       ResourceId systemId =
+           WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "LastCall", name: "LastCallSystem" });
+   ```
+
+   The system where `newCall` is located is `LastCall:LastCallSystem`.
+
+   ```solidity
+
+       // Run as the first address
+       vm.startBroadcast(userPrivateKey);
+
+       world.registerDelegation(
+         userAddress2,
+         SYSTEMBOUND_DELEGATION,
+         abi.encodeCall(SystemboundDelegationControl.initDelegation, (userAddress2, systemId, 2))
+       );
+   ```
+
+   This is how you register a delegation.
+   The exact parameters depend on the delegation `System` we are using, so we call `registerDelegation` with some parameters, and then provide the exact call to the `System`, in this case `initDelegation(userAddress2, systemId, 2)`.
+
+   ```solidity
+       vm.stopBroadcast();
+
+       // Run as the second address
+       vm.startBroadcast(userPrivateKey2);
+
+       /* bytes memory returnData = */ world.callFrom(userAddress, systemId,
+           abi.encodeWithSignature("newCall()")
+       );
+   ```
+
+   To actually use a delegation you use `world.callFrom` with the address of the user on whose behalf you are performing the action, the resource identifier of the `System` on which you perform the action, and the calldata to send that system (which includes the signature of the function name and parameters, followed by parameter values).
+
+   The output is returned as `bytes memory`
+   Here it is commented out because [`newCall()`](https://github.com/latticexyz/mud/blob/main/examples/multiple-accounts/packages/contracts/src/systems/LastCallSystem.sol#L8-L10) does not return any data so we don't need it.
+
+   ```solidity
+
+       vm.stopBroadcast();
+
+     }
+   }
+   ```
+
+   </details>
+
+1. In the user interface click a few buttons.
+   This step is important because there is always going to be a call by `USER_ADDRESS`, it is created by the post deploy script (`script/PostDeploy.s.sol`).
+   We want to make sure we can see that the time of the last call from `USER_ADDRESS` is now _after_ the other calls.
+
+1. Run the script
+
+   ```sh copy
+   forge script script/TestDelegation.s.sol --broadcast --rpc-url http://127.0.0.1:8545
+   ```
+
+1. See that the call from `USER_ADDRESS` is now at the bottom, it is the latest call.
+   This call was executed by `USER_ADDRESS_2`.
+
+### Using TypeScript
+
+In most cases, you want to use a TypeScript client to handle both delegation and using delegates.
+These are system calls, so normally the best place for them would be `packages/client/src/mud/createSystemCalls.ts`.
+However, because this application uses multiple accounts, it doesn't use the normal system call mechanism and instead has everything in `packages/client/src/App.tsx`.
+We need to perform these actions:
+
+- Add the ABI for the functions whose calldata needs to be created and provided as a parameter.
+
+  - `SystemboundDelegationControl.initDelegation`
+  - `LastCallSystem.newCall`
+
+  The ABIs are located under `packages/contracts/out`.
+
+- Provide the values of the constants we need.
+  Both of those constants are `System` identifiers, so their format is:
+  `sy + <namespace in 14 bytes> + <system name in 16 bytes>.`
+
+  | Constant               | Namespace    | System name    |
+  | ---------------------- | ------------ | -------------- |
+  | LASTCALL_SYSTEM_ID     | LastCall     | LastCallSystem |
+  | SYSTEMBOUND_DELEGATION | Root (empty) | systembound    |
+
+- Create the functions for:
+
+  - Delegating access with `registerDelegation`
+  - Usign delegated access with `callFrom`
+
+  This requires the viem `encodeFunctionData` function to build the calldata parameters.
+
+- Update the user interface.
+
+Here is the modified `packages/client/src/App.tsx`:
+
+<CollapseCode>
+
+```typescript filename="App.tsx" copy showLineNumbers {1,8-60,119-149,176,188-211}
+import { encodeFunctionData } from "viem";
+import { useMUD } from "./MUDContext";
+import { getBurnerPrivateKey, createBurnerAccount, transportObserver, getContract } from "@latticexyz/common";
+import { createPublicClient, createWalletClient, fallback, webSocket, http, ClientConfig, Hex } from "viem";
+import { getNetworkConfig } from "./mud/getNetworkConfig";
+import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
+
+// The ABI we need
+const ABI = [
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "delegatee",
+        type: "address",
+      },
+      {
+        internalType: "ResourceId",
+        name: "systemId",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256",
+        name: "numCalls",
+        type: "uint256",
+      },
+    ],
+    name: "initDelegation",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "newCall",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];
+
+// Create the system name constants
+
+const name2hex = (name, length) => {
+  let result = "";
+  for (let i = 0; i < name.length; i++) result += name.charCodeAt(i).toString(16);
+
+  if (length >= name.length) return result.padEnd(length * 2, "0");
+  else return result.slice(0, length * 2);
+};
+
+const systemId = (namespace, systemName) =>
+  "0x" + name2hex("sy", 2) + name2hex(namespace, 14) + name2hex(systemName, 16);
+
+const LASTCALL_SYSTEM_ID = systemId("LastCall", "LastCallSystem");
+const SYSTEMBOUND_DELEGATION = systemId("", "systembound");
+
+// A lot of code that would normally go in mud/getNetworkConfig.ts is part of the application here,
+// because `getNetworkConfig.ts` assumes you use one wallet, and here we need several.
+const networkConfig = await getNetworkConfig();
+
+const clientOptions = {
+  chain: networkConfig.chain,
+  transport: transportObserver(fallback([webSocket(), http()])),
+  pollingInterval: 1000,
+} as const satisfies ClientConfig;
+
+const publicClient = createPublicClient({
+  ...clientOptions,
+});
+
+// Create a structure with two fields:
+//   client - a wallet client that uses a random account
+//   world - a world contract object that lets us issue newCall
+const makeWorldContract = () => {
+  const client = createWalletClient({
+    ...clientOptions,
+    account: createBurnerAccount(getBurnerPrivateKey(Math.random().toString())),
+  });
+
+  return {
+    world: getContract({
+      address: networkConfig.worldAddress as Hex,
+      abi: IWorldAbi,
+      publicClient: publicClient,
+      walletClient: client,
+    }),
+    client,
+  };
+};
+
+// Create five world contracts
+const worldContracts = [1, 2, 3, 4, 5].map((x) => makeWorldContract());
+
+export const App = () => {
+  const {
+    network: { tables, useStore },
+  } = useMUD();
+
+  // Get all the calls from the records cache.
+  const calls = useStore((state) => {
+    const records = Object.values(state.getRecords(tables.LastCall));
+    records.sort((a, b) => Number(a.value.callTime - b.value.callTime));
+    return records;
+  });
+
+  // Convert timestamps to readable format
+  const twoDigit = (str) => str.toString().padStart(2, "0");
+  const timestamp2Str = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    return `${twoDigit(date.getHours())}:${twoDigit(date.getMinutes())}:${twoDigit(date.getSeconds())}`;
+  };
+
+  // Call newCall() on LastCall:LastCallSystem.
+  const newCall = async (worldContract) => {
+    const tx = await worldContract.write.LastCall_LastCallSystem_newCall();
+  };
+
+  // Delegate to a contract
+  const delegate = async (delegatorContract, delegateeAddress) => {
+    const callData = encodeFunctionData({
+      abi: ABI,
+      functionName: "initDelegation",
+      args: [delegateeAddress, LASTCALL_SYSTEM_ID, 2],
+    });
+
+    const tx = await delegatorContract.write.registerDelegation([delegateeAddress, SYSTEMBOUND_DELEGATION, callData]);
+  };
+
+  // Call as a different contract
+  const callFrom = async (delegateeContract, delegatorAddress) => {
+    const callData = encodeFunctionData({
+      abi: ABI,
+      functionName: "newCall",
+    });
+
+    const tx = await delegateeContract.write.callFrom([delegatorAddress, LASTCALL_SYSTEM_ID, callData]);
+  };
+
+  return (
+    <>
+      <h2>Last calls</h2>
+      <table>
+        <tbody>
+          <tr>
+            <th>Caller</th>
+            <th>Time</th>
+          </tr>
+          {
+            // Show all the calls
+            calls.map((call) => (
+              <tr key={call.id}>
+                <td>{call.key.caller}</td>
+                <td>{timestamp2Str(Number(call.value.callTime))}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <h2>My clients</h2>
+      {
+        // For every world contract, have a button to call newCall as that address.
+        worldContracts.map((worldContract) => (
+          <>
+            <h4>{worldContract.client.account.address}</h4>
+            <button
+              type="button"
+              title="Call"
+              onClick={async (event) => {
+                event.preventDefault();
+                await newCall(worldContract.world);
+              }}
+            >
+              Call yourself
+            </button>
+            <br />
+            <button
+              type="button"
+              title="Delegate"
+              key={`Delegate as ${worldContract.client.account.address}`}
+              onClick={async (event) => {
+                event.preventDefault();
+                await delegate(worldContract.world, worldContracts[0].client.account.address);
+              }}
+            >
+              Delegate permissions to {worldContracts[0].client.account.address}
+            </button>
+            <br />
+            <button
+              type="button"
+              title="callFrom"
+              key={`callFrom as ${worldContract.client.account.address}`}
+              onClick={async (event) => {
+                event.preventDefault();
+                await callFrom(worldContracts[0].world, worldContract.client.account.address);
+              }}
+            >
+              Call as {worldContracts[0].client.account.address}
+            </button>
+            <br />
+          </>
+        ))
+      }
+    </>
+  );
+};
+```
+
+</CollapseCode>
