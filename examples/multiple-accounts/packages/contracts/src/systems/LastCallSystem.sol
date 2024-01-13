@@ -6,6 +6,6 @@ import { LastCall } from "../codegen/index.sol";
 
 contract LastCallSystem is System {
   function newCall() public {
-    LastCall.set(_msgSender(), block.timestamp);
+    LastCall.set(_msgSender(), block.timestamp, tx.origin);
   }
 }

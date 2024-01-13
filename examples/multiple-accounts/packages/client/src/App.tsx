@@ -72,6 +72,7 @@ export const App = () => {
         <tbody>
           <tr>
             <th>Caller</th>
+            <th>tx.sender</th>
             <th>Time</th>
           </tr>
           {
@@ -79,6 +80,7 @@ export const App = () => {
             calls.map((call) => (
               <tr key={call.id}>
                 <td>{call.key.caller}</td>
+                <td>{call.value.sender}</td>
                 <td>{timestamp2Str(Number(call.value.callTime))}</td>
               </tr>
             ))
