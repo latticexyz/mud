@@ -93,7 +93,7 @@ To deploy the delegation system:
 
     </CollapseCode>
 
-1.  Create this script in `packages/contracts/scripts/DeployDelegation.s.sol`
+1.  Create this script in `script/DeployDelegation.s.sol`
 
     <CollapseCode>
 ```solidity filename="DeployDelegation.s.sol" copy showLineNumbers {21-23}
@@ -101,18 +101,16 @@ To deploy the delegation system:
 pragma solidity >=0.8.21;
 
     import { Script } from "forge-std/Script.sol";
-import { console } from "forge-std/console.sol";
-    
-import { IWorld } from "../src/codegen/world/IWorld.sol";
+    import { console } from "forge-std/console.sol";
 
-import { StandardDelegationsModule } from "@latticexyz/world-modules/src/module$
+    import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+    import { StandardDelegationsModule } from "@latticexyz/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol";
 
     contract DeployDelegation is Script {
     function run() external {
-
-        // Load the configuration
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
 
         vm.startBroadcast(deployerPrivateKey);
         IWorld world = IWorld(worldAddress);
@@ -202,7 +200,7 @@ Before moving over to the client, we will verify things work as expected using a
 
    </CollapseCode>
 
-1. Create `scripts/TestDelegation.s.sol`.
+1. Create `script/TestDelegation.s.sol`.
 
    ```solidity copy
    // SPDX-License-Identifier: MIT
@@ -344,10 +342,6 @@ Before moving over to the client, we will verify things work as expected using a
 
    </details>
 
-1. In the user interface click a few buttons.
-   This step is important because there is always going to be a call by `USER_ADDRESS`, it is created by the post deploy script (`script/PostDeploy.s.sol`).
-   We want to make sure we can see that the time of the last call from `USER_ADDRESS` is now _after_ the other calls.
-
 1. Run the script
 
    ```sh copy
@@ -355,7 +349,7 @@ Before moving over to the client, we will verify things work as expected using a
    ```
 
 1. See that the call from `USER_ADDRESS` is now at the bottom, it is the latest call.
-   This call was executed by `USER_ADDRESS_2`.
+   Also, the transaction sender is different from the caller.
 
 ### Using TypeScript
 
@@ -393,7 +387,7 @@ Here is the modified `packages/client/src/App.tsx`:
 
 <CollapseCode>
 
-```typescript filename="App.tsx" copy showLineNumbers {1,8-60,119-149,176,188-211}
+```typescript filename="App.tsx" copy showLineNumbers {1,8-56,119-138,177-200}
 import { encodeFunctionData } from "viem";
 import { useMUD } from "./MUDContext";
 import { getBurnerPrivateKey, createBurnerAccount, transportObserver, getContract } from "@latticexyz/common";
@@ -603,3 +597,220 @@ export const App = () => {
 ```
 
 </CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```typescript
+import { encodeFunctionData } from "viem";
+import { useMUD } from "./MUDContext";
+import { getBurnerPrivateKey, createBurnerAccount, transportObserver, getContract } from "@latticexyz/common";
+import { createPublicClient, createWalletClient, fallback, webSocket, http, ClientConfig, Hex } from "viem";
+import { getNetworkConfig } from "./mud/getNetworkConfig";
+import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
+
+// The ABI we need
+const ABI = [
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "delegatee",
+        type: "address",
+      },
+      {
+        internalType: "ResourceId",
+        name: "systemId",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256",
+        name: "numCalls",
+        type: "uint256",
+      },
+    ],
+    name: "initDelegation",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "newCall",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];
+
+// Create the system name constants
+
+const name2hex = (name, length) => {
+  let result = "";
+  for (let i = 0; i < name.length; i++) result += name.charCodeAt(i).toString(16);
+
+  if (length >= name.length) return result.padEnd(length * 2, "0");
+  else return result.slice(0, length * 2);
+};
+
+const systemId = (namespace, systemName) =>
+  "0x" + name2hex("sy", 2) + name2hex(namespace, 14) + name2hex(systemName, 16);
+
+const LASTCALL_SYSTEM_ID = systemId("LastCall", "LastCallSystem");
+const SYSTEMBOUND_DELEGATION = systemId("", "systembound");
+
+// A lot of code that would normally go in mud/getNetworkConfig.ts is part of the application here,
+// because `getNetworkConfig.ts` assumes you use one wallet, and here we need several.
+const networkConfig = await getNetworkConfig();
+
+const clientOptions = {
+  chain: networkConfig.chain,
+  transport: transportObserver(fallback([webSocket(), http()])),
+  pollingInterval: 1000,
+} as const satisfies ClientConfig;
+
+const publicClient = createPublicClient({
+  ...clientOptions,
+});
+
+// Create a structure with two fields:
+//   client - a wallet client that uses a random account
+//   world - a world contract object that lets us issue newCall
+const makeWorldContract = () => {
+  const client = createWalletClient({
+    ...clientOptions,
+    account: createBurnerAccount(getBurnerPrivateKey(Math.random().toString())),
+  });
+
+  return {
+    world: getContract({
+      address: networkConfig.worldAddress as Hex,
+      abi: IWorldAbi,
+      publicClient: publicClient,
+      walletClient: client,
+    }),
+    client,
+  };
+};
+
+// Create five world contracts
+const worldContracts = [1, 2, 3, 4, 5].map((x) => makeWorldContract());
+
+export const App = () => {
+  const {
+    network: { tables, useStore },
+  } = useMUD();
+
+  // Get all the calls from the records cache.
+  const calls = useStore((state) => {
+    const records = Object.values(state.getRecords(tables.LastCall));
+    records.sort((a, b) => Number(a.value.callTime - b.value.callTime));
+    return records;
+  });
+
+  // Convert timestamps to readable format
+  const twoDigit = (str) => str.toString().padStart(2, "0");
+  const timestamp2Str = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    return `${twoDigit(date.getHours())}:${twoDigit(date.getMinutes())}:${twoDigit(date.getSeconds())}`;
+  };
+
+  // Call newCall() on LastCall:LastCallSystem.
+  const newCall = async (worldContract) => {
+    const tx = await worldContract.write.LastCall_LastCallSystem_newCall();
+  };
+
+  // Delegate to a contract
+  const delegate = async (delegatorContract, delegateeAddress) => {
+    const callData = encodeFunctionData({
+      abi: ABI,
+      functionName: "initDelegation",
+      args: [delegateeAddress, LASTCALL_SYSTEM_ID, 2],
+    });
+
+    const tx = await delegatorContract.write.registerDelegation([delegateeAddress, SYSTEMBOUND_DELEGATION, callData]);
+  };
+
+  // Call as a different contract
+  const callFrom = async (delegateeContract, delegatorAddress) => {
+    const callData = encodeFunctionData({
+      abi: ABI,
+      functionName: "newCall",
+    });
+
+    const tx = await delegateeContract.write.callFrom([delegatorAddress, LASTCALL_SYSTEM_ID, callData]);
+  };
+
+  return (
+    <>
+      <h2>Last calls</h2>
+      <table>
+        <tbody>
+          <tr>
+            <th>Caller</th>
+            <th>Time</th>
+          </tr>
+          {
+            // Show all the calls
+            calls.map((call) => (
+              <tr key={call.id}>
+                <td>{call.key.caller}</td>
+                <td>{timestamp2Str(Number(call.value.callTime))}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <h2>My clients</h2>
+      {
+        // For every world contract, have a button to call newCall as that address.
+        worldContracts.map((worldContract) => (
+          <>
+            <h4>{worldContract.client.account.address}</h4>
+            <button
+              type="button"
+              title="Call"
+              onClick={async (event) => {
+                event.preventDefault();
+                await newCall(worldContract.world);
+              }}
+            >
+              Call yourself
+            </button>
+            <br />
+            <button
+              type="button"
+              title="Delegate"
+              key={`Delegate as ${worldContract.client.account.address}`}
+              onClick={async (event) => {
+                event.preventDefault();
+                await delegate(worldContract.world, worldContracts[0].client.account.address);
+              }}
+            >
+              Delegate permissions to {worldContracts[0].client.account.address}
+            </button>
+            <br />
+            <button
+              type="button"
+              title="callFrom"
+              key={`callFrom as ${worldContract.client.account.address}`}
+              onClick={async (event) => {
+                event.preventDefault();
+                await callFrom(worldContracts[0].world, worldContract.client.account.address);
+              }}
+            >
+              Call as {worldContracts[0].client.account.address}
+            </button>
+            <br />
+          </>
+        ))
+      }
+    </>
+  );
+};
+```
+
+</details>
+
+1. Try to click a few **Call as\*** buttons, see that
