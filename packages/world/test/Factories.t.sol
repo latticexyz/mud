@@ -15,6 +15,7 @@ import { IWorldFactory } from "../src/IWorldFactory.sol";
 import { InstalledModules } from "../src/codegen/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ROOT_NAMESPACE_ID } from "../src/constants.sol";
+import { createCoreModule } from "./createCoreModule.sol";
 
 contract FactoriesTest is Test {
   event ContractDeployed(address addr, uint256 salt);
@@ -35,7 +36,7 @@ contract FactoriesTest is Test {
     Create2Factory create2Factory = new Create2Factory();
 
     // Encode constructor arguments for WorldFactory
-    bytes memory encodedArguments = abi.encode(new CoreModule());
+    bytes memory encodedArguments = abi.encode(createCoreModule());
     bytes memory combinedBytes = abi.encodePacked(type(WorldFactory).creationCode, encodedArguments);
 
     // Address we expect for deployed WorldFactory
@@ -53,7 +54,7 @@ contract FactoriesTest is Test {
 
   function testWorldFactory() public {
     // Deploy WorldFactory with current CoreModule
-    CoreModule coreModule = new CoreModule();
+    CoreModule coreModule = createCoreModule();
     address worldFactoryAddress = address(new WorldFactory(coreModule));
     IWorldFactory worldFactory = IWorldFactory(worldFactoryAddress);
 
