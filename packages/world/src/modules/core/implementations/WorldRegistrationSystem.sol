@@ -6,7 +6,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
 import { System } from "../../../System.sol";
-import { WorldContextConsumer, IWorldContextConsumer } from "../../../WorldContext.sol";
+import { IWorldContextConsumer } from "../../../WorldContext.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { SystemCall } from "../../../SystemCall.sol";
 import { ROOT_NAMESPACE_ID, ROOT_NAME } from "../../../constants.sol";
@@ -106,7 +106,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param system The system being registered
    * @param publicAccess Flag indicating if access control check is bypassed
    */
-  function registerSystem(ResourceId systemId, WorldContextConsumer system, bool publicAccess) public virtual {
+  function registerSystem(ResourceId systemId, System system, bool publicAccess) public virtual {
     // Require the provided system ID to have type RESOURCE_SYSTEM
     if (systemId.getType() != RESOURCE_SYSTEM) {
       revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
