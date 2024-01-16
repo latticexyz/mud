@@ -9,7 +9,7 @@
     "file": "test/Bytes.t.sol",
     "test": "testSlice32",
     "name": "slice bytes32 with offset 10",
-    "gasUsed": 68
+    "gasUsed": 13
   },
   {
     "file": "test/Callbacks.t.sol",
@@ -567,7 +567,7 @@
     "file": "test/Storage.t.sol",
     "test": "testStoreLoad",
     "name": "load 34 bytes over 3 storage slots (with offset and safeTrail))",
-    "gasUsed": 885
+    "gasUsed": 874
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
