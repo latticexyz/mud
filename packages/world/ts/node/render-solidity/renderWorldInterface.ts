@@ -7,7 +7,7 @@ import {
 } from "@latticexyz/common/codegen";
 import type { RenderWorldOptions } from "./types";
 
-export function renderWorld(options: RenderWorldOptions) {
+export function renderWorldInterface(options: RenderWorldOptions) {
   const { interfaceName, storeImportPath, worldImportPath, imports } = options;
   const baseImports: AbsoluteImportDatum[] =
     interfaceName === "IBaseWorld"

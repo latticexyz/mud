@@ -35,7 +35,7 @@ export function loadAndExtractUserTypes(
       }
     }
 
-    extractedUserTypes = Object.assign(extractedUserTypes, userTypesInFile);
+    extractedUserTypes = { ...extractedUserTypes, ...userTypesInFile };
   }
   return extractedUserTypes;
 }

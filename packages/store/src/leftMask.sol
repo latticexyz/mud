@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
+import { BYTE_TO_BITS } from "./constants.sol";
+
 /**
  * @title Byte Mask Utility
  * @notice Utility functions to manage bytes in memory.
@@ -24,6 +26,6 @@ pragma solidity >=0.8.21;
  */
 function leftMask(uint256 byteLength) pure returns (uint256 mask) {
   unchecked {
-    return ~(type(uint256).max >> (byteLength * 8));
+    return ~(type(uint256).max >> (byteLength * BYTE_TO_BITS));
   }
 }

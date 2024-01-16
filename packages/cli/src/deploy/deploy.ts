@@ -9,12 +9,12 @@ import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
 import { Table } from "./configToTables";
-import { assertNamespaceOwner } from "./assertNamespaceOwner";
+import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
-import { coreModuleBytecode, worldFactoryBytecode, worldFactoryContracts } from "./ensureWorldFactory";
+import { worldFactoryContracts } from "./ensureWorldFactory";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -67,11 +67,16 @@ export async function deploy<configInput extends ConfigInput>({
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
 
-  await assertNamespaceOwner({
+  const namespaceTxs = await ensureNamespaceOwner({
     client,
     worldDeploy,
     resourceIds: [...tables.map((table) => table.tableId), ...systems.map((system) => system.systemId)],
   });
+
+  debug("waiting for all namespace registration transactions to confirm");
+  for (const tx of namespaceTxs) {
+    await waitForTransactionReceipt(client, { hash: tx });
+  }
 
   const tableTxs = await ensureTables({
     client,

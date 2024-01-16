@@ -36,7 +36,8 @@ contract SchemaTest is Test, GasReporter {
     assertEq(uint8(schema.atIndex(5)), uint8(SchemaType.UINT32_ARRAY));
   }
 
-  function testFailInvalidSchemaStaticAfterDynamic() public pure {
+  function testInvalidSchemaStaticAfterDynamic() public {
+    vm.expectRevert(abi.encodeWithSelector(SchemaLib.SchemaLib_StaticTypeAfterDynamicType.selector));
     SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT32_ARRAY, SchemaType.UINT16);
   }
 
@@ -75,7 +76,7 @@ contract SchemaTest is Test, GasReporter {
     assertEq(encodedSchema.numStaticFields() + encodedSchema.numDynamicFields(), 28);
   }
 
-  function testFailEncodeTooLong() public pure {
+  function testEncodeTooLong() public {
     SchemaType[] memory schema = new SchemaType[](29);
     schema[0] = SchemaType.UINT256;
     schema[1] = SchemaType.UINT256;
@@ -106,6 +107,7 @@ contract SchemaTest is Test, GasReporter {
     schema[26] = SchemaType.UINT32_ARRAY;
     schema[27] = SchemaType.UINT32_ARRAY;
     schema[28] = SchemaType.UINT32_ARRAY;
+    vm.expectRevert(abi.encodeWithSelector(SchemaLib.SchemaLib_InvalidLength.selector, schema.length));
     SchemaLib.encode(schema);
   }
 
@@ -121,7 +123,7 @@ contract SchemaTest is Test, GasReporter {
     assertEq(encodedSchema.numDynamicFields(), 5);
   }
 
-  function testFailEncodeTooManyDynamic() public pure {
+  function testEncodeTooManyDynamic() public {
     SchemaType[] memory schema = new SchemaType[](6);
     schema[0] = SchemaType.UINT32_ARRAY;
     schema[1] = SchemaType.UINT32_ARRAY;
@@ -129,6 +131,7 @@ contract SchemaTest is Test, GasReporter {
     schema[3] = SchemaType.UINT32_ARRAY;
     schema[4] = SchemaType.UINT32_ARRAY;
     schema[5] = SchemaType.UINT32_ARRAY;
+    vm.expectRevert(abi.encodeWithSelector(SchemaLib.SchemaLib_InvalidLength.selector, schema.length));
     SchemaLib.encode(schema);
   }
 
@@ -237,7 +240,13 @@ contract SchemaTest is Test, GasReporter {
     endGasReport();
   }
 
-  function testFailValidate() public pure {
+  function testValidateInvalidSchema() public {
+    Schema encodedSchema = Schema.wrap(keccak256("some invalid schema"));
+
+    vm.expectRevert(
+      abi.encodeWithSelector(SchemaLib.SchemaLib_InvalidLength.selector, encodedSchema.numDynamicFields())
+    );
+
     Schema.wrap(keccak256("some invalid schema")).validate({ allowEmpty: false });
   }
 

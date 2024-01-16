@@ -53,6 +53,20 @@ contract WorldResourceIdTest is Test, GasReporter {
     assertEq(ResourceId.unwrap(namespaceId), ResourceId.unwrap(WorldResourceIdLib.encodeNamespace("namespace")));
   }
 
+  function testToString() public {
+    ResourceId resourceId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "name"
+    });
+
+    startGasReport("convert resource ID to string");
+    string memory resourceIdString = resourceId.toString();
+    endGasReport();
+
+    assertEq(resourceIdString, "sy:namespace:name");
+  }
+
   function testGetType() public {
     ResourceId resourceId = WorldResourceIdLib.encode({
       typeId: RESOURCE_SYSTEM,

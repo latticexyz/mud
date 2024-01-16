@@ -11,6 +11,8 @@ import { WorldContextProviderLib } from "../src/WorldContext.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { ResourceId, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 
+import { createCoreModule } from "./createCoreModule.sol";
+
 contract WorldMock is StoreRead {
   constructor() {
     StoreSwitch.setStoreAddress(address(this));
@@ -31,7 +33,7 @@ contract CoreModuleTest is Test {
   WorldMock worldMock;
 
   function setUp() public {
-    coreModule = new CoreModule();
+    coreModule = createCoreModule();
     worldMock = new WorldMock();
     StoreSwitch.setStoreAddress(address(worldMock));
   }

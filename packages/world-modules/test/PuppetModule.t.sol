@@ -13,7 +13,7 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { DELEGATION_CONTROL_INTERFACE_ID } from "@latticexyz/world/src/IDelegationControl.sol";
 
-import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
+import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
 import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 
 import { PuppetModule } from "../src/modules/puppet/PuppetModule.sol";
@@ -48,10 +48,26 @@ contract PuppetModuleTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world.initialize(createCoreModule());
+  }
+
+  function _setupPuppet() internal {
     world.installModule(new PuppetModule(), new bytes(0));
 
+    // Register a new namespace and system
+    world.registerNamespace(systemId.getNamespaceId());
+    PuppetTestSystem system = new PuppetTestSystem();
+    world.registerSystem(systemId, system, true);
+
+    // Connect the puppet
+    puppet = PuppetTestSystem(createPuppet(world, systemId));
+  }
+
+  function _setupRootPuppet() internal {
+    world.installRootModule(new PuppetModule(), new bytes(0));
+
     // Register a new system
+    world.registerNamespace(systemId.getNamespaceId());
     PuppetTestSystem system = new PuppetTestSystem();
     world.registerSystem(systemId, system, true);
 
@@ -60,6 +76,8 @@ contract PuppetModuleTest is Test, GasReporter {
   }
 
   function testEmitOnPuppet() public {
+    _setupPuppet();
+
     vm.expectEmit(true, true, true, true);
     emit Hello("hello world");
     string memory result = puppet.echoAndEmit("hello world");
@@ -67,6 +85,23 @@ contract PuppetModuleTest is Test, GasReporter {
   }
 
   function testMsgSender() public {
+    _setupPuppet();
+
+    assertEq(puppet.msgSender(), address(this));
+  }
+
+  function testEmitOnRootPuppet() public {
+    _setupRootPuppet();
+
+    vm.expectEmit(true, true, true, true);
+    emit Hello("hello world");
+    string memory result = puppet.echoAndEmit("hello world");
+    assertEq(result, "hello world");
+  }
+
+  function testMsgSenderRootPuppet() public {
+    _setupRootPuppet();
+
     assertEq(puppet.msgSender(), address(this));
   }
 }

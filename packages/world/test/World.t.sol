@@ -35,9 +35,13 @@ import { Module, MODULE_INTERFACE_ID } from "../src/Module.sol";
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
 
+import { AccessManagementSystem } from "../src/modules/core/implementations/AccessManagementSystem.sol";
+import { BalanceTransferSystem } from "../src/modules/core/implementations/BalanceTransferSystem.sol";
+import { BatchCallSystem } from "../src/modules/core/implementations/BatchCallSystem.sol";
+
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { CoreSystem } from "../src/modules/core/CoreSystem.sol";
-import { CORE_SYSTEM_ID } from "../src/modules/core/constants.sol";
+import { CoreRegistrationSystem } from "../src/modules/core/CoreRegistrationSystem.sol";
+import { CORE_REGISTRATION_SYSTEM_ID } from "../src/modules/core/constants.sol";
 import { Systems } from "../src/codegen/tables/Systems.sol";
 import { SystemRegistry } from "../src/codegen/tables/SystemRegistry.sol";
 import { FunctionSelectors } from "../src/codegen/tables/FunctionSelectors.sol";
@@ -50,6 +54,7 @@ import { Bool } from "./codegen/tables/Bool.sol";
 import { TwoFields, TwoFieldsData } from "./codegen/tables/TwoFields.sol";
 import { AddressArray } from "./codegen/tables/AddressArray.sol";
 import { DelegationControlMock } from "./DelegationControlMock.sol";
+import { createCoreModule } from "./createCoreModule.sol";
 
 interface IWorldTestSystem {
   function testNamespace_testSystem_err(string memory input) external pure;
@@ -170,7 +175,7 @@ contract WorldTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world.initialize(createCoreModule());
     StoreSwitch.setStoreAddress(address(world));
 
     key = "testKey";
@@ -192,7 +197,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testConstructorAndInitialize() public {
-    CoreModule coreModule = new CoreModule();
+    CoreModule coreModule = createCoreModule();
 
     vm.expectEmit(true, true, true, true);
     emit HelloWorld(WORLD_VERSION);
@@ -217,33 +222,35 @@ contract WorldTest is Test, GasReporter {
     newWorld.initialize(coreModule);
 
     // Should have registered the core system function selectors
-    CoreSystem coreSystem = CoreSystem(Systems.getSystem(CORE_SYSTEM_ID));
+    CoreRegistrationSystem coreRegistrationSystem = CoreRegistrationSystem(
+      Systems.getSystem(CORE_REGISTRATION_SYSTEM_ID)
+    );
     bytes4[19] memory coreFunctionSignatures = [
       // --- AccessManagementSystem ---
-      coreSystem.grantAccess.selector,
-      coreSystem.revokeAccess.selector,
-      coreSystem.transferOwnership.selector,
+      AccessManagementSystem.grantAccess.selector,
+      AccessManagementSystem.revokeAccess.selector,
+      AccessManagementSystem.transferOwnership.selector,
       // --- BalanceTransferSystem ---
-      coreSystem.transferBalanceToNamespace.selector,
-      coreSystem.transferBalanceToAddress.selector,
+      BalanceTransferSystem.transferBalanceToNamespace.selector,
+      BalanceTransferSystem.transferBalanceToAddress.selector,
       // --- BatchCallSystem ---
-      coreSystem.batchCall.selector,
-      coreSystem.batchCallFrom.selector,
+      BatchCallSystem.batchCall.selector,
+      BatchCallSystem.batchCallFrom.selector,
       // --- ModuleInstallationSystem ---
-      coreSystem.installModule.selector,
+      coreRegistrationSystem.installModule.selector,
       // --- StoreRegistrationSystem ---
-      coreSystem.registerTable.selector,
-      coreSystem.registerStoreHook.selector,
-      coreSystem.unregisterStoreHook.selector,
+      coreRegistrationSystem.registerTable.selector,
+      coreRegistrationSystem.registerStoreHook.selector,
+      coreRegistrationSystem.unregisterStoreHook.selector,
       // --- WorldRegistrationSystem ---
-      coreSystem.registerNamespace.selector,
-      coreSystem.registerSystemHook.selector,
-      coreSystem.unregisterSystemHook.selector,
-      coreSystem.registerSystem.selector,
-      coreSystem.registerFunctionSelector.selector,
-      coreSystem.registerRootFunctionSelector.selector,
-      coreSystem.registerDelegation.selector,
-      coreSystem.registerNamespaceDelegation.selector
+      coreRegistrationSystem.registerNamespace.selector,
+      coreRegistrationSystem.registerSystemHook.selector,
+      coreRegistrationSystem.unregisterSystemHook.selector,
+      coreRegistrationSystem.registerSystem.selector,
+      coreRegistrationSystem.registerFunctionSelector.selector,
+      coreRegistrationSystem.registerRootFunctionSelector.selector,
+      coreRegistrationSystem.registerDelegation.selector,
+      coreRegistrationSystem.registerNamespaceDelegation.selector
     ];
 
     for (uint256 i; i < coreFunctionSignatures.length; i++) {
@@ -308,6 +315,7 @@ contract WorldTest is Test, GasReporter {
       name: "testSystem"
     });
 
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, false);
     bytes memory result = world.call(systemId, abi.encodeCall(WorldTestSystem.getStoreAddress, ()));
 
@@ -431,6 +439,7 @@ contract WorldTest is Test, GasReporter {
     fieldNames[0] = "value1";
     fieldNames[1] = "value2";
     fieldNames[2] = "value3";
+    world.registerNamespace(tableId.getNamespaceId());
 
     startGasReport("Register a new table in the namespace");
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
@@ -460,7 +469,7 @@ contract WorldTest is Test, GasReporter {
       namespace: namespace,
       name: "otherTable"
     });
-    _expectAccessDenied(address(0x01), namespace, "", RESOURCE_NAMESPACE);
+    _expectAccessDenied(address(0x01), namespace, "otherTable", RESOURCE_TABLE);
     world.registerTable(otherTableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
     // Expect the World to not be allowed to call registerTable via an external call
@@ -505,15 +514,22 @@ contract WorldTest is Test, GasReporter {
     // Expect the system to have access to its own namespace
     assertTrue(ResourceAccess.get({ resourceId: namespaceId, caller: address(system) }));
 
-    ResourceId newNamespaceId = WorldResourceIdLib.encodeNamespace("newNamespace");
-    // Expect the namespace to be created if it doesn't exist yet
-    assertEq(NamespaceOwner.get(newNamespaceId), address(0));
-    world.registerSystem(
-      WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "newNamespace", name: "testSystem" }),
-      new System(),
-      false
+    // Expect the registration to fail if the namespace does not exist yet
+    System newSystem = new System();
+    ResourceId invalidNamespaceSystemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "newNamespace",
+      name: "testSystem"
+    });
+    assertEq(NamespaceOwner.get(invalidNamespaceSystemId.getNamespaceId()), address(0));
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_ResourceNotFound.selector,
+        invalidNamespaceSystemId.getNamespaceId(),
+        invalidNamespaceSystemId.getNamespaceId().toString()
+      )
     );
-    assertEq(NamespaceOwner.get(newNamespaceId), address(this));
+    world.registerSystem(invalidNamespaceSystemId, newSystem, false);
 
     // Expect an error when registering an existing system at a new system ID
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_SystemAlreadyExists.selector, address(system)));
@@ -527,7 +543,6 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(systemId, system, true);
 
     // Expect an error when registering a system at an existing resource ID of a different type
-    System newSystem = new System();
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "testTable" });
     world.registerTable(
       tableId,
@@ -576,7 +591,7 @@ contract WorldTest is Test, GasReporter {
       )
     );
     world.registerSystem(
-      WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "someNamespace", name: "invalidSystem" }),
+      WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "invalidSystem" }),
       System(address(world)),
       true
     );
@@ -591,6 +606,7 @@ contract WorldTest is Test, GasReporter {
       namespace: namespace,
       name: systemName
     });
+    world.registerNamespace(systemId.getNamespaceId());
 
     // Register a system
     System oldSystem = new System();
@@ -631,6 +647,10 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testInvalidIds() public {
+    // Register the namespaces
+    world.registerNamespace(WorldResourceIdLib.encodeNamespace("namespace"));
+    world.registerNamespace(WorldResourceIdLib.encodeNamespace("namespace2"));
+
     // Register a new table
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "namespace", name: "name" });
     world.registerTable(
@@ -706,6 +726,7 @@ contract WorldTest is Test, GasReporter {
       namespace: "testSetRecord",
       name: "testTable"
     });
+    world.registerNamespace(tableId.getNamespaceId());
     // Register a new table
     world.registerTable(
       tableId,
@@ -741,6 +762,7 @@ contract WorldTest is Test, GasReporter {
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
     FieldLayout fieldLayout = Bool.getFieldLayout();
     Schema valueSchema = Bool.getValueSchema();
+    world.registerNamespace(tableId.getNamespaceId());
 
     // Register a new table
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
@@ -772,6 +794,7 @@ contract WorldTest is Test, GasReporter {
     Schema valueSchema = AddressArray.getValueSchema();
 
     // Register a new table
+    world.registerNamespace(tableId.getNamespaceId());
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
     // Create data
@@ -817,6 +840,7 @@ contract WorldTest is Test, GasReporter {
     Schema valueSchema = Bool.getValueSchema();
 
     // Register a new table
+    world.registerNamespace(tableId.getNamespaceId());
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
     // Write data to the table and expect it to be written
@@ -855,6 +879,7 @@ contract WorldTest is Test, GasReporter {
       namespace: "namespace",
       name: "testSystem"
     });
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, false);
 
     // Call a system function without arguments via the World
@@ -933,6 +958,7 @@ contract WorldTest is Test, GasReporter {
       namespace: "namespace",
       name: "testSystem"
     });
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
     address caller = address(1);
@@ -954,6 +980,7 @@ contract WorldTest is Test, GasReporter {
       namespace: "namespace",
       name: "testSystem"
     });
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
     // Register an unlimited delegation
@@ -983,6 +1010,7 @@ contract WorldTest is Test, GasReporter {
       namespace: "namespace",
       name: "testSystem"
     });
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
     // Expect a revert when attempting to perform a call on behalf of an address that doesn't have a delegation
@@ -1005,6 +1033,7 @@ contract WorldTest is Test, GasReporter {
       namespace: "namespace",
       name: "testSystem"
     });
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
     // Register a limited delegation
@@ -1022,6 +1051,7 @@ contract WorldTest is Test, GasReporter {
       namespace: "namespace",
       name: "testSystem"
     });
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
     // Register a delegation control mock system
@@ -1031,6 +1061,7 @@ contract WorldTest is Test, GasReporter {
       namespace: "delegation",
       name: "mock"
     });
+    world.registerNamespace(delegationControlMockId.getNamespaceId());
     world.registerSystem(delegationControlMockId, delegationControlMock, true);
 
     address delegator = address(1);
@@ -1224,6 +1255,7 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
     // Expect the registration to fail if the contract does not implement the system hook interface
@@ -1268,6 +1300,7 @@ contract WorldTest is Test, GasReporter {
     });
 
     // Register a new system
+    world.registerNamespace(systemId.getNamespaceId());
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(systemId, system, false);
 
@@ -1309,6 +1342,7 @@ contract WorldTest is Test, GasReporter {
       name: "testTable"
     });
     // Register a new table
+    world.registerNamespace(tableId.getNamespaceId());
     world.registerTable(
       tableId,
       Bool.getFieldLayout(),
@@ -1337,6 +1371,7 @@ contract WorldTest is Test, GasReporter {
       name: "testTable"
     });
     // Register a new table
+    world.registerNamespace(tableId.getNamespaceId());
     world.registerTable(
       tableId,
       Bool.getFieldLayout(),
@@ -1382,6 +1417,7 @@ contract WorldTest is Test, GasReporter {
     });
     // Register a new non-root system
     WorldTestSystem system = new WorldTestSystem();
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, false);
 
     // Call the sysyem
@@ -1397,6 +1433,7 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
     startGasReport("Register a function selector");
@@ -1428,6 +1465,7 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
     string memory worldFunc = "testSelector()";
@@ -1495,6 +1533,7 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
 
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
     world.registerRootFunctionSelector(systemId, "receiveEther()", WorldTestSystem.receiveEther.selector);
 
@@ -1521,6 +1560,7 @@ contract WorldTest is Test, GasReporter {
     bytes14 namespace = "noroot";
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
+    world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
     world.registerRootFunctionSelector(systemId, "msgSender()", WorldTestSystem.msgSender.selector);
 
