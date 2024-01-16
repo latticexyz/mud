@@ -2,7 +2,7 @@
 pragma solidity >=0.8.21;
 
 import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
-import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
 import { System } from "../../../System.sol";
@@ -33,7 +33,6 @@ import { FunctionSignatures } from "../../../codegen/tables/FunctionSignatures.s
  * @dev This contract provides functions related to registering resources other than tables in the World.
  */
 contract WorldRegistrationSystem is System, IWorldErrors {
-  using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
   /**

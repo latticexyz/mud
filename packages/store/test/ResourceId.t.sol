@@ -5,11 +5,9 @@ import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { ResourceId } from "../src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../src/storeResourceTypes.sol";
-import { ResourceId, ResourceIdInstance, ResourceIdLib } from "../src/ResourceId.sol";
+import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
 
 contract ResourceIdTest is Test, GasReporter {
-  using ResourceIdInstance for ResourceId;
-
   function testEncode() public {
     startGasReport("encode table ID with name and type");
     ResourceId tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "name" });
