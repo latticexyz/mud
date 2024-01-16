@@ -13,8 +13,9 @@ import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
 import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { SystemCallData, SystemCallFromData } from "../src/modules/core/types.sol";
+
+import { createCoreModule } from "./createCoreModule.sol";
 
 address constant caller = address(1);
 address constant delegator = address(2);
@@ -57,7 +58,7 @@ contract BatchCallTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world.initialize(createCoreModule());
     world.registerNamespace(systemId.getNamespaceId());
   }
 

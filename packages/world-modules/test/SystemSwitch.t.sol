@@ -7,7 +7,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { World } from "@latticexyz/world/src/World.sol";
-import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
+import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
@@ -55,7 +55,7 @@ contract SystemSwitchTest is Test, GasReporter {
   function setUp() public {
     // Deploy world
     World _world = new World();
-    _world.initialize(new CoreModule());
+    _world.initialize(createCoreModule());
     world = IBaseWorld(address(_world));
 
     // Deploy systems
