@@ -47,6 +47,11 @@ contract WorldRegistrationSystem is System, IWorldErrors {
       revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
     }
 
+    // Require the provided namespace name to be empty
+    if (namespaceId.getName() != ROOT_NAME) {
+      revert World_InvalidResourceId(namespaceId, namespaceId.toString());
+    }
+
     // Require namespace to not exist yet
     if (ResourceIds._getExists(namespaceId)) {
       revert World_ResourceAlreadyExists(namespaceId, namespaceId.toString());
@@ -288,6 +293,11 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Require the delegation to not be unlimited
     if (!Delegation.isLimited(delegationControlId)) {
       revert World_UnlimitedDelegationNotAllowed();
+    }
+
+    // Require the provided namespace name to be empty
+    if (namespaceId.getName() != ROOT_NAME) {
+      revert World_InvalidResourceId(namespaceId, namespaceId.toString());
     }
 
     // Require the caller to own the namespace
