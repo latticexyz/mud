@@ -20,7 +20,6 @@ library SliceLib {
   error Slice_OutOfBounds(bytes data, uint256 start, uint256 end);
 
   uint256 constant MASK_LEN = uint256(type(uint128).max);
-  uint256 constant MASK_PTR = uint256(type(uint128).max) << 128;
 
   /**
    * @notice Converts a bytes array to a slice (without copying data)
