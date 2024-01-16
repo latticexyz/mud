@@ -54,6 +54,12 @@
     "gasUsed": 45206
   },
   {
+    "file": "test/Factories.t.sol",
+    "test": "testWorldFactory",
+    "name": "deploy world",
+    "gasUsed": 11933749
+  },
+  {
     "file": "test/World.t.sol",
     "test": "testCall",
     "name": "call a system via the World",

@@ -4,6 +4,7 @@ pragma solidity >=0.8.21;
 import { Test, console } from "forge-std/Test.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
 import { ResourceId } from "../src/WorldResourceId.sol";
@@ -16,7 +17,7 @@ import { InstalledModules } from "../src/codegen/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ROOT_NAMESPACE_ID } from "../src/constants.sol";
 
-contract FactoriesTest is Test {
+contract FactoriesTest is Test, GasReporter {
   event ContractDeployed(address addr, uint256 salt);
   event WorldDeployed(address indexed newContract);
   event HelloWorld(bytes32 indexed version);
@@ -67,7 +68,9 @@ contract FactoriesTest is Test {
     // Check for WorldDeployed event from Factory
     vm.expectEmit(true, false, false, false);
     emit WorldDeployed(calculatedAddress);
+    startGasReport("deploy world via WorldFactory");
     worldFactory.deployWorld();
+    endGasReport();
 
     // Set the store address manually
     StoreSwitch.setStoreAddress(calculatedAddress);
