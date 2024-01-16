@@ -3,8 +3,10 @@ import balanceTransferSystemBuild from "@latticexyz/world/out/BalanceTransferSys
 import batchCallSystemBuild from "@latticexyz/world/out/BatchCallSystem.sol/BatchCallSystem.json" assert { type: "json" };
 import coreRegistrationSystemBuild from "@latticexyz/world/out/CoreRegistrationSystem.sol/CoreRegistrationSystem.json" assert { type: "json" };
 import coreModuleBuild from "@latticexyz/world/out/CoreModule.sol/CoreModule.json" assert { type: "json" };
+import coreModuleAbi from "@latticexyz/world/out/CoreModule.sol/CoreModule.abi.json" assert { type: "json" };
 import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json" assert { type: "json" };
-import { Client, Transport, Chain, Account, Hex, parseAbi, getCreate2Address, encodeDeployData, size } from "viem";
+import worldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
+import { Client, Transport, Chain, Account, Hex, getCreate2Address, encodeDeployData, size } from "viem";
 import { deployer } from "./ensureDeployer";
 import { salt } from "./common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
@@ -59,7 +61,7 @@ export const coreRegistrationSystem = getCreate2Address({
 export const coreModuleDeployedBytecodeSize = size(coreModuleBuild.deployedBytecode.object as Hex);
 export const coreModuleBytecode = encodeDeployData({
   bytecode: coreModuleBuild.bytecode.object as Hex,
-  abi: parseAbi(["constructor(address,address,address,address)"]),
+  abi: coreModuleAbi,
   args: [accessManagementSystem, balanceTransferSystem, batchCallSystem, coreRegistrationSystem],
 });
 
@@ -68,7 +70,7 @@ export const coreModule = getCreate2Address({ from: deployer, bytecode: coreModu
 export const worldFactoryDeployedBytecodeSize = size(worldFactoryBuild.deployedBytecode.object as Hex);
 export const worldFactoryBytecode = encodeDeployData({
   bytecode: worldFactoryBuild.bytecode.object as Hex,
-  abi: parseAbi(["constructor(address)"]),
+  abi: worldFactoryAbi,
   args: [coreModule],
 });
 

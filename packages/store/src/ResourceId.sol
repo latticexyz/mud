@@ -9,12 +9,7 @@ pragma solidity >=0.8.21;
 type ResourceId is bytes32;
 
 /// @dev Number of bits reserved for the type in the ResourceId.
-uint256 constant TYPE_BITS = 2 * 8;
-/// @dev Number of bits reserved for the name in the ResourceId.
-uint256 constant NAME_BITS = 32 * 8 - TYPE_BITS;
-
-/// @dev Bitmask to extract the type from the ResourceId.
-bytes32 constant TYPE_MASK = bytes32(hex"ffff");
+uint256 constant TYPE_BITS = 2 * 8; // 2 bytes * 8 bits per byte
 
 /**
  * @title ResourceIdLib Library

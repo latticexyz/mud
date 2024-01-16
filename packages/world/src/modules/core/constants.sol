@@ -14,7 +14,7 @@ bytes16 constant CORE_MODULE_NAME = bytes16("core");
 
 /**
  * @dev Resource ID for access management system.
- * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and a suffixed CORE_MODULE_NAME.
+ * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name.
  */
 ResourceId constant ACCESS_MANAGEMENT_SYSTEM_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("AccessManagement")))
@@ -22,7 +22,7 @@ ResourceId constant ACCESS_MANAGEMENT_SYSTEM_ID = ResourceId.wrap(
 
 /**
  * @dev Resource ID for balance transfer system.
- * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and a suffixed CORE_MODULE_NAME.
+ * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name.
  */
 ResourceId constant BALANCE_TRANSFER_SYSTEM_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("BalanceTransfer")))
@@ -30,7 +30,7 @@ ResourceId constant BALANCE_TRANSFER_SYSTEM_ID = ResourceId.wrap(
 
 /**
  * @dev Resource ID for batch call system.
- * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and a suffixed CORE_MODULE_NAME.
+ * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name.
  */
 ResourceId constant BATCH_CALL_SYSTEM_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("BatchCall")))
@@ -38,7 +38,7 @@ ResourceId constant BATCH_CALL_SYSTEM_ID = ResourceId.wrap(
 
 /**
  * @dev Resource ID for core registration system.
- * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and a suffixed CORE_MODULE_NAME.
+ * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name.
  */
 ResourceId constant CORE_REGISTRATION_SYSTEM_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("CoreRegistration")))

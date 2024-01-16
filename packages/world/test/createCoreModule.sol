@@ -11,9 +11,9 @@ import { CoreRegistrationSystem } from "../src/modules/core/CoreRegistrationSyst
 function createCoreModule() returns (CoreModule) {
   return
     new CoreModule(
-      address(new AccessManagementSystem()),
-      address(new BalanceTransferSystem()),
-      address(new BatchCallSystem()),
-      address(new CoreRegistrationSystem())
+      new AccessManagementSystem(),
+      new BalanceTransferSystem(),
+      new BatchCallSystem(),
+      new CoreRegistrationSystem()
     );
 }

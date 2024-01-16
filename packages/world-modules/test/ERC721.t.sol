@@ -8,7 +8,6 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World } from "@latticexyz/world/src/World.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
-import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
 import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
@@ -195,8 +194,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.ownerOf(id);
   }
 
-  function testBurnRevertAccessDenined(uint256 id, address owner, address operator) public {
-    _assumeDifferentNonZero(owner, operator);
+  function testBurnRevertAccessDenied(uint256 id, address owner, address operator) public {
+    _assumeDifferentNonZero(owner, operator, address(this));
 
     _expectMintEvent(owner, id);
     token.mint(owner, id);

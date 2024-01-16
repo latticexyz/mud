@@ -13,7 +13,6 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { DELEGATION_CONTROL_INTERFACE_ID } from "@latticexyz/world/src/IDelegationControl.sol";
 
-import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
 import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
 import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 

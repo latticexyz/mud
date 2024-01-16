@@ -18,7 +18,6 @@ import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@lattic
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
 import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
 
-import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
 import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
 import { getKeysInTable } from "../src/modules/keysintable/getKeysInTable.sol";

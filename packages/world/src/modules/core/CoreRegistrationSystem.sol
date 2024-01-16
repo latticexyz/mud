@@ -11,7 +11,6 @@ import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSyst
  * @title Core Registration System for World
  * @notice This system aggregates World registration and installation functionalities externalized from the World contract, aiming to keep the World contract's bytecode lean.
  * @dev Aggregates multiple system implementations for the World.
- * Split into multiple systems because of the bytecode size limit.
  */
 contract CoreRegistrationSystem is
   IWorldErrors,
