@@ -16,7 +16,7 @@ import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
 import { Tables, ResourceIds, TablesTableId } from "../src/codegen/index.sol";
-import { ResourceId, ResourceIdLib, ResourceIdInstance } from "../src/ResourceId.sol";
+import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../src/storeResourceTypes.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD, ALL, BEFORE_ALL, AFTER_ALL } from "../src/storeHookTypes.sol";
@@ -34,8 +34,6 @@ struct TestStruct {
 }
 
 contract StoreCoreTest is Test, StoreMock {
-  using ResourceIdInstance for ResourceId;
-
   TestStruct private testStruct;
   event HookCalled(bytes);
 
