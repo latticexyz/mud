@@ -45,7 +45,9 @@ contract FactoriesTest is Test, GasReporter {
     // Confirm event for deployment
     vm.expectEmit(true, false, false, false);
     emit ContractDeployed(calculatedAddress, uint256(0));
+    startGasReport("deploy contract via Create2");
     create2Factory.deployContract(combinedBytes, uint256(0));
+    endGasReport();
 
     // Confirm worldFactory was deployed correctly
     IWorldFactory worldFactory = IWorldFactory(calculatedAddress);
