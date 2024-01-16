@@ -160,7 +160,7 @@ library Storage {
     assembly {
       // Solidity's YulUtilFunctions::roundUpFunction
       function round_up_to_mul_of_32(value) -> _result {
-        _result := and(add(value, 31), not(31))
+        _result := and(add(value, 0x1F), not(0x1F))
       }
 
       // Allocate memory
