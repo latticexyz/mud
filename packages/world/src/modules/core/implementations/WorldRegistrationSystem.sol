@@ -70,8 +70,16 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param enabledHooksBitmap Bitmap indicating which hooks are enabled
    */
   function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) public virtual {
+    // Require the provided system ID to have type RESOURCE_SYSTEM
+    if (systemId.getType() != RESOURCE_SYSTEM) {
+      revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
+    }
+
     // Require the provided address to implement the ISystemHook interface
     requireInterface(address(hookAddress), SYSTEM_HOOK_INTERFACE_ID);
+
+    // Require the system's namespace to exist
+    AccessControl.requireExistence(systemId.getNamespaceId());
 
     // Require caller to own the namespace
     AccessControl.requireOwner(systemId, _msgSender());
