@@ -1,0 +1,170 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+
+# Keys with Value
+
+[The `KeysWithValue` module](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/keyswithvalue) tracks a reverse mapping for a table that maps a value hash to a list of keys with this value.
+This is useful if you need the ability to lookup keys based on the data onchain.
+Note that it costs additional gas for every write to the table affected, so if you just need this functionality offchain it is best to look at the data offchain instead.
+
+## Deployment
+
+It can be deployed multiple times, each time for a different table.
+For example, here is the forge script to deploy it for the `Tasks` table in [the React template](/templates/typescript/react).
+
+<CollapseCode>
+
+```solidity filename="DeployKeyWithValueModule.s.sol" copy showLineNumbers {9-12,25-29}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { KeysWithValueModule } from "@latticexyz/world-modules/src/modules/keyswithvalue/KeysWithValueModule.sol";
+
+contract DeployKeyWithValueModule is Script {
+  function run() external {
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+    vm.startBroadcast(deployerPrivateKey);
+    IWorld world = IWorld(worldAddress);
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    // Deploy the module
+    KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
+    ResourceId sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "Tasks" });
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+    KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
+```
+
+Deploy the module.
+Modules are stateless, so if there is already a copy of the contract on the blockchain you can just use that.
+
+```solidity
+    ResourceId sourceTableId =
+       WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "Tasks" });
+```
+
+Get the resourceID for the table that needs a reverse index.
+
+```solidity
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+```
+
+Actually install the module in the `World`.
+At present it is a root module to ensure it can specify a hook on the relevant table.
+In the future we might add a feature to allow it to be in a namespace.
+
+</details>
+
+## Usage
+
+Installing the module creates a table called `keywval:<table name>`.
+When entries are added or modified in the source table, a hash of their values gets written to this table as a key, with the relevant key as the value.
+This only applies from the time the module is installed, entries created prior to that don't get the reverse mapping.
+
+To get the keys you use [`getKeysWithValue`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/keyswithvalue/getKeysWithValue.sol#L18-L35) with these parameters:
+
+- The identifier of the source table
+- The encoded static fields (the result of `<table name>.encodeStatic`)
+- The encoded lengths of the dynamic fields (the result of `<table name>.encodeLengths`)
+- The encoded dynamic fields themselves (the result of `<table name>.encodeDynamic`)
+
+For example, here is the forge script to add a task to `Tasks` in [the React template](/templates/typescript/react) and then find the key from the data.
+
+<CollapseCode>
+
+```solidity filename="UseKeysWithValues.s.sol" copy showLineNumbers {10,24-33}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { getKeysWithValue } from "@latticexyz/world-modules/src/modules/keyswithvalue/getKeysWithValue.sol";
+import { Tasks, TasksTableId } from "../src/codegen/index.sol";
+
+contract UseKeysWithValues is Script {
+  function run() external {
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    uint createdAt = block.timestamp;
+    uint completedAt = 0;
+    string memory description = "Test";
+
+    vm.startBroadcast(deployerPrivateKey);
+    IWorld(worldAddress).addTask(description);
+    vm.stopBroadcast();
+
+    bytes32[] memory keys = getKeysWithValue(
+      TasksTableId,
+      Tasks.encodeStatic(createdAt, completedAt),
+      Tasks.encodeLengths(description),
+      Tasks.encodeDynamic(description)
+    );
+
+    console.log("Number of keys:", keys.length);
+    for (uint i = 0; i < keys.length; i++) {
+      console.log("Key #", i, "is", uint256(keys[i]));
+    }
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+import { Tasks, TasksTableId } from "../src/codegen/index.sol";
+```
+
+It is easiest to use `getKeysWithValue` when you have the definition of the source table.
+
+```solidity
+    vm.startBroadcast(deployerPrivateKey);
+    IWorld(worldAddress).addTask(description);
+    vm.stopBroadcast();
+```
+
+Create an entry with this description.
+The two static fields, `createdAt` and `completedAt`, are filled by [`TasksSystem.addTask`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/contracts/src/systems/TasksSystem.sol#L8-L11).
+
+```solidity
+    bytes32[] memory keys = getKeysWithValue(
+        TasksTableId,
+        Tasks.encodeStatic(createdAt,completedAt),
+        Tasks.encodeLengths(description),
+        Tasks.encodeDynamic(description)
+    );
+```
+
+Actually get the key(s), using the encoded static fields, encoded lengths, and encoded dynamic fields.
+
+</details>
