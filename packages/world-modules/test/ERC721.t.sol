@@ -194,7 +194,20 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.ownerOf(id);
   }
 
-  function testBurnRevertAccessDenined(uint256 id, address owner, address operator) public {
+  function testBurnRevertAccessDenied(uint256 id, address owner) public {
+    address operator = 0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496;
+
+    _assumeDifferentNonZero(owner, operator);
+
+    _expectMintEvent(owner, id);
+    token.mint(owner, id);
+
+    _expectAccessDenied(operator);
+    vm.prank(operator);
+    token.burn(id);
+  }
+
+  function testBurnRevertAccessDeniedSpec(uint256 id, address owner, address operator) public {
     _assumeDifferentNonZero(owner, operator);
 
     _expectMintEvent(owner, id);
