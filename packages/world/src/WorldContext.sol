@@ -40,7 +40,7 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
    * @return The address of the World contract that routed the call to this WorldContextConsumer.
    */
   function _world() public view returns (address) {
-    return StoreSwitch.getStoreAddress();
+    return WorldContextConsumerLib._world();
   }
 
   /**
