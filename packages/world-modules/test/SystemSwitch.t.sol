@@ -7,8 +7,8 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { World } from "@latticexyz/world/src/World.sol";
-import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
-import { ResourceId, WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
 import { SystemSwitch } from "../src/utils/SystemSwitch.sol";
@@ -38,6 +38,8 @@ contract EchoSystem is System {
 address constant caller = address(4232);
 
 contract SystemSwitchTest is Test, GasReporter {
+  using WorldResourceIdInstance for ResourceId;
+
   IBaseWorld world;
 
   EchoSystem systemA;
@@ -53,7 +55,7 @@ contract SystemSwitchTest is Test, GasReporter {
   function setUp() public {
     // Deploy world
     World _world = new World();
-    _world.initialize(new CoreModule());
+    _world.initialize(createCoreModule());
     world = IBaseWorld(address(_world));
 
     // Deploy systems
@@ -67,6 +69,10 @@ contract SystemSwitchTest is Test, GasReporter {
     systemBId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "namespaceB", name: "systemB" });
     rootSystemAId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: ROOT_NAMESPACE, name: "systemA" });
     rootSystemBId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: ROOT_NAMESPACE, name: "systemB" });
+
+    // Register namespaces
+    world.registerNamespace(systemAId.getNamespaceId());
+    world.registerNamespace(systemBId.getNamespaceId());
 
     // Register systems
     world.registerSystem(systemAId, systemA, true);

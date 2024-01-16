@@ -6,7 +6,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
-import { InstalledModules } from "@latticexyz/world/src/codegen/tables/InstalledModules.sol";
+import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { Puppet } from "../puppet/Puppet.sol";
 import { createPuppet } from "../puppet/createPuppet.sol";
@@ -32,16 +32,14 @@ contract ERC20Module is Module {
 
   function _requireDependencies() internal view {
     // Require PuppetModule to be installed
-    if (InstalledModules.get(PUPPET_MODULE_NAME, keccak256(new bytes(0))) == address(0)) {
+    if (!isInstalled(PUPPET_MODULE_NAME, new bytes(0))) {
       revert Module_MissingDependency(string(bytes.concat(PUPPET_MODULE_NAME)));
     }
   }
 
   function install(bytes memory args) public {
     // Require the module to not be installed with these args yet
-    if (InstalledModules.get(MODULE_NAME, keccak256(args)) != address(0)) {
-      revert Module_AlreadyInstalled();
-    }
+    requireNotInstalled(MODULE_NAME, args);
 
     // Extract args
     (bytes14 namespace, ERC20MetadataData memory metadata) = abi.decode(args, (bytes14, ERC20MetadataData));
@@ -56,7 +54,10 @@ contract ERC20Module is Module {
 
     // Register the ERC20 tables and system
     IBaseWorld world = IBaseWorld(_world());
-    registrationLibrary.delegatecall(abi.encodeCall(ERC20ModuleRegistrationLibrary.register, (world, namespace)));
+    (bool success, bytes memory returnData) = registrationLibrary.delegatecall(
+      abi.encodeCall(ERC20ModuleRegistrationLibrary.register, (world, namespace))
+    );
+    if (!success) revertWithBytes(returnData);
 
     // Initialize the Metadata
     ERC20Metadata.set(_metadataTableId(namespace), metadata);
@@ -71,6 +72,7 @@ contract ERC20Module is Module {
 
     // Register the ERC20 in the ERC20Registry
     if (!ResourceIds.getExists(ERC20_REGISTRY_TABLE_ID)) {
+      world.registerNamespace(MODULE_NAMESPACE_ID);
       ERC20Registry.register(ERC20_REGISTRY_TABLE_ID);
     }
     ERC20Registry.set(ERC20_REGISTRY_TABLE_ID, namespaceId, puppet);
@@ -86,6 +88,12 @@ contract ERC20ModuleRegistrationLibrary {
    * Register systems and tables for a new ERC20 token in a given namespace
    */
   function register(IBaseWorld world, bytes14 namespace) public {
+    // Register the namespace if it doesn't exist yet
+    ResourceId tokenNamespace = WorldResourceIdLib.encodeNamespace(namespace);
+    if (!ResourceIds.getExists(tokenNamespace)) {
+      world.registerNamespace(tokenNamespace);
+    }
+
     // Register the tables
     Allowances.register(_allowancesTableId(namespace));
     Balances.register(_balancesTableId(namespace));

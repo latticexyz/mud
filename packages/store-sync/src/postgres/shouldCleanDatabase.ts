@@ -4,6 +4,13 @@ import { debug as parentDebug } from "./debug";
 import { version as expectedVersion } from "./version";
 
 const debug = parentDebug.extend("shouldCleanDatabase");
+const error = parentDebug.extend("shouldCleanDatabase");
+
+// Pipe debug output to stdout instead of stderr
+debug.log = console.debug.bind(console);
+
+// Pipe error output to stderr
+error.log = console.error.bind(console);
 
 /**
  * @internal
@@ -28,8 +35,8 @@ export async function shouldCleanDatabase(db: PgDatabase<any>, expectedChainId: 
     }
 
     return false;
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    error(e);
     debug("error while querying config table");
     return true;
   }

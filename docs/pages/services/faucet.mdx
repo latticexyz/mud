@@ -37,4 +37,13 @@ A minimal Typescript faucet to drip native tokens on Ethereum chains
 
 ## Getting ETH from a faucet
 
-[This sample program](https://github.com/latticexyz/mud/tree/main/examples/faucet-client) shows how to obtain ETH from a faucet.
+[This sample program](https://github.com/latticexyz/mud/tree/main/examples/faucet-client) shows how to obtain ETH from a faucet using TypeScript.
+
+Alternatively, you can submit a `POST` request to the faucet.
+For example, if you use the default `HOST` and `PORT`, this command requests a drip to the zero address.
+
+```sh copy
+curl -X POST http://127.0.0.1:3002/trpc/drip \
+   -H "Content-Type: application/json" \
+   -d '{"address": "0x0000000000000000000000000000000000000000"}'
+```
