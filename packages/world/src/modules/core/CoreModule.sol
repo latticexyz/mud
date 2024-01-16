@@ -15,6 +15,10 @@ import { InstalledModules } from "../../codegen/tables/InstalledModules.sol";
 import { UserDelegationControl } from "../../codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "../../codegen/tables/NamespaceDelegationControl.sol";
 
+import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
+import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
+import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
+
 import { CoreRegistrationSystem } from "./CoreRegistrationSystem.sol";
 import { CORE_MODULE_NAME, ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, CORE_REGISTRATION_SYSTEM_ID } from "./constants.sol";
 
@@ -40,15 +44,15 @@ contract CoreModule is Module {
   address internal immutable coreRegistrationSystem;
 
   constructor(
-    address _accessManagementSystem,
-    address _balanceTransferSystem,
-    address _batchCallSystem,
-    address _coreRegistrationSystem
+    AccessManagementSystem _accessManagementSystem,
+    BalanceTransferSystem _balanceTransferSystem,
+    BatchCallSystem _batchCallSystem,
+    CoreRegistrationSystem _coreRegistrationSystem
   ) {
-    accessManagementSystem = _accessManagementSystem;
-    balanceTransferSystem = _balanceTransferSystem;
-    batchCallSystem = _batchCallSystem;
-    coreRegistrationSystem = _coreRegistrationSystem;
+    accessManagementSystem = address(_accessManagementSystem);
+    balanceTransferSystem = address(_balanceTransferSystem);
+    batchCallSystem = address(_batchCallSystem);
+    coreRegistrationSystem = address(_coreRegistrationSystem);
   }
 
   /**
