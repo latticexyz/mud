@@ -45,13 +45,25 @@
     "file": "test/BatchCall.t.sol",
     "test": "testBatchCallFromReturnData",
     "name": "call systems with batchCallFrom",
-    "gasUsed": 46444
+    "gasUsed": 52561
   },
   {
     "file": "test/BatchCall.t.sol",
     "test": "testBatchCallReturnData",
     "name": "call systems with batchCall",
-    "gasUsed": 45206
+    "gasUsed": 51407
+  },
+  {
+    "file": "test/Factories.t.sol",
+    "test": "testCreate2Factory",
+    "name": "deploy contract via Create2",
+    "gasUsed": 4663033
+  },
+  {
+    "file": "test/Factories.t.sol",
+    "test": "testWorldFactory",
+    "name": "deploy world via WorldFactory",
+    "gasUsed": 12321908
   },
   {
     "file": "test/World.t.sol",
@@ -69,7 +81,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 47623
+    "gasUsed": 47552
   },
   {
     "file": "test/World.t.sol",
@@ -81,79 +93,79 @@
     "file": "test/World.t.sol",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 9837
+    "gasUsed": 9846
   },
   {
     "file": "test/World.t.sol",
     "test": "testPushToDynamicField",
     "name": "Push data to the table",
-    "gasUsed": 85811
+    "gasUsed": 85842
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 83149
+    "gasUsed": 83123
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 120887
+    "gasUsed": 120895
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterRootFunctionSelector",
     "name": "Register a root function selector",
-    "gasUsed": 80433
+    "gasUsed": 80424
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 162594
+    "gasUsed": 164348
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 637367
+    "gasUsed": 528266
   },
   {
     "file": "test/World.t.sol",
     "test": "testSetField",
     "name": "Write data to a table field",
-    "gasUsed": 36881
+    "gasUsed": 36912
   },
   {
     "file": "test/World.t.sol",
     "test": "testSetRecord",
     "name": "Write data to the table",
-    "gasUsed": 39039
+    "gasUsed": 39056
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (cold)",
-    "gasUsed": 25602
+    "gasUsed": 25627
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (warm)",
-    "gasUsed": 12748
+    "gasUsed": 12773
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (cold)",
-    "gasUsed": 25953
+    "gasUsed": 25990
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (warm)",
-    "gasUsed": 13154
+    "gasUsed": 13191
   },
   {
     "file": "test/WorldResourceId.t.sol",
@@ -172,5 +184,11 @@
     "test": "testGetType",
     "name": "get type from a resource ID",
     "gasUsed": 4
+  },
+  {
+    "file": "test/WorldResourceId.t.sol",
+    "test": "testToString",
+    "name": "convert resource ID to string",
+    "gasUsed": 3313
   }
 ]

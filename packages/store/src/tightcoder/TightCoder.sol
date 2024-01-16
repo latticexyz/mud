@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { Slice, SliceLib } from "../Slice.sol";
+import { Slice } from "../Slice.sol";
 
 /**
  * @title TightCoder
@@ -13,7 +13,7 @@ library TightCoder {
    * @dev Copies the array to a new bytes array, tightly packing its elements.
    * @param array The array to encode.
    * @param elementSize The size of each element in bytes.
-   * @param leftPaddingBits The number of bits to pad on the left for each element.
+   * @param leftPaddingBits The amount to shift each element to the left.
    * @return data A tightly packed byte array.
    * @notice elementSize and leftPaddingBits must be correctly provided by the caller based on the array's element type.
    */

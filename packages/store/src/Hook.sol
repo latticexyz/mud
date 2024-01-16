@@ -30,15 +30,15 @@ library HookLib {
    * @notice Filter a hook from the hook list by its address.
    * @dev This function writes the updated hook list to the table in place.
    * @param hookTableId The resource ID of the hook table.
-   * @param tableWithHooks The resource ID of the table with hooks to filter.
+   * @param resourceWithHooks The resource ID of the table with hooks to filter.
    * @param hookAddressToRemove The address of the hook to remove.
    */
   function filterListByAddress(
     ResourceId hookTableId,
-    ResourceId tableWithHooks,
+    ResourceId resourceWithHooks,
     address hookAddressToRemove
   ) internal {
-    bytes21[] memory currentHooks = Hooks._get(hookTableId, tableWithHooks);
+    bytes21[] memory currentHooks = Hooks._get(hookTableId, resourceWithHooks);
 
     // Initialize the new hooks array with the same length because we don't know if the hook is registered yet
     bytes21[] memory newHooks = new bytes21[](currentHooks.length);
@@ -61,7 +61,7 @@ library HookLib {
     }
 
     // Set the new hooks table
-    Hooks._set(hookTableId, tableWithHooks, newHooks);
+    Hooks._set(hookTableId, resourceWithHooks, newHooks);
   }
 }
 
