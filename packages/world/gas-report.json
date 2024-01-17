@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactory",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12322070
+    "gasUsed": 12323409
   },
   {
     "file": "test/World.t.sol",
@@ -81,7 +81,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 47552
+    "gasUsed": 47558
   },
   {
     "file": "test/World.t.sol",
@@ -105,7 +105,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 83129
+    "gasUsed": 84476
   },
   {
     "file": "test/World.t.sol",
@@ -123,7 +123,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 164360
+    "gasUsed": 164366
   },
   {
     "file": "test/World.t.sol",
