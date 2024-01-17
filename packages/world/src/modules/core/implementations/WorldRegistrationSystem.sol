@@ -6,7 +6,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
 import { System } from "../../../System.sol";
-import { WorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../../../WorldContext.sol";
+import { WorldContextConsumer, IWorldContextConsumer } from "../../../WorldContext.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { SystemCall } from "../../../SystemCall.sol";
 import { ROOT_NAMESPACE_ID, ROOT_NAME } from "../../../constants.sol";
@@ -18,9 +18,9 @@ import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { UserDelegationControl } from "../../../codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "../../../codegen/tables/NamespaceDelegationControl.sol";
-import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../../../ISystemHook.sol";
+import { ISystemHook } from "../../../ISystemHook.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";
-import { DELEGATION_CONTROL_INTERFACE_ID } from "../../../IDelegationControl.sol";
+import { IDelegationControl } from "../../../IDelegationControl.sol";
 
 import { SystemHooks, SystemHooksTableId } from "../../../codegen/tables/SystemHooks.sol";
 import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
@@ -70,7 +70,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) public virtual {
     // Require the provided address to implement the ISystemHook interface
-    requireInterface(address(hookAddress), SYSTEM_HOOK_INTERFACE_ID);
+    requireInterface(address(hookAddress), type(ISystemHook).interfaceId);
 
     // Require caller to own the namespace
     AccessControl.requireOwner(systemId, _msgSender());
@@ -120,7 +120,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     AccessControl.requireOwner(namespaceId, _msgSender());
 
     // Require the provided address to implement the WorldContextConsumer interface
-    requireInterface(address(system), WORLD_CONTEXT_CONSUMER_INTERFACE_ID);
+    requireInterface(address(system), type(IWorldContextConsumer).interfaceId);
 
     // Require the name to not be the namespace's root name
     if (systemId.getName() == ROOT_NAME) revert World_InvalidResourceId(systemId, systemId.toString());
@@ -247,7 +247,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     if (Delegation.isLimited(delegationControlId) && initCallData.length > 0) {
       // Require the delegationControl contract to implement the IDelegationControl interface
       address delegationControl = Systems._getSystem(delegationControlId);
-      requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
+      requireInterface(delegationControl, type(IDelegationControl).interfaceId);
 
       // Call the delegation control contract's init function
       SystemCall.callWithHooksOrRevert({
@@ -286,7 +286,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
 
     // Require the delegationControl contract to implement the IDelegationControl interface
     address delegationControl = Systems._getSystem(delegationControlId);
-    requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
+    requireInterface(delegationControl, type(IDelegationControl).interfaceId);
 
     // Register the delegation control
     NamespaceDelegationControl._set(namespaceId, delegationControlId);
