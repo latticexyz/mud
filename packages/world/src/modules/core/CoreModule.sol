@@ -142,7 +142,7 @@ contract CoreModule is Module {
       "registerNamespaceDelegation(bytes32,bytes32,bytes)"
     ];
 
-    for (uint256 i = 0; i < functionSignatures.length; i++) {
+    for (uint256 i; i < functionSignatures.length; i++) {
       // Use the CoreSystem's `registerRootFunctionSelector` to register the
       // root function selectors in the World.
       WorldContextProviderLib.delegatecallWithContextOrRevert({
