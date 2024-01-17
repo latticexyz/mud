@@ -3,7 +3,9 @@ pragma solidity >=0.8.21;
 
 import { System } from "../../../System.sol";
 import { AccessControl } from "../../../AccessControl.sol";
-import { ResourceId } from "../../../WorldResourceId.sol";
+import { ResourceId, ResourceIdInstance, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
+import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
+import { IWorldErrors } from "../../../IWorldErrors.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 
@@ -11,7 +13,10 @@ import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
  * @title Access Management System
  * @dev This contract manages the granting and revoking of access from/to resources.
  */
-contract AccessManagementSystem is System {
+contract AccessManagementSystem is System, IWorldErrors {
+  using ResourceIdInstance for ResourceId;
+  using WorldResourceIdInstance for ResourceId;
+
   /**
    * @notice Grant access to the resource at the given resource ID.
    * @dev Requires the caller to own the namespace.
@@ -50,6 +55,14 @@ contract AccessManagementSystem is System {
    * @param newOwner The address to which ownership should be transferred.
    */
   function transferOwnership(ResourceId namespaceId, address newOwner) public virtual {
+    // Require the provided namespace ID to have type RESOURCE_NAMESPACE
+    if (namespaceId.getType() != RESOURCE_NAMESPACE) {
+      revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
+    }
+
+    // Require the namespace to exist
+    AccessControl.requireExistence(namespaceId);
+
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespaceId, _msgSender());
 
