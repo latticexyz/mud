@@ -5,7 +5,7 @@ pragma solidity >=0.8.21;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ISystemHook } from "./../../ISystemHook.sol";
-import { WorldContextConsumer } from "./../../WorldContext.sol";
+import { System } from "./../../System.sol";
 
 /**
  * @title IWorldRegistrationSystem
@@ -18,7 +18,7 @@ interface IWorldRegistrationSystem {
 
   function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) external;
 
-  function registerSystem(ResourceId systemId, WorldContextConsumer system, bool publicAccess) external;
+  function registerSystem(ResourceId systemId, System system, bool publicAccess) external;
 
   function registerFunctionSelector(
     ResourceId systemId,
