@@ -19,6 +19,9 @@ contract AccessManagementSystem is System {
    * @param grantee The address to which access should be granted.
    */
   function grantAccess(ResourceId resourceId, address grantee) public virtual {
+    // Require the resource to exist
+    AccessControl.requireExistence(resourceId);
+
     // Require the caller to own the namespace
     AccessControl.requireOwner(resourceId, _msgSender());
 
