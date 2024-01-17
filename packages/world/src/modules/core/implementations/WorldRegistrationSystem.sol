@@ -183,6 +183,14 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceId systemId,
     string memory systemFunctionSignature
   ) public returns (bytes4 worldFunctionSelector) {
+    // Require the provided system ID to have type RESOURCE_SYSTEM
+    if (systemId.getType() != RESOURCE_SYSTEM) {
+      revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
+    }
+
+    // Require the resource to exist
+    AccessControl.requireExistence(systemId);
+
     // Require the caller to own the namespace
     AccessControl.requireOwner(systemId, _msgSender());
 
