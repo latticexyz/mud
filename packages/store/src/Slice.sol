@@ -27,13 +27,13 @@ library SliceLib {
    * @return A new Slice representing the bytes array
    */
   function fromBytes(bytes memory data) internal pure returns (Slice) {
-    uint256 _pointer;
+    uint256 pointer;
     assembly {
-      _pointer := add(data, 0x20) // pointer to first data byte
+      pointer := add(data, 0x20) // pointer to first data byte
     }
 
     // Pointer is stored in upper 128 bits, length is stored in lower 128 bits
-    return Slice.wrap((_pointer << 128) | (data.length & MASK_LEN));
+    return Slice.wrap((pointer << 128) | (data.length & MASK_LEN));
   }
 
   /**
@@ -58,16 +58,16 @@ library SliceLib {
     // TODO this check helps catch bugs and can eventually be removed
     if (start > end || end > data.length) revert Slice_OutOfBounds(data, start, end);
 
-    uint256 _pointer;
+    uint256 pointer;
     assembly {
-      _pointer := add(data, 0x20) // pointer to first data byte
+      pointer := add(data, 0x20) // pointer to first data byte
     }
 
-    _pointer += start;
+    pointer += start;
     uint256 _len = end - start;
 
     // Pointer is stored in upper 128 bits, length is stored in lower 128 bits
-    return Slice.wrap((_pointer << 128) | (_len & MASK_LEN));
+    return Slice.wrap((pointer << 128) | (_len & MASK_LEN));
   }
 }
 
