@@ -15,7 +15,7 @@ import { revertWithBytes } from "../../../revertWithBytes.sol";
 
 import { IWorldErrors } from "../../../IWorldErrors.sol";
 
-import { CORE_SYSTEM_ID } from "../constants.sol";
+import { CORE_REGISTRATION_SYSTEM_ID } from "../constants.sol";
 
 import { WorldRegistrationSystem } from "./WorldRegistrationSystem.sol";
 

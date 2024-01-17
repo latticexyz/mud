@@ -12,7 +12,7 @@ import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { createCoreModule } from "./createCoreModule.sol";
 
 contract UtilsTestSystem is System {
   function systemNamespace() public view returns (bytes16) {
@@ -28,7 +28,7 @@ contract UtilsTest is Test {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world.initialize(createCoreModule());
     StoreSwitch.setStoreAddress(address(world));
   }
 

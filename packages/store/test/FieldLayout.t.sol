@@ -5,6 +5,7 @@ import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { FieldLayout, FieldLayoutLib } from "../src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
+import { MAX_TOTAL_FIELDS, MAX_DYNAMIC_FIELDS } from "../src/constants.sol";
 
 // TODO add tests for all lengths
 contract FieldLayoutTest is Test, GasReporter {
@@ -69,13 +70,14 @@ contract FieldLayoutTest is Test, GasReporter {
     fieldLayout[20] = 32;
     fieldLayout[21] = 32;
     fieldLayout[22] = 32;
-    FieldLayout encodedFieldLayout = FieldLayoutLib.encode(fieldLayout, 5);
+    FieldLayout encodedFieldLayout = FieldLayoutLib.encode(fieldLayout, MAX_DYNAMIC_FIELDS);
 
     assertEq(encodedFieldLayout.numStaticFields() + encodedFieldLayout.numDynamicFields(), 28);
   }
 
-  function testFailEncodeTooLong() public pure {
+  function testEncodeTooLong() public {
     uint256[] memory fieldLayout = new uint256[](17);
+    uint256 dynamicFields = 12;
     fieldLayout[0] = 32;
     fieldLayout[1] = 32;
     fieldLayout[2] = 32;
@@ -93,19 +95,34 @@ contract FieldLayoutTest is Test, GasReporter {
     fieldLayout[14] = 32;
     fieldLayout[15] = 32;
     fieldLayout[16] = 32;
-    FieldLayoutLib.encode(fieldLayout, 12);
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        FieldLayoutLib.FieldLayoutLib_TooManyFields.selector,
+        fieldLayout.length + dynamicFields,
+        MAX_TOTAL_FIELDS
+      )
+    );
+    FieldLayoutLib.encode(fieldLayout, dynamicFields);
   }
 
   function testEncodeMaxValidDynamic() public {
     uint256[] memory fieldLayout = new uint256[](0);
-    FieldLayout encodedFieldLayout = FieldLayoutLib.encode(fieldLayout, 5);
+    FieldLayout encodedFieldLayout = FieldLayoutLib.encode(fieldLayout, MAX_DYNAMIC_FIELDS);
 
-    assertEq(encodedFieldLayout.numDynamicFields(), 5);
+    assertEq(encodedFieldLayout.numDynamicFields(), MAX_DYNAMIC_FIELDS);
   }
 
-  function testFailEncodeTooManyDynamic() public pure {
+  function testEncodeTooManyDynamic() public {
     uint256[] memory fieldLayout = new uint256[](0);
-    FieldLayoutLib.encode(fieldLayout, 6);
+    uint256 dynamicFields = 6;
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields.selector,
+        fieldLayout.length + dynamicFields,
+        MAX_DYNAMIC_FIELDS
+      )
+    );
+    FieldLayoutLib.encode(fieldLayout, dynamicFields);
   }
 
   function testGetStaticFieldLayoutLength() public {
@@ -173,14 +190,23 @@ contract FieldLayoutTest is Test, GasReporter {
     fieldLayout[20] = 32;
     fieldLayout[21] = 32;
     fieldLayout[22] = 32;
-    FieldLayout encodedFieldLayout = FieldLayoutLib.encode(fieldLayout, 5);
+    FieldLayout encodedFieldLayout = FieldLayoutLib.encode(fieldLayout, MAX_DYNAMIC_FIELDS);
 
     startGasReport("validate field layout");
     encodedFieldLayout.validate();
     endGasReport();
   }
 
-  function testFailValidate() public pure {
+  function testValidateInvalidLayout() public {
+    FieldLayout encodedFieldLayout = FieldLayout.wrap(keccak256("some invalid field layout"));
+
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields.selector,
+        encodedFieldLayout.numDynamicFields(),
+        MAX_DYNAMIC_FIELDS
+      )
+    );
     FieldLayout.wrap(keccak256("some invalid field layout")).validate();
   }
 

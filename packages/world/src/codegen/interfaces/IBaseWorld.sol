@@ -6,7 +6,7 @@ pragma solidity >=0.8.21;
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { IWorldKernel } from "../../IWorldKernel.sol";
 
-import { ICoreSystem } from "./ICoreSystem.sol";
+import { ICoreRegistrationSystem } from "./ICoreRegistrationSystem.sol";
 import { IAccessManagementSystem } from "./IAccessManagementSystem.sol";
 import { IBalanceTransferSystem } from "./IBalanceTransferSystem.sol";
 import { IBatchCallSystem } from "./IBatchCallSystem.sol";
@@ -22,7 +22,7 @@ import { IWorldRegistrationSystem } from "./IWorldRegistrationSystem.sol";
 interface IBaseWorld is
   IStore,
   IWorldKernel,
-  ICoreSystem,
+  ICoreRegistrationSystem,
   IAccessManagementSystem,
   IBalanceTransferSystem,
   IBatchCallSystem,
