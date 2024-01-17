@@ -10,6 +10,7 @@ import { WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";
+import { ROOT_NAME } from "../../../constants.sol";
 
 import { Balances } from "../../../codegen/tables/Balances.sol";
 
@@ -36,6 +37,11 @@ contract BalanceTransferSystem is System, IWorldErrors {
     // Require the target ID to be a namespace ID
     if (toNamespaceId.getType() != RESOURCE_NAMESPACE) {
       revert World_InvalidResourceType(RESOURCE_NAMESPACE, toNamespaceId, toNamespaceId.toString());
+    }
+
+    // Require the provided namespace name to be empty
+    if (toNamespaceId.getName() != ROOT_NAME) {
+      revert World_InvalidResourceId(toNamespaceId, toNamespaceId.toString());
     }
 
     // Require the namespace to exist
