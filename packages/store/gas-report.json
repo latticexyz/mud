@@ -87,7 +87,7 @@
     "file": "test/FieldLayout.t.sol",
     "test": "testValidate",
     "name": "validate field layout",
-    "gasUsed": 6925
+    "gasUsed": 3954
   },
   {
     "file": "test/Gas.t.sol",
@@ -477,7 +477,7 @@
     "file": "test/Schema.t.sol",
     "test": "testValidate",
     "name": "validate schema",
-    "gasUsed": 13777
+    "gasUsed": 11497
   },
   {
     "file": "test/Slice.t.sol",
