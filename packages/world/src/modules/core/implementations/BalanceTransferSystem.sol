@@ -10,7 +10,6 @@ import { WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";
-import { ROOT_NAME } from "../../../constants.sol";
 
 import { Balances } from "../../../codegen/tables/Balances.sol";
 import { requireNamespace } from "../../../requireNamespace.sol";
