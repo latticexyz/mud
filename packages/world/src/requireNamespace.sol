@@ -14,7 +14,7 @@ using WorldResourceIdInstance for ResourceId;
  * @param resourceId The resource ID to verify.
  */
 function requireNamespace(ResourceId resourceId) pure {
-  if (resourceId.getType() != RESOURCE_NAMESPACE || resourceId.getName() != ROOT_NAME) {
+  if (ResourceId.unwrap(resourceId) != ResourceId.unwrap(resourceId.getNamespaceId())) {
     revert IWorldErrors.World_InvalidResourceType(RESOURCE_NAMESPACE, resourceId, resourceId.toString());
   }
 }
