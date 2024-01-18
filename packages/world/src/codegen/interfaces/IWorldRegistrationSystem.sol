@@ -20,6 +20,8 @@ interface IWorldRegistrationSystem {
 
   function registerSystem(ResourceId systemId, WorldContextConsumer system, bool publicAccess) external;
 
+  function unregisterSystem(ResourceId systemId) external;
+
   function registerFunctionSelector(
     ResourceId systemId,
     string memory systemFunctionSignature

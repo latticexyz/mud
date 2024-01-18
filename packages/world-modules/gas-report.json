@@ -267,7 +267,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromCallboundDelegation",
     "name": "register a callbound delegation",
-    "gasUsed": 118161
+    "gasUsed": 118179
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -279,7 +279,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromSystemDelegation",
     "name": "register a systembound delegation",
-    "gasUsed": 115714
+    "gasUsed": 115732
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -291,7 +291,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromTimeboundDelegation",
     "name": "register a timebound delegation",
-    "gasUsed": 112637
+    "gasUsed": 112655
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -303,7 +303,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "install unique entity module",
-    "gasUsed": 702702
+    "gasUsed": 702743
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -315,7 +315,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 671744
+    "gasUsed": 671762
   },
   {
     "file": "test/UniqueEntityModule.t.sol",

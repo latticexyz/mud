@@ -169,7 +169,7 @@ contract CoreModule is Module {
       _registerRootFunctionSelector(BATCH_CALL_SYSTEM_ID, functionSignaturesBatchCall[i]);
     }
 
-    string[14] memory functionSignaturesCoreRegistration = [
+    string[15] memory functionSignaturesCoreRegistration = [
       // --- ModuleInstallationSystem ---
       "installModule(address,bytes)",
       // --- StoreRegistrationSystem ---
@@ -181,6 +181,7 @@ contract CoreModule is Module {
       "registerSystemHook(bytes32,address,uint8)",
       "unregisterSystemHook(bytes32,address)",
       "registerSystem(bytes32,address,bool)",
+      "unregisterSystem(bytes32)",
       "registerFunctionSelector(bytes32,string)",
       "registerRootFunctionSelector(bytes32,string,bytes4)",
       "registerDelegation(address,bytes32,bytes)",
