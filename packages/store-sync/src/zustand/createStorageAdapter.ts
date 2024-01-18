@@ -60,7 +60,7 @@ export function createStorageAdapter<tables extends Tables>({
           log,
         });
         updatedIds.push(id);
-        const previousRecord = (store.getState().rawRecords[id] as RawRecord | undefined) ?? {
+        const previousRecord = (rawRecords[id] as RawRecord | undefined) ?? {
           id,
           tableId: log.args.tableId,
           keyTuple: log.args.keyTuple,
@@ -81,7 +81,7 @@ export function createStorageAdapter<tables extends Tables>({
           log,
         });
         updatedIds.push(id);
-        const previousRecord = (store.getState().rawRecords[id] as RawRecord | undefined) ?? {
+        const previousRecord = (rawRecords[id] as RawRecord | undefined) ?? {
           id,
           tableId: log.args.tableId,
           keyTuple: log.args.keyTuple,
