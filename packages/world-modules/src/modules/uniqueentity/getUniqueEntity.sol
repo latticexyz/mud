@@ -23,5 +23,5 @@ function getUniqueEntity() returns (bytes32 uniqueEntity) {
  * Increment and get an entity nonce.
  */
 function getUniqueEntity(IBaseWorld world) returns (bytes32 uniqueEntity) {
-  return IUniqueEntitySystem(address(world)).uniqueEntity_system_getUniqueEntity();
+  return IUniqueEntitySystem(address(world)).uniqueEntity_getUniqueEntity();
 }
