@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "./ISystemHook.sol";
-import { ERC165_INTERFACE_ID } from "./IERC165.sol";
+import { ISystemHook } from "./ISystemHook.sol";
+import { IERC165 } from "./IERC165.sol";
 
 /**
  * @title SystemHook
@@ -17,6 +17,6 @@ abstract contract SystemHook is ISystemHook {
    * @return true if the contract implements `interfaceId`, false otherwise.
    */
   function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
-    return interfaceId == SYSTEM_HOOK_INTERFACE_ID || interfaceId == ERC165_INTERFACE_ID;
+    return interfaceId == type(ISystemHook).interfaceId || interfaceId == type(IERC165).interfaceId;
   }
 }

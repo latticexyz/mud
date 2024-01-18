@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { IModule, MODULE_INTERFACE_ID } from "../../../IModule.sol";
+import { IModule } from "../../../IModule.sol";
 import { System } from "../../../System.sol";
 import { WorldContextProviderLib } from "../../../WorldContext.sol";
 import { InstalledModules } from "../../../codegen/tables/InstalledModules.sol";
@@ -21,7 +21,7 @@ contract ModuleInstallationSystem is System {
    */
   function installModule(IModule module, bytes memory args) public {
     // Require the provided address to implement the IModule interface
-    requireInterface(address(module), MODULE_INTERFACE_ID);
+    requireInterface(address(module), type(IModule).interfaceId);
 
     WorldContextProviderLib.callWithContextOrRevert({
       msgSender: _msgSender(),

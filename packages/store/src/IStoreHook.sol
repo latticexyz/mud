@@ -6,16 +6,6 @@ import { IERC165 } from "./IERC165.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { ResourceId } from "./ResourceId.sol";
 
-// ERC-165 Interface ID (see https://eips.ethereum.org/EIPS/eip-165)
-bytes4 constant STORE_HOOK_INTERFACE_ID = IStoreHook.onBeforeSetRecord.selector ^
-  IStoreHook.onAfterSetRecord.selector ^
-  IStoreHook.onBeforeSpliceStaticData.selector ^
-  IStoreHook.onAfterSpliceStaticData.selector ^
-  IStoreHook.onBeforeSpliceDynamicData.selector ^
-  IStoreHook.onAfterSpliceDynamicData.selector ^
-  IStoreHook.onBeforeDeleteRecord.selector ^
-  IStoreHook.onAfterDeleteRecord.selector;
-
 interface IStoreHook is IERC165 {
   /// @notice Error emitted when a function is not implemented.
   error StoreHook_NotImplemented();

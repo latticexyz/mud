@@ -11,7 +11,7 @@ import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
-import { DELEGATION_CONTROL_INTERFACE_ID } from "@latticexyz/world/src/IDelegationControl.sol";
+import { IDelegationControl } from "@latticexyz/world/src/IDelegationControl.sol";
 
 import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
 import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";

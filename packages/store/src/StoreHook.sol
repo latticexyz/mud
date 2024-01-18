@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "./IStoreHook.sol";
-import { ERC165_INTERFACE_ID } from "./IERC165.sol";
+import { IStoreHook } from "./IStoreHook.sol";
+import { IERC165 } from "./IERC165.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { ResourceId } from "./ResourceId.sol";
@@ -21,7 +21,7 @@ abstract contract StoreHook is IStoreHook {
    * @return true if the interface is supported, false otherwise.
    */
   function supportsInterface(bytes4 interfaceId) public pure virtual returns (bool) {
-    return interfaceId == STORE_HOOK_INTERFACE_ID || interfaceId == ERC165_INTERFACE_ID;
+    return interfaceId == type(IStoreHook).interfaceId || interfaceId == type(IERC165).interfaceId;
   }
 
   /**

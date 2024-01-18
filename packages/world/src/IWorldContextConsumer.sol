@@ -10,10 +10,6 @@ import { IERC165 } from "./IERC165.sol";
  * Additionally, it integrates with the ERC-165 standard for interface detection.
  */
 
-bytes4 constant WORLD_CONTEXT_CONSUMER_INTERFACE_ID = IWorldContextConsumer._msgSender.selector ^
-  IWorldContextConsumer._msgValue.selector ^
-  IWorldContextConsumer._world.selector;
-
 /**
  * @title WorldContextConsumer - Extracting trusted context values from appended calldata.
  * @notice This contract is designed to extract trusted context values (like msg.sender and msg.value)
