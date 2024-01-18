@@ -4,8 +4,6 @@ pragma solidity >=0.8.21;
 import { System } from "../../../System.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { ResourceId, ResourceIdInstance, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
-import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
-import { IWorldErrors } from "../../../IWorldErrors.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 import { requireNamespace } from "../../../requireNamespace.sol";
