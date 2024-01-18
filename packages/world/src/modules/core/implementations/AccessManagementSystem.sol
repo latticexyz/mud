@@ -51,6 +51,7 @@ contract AccessManagementSystem is System {
    * @param newOwner The address to which ownership should be transferred.
    */
   function transferOwnership(ResourceId namespaceId, address newOwner) public virtual {
+    // Require the namespace to be a valid namespace ID
     requireNamespace(namespaceId);
 
     // Require the namespace to exist

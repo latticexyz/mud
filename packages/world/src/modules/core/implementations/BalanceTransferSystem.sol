@@ -34,7 +34,9 @@ contract BalanceTransferSystem is System, IWorldErrors {
     ResourceId toNamespaceId,
     uint256 amount
   ) public virtual {
+    // Require the from namespace to be a valid namespace ID
     requireNamespace(fromNamespaceId);
+    // Require the to namespace to be a valid namespace ID
     requireNamespace(toNamespaceId);
 
     // Require the namespace to exist

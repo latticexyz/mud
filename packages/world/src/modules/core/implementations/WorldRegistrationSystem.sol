@@ -43,6 +43,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param namespaceId The unique identifier for the new namespace
    */
   function registerNamespace(ResourceId namespaceId) public virtual {
+    // Require namespace to be a valid namespace ID
     requireNamespace(namespaceId);
 
     // Require namespace to not exist yet
@@ -291,6 +292,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public {
+    // Require namespace to be a valid namespace ID
     requireNamespace(namespaceId);
 
     // Require the delegation to not be unlimited
