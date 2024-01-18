@@ -185,7 +185,6 @@ library SchemaInstance {
     for (uint256 i = _numStaticFields; i < _numTotalFields; ) {
       uint256 staticByteLength = schema.atIndex(i).getStaticByteLength();
       if (staticByteLength > 0) {
-        _staticDataLength += staticByteLength;
         revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
       }
       unchecked {
