@@ -1112,6 +1112,49 @@ contract WorldTest is Test, GasReporter {
     );
   }
 
+  function testUnregisterUnlimitedDelegation() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "testSystem"
+    });
+    world.registerNamespace(systemId.getNamespaceId());
+    world.registerSystem(systemId, system, true);
+
+    // Register an unlimited delegation
+    address delegator = address(1);
+    address delegatee = address(2);
+    vm.prank(delegator);
+    world.registerDelegation(delegatee, UNLIMITED_DELEGATION, new bytes(0));
+
+    // Call a system from the delegatee on behalf of the delegator
+    vm.prank(delegatee);
+    bytes memory returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    address returnedAddress = abi.decode(returnData, (address));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedAddress, delegator);
+
+    // Unregister the delegation
+    vm.prank(delegator);
+    startGasReport("unregister an unlimited delegation");
+    world.unregisterDelegation(delegatee);
+    endGasReport();
+
+    // Expect a revert when attempting to perform a call on behalf of an address that doesn't have a delegation
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_DelegationNotFound.selector,
+        delegator,
+        delegatee // Invalid delegatee
+      )
+    );
+    vm.prank(delegatee);
+    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+  }
+
   function testRegisterStoreHook() public {
     FieldLayout fieldLayout = Bool.getFieldLayout();
     Schema valueSchema = Bool.getValueSchema();

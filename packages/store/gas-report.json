@@ -87,7 +87,7 @@
     "file": "test/FieldLayout.t.sol",
     "test": "testValidate",
     "name": "validate field layout",
-    "gasUsed": 3954
+    "gasUsed": 6925
   },
   {
     "file": "test/Gas.t.sol",
@@ -321,7 +321,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 719023
+    "gasUsed": 727536
   },
   {
     "file": "test/Mixed.t.sol",
@@ -477,7 +477,7 @@
     "file": "test/Schema.t.sol",
     "test": "testValidate",
     "name": "validate schema",
-    "gasUsed": 11497
+    "gasUsed": 13777
   },
   {
     "file": "test/Slice.t.sol",
@@ -573,25 +573,25 @@
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetDynamicFieldSlice",
     "name": "get field slice (cold, 1 slot)",
-    "gasUsed": 5609
+    "gasUsed": 5569
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetDynamicFieldSlice",
     "name": "get field slice (warm, 1 slot)",
-    "gasUsed": 1711
+    "gasUsed": 1671
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetDynamicFieldSlice",
     "name": "get field slice (semi-cold, 1 slot)",
-    "gasUsed": 3704
+    "gasUsed": 3664
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetDynamicFieldSlice",
     "name": "get field slice (warm, 2 slots)",
-    "gasUsed": 3931
+    "gasUsed": 3891
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
@@ -765,7 +765,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: register table",
-    "gasUsed": 640905
+    "gasUsed": 651200
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -1023,7 +1023,7 @@
     "file": "test/StoreHooksColdLoad.t.sol",
     "test": "testGetItem",
     "name": "StoreHooks: get 1 element (cold)",
-    "gasUsed": 8486
+    "gasUsed": 8446
   },
   {
     "file": "test/StoreHooksColdLoad.t.sol",
@@ -1107,7 +1107,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 442408
+    "gasUsed": 451196
   },
   {
     "file": "test/Vector2.t.sol",

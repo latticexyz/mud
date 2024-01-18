@@ -57,13 +57,13 @@
     "file": "test/Factories.t.sol",
     "test": "testCreate2Factory",
     "name": "deploy contract via Create2",
-    "gasUsed": 4663033
+    "gasUsed": 4676449
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testWorldFactory",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12323409
+    "gasUsed": 12515810
   },
   {
     "file": "test/World.t.sol",
@@ -81,7 +81,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 47558
+    "gasUsed": 47538
   },
   {
     "file": "test/World.t.sol",
@@ -111,7 +111,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 121078
+    "gasUsed": 121101
   },
   {
     "file": "test/World.t.sol",
@@ -129,7 +129,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 528278
+    "gasUsed": 537072
   },
   {
     "file": "test/World.t.sol",
@@ -142,6 +142,12 @@
     "test": "testSetRecord",
     "name": "Write data to the table",
     "gasUsed": 39056
+  },
+  {
+    "file": "test/World.t.sol",
+    "test": "testUnregisterUnlimitedDelegation",
+    "name": "unregister an unlimited delegation",
+    "gasUsed": 26191
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",

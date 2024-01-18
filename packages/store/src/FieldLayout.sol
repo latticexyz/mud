@@ -28,8 +28,10 @@ library FieldLayoutLib {
   error FieldLayoutLib_TooManyFields(uint256 numFields, uint256 maxFields);
   error FieldLayoutLib_TooManyDynamicFields(uint256 numFields, uint256 maxFields);
   error FieldLayoutLib_Empty();
-  error FieldLayoutLib_StaticLengthIsZero();
-  error FieldLayoutLib_StaticLengthDoesNotFitInAWord();
+  error FieldLayoutLib_InvalidStaticDataLength(uint256 staticDataLength, uint256 computedStaticDataLength);
+  error FieldLayoutLib_StaticLengthIsZero(uint256 index);
+  error FieldLayoutLib_StaticLengthIsNotZero(uint256 index);
+  error FieldLayoutLib_StaticLengthDoesNotFitInAWord(uint256 index);
 
   /**
    * @notice Encodes the given field layout into a single bytes32.
@@ -51,9 +53,9 @@ library FieldLayoutLib {
     for (uint256 i = 0; i < _staticFieldLengths.length; ) {
       uint256 staticByteLength = _staticFieldLengths[i];
       if (staticByteLength == 0) {
-        revert FieldLayoutLib_StaticLengthIsZero();
+        revert FieldLayoutLib_StaticLengthIsZero(i);
       } else if (staticByteLength > WORD_SIZE) {
-        revert FieldLayoutLib_StaticLengthDoesNotFitInAWord();
+        revert FieldLayoutLib_StaticLengthDoesNotFitInAWord(i);
       }
 
       unchecked {
@@ -166,15 +168,28 @@ library FieldLayoutInstance {
     }
 
     // Static lengths must be valid
+    uint256 _staticDataLength;
     for (uint256 i; i < _numStaticFields; ) {
       uint256 staticByteLength = fieldLayout.atIndex(i);
       if (staticByteLength == 0) {
-        revert FieldLayoutLib.FieldLayoutLib_StaticLengthIsZero();
+        revert FieldLayoutLib.FieldLayoutLib_StaticLengthIsZero(i);
       } else if (staticByteLength > WORD_SIZE) {
-        revert FieldLayoutLib.FieldLayoutLib_StaticLengthDoesNotFitInAWord();
+        revert FieldLayoutLib.FieldLayoutLib_StaticLengthDoesNotFitInAWord(i);
       }
+      _staticDataLength += staticByteLength;
       unchecked {
         i++;
+      }
+    }
+    // Static length sums must match
+    if (_staticDataLength != fieldLayout.staticDataLength()) {
+      revert FieldLayoutLib.FieldLayoutLib_InvalidStaticDataLength(fieldLayout.staticDataLength(), _staticDataLength);
+    }
+    // Unused fields must be zero
+    for (uint256 i = _numStaticFields; i < MAX_TOTAL_FIELDS; i++) {
+      uint256 staticByteLength = fieldLayout.atIndex(i);
+      if (staticByteLength != 0) {
+        revert FieldLayoutLib.FieldLayoutLib_StaticLengthIsNotZero(i);
       }
     }
   }

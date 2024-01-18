@@ -205,6 +205,28 @@ library StoreCore {
     if (valueSchema.numFields() != fieldLayout.numFields()) {
       revert IStoreErrors.Store_InvalidValueSchemaLength(fieldLayout.numFields(), valueSchema.numFields());
     }
+    if (valueSchema.numStaticFields() != fieldLayout.numStaticFields()) {
+      revert IStoreErrors.Store_InvalidValueSchemaStaticLength(
+        fieldLayout.numStaticFields(),
+        valueSchema.numStaticFields()
+      );
+    }
+    if (valueSchema.numDynamicFields() != fieldLayout.numDynamicFields()) {
+      revert IStoreErrors.Store_InvalidValueSchemaDynamicLength(
+        fieldLayout.numDynamicFields(),
+        valueSchema.numDynamicFields()
+      );
+    }
+
+    // Verify that static field lengths are consistent between Schema and FieldLayout
+    for (uint256 i; i < fieldLayout.numStaticFields(); i++) {
+      if (fieldLayout.atIndex(i) != valueSchema.atIndex(i).getStaticByteLength()) {
+        revert IStoreErrors.Store_InvalidStaticDataLength(
+          fieldLayout.atIndex(i),
+          valueSchema.atIndex(i).getStaticByteLength()
+        );
+      }
+    }
 
     // Verify there is no resource with this ID yet
     if (ResourceIds._getExists(tableId)) {
@@ -911,6 +933,10 @@ library StoreCore {
     uint256 start,
     uint256 end
   ) internal view returns (bytes memory) {
+    // Verify the slice bounds are valid
+    if (start > end) {
+      revert IStoreErrors.Store_InvalidBounds(start, end);
+    }
     // Verify the accessed data is within the bounds of the dynamic field.
     // This is necessary because we don't delete the dynamic data when a record is deleted,
     // but only decrease its length.
@@ -923,7 +949,9 @@ library StoreCore {
     // Get the length and storage location of the dynamic field
     uint256 location = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
 
-    return Storage.load({ storagePointer: location, offset: start, length: end - start });
+    unchecked {
+      return Storage.load({ storagePointer: location, offset: start, length: end - start });
+    }
   }
 }
 
