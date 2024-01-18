@@ -14,7 +14,7 @@ import { requireNamespace } from "../../../requireNamespace.sol";
  * @title Access Management System
  * @dev This contract manages the granting and revoking of access from/to resources.
  */
-contract AccessManagementSystem is System, IWorldErrors {
+contract AccessManagementSystem is System {
   using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
