@@ -57,7 +57,7 @@ import { DelegationControlMock } from "./DelegationControlMock.sol";
 import { createCoreModule } from "./createCoreModule.sol";
 
 interface IWorldTestSystem {
-  function testNamespace_testSystem_err(string memory input) external pure;
+  function testNamespace_err(string memory input) external pure;
 }
 
 struct WorldTestSystemReturn {
@@ -1483,7 +1483,7 @@ contract WorldTest is Test, GasReporter {
     bytes4 functionSelector = world.registerFunctionSelector(systemId, "msgSender()");
     endGasReport();
 
-    string memory expectedWorldFunctionSignature = "testNamespace_testSystem_msgSender()";
+    string memory expectedWorldFunctionSignature = "testNamespace_msgSender()";
     bytes4 expectedWorldFunctionSelector = bytes4(keccak256(abi.encodePacked(expectedWorldFunctionSignature)));
     assertEq(functionSelector, expectedWorldFunctionSelector, "wrong function selector returned");
 
@@ -1498,7 +1498,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect errors to be passed through
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
-    IWorldTestSystem(address(world)).testNamespace_testSystem_err("test error");
+    IWorldTestSystem(address(world)).testNamespace_err("test error");
   }
 
   function testRegisterRootFunctionSelector() public {
