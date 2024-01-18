@@ -27,6 +27,7 @@ import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
 import { Systems } from "../../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "../../../codegen/tables/FunctionSignatures.sol";
+import { requireNamespace } from "../../../requireNamespace.sol";
 
 /**
  * @title WorldRegistrationSystem
@@ -42,9 +43,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param namespaceId The unique identifier for the new namespace
    */
   function registerNamespace(ResourceId namespaceId) public virtual {
-    if (!namespaceId.isNamespace()) {
-      revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
-    }
+    requireNamespace(namespaceId);
 
     // Require namespace to not exist yet
     if (ResourceIds._getExists(namespaceId)) {
@@ -292,9 +291,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public {
-    if (!namespaceId.isNamespace()) {
-      revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
-    }
+    requireNamespace(namespaceId);
 
     // Require the delegation to not be unlimited
     if (!Delegation.isLimited(delegationControlId)) {

@@ -77,15 +77,6 @@ library WorldResourceIdInstance {
   }
 
   /**
-   * @notice Check if a resource ID is a namespace.
-   * @param resourceId The resource ID.
-   * @return True if resource ID is a namespace.
-   */
-  function isNamespace(ResourceId resourceId) internal pure returns (bool) {
-    return resourceId.getType() == RESOURCE_NAMESPACE && getName(resourceId) == ROOT_NAME;
-  }
-
-  /**
    * @notice Get the name from a resource ID.
    * @param resourceId The resource ID.
    * @return A 16-byte name.

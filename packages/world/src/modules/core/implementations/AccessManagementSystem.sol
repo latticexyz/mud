@@ -8,6 +8,7 @@ import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
+import { requireNamespace } from "../../../requireNamespace.sol";
 
 /**
  * @title Access Management System
@@ -55,9 +56,7 @@ contract AccessManagementSystem is System, IWorldErrors {
    * @param newOwner The address to which ownership should be transferred.
    */
   function transferOwnership(ResourceId namespaceId, address newOwner) public virtual {
-    if (!namespaceId.isNamespace()) {
-      revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
-    }
+    requireNamespace(namespaceId);
 
     // Require the namespace to exist
     AccessControl.requireExistence(namespaceId);

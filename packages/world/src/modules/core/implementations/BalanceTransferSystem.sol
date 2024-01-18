@@ -13,6 +13,7 @@ import { IWorldErrors } from "../../../IWorldErrors.sol";
 import { ROOT_NAME } from "../../../constants.sol";
 
 import { Balances } from "../../../codegen/tables/Balances.sol";
+import { requireNamespace } from "../../../requireNamespace.sol";
 
 /**
  * @title Balance Transfer System
@@ -34,12 +35,8 @@ contract BalanceTransferSystem is System, IWorldErrors {
     ResourceId toNamespaceId,
     uint256 amount
   ) public virtual {
-    if (!fromNamespaceId.isNamespace()) {
-      revert World_InvalidResourceType(RESOURCE_NAMESPACE, fromNamespaceId, fromNamespaceId.toString());
-    }
-    if (!toNamespaceId.isNamespace()) {
-      revert World_InvalidResourceType(RESOURCE_NAMESPACE, toNamespaceId, toNamespaceId.toString());
-    }
+    requireNamespace(fromNamespaceId);
+    requireNamespace(toNamespaceId);
 
     // Require the namespace to exist
     AccessControl.requireExistence(toNamespaceId);

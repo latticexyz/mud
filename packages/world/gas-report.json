@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactory",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12516011
+    "gasUsed": 12516007
   },
   {
     "file": "test/World.t.sol",
@@ -111,7 +111,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 121119
+    "gasUsed": 121115
   },
   {
     "file": "test/World.t.sol",
