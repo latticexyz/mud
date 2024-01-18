@@ -43,7 +43,6 @@ export function createStorageAdapter<tables extends Tables>({
           id,
           log,
         });
-        updatedIds.push(id);
         rawRecords[id] = {
           id,
           tableId: log.args.tableId,
@@ -52,6 +51,7 @@ export function createStorageAdapter<tables extends Tables>({
           encodedLengths: log.args.encodedLengths,
           dynamicData: log.args.dynamicData,
         };
+        updatedIds.push(id);
       } else if (log.eventName === "Store_SpliceStaticData") {
         debug("splicing static data", {
           namespace: table.namespace,
@@ -59,7 +59,6 @@ export function createStorageAdapter<tables extends Tables>({
           id,
           log,
         });
-        updatedIds.push(id);
         const previousRecord = (rawRecords[id] as RawRecord | undefined) ?? {
           id,
           tableId: log.args.tableId,
@@ -73,6 +72,7 @@ export function createStorageAdapter<tables extends Tables>({
           ...previousRecord,
           staticData,
         };
+        updatedIds.push(id);
       } else if (log.eventName === "Store_SpliceDynamicData") {
         debug("splicing dynamic data", {
           namespace: table.namespace,
@@ -80,7 +80,6 @@ export function createStorageAdapter<tables extends Tables>({
           id,
           log,
         });
-        updatedIds.push(id);
         const previousRecord = (rawRecords[id] as RawRecord | undefined) ?? {
           id,
           tableId: log.args.tableId,
@@ -96,6 +95,7 @@ export function createStorageAdapter<tables extends Tables>({
           encodedLengths,
           dynamicData,
         };
+        updatedIds.push(id);
       } else if (log.eventName === "Store_DeleteRecord") {
         debug("deleting record", {
           namespace: table.namespace,
@@ -103,8 +103,8 @@ export function createStorageAdapter<tables extends Tables>({
           id,
           log,
         });
-        deletedIds.push(id);
         delete rawRecords[id];
+        deletedIds.push(id);
       }
     }
 
@@ -115,7 +115,7 @@ export function createStorageAdapter<tables extends Tables>({
       ...Object.fromEntries(
         updatedIds
           .map((id) => {
-            const rawRecord = rawRecords[id];
+            const rawRecord = rawRecords[id] as RawRecord | undefined;
             if (!rawRecord) {
               console.warn("no raw record found for updated ID", id);
               return;
