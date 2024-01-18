@@ -41,7 +41,7 @@ contract FieldLayoutTest is Test, GasReporter {
   }
 
   function testInvalidFieldLayoutStaticTypeDoesNotFitInAWord() public {
-    vm.expectRevert(FieldLayoutLib.FieldLayoutLib_StaticLengthDoesNotFitInAWord.selector);
+    vm.expectRevert(abi.encodeWithSelector(FieldLayoutLib.FieldLayoutLib_StaticLengthDoesNotFitInAWord.selector, 1));
     FieldLayoutEncodeHelper.encode(1, 33, 1);
   }
 

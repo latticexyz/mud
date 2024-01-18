@@ -31,7 +31,7 @@ library FieldLayoutLib {
   error FieldLayoutLib_InvalidStaticDataLength(uint256 staticDataLength, uint256 computedStaticDataLength);
   error FieldLayoutLib_StaticLengthIsZero(uint256 index);
   error FieldLayoutLib_StaticLengthIsNotZero(uint256 index);
-  error FieldLayoutLib_StaticLengthDoesNotFitInAWord();
+  error FieldLayoutLib_StaticLengthDoesNotFitInAWord(uint256 index);
 
   /**
    * @notice Encodes the given field layout into a single bytes32.
@@ -55,7 +55,7 @@ library FieldLayoutLib {
       if (staticByteLength == 0) {
         revert FieldLayoutLib_StaticLengthIsZero(i);
       } else if (staticByteLength > WORD_SIZE) {
-        revert FieldLayoutLib_StaticLengthDoesNotFitInAWord();
+        revert FieldLayoutLib_StaticLengthDoesNotFitInAWord(i);
       }
 
       unchecked {
@@ -174,7 +174,7 @@ library FieldLayoutInstance {
       if (staticByteLength == 0) {
         revert FieldLayoutLib.FieldLayoutLib_StaticLengthIsZero(i);
       } else if (staticByteLength > WORD_SIZE) {
-        revert FieldLayoutLib.FieldLayoutLib_StaticLengthDoesNotFitInAWord();
+        revert FieldLayoutLib.FieldLayoutLib_StaticLengthDoesNotFitInAWord(i);
       }
       _staticDataLength += staticByteLength;
       unchecked {
