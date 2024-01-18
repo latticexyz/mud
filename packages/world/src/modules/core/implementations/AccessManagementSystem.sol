@@ -3,7 +3,7 @@ pragma solidity >=0.8.21;
 
 import { System } from "../../../System.sol";
 import { AccessControl } from "../../../AccessControl.sol";
-import { ResourceId, ResourceIdInstance, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
+import { ResourceId } from "../../../WorldResourceId.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 import { requireNamespace } from "../../../requireNamespace.sol";
@@ -13,9 +13,6 @@ import { requireNamespace } from "../../../requireNamespace.sol";
  * @dev This contract manages the granting and revoking of access from/to resources.
  */
 contract AccessManagementSystem is System {
-  using ResourceIdInstance for ResourceId;
-  using WorldResourceIdInstance for ResourceId;
-
   /**
    * @notice Grant access to the resource at the given resource ID.
    * @dev Requires the caller to own the namespace.
