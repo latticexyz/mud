@@ -69,7 +69,11 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @param hookAddress The address of the hook being registered
    * @param enabledHooksBitmap Bitmap indicating which hooks are enabled
    */
-  function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) public virtual onlyDelegatecall {
+  function registerSystemHook(
+    ResourceId systemId,
+    ISystemHook hookAddress,
+    uint8 enabledHooksBitmap
+  ) public virtual onlyDelegatecall {
     // Require the provided system ID to have type RESOURCE_SYSTEM
     if (systemId.getType() != RESOURCE_SYSTEM) {
       revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
@@ -115,7 +119,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @param system The system being registered
    * @param publicAccess Flag indicating if access control check is bypassed
    */
-  function registerSystem(ResourceId systemId, System system, bool publicAccess) public virtual onlyDelegatecall{
+  function registerSystem(ResourceId systemId, System system, bool publicAccess) public virtual onlyDelegatecall {
     // Require the provided system ID to have type RESOURCE_SYSTEM
     if (systemId.getType() != RESOURCE_SYSTEM) {
       revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());

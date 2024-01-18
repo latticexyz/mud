@@ -21,7 +21,7 @@ contract AccessManagementSystem is System, LimitedCallContext {
    * @param resourceId The ID of the resource to grant access to.
    * @param grantee The address to which access should be granted.
    */
-  function grantAccess(ResourceId resourceId, address grantee) onlyDelegatecall public virtual {
+  function grantAccess(ResourceId resourceId, address grantee) public virtual onlyDelegatecall {
     // Require the resource to exist
     AccessControl.requireExistence(resourceId);
 
