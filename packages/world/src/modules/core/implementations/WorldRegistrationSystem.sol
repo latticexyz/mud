@@ -42,7 +42,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param namespaceId The unique identifier for the new namespace
    */
   function registerNamespace(ResourceId namespaceId) public virtual {
-    // Require namespace to be a valid namespace ID
+    // Require namespace ID to be a valid namespace
     requireNamespace(namespaceId);
 
     // Require namespace to not exist yet
@@ -330,7 +330,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public {
-    // Require namespace to be a valid namespace ID
+    // Require namespace ID to be a valid namespace
     requireNamespace(namespaceId);
 
     // Require the delegation to not be unlimited
@@ -365,10 +365,8 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param namespaceId The ID of the namespace
    */
   function unregisterNamespaceDelegation(ResourceId namespaceId) public {
-    // Require the namespaceId to be a valid namespace ID
-    if (namespaceId.getType() != RESOURCE_NAMESPACE) {
-      revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
-    }
+    // Require namespace ID to be a valid namespace
+    requireNamespace(namespaceId);
 
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespaceId, _msgSender());
