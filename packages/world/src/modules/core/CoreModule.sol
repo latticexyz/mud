@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { WorldContextProviderLib, WorldContextConsumer } from "../../WorldContext.sol";
+import { System } from "../../System.sol";
+import { WorldContextProviderLib } from "../../WorldContext.sol";
 import { ROOT_NAMESPACE_ID, STORE_NAMESPACE_ID, WORLD_NAMESPACE_ID } from "../../constants.sol";
 import { Module } from "../../Module.sol";
 
@@ -131,7 +132,7 @@ contract CoreModule is Module {
       msgSender: _msgSender(),
       msgValue: 0,
       target: coreRegistrationSystem,
-      callData: abi.encodeCall(WorldRegistrationSystem.registerSystem, (systemId, WorldContextConsumer(target), true))
+      callData: abi.encodeCall(WorldRegistrationSystem.registerSystem, (systemId, System(target), true))
     });
   }
 

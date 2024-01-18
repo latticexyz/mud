@@ -6,7 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
-import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "@latticexyz/store/src/IStoreHook.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
@@ -27,10 +27,10 @@ import { System } from "../src/System.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, ROOT_NAMESPACE_ID, UNLIMITED_DELEGATION, WORLD_NAMESPACE_ID, STORE_NAMESPACE_ID } from "../src/constants.sol";
 import { RESOURCE_TABLE, RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "../src/worldResourceTypes.sol";
-import { WorldContextProviderLib, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
+import { WorldContextProviderLib, IWorldContextConsumer } from "../src/WorldContext.sol";
 import { SystemHook } from "../src/SystemHook.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
-import { Module, MODULE_INTERFACE_ID } from "../src/Module.sol";
+import { Module, IModule } from "../src/Module.sol";
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
@@ -48,7 +48,7 @@ import { FunctionSelectors } from "../src/codegen/tables/FunctionSelectors.sol";
 
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/IWorldErrors.sol";
-import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../src/ISystemHook.sol";
+import { ISystemHook } from "../src/ISystemHook.sol";
 
 import { Bool } from "./codegen/tables/Bool.sol";
 import { TwoFields, TwoFieldsData } from "./codegen/tables/TwoFields.sol";
@@ -285,7 +285,7 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(
         IWorldErrors.World_InterfaceNotSupported.selector,
         Module(address(world)), // The World contract does not implement the IModule interface
-        MODULE_INTERFACE_ID
+        type(IModule).interfaceId
       )
     );
     world.installModule(Module(address(world)), new bytes(0));
@@ -295,7 +295,7 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(
         IWorldErrors.World_InterfaceNotSupported.selector,
         Module(address(world)), // The World contract does not implement the IModule interface
-        MODULE_INTERFACE_ID
+        type(IModule).interfaceId
       )
     );
     world.installRootModule(Module(address(world)), new bytes(0));
@@ -616,7 +616,7 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(
         IWorldErrors.World_InterfaceNotSupported.selector,
         address(world),
-        WORLD_CONTEXT_CONSUMER_INTERFACE_ID
+        type(IWorldContextConsumer).interfaceId
       )
     );
     world.registerSystem(
@@ -1238,7 +1238,11 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to register an address that doesn't implement the IStoreHook interface
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.World_InterfaceNotSupported.selector, address(world), STORE_HOOK_INTERFACE_ID)
+      abi.encodeWithSelector(
+        IWorldErrors.World_InterfaceNotSupported.selector,
+        address(world),
+        type(IStoreHook).interfaceId
+      )
     );
     world.registerStoreHook(
       tableId,
@@ -1335,7 +1339,7 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(
         IWorldErrors.World_InterfaceNotSupported.selector,
         address(world),
-        SYSTEM_HOOK_INTERFACE_ID
+        type(ISystemHook).interfaceId
       )
     );
     world.registerSystemHook(

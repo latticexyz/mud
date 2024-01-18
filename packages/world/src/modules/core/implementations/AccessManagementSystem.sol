@@ -6,6 +6,7 @@ import { AccessControl } from "../../../AccessControl.sol";
 import { ResourceId } from "../../../WorldResourceId.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
+import { requireNamespace } from "../../../requireNamespace.sol";
 
 /**
  * @title Access Management System
@@ -19,6 +20,9 @@ contract AccessManagementSystem is System {
    * @param grantee The address to which access should be granted.
    */
   function grantAccess(ResourceId resourceId, address grantee) public virtual {
+    // Require the resource to exist
+    AccessControl.requireExistence(resourceId);
+
     // Require the caller to own the namespace
     AccessControl.requireOwner(resourceId, _msgSender());
 
@@ -47,6 +51,12 @@ contract AccessManagementSystem is System {
    * @param newOwner The address to which ownership should be transferred.
    */
   function transferOwnership(ResourceId namespaceId, address newOwner) public virtual {
+    // Require the namespace to be a valid namespace ID
+    requireNamespace(namespaceId);
+
+    // Require the namespace to exist
+    AccessControl.requireExistence(namespaceId);
+
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespaceId, _msgSender());
 
