@@ -2,7 +2,6 @@
 pragma solidity >=0.8.21;
 
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
-import { ROOT_NAME } from "./constants.sol";
 import { RESOURCE_NAMESPACE } from "./worldResourceTypes.sol";
 import { IWorldErrors } from "./IWorldErrors.sol";
 
