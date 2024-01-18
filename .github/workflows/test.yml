@@ -6,9 +6,6 @@ on:
       - main
   pull_request:
 
-env:
-  FOUNDRY_VERBOSITY: 5
-
 jobs:
   test:
     name: Run tests
