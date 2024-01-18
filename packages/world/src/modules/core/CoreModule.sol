@@ -140,11 +140,12 @@ contract CoreModule is Module {
    * @dev Iterates through known function signatures and registers them.
    */
   function _registerFunctionSelectors() internal {
-    string[3] memory functionSignaturesAccessManagement = [
+    string[4] memory functionSignaturesAccessManagement = [
       // --- AccessManagementSystem ---
       "grantAccess(bytes32,address)",
       "revokeAccess(bytes32,address)",
-      "transferOwnership(bytes32,address)"
+      "transferOwnership(bytes32,address)",
+      "renounceOwnership(bytes32)"
     ];
     for (uint256 i = 0; i < functionSignaturesAccessManagement.length; i++) {
       _registerRootFunctionSelector(ACCESS_MANAGEMENT_SYSTEM_ID, functionSignaturesAccessManagement[i]);

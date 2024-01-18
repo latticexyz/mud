@@ -225,11 +225,12 @@ contract WorldTest is Test, GasReporter {
     CoreRegistrationSystem coreRegistrationSystem = CoreRegistrationSystem(
       Systems.getSystem(CORE_REGISTRATION_SYSTEM_ID)
     );
-    bytes4[19] memory coreFunctionSignatures = [
+    bytes4[20] memory coreFunctionSignatures = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
       AccessManagementSystem.transferOwnership.selector,
+      AccessManagementSystem.renounceOwnership.selector,
       // --- BalanceTransferSystem ---
       BalanceTransferSystem.transferBalanceToNamespace.selector,
       BalanceTransferSystem.transferBalanceToAddress.selector,
@@ -424,6 +425,31 @@ contract WorldTest is Test, GasReporter {
     // Expect revert if caller is not the owner
     _expectAccessDenied(address(this), namespace, 0, RESOURCE_NAMESPACE);
     world.transferOwnership(namespaceId, address(1));
+  }
+
+  function testRenounceNamespace() public {
+    bytes14 namespace = "testRenounce";
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+
+    world.registerNamespace(namespaceId);
+
+    // Expect the new owner to not be namespace owner before transfer
+    assertFalse(
+      (NamespaceOwner.get(namespaceId)) == address(0),
+      "new owner should not be namespace owner before transfer"
+    );
+
+    world.renounceOwnership(namespaceId);
+
+    // Expect the new owner to be zero address
+    assertEq(NamespaceOwner.get(namespaceId), address(0), "zero address should be namespace owner");
+
+    // Expect previous owner to no longer have access
+    assertEq(ResourceAccess.get(namespaceId, address(this)), false, "caller should no longer have access");
+
+    // Expect revert if caller is not the owner
+    _expectAccessDenied(address(this), namespace, 0, RESOURCE_NAMESPACE);
+    world.renounceOwnership(namespaceId);
   }
 
   function testRegisterTable() public {

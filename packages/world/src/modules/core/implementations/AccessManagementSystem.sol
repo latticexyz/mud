@@ -59,4 +59,20 @@ contract AccessManagementSystem is System {
     // Grant access to new owner
     ResourceAccess._set(namespaceId, newOwner, true);
   }
+
+  /**
+   * @notice Renounces ownership of the given namespace
+   * @dev Requires the caller to own the namespace. Revoke ResourceAccess for previous owner
+   * @param namespaceId The ID of the namespace to transfer ownership.
+   */
+  function renounceOwnership(ResourceId namespaceId) public virtual {
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(namespaceId, _msgSender());
+
+    // Delete namespace owner
+    NamespaceOwner._deleteRecord(namespaceId);
+
+    // Revoke access from old owner
+    ResourceAccess._deleteRecord(namespaceId, _msgSender());
+  }
 }
