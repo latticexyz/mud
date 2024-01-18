@@ -27,6 +27,7 @@ import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
 import { Systems } from "../../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "../../../codegen/tables/FunctionSignatures.sol";
+import { requireNamespace } from "../../../requireNamespace.sol";
 
 /**
  * @title WorldRegistrationSystem
@@ -41,10 +42,8 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param namespaceId The unique identifier for the new namespace
    */
   function registerNamespace(ResourceId namespaceId) public virtual {
-    // Require the provided namespace ID to have type RESOURCE_NAMESPACE
-    if (namespaceId.getType() != RESOURCE_NAMESPACE) {
-      revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
-    }
+    // Require namespace to be a valid namespace ID
+    requireNamespace(namespaceId);
 
     // Require namespace to not exist yet
     if (ResourceIds._getExists(namespaceId)) {
@@ -69,8 +68,16 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param enabledHooksBitmap Bitmap indicating which hooks are enabled
    */
   function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) public virtual {
+    // Require the provided system ID to have type RESOURCE_SYSTEM
+    if (systemId.getType() != RESOURCE_SYSTEM) {
+      revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
+    }
+
     // Require the provided address to implement the ISystemHook interface
     requireInterface(address(hookAddress), type(ISystemHook).interfaceId);
+
+    // Require the system's namespace to exist
+    AccessControl.requireExistence(systemId.getNamespaceId());
 
     // Require caller to own the namespace
     AccessControl.requireOwner(systemId, _msgSender());
@@ -169,6 +176,14 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceId systemId,
     string memory systemFunctionSignature
   ) public returns (bytes4 worldFunctionSelector) {
+    // Require the provided system ID to have type RESOURCE_SYSTEM
+    if (systemId.getType() != RESOURCE_SYSTEM) {
+      revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
+    }
+
+    // Require the resource to exist
+    AccessControl.requireExistence(systemId);
+
     // Require the caller to own the namespace
     AccessControl.requireOwner(systemId, _msgSender());
 
@@ -276,10 +291,8 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public {
-    // Require the namespaceId to be a valid namespace ID
-    if (namespaceId.getType() != RESOURCE_NAMESPACE) {
-      revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
-    }
+    // Require namespace to be a valid namespace ID
+    requireNamespace(namespaceId);
 
     // Require the delegation to not be unlimited
     if (!Delegation.isLimited(delegationControlId)) {

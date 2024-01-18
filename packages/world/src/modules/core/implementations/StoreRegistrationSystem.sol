@@ -73,6 +73,9 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     // Require the hook to implement the store hook interface
     requireInterface(address(hookAddress), type(IStoreHook).interfaceId);
 
+    // Require the table's namespace to exist
+    AccessControl.requireExistence(tableId.getNamespaceId());
+
     // Require caller to own the namespace
     AccessControl.requireOwner(tableId, _msgSender());
 

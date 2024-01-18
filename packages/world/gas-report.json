@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactory",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12509892
+    "gasUsed": 12511434
   },
   {
     "file": "test/World.t.sol",
@@ -81,7 +81,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 47514
+    "gasUsed": 47520
   },
   {
     "file": "test/World.t.sol",
@@ -105,31 +105,31 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 83102
+    "gasUsed": 84455
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 120879
+    "gasUsed": 120905
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterRootFunctionSelector",
     "name": "Register a root function selector",
-    "gasUsed": 80403
+    "gasUsed": 80409
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 164303
+    "gasUsed": 164321
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 536805
+    "gasUsed": 536817
   },
   {
     "file": "test/World.t.sol",
