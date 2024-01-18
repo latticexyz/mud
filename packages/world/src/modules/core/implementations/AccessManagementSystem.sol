@@ -55,8 +55,7 @@ contract AccessManagementSystem is System, IWorldErrors {
    * @param newOwner The address to which ownership should be transferred.
    */
   function transferOwnership(ResourceId namespaceId, address newOwner) public virtual {
-    // Require the provided namespace ID to have type RESOURCE_NAMESPACE
-    if (namespaceId.getType() != RESOURCE_NAMESPACE) {
+    if (!namespaceId.isNamespace()) {
       revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
     }
 

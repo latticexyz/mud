@@ -5,7 +5,6 @@ import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.so
 
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { IWorldErrors } from "./IWorldErrors.sol";
-import { ROOT_NAME } from "./constants.sol";
 
 import { ResourceAccess } from "./codegen/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "./codegen/tables/NamespaceOwner.sol";
@@ -62,17 +61,6 @@ library AccessControl {
   function requireExistence(ResourceId resourceId) internal view {
     if (!ResourceIds._getExists(resourceId)) {
       revert IWorldErrors.World_ResourceNotFound(resourceId, resourceId.toString());
-    }
-  }
-
-  /**
-   * @notice Checks that the given resource ID has the root name component.
-   * @dev Reverts with IWorldErrors.World_InvalidResourceId if the name is not ROOT_NAME.
-   * @param resourceId The resource ID to check the name of.
-   */
-  function requireRootName(ResourceId resourceId) internal pure {
-    if (resourceId.getName() != ROOT_NAME) {
-      revert IWorldErrors.World_InvalidResourceId(resourceId, resourceId.toString());
     }
   }
 }

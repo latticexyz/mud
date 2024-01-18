@@ -42,13 +42,9 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param namespaceId The unique identifier for the new namespace
    */
   function registerNamespace(ResourceId namespaceId) public virtual {
-    // Require the provided namespace ID to have type RESOURCE_NAMESPACE
-    if (namespaceId.getType() != RESOURCE_NAMESPACE) {
+    if (!namespaceId.isNamespace()) {
       revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
     }
-
-    // Require the namespaceId to have an empty name
-    AccessControl.requireRootName(namespaceId);
 
     // Require namespace to not exist yet
     if (ResourceIds._getExists(namespaceId)) {
@@ -296,13 +292,9 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public {
-    // Require the namespaceId to be a valid namespace ID
-    if (namespaceId.getType() != RESOURCE_NAMESPACE) {
+    if (!namespaceId.isNamespace()) {
       revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
     }
-
-    // Require the namespaceId to have an empty name
-    AccessControl.requireRootName(namespaceId);
 
     // Require the delegation to not be unlimited
     if (!Delegation.isLimited(delegationControlId)) {

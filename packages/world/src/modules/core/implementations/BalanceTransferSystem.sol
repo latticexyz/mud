@@ -34,13 +34,12 @@ contract BalanceTransferSystem is System, IWorldErrors {
     ResourceId toNamespaceId,
     uint256 amount
   ) public virtual {
-    // Require the target ID to be a namespace ID
-    if (toNamespaceId.getType() != RESOURCE_NAMESPACE) {
+    if (!fromNamespaceId.isNamespace()) {
+      revert World_InvalidResourceType(RESOURCE_NAMESPACE, fromNamespaceId, fromNamespaceId.toString());
+    }
+    if (!toNamespaceId.isNamespace()) {
       revert World_InvalidResourceType(RESOURCE_NAMESPACE, toNamespaceId, toNamespaceId.toString());
     }
-
-    // Require the target ID to have an empty name
-    AccessControl.requireRootName(toNamespaceId);
 
     // Require the namespace to exist
     AccessControl.requireExistence(toNamespaceId);
