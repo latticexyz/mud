@@ -135,7 +135,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testGetKeysWithValueGas",
     "name": "install keys with value module",
-    "gasUsed": 681672
+    "gasUsed": 681695
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -153,7 +153,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testInstall",
     "name": "install keys with value module",
-    "gasUsed": 681672
+    "gasUsed": 681695
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -165,7 +165,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetAndDeleteRecordHook",
     "name": "install keys with value module",
-    "gasUsed": 681672
+    "gasUsed": 681695
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -183,7 +183,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetField",
     "name": "install keys with value module",
-    "gasUsed": 681672
+    "gasUsed": 681695
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -267,7 +267,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromCallboundDelegation",
     "name": "register a callbound delegation",
-    "gasUsed": 118172
+    "gasUsed": 118138
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -279,7 +279,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromSystemDelegation",
     "name": "register a systembound delegation",
-    "gasUsed": 115725
+    "gasUsed": 115691
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -291,7 +291,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromTimeboundDelegation",
     "name": "register a timebound delegation",
-    "gasUsed": 112648
+    "gasUsed": 112614
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -303,7 +303,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "install unique entity module",
-    "gasUsed": 702700
+    "gasUsed": 702723
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -315,7 +315,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 671720
+    "gasUsed": 671743
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
