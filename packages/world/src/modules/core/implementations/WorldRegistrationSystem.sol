@@ -47,7 +47,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
       revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
     }
 
-    // Require the provided namespace name to be empty
+    // Require the namespaceId to have an empty name
     AccessControl.requireRootName(namespaceId);
 
     // Require namespace to not exist yet
@@ -296,13 +296,13 @@ contract WorldRegistrationSystem is System, IWorldErrors {
       revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
     }
 
+    // Require the namespaceId to have an empty name
+    AccessControl.requireRootName(namespaceId);
+
     // Require the delegation to not be unlimited
     if (!Delegation.isLimited(delegationControlId)) {
       revert World_UnlimitedDelegationNotAllowed();
     }
-
-    // Require the provided namespace name to be empty
-    AccessControl.requireRootName(namespaceId);
 
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespaceId, _msgSender());

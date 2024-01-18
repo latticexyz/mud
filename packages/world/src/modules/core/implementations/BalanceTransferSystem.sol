@@ -39,7 +39,7 @@ contract BalanceTransferSystem is System, IWorldErrors {
       revert World_InvalidResourceType(RESOURCE_NAMESPACE, toNamespaceId, toNamespaceId.toString());
     }
 
-    // Require the provided namespace name to be empty
+    // Require the target ID to have an empty name
     AccessControl.requireRootName(toNamespaceId);
 
     // Require the namespace to exist
