@@ -2,4 +2,4 @@
 "@latticexyz/store": patch
 ---
 
-Added missing FieldLayout and Schema validations
+Added more validation checks for `FieldLayout` and `Schema`.
