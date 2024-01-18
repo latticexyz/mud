@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
-import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { System } from "../../../System.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
@@ -19,7 +18,6 @@ import { requireNamespace } from "../../../requireNamespace.sol";
  * @dev A system contract that facilitates balance transfers in the World and outside of the World.
  */
 contract BalanceTransferSystem is System, IWorldErrors {
-  using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
   /**

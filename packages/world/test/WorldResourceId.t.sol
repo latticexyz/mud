@@ -3,13 +3,12 @@ pragma solidity >=0.8.21;
 
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { ResourceId, ResourceIdLib, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
 
 import { WorldResourceIdLib, WorldResourceIdInstance, NAMESPACE_BITS, NAME_BITS, TYPE_BITS } from "../src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
 contract WorldResourceIdTest is Test, GasReporter {
-  using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
   function testEncode() public {
