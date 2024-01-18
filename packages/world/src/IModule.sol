@@ -4,14 +4,6 @@ pragma solidity >=0.8.21;
 import { IERC165 } from "./IERC165.sol";
 
 /**
- * @dev Calculation for ERC-165 interface ID for the IModule functions.
- * See: https://eips.ethereum.org/EIPS/eip-165
- */
-bytes4 constant MODULE_INTERFACE_ID = IModule.getName.selector ^
-  IModule.installRoot.selector ^
-  IModule.install.selector;
-
-/**
  * @title IModule
  * @dev Interface for the Module system.
  * A module can be installed within the context of a world, either as a root or non-root module.
