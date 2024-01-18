@@ -225,7 +225,7 @@ contract WorldTest is Test, GasReporter {
     CoreRegistrationSystem coreRegistrationSystem = CoreRegistrationSystem(
       Systems.getSystem(CORE_REGISTRATION_SYSTEM_ID)
     );
-    bytes4[20] memory coreFunctionSignatures = [
+    bytes4[22] memory coreFunctionSignatures = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
@@ -251,7 +251,9 @@ contract WorldTest is Test, GasReporter {
       coreRegistrationSystem.registerFunctionSelector.selector,
       coreRegistrationSystem.registerRootFunctionSelector.selector,
       coreRegistrationSystem.registerDelegation.selector,
-      coreRegistrationSystem.registerNamespaceDelegation.selector
+      coreRegistrationSystem.unregisterDelegation.selector,
+      coreRegistrationSystem.registerNamespaceDelegation.selector,
+      coreRegistrationSystem.unregisterNamespaceDelegation.selector
     ];
 
     for (uint256 i; i < coreFunctionSignatures.length; i++) {

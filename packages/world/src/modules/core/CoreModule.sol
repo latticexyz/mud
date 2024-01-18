@@ -169,7 +169,7 @@ contract CoreModule is Module {
       _registerRootFunctionSelector(BATCH_CALL_SYSTEM_ID, functionSignaturesBatchCall[i]);
     }
 
-    string[13] memory functionSignaturesCoreRegistration = [
+    string[14] memory functionSignaturesCoreRegistration = [
       // --- ModuleInstallationSystem ---
       "installModule(address,bytes)",
       // --- StoreRegistrationSystem ---
@@ -185,7 +185,8 @@ contract CoreModule is Module {
       "registerRootFunctionSelector(bytes32,string,bytes4)",
       "registerDelegation(address,bytes32,bytes)",
       "unregisterDelegation(address)",
-      "registerNamespaceDelegation(bytes32,bytes32,bytes)"
+      "registerNamespaceDelegation(bytes32,bytes32,bytes)",
+      "unregisterNamespaceDelegation(bytes32)"
     ];
     for (uint256 i = 0; i < functionSignaturesCoreRegistration.length; i++) {
       _registerRootFunctionSelector(CORE_REGISTRATION_SYSTEM_ID, functionSignaturesCoreRegistration[i]);

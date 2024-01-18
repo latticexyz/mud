@@ -260,6 +260,11 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     }
   }
 
+  /**
+   * @notice Unregisters a delegation
+   * @dev Deletes the new delegation from the caller to the specified delegatee
+   * @param delegatee The address of the delegatee
+   */
   function unregisterDelegation(address delegatee) public {
     // Delete the delegation control contract address
     UserDelegationControl.deleteRecord({ delegator: _msgSender(), delegatee: delegatee });
@@ -306,5 +311,23 @@ contract WorldRegistrationSystem is System, IWorldErrors {
         value: 0
       });
     }
+  }
+
+  /**
+   * @notice Unregisters a delegation for a namespace
+   * @dev Deletes the delegation control for a specific namespace
+   * @param namespaceId The ID of the namespace
+   */
+  function unregisterNamespaceDelegation(ResourceId namespaceId) public {
+    // Require the namespaceId to be a valid namespace ID
+    if (namespaceId.getType() != RESOURCE_NAMESPACE) {
+      revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
+    }
+
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(namespaceId, _msgSender());
+
+    // Register the delegation control
+    NamespaceDelegationControl.deleteRecord(namespaceId);
   }
 }
