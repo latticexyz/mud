@@ -48,9 +48,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     }
 
     // Require the provided namespace name to be empty
-    if (namespaceId.getName() != ROOT_NAME) {
-      revert World_InvalidResourceId(namespaceId, namespaceId.toString());
-    }
+    AccessControl.requireRootName(namespaceId);
 
     // Require namespace to not exist yet
     if (ResourceIds._getExists(namespaceId)) {
@@ -304,9 +302,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     }
 
     // Require the provided namespace name to be empty
-    if (namespaceId.getName() != ROOT_NAME) {
-      revert World_InvalidResourceId(namespaceId, namespaceId.toString());
-    }
+    AccessControl.requireRootName(namespaceId);
 
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespaceId, _msgSender());

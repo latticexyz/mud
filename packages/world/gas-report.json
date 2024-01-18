@@ -111,7 +111,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 121049
+    "gasUsed": 121078
   },
   {
     "file": "test/World.t.sol",

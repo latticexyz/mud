@@ -40,9 +40,7 @@ contract BalanceTransferSystem is System, IWorldErrors {
     }
 
     // Require the provided namespace name to be empty
-    if (toNamespaceId.getName() != ROOT_NAME) {
-      revert World_InvalidResourceId(toNamespaceId, toNamespaceId.toString());
-    }
+    AccessControl.requireRootName(toNamespaceId);
 
     // Require the namespace to exist
     AccessControl.requireExistence(toNamespaceId);
