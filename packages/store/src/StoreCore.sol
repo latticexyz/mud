@@ -95,10 +95,17 @@ library StoreCore {
   function registerCoreTables() internal {
     // Because `registerTable` writes to both `Tables` and `ResourceIds`, we can't use it
     // directly here without creating a race condition, where we'd write to one or the other
-    // depending on the order of registering each of those two core tables.
+    // before they exist (depending on the order of registration).
     //
-    // Instead, we'll register them manually. The logic here ought to be kept in sync with
-    // the internals of the `registerTable` function below.
+    // Instead, we'll register them manually, writing everything to the `Tables` table first,
+    // then the `ResourceIds` table. The logic here ought to be kept in sync with the internals
+    // of the `registerTable` function below.
+    if (ResourceIds._getExists(TablesTableId)) {
+      revert IStoreErrors.Store_TableAlreadyExists(TablesTableId, string(abi.encodePacked(TablesTableId)));
+    }
+    if (ResourceIds._getExists(ResourceIdsTableId)) {
+      revert IStoreErrors.Store_TableAlreadyExists(ResourceIdsTableId, string(abi.encodePacked(ResourceIdsTableId)));
+    }
     Tables._set(
       TablesTableId,
       Tables.getFieldLayout(),
