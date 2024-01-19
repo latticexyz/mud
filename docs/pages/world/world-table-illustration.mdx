@@ -1,7 +1,7 @@
 ![Interaction between the `World`, a `System`, and a table](./world-table.svg)
 
-1. An account calls a function called `namespace_system_function` via the `World`.
-   [This function was registered](./function-selectors) by the owner of the `namespace` namespace and points to the `function` function in the `system` system in the `namespace` namespace.
+1. An account calls a function called `namespace__function` via the `World`.
+   [This function was registered](./function-selectors) by the owner of the `namespace` namespace and points to the `function` function in one of the `System`s in the `namespace` namespace.
 
 2. The `World` verifies that access is permitted (for example, because `namespace:system` is publicly accessible) and if so calls `function` on the `namespace:system` contract with the provided parameters.
 
