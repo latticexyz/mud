@@ -133,6 +133,12 @@
   },
   {
     "file": "test/World.t.sol",
+    "test": "testRenounceNamespace",
+    "name": "Renounce namespace ownership",
+    "gasUsed": 35488
+  },
+  {
+    "file": "test/World.t.sol",
     "test": "testSetField",
     "name": "Write data to a table field",
     "gasUsed": 36903

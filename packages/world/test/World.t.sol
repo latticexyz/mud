@@ -441,7 +441,9 @@ contract WorldTest is Test, GasReporter {
       "new owner should not be namespace owner before transfer"
     );
 
+    startGasReport("Renounce namespace ownership");
     world.renounceOwnership(namespaceId);
+    endGasReport();
 
     // Expect the new owner to be zero address
     assertEq(NamespaceOwner.get(namespaceId), address(0), "zero address should be namespace owner");
