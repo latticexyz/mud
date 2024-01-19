@@ -347,7 +347,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespaceId, _msgSender());
 
-    // Register the delegation control
+    // Delete the delegation control
     NamespaceDelegationControl.deleteRecord(namespaceId);
   }
 }
