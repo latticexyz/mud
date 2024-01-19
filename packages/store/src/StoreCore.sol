@@ -93,10 +93,18 @@ library StoreCore {
    * any table data to allow indexers to decode table events.
    */
   function registerCoreTables() internal {
-    // Register core tables
+    // There is a known bootstrapping/race condition issue here, where calling `.register()`
+    // on any table writes  to both the `Tables` table and `ResourceIds` table, but these
+    // tables aren't yet registered when we make these calls below.
+    //
+    // For now, clients and indexers will need to hardcode the `Tables` table schema and assume
+    // that the resource ID for the `Tables` table will be set before the `ResourceIds`
+    // table is registered.
+    //
+    // The registration order below is intentionally: Tables, ResourceIds, all other tables
     Tables.register();
-    StoreHooks.register();
     ResourceIds.register();
+    StoreHooks.register();
   }
 
   /************************************************************************
