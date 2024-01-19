@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "@latticexyz/store/src/IStoreHook.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
 import { System } from "../../../System.sol";
 import { ResourceId, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
@@ -14,11 +13,10 @@ import { AccessControl } from "../../../AccessControl.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
 
-import { Systems } from "../../../codegen/tables/Systems.sol";
-
 import { IWorldErrors } from "../../../IWorldErrors.sol";
 
-import { CORE_SYSTEM_ID } from "../constants.sol";
+import { CORE_REGISTRATION_SYSTEM_ID } from "../constants.sol";
+import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 import { WorldRegistrationSystem } from "./WorldRegistrationSystem.sol";
 
@@ -26,7 +24,7 @@ import { WorldRegistrationSystem } from "./WorldRegistrationSystem.sol";
  * @title Store Registration System
  * @dev This contract provides functionality for the registration of store-related resources within the World framework.
  */
-contract StoreRegistrationSystem is System, IWorldErrors {
+contract StoreRegistrationSystem is System, IWorldErrors, LimitedCallContext {
   using WorldResourceIdInstance for ResourceId;
 
   /**
@@ -47,24 +45,17 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     Schema valueSchema,
     string[] calldata keyNames,
     string[] calldata fieldNames
-  ) public virtual {
+  ) public virtual onlyDelegatecall {
     // Require the name to not be the namespace's root name
-    if (tableId.getName() == ROOT_NAME) revert World_InvalidResourceId(tableId, tableId.toString());
-
-    // If the namespace doesn't exist yet, register it
-    ResourceId namespaceId = tableId.getNamespaceId();
-    if (!ResourceIds._getExists(namespaceId)) {
-      // Since this is a root system, we're in the context of the World contract already,
-      // so we can use delegatecall to register the namespace
-      address coreSystemAddress = Systems._getSystem(CORE_SYSTEM_ID);
-      (bool success, bytes memory data) = coreSystemAddress.delegatecall(
-        abi.encodeCall(WorldRegistrationSystem.registerNamespace, (namespaceId))
-      );
-      if (!success) revertWithBytes(data);
-    } else {
-      // otherwise require caller to own the namespace
-      AccessControl.requireOwner(namespaceId, _msgSender());
+    if (tableId.getName() == ROOT_NAME) {
+      revert World_InvalidResourceId(tableId, tableId.toString());
     }
+
+    // Require the table's namespace to exist
+    AccessControl.requireExistence(tableId.getNamespaceId());
+
+    // Require the caller to own the table's namespace
+    AccessControl.requireOwner(tableId, _msgSender());
 
     // Register the table
     StoreCore.registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
@@ -79,9 +70,16 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    * @param enabledHooksBitmap A bitmap indicating which hook functionalities are enabled.
    */
 
-  function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
+  function registerStoreHook(
+    ResourceId tableId,
+    IStoreHook hookAddress,
+    uint8 enabledHooksBitmap
+  ) public virtual onlyDelegatecall {
     // Require the hook to implement the store hook interface
-    requireInterface(address(hookAddress), STORE_HOOK_INTERFACE_ID);
+    requireInterface(address(hookAddress), type(IStoreHook).interfaceId);
+
+    // Require the table's namespace to exist
+    AccessControl.requireExistence(tableId.getNamespaceId());
 
     // Require caller to own the namespace
     AccessControl.requireOwner(tableId, _msgSender());
@@ -96,7 +94,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    * @param tableId The resource ID of the table from which the hook is being unregistered.
    * @param hookAddress The address of the storage hook contract.
    */
-  function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) public virtual {
+  function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) public virtual onlyDelegatecall {
     // Require caller to own the namespace
     AccessControl.requireOwner(tableId, _msgSender());
 

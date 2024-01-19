@@ -3,7 +3,7 @@ import path from "path";
 import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum } from "@latticexyz/common/codegen";
 import { StoreConfig } from "@latticexyz/store";
 import { renderSystemInterface } from "./renderSystemInterface";
-import { renderWorld } from "./renderWorld";
+import { renderWorldInterface } from "./renderWorldInterface";
 import { resolveWorldConfig } from "../../config/resolveWorldConfig";
 import { WorldConfig } from "../../config/types";
 
@@ -64,7 +64,7 @@ export async function worldgen(
   }
 
   // render IWorld
-  const output = renderWorld({
+  const output = renderWorldInterface({
     interfaceName: config.worldInterfaceName,
     imports: systemInterfaceImports,
     storeImportPath: config.storeImportPath,
@@ -72,5 +72,5 @@ export async function worldgen(
   });
   // write to file
   const fullOutputPath = path.join(worldgenBaseDirectory, config.worldInterfaceName + ".sol");
-  await formatAndWriteSolidity(output, fullOutputPath, "Generated system interface");
+  await formatAndWriteSolidity(output, fullOutputPath, "Generated world interface");
 }

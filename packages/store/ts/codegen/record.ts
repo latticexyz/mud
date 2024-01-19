@@ -17,7 +17,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
   if (options.withGetters) {
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+      ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
         /**
          * @notice Get the full data${_commentSuffix}.
          */
@@ -41,7 +41,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
   result += renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+    ({ _typedStore, _store, _commentSuffix, _methodNamePrefix, _useExplicitFieldLayout }) => {
       const externalArguments = renderArguments([
         _typedStore,
         _typedTableId,
@@ -50,7 +50,8 @@ export function renderRecordMethods(options: RenderTableOptions) {
       ]);
 
       const internalArguments =
-        "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" + (_internal ? ", _fieldLayout" : "");
+        "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" +
+        (_useExplicitFieldLayout ? ", _fieldLayout" : "");
 
       return `
         /** 
@@ -70,7 +71,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
   if (structName !== undefined) {
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+      ({ _typedStore, _store, _commentSuffix, _methodNamePrefix, _useExplicitFieldLayout }) => {
         const externalArguments = renderArguments([
           _typedStore,
           _typedTableId,
@@ -79,7 +80,8 @@ export function renderRecordMethods(options: RenderTableOptions) {
         ]);
 
         const internalArguments =
-          "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" + (_internal ? ", _fieldLayout" : "");
+          "_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData" +
+          (_useExplicitFieldLayout ? ", _fieldLayout" : "");
 
         return `
           /**
@@ -139,19 +141,19 @@ export function renderDeleteRecordMethods(options: RenderTableOptions) {
 
   return renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix, _internal) => {
+    ({ _typedStore, _store, _commentSuffix, _methodNamePrefix, _useExplicitFieldLayout }) => {
       const externalArguments = renderArguments([_typedStore, _typedTableId, _typedKeyArgs]);
-      const internalArguments = "_tableId, _keyTuple" + (_internal ? ", _fieldLayout" : "");
+      const internalArguments = "_tableId, _keyTuple" + (_useExplicitFieldLayout ? ", _fieldLayout" : "");
 
       return `
-      /** 
-       * @notice Delete all data for given keys${_commentSuffix}.
-       */
-      function ${_methodNamePrefix}deleteRecord(${externalArguments}) internal {
-        ${_keyTupleDefinition}
-        ${_store}.deleteRecord(${internalArguments});
-      }
-    `;
+        /** 
+         * @notice Delete all data for given keys${_commentSuffix}.
+         */
+        function ${_methodNamePrefix}deleteRecord(${externalArguments}) internal {
+          ${_keyTupleDefinition}
+          ${_store}.deleteRecord(${internalArguments});
+        }
+      `;
     }
   );
 }

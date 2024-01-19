@@ -15,10 +15,10 @@ import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
 import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
-import { healthcheck } from "../src/healthcheck";
-import { helloWorld } from "../src/helloWorld";
+import { healthcheck } from "../src/koa-middleware/healthcheck";
+import { helloWorld } from "../src/koa-middleware/helloWorld";
 import { apiRoutes } from "../src/sqlite/apiRoutes";
-import { registerSentryMiddlewares } from "../src/sentry";
+import { sentry } from "../src/koa-middleware/sentry";
 
 const env = parseEnv(
   z.intersection(
@@ -96,7 +96,7 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
 const server = new Koa();
 
 if (env.SENTRY_DSN) {
-  registerSentryMiddlewares(server);
+  server.use(sentry(env.SENTRY_DSN));
 }
 
 server.use(cors());

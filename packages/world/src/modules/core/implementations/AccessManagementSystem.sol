@@ -6,19 +6,25 @@ import { AccessControl } from "../../../AccessControl.sol";
 import { ResourceId } from "../../../WorldResourceId.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
+import { requireNamespace } from "../../../requireNamespace.sol";
+
+import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
  * @title Access Management System
  * @dev This contract manages the granting and revoking of access from/to resources.
  */
-contract AccessManagementSystem is System {
+contract AccessManagementSystem is System, LimitedCallContext {
   /**
    * @notice Grant access to the resource at the given resource ID.
    * @dev Requires the caller to own the namespace.
    * @param resourceId The ID of the resource to grant access to.
    * @param grantee The address to which access should be granted.
    */
-  function grantAccess(ResourceId resourceId, address grantee) public virtual {
+  function grantAccess(ResourceId resourceId, address grantee) public virtual onlyDelegatecall {
+    // Require the resource to exist
+    AccessControl.requireExistence(resourceId);
+
     // Require the caller to own the namespace
     AccessControl.requireOwner(resourceId, _msgSender());
 
@@ -32,7 +38,7 @@ contract AccessManagementSystem is System {
    * @param resourceId The ID of the resource to revoke access from.
    * @param grantee The address from which access should be revoked.
    */
-  function revokeAccess(ResourceId resourceId, address grantee) public virtual {
+  function revokeAccess(ResourceId resourceId, address grantee) public virtual onlyDelegatecall {
     // Require the caller to own the namespace
     AccessControl.requireOwner(resourceId, _msgSender());
 
@@ -46,7 +52,13 @@ contract AccessManagementSystem is System {
    * @param namespaceId The ID of the namespace to transfer ownership.
    * @param newOwner The address to which ownership should be transferred.
    */
-  function transferOwnership(ResourceId namespaceId, address newOwner) public virtual {
+  function transferOwnership(ResourceId namespaceId, address newOwner) public virtual onlyDelegatecall {
+    // Require the namespace to be a valid namespace ID
+    requireNamespace(namespaceId);
+
+    // Require the namespace to exist
+    AccessControl.requireExistence(namespaceId);
+
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespaceId, _msgSender());
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { System } from "../../../System.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
@@ -11,13 +11,15 @@ import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";
 
 import { Balances } from "../../../codegen/tables/Balances.sol";
+import { requireNamespace } from "../../../requireNamespace.sol";
+
+import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
  * @title Balance Transfer System
  * @dev A system contract that facilitates balance transfers in the World and outside of the World.
  */
-contract BalanceTransferSystem is System, IWorldErrors {
-  using ResourceIdInstance for ResourceId;
+contract BalanceTransferSystem is System, IWorldErrors, LimitedCallContext {
   using WorldResourceIdInstance for ResourceId;
 
   /**
@@ -31,11 +33,14 @@ contract BalanceTransferSystem is System, IWorldErrors {
     ResourceId fromNamespaceId,
     ResourceId toNamespaceId,
     uint256 amount
-  ) public virtual {
-    // Require the target ID to be a namespace ID
-    if (toNamespaceId.getType() != RESOURCE_NAMESPACE) {
-      revert World_InvalidResourceType(RESOURCE_NAMESPACE, toNamespaceId, toNamespaceId.toString());
-    }
+  ) public virtual onlyDelegatecall {
+    // Require the from namespace to be a valid namespace ID
+    requireNamespace(fromNamespaceId);
+    // Require the to namespace to be a valid namespace ID
+    requireNamespace(toNamespaceId);
+
+    // Require the namespace to exist
+    AccessControl.requireExistence(toNamespaceId);
 
     // Require caller to have access to the namespace
     AccessControl.requireAccess(fromNamespaceId, _msgSender());
@@ -58,7 +63,11 @@ contract BalanceTransferSystem is System, IWorldErrors {
    * @param toAddress The target address where the balance will be sent.
    * @param amount The amount to transfer.
    */
-  function transferBalanceToAddress(ResourceId fromNamespaceId, address toAddress, uint256 amount) public virtual {
+  function transferBalanceToAddress(
+    ResourceId fromNamespaceId,
+    address toAddress,
+    uint256 amount
+  ) public virtual onlyDelegatecall {
     // Require caller to have access to the namespace
     AccessControl.requireAccess(fromNamespaceId, _msgSender());
 

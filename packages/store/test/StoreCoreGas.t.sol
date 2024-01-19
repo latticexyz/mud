@@ -16,7 +16,7 @@ import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
 import { ResourceIds } from "../src/codegen/tables/ResourceIds.sol";
-import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
+import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../src/storeResourceTypes.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
@@ -37,6 +37,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
   ResourceId _tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some table" });
   ResourceId _tableId2 = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some other table" });
+  ResourceId _tableId3 = ResourceIdLib.encode({ typeId: RESOURCE_OFFCHAIN_TABLE, name: "some offchain table" });
 
   function testGetStaticDataLocation() public {
     ResourceId tableId = _tableId;
@@ -722,6 +723,94 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     startGasReport("delete (dynamic) record on table with subscriber");
     StoreCore.deleteRecord(tableId, keyTuple);
+    endGasReport();
+  }
+
+  function testSetDataOffchainTable() public {
+    ResourceId tableId = _tableId3;
+
+    // Register offchain table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
+
+    IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
+
+    // Set data
+    bytes memory staticData = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
+
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = "some key";
+
+    // Expect a Store_SetRecord event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit Store_SetRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+
+    startGasReport("StoreCore: set record in offchain table");
+    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    endGasReport();
+  }
+
+  function testDeleteDataOffchainTable() public {
+    ResourceId tableId = _tableId3;
+
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
+    {
+      Schema valueSchema = SchemaEncodeHelper.encode(
+        SchemaType.UINT128,
+        SchemaType.UINT32_ARRAY,
+        SchemaType.UINT32_ARRAY
+      );
+      IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+    }
+
+    bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
+
+    bytes memory secondDataBytes;
+    {
+      uint32[] memory secondData = new uint32[](2);
+      secondData[0] = 0x11121314;
+      secondData[1] = 0x15161718;
+      secondDataBytes = EncodeArray.encode(secondData);
+    }
+
+    bytes memory thirdDataBytes;
+    {
+      uint32[] memory thirdData = new uint32[](3);
+      thirdData[0] = 0x191a1b1c;
+      thirdData[1] = 0x1d1e1f20;
+      thirdData[2] = 0x21222324;
+      thirdDataBytes = EncodeArray.encode(thirdData);
+    }
+
+    PackedCounter encodedDynamicLength;
+    {
+      encodedDynamicLength = PackedCounterLib.pack(uint40(secondDataBytes.length), uint40(thirdDataBytes.length));
+    }
+
+    // Concat data
+    bytes memory staticData = abi.encodePacked(firstDataBytes);
+    bytes memory dynamicData = abi.encodePacked(secondDataBytes, thirdDataBytes);
+
+    // Create keyTuple
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = bytes32("some key");
+
+    // Set data
+    IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
+
+    // Expect a Store_DeleteRecord event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit Store_DeleteRecord(tableId, keyTuple);
+
+    // Delete data
+    startGasReport("StoreCore: delete record in offchain table");
+    IStore(this).deleteRecord(tableId, keyTuple);
     endGasReport();
   }
 }

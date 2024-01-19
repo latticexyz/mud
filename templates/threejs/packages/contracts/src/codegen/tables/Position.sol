@@ -375,7 +375,7 @@ library Position {
    * @notice Encode all of a record's fields.
    * @return The static (fixed length) data, encoded into a sequence of bytes.
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
-   * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
+   * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
   function encode(int32 x, int32 y, int32 z) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(x, y, z);

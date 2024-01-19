@@ -7,6 +7,7 @@ import { Module } from "@latticexyz/world/src/Module.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { InstalledModules } from "@latticexyz/world/src/codegen/tables/InstalledModules.sol";
+import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { Puppet } from "../puppet/Puppet.sol";
 import { createPuppet } from "../puppet/createPuppet.sol";
@@ -57,7 +58,10 @@ contract ERC721Module is Module {
 
     // Register the ERC721 tables and system
     IBaseWorld world = IBaseWorld(_world());
-    registrationLibrary.delegatecall(abi.encodeCall(ERC721ModuleRegistrationLibrary.register, (world, namespace)));
+    (bool success, bytes memory returnData) = registrationLibrary.delegatecall(
+      abi.encodeCall(ERC721ModuleRegistrationLibrary.register, (world, namespace))
+    );
+    if (!success) revertWithBytes(returnData);
 
     // Initialize the Metadata
     ERC721Metadata.set(_metadataTableId(namespace), metadata);
@@ -72,6 +76,7 @@ contract ERC721Module is Module {
 
     // Register the ERC721 in the ERC20Registry
     if (!ResourceIds.getExists(ERC721_REGISTRY_TABLE_ID)) {
+      world.registerNamespace(MODULE_NAMESPACE_ID);
       ERC721Registry.register(ERC721_REGISTRY_TABLE_ID);
     }
     ERC721Registry.set(ERC721_REGISTRY_TABLE_ID, namespaceId, puppet);
@@ -87,8 +92,13 @@ contract ERC721ModuleRegistrationLibrary {
    * Register systems and tables for a new ERC721 token in a given namespace
    */
   function register(IBaseWorld world, bytes14 namespace) public {
-    // Register the tables
+    // Register the namespace if it doesn't exist yet
+    ResourceId tokenNamespace = WorldResourceIdLib.encodeNamespace(namespace);
+    if (!ResourceIds.getExists(tokenNamespace)) {
+      world.registerNamespace(tokenNamespace);
+    }
 
+    // Register the tables
     OperatorApproval.register(_operatorApprovalTableId(namespace));
     Owners.register(_ownersTableId(namespace));
     TokenApproval.register(_tokenApprovalTableId(namespace));

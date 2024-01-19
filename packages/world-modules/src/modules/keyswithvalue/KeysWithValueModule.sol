@@ -2,8 +2,9 @@
 pragma solidity >=0.8.21;
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
-import { Module } from "@latticexyz/world/src/Module.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
+import { Module } from "@latticexyz/world/src/Module.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { InstalledModules } from "@latticexyz/world/src/codegen/index.sol";
 
@@ -45,16 +46,24 @@ contract KeysWithValueModule is Module {
 
     // Extract source table id from args
     ResourceId sourceTableId = ResourceId.wrap(abi.decode(args, (bytes32)));
-    ResourceId targetTableSelector = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
+    ResourceId targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
 
     IBaseWorld world = IBaseWorld(_world());
+
+    // Register the target namespace if it doesn't exist yet
+    if (!ResourceIds.getExists(targetTableId.getNamespaceId())) {
+      (bool registrationSuccess, bytes memory registrationReturnData) = address(world).delegatecall(
+        abi.encodeCall(world.registerNamespace, (targetTableId.getNamespaceId()))
+      );
+      if (!registrationSuccess) revertWithBytes(registrationReturnData);
+    }
 
     // Register the target table
     (bool success, bytes memory returnData) = address(world).delegatecall(
       abi.encodeCall(
         world.registerTable,
         (
-          targetTableSelector,
+          targetTableId,
           KeysWithValue.getFieldLayout(),
           KeysWithValue.getKeySchema(),
           KeysWithValue.getValueSchema(),
@@ -64,9 +73,11 @@ contract KeysWithValueModule is Module {
       )
     );
 
+    if (!success) revertWithBytes(returnData);
+
     // Grant the hook access to the target table
     (success, returnData) = address(world).delegatecall(
-      abi.encodeCall(world.grantAccess, (targetTableSelector, address(hook)))
+      abi.encodeCall(world.grantAccess, (targetTableId, address(hook)))
     );
 
     if (!success) revertWithBytes(returnData);
