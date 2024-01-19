@@ -172,40 +172,6 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
   }
 
   /**
-   * @notice Unregisters a system
-   * @dev Unregisters the system at the given ID
-   * @param systemId The unique identifier for the system
-   */
-  function unregisterSystem(ResourceId systemId) public virtual {
-    // Require the provided system ID to have type RESOURCE_SYSTEM
-    if (systemId.getType() != RESOURCE_SYSTEM) {
-      revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
-    }
-
-    // Require the system's namespace to exist
-    ResourceId namespaceId = systemId.getNamespaceId();
-    AccessControl.requireExistence(namespaceId);
-
-    // Require the caller to own the namespace
-    AccessControl.requireOwner(namespaceId, _msgSender());
-
-    // Require the name to not be the namespace's root name
-    if (systemId.getName() == ROOT_NAME) revert World_InvalidResourceId(systemId, systemId.toString());
-
-    // Get the system at this system ID
-    address existingSystem = Systems._getSystem(systemId);
-
-    // Systems = mapping from system ID to system address and public access flag
-    Systems._deleteRecord(systemId);
-
-    // SystemRegistry = mapping from system address to system ID
-    SystemRegistry._deleteRecord(address(existingSystem));
-
-    // Delete the system access to its namespace
-    ResourceAccess._deleteRecord(namespaceId, address(existingSystem));
-  }
-
-  /**
    * @notice Registers a new World function selector
    * @dev Creates a mapping between a World function and its associated system function
    * @param systemId The system ID
