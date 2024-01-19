@@ -153,7 +153,7 @@
     "file": "test/World.t.sol",
     "test": "testUnregisterNamespaceDelegation",
     "name": "unregister a namespace delegation",
-    "gasUsed": 27062
+    "gasUsed": 28360
   },
   {
     "file": "test/World.t.sol",

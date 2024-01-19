@@ -344,6 +344,9 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     // Require namespace ID to be a valid namespace
     requireNamespace(namespaceId);
 
+    // Require the namespace to exist
+    AccessControl.requireExistence(namespaceId);
+
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespaceId, _msgSender());
 
