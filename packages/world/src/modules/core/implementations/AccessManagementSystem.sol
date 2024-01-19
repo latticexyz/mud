@@ -52,7 +52,7 @@ contract AccessManagementSystem is System, LimitedCallContext {
    * @param namespaceId The ID of the namespace to transfer ownership.
    * @param newOwner The address to which ownership should be transferred.
    */
-  function transferOwnership(ResourceId namespaceId, address newOwner) public virtual {
+  function transferOwnership(ResourceId namespaceId, address newOwner) public virtual onlyDelegatecall {
     // Require the namespace ID to be a valid namespace
     requireNamespace(namespaceId);
 
@@ -77,7 +77,7 @@ contract AccessManagementSystem is System, LimitedCallContext {
    * @dev Requires the caller to own the namespace. Revoke ResourceAccess for previous owner
    * @param namespaceId The ID of the namespace to transfer ownership.
    */
-  function renounceOwnership(ResourceId namespaceId) public virtual {
+  function renounceOwnership(ResourceId namespaceId) public virtual onlyDelegatecall {
     // Require the namespace ID to be a valid namespace
     requireNamespace(namespaceId);
 

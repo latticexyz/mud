@@ -43,7 +43,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @dev Creates a new namespace resource with the given ID
    * @param namespaceId The unique identifier for the new namespace
    */
-  function registerNamespace(ResourceId namespaceId) public virtual {
+  function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall {
     // Require namespace ID to be a valid namespace
     requireNamespace(namespaceId);
 
@@ -289,7 +289,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @dev Deletes the new delegation from the caller to the specified delegatee
    * @param delegatee The address of the delegatee
    */
-  function unregisterDelegation(address delegatee) public {
+  function unregisterDelegation(address delegatee) public onlyDelegatecall {
     // Delete the delegation control contract address
     UserDelegationControl.deleteRecord({ delegator: _msgSender(), delegatee: delegatee });
   }
@@ -305,7 +305,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     ResourceId namespaceId,
     ResourceId delegationControlId,
     bytes memory initCallData
-  ) public {
+  ) public onlyDelegatecall {
     // Require namespace ID to be a valid namespace
     requireNamespace(namespaceId);
 
@@ -340,7 +340,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @dev Deletes the delegation control for a specific namespace
    * @param namespaceId The ID of the namespace
    */
-  function unregisterNamespaceDelegation(ResourceId namespaceId) public {
+  function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelegatecall {
     // Require namespace ID to be a valid namespace
     requireNamespace(namespaceId);
 
