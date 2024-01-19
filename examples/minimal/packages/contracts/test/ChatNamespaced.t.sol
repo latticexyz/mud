@@ -22,6 +22,6 @@ contract ChatNamespacedTest is MudTest {
       MessageTable.encodeLengths(value),
       MessageTable.encodeDynamic(value)
     );
-    IChatNamespacedSystem(worldAddress).namespace_sendMessage(value);
+    IChatNamespacedSystem(worldAddress).namespace__sendMessage(value);
   }
 }
