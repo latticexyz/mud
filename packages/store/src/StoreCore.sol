@@ -9,7 +9,7 @@ import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { StoreHooks, Tables, TablesTableId, ResourceIds, StoreHooksTableId } from "./codegen/index.sol";
+import { Tables, TablesTableId, ResourceIds, ResourceIdsTableId, StoreHooks, StoreHooksTableId } from "./codegen/index.sol";
 import { _fieldLayout as TablesTableFieldLayout } from "./codegen/tables/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
@@ -93,17 +93,32 @@ library StoreCore {
    * any table data to allow indexers to decode table events.
    */
   function registerCoreTables() internal {
-    // There is a known bootstrapping/race condition issue here, where calling `.register()`
-    // on any table writes  to both the `Tables` table and `ResourceIds` table, but these
-    // tables aren't yet registered when we make these calls below.
+    // Because `registerTable` writes to both `Tables` and `ResourceIds`, we can't use it
+    // directly here without creating a race condition, where we'd write to one or the other
+    // depending on the order of registering each of those two core tables.
     //
-    // For now, clients and indexers will need to hardcode the `Tables` table schema and assume
-    // that the resource ID for the `Tables` table will be set before the `ResourceIds`
-    // table is registered.
-    //
-    // The registration order below is intentionally: Tables, ResourceIds, all other tables
-    Tables.register();
-    ResourceIds.register();
+    // Instead, we'll register them manually. The logic here ought to be kept in sync with
+    // the internals of the `registerTable` function below.
+    Tables._set(
+      TablesTableId,
+      Tables.getFieldLayout(),
+      Tables.getKeySchema(),
+      Tables.getValueSchema(),
+      abi.encode(Tables.getKeyNames()),
+      abi.encode(Tables.getFieldNames())
+    );
+    Tables._set(
+      ResourceIdsTableId,
+      ResourceIds.getFieldLayout(),
+      ResourceIds.getKeySchema(),
+      ResourceIds.getValueSchema(),
+      abi.encode(ResourceIds.getKeyNames()),
+      abi.encode(ResourceIds.getFieldNames())
+    );
+    ResourceIds._setExists(TablesTableId, true);
+    ResourceIds._setExists(ResourceIdsTableId, true);
+
+    // Now we can register the rest of the core tables as regular tables.
     StoreHooks.register();
   }
 
