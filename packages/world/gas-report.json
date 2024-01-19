@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactory",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12642897
+    "gasUsed": 12642949
   },
   {
     "file": "test/World.t.sol",
@@ -111,7 +111,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 120905
+    "gasUsed": 120969
   },
   {
     "file": "test/World.t.sol",
@@ -145,9 +145,15 @@
   },
   {
     "file": "test/World.t.sol",
+    "test": "testUnregisterNamespaceDelegation",
+    "name": "unregister a namespace delegation",
+    "gasUsed": 27062
+  },
+  {
+    "file": "test/World.t.sol",
     "test": "testUnregisterUnlimitedDelegation",
     "name": "unregister an unlimited delegation",
-    "gasUsed": 26191
+    "gasUsed": 26255
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
