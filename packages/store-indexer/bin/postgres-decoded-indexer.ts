@@ -10,6 +10,9 @@ import postgres from "postgres";
 import { createStorageAdapter } from "@latticexyz/store-sync/postgres-decoded";
 import { createStoreSync } from "@latticexyz/store-sync";
 import { indexerEnvSchema, parseEnv } from "./parseEnv";
+import { registerSentryMiddlewares } from "../src/sentry";
+import { healthcheck } from "../src/healthcheck";
+import { helloWorld } from "../src/helloWorld";
 
 const env = parseEnv(
   z.intersection(
@@ -18,6 +21,7 @@ const env = parseEnv(
       DATABASE_URL: z.string(),
       HEALTHCHECK_HOST: z.string().optional(),
       HEALTHCHECK_PORT: z.coerce.number().optional(),
+      SENTRY_DSN: z.string().optional(),
     })
   )
 );
@@ -88,33 +92,21 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
 if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
   const { default: Koa } = await import("koa");
   const { default: cors } = await import("@koa/cors");
-  const { default: Router } = await import("@koa/router");
 
   const server = new Koa();
+
+  if (env.SENTRY_DSN) {
+    registerSentryMiddlewares(server);
+  }
+
   server.use(cors());
-
-  const router = new Router();
-
-  router.get("/", (ctx) => {
-    ctx.body = "emit HelloWorld();";
-  });
-
-  // k8s healthchecks
-  router.get("/healthz", (ctx) => {
-    ctx.status = 200;
-  });
-  router.get("/readyz", (ctx) => {
-    if (isCaughtUp) {
-      ctx.status = 200;
-      ctx.body = "ready";
-    } else {
-      ctx.status = 424;
-      ctx.body = "backfilling";
-    }
-  });
-
-  server.use(router.routes());
-  server.use(router.allowedMethods());
+  server.use(cors());
+  server.use(
+    healthcheck({
+      isReady: () => isCaughtUp,
+    })
+  );
+  server.use(helloWorld());
 
   server.listen({ host: env.HEALTHCHECK_HOST, port: env.HEALTHCHECK_PORT });
   console.log(

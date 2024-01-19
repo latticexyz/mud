@@ -8,7 +8,6 @@ import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
 import Koa from "koa";
 import cors from "@koa/cors";
-import Router from "@koa/router";
 import { createKoaMiddleware } from "trpc-koa-adapter";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
@@ -16,6 +15,8 @@ import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
 import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
+import { healthcheck } from "../src/healthcheck";
+import { helloWorld } from "../src/helloWorld";
 import { apiRoutes } from "../src/sqlite/apiRoutes";
 import { registerSentryMiddlewares } from "../src/sentry";
 
@@ -93,35 +94,19 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
   });
 
 const server = new Koa();
-server.use(cors());
-server.use(apiRoutes(database));
 
 if (env.SENTRY_DSN) {
   registerSentryMiddlewares(server);
 }
 
-const router = new Router();
-
-router.get("/", (ctx) => {
-  ctx.body = "emit HelloWorld();";
-});
-
-// k8s healthchecks
-router.get("/healthz", (ctx) => {
-  ctx.status = 200;
-});
-router.get("/readyz", (ctx) => {
-  if (isCaughtUp) {
-    ctx.status = 200;
-    ctx.body = "ready";
-  } else {
-    ctx.status = 424;
-    ctx.body = "backfilling";
-  }
-});
-
-server.use(router.routes());
-server.use(router.allowedMethods());
+server.use(cors());
+server.use(
+  healthcheck({
+    isReady: () => isCaughtUp,
+  })
+);
+server.use(helloWorld());
+server.use(apiRoutes(database));
 
 server.use(
   createKoaMiddleware({
