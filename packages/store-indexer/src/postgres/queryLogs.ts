@@ -39,7 +39,6 @@ export function queryLogs(sql: Sql, opts: z.infer<typeof input>): PendingQuery<R
   )}`;
 
   // TODO: implement bytea <> hex columns via custom types: https://github.com/porsager/postgres#custom-types
-  // TODO: sort by logIndex (https://github.com/latticexyz/mud/issues/1979)
   return sql<Record[]>`
     WITH
       config AS (

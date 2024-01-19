@@ -309,7 +309,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "get a unique entity nonce (non-root module)",
-    "gasUsed": 51026
+    "gasUsed": 50365
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -321,6 +321,6 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "get a unique entity nonce (root module)",
-    "gasUsed": 51026
+    "gasUsed": 50368
   }
 ]

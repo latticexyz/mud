@@ -3,7 +3,6 @@ pragma solidity >=0.8.21;
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 
-import { IUniqueEntitySystem } from "../../interfaces/IUniqueEntitySystem.sol";
 import { UniqueEntitySystem } from "./UniqueEntitySystem.sol";
 
 import { SystemSwitch } from "../../utils/SystemSwitch.sol";
@@ -23,5 +22,5 @@ function getUniqueEntity() returns (bytes32 uniqueEntity) {
  * Increment and get an entity nonce.
  */
 function getUniqueEntity(IBaseWorld world) returns (bytes32 uniqueEntity) {
-  return IUniqueEntitySystem(address(world)).uniqueEntity__getUniqueEntity();
+  return abi.decode(world.call(SYSTEM_ID, abi.encodeCall(UniqueEntitySystem.getUniqueEntity, ())), (bytes32));
 }
