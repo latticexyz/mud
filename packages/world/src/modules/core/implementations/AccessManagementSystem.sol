@@ -81,6 +81,9 @@ contract AccessManagementSystem is System, LimitedCallContext {
     // Require the namespace ID to be a valid namespace
     requireNamespace(namespaceId);
 
+    // Require the namespace to exist
+    AccessControl.requireExistence(namespaceId);
+
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespaceId, _msgSender());
 
