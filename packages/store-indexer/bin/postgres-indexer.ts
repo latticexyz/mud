@@ -93,8 +93,8 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
 if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
   const { default: Koa } = await import("koa");
   const { default: cors } = await import("@koa/cors");
-  const { healthcheck } = await import("../src/healthcheck");
-  const { helloWorld } = await import("../src/helloWorld");
+  const { healthcheck } = await import("../src/koa-middleware/healthcheck");
+  const { helloWorld } = await import("../src/koa-middleware/helloWorld");
 
   const server = new Koa();
 

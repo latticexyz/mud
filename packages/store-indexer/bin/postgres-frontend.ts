@@ -10,9 +10,9 @@ import postgres from "postgres";
 import { frontendEnvSchema, parseEnv } from "./parseEnv";
 import { createQueryAdapter } from "../src/postgres/deprecated/createQueryAdapter";
 import { apiRoutes } from "../src/postgres/apiRoutes";
-import { registerSentryMiddlewares } from "../src/sentry";
-import { healthcheck } from "../src/healthcheck";
-import { helloWorld } from "../src/helloWorld";
+import { sentry } from "../src/koa-middleware/sentry";
+import { healthcheck } from "../src/koa-middleware/healthcheck";
+import { helloWorld } from "../src/koa-middleware/helloWorld";
 
 const env = parseEnv(
   z.intersection(
@@ -29,7 +29,7 @@ const database = postgres(env.DATABASE_URL, { prepare: false });
 const server = new Koa();
 
 if (env.SENTRY_DSN) {
-  registerSentryMiddlewares(server);
+  server.use(sentry(env.SENTRY_DSN));
 }
 
 server.use(cors());

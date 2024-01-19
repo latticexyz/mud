@@ -10,9 +10,9 @@ import postgres from "postgres";
 import { createStorageAdapter } from "@latticexyz/store-sync/postgres-decoded";
 import { createStoreSync } from "@latticexyz/store-sync";
 import { indexerEnvSchema, parseEnv } from "./parseEnv";
-import { registerSentryMiddlewares } from "../src/sentry";
-import { healthcheck } from "../src/healthcheck";
-import { helloWorld } from "../src/helloWorld";
+import { sentry } from "../src/koa-middleware/sentry";
+import { healthcheck } from "../src/koa-middleware/healthcheck";
+import { helloWorld } from "../src/koa-middleware/helloWorld";
 
 const env = parseEnv(
   z.intersection(
@@ -96,7 +96,7 @@ if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
   const server = new Koa();
 
   if (env.SENTRY_DSN) {
-    registerSentryMiddlewares(server);
+    server.use(sentry(env.SENTRY_DSN));
   }
 
   server.use(cors());
