@@ -3,6 +3,9 @@ import type {
   RelativeImportDatum,
   ContractInterfaceFunction,
   ContractInterfaceError,
+  ContractInterfaceEvent,
+  ContractInterfaceStruct,
+  ContractInterfaceEnum,
 } from "@latticexyz/common/codegen";
 
 export interface RenderSystemInterfaceOptions {
@@ -12,6 +15,9 @@ export interface RenderSystemInterfaceOptions {
   functionPrefix: string;
   functions: ContractInterfaceFunction[];
   errors: ContractInterfaceError[];
+  events: ContractInterfaceEvent[];
+  structs: ContractInterfaceStruct[];
+  enums: ContractInterfaceEnum[];
 }
 
 export interface RenderWorldOptions {

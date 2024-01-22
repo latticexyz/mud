@@ -1,5 +1,10 @@
 import { parse, visit } from "@solidity-parser/parser";
-import type { SourceUnit, TypeName, VariableDeclaration } from "@solidity-parser/parser/dist/src/ast-types";
+import type {
+  ContractDefinition,
+  SourceUnit,
+  TypeName,
+  VariableDeclaration,
+} from "@solidity-parser/parser/dist/src/ast-types";
 import { MUDError } from "../../errors";
 
 export interface ContractInterfaceFunction {
@@ -12,6 +17,21 @@ export interface ContractInterfaceFunction {
 export interface ContractInterfaceError {
   name: string;
   parameters: string[];
+}
+
+export interface ContractInterfaceEvent {
+  name: string;
+  parameters: string[];
+}
+
+export interface ContractInterfaceStruct {
+  name: string;
+  members: string[];
+}
+
+export interface ContractInterfaceEnum {
+  name: string;
+  members: string[];
 }
 
 interface SymbolImport {
@@ -32,75 +52,114 @@ export function contractToInterface(
 ): {
   functions: ContractInterfaceFunction[];
   errors: ContractInterfaceError[];
+  events: ContractInterfaceEvent[];
+  structs: ContractInterfaceStruct[];
+  enums: ContractInterfaceEnum[];
   symbolImports: SymbolImport[];
 } {
   const ast = parse(data);
 
-  let withContract = false;
+  const contractNode = findContractNode(parse(data), contractName);
   let symbolImports: SymbolImport[] = [];
   const functions: ContractInterfaceFunction[] = [];
   const errors: ContractInterfaceError[] = [];
+  const events: ContractInterfaceEvent[] = [];
+  const structs: ContractInterfaceStruct[] = [];
+  const enums: ContractInterfaceEnum[] = [];
 
-  visit(ast, {
-    ContractDefinition({ name }) {
-      if (name === contractName) {
-        withContract = true;
-      }
-    },
-    FunctionDefinition(
-      { name, visibility, parameters, stateMutability, returnParameters, isConstructor, isFallback, isReceiveEther },
-      parent
-    ) {
-      if (parent !== undefined && parent.type === "ContractDefinition" && parent.name === contractName) {
-        try {
-          // skip constructor and fallbacks
-          if (isConstructor || isFallback || isReceiveEther) return;
-          // forbid default visibility (this check might be unnecessary, modern solidity already disallows this)
-          if (visibility === "default") throw new MUDError(`Visibility is not specified`);
+  if (!contractNode) {
+    throw new MUDError(`Contract not found: ${contractName}`);
+  }
 
-          if (visibility === "external" || visibility === "public") {
-            functions.push({
-              name: name === null ? "" : name,
-              parameters: parameters.map(parseParameter),
-              stateMutability: stateMutability || "",
-              returnParameters: returnParameters === null ? [] : returnParameters.map(parseParameter),
-            });
+  visit(contractNode, {
+    FunctionDefinition({
+      name,
+      visibility,
+      parameters,
+      stateMutability,
+      returnParameters,
+      isConstructor,
+      isFallback,
+      isReceiveEther,
+    }) {
+      try {
+        // skip constructor and fallbacks
+        if (isConstructor || isFallback || isReceiveEther) return;
+        // forbid default visibility (this check might be unnecessary, modern solidity already disallows this)
+        if (visibility === "default") throw new MUDError(`Visibility is not specified`);
 
-            for (const { typeName } of parameters.concat(returnParameters ?? [])) {
-              const symbols = typeNameToSymbols(typeName);
-              symbolImports = symbolImports.concat(symbolsToImports(ast, symbols));
-            }
-          }
-        } catch (error: unknown) {
-          if (error instanceof MUDError) {
-            error.message = `Function "${name}" in contract "${contractName}": ${error.message}`;
-          }
-          throw error;
+        if (visibility === "external" || visibility === "public") {
+          functions.push({
+            name: name === null ? "" : name,
+            parameters: parameters.map(parseParameter),
+            stateMutability: stateMutability || "",
+            returnParameters: returnParameters === null ? [] : returnParameters.map(parseParameter),
+          });
+          symbolImports = symbolImports.concat(
+            variableDeclarationsToImports(ast, parameters.concat(returnParameters ?? []))
+          );
         }
+      } catch (error: unknown) {
+        if (error instanceof MUDError) {
+          error.message = `Function "${name}" in contract "${contractName}": ${error.message}`;
+        }
+        throw error;
       }
     },
     CustomErrorDefinition({ name, parameters }) {
       errors.push({
-        name: name === null ? "" : name,
+        name,
         parameters: parameters.map(parseParameter),
       });
 
-      for (const parameter of parameters) {
-        const symbols = typeNameToSymbols(parameter.typeName);
-        symbolImports = symbolImports.concat(symbolsToImports(ast, symbols));
-      }
+      symbolImports = symbolImports.concat(variableDeclarationsToImports(ast, parameters));
+    },
+    EventDefinition({ name, parameters }) {
+      events.push({
+        name,
+        parameters: parameters.map(parseParameter),
+      });
+
+      symbolImports = symbolImports.concat(variableDeclarationsToImports(ast, parameters));
+    },
+    StructDefinition({ name, members }) {
+      structs.push({
+        name,
+        members: members.map(parseParameter),
+      });
+
+      symbolImports = symbolImports.concat(variableDeclarationsToImports(ast, members));
+    },
+    EnumDefinition({ name, members }) {
+      enums.push({
+        name,
+        members: members.map(({ name }) => name),
+      });
     },
   });
-
-  if (!withContract) {
-    throw new MUDError(`Contract not found: ${contractName}`);
-  }
 
   return {
     functions,
     errors,
+    events,
+    structs,
+    enums,
     symbolImports,
   };
+}
+
+function findContractNode(ast: SourceUnit, contractName: string): ContractDefinition | undefined {
+  let contract = undefined;
+
+  visit(ast, {
+    ContractDefinition(node) {
+      if (node.name === contractName) {
+        contract = node;
+      }
+    },
+  });
+
+  return contract;
 }
 
 function parseParameter({ name, typeName, storageLocation }: VariableDeclaration): string {
@@ -178,6 +237,16 @@ function typeNameToSymbols(typeName: TypeName | null): string[] {
   } else {
     return [];
   }
+}
+
+// Get imports for given VariableDeclaration AST nodes.
+function variableDeclarationsToImports(ast: SourceUnit, variableDeclarations: VariableDeclaration[]): SymbolImport[] {
+  let imports: SymbolImport[] = [];
+  for (const variableDeclaration of variableDeclarations) {
+    const symbols = typeNameToSymbols(variableDeclaration.typeName);
+    imports = imports.concat(symbolsToImports(ast, symbols));
+  }
+  return imports;
 }
 
 // Get imports for given symbols.
