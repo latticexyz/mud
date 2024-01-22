@@ -40,4 +40,6 @@ interface IWorldRegistrationSystem {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) external;
+
+  function unregisterNamespaceDelegation(ResourceId namespaceId) external;
 }

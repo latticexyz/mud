@@ -225,11 +225,12 @@ contract WorldTest is Test, GasReporter {
     CoreRegistrationSystem coreRegistrationSystem = CoreRegistrationSystem(
       Systems.getSystem(CORE_REGISTRATION_SYSTEM_ID)
     );
-    bytes4[19] memory coreFunctionSignatures = [
+    bytes4[22] memory coreFunctionSignatures = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
       AccessManagementSystem.transferOwnership.selector,
+      AccessManagementSystem.renounceOwnership.selector,
       // --- BalanceTransferSystem ---
       BalanceTransferSystem.transferBalanceToNamespace.selector,
       BalanceTransferSystem.transferBalanceToAddress.selector,
@@ -250,7 +251,9 @@ contract WorldTest is Test, GasReporter {
       coreRegistrationSystem.registerFunctionSelector.selector,
       coreRegistrationSystem.registerRootFunctionSelector.selector,
       coreRegistrationSystem.registerDelegation.selector,
-      coreRegistrationSystem.registerNamespaceDelegation.selector
+      coreRegistrationSystem.unregisterDelegation.selector,
+      coreRegistrationSystem.registerNamespaceDelegation.selector,
+      coreRegistrationSystem.unregisterNamespaceDelegation.selector
     ];
 
     for (uint256 i; i < coreFunctionSignatures.length; i++) {
@@ -424,6 +427,33 @@ contract WorldTest is Test, GasReporter {
     // Expect revert if caller is not the owner
     _expectAccessDenied(address(this), namespace, 0, RESOURCE_NAMESPACE);
     world.transferOwnership(namespaceId, address(1));
+  }
+
+  function testRenounceNamespace() public {
+    bytes14 namespace = "testRenounce";
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+
+    world.registerNamespace(namespaceId);
+
+    // Expect the new owner to not be namespace owner before transfer
+    assertFalse(
+      (NamespaceOwner.get(namespaceId)) == address(0),
+      "new owner should not be namespace owner before transfer"
+    );
+
+    startGasReport("Renounce namespace ownership");
+    world.renounceOwnership(namespaceId);
+    endGasReport();
+
+    // Expect the new owner to be zero address
+    assertEq(NamespaceOwner.get(namespaceId), address(0), "zero address should be namespace owner");
+
+    // Expect previous owner to no longer have access
+    assertEq(ResourceAccess.get(namespaceId, address(this)), false, "caller should no longer have access");
+
+    // Expect revert if caller is not the owner
+    _expectAccessDenied(address(this), namespace, 0, RESOURCE_NAMESPACE);
+    world.renounceOwnership(namespaceId);
   }
 
   function testRegisterTable() public {
@@ -1144,6 +1174,69 @@ contract WorldTest is Test, GasReporter {
     endGasReport();
 
     // Expect a revert when attempting to perform a call on behalf of an address that doesn't have a delegation
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_DelegationNotFound.selector,
+        delegator,
+        delegatee // Invalid delegatee
+      )
+    );
+    vm.prank(delegatee);
+    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+  }
+
+  function testUnregisterNamespaceDelegation() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "testSystem"
+    });
+    world.registerNamespace(systemId.getNamespaceId());
+    world.registerSystem(systemId, system, true);
+
+    // Register a delegation control mock system
+    DelegationControlMock delegationControlMock = new DelegationControlMock();
+    ResourceId delegationControlMockId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "delegation",
+      name: "mock"
+    });
+    world.registerNamespace(delegationControlMockId.getNamespaceId());
+    world.registerSystem(delegationControlMockId, delegationControlMock, true);
+
+    address delegator = address(1);
+    address delegatee = address(2);
+    ResourceId namespaceId = systemId.getNamespaceId();
+
+    // Expect a revert when attempting to perform a call via callFrom before a delegation was created
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
+    vm.prank(delegatee);
+    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+
+    // Register the delegation mock as the delegation control for the namespace
+    // with `delegatee` and `namespaceId` in the init call data
+    world.registerNamespaceDelegation(
+      namespaceId,
+      delegationControlMockId,
+      abi.encodeWithSelector(delegationControlMock.initDelegation.selector, namespaceId, delegatee)
+    );
+
+    // Call a system from the delegatee on behalf of the delegator
+    vm.prank(delegatee);
+    bytes memory returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    address returnedAddress = abi.decode(returnData, (address));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedAddress, delegator);
+
+    // Unregister the delegation
+    startGasReport("unregister a namespace delegation");
+    world.unregisterNamespaceDelegation(namespaceId);
+    endGasReport();
+
+    // Expect a revert when attempting to perform a call on behalf of the previous delegatee
     vm.expectRevert(
       abi.encodeWithSelector(
         IWorldErrors.World_DelegationNotFound.selector,

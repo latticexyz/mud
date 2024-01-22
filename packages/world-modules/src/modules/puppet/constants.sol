@@ -6,7 +6,6 @@ import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 import { RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
 
-bytes16 constant MODULE_NAME = bytes16("puppet");
 bytes14 constant NAMESPACE = bytes14("puppet");
 
 ResourceId constant NAMESPACE_ID = ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_NAMESPACE, NAMESPACE)));

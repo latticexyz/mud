@@ -100,7 +100,6 @@ if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
   }
 
   server.use(cors());
-  server.use(cors());
   server.use(
     healthcheck({
       isReady: () => isCaughtUp,

@@ -11,10 +11,9 @@ import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { Puppet } from "../puppet/Puppet.sol";
 import { createPuppet } from "../puppet/createPuppet.sol";
-import { MODULE_NAME as PUPPET_MODULE_NAME } from "../puppet/constants.sol";
 import { Balances } from "../tokens/tables/Balances.sol";
 
-import { MODULE_NAME, MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC721_REGISTRY_TABLE_ID } from "./constants.sol";
+import { MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC721_REGISTRY_TABLE_ID } from "./constants.sol";
 import { _erc721SystemId, _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId } from "./utils.sol";
 import { ERC721System } from "./ERC721System.sol";
 
@@ -30,20 +29,9 @@ contract ERC721Module is Module {
 
   address immutable registrationLibrary = address(new ERC721ModuleRegistrationLibrary());
 
-  function getName() public pure override returns (bytes16) {
-    return MODULE_NAME;
-  }
-
-  function _requireDependencies() internal view {
-    // Require PuppetModule to be installed
-    if (!isInstalled(PUPPET_MODULE_NAME, new bytes(0))) {
-      revert Module_MissingDependency(string(bytes.concat(PUPPET_MODULE_NAME)));
-    }
-  }
-
   function install(bytes memory args) public {
     // Require the module to not be installed with these args yet
-    requireNotInstalled(MODULE_NAME, args);
+    requireNotInstalled(__self, args);
 
     // Extract args
     (bytes14 namespace, ERC721MetadataData memory metadata) = abi.decode(args, (bytes14, ERC721MetadataData));
@@ -52,9 +40,6 @@ contract ERC721Module is Module {
     if (namespace == MODULE_NAMESPACE) {
       revert ERC721Module_InvalidNamespace(namespace);
     }
-
-    // Require dependencies
-    _requireDependencies();
 
     // Register the ERC721 tables and system
     IBaseWorld world = IBaseWorld(_world());

@@ -14,3 +14,4 @@ import { SystemRegistry, SystemRegistryTableId } from "./tables/SystemRegistry.s
 import { SystemHooks, SystemHooksTableId } from "./tables/SystemHooks.sol";
 import { FunctionSelectors, FunctionSelectorsTableId } from "./tables/FunctionSelectors.sol";
 import { FunctionSignatures, FunctionSignaturesTableId } from "./tables/FunctionSignatures.sol";
+import { CoreModuleAddress, CoreModuleAddressTableId } from "./tables/CoreModuleAddress.sol";

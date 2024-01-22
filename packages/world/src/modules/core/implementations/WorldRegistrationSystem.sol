@@ -44,7 +44,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @param namespaceId The unique identifier for the new namespace
    */
   function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall {
-    // Require namespace to be a valid namespace ID
+    // Require namespace ID to be a valid namespace
     requireNamespace(namespaceId);
 
     // Require namespace to not exist yet
@@ -277,7 +277,12 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     }
   }
 
-  function unregisterDelegation(address delegatee) public {
+  /**
+   * @notice Unregisters a delegation
+   * @dev Deletes the new delegation from the caller to the specified delegatee
+   * @param delegatee The address of the delegatee
+   */
+  function unregisterDelegation(address delegatee) public onlyDelegatecall {
     // Delete the delegation control contract address
     UserDelegationControl.deleteRecord({ delegator: _msgSender(), delegatee: delegatee });
   }
@@ -294,7 +299,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public onlyDelegatecall {
-    // Require namespace to be a valid namespace ID
+    // Require namespace ID to be a valid namespace
     requireNamespace(namespaceId);
 
     // Require the delegation to not be unlimited
@@ -321,5 +326,24 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
         value: 0
       });
     }
+  }
+
+  /**
+   * @notice Unregisters a delegation for a namespace
+   * @dev Deletes the delegation control for a specific namespace
+   * @param namespaceId The ID of the namespace
+   */
+  function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelegatecall {
+    // Require namespace ID to be a valid namespace
+    requireNamespace(namespaceId);
+
+    // Require the namespace to exist
+    AccessControl.requireExistence(namespaceId);
+
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(namespaceId, _msgSender());
+
+    // Delete the delegation control
+    NamespaceDelegationControl.deleteRecord(namespaceId);
   }
 }

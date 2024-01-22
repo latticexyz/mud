@@ -21,13 +21,14 @@ import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.s
 import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
 
 import { CoreRegistrationSystem } from "./CoreRegistrationSystem.sol";
-import { CORE_MODULE_NAME, ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, CORE_REGISTRATION_SYSTEM_ID } from "./constants.sol";
+import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, CORE_REGISTRATION_SYSTEM_ID } from "./constants.sol";
 
 import { Systems } from "../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../codegen/tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "../../codegen/tables/FunctionSignatures.sol";
 import { SystemHooks } from "../../codegen/tables/SystemHooks.sol";
 import { SystemRegistry } from "../../codegen/tables/SystemRegistry.sol";
+import { CoreModuleAddress } from "../../codegen/tables/CoreModuleAddress.sol";
 import { Balances } from "../../codegen/tables/Balances.sol";
 
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
@@ -54,14 +55,6 @@ contract CoreModule is Module {
     balanceTransferSystem = address(_balanceTransferSystem);
     batchCallSystem = address(_batchCallSystem);
     coreRegistrationSystem = address(_coreRegistrationSystem);
-  }
-
-  /**
-   * @notice Get the name of the module.
-   * @return Module name as bytes16.
-   */
-  function getName() public pure returns (bytes16) {
-    return CORE_MODULE_NAME;
   }
 
   /**
@@ -99,6 +92,7 @@ contract CoreModule is Module {
     FunctionSignatures.register();
     SystemHooks.register();
     SystemRegistry.register();
+    CoreModuleAddress.register();
 
     ResourceIds._setExists(ROOT_NAMESPACE_ID, true);
     NamespaceOwner._set(ROOT_NAMESPACE_ID, _msgSender());
@@ -141,11 +135,12 @@ contract CoreModule is Module {
    * @dev Iterates through known function signatures and registers them.
    */
   function _registerFunctionSelectors() internal {
-    string[3] memory functionSignaturesAccessManagement = [
+    string[4] memory functionSignaturesAccessManagement = [
       // --- AccessManagementSystem ---
       "grantAccess(bytes32,address)",
       "revokeAccess(bytes32,address)",
-      "transferOwnership(bytes32,address)"
+      "transferOwnership(bytes32,address)",
+      "renounceOwnership(bytes32)"
     ];
     for (uint256 i = 0; i < functionSignaturesAccessManagement.length; i++) {
       _registerRootFunctionSelector(ACCESS_MANAGEMENT_SYSTEM_ID, functionSignaturesAccessManagement[i]);
@@ -169,7 +164,7 @@ contract CoreModule is Module {
       _registerRootFunctionSelector(BATCH_CALL_SYSTEM_ID, functionSignaturesBatchCall[i]);
     }
 
-    string[13] memory functionSignaturesCoreRegistration = [
+    string[14] memory functionSignaturesCoreRegistration = [
       // --- ModuleInstallationSystem ---
       "installModule(address,bytes)",
       // --- StoreRegistrationSystem ---
@@ -185,7 +180,8 @@ contract CoreModule is Module {
       "registerRootFunctionSelector(bytes32,string,bytes4)",
       "registerDelegation(address,bytes32,bytes)",
       "unregisterDelegation(address)",
-      "registerNamespaceDelegation(bytes32,bytes32,bytes)"
+      "registerNamespaceDelegation(bytes32,bytes32,bytes)",
+      "unregisterNamespaceDelegation(bytes32)"
     ];
     for (uint256 i = 0; i < functionSignaturesCoreRegistration.length; i++) {
       _registerRootFunctionSelector(CORE_REGISTRATION_SYSTEM_ID, functionSignaturesCoreRegistration[i]);

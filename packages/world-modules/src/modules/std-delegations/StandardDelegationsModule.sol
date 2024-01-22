@@ -10,7 +10,7 @@ import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { CallboundDelegationControl } from "./CallboundDelegationControl.sol";
 import { SystemboundDelegationControl } from "./SystemboundDelegationControl.sol";
 import { TimeboundDelegationControl } from "./TimeboundDelegationControl.sol";
-import { MODULE_NAME, CALLBOUND_DELEGATION, SYSTEMBOUND_DELEGATION, TIMEBOUND_DELEGATION } from "./constants.sol";
+import { CALLBOUND_DELEGATION, SYSTEMBOUND_DELEGATION, TIMEBOUND_DELEGATION } from "./constants.sol";
 
 import { CallboundDelegations } from "./tables/CallboundDelegations.sol";
 import { SystemboundDelegations } from "./tables/SystemboundDelegations.sol";
@@ -23,10 +23,6 @@ contract StandardDelegationsModule is Module {
   CallboundDelegationControl private immutable callboundDelegationControl = new CallboundDelegationControl();
   SystemboundDelegationControl private immutable systemboundDelegationControl = new SystemboundDelegationControl();
   TimeboundDelegationControl private immutable timeboundDelegationControl = new TimeboundDelegationControl();
-
-  function getName() public pure returns (bytes16) {
-    return MODULE_NAME;
-  }
 
   function installRoot(bytes memory) public {
     IBaseWorld world = IBaseWorld(_world());
