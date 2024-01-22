@@ -105,9 +105,7 @@ export default mudConfig({
     },
     CoreModuleAddress: {
       keySchema: {},
-      valueSchema: {
-        coreModuleAddress: "address",
-      },
+      valueSchema: "address",
     },
   },
   excludeSystems: [
