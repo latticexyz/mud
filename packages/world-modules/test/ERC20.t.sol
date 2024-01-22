@@ -26,24 +26,17 @@ import { IERC20Events } from "../src/modules/erc20-puppet/IERC20Events.sol";
 
 contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
   IBaseWorld world;
-  PuppetModule puppetModule;
   ERC20Module erc20Module;
   IERC20Mintable token;
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(createCoreModule());
-    puppetModule = new PuppetModule();
-    world.installModule(puppetModule, new bytes(0));
+    world.installModule(new PuppetModule(), new bytes(0));
     StoreSwitch.setStoreAddress(address(world));
 
     // Register a new ERC20 token
-    token = registerERC20(
-      world,
-      address(puppetModule),
-      "myERC20",
-      ERC20MetadataData({ decimals: 18, name: "Token", symbol: "TKN" })
-    );
+    token = registerERC20(world, "myERC20", ERC20MetadataData({ decimals: 18, name: "Token", symbol: "TKN" }));
   }
 
   function testSetUp() public {
@@ -55,7 +48,6 @@ contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
     // Install the ERC20 module
     IERC20Mintable anotherToken = registerERC20(
       world,
-      address(puppetModule),
       "anotherERC20",
       ERC20MetadataData({ decimals: 18, name: "Token", symbol: "TKN" })
     );

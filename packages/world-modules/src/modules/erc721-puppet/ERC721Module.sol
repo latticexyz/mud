@@ -28,18 +28,6 @@ contract ERC721Module is Module {
   error ERC721Module_InvalidNamespace(bytes14 namespace);
 
   address immutable registrationLibrary = address(new ERC721ModuleRegistrationLibrary());
-  address immutable puppetModule;
-
-  constructor(address _puppetModule) {
-    puppetModule = _puppetModule;
-  }
-
-  function _requireDependencies() internal view {
-    // Require PuppetModule to be installed
-    if (!isInstalled(puppetModule, new bytes(0))) {
-      revert Module_MissingDependency(puppetModule);
-    }
-  }
 
   function install(bytes memory args) public {
     // Require the module to not be installed with these args yet
@@ -52,9 +40,6 @@ contract ERC721Module is Module {
     if (namespace == MODULE_NAMESPACE) {
       revert ERC721Module_InvalidNamespace(namespace);
     }
-
-    // Require dependencies
-    _requireDependencies();
 
     // Register the ERC721 tables and system
     IBaseWorld world = IBaseWorld(_world());

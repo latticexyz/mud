@@ -24,18 +24,6 @@ contract ERC20Module is Module {
   error ERC20Module_InvalidNamespace(bytes14 namespace);
 
   address immutable registrationLibrary = address(new ERC20ModuleRegistrationLibrary());
-  address immutable puppetModule;
-
-  constructor(address _puppetModule) {
-    puppetModule = _puppetModule;
-  }
-
-  function _requireDependencies() internal view {
-    // Require PuppetModule to be installed
-    if (!isInstalled(puppetModule, new bytes(0))) {
-      revert Module_MissingDependency(puppetModule);
-    }
-  }
 
   function install(bytes memory args) public {
     // Require the module to not be installed with these args yet
@@ -48,9 +36,6 @@ contract ERC20Module is Module {
     if (namespace == MODULE_NAMESPACE) {
       revert ERC20Module_InvalidNamespace(namespace);
     }
-
-    // Require dependencies
-    _requireDependencies();
 
     // Register the ERC20 tables and system
     IBaseWorld world = IBaseWorld(_world());

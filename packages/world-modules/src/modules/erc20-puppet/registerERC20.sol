@@ -18,14 +18,13 @@ import { ERC20Registry } from "./tables/ERC20Registry.sol";
  */
 function registerERC20(
   IBaseWorld world,
-  address puppetModule,
   bytes14 namespace,
   ERC20MetadataData memory metadata
 ) returns (IERC20Mintable token) {
   // Get the ERC20 module
   ERC20Module erc20Module = ERC20Module(NamespaceOwner.get(MODULE_NAMESPACE_ID));
   if (address(erc20Module) == address(0)) {
-    erc20Module = new ERC20Module(puppetModule);
+    erc20Module = new ERC20Module();
   }
 
   // Install the ERC20 module with the provided args
