@@ -44,7 +44,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @param namespaceId The unique identifier for the new namespace
    */
   function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall {
-    // Require namespace ID to be valid namespace
+    // Require namespace ID to be a valid namespace
     validateNamespace(namespaceId);
 
     // Require namespace to not exist yet
