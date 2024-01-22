@@ -303,7 +303,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "install unique entity module",
-    "gasUsed": 703658
+    "gasUsed": 701756
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -315,7 +315,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 672525
+    "gasUsed": 670623
   },
   {
     "file": "test/UniqueEntityModule.t.sol",

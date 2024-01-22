@@ -105,7 +105,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 84542
+    "gasUsed": 81992
   },
   {
     "file": "test/World.t.sol",

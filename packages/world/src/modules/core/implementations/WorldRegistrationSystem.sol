@@ -195,14 +195,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
 
     // Compute global function selector
     string memory namespaceString = WorldResourceIdLib.toTrimmedString(systemId.getNamespace());
-    string memory nameString = WorldResourceIdLib.toTrimmedString(systemId.getName());
-    bytes memory worldFunctionSignature = abi.encodePacked(
-      namespaceString,
-      "_",
-      nameString,
-      "_",
-      systemFunctionSignature
-    );
+    bytes memory worldFunctionSignature = abi.encodePacked(namespaceString, "__", systemFunctionSignature);
     worldFunctionSelector = bytes4(keccak256(worldFunctionSignature));
 
     // Require the function selector to be globally unique
