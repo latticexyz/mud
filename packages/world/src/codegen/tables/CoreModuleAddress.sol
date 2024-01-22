@@ -21,15 +21,15 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("world"), bytes16("WorldInitialized")))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("world"), bytes16("CoreModuleAddres")))
 );
-ResourceId constant WorldInitializedTableId = _tableId;
+ResourceId constant CoreModuleAddressTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0001010001000000000000000000000000000000000000000000000000000000
+  0x0014010014000000000000000000000000000000000000000000000000000000
 );
 
-library WorldInitialized {
+library CoreModuleAddress {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.
@@ -54,7 +54,7 @@ library WorldInitialized {
    */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _valueSchema = new SchemaType[](1);
-    _valueSchema[0] = SchemaType.BOOL;
+    _valueSchema[0] = SchemaType.ADDRESS;
 
     return SchemaLib.encode(_valueSchema);
   }
@@ -73,7 +73,7 @@ library WorldInitialized {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
-    fieldNames[0] = "isInitialized";
+    fieldNames[0] = "coreModuleAddress";
   }
 
   /**
@@ -91,79 +91,79 @@ library WorldInitialized {
   }
 
   /**
-   * @notice Get isInitialized.
+   * @notice Get coreModuleAddress.
    */
-  function getIsInitialized() internal view returns (bool isInitialized) {
+  function getCoreModuleAddress() internal view returns (address coreModuleAddress) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
+    return (address(bytes20(_blob)));
   }
 
   /**
-   * @notice Get isInitialized.
+   * @notice Get coreModuleAddress.
    */
-  function _getIsInitialized() internal view returns (bool isInitialized) {
+  function _getCoreModuleAddress() internal view returns (address coreModuleAddress) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
+    return (address(bytes20(_blob)));
   }
 
   /**
-   * @notice Get isInitialized.
+   * @notice Get coreModuleAddress.
    */
-  function get() internal view returns (bool isInitialized) {
+  function get() internal view returns (address coreModuleAddress) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
+    return (address(bytes20(_blob)));
   }
 
   /**
-   * @notice Get isInitialized.
+   * @notice Get coreModuleAddress.
    */
-  function _get() internal view returns (bool isInitialized) {
+  function _get() internal view returns (address coreModuleAddress) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(bytes1(_blob))));
+    return (address(bytes20(_blob)));
   }
 
   /**
-   * @notice Set isInitialized.
+   * @notice Set coreModuleAddress.
    */
-  function setIsInitialized(bool isInitialized) internal {
+  function setCoreModuleAddress(address coreModuleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInitialized)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((coreModuleAddress)), _fieldLayout);
   }
 
   /**
-   * @notice Set isInitialized.
+   * @notice Set coreModuleAddress.
    */
-  function _setIsInitialized(bool isInitialized) internal {
+  function _setCoreModuleAddress(address coreModuleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInitialized)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((coreModuleAddress)), _fieldLayout);
   }
 
   /**
-   * @notice Set isInitialized.
+   * @notice Set coreModuleAddress.
    */
-  function set(bool isInitialized) internal {
+  function set(address coreModuleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInitialized)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((coreModuleAddress)), _fieldLayout);
   }
 
   /**
-   * @notice Set isInitialized.
+   * @notice Set coreModuleAddress.
    */
-  function _set(bool isInitialized) internal {
+  function _set(address coreModuleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInitialized)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((coreModuleAddress)), _fieldLayout);
   }
 
   /**
@@ -188,8 +188,8 @@ library WorldInitialized {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(bool isInitialized) internal pure returns (bytes memory) {
-    return abi.encodePacked(isInitialized);
+  function encodeStatic(address coreModuleAddress) internal pure returns (bytes memory) {
+    return abi.encodePacked(coreModuleAddress);
   }
 
   /**
@@ -198,8 +198,8 @@ library WorldInitialized {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(bool isInitialized) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(isInitialized);
+  function encode(address coreModuleAddress) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+    bytes memory _staticData = encodeStatic(coreModuleAddress);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -214,17 +214,5 @@ library WorldInitialized {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     return _keyTuple;
-  }
-}
-
-/**
- * @notice Cast a value to a bool.
- * @dev Boolean values are encoded as uint8 (1 = true, 0 = false), but Solidity doesn't allow casting between uint8 and bool.
- * @param value The uint8 value to convert.
- * @return result The boolean value.
- */
-function _toBool(uint8 value) pure returns (bool result) {
-  assembly {
-    result := value
   }
 }

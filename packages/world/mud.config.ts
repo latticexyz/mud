@@ -103,10 +103,10 @@ export default mudConfig({
       },
       offchainOnly: true,
     },
-    WorldInitialized: {
+    CoreModuleAddress: {
       keySchema: {},
       valueSchema: {
-        isInitialized: "bool",
+        coreModuleAddress: "address",
       },
     },
   },

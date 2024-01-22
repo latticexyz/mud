@@ -45,49 +45,49 @@
     "file": "test/BatchCall.t.sol",
     "test": "testBatchCallFromReturnData",
     "name": "call systems with batchCallFrom",
-    "gasUsed": 52611
+    "gasUsed": 52620
   },
   {
     "file": "test/BatchCall.t.sol",
     "test": "testBatchCallReturnData",
     "name": "call systems with batchCall",
-    "gasUsed": 51457
+    "gasUsed": 51466
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testCreate2Factory",
     "name": "deploy contract via Create2",
-    "gasUsed": 4785208
+    "gasUsed": 4759984
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testWorldFactory",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 13064063
+    "gasUsed": 13039359
   },
   {
     "file": "test/World.t.sol",
     "test": "testCall",
     "name": "call a system via the World",
-    "gasUsed": 12361
+    "gasUsed": 12364
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromNamespaceDelegation",
     "name": "call a system via a namespace fallback delegation",
-    "gasUsed": 26131
+    "gasUsed": 26137
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 47607
+    "gasUsed": 47610
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 12797
+    "gasUsed": 12800
   },
   {
     "file": "test/World.t.sol",
@@ -105,37 +105,37 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 84542
+    "gasUsed": 84545
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 120969
+    "gasUsed": 120972
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterRootFunctionSelector",
     "name": "Register a root function selector",
-    "gasUsed": 80445
+    "gasUsed": 80448
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 164363
+    "gasUsed": 164366
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 536881
+    "gasUsed": 536884
   },
   {
     "file": "test/World.t.sol",
     "test": "testRenounceNamespace",
     "name": "Renounce namespace ownership",
-    "gasUsed": 36773
+    "gasUsed": 36776
   },
   {
     "file": "test/World.t.sol",
@@ -153,13 +153,13 @@
     "file": "test/World.t.sol",
     "test": "testUnregisterNamespaceDelegation",
     "name": "unregister a namespace delegation",
-    "gasUsed": 28360
+    "gasUsed": 28363
   },
   {
     "file": "test/World.t.sol",
     "test": "testUnregisterUnlimitedDelegation",
     "name": "unregister an unlimited delegation",
-    "gasUsed": 26255
+    "gasUsed": 26258
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
