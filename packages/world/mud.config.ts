@@ -103,6 +103,10 @@ export default mudConfig({
       },
       offchainOnly: true,
     },
+    CoreModuleAddress: {
+      keySchema: {},
+      valueSchema: "address",
+    },
   },
   excludeSystems: [
     // Worldgen currently does not support systems inheriting logic
