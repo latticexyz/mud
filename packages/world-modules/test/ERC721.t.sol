@@ -68,17 +68,24 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   using WorldResourceIdInstance for ResourceId;
 
   IBaseWorld world;
+  PuppetModule puppetModule;
   ERC721Module erc721Module;
   IERC721Mintable token;
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.initialize(createCoreModule());
-    world.installModule(new PuppetModule(), new bytes(0));
+    puppetModule = new PuppetModule();
+    world.installModule(puppetModule, new bytes(0));
     StoreSwitch.setStoreAddress(address(world));
 
     // Register a new ERC721 token
-    token = registerERC721(world, "myERC721", ERC721MetadataData({ name: "Token", symbol: "TKN", baseURI: "" }));
+    token = registerERC721(
+      world,
+      address(puppetModule),
+      "myERC721",
+      ERC721MetadataData({ name: "Token", symbol: "TKN", baseURI: "" })
+    );
   }
 
   function _expectAccessDenied(address caller) internal {
@@ -141,6 +148,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     // Install the ERC721 module again
     IERC721Mintable anotherToken = registerERC721(
       world,
+      address(puppetModule),
       "anotherERC721",
       ERC721MetadataData({ name: "Token", symbol: "TKN", baseURI: "" })
     );

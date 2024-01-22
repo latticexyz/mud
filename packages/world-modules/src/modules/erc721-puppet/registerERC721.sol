@@ -20,13 +20,14 @@ import { ERC721Registry } from "./tables/ERC721Registry.sol";
  */
 function registerERC721(
   IBaseWorld world,
+  address puppetModule,
   bytes14 namespace,
   ERC721MetadataData memory metadata
 ) returns (IERC721Mintable token) {
   // Get the ERC721 module
   ERC721Module erc721Module = ERC721Module(NamespaceOwner.get(MODULE_NAMESPACE_ID));
   if (address(erc721Module) == address(0)) {
-    erc721Module = new ERC721Module();
+    erc721Module = new ERC721Module(puppetModule);
   }
 
   // Install the ERC721 module with the provided args
