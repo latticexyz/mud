@@ -25,7 +25,7 @@ contract UniqueEntityModule is Module {
   function installRoot(bytes memory args) public {
     // Naive check to ensure this is only installed once
     // TODO: only revert if there's nothing to do
-    requireNotInstalled(address(this), args);
+    requireNotInstalled(__self, args);
 
     IBaseWorld world = IBaseWorld(_world());
 
@@ -54,7 +54,7 @@ contract UniqueEntityModule is Module {
   function install(bytes memory args) public {
     // Naive check to ensure this is only installed once
     // TODO: only revert if there's nothing to do
-    requireNotInstalled(address(this), args);
+    requireNotInstalled(__self, args);
 
     IBaseWorld world = IBaseWorld(_world());
 

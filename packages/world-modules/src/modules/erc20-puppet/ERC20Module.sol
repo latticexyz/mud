@@ -39,7 +39,7 @@ contract ERC20Module is Module {
 
   function install(bytes memory args) public {
     // Require the module to not be installed with these args yet
-    requireNotInstalled(address(this), args);
+    requireNotInstalled(__self, args);
 
     // Extract args
     (bytes14 namespace, ERC20MetadataData memory metadata) = abi.decode(args, (bytes14, ERC20MetadataData));

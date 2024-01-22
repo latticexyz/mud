@@ -36,7 +36,7 @@ contract KeysInTableModule is Module {
   function installRoot(bytes memory args) public override {
     // Naive check to ensure this is only installed once
     // TODO: only revert if there's nothing to do
-    requireNotInstalled(address(this), args);
+    requireNotInstalled(__self, args);
 
     // Extract source table id from args
     ResourceId sourceTableId = ResourceId.wrap(abi.decode(args, (bytes32)));

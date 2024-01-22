@@ -12,6 +12,8 @@ import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
  * @dev Abstract contract that implements the ERC-165 supportsInterface function for IModule.
  */
 abstract contract Module is IModule, WorldContextConsumer {
+  address internal immutable __self = address(this);
+
   /**
    * @notice Checks if the given interfaceId is supported by this contract.
    * @dev Overrides the functionality from IERC165 and WorldContextConsumer to check for supported interfaces.
