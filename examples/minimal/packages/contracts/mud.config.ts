@@ -43,10 +43,5 @@ export default mudConfig({
       root: true,
       args: [resolveTableId("Inventory")],
     },
-    {
-      name: "KeysWithValueModule",
-      root: true,
-      args: [resolveTableId("Inventory")],
-    },
   ],
 });
