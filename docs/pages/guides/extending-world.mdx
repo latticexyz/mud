@@ -375,7 +375,7 @@ The easiest way to create the Solidity code is to use the MUD template:
 
    Register `MessageSystem.incrementMessage(string)`.
    This step is necessary to make the function accessible through the `World`.
-   The function's name when accessed through the world is `<namespace>_<system>_<function>`, so this function will be available as `messaging_message_incrementMessage(string)`.
+   The function's name when accessed through the world is `<namespace>__<function>`, so this function will be available as `messaging__incrementMessage(string)`.
 
    **Note:** This is the case for all namespaces except for the root namespace, where we just use the name of the function (such as `increment()`).
 
@@ -401,10 +401,10 @@ The easiest way to create the Solidity code is to use the MUD template:
 
    ```sh copy
    source .env
-   cast send $WORLD_ADDRESS --rpc-url http://localhost:8545 --private-key $PRIVATE_KEY "messaging_MessageSystem_incrementMessage(string)" "hello"
+   cast send $WORLD_ADDRESS --rpc-url http://localhost:8545 --private-key $PRIVATE_KEY "messaging__incrementMessage(string)" "hello"
    ```
 
-   When a function is _not_ in the root namespace, it is accessible as `<namespace>_<system>_<function name>` (as long as it is [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L164-L201)).
+   When a function is _not_ in the root namespace, it is accessible as `<namespace>__<function name>` (as long as it is [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L164-L201)).
 
    Here we call our `incrementMessage(string)` with the parameter `hello`.
 
@@ -561,7 +561,7 @@ We will fix these problems now.
 
 ### Increment and send a message
 
-Edit `src/mud/createSystemCalls.ts` to use the new `messaging_MessageSystem_incrementMessage` function instead of `increment`.
+Edit `src/mud/createSystemCalls.ts` to use the new `messaging__incrementMessage` function instead of `increment`.
 
    <CollapseCode>
 
@@ -608,7 +608,7 @@ Edit `src/mud/createSystemCalls.ts` to use the new `messaging_MessageSystem_incr
         * is in the root namespace, `.increment` can be called directly
         * on the World contract.
         */
-          const tx = await worldContract.write.messaging_MessageSystem_incrementMessage(
+          const tx = await worldContract.write.messaging__incrementMessage(
               [`message at ${Date()}`]);
           await waitForTransaction(tx);
           return getComponentValue(Counter, singletonEntity);
