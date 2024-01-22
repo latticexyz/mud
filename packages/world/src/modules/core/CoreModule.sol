@@ -21,7 +21,7 @@ import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.s
 import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
 
 import { CoreRegistrationSystem } from "./CoreRegistrationSystem.sol";
-import { CORE_MODULE_NAME, ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, CORE_REGISTRATION_SYSTEM_ID } from "./constants.sol";
+import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, CORE_REGISTRATION_SYSTEM_ID } from "./constants.sol";
 
 import { Systems } from "../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../codegen/tables/FunctionSelectors.sol";
@@ -55,14 +55,6 @@ contract CoreModule is Module {
     balanceTransferSystem = address(_balanceTransferSystem);
     batchCallSystem = address(_batchCallSystem);
     coreRegistrationSystem = address(_coreRegistrationSystem);
-  }
-
-  /**
-   * @notice Get the name of the module.
-   * @return Module name as bytes16.
-   */
-  function getName() public pure returns (bytes16) {
-    return CORE_MODULE_NAME;
   }
 
   /**

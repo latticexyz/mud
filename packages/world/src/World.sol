@@ -26,7 +26,6 @@ import { IWorldKernel } from "./IWorldKernel.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
-import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 /**
  * @title World Contract
@@ -110,7 +109,7 @@ contract World is StoreData, IWorldKernel {
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules._set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(address(module), keccak256(args), true);
   }
 
   /************************************************************************
