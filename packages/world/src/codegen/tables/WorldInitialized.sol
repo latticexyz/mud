@@ -21,15 +21,15 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("world"), bytes16("InstalledModules")))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("world"), bytes16("WorldInitialized")))
 );
-ResourceId constant InstalledModulesTableId = _tableId;
+ResourceId constant WorldInitializedTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0001010001000000000000000000000000000000000000000000000000000000
 );
 
-library InstalledModules {
+library WorldInitialized {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.
@@ -43,9 +43,7 @@ library InstalledModules {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](2);
-    _keySchema[0] = SchemaType.ADDRESS;
-    _keySchema[1] = SchemaType.BYTES32;
+    SchemaType[] memory _keySchema = new SchemaType[](0);
 
     return SchemaLib.encode(_keySchema);
   }
@@ -66,9 +64,7 @@ library InstalledModules {
    * @return keyNames An array of strings with the names of key fields.
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
-    keyNames = new string[](2);
-    keyNames[0] = "moduleAddress";
-    keyNames[1] = "argumentsHash";
+    keyNames = new string[](0);
   }
 
   /**
@@ -97,10 +93,8 @@ library InstalledModules {
   /**
    * @notice Get isInitialized.
    */
-  function getIsInitialized(address moduleAddress, bytes32 argumentsHash) internal view returns (bool isInitialized) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
-    _keyTuple[1] = argumentsHash;
+  function getIsInitialized() internal view returns (bool isInitialized) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
@@ -109,10 +103,8 @@ library InstalledModules {
   /**
    * @notice Get isInitialized.
    */
-  function _getIsInitialized(address moduleAddress, bytes32 argumentsHash) internal view returns (bool isInitialized) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
-    _keyTuple[1] = argumentsHash;
+  function _getIsInitialized() internal view returns (bool isInitialized) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
@@ -121,10 +113,8 @@ library InstalledModules {
   /**
    * @notice Get isInitialized.
    */
-  function get(address moduleAddress, bytes32 argumentsHash) internal view returns (bool isInitialized) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
-    _keyTuple[1] = argumentsHash;
+  function get() internal view returns (bool isInitialized) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
@@ -133,10 +123,8 @@ library InstalledModules {
   /**
    * @notice Get isInitialized.
    */
-  function _get(address moduleAddress, bytes32 argumentsHash) internal view returns (bool isInitialized) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
-    _keyTuple[1] = argumentsHash;
+  function _get() internal view returns (bool isInitialized) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
@@ -145,10 +133,8 @@ library InstalledModules {
   /**
    * @notice Set isInitialized.
    */
-  function setIsInitialized(address moduleAddress, bytes32 argumentsHash, bool isInitialized) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
-    _keyTuple[1] = argumentsHash;
+  function setIsInitialized(bool isInitialized) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInitialized)), _fieldLayout);
   }
@@ -156,10 +142,8 @@ library InstalledModules {
   /**
    * @notice Set isInitialized.
    */
-  function _setIsInitialized(address moduleAddress, bytes32 argumentsHash, bool isInitialized) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
-    _keyTuple[1] = argumentsHash;
+  function _setIsInitialized(bool isInitialized) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInitialized)), _fieldLayout);
   }
@@ -167,10 +151,8 @@ library InstalledModules {
   /**
    * @notice Set isInitialized.
    */
-  function set(address moduleAddress, bytes32 argumentsHash, bool isInitialized) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
-    _keyTuple[1] = argumentsHash;
+  function set(bool isInitialized) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInitialized)), _fieldLayout);
   }
@@ -178,10 +160,8 @@ library InstalledModules {
   /**
    * @notice Set isInitialized.
    */
-  function _set(address moduleAddress, bytes32 argumentsHash, bool isInitialized) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
-    _keyTuple[1] = argumentsHash;
+  function _set(bool isInitialized) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInitialized)), _fieldLayout);
   }
@@ -189,10 +169,8 @@ library InstalledModules {
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(address moduleAddress, bytes32 argumentsHash) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
-    _keyTuple[1] = argumentsHash;
+  function deleteRecord() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -200,10 +178,8 @@ library InstalledModules {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(address moduleAddress, bytes32 argumentsHash) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
-    _keyTuple[1] = argumentsHash;
+  function _deleteRecord() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -234,10 +210,8 @@ library InstalledModules {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple(address moduleAddress, bytes32 argumentsHash) internal pure returns (bytes32[] memory) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
-    _keyTuple[1] = argumentsHash;
+  function encodeKeyTuple() internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     return _keyTuple;
   }

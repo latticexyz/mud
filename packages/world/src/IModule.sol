@@ -17,13 +17,6 @@ interface IModule is IERC165 {
   error Module_MissingDependency(string dependency);
 
   /**
-   * @notice Return the name of the module.
-   * @dev Provides a way to identify the module by a unique name.
-   * @return name The name of the module as a bytes16.
-   */
-  function getName() external view returns (bytes16 name);
-
-  /**
    * @notice Installs the module as a root module.
    * @dev This function is invoked by the World contract during `installRootModule` process.
    * The module expects to be called via the World contract and thus installs itself on the `msg.sender`.

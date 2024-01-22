@@ -57,19 +57,19 @@
     "file": "test/Factories.t.sol",
     "test": "testCreate2Factory",
     "name": "deploy contract via Create2",
-    "gasUsed": 4659744
+    "gasUsed": 4738039
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testWorldFactory",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12642949
+    "gasUsed": 13016645
   },
   {
     "file": "test/World.t.sol",
     "test": "testCall",
     "name": "call a system via the World",
-    "gasUsed": 12361
+    "gasUsed": 12367
   },
   {
     "file": "test/World.t.sol",
@@ -93,13 +93,13 @@
     "file": "test/World.t.sol",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 9837
+    "gasUsed": 9843
   },
   {
     "file": "test/World.t.sol",
     "test": "testPushToDynamicField",
     "name": "Push data to the table",
-    "gasUsed": 85833
+    "gasUsed": 85839
   },
   {
     "file": "test/World.t.sol",
@@ -111,7 +111,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 120969
+    "gasUsed": 120951
   },
   {
     "file": "test/World.t.sol",
@@ -141,13 +141,13 @@
     "file": "test/World.t.sol",
     "test": "testSetField",
     "name": "Write data to a table field",
-    "gasUsed": 36903
+    "gasUsed": 36909
   },
   {
     "file": "test/World.t.sol",
     "test": "testSetRecord",
     "name": "Write data to the table",
-    "gasUsed": 39047
+    "gasUsed": 39053
   },
   {
     "file": "test/World.t.sol",
@@ -165,25 +165,25 @@
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (cold)",
-    "gasUsed": 25621
+    "gasUsed": 25627
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (warm)",
-    "gasUsed": 12767
+    "gasUsed": 12773
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (cold)",
-    "gasUsed": 25981
+    "gasUsed": 25987
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (warm)",
-    "gasUsed": 13182
+    "gasUsed": 13188
   },
   {
     "file": "test/WorldResourceId.t.sol",
