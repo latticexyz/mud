@@ -53,7 +53,7 @@ contract AccessManagementSystem is System, LimitedCallContext {
    * @param newOwner The address to which ownership should be transferred.
    */
   function transferOwnership(ResourceId namespaceId, address newOwner) public virtual onlyDelegatecall {
-    // Require the namespace to be a valid namespace ID
+    // Require the namespace ID to be a valid namespace
     validateNamespace(namespaceId);
 
     // Require the namespace to exist
