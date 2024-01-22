@@ -6,7 +6,7 @@ import { AccessControl } from "../../../AccessControl.sol";
 import { ResourceId } from "../../../WorldResourceId.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
-import { requireNamespace } from "../../../requireNamespace.sol";
+import { validateNamespace } from "../../../validateNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
 
@@ -53,8 +53,8 @@ contract AccessManagementSystem is System, LimitedCallContext {
    * @param newOwner The address to which ownership should be transferred.
    */
   function transferOwnership(ResourceId namespaceId, address newOwner) public virtual onlyDelegatecall {
-    // Require the namespace ID to be a valid namespace
-    requireNamespace(namespaceId);
+    // Require the namespace to be a valid namespace ID
+    validateNamespace(namespaceId);
 
     // Require the namespace to exist
     AccessControl.requireExistence(namespaceId);
@@ -79,7 +79,7 @@ contract AccessManagementSystem is System, LimitedCallContext {
    */
   function renounceOwnership(ResourceId namespaceId) public virtual onlyDelegatecall {
     // Require the namespace ID to be a valid namespace
-    requireNamespace(namespaceId);
+    validateNamespace(namespaceId);
 
     // Require the namespace to exist
     AccessControl.requireExistence(namespaceId);

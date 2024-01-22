@@ -27,7 +27,7 @@ import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
 import { Systems } from "../../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "../../../codegen/tables/FunctionSignatures.sol";
-import { requireNamespace } from "../../../requireNamespace.sol";
+import { validateNamespace } from "../../../validateNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
 
@@ -44,8 +44,8 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @param namespaceId The unique identifier for the new namespace
    */
   function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall {
-    // Require namespace ID to be a valid namespace
-    requireNamespace(namespaceId);
+    // Require namespace to be a valid namespace ID
+    validateNamespace(namespaceId);
 
     // Require namespace to not exist yet
     if (ResourceIds._getExists(namespaceId)) {
@@ -299,8 +299,8 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public onlyDelegatecall {
-    // Require namespace ID to be a valid namespace
-    requireNamespace(namespaceId);
+    // Require namespace to be a valid namespace ID
+    validateNamespace(namespaceId);
 
     // Require the delegation to not be unlimited
     if (!Delegation.isLimited(delegationControlId)) {
@@ -335,7 +335,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    */
   function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelegatecall {
     // Require namespace ID to be a valid namespace
-    requireNamespace(namespaceId);
+    validateNamespace(namespaceId);
 
     // Require the namespace to exist
     AccessControl.requireExistence(namespaceId);
