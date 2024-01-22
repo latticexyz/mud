@@ -1,5 +1,5 @@
 ---
-"@latticexyz/world": patch
+"@latticexyz/world": major
 "@latticexyz/world-modules": patch
 ---
 
