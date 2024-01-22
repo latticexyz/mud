@@ -57,19 +57,19 @@
     "file": "test/Factories.t.sol",
     "test": "testCreate2Factory",
     "name": "deploy contract via Create2",
-    "gasUsed": 4738039
+    "gasUsed": 4763472
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testWorldFactory",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 13016645
+    "gasUsed": 13041829
   },
   {
     "file": "test/World.t.sol",
     "test": "testCall",
     "name": "call a system via the World",
-    "gasUsed": 12367
+    "gasUsed": 12361
   },
   {
     "file": "test/World.t.sol",
@@ -93,13 +93,13 @@
     "file": "test/World.t.sol",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 9843
+    "gasUsed": 9837
   },
   {
     "file": "test/World.t.sol",
     "test": "testPushToDynamicField",
     "name": "Push data to the table",
-    "gasUsed": 85839
+    "gasUsed": 85833
   },
   {
     "file": "test/World.t.sol",
@@ -141,13 +141,13 @@
     "file": "test/World.t.sol",
     "test": "testSetField",
     "name": "Write data to a table field",
-    "gasUsed": 36909
+    "gasUsed": 36903
   },
   {
     "file": "test/World.t.sol",
     "test": "testSetRecord",
     "name": "Write data to the table",
-    "gasUsed": 39053
+    "gasUsed": 39047
   },
   {
     "file": "test/World.t.sol",
@@ -165,25 +165,25 @@
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (cold)",
-    "gasUsed": 25627
+    "gasUsed": 25621
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (warm)",
-    "gasUsed": 12773
+    "gasUsed": 12767
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (cold)",
-    "gasUsed": 25987
+    "gasUsed": 25981
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (warm)",
-    "gasUsed": 13188
+    "gasUsed": 13182
   },
   {
     "file": "test/WorldResourceId.t.sol",
