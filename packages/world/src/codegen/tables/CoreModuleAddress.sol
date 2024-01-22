@@ -73,7 +73,7 @@ library CoreModuleAddress {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
-    fieldNames[0] = "coreModuleAddress";
+    fieldNames[0] = "value";
   }
 
   /**
@@ -91,9 +91,9 @@ library CoreModuleAddress {
   }
 
   /**
-   * @notice Get coreModuleAddress.
+   * @notice Get value.
    */
-  function getCoreModuleAddress() internal view returns (address coreModuleAddress) {
+  function getValue() internal view returns (address value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -101,9 +101,9 @@ library CoreModuleAddress {
   }
 
   /**
-   * @notice Get coreModuleAddress.
+   * @notice Get value.
    */
-  function _getCoreModuleAddress() internal view returns (address coreModuleAddress) {
+  function _getValue() internal view returns (address value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -111,9 +111,9 @@ library CoreModuleAddress {
   }
 
   /**
-   * @notice Get coreModuleAddress.
+   * @notice Get value.
    */
-  function get() internal view returns (address coreModuleAddress) {
+  function get() internal view returns (address value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -121,9 +121,9 @@ library CoreModuleAddress {
   }
 
   /**
-   * @notice Get coreModuleAddress.
+   * @notice Get value.
    */
-  function _get() internal view returns (address coreModuleAddress) {
+  function _get() internal view returns (address value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
@@ -131,39 +131,39 @@ library CoreModuleAddress {
   }
 
   /**
-   * @notice Set coreModuleAddress.
+   * @notice Set value.
    */
-  function setCoreModuleAddress(address coreModuleAddress) internal {
+  function setValue(address value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((coreModuleAddress)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /**
-   * @notice Set coreModuleAddress.
+   * @notice Set value.
    */
-  function _setCoreModuleAddress(address coreModuleAddress) internal {
+  function _setValue(address value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((coreModuleAddress)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /**
-   * @notice Set coreModuleAddress.
+   * @notice Set value.
    */
-  function set(address coreModuleAddress) internal {
+  function set(address value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((coreModuleAddress)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /**
-   * @notice Set coreModuleAddress.
+   * @notice Set value.
    */
-  function _set(address coreModuleAddress) internal {
+  function _set(address value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((coreModuleAddress)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /**
@@ -188,8 +188,8 @@ library CoreModuleAddress {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(address coreModuleAddress) internal pure returns (bytes memory) {
-    return abi.encodePacked(coreModuleAddress);
+  function encodeStatic(address value) internal pure returns (bytes memory) {
+    return abi.encodePacked(value);
   }
 
   /**
@@ -198,8 +198,8 @@ library CoreModuleAddress {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(address coreModuleAddress) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(coreModuleAddress);
+  function encode(address value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+    bytes memory _staticData = encodeStatic(value);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
