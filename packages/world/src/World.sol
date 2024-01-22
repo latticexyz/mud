@@ -19,6 +19,7 @@ import { requireInterface } from "./requireInterface.sol";
 import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
+import { WorldInitialized } from "./codegen/tables/WorldInitialized.sol";
 
 import { IModule, IModule } from "./IModule.sol";
 import { IWorldKernel } from "./IWorldKernel.sol";
@@ -71,9 +72,11 @@ contract World is StoreData, IWorldKernel {
     }
 
     // The World can only be initialized once
-    if (InstalledModules._get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
+    if (WorldInitialized.get()) {
       revert World_AlreadyInitialized();
     }
+
+    WorldInitialized.set(true);
 
     // Initialize the World by installing the core module
     _installRootModule(coreModule, new bytes(0));

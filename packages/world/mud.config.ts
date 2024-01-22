@@ -103,6 +103,12 @@ export default mudConfig({
       },
       offchainOnly: true,
     },
+    WorldInitialized: {
+      keySchema: {},
+      valueSchema: {
+        isInitialized: "bool",
+      },
+    },
   },
   excludeSystems: [
     // Worldgen currently does not support systems inheriting logic

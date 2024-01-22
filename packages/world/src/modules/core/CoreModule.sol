@@ -28,6 +28,7 @@ import { FunctionSelectors } from "../../codegen/tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "../../codegen/tables/FunctionSignatures.sol";
 import { SystemHooks } from "../../codegen/tables/SystemHooks.sol";
 import { SystemRegistry } from "../../codegen/tables/SystemRegistry.sol";
+import { WorldInitialized } from "../../codegen/tables/WorldInitialized.sol";
 import { Balances } from "../../codegen/tables/Balances.sol";
 
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
@@ -99,6 +100,7 @@ contract CoreModule is Module {
     FunctionSignatures.register();
     SystemHooks.register();
     SystemRegistry.register();
+    WorldInitialized.register();
 
     ResourceIds._setExists(ROOT_NAMESPACE_ID, true);
     NamespaceOwner._set(ROOT_NAMESPACE_ID, _msgSender());
