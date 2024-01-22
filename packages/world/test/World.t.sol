@@ -348,6 +348,23 @@ contract WorldTest is Test, GasReporter {
     world.registerNamespace(namespaceId);
   }
 
+  function testRegisterInvalidNamespace() public {
+    ResourceId invalidNamespaceId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "namespace", "system");
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_InvalidResourceType.selector,
+        RESOURCE_NAMESPACE,
+        invalidNamespaceId,
+        invalidNamespaceId.toString()
+      )
+    );
+    world.registerNamespace(invalidNamespaceId);
+
+    bytes14 invalidNamespace = "invld__nmsp";
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InvalidNamespace.selector, invalidNamespace));
+    world.registerNamespace(WorldResourceIdLib.encodeNamespace(invalidNamespace));
+  }
+
   function testRegisterCoreNamespacesRevert() public {
     vm.expectRevert(
       abi.encodeWithSelector(
