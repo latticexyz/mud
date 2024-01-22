@@ -32,7 +32,7 @@ export default mudConfig({
         argumentsHash: "bytes32", // Hash of the params passed to the `install` function
       },
       valueSchema: {
-        isInitialized: "bool",
+        isInstalled: "bool",
       },
     },
     UserDelegationControl: {

@@ -77,7 +77,7 @@ library InstalledModules {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
-    fieldNames[0] = "isInitialized";
+    fieldNames[0] = "isInstalled";
   }
 
   /**
@@ -95,9 +95,9 @@ library InstalledModules {
   }
 
   /**
-   * @notice Get isInitialized.
+   * @notice Get isInstalled.
    */
-  function getIsInitialized(address moduleAddress, bytes32 argumentsHash) internal view returns (bool isInitialized) {
+  function getIsInstalled(address moduleAddress, bytes32 argumentsHash) internal view returns (bool isInstalled) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
     _keyTuple[1] = argumentsHash;
@@ -107,9 +107,9 @@ library InstalledModules {
   }
 
   /**
-   * @notice Get isInitialized.
+   * @notice Get isInstalled.
    */
-  function _getIsInitialized(address moduleAddress, bytes32 argumentsHash) internal view returns (bool isInitialized) {
+  function _getIsInstalled(address moduleAddress, bytes32 argumentsHash) internal view returns (bool isInstalled) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
     _keyTuple[1] = argumentsHash;
@@ -119,9 +119,9 @@ library InstalledModules {
   }
 
   /**
-   * @notice Get isInitialized.
+   * @notice Get isInstalled.
    */
-  function get(address moduleAddress, bytes32 argumentsHash) internal view returns (bool isInitialized) {
+  function get(address moduleAddress, bytes32 argumentsHash) internal view returns (bool isInstalled) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
     _keyTuple[1] = argumentsHash;
@@ -131,9 +131,9 @@ library InstalledModules {
   }
 
   /**
-   * @notice Get isInitialized.
+   * @notice Get isInstalled.
    */
-  function _get(address moduleAddress, bytes32 argumentsHash) internal view returns (bool isInitialized) {
+  function _get(address moduleAddress, bytes32 argumentsHash) internal view returns (bool isInstalled) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
     _keyTuple[1] = argumentsHash;
@@ -143,47 +143,47 @@ library InstalledModules {
   }
 
   /**
-   * @notice Set isInitialized.
+   * @notice Set isInstalled.
    */
-  function setIsInitialized(address moduleAddress, bytes32 argumentsHash, bool isInitialized) internal {
+  function setIsInstalled(address moduleAddress, bytes32 argumentsHash, bool isInstalled) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
     _keyTuple[1] = argumentsHash;
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInitialized)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInstalled)), _fieldLayout);
   }
 
   /**
-   * @notice Set isInitialized.
+   * @notice Set isInstalled.
    */
-  function _setIsInitialized(address moduleAddress, bytes32 argumentsHash, bool isInitialized) internal {
+  function _setIsInstalled(address moduleAddress, bytes32 argumentsHash, bool isInstalled) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
     _keyTuple[1] = argumentsHash;
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInitialized)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInstalled)), _fieldLayout);
   }
 
   /**
-   * @notice Set isInitialized.
+   * @notice Set isInstalled.
    */
-  function set(address moduleAddress, bytes32 argumentsHash, bool isInitialized) internal {
+  function set(address moduleAddress, bytes32 argumentsHash, bool isInstalled) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
     _keyTuple[1] = argumentsHash;
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInitialized)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInstalled)), _fieldLayout);
   }
 
   /**
-   * @notice Set isInitialized.
+   * @notice Set isInstalled.
    */
-  function _set(address moduleAddress, bytes32 argumentsHash, bool isInitialized) internal {
+  function _set(address moduleAddress, bytes32 argumentsHash, bool isInstalled) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(moduleAddress)));
     _keyTuple[1] = argumentsHash;
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInitialized)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((isInstalled)), _fieldLayout);
   }
 
   /**
@@ -212,8 +212,8 @@ library InstalledModules {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(bool isInitialized) internal pure returns (bytes memory) {
-    return abi.encodePacked(isInitialized);
+  function encodeStatic(bool isInstalled) internal pure returns (bytes memory) {
+    return abi.encodePacked(isInstalled);
   }
 
   /**
@@ -222,8 +222,8 @@ library InstalledModules {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(bool isInitialized) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(isInitialized);
+  function encode(bool isInstalled) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+    bytes memory _staticData = encodeStatic(isInstalled);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
