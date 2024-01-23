@@ -168,12 +168,14 @@ export function renderWithFieldSuffix(
   return result;
 }
 
-export function renderTableId({ namespace, name, offchainOnly, tableIdName }: StaticResourceData): {
-  hardcodedTableId: string;
-  tableIdDefinition: string;
-} {
-  const hardcodedTableId = `
-    ResourceId.wrap(
+export function renderTableId({
+  namespace,
+  name,
+  offchainOnly,
+  tableIdName,
+}: Pick<StaticResourceData, "namespace" | "name" | "offchainOnly" | "tableIdName">): string {
+  return `
+    ResourceId constant _tableId = ResourceId.wrap(
       bytes32(
         abi.encodePacked(
           ${offchainOnly ? "RESOURCE_OFFCHAIN_TABLE" : "RESOURCE_TABLE"},
@@ -181,20 +183,15 @@ export function renderTableId({ namespace, name, offchainOnly, tableIdName }: St
           bytes16("${name}")
         )
       )
-    )
-  `;
-
-  const tableIdDefinition = `
-    ResourceId constant _tableId = ${hardcodedTableId};
+    );
     ResourceId constant ${tableIdName} = _tableId;
   `;
-  return {
-    hardcodedTableId,
-    tableIdDefinition,
-  };
 }
 
-export function renderValueTypeToBytes32(name: string, { typeUnwrap, internalTypeId }: RenderType): string {
+export function renderValueTypeToBytes32(
+  name: string,
+  { typeUnwrap, internalTypeId }: Pick<RenderType, "typeUnwrap" | "internalTypeId">
+): string {
   const innerText = typeUnwrap.length ? `${typeUnwrap}(${name})` : name;
 
   if (internalTypeId === "bytes32") {

@@ -61,7 +61,7 @@ export function renderTable(options: RenderTableOptions) {
         : ""
     }
 
-    ${staticResourceData ? renderTableId(staticResourceData).tableIdDefinition : ""}
+    ${staticResourceData ? renderTableId(staticResourceData) : ""}
 
     ${renderFieldLayout(fields)}
 
