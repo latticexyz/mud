@@ -153,27 +153,15 @@ library Dynamics1 {
   /**
    * @notice Get the length of staticB32.
    */
-  function lengthStaticB32(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 32;
-    }
+  function lengthStaticB32(bytes32 key) internal pure returns (uint256) {
+    return 1;
   }
 
   /**
    * @notice Get the length of staticB32.
    */
-  function _lengthStaticB32(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 32;
-    }
+  function _lengthStaticB32(bytes32 key) internal pure returns (uint256) {
+    return 1;
   }
 
   /**
@@ -202,46 +190,6 @@ library Dynamics1 {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
       return (bytes32(_blob));
     }
-  }
-
-  /**
-   * @notice Push an element to staticB32.
-   */
-  function pushStaticB32(bytes32 key, bytes32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Push an element to staticB32.
-   */
-  function _pushStaticB32(bytes32 key, bytes32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Pop an element from staticB32.
-   */
-  function popStaticB32(bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 32);
-  }
-
-  /**
-   * @notice Pop an element from staticB32.
-   */
-  function _popStaticB32(bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 32);
   }
 
   /**
@@ -315,27 +263,15 @@ library Dynamics1 {
   /**
    * @notice Get the length of staticI32.
    */
-  function lengthStaticI32(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 1);
-    unchecked {
-      return _byteLength / 4;
-    }
+  function lengthStaticI32(bytes32 key) internal pure returns (uint256) {
+    return 2;
   }
 
   /**
    * @notice Get the length of staticI32.
    */
-  function _lengthStaticI32(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
-    unchecked {
-      return _byteLength / 4;
-    }
+  function _lengthStaticI32(bytes32 key) internal pure returns (uint256) {
+    return 2;
   }
 
   /**
@@ -364,46 +300,6 @@ library Dynamics1 {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
       return (int32(uint32(bytes4(_blob))));
     }
-  }
-
-  /**
-   * @notice Push an element to staticI32.
-   */
-  function pushStaticI32(bytes32 key, int32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Push an element to staticI32.
-   */
-  function _pushStaticI32(bytes32 key, int32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Pop an element from staticI32.
-   */
-  function popStaticI32(bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 4);
-  }
-
-  /**
-   * @notice Pop an element from staticI32.
-   */
-  function _popStaticI32(bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 4);
   }
 
   /**
@@ -477,27 +373,15 @@ library Dynamics1 {
   /**
    * @notice Get the length of staticU128.
    */
-  function lengthStaticU128(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 2);
-    unchecked {
-      return _byteLength / 16;
-    }
+  function lengthStaticU128(bytes32 key) internal pure returns (uint256) {
+    return 3;
   }
 
   /**
    * @notice Get the length of staticU128.
    */
-  function _lengthStaticU128(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 2);
-    unchecked {
-      return _byteLength / 16;
-    }
+  function _lengthStaticU128(bytes32 key) internal pure returns (uint256) {
+    return 3;
   }
 
   /**
@@ -526,46 +410,6 @@ library Dynamics1 {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 16, (_index + 1) * 16);
       return (uint128(bytes16(_blob)));
     }
-  }
-
-  /**
-   * @notice Push an element to staticU128.
-   */
-  function pushStaticU128(bytes32 key, uint128 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Push an element to staticU128.
-   */
-  function _pushStaticU128(bytes32 key, uint128 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Pop an element from staticU128.
-   */
-  function popStaticU128(bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 2, 16);
-  }
-
-  /**
-   * @notice Pop an element from staticU128.
-   */
-  function _popStaticU128(bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 2, 16);
   }
 
   /**
@@ -639,27 +483,15 @@ library Dynamics1 {
   /**
    * @notice Get the length of staticAddrs.
    */
-  function lengthStaticAddrs(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 3);
-    unchecked {
-      return _byteLength / 20;
-    }
+  function lengthStaticAddrs(bytes32 key) internal pure returns (uint256) {
+    return 4;
   }
 
   /**
    * @notice Get the length of staticAddrs.
    */
-  function _lengthStaticAddrs(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 3);
-    unchecked {
-      return _byteLength / 20;
-    }
+  function _lengthStaticAddrs(bytes32 key) internal pure returns (uint256) {
+    return 4;
   }
 
   /**
@@ -688,46 +520,6 @@ library Dynamics1 {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 3, _index * 20, (_index + 1) * 20);
       return (address(bytes20(_blob)));
     }
-  }
-
-  /**
-   * @notice Push an element to staticAddrs.
-   */
-  function pushStaticAddrs(bytes32 key, address _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Push an element to staticAddrs.
-   */
-  function _pushStaticAddrs(bytes32 key, address _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Pop an element from staticAddrs.
-   */
-  function popStaticAddrs(bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 3, 20);
-  }
-
-  /**
-   * @notice Pop an element from staticAddrs.
-   */
-  function _popStaticAddrs(bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 3, 20);
   }
 
   /**
@@ -801,27 +593,15 @@ library Dynamics1 {
   /**
    * @notice Get the length of staticBools.
    */
-  function lengthStaticBools(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 4);
-    unchecked {
-      return _byteLength / 1;
-    }
+  function lengthStaticBools(bytes32 key) internal pure returns (uint256) {
+    return 5;
   }
 
   /**
    * @notice Get the length of staticBools.
    */
-  function _lengthStaticBools(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 4);
-    unchecked {
-      return _byteLength / 1;
-    }
+  function _lengthStaticBools(bytes32 key) internal pure returns (uint256) {
+    return 5;
   }
 
   /**
@@ -850,46 +630,6 @@ library Dynamics1 {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 4, _index * 1, (_index + 1) * 1);
       return (_toBool(uint8(bytes1(_blob))));
     }
-  }
-
-  /**
-   * @notice Push an element to staticBools.
-   */
-  function pushStaticBools(bytes32 key, bool _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Push an element to staticBools.
-   */
-  function _pushStaticBools(bytes32 key, bool _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Pop an element from staticBools.
-   */
-  function popStaticBools(bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 4, 1);
-  }
-
-  /**
-   * @notice Pop an element from staticBools.
-   */
-  function _popStaticBools(bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 4, 1);
   }
 
   /**
