@@ -175,25 +175,15 @@ library Singleton {
   /**
    * @notice Get the length of v2.
    */
-  function lengthV2() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 4;
-    }
+  function lengthV2() internal pure returns (uint256) {
+    return 2;
   }
 
   /**
    * @notice Get the length of v2.
    */
-  function _lengthV2() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
-    unchecked {
-      return _byteLength / 4;
-    }
+  function _lengthV2() internal pure returns (uint256) {
+    return 2;
   }
 
   /**
@@ -220,42 +210,6 @@ library Singleton {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
-  }
-
-  /**
-   * @notice Push an element to v2.
-   */
-  function pushV2(uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Push an element to v2.
-   */
-  function _pushV2(uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Pop an element from v2.
-   */
-  function popV2() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 4);
-  }
-
-  /**
-   * @notice Pop an element from v2.
-   */
-  function _popV2() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 4);
   }
 
   /**
@@ -323,25 +277,15 @@ library Singleton {
   /**
    * @notice Get the length of v3.
    */
-  function lengthV3() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 1);
-    unchecked {
-      return _byteLength / 4;
-    }
+  function lengthV3() internal pure returns (uint256) {
+    return 2;
   }
 
   /**
    * @notice Get the length of v3.
    */
-  function _lengthV3() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
-    unchecked {
-      return _byteLength / 4;
-    }
+  function _lengthV3() internal pure returns (uint256) {
+    return 2;
   }
 
   /**
@@ -368,42 +312,6 @@ library Singleton {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
-  }
-
-  /**
-   * @notice Push an element to v3.
-   */
-  function pushV3(uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Push an element to v3.
-   */
-  function _pushV3(uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Pop an element from v3.
-   */
-  function popV3() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 4);
-  }
-
-  /**
-   * @notice Pop an element from v3.
-   */
-  function _popV3() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 4);
   }
 
   /**
@@ -471,25 +379,15 @@ library Singleton {
   /**
    * @notice Get the length of v4.
    */
-  function lengthV4() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 2);
-    unchecked {
-      return _byteLength / 4;
-    }
+  function lengthV4() internal pure returns (uint256) {
+    return 1;
   }
 
   /**
    * @notice Get the length of v4.
    */
-  function _lengthV4() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 2);
-    unchecked {
-      return _byteLength / 4;
-    }
+  function _lengthV4() internal pure returns (uint256) {
+    return 1;
   }
 
   /**
@@ -516,42 +414,6 @@ library Singleton {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
-  }
-
-  /**
-   * @notice Push an element to v4.
-   */
-  function pushV4(uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Push an element to v4.
-   */
-  function _pushV4(uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreCore.pushToDynamicField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
-  }
-
-  /**
-   * @notice Pop an element from v4.
-   */
-  function popV4() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 2, 4);
-  }
-
-  /**
-   * @notice Pop an element from v4.
-   */
-  function _popV4() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreCore.popFromDynamicField(_tableId, _keyTuple, 2, 4);
   }
 
   /**
