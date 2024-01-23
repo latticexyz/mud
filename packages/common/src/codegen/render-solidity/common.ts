@@ -29,14 +29,6 @@ export function renderArguments(args: (string | undefined)[]): string {
   return internalRenderList(",", filteredArgs, (arg) => arg);
 }
 
-/**
- * Renders a semicolon-separated list of lines, ignoring empty and undefined ones
- */
-export function renderSemicolonTerminatedLines(args: (string | undefined)[]): string {
-  const filteredArgs = args.filter((arg) => arg !== undefined && arg !== "") as string[];
-  return internalRenderList(";", filteredArgs, (arg) => arg);
-}
-
 export function renderCommonData({
   staticResourceData,
   keyTuple,
