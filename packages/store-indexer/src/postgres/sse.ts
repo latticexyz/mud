@@ -2,7 +2,7 @@ import { Sql } from "postgres";
 import { Middleware } from "koa";
 import Router from "@koa/router";
 import compose from "koa-compose";
-import { compress } from "../compress";
+import { compress } from "../koa-middleware/compress";
 import { eventStream } from "../eventStream";
 import { storeTables } from "@latticexyz/store-sync";
 import { queryLogs } from "./queryLogs";
