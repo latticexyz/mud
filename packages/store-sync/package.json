@@ -48,6 +48,7 @@
     }
   },
   "scripts": {
+    "bench": "vitest bench",
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
@@ -55,8 +56,7 @@
     "dev": "tsup --watch",
     "lint": "eslint .",
     "test": "DATABASE_URL=http://127.0.0.1:5432/postgres vitest",
-    "test:ci": "vitest --run",
-    "timer": "DATABASE_URL=http://127.0.0.1:5432/postgres vitest timer"
+    "test:ci": "vitest --run"
   },
   "dependencies": {
     "@latticexyz/block-logs-stream": "workspace:*",
@@ -84,7 +84,7 @@
     "@types/debug": "^4.1.7",
     "@types/sql.js": "^1.4.4",
     "tsup": "^6.7.0",
-    "vitest": "0.31.4"
+    "vitest": "^1.0.4"
   },
   "publishConfig": {
     "access": "public"

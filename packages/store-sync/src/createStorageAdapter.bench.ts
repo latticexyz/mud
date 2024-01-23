@@ -1,14 +1,15 @@
-import { describe, it } from "vitest";
+import { bench, describe } from "vitest";
 import mudConfig from "../../../e2e/packages/contracts/mud.config";
 import worldRpcLogs from "../../../test-data/world-logs.json";
 import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import { StoreEventsLog } from "./common";
 import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
 import { resolveConfig, storeEventsAbi } from "@latticexyz/store";
-import { recsStorage } from "./recs";
+
 import { createWorld } from "@latticexyz/recs";
-import { createStorageAdapter, createStore } from "./zustand";
-import * as fs from "fs";
+import { recsStorage } from "./recs";
+import { createStorageAdapter } from "./zustand/createStorageAdapter";
+import { createStore } from "./zustand/createStore";
 
 const tables = resolveConfig(mudConfig).tables;
 
@@ -21,44 +22,26 @@ const blocks = groupLogsByBlockNumber(
       topics: log.topics as [Hex, ...Hex[]],
       strict: true,
     });
-    return formatLog(log as unknown as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
+    return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
   })
 );
 
-describe("timer", () => {
-  it("times recs", async () => {
+describe("Storage Adapter", () => {
+  bench("recs: `storageAdapter`", async () => {
     const world = createWorld();
-
-    let t = process.hrtime();
     const { storageAdapter } = recsStorage({ world, tables });
 
     for (const block of blocks) {
       await storageAdapter(block);
     }
-    t = process.hrtime(t);
-
-    fs.writeFile("recs_storageAdapter.txt", t[1].toString(), (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
   });
 
-  it("times zustand", async () => {
+  bench("zustand: `storageAdapter`", async () => {
     const useStore = createStore({ tables });
-
-    let t = process.hrtime();
     const storageAdapter = createStorageAdapter({ store: useStore });
+
     for (const block of blocks) {
       await storageAdapter(block);
     }
-    t = process.hrtime(t);
-    console.log("createStorageAdapter: %d nanoseconds", t[1]);
-
-    fs.writeFile("zustand_storageAdapter.txt", t[1].toString(), (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
   });
 });
