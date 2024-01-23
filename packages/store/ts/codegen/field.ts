@@ -51,7 +51,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
               }
               return ${renderDecodeFieldSingle(field)};
             }
-        `
+          `
         )
       );
     }
@@ -88,17 +88,17 @@ export function renderFieldMethods(options: RenderTableOptions) {
             renderWithStore(
               storeArgument,
               ({ _typedStore, _commentSuffix, _methodNamePrefix }) => `
-              /**
-               * @notice Get the length of ${field.name}${_commentSuffix}.
-               */
-              function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
+                /**
+                 * @notice Get the length of ${field.name}${_commentSuffix}.
+                 */
+                function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
                 _typedStore,
                 _typedTableId,
                 _typedKeyArgs,
               ])}) internal pure returns (uint256) {
-                return ${typeWrappingData.staticLength};
-              }
-            `
+                  return ${typeWrappingData.staticLength};
+                }
+              `
             )
           );
         } else {
@@ -106,21 +106,21 @@ export function renderFieldMethods(options: RenderTableOptions) {
             renderWithStore(
               storeArgument,
               ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
-              /**
-               * @notice Get the length of ${field.name}${_commentSuffix}.
-               */
-              function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
+                /**
+                 * @notice Get the length of ${field.name}${_commentSuffix}.
+                 */
+                function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
                 _typedStore,
                 _typedTableId,
                 _typedKeyArgs,
               ])}) internal view returns (uint256) {
-                ${_keyTupleDefinition}
-                uint256 _byteLength = ${_store}.getDynamicFieldLength(_tableId, _keyTuple, ${dynamicSchemaIndex});
-                unchecked {
-                  return _byteLength / ${portionData.elementLength};
+                  ${_keyTupleDefinition}
+                  uint256 _byteLength = ${_store}.getDynamicFieldLength(_tableId, _keyTuple, ${dynamicSchemaIndex});
+                  unchecked {
+                    return _byteLength / ${portionData.elementLength};
+                  }
                 }
-              }
-            `
+              `
             )
           );
         }
@@ -129,29 +129,29 @@ export function renderFieldMethods(options: RenderTableOptions) {
           renderWithStore(
             storeArgument,
             ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
-            /**
-             * @notice Get an item of ${field.name}${_commentSuffix}.
-             * @dev Reverts with Store_IndexOutOfBounds if \`_index\` is out of bounds for the array.
-            */
-            function ${_methodNamePrefix}getItem${_methodNameSuffix}(${renderArguments([
+              /**
+               * @notice Get an item of ${field.name}${_commentSuffix}.
+               * @dev Reverts with Store_IndexOutOfBounds if \`_index\` is out of bounds for the array.
+              */
+              function ${_methodNamePrefix}getItem${_methodNameSuffix}(${renderArguments([
               _typedStore,
               _typedTableId,
               _typedKeyArgs,
               "uint256 _index",
             ])}) internal view returns (${portionData.typeWithLocation}) {
-              ${_keyTupleDefinition}
-              unchecked {
-                bytes memory _blob = ${_store}.getDynamicFieldSlice(
-                  _tableId,
-                  _keyTuple,
-                  ${dynamicSchemaIndex},
-                  _index * ${portionData.elementLength},
-                  (_index + 1) * ${portionData.elementLength}
-                );
-                return ${portionData.decoded};
+                ${_keyTupleDefinition}
+                unchecked {
+                  bytes memory _blob = ${_store}.getDynamicFieldSlice(
+                    _tableId,
+                    _keyTuple,
+                    ${dynamicSchemaIndex},
+                    _index * ${portionData.elementLength},
+                    (_index + 1) * ${portionData.elementLength}
+                  );
+                  return ${portionData.decoded};
+                }
               }
-            }
-          `
+            `
           )
         );
       }
@@ -161,19 +161,19 @@ export function renderFieldMethods(options: RenderTableOptions) {
           renderWithStore(
             storeArgument,
             ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
-            /**
-             * @notice Push ${portionData.title} to ${field.name}${_commentSuffix}.
-             */
-            function ${_methodNamePrefix}push${_methodNameSuffix}(${renderArguments([
+              /**
+               * @notice Push ${portionData.title} to ${field.name}${_commentSuffix}.
+               */
+              function ${_methodNamePrefix}push${_methodNameSuffix}(${renderArguments([
               _typedStore,
               _typedTableId,
               _typedKeyArgs,
               `${portionData.typeWithLocation} ${portionData.name}`,
             ])}) internal {
-              ${_keyTupleDefinition}
-              ${_store}.pushToDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.encoded});
-            }
-          `
+                ${_keyTupleDefinition}
+                ${_store}.pushToDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.encoded});
+              }
+            `
           )
         );
 
@@ -181,18 +181,18 @@ export function renderFieldMethods(options: RenderTableOptions) {
           renderWithStore(
             storeArgument,
             ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
-            /**
-             * @notice Pop ${portionData.title} from ${field.name}${_commentSuffix}.
-             */
-            function ${_methodNamePrefix}pop${_methodNameSuffix}(${renderArguments([
+              /**
+               * @notice Pop ${portionData.title} from ${field.name}${_commentSuffix}.
+               */
+              function ${_methodNamePrefix}pop${_methodNameSuffix}(${renderArguments([
               _typedStore,
               _typedTableId,
               _typedKeyArgs,
             ])}) internal {
-              ${_keyTupleDefinition}
-              ${_store}.popFromDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.elementLength});
-            }
-          `
+                ${_keyTupleDefinition}
+                ${_store}.popFromDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.elementLength});
+              }
+            `
           )
         );
       }
