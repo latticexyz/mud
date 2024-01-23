@@ -97,7 +97,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
               ])}) internal pure returns (uint256) {
                 return ${field.typeWrappingData?.staticLength};
               }
-          `
+            `
             )
           );
         } else {
@@ -105,21 +105,21 @@ export function renderFieldMethods(options: RenderTableOptions) {
             renderWithStore(
               storeArgument,
               ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
-            /**
-             * @notice Get the length of ${field.name}${_commentSuffix}.
-             */
-            function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
+              /**
+               * @notice Get the length of ${field.name}${_commentSuffix}.
+               */
+              function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
                 _typedStore,
                 _typedTableId,
                 _typedKeyArgs,
               ])}) internal view returns (uint256) {
-              ${_keyTupleDefinition}
-              uint256 _byteLength = ${_store}.getDynamicFieldLength(_tableId, _keyTuple, ${dynamicSchemaIndex});
-              unchecked {
-                return _byteLength / ${portionData.elementLength};
+                ${_keyTupleDefinition}
+                uint256 _byteLength = ${_store}.getDynamicFieldLength(_tableId, _keyTuple, ${dynamicSchemaIndex});
+                unchecked {
+                  return _byteLength / ${portionData.elementLength};
+                }
               }
-            }
-        `
+            `
             )
           );
         }
@@ -128,11 +128,11 @@ export function renderFieldMethods(options: RenderTableOptions) {
           renderWithStore(
             storeArgument,
             ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
-              /**
-               * @notice Get an item of ${field.name}${_commentSuffix}.
-               * @dev Reverts with Store_IndexOutOfBounds if \`_index\` is out of bounds for the array.
-              */
-              function ${_methodNamePrefix}getItem${_methodNameSuffix}(${renderArguments([
+            /**
+             * @notice Get an item of ${field.name}${_commentSuffix}.
+             * @dev Reverts with Store_IndexOutOfBounds if \`_index\` is out of bounds for the array.
+            */
+            function ${_methodNamePrefix}getItem${_methodNameSuffix}(${renderArguments([
               _typedStore,
               _typedTableId,
               _typedKeyArgs,
@@ -146,11 +146,11 @@ export function renderFieldMethods(options: RenderTableOptions) {
                   ${dynamicSchemaIndex},
                   _index * ${portionData.elementLength},
                   (_index + 1) * ${portionData.elementLength}
-                  );
-                  return ${portionData.decoded};
-                }
+                );
+                return ${portionData.decoded};
               }
-            `
+            }
+          `
           )
         );
       }
@@ -160,10 +160,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
           renderWithStore(
             storeArgument,
             ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
-              /**
-               * @notice Push ${portionData.title} to ${field.name}${_commentSuffix}.
-               */
-              function ${_methodNamePrefix}push${_methodNameSuffix}(${renderArguments([
+            /**
+             * @notice Push ${portionData.title} to ${field.name}${_commentSuffix}.
+             */
+            function ${_methodNamePrefix}push${_methodNameSuffix}(${renderArguments([
               _typedStore,
               _typedTableId,
               _typedKeyArgs,
@@ -172,7 +172,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
               ${_keyTupleDefinition}
               ${_store}.pushToDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.encoded});
             }
-            `
+          `
           )
         );
 
