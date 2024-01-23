@@ -80,9 +80,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
     if (field.isDynamic) {
       const portionData = fieldPortionData(field);
       const dynamicSchemaIndex = schemaIndex - options.staticFields.length;
+      const { typeWrappingData } = field;
 
       if (options.withGetters) {
-        if (field.typeWrappingData && field.typeWrappingData.kind === "staticArray") {
+        if (typeWrappingData && typeWrappingData.kind === "staticArray") {
           result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
             renderWithStore(
               storeArgument,
@@ -95,7 +96,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
                 _typedTableId,
                 _typedKeyArgs,
               ])}) internal pure returns (uint256) {
-                return ${field.typeWrappingData?.staticLength};
+                return ${typeWrappingData.staticLength};
               }
             `
             )
@@ -155,7 +156,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         );
       }
 
-      if (!field.typeWrappingData || field.typeWrappingData.kind !== "staticArray") {
+      if (!typeWrappingData || typeWrappingData.kind !== "staticArray") {
         result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
           renderWithStore(
             storeArgument,
