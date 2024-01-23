@@ -28,11 +28,11 @@ export default mudConfig({
     },
     InstalledModules: {
       keySchema: {
-        moduleName: "bytes16",
+        moduleAddress: "address",
         argumentsHash: "bytes32", // Hash of the params passed to the `install` function
       },
       valueSchema: {
-        moduleAddress: "address",
+        isInstalled: "bool",
       },
     },
     UserDelegationControl: {
@@ -102,6 +102,10 @@ export default mudConfig({
         functionSignature: "string",
       },
       offchainOnly: true,
+    },
+    CoreModuleAddress: {
+      keySchema: {},
+      valueSchema: "address",
     },
   },
   excludeSystems: [

@@ -14,14 +14,7 @@ interface IModule is IERC165 {
   error Module_RootInstallNotSupported();
   error Module_NonRootInstallNotSupported();
   error Module_AlreadyInstalled();
-  error Module_MissingDependency(string dependency);
-
-  /**
-   * @notice Return the name of the module.
-   * @dev Provides a way to identify the module by a unique name.
-   * @return name The name of the module as a bytes16.
-   */
-  function getName() external view returns (bytes16 name);
+  error Module_MissingDependency(address dependency);
 
   /**
    * @notice Installs the module as a root module.

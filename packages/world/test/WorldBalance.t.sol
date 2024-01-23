@@ -126,7 +126,7 @@ contract WorldBalanceTest is Test, GasReporter {
     // Call a function on a non-root system with value
     vm.deal(caller, value);
     vm.prank(caller);
-    (success, data) = address(world).call{ value: value }(abi.encodeWithSignature("namespace_testSystem_echoValue()"));
+    (success, data) = address(world).call{ value: value }(abi.encodeWithSignature("namespace__echoValue()"));
     assertTrue(success);
     assertEq(abi.decode(data, (uint256)), value);
 
