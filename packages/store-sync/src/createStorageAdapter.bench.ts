@@ -26,22 +26,22 @@ const blocks = groupLogsByBlockNumber(
   })
 );
 
+const world = createWorld();
+const { storageAdapter: recsStorageAdapter } = recsStorage({ world, tables });
+
+const useStore = createStore({ tables });
+const zustandStorageAdapter = createStorageAdapter({ store: useStore });
+
 describe("Storage Adapter", () => {
   bench("recs: `storageAdapter`", async () => {
-    const world = createWorld();
-    const { storageAdapter } = recsStorage({ world, tables });
-
     for (const block of blocks) {
-      await storageAdapter(block);
+      await recsStorageAdapter(block);
     }
   });
 
   bench("zustand: `storageAdapter`", async () => {
-    const useStore = createStore({ tables });
-    const storageAdapter = createStorageAdapter({ store: useStore });
-
     for (const block of blocks) {
-      await storageAdapter(block);
+      await zustandStorageAdapter(block);
     }
   });
 });
