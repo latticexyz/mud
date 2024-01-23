@@ -2,7 +2,7 @@ import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import { storeEventsAbi } from "@latticexyz/store";
 import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
 import worldRpcLogs from "../../../test-data/world-logs.json";
-import { StoreEventsLog } from "./common";
+import { StoreEventsLog } from "../src/common";
 
 // TODO: make test-data a proper package and export this
 export const blocks = groupLogsByBlockNumber(

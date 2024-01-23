@@ -11,7 +11,7 @@ import initSqlJs from "sql.js";
 import { sqliteStorage } from "./sqlite";
 import { createStorageAdapter } from "./zustand/createStorageAdapter";
 import { createStore } from "./zustand/createStore";
-import { blocks } from "./constants";
+import { blocks } from "../test/constants";
 
 const tables = resolveConfig(mudConfig).tables;
 
