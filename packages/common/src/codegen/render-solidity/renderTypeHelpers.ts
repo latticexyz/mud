@@ -1,5 +1,8 @@
 import { RenderField, RenderKeyTuple, RenderType } from "./types";
 
+/**
+ * Renders the necessary helper functions to typecast to/from the types of given fields and keys
+ */
 export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: RenderKeyTuple[] }): string {
   const { fields, keyTuple } = options;
 
