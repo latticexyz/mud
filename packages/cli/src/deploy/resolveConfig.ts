@@ -54,7 +54,7 @@ export function resolveConfig<config extends ConfigInput>({
       .filter((sig) => !baseSystemFunctions.includes(sig))
       .map((sig): WorldFunction => {
         // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
-        const worldSignature = namespace === "" ? sig : `${namespace}_${name}_${sig}`;
+        const worldSignature = namespace === "" ? sig : `${namespace}__${sig}`;
         return {
           signature: worldSignature,
           selector: getFunctionSelector(worldSignature),
