@@ -74,6 +74,12 @@ await worldContract.write.set([[420]]);
 console.log("calling push");
 const lastTx = await worldContract.write.push([69]);
 
+await worldContract.write.setNumber([1, 11]);
+await worldContract.write.setNumber([2, 22]);
+await worldContract.write.setNumber([3, 33]);
+await worldContract.write.setNumber([4, 44]);
+await worldContract.write.setNumber([5, 55]);
+
 console.log("waiting for tx");
 const receipt = await publicClient.waitForTransactionReceipt({ hash: lastTx });
 
