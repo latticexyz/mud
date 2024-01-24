@@ -42,13 +42,17 @@ for (const block of blocks) {
   await sqliteStorageAdapter(block);
 }
 
-describe("Get State", () => {
+describe("Get Records", () => {
   bench("recs: `getComponentValue`", async () => {
     getComponentValue(components.NumberList, singletonEntity);
   });
 
-  bench("zustand: `getState`", async () => {
+  bench("zustand: `getRecords`", async () => {
     useStore.getState().getRecords(tables.NumberList);
+  });
+
+  bench("zustand: `getValue`", async () => {
+    useStore.getState().getValue(tables.NumberList, {});
   });
 
   bench("sqlite: `select`", async () => {
