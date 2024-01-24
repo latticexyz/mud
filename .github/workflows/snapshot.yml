@@ -8,6 +8,8 @@ on:
     branches:
       - main
 
+concurrency: publish-to-npm
+
 jobs:
   release-snapshot:
     name: Publish snapshot release to npm

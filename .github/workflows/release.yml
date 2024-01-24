@@ -5,7 +5,7 @@ on:
     branches:
       - v2
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency: publish-to-npm
 
 jobs:
   version:

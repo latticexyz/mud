@@ -10,7 +10,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   prerelease:
-    name: Changests Prerelease
+    name: Changesets Prerelease
     if: github.repository == 'latticexyz/mud'
     runs-on: ubuntu-latest
     # Permissions necessary for Changesets to push a new branch and open PRs
