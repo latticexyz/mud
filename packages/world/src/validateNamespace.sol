@@ -3,7 +3,7 @@ pragma solidity >=0.8.21;
 
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 
-import { ResourceId, WorldResourceIdInstance, NAMESPACE_BYTES } from "./WorldResourceId.sol";
+import { ResourceId, WorldResourceIdInstance, NAMESPACE_BYTES, WorldResourceIdLib } from "./WorldResourceId.sol";
 import { RESOURCE_NAMESPACE } from "./worldResourceTypes.sol";
 import { IWorldErrors } from "./IWorldErrors.sol";
 
@@ -27,5 +27,11 @@ function validateNamespace(ResourceId resourceId) pure {
     if (Bytes.slice1(namespace, i) == bytes1("_") && Bytes.slice1(namespace, i + 1) == bytes1("_")) {
       revert IWorldErrors.World_InvalidNamespace(namespace);
     }
+  }
+
+  // Require the namespace to not end with an underscore
+  uint256 namespaceStringLength = bytes(WorldResourceIdLib.toTrimmedString(namespace)).length;
+  if (namespaceStringLength > 0 && Bytes.slice1(namespace, namespaceStringLength - 1) == "_") {
+    revert IWorldErrors.World_InvalidNamespace(namespace);
   }
 }

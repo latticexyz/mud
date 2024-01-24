@@ -363,6 +363,10 @@ contract WorldTest is Test, GasReporter {
     bytes14 invalidNamespace = "invld__nmsp";
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InvalidNamespace.selector, invalidNamespace));
     world.registerNamespace(WorldResourceIdLib.encodeNamespace(invalidNamespace));
+
+    bytes14 invalidNamespace2 = "invldnmsp_";
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InvalidNamespace.selector, invalidNamespace2));
+    world.registerNamespace(WorldResourceIdLib.encodeNamespace(invalidNamespace2));
   }
 
   function testRegisterCoreNamespacesRevert() public {
