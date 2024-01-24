@@ -51,7 +51,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
               }
               return ${renderDecodeFieldSingle(field)};
             }
-        `
+          `
         )
       );
     }
@@ -80,29 +80,50 @@ export function renderFieldMethods(options: RenderTableOptions) {
     if (field.isDynamic) {
       const portionData = fieldPortionData(field);
       const dynamicSchemaIndex = schemaIndex - options.staticFields.length;
+      const { typeWrappingData } = field;
 
       if (options.withGetters) {
-        result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-          renderWithStore(
-            storeArgument,
-            ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
-              /**
-               * @notice Get the length of ${field.name}${_commentSuffix}.
-               */
-              function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
-              _typedStore,
-              _typedTableId,
-              _typedKeyArgs,
-            ])}) internal view returns (uint256) {
-                ${_keyTupleDefinition}
-                uint256 _byteLength = ${_store}.getDynamicFieldLength(_tableId, _keyTuple, ${dynamicSchemaIndex});
-                unchecked {
-                  return _byteLength / ${portionData.elementLength};
+        if (typeWrappingData && typeWrappingData.kind === "staticArray") {
+          result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
+            renderWithStore(
+              storeArgument,
+              ({ _typedStore, _commentSuffix, _methodNamePrefix }) => `
+                /**
+                 * @notice Get the length of ${field.name}${_commentSuffix}.
+                 */
+                function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
+                _typedStore,
+                _typedTableId,
+                _typedKeyArgs,
+              ])}) internal pure returns (uint256) {
+                  return ${typeWrappingData.staticLength};
                 }
-              }
-          `
-          )
-        );
+              `
+            )
+          );
+        } else {
+          result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
+            renderWithStore(
+              storeArgument,
+              ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
+                /**
+                 * @notice Get the length of ${field.name}${_commentSuffix}.
+                 */
+                function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
+                _typedStore,
+                _typedTableId,
+                _typedKeyArgs,
+              ])}) internal view returns (uint256) {
+                  ${_keyTupleDefinition}
+                  uint256 _byteLength = ${_store}.getDynamicFieldLength(_tableId, _keyTuple, ${dynamicSchemaIndex});
+                  unchecked {
+                    return _byteLength / ${portionData.elementLength};
+                  }
+                }
+              `
+            )
+          );
+        }
 
         result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
           renderWithStore(
@@ -118,14 +139,14 @@ export function renderFieldMethods(options: RenderTableOptions) {
               _typedKeyArgs,
               "uint256 _index",
             ])}) internal view returns (${portionData.typeWithLocation}) {
-              ${_keyTupleDefinition}
-              unchecked {
-                bytes memory _blob = ${_store}.getDynamicFieldSlice(
-                  _tableId,
-                  _keyTuple,
-                  ${dynamicSchemaIndex},
-                  _index * ${portionData.elementLength},
-                  (_index + 1) * ${portionData.elementLength}
+                ${_keyTupleDefinition}
+                unchecked {
+                  bytes memory _blob = ${_store}.getDynamicFieldSlice(
+                    _tableId,
+                    _keyTuple,
+                    ${dynamicSchemaIndex},
+                    _index * ${portionData.elementLength},
+                    (_index + 1) * ${portionData.elementLength}
                   );
                   return ${portionData.decoded};
                 }
@@ -135,44 +156,46 @@ export function renderFieldMethods(options: RenderTableOptions) {
         );
       }
 
-      result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-        renderWithStore(
-          storeArgument,
-          ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
+      if (!typeWrappingData || typeWrappingData.kind !== "staticArray") {
+        result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
+          renderWithStore(
+            storeArgument,
+            ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
               /**
                * @notice Push ${portionData.title} to ${field.name}${_commentSuffix}.
                */
               function ${_methodNamePrefix}push${_methodNameSuffix}(${renderArguments([
-            _typedStore,
-            _typedTableId,
-            _typedKeyArgs,
-            `${portionData.typeWithLocation} ${portionData.name}`,
-          ])}) internal {
-              ${_keyTupleDefinition}
-              ${_store}.pushToDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.encoded});
-            }
+              _typedStore,
+              _typedTableId,
+              _typedKeyArgs,
+              `${portionData.typeWithLocation} ${portionData.name}`,
+            ])}) internal {
+                ${_keyTupleDefinition}
+                ${_store}.pushToDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.encoded});
+              }
             `
-        )
-      );
+          )
+        );
 
-      result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-        renderWithStore(
-          storeArgument,
-          ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
-            /**
-             * @notice Pop ${portionData.title} from ${field.name}${_commentSuffix}.
-             */
-            function ${_methodNamePrefix}pop${_methodNameSuffix}(${renderArguments([
-            _typedStore,
-            _typedTableId,
-            _typedKeyArgs,
-          ])}) internal {
-              ${_keyTupleDefinition}
-              ${_store}.popFromDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.elementLength});
-            }
-          `
-        )
-      );
+        result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
+          renderWithStore(
+            storeArgument,
+            ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
+              /**
+               * @notice Pop ${portionData.title} from ${field.name}${_commentSuffix}.
+               */
+              function ${_methodNamePrefix}pop${_methodNameSuffix}(${renderArguments([
+              _typedStore,
+              _typedTableId,
+              _typedKeyArgs,
+            ])}) internal {
+                ${_keyTupleDefinition}
+                ${_store}.popFromDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.elementLength});
+              }
+            `
+          )
+        );
+      }
 
       result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
         renderWithStore(storeArgument, ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => {

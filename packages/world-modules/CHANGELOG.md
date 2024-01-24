@@ -1,5 +1,77 @@
 # Change Log
 
+## 2.0.0-next.16
+
+### Major Changes
+
+- 865253db: Refactored `InstalledModules` to key modules by addresses instead of pre-defined names. Previously, modules could report arbitrary names, meaning misconfigured modules could be installed under a name intended for another module.
+
+### Patch Changes
+
+- eaa766ef: Removed `IUniqueEntitySystem` in favor of calling `getUniqueEntity` via `world.call` instead of the world function selector. This had a small gas improvement.
+- 0f27afdd: World function signatures for namespaced systems have changed from `{namespace}_{systemName}_{functionName}` to `{namespace}__{functionName}` (double underscore, no system name). This is more ergonomic and is more consistent with namespaced resources in other parts of the codebase (e.g. MUD config types, table names in the schemaful indexer).
+
+  If you have a project using the `namespace` key in your `mud.config.ts` or are manually registering systems and function selectors on a namespace, you will likely need to codegen your system interfaces (`pnpm build`) and update any calls to these systems through the world's namespaced function signatures.
+
+- 063daf80: Previously `registerSystem` and `registerTable` had a side effect of registering namespaces if the system or table's namespace didn't exist yet.
+  This caused a possible frontrunning issue, where an attacker could detect a `registerSystem`/`registerTable` transaction in the mempool,
+  insert a `registerNamespace` transaction before it, grant themselves access to the namespace, transfer ownership of the namespace to the victim,
+  so that the `registerSystem`/`registerTable` transactions still went through successfully.
+  To mitigate this issue, the side effect of registering a namespace in `registerSystem` and `registerTable` has been removed.
+  Calls to these functions now expect the respective namespace to exist and the caller to own the namespace, otherwise they revert.
+
+  Changes in consuming projects are only necessary if tables or systems are registered manually.
+  If only the MUD deployer is used to register tables and systems, no changes are necessary, as the MUD deployer has been updated accordingly.
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     world.registerSystem(systemId, system, true);
+  ```
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     MyTable.register();
+  ```
+
+- 37c228c6: Refactored `ResourceId` to use a global Solidity `using` statement.
+- 37c228c6: Refactored EIP165 usages to use the built-in interfaceId property instead of pre-defined constants.
+- 37c228c6: Refactored various Solidity files to not explicitly initialise variables to zero.
+- Updated dependencies [c6c13f2e]
+- Updated dependencies [0f27afdd]
+- Updated dependencies [865253db]
+- Updated dependencies [e6c03a87]
+- Updated dependencies [c207d35e]
+- Updated dependencies [d00c4a9a]
+- Updated dependencies [37c228c6]
+- Updated dependencies [1bf2e908]
+- Updated dependencies [f6f40289]
+- Updated dependencies [08b42217]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [063daf80]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [2bfee921]
+- Updated dependencies [7b28d32e]
+- Updated dependencies [9f8b84e7]
+- Updated dependencies [aee8020a]
+- Updated dependencies [ad4ac445]
+- Updated dependencies [57d8965d]
+- Updated dependencies [e4a6189d]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [3ac68ade]
+- Updated dependencies [c642ff3a]
+- Updated dependencies [37c228c6]
+- Updated dependencies [103f635e]
+  - @latticexyz/store@2.0.0-next.16
+  - @latticexyz/world@2.0.0-next.16
+  - @latticexyz/common@2.0.0-next.16
+  - @latticexyz/config@2.0.0-next.16
+  - @latticexyz/schema-type@2.0.0-next.16
+
 ## 2.0.0-next.15
 
 ### Patch Changes
