@@ -6,7 +6,8 @@ on:
       # Target main branch
       - "main"
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+# Ensure only one workflow/job is publishing to npm at a time
+concurrency: publish-to-npm
 
 jobs:
   prerelease:

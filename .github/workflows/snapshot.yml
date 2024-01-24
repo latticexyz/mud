@@ -8,6 +8,7 @@ on:
     branches:
       - main
 
+# Ensure only one workflow/job is publishing to npm at a time
 concurrency: publish-to-npm
 
 jobs:
