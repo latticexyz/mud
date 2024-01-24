@@ -1,33 +1,7 @@
 import { bench, describe } from "vitest";
-import { resolveConfig } from "@latticexyz/store";
-import { createWorld } from "@latticexyz/recs";
-import { drizzle } from "drizzle-orm/sql-js";
-import { createPublicClient, http } from "viem";
-import { foundry } from "viem/chains";
 
-import mudConfig from "../../../e2e/packages/contracts/mud.config";
-import { recsStorage } from "./recs";
-import initSqlJs from "sql.js";
-import { sqliteStorage } from "./sqlite";
-import { createStorageAdapter } from "./zustand/createStorageAdapter";
-import { createStore } from "./zustand/createStore";
 import { blocks } from "../test/constants";
-
-const tables = resolveConfig(mudConfig).tables;
-
-const world = createWorld();
-const { storageAdapter: recsStorageAdapter } = recsStorage({ world, tables });
-
-const useStore = createStore({ tables });
-const zustandStorageAdapter = createStorageAdapter({ store: useStore });
-
-const SqlJs = await initSqlJs();
-const db = drizzle(new SqlJs.Database(), {});
-const publicClient = createPublicClient({
-  chain: foundry,
-  transport: http(),
-});
-const sqliteStorageAdapter = await sqliteStorage({ database: db, publicClient });
+import { recsStorageAdapter, sqliteStorageAdapter, zustandStorageAdapter } from "../test/utils";
 
 describe("Storage Adapter", () => {
   bench("recs: `storageAdapter`", async () => {
