@@ -1,6 +1,6 @@
 import { bench, describe } from "vitest";
 import { resolveConfig } from "@latticexyz/store";
-import { createWorld, getComponentValue } from "@latticexyz/recs";
+import { createWorld, getComponentEntities, getComponentValue } from "@latticexyz/recs";
 import { drizzle } from "drizzle-orm/sql-js";
 import { createPublicClient, http } from "viem";
 import { foundry } from "viem/chains";
@@ -44,7 +44,9 @@ for (const block of blocks) {
 
 describe("Get Records", () => {
   bench("recs: `getComponentValue`", async () => {
-    getComponentValue(components.NumberList, singletonEntity);
+    for (const entity of getComponentEntities(components.NumberList)) {
+      getComponentValue(components.NumberList, entity);
+    }
   });
 
   bench("zustand: `getRecords`", async () => {
