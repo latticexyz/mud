@@ -101,7 +101,7 @@ export function contractToInterface(
         }
       } catch (error: unknown) {
         if (error instanceof MUDError) {
-          error.message = `Function "${name}" in contract "${contractName}": ${error.message}`;
+          throw new MUDError(`Function "${name}" in contract "${contractName}": ${error.message}`);
         }
         throw error;
       }
