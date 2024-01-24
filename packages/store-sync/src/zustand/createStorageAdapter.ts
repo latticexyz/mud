@@ -30,7 +30,6 @@ export function createStorageAdapter<tables extends Tables>({
       if (!table) {
         const { namespace, name } = hexToResource(log.args.tableId);
         debug(`skipping update for unknown table: ${namespace}:${name} (${log.args.tableId}) at ${log.address}`);
-        console.log(store.getState().tables, log.args.tableId);
         continue;
       }
 
