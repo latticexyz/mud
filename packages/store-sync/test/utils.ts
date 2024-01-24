@@ -2,12 +2,12 @@ import { drizzle } from "drizzle-orm/sql-js";
 import { createPublicClient, http } from "viem";
 import { foundry } from "viem/chains";
 import initSqlJs from "sql.js";
-import { sqliteStorage } from "../src/sqlite";
-import { resolveConfig } from "@latticexyz/store";
 import mudConfig from "../../../e2e/packages/contracts/mud.config";
-import { createStorageAdapter, createStore } from "../src/zustand";
 import { createWorld } from "@latticexyz/recs";
+import { resolveConfig } from "@latticexyz/store";
 import { recsStorage } from "../src/recs";
+import { sqliteStorage } from "../src/sqlite";
+import { createStorageAdapter, createStore } from "../src/zustand";
 
 const publicClient = createPublicClient({
   chain: foundry,
