@@ -1,5 +1,5 @@
 ---
-"@latticexyz/common": major
+"@latticexyz/common": minor
 ---
 
 - Added events, structs and enums to `contractToInterface`'s return object.
