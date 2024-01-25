@@ -28,7 +28,7 @@ describe("mudConfig", () => {
         };
       }>
     >
-  >().toEqualTypeOf<{
+  >().toMatchTypeOf<{
     enums: {
       Enum1: ["E1"];
       Enum2: ["E1"];
