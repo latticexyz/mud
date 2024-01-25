@@ -30,10 +30,6 @@ describe("Get Records", () => {
     useStore.getState().getRecords(tables.NumberList);
   });
 
-  bench("zustand: `getValue`", async () => {
-    useStore.getState().getValue(tables.NumberList, {});
-  });
-
   bench("sqlite: `select`", async () => {
     db.select().from(mudStoreTables).where(eq(mudStoreTables.name, "NumberList")).all();
   });
