@@ -27,7 +27,7 @@ import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
 import { Systems } from "../../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "../../../codegen/tables/FunctionSignatures.sol";
-import { requireNamespace } from "../../../requireNamespace.sol";
+import { validateNamespace } from "../../../validateNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
 
@@ -44,8 +44,8 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @param namespaceId The unique identifier for the new namespace
    */
   function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall {
-    // Require namespace to be a valid namespace ID
-    requireNamespace(namespaceId);
+    // Require namespace ID to be a valid namespace
+    validateNamespace(namespaceId);
 
     // Require namespace to not exist yet
     if (ResourceIds._getExists(namespaceId)) {
@@ -195,14 +195,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
 
     // Compute global function selector
     string memory namespaceString = WorldResourceIdLib.toTrimmedString(systemId.getNamespace());
-    string memory nameString = WorldResourceIdLib.toTrimmedString(systemId.getName());
-    bytes memory worldFunctionSignature = abi.encodePacked(
-      namespaceString,
-      "_",
-      nameString,
-      "_",
-      systemFunctionSignature
-    );
+    bytes memory worldFunctionSignature = abi.encodePacked(namespaceString, "__", systemFunctionSignature);
     worldFunctionSelector = bytes4(keccak256(worldFunctionSignature));
 
     // Require the function selector to be globally unique
@@ -284,7 +277,12 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     }
   }
 
-  function unregisterDelegation(address delegatee) public {
+  /**
+   * @notice Unregisters a delegation
+   * @dev Deletes the new delegation from the caller to the specified delegatee
+   * @param delegatee The address of the delegatee
+   */
+  function unregisterDelegation(address delegatee) public onlyDelegatecall {
     // Delete the delegation control contract address
     UserDelegationControl.deleteRecord({ delegator: _msgSender(), delegatee: delegatee });
   }
@@ -301,8 +299,8 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public onlyDelegatecall {
-    // Require namespace to be a valid namespace ID
-    requireNamespace(namespaceId);
+    // Require namespace ID to be a valid namespace
+    validateNamespace(namespaceId);
 
     // Require the delegation to not be unlimited
     if (!Delegation.isLimited(delegationControlId)) {
@@ -328,5 +326,24 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
         value: 0
       });
     }
+  }
+
+  /**
+   * @notice Unregisters a delegation for a namespace
+   * @dev Deletes the delegation control for a specific namespace
+   * @param namespaceId The ID of the namespace
+   */
+  function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelegatecall {
+    // Require namespace ID to be a valid namespace
+    validateNamespace(namespaceId);
+
+    // Require the namespace to exist
+    AccessControl.requireExistence(namespaceId);
+
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(namespaceId, _msgSender());
+
+    // Delete the delegation control
+    NamespaceDelegationControl.deleteRecord(namespaceId);
   }
 }

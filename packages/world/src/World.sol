@@ -19,13 +19,13 @@ import { requireInterface } from "./requireInterface.sol";
 import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
+import { CoreModuleAddress } from "./codegen/tables/CoreModuleAddress.sol";
 
 import { IModule, IModule } from "./IModule.sol";
 import { IWorldKernel } from "./IWorldKernel.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
-import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 /**
  * @title World Contract
@@ -71,9 +71,11 @@ contract World is StoreData, IWorldKernel {
     }
 
     // The World can only be initialized once
-    if (InstalledModules._get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
+    if (CoreModuleAddress.get() != address(0)) {
       revert World_AlreadyInitialized();
     }
+
+    CoreModuleAddress.set(address(coreModule));
 
     // Initialize the World by installing the core module
     _installRootModule(coreModule, new bytes(0));
@@ -107,7 +109,7 @@ contract World is StoreData, IWorldKernel {
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules._set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(address(module), keccak256(args), true);
   }
 
   /************************************************************************

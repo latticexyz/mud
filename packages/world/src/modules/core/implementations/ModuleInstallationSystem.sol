@@ -33,6 +33,6 @@ contract ModuleInstallationSystem is System, LimitedCallContext {
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules._set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(address(module), keccak256(args), true);
   }
 }

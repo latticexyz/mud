@@ -1,12 +1,14 @@
 import { RenderType } from "@latticexyz/common/codegen";
 import { BYTE_TO_BITS, LayoutOffsets, MAX_DYNAMIC_FIELDS, MAX_TOTAL_FIELDS, WORD_LAST_INDEX } from "../constants";
 
-export function renderFieldLayout(fields: RenderType[]) {
+type FieldLayoutRenderType = Pick<RenderType, "isDynamic" | "staticByteLength">;
+
+export function renderFieldLayout(fields: FieldLayoutRenderType[]): string {
   return `FieldLayout constant _fieldLayout = FieldLayout.wrap(${encodeFieldLayout(fields)});`;
 }
 
 // Make sure this logic stays aligned with @latticexyz/store/src/FieldLayout.sol
-export function encodeFieldLayout(fields: RenderType[]) {
+function encodeFieldLayout(fields: FieldLayoutRenderType[]): string {
   const staticFields = fields.filter(({ isDynamic }) => !isDynamic);
   const numDynamicFields = fields.length - staticFields.length;
 
