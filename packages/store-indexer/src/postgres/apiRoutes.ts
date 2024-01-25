@@ -53,7 +53,7 @@ export function apiRoutes(database: Sql): Middleware {
       // we've also turned on `stale-while-revalidate`, which will refetch in the background once stale so responses are always snappy
       const maxAgeInBlocks = 1000 * 4;
       const secondsPerBlock = 2;
-      ctx.set("Cache-Control", `s-maxage=${maxAgeInBlocks * secondsPerBlock}, stale-while-revalidate`);
+      ctx.set("Cache-Control", `public, max-age=${maxAgeInBlocks * secondsPerBlock}, stale-while-revalidate`);
     } catch (e) {
       ctx.status = 500;
       ctx.body = JSON.stringify(e);
