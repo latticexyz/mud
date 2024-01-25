@@ -67,8 +67,8 @@ describe("renderTableId", () => {
             bytes32(
               abi.encodePacked(
                 RESOURCE_TABLE,
-                bytes14(\\"somewhere\\"),
-                bytes16(\\"Player\\")
+                bytes14("somewhere"),
+                bytes16("Player")
               )
             )
           );
@@ -85,8 +85,8 @@ describe("renderTableId", () => {
               bytes32(
                 abi.encodePacked(
                   RESOURCE_OFFCHAIN_TABLE,
-                  bytes14(\\"somewhere\\"),
-                  bytes16(\\"Player\\")
+                  bytes14("somewhere"),
+                  bytes16("Player")
                 )
               )
             );
