@@ -43,7 +43,7 @@
     "@types/debug": "^4.1.7",
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
-    "vitest": "0.31.4"
+    "vitest": "0.34.6"
   },
   "publishConfig": {
     "access": "public"
