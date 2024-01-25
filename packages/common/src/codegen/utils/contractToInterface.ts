@@ -19,11 +19,6 @@ export interface ContractInterfaceError {
   parameters: string[];
 }
 
-export interface ContractInterfaceEvent {
-  name: string;
-  parameters: string[];
-}
-
 export interface ContractInterfaceStruct {
   name: string;
   members: string[];
@@ -52,7 +47,6 @@ export function contractToInterface(
 ): {
   functions: ContractInterfaceFunction[];
   errors: ContractInterfaceError[];
-  events: ContractInterfaceEvent[];
   structs: ContractInterfaceStruct[];
   enums: ContractInterfaceEnum[];
   symbolImports: SymbolImport[];
@@ -63,7 +57,6 @@ export function contractToInterface(
   let symbolImports: SymbolImport[] = [];
   const functions: ContractInterfaceFunction[] = [];
   const errors: ContractInterfaceError[] = [];
-  const events: ContractInterfaceEvent[] = [];
   const structs: ContractInterfaceStruct[] = [];
   const enums: ContractInterfaceEnum[] = [];
 
@@ -114,14 +107,6 @@ export function contractToInterface(
 
       symbolImports = symbolImports.concat(variableDeclarationsToImports(ast, parameters));
     },
-    EventDefinition({ name, parameters }) {
-      events.push({
-        name,
-        parameters: parameters.map(parseParameter),
-      });
-
-      symbolImports = symbolImports.concat(variableDeclarationsToImports(ast, parameters));
-    },
     StructDefinition({ name, members }) {
       structs.push({
         name,
@@ -141,7 +126,6 @@ export function contractToInterface(
   return {
     functions,
     errors,
-    events,
     structs,
     enums,
     symbolImports,
