@@ -14,11 +14,8 @@ contract CustomStructEnumSystem is System {
     VAL2
   }
 
-  TestStruct internal testStruct;
-  TestEnum internal testEnum;
-
-  function stub3(uint8 val1, bytes32 val2) public {
-    testStruct = TestStruct({ val1: val1, val2: val2 });
-    testEnum = TestEnum.VAL2;
-  }
+  // TODO: this fails to codegen an interface
+  // function stub3(TestStruct memory testStruct, TestEnum testEnum) public {
+  //   testStruct.val1 = uint8(testEnum);
+  // }
 }

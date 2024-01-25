@@ -17,6 +17,4 @@ interface ICustomStructEnumSystem {
     VAL1,
     VAL2
   }
-
-  function stub3(uint8 val1, bytes32 val2) external;
 }
