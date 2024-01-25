@@ -202,7 +202,10 @@ export function renderWithFieldSuffix(
   return result;
 }
 
-// TODO: docs
+/**
+ * Renders `_tableId` variable definition and initialization, and its alias which uses the provided `tableIdName`.
+ * @param param0 static resource data needed to construct the table id
+ */
 export function renderTableId({
   namespace,
   name,

@@ -2,7 +2,11 @@ import { renderedSolidityHeader } from "@latticexyz/common/codegen";
 import { staticAbiTypeToByteLength, staticAbiTypes } from "@latticexyz/schema-type";
 import { renderTightCoderDecode } from "./renderFunctions";
 
-// TODO: docs
+/**
+ * Renders `DecodeSlice` library with the necessary header and imports,
+ * which provides methods for decoding `Slice` into arrays of all primitive types
+ * @returns string of Solidity code
+ */
 export function renderDecodeSlice() {
   return `
     ${renderedSolidityHeader}

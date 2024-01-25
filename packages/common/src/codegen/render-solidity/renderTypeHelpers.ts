@@ -62,6 +62,14 @@ function getWrappingHelpers(array: RenderType[]): string[] {
   return [...wrappers.values(), ...unwrappers.values()];
 }
 
+/**
+ * Renders a function to cast a dynamic array to a static array.
+ * @param functionName name of the function to be rendered
+ * @param elementType type of the array's element
+ * @param staticLength length of the static array
+ * @param internalTypeId solidity type name of the dynamic array
+ * @returns
+ */
 function renderWrapperStaticArray(
   functionName: string,
   elementType: string,
@@ -99,7 +107,14 @@ function renderWrapperStaticArray(
   `;
 }
 
-// TODO: docs
+/**
+ * Renders a function to cast a static array to a dynamic array.
+ * @param functionName name of the function to be rendered
+ * @param elementType type of the array's element
+ * @param staticLength length of the static array
+ * @param internalTypeId solidity type name of the dynamic array
+ * @returns
+ */
 function renderUnwrapperStaticArray(
   functionName: string,
   elementType: string,

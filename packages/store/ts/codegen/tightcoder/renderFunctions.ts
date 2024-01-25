@@ -1,6 +1,10 @@
 import { RenderType, getLeftPaddingBits } from "@latticexyz/common/codegen";
 
-// TODO: docs
+/**
+ * Renders `decodeArray_*` method for decoding `Slice` into the array of provided primitive type
+ * @param element name and byte length of the primitive type
+ * @returns string of Solidity code
+ */
 export function renderTightCoderDecode(element: Pick<RenderType, "internalTypeId" | "staticByteLength">) {
   return `
     /**
@@ -26,7 +30,11 @@ export function renderTightCoderDecode(element: Pick<RenderType, "internalTypeId
   `;
 }
 
-// TODO: docs
+/**
+ * Renders `encode` method for encoding the array of provided primitive type into `Slice`
+ * @param element name and byte length of the primitive type
+ * @returns string of Solidity code
+ */
 export function renderTightCoderEncode(element: Pick<RenderType, "internalTypeId" | "staticByteLength">) {
   return `
 
