@@ -38,5 +38,5 @@ services:
 
 databases:
   - name: skystrife-indexer-db
-    plan: standard
+    plan: pro
     region: ohio
