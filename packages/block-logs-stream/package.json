@@ -20,7 +20,7 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests",
+    "test": "vitest --typecheck --run --passWithNoTests",
     "test:ci": "pnpm run test"
   },
   "dependencies": {

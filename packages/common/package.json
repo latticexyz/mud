@@ -49,7 +49,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "test": "vitest typecheck --run --passWithNoTests && vitest --run",
+    "test": "vitest --typecheck --run --passWithNoTests",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
