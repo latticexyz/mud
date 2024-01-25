@@ -81,6 +81,9 @@ contract StoreRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     // Require the table's namespace to exist
     AccessControl.requireExistence(tableId.getNamespaceId());
 
+    // Require the table to exist
+    AccessControl.requireExistence(tableId);
+
     // Require caller to own the namespace
     AccessControl.requireOwner(tableId, _msgSender());
 
