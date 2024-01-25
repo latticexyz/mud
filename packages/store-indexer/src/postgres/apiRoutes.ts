@@ -47,6 +47,13 @@ export function apiRoutes(database: Sql): Middleware {
       const blockNumber = records[0].chainBlockNumber;
       ctx.body = JSON.stringify({ blockNumber, logs });
       ctx.status = 200;
+
+      // client fetches logs 1000 blocks at a time, so we'll allow clients to get behind by 4 rpc requests worth
+      // this equates to ~2 hours, which seems like a reasonable refresh rate for an effective cache!
+      // we've also turned on `stale-while-revalidate`, which will refetch in the background once stale so responses are always snappy
+      const maxAgeInBlocks = 1000 * 4;
+      const secondsPerBlock = 2;
+      ctx.set("Cache-Control", `s-maxage=${maxAgeInBlocks * secondsPerBlock}, stale-while-revalidate`);
     } catch (e) {
       ctx.status = 500;
       ctx.body = JSON.stringify(e);
