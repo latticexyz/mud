@@ -22,7 +22,7 @@ services:
 
   - type: web
     name: skystrife-indexer-api
-    plan: standard
+    plan: pro
     region: ohio
     runtime: docker
     domains:
