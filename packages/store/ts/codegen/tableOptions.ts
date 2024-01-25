@@ -18,6 +18,7 @@ export interface TableOptions {
   renderOptions: RenderTableOptions;
 }
 
+// TODO: docs
 export function getTableOptions(
   config: StoreConfig,
   solidityUserTypes: Record<string, SolidityUserDefinedType>

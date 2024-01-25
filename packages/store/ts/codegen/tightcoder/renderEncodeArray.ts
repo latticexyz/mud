@@ -2,6 +2,7 @@ import { renderedSolidityHeader } from "@latticexyz/common/codegen";
 import { staticAbiTypeToByteLength, staticAbiTypes } from "@latticexyz/schema-type";
 import { renderTightCoderEncode } from "./renderFunctions";
 
+// TODO: docs
 export function renderEncodeArray() {
   return `
     ${renderedSolidityHeader}

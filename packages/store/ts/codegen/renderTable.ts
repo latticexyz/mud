@@ -15,6 +15,7 @@ import { renderDeleteRecordMethods, renderRecordData, renderRecordMethods } from
 import { renderFieldLayout } from "./renderFieldLayout";
 import { RenderTableOptions } from "./types";
 
+// TODO: docs
 export function renderTable(options: RenderTableOptions) {
   const {
     imports,
@@ -175,6 +176,7 @@ export function renderTable(options: RenderTableOptions) {
   `;
 }
 
+// TODO: docs
 function renderEncodeStatic(staticFields: RenderStaticField[]) {
   if (staticFields.length === 0) return "";
 
@@ -191,6 +193,7 @@ function renderEncodeStatic(staticFields: RenderStaticField[]) {
   `;
 }
 
+// TODO: docs
 function renderEncodeLengths(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length === 0) return "";
 
@@ -220,6 +223,7 @@ function renderEncodeLengths(dynamicFields: RenderDynamicField[]) {
   `;
 }
 
+// TODO: docs
 function renderEncodeDynamic(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length === 0) return "";
 

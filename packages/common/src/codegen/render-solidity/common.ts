@@ -202,6 +202,7 @@ export function renderWithFieldSuffix(
   return result;
 }
 
+// TODO: docs
 export function renderTableId({
   namespace,
   name,

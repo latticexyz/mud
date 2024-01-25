@@ -1,5 +1,6 @@
 import { RenderType, getLeftPaddingBits } from "@latticexyz/common/codegen";
 
+// TODO: docs
 export function renderTightCoderDecode(element: Pick<RenderType, "internalTypeId" | "staticByteLength">) {
   return `
     /**
@@ -25,6 +26,7 @@ export function renderTightCoderDecode(element: Pick<RenderType, "internalTypeId
   `;
 }
 
+// TODO: docs
 export function renderTightCoderEncode(element: Pick<RenderType, "internalTypeId" | "staticByteLength">) {
   return `
 

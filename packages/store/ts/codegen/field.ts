@@ -8,7 +8,12 @@ import {
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
 
-export function renderFieldMethods(options: RenderTableOptions) {
+/**
+ * Returns Solidity code for all the field-specific table methods (get, set, push, pop, etc.)
+ * @param options RenderTableOptions
+ * @returns string of Solidity code
+ */
+export function renderFieldMethods(options: RenderTableOptions): string {
   const storeArgument = options.storeArgument;
   const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
 
@@ -235,6 +240,11 @@ export function renderFieldMethods(options: RenderTableOptions) {
   return result;
 }
 
+/**
+ * Returns Solidity code for how to encode a particular field into bytes before storing onchain
+ * @param field RenderField
+ * @returns string of Solidity code
+ */
 export function renderEncodeFieldSingle(field: RenderField) {
   let func;
   if (field.arrayElement) {
@@ -247,6 +257,12 @@ export function renderEncodeFieldSingle(field: RenderField) {
   return `${func}(${field.typeUnwrap}(${field.name}))`;
 }
 
+/**
+ * Returns Solidity code for decoding a bytes value into its Solidity primitive type
+ * @param field description of field type
+ * @param offset byte-length offset of value in encoded bytes
+ * @returns string of Solidity code
+ */
 export function renderDecodeValueType(field: RenderType, offset: number) {
   const { staticByteLength } = field;
 
@@ -255,6 +271,7 @@ export function renderDecodeValueType(field: RenderType, offset: number) {
   return renderCastStaticBytesToType(field, innerSlice);
 }
 
+// TODO: add docs
 function renderCastStaticBytesToType(field: RenderType, staticBytes: string) {
   const { staticByteLength, internalTypeId } = field;
   const bits = staticByteLength * 8;
@@ -274,6 +291,7 @@ function renderCastStaticBytesToType(field: RenderType, staticBytes: string) {
   return `${field.typeWrap}(${result})`;
 }
 
+// TODO: docs
 /** bytes/string are dynamic, but aren't really arrays */
 function fieldPortionData(field: RenderField) {
   if (field.arrayElement) {
@@ -301,6 +319,7 @@ function fieldPortionData(field: RenderField) {
   }
 }
 
+// TODO: docs
 function renderDecodeFieldSingle(field: RenderField) {
   const { isDynamic, arrayElement } = field;
   if (arrayElement) {

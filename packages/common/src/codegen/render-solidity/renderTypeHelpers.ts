@@ -99,6 +99,7 @@ function renderWrapperStaticArray(
   `;
 }
 
+// TODO: docs
 function renderUnwrapperStaticArray(
   functionName: string,
   elementType: string,
