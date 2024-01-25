@@ -21,6 +21,7 @@ export function apiRoutes(database: Sql): Middleware {
       options = input.parse(typeof ctx.query.input === "string" ? JSON.parse(ctx.query.input) : {});
     } catch (e) {
       ctx.status = 400;
+      ctx.set("Content-Type", "application/json");
       ctx.body = JSON.stringify(e);
       debug(e);
       return;
@@ -45,7 +46,6 @@ export function apiRoutes(database: Sql): Middleware {
       }
 
       const blockNumber = records[0].chainBlockNumber;
-      ctx.body = JSON.stringify({ blockNumber, logs });
       ctx.status = 200;
 
       // client fetches logs 1000 blocks at a time, so we'll allow clients to get behind by 4 rpc requests worth
@@ -54,8 +54,12 @@ export function apiRoutes(database: Sql): Middleware {
       const maxAgeInBlocks = 1000 * 4;
       const secondsPerBlock = 2;
       ctx.set("Cache-Control", `public, max-age=${maxAgeInBlocks * secondsPerBlock}, stale-while-revalidate`);
+
+      ctx.set("Content-Type", "application/json");
+      ctx.body = JSON.stringify({ blockNumber, logs });
     } catch (e) {
       ctx.status = 500;
+      ctx.set("Content-Type", "application/json");
       ctx.body = JSON.stringify(e);
       error(e);
     }
