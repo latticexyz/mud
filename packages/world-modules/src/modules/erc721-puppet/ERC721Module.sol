@@ -33,7 +33,7 @@ contract ERC721Module is Module {
     // Require the module to not be installed with these args yet
     requireNotInstalled(__self, encodedArgs);
 
-    // Extract args
+    // Decode args
     (bytes14 namespace, ERC721MetadataData memory metadata) = abi.decode(encodedArgs, (bytes14, ERC721MetadataData));
 
     // Require the namespace to not be the module's namespace

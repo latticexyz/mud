@@ -84,7 +84,7 @@ contract World is StoreData, IWorldKernel {
   /**
    * @notice Installs a given root module in the World.
    * @param module The module to be installed.
-   * @param encodedArgs Arguments for module installation.
+   * @param encodedArgs The ABI encoded arguments for module installation.
    * @dev The caller must own the root namespace.
    */
   function installRootModule(IModule module, bytes memory encodedArgs) public prohibitDirectCallback {
@@ -95,7 +95,7 @@ contract World is StoreData, IWorldKernel {
   /**
    * @dev Internal function to install a root module.
    * @param module The module to be installed.
-   * @param encodedArgs Arguments for module installation.
+   * @param encodedArgs The ABI encoded arguments for module installation.
    */
   function _installRootModule(IModule module, bytes memory encodedArgs) internal {
     // Require the provided address to implement the IModule interface

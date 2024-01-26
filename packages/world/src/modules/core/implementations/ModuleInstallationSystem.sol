@@ -19,7 +19,7 @@ contract ModuleInstallationSystem is System, LimitedCallContext {
    * @dev Validates the given module against the IModule interface and delegates the installation process.
    * The module is then registered in the InstalledModules table.
    * @param module The module to be installed.
-   * @param encodedArgs Arguments for the module installation.
+   * @param encodedArgs The ABI encoded arguments for module installation.
    */
   function installModule(IModule module, bytes memory encodedArgs) public onlyDelegatecall {
     // Require the provided address to implement the IModule interface
