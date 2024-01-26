@@ -11,11 +11,9 @@ import {
 } from "../test/utils";
 import { singletonEntity } from "./recs";
 
-for (const block of blocks) {
-  await recsStorageAdapter(block);
-  await zustandStorageAdapter(block);
-  await sqliteStorageAdapter(block);
-}
+await Promise.all(
+  blocks.flatMap((block) => [recsStorageAdapter(block), zustandStorageAdapter(block), sqliteStorageAdapter(block)])
+);
 
 describe("Get single record by key", () => {
   bench("recs: `getComponentValue`", async () => {
