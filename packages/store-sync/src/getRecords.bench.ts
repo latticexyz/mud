@@ -2,7 +2,7 @@ import { bench, describe } from "vitest";
 import { getComponentEntities, getComponentValue } from "@latticexyz/recs";
 import { eq } from "drizzle-orm";
 import { mudStoreTables } from "./sqlite";
-import { blocks } from "../test/constants";
+import { blocks } from "../test/blocks";
 import {
   components,
   db,

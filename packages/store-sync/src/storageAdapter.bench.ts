@@ -1,6 +1,6 @@
 import { bench, describe } from "vitest";
 
-import { blocks } from "../test/constants";
+import { blocks } from "../test/blocks";
 import { recsStorageAdapter, sqliteStorageAdapter, zustandStorageAdapter } from "../test/utils";
 
 describe("Storage Adapter", () => {
