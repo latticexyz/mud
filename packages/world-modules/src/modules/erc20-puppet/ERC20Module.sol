@@ -29,7 +29,7 @@ contract ERC20Module is Module {
     // Require the module to not be installed with these args yet
     requireNotInstalled(__self, encodedArgs);
 
-    // Extract args
+    // Decode args
     (bytes14 namespace, ERC20MetadataData memory metadata) = abi.decode(encodedArgs, (bytes14, ERC20MetadataData));
 
     // Require the namespace to not be the module's namespace

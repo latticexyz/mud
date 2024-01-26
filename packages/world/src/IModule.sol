@@ -20,7 +20,7 @@ interface IModule is IERC165 {
    * @notice Installs the module as a root module.
    * @dev This function is invoked by the World contract during `installRootModule` process.
    * The module expects to be called via the World contract and thus installs itself on the `msg.sender`.
-   * @param encodedArgs Arguments that may be needed during the installation process.
+   * @param encodedArgs The ABI encoded arguments that may be needed during the installation process.
    */
   function installRoot(bytes memory encodedArgs) external;
 
