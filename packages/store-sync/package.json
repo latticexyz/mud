@@ -72,6 +72,7 @@
     "change-case": "^5.2.0",
     "debug": "^4.3.4",
     "drizzle-orm": "^0.28.5",
+    "execa": "^7.1.1",
     "kysely": "^0.26.3",
     "postgres": "^3.3.5",
     "rxjs": "7.5.5",

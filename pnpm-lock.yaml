@@ -978,6 +978,9 @@ importers:
       drizzle-orm:
         specifier: ^0.28.5
         version: 0.28.5(@types/sql.js@1.4.4)(kysely@0.26.3)(postgres@3.3.5)(sql.js@1.8.0)
+      execa:
+        specifier: ^7.1.1
+        version: 7.2.0
       kysely:
         specifier: ^0.26.3
         version: 0.26.3
