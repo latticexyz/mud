@@ -19,7 +19,7 @@ for (const block of blocks) {
   await sqliteStorageAdapter(block);
 }
 
-describe("Get Records", () => {
+describe("Get all records for table", () => {
   bench("recs: `getComponentValue`", async () => {
     for (const entity of getComponentEntities(components.NumberList)) {
       getComponentValue(components.NumberList, entity);

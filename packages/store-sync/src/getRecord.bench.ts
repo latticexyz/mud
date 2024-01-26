@@ -20,7 +20,7 @@ for (const block of blocks) {
   await sqliteStorageAdapter(block);
 }
 
-describe("Get Record", () => {
+describe("Get single record by key", () => {
   bench("recs: `getComponentValue`", async () => {
     getComponentValue(components.NumberList, singletonEntity);
   });
