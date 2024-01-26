@@ -13,9 +13,9 @@ import {
   zustandStorageAdapter,
 } from "../test/utils";
 
-await Promise.all(
-  blocks.flatMap((block) => [recsStorageAdapter(block), zustandStorageAdapter(block), sqliteStorageAdapter(block)])
-);
+for (const block of blocks) {
+  await Promise.all([recsStorageAdapter(block), zustandStorageAdapter(block), sqliteStorageAdapter(block)]);
+}
 
 describe("Get all records for table", () => {
   bench("recs: `getComponentValue`", async () => {
