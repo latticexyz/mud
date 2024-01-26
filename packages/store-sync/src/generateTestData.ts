@@ -26,6 +26,7 @@ export async function generateTestData(): Promise<RpcLog[]> {
   await anvil.start();
   const rpc = `http://${anvil.host}:${anvil.port}`;
 
+  // FIXME: there is nothing to deploy!!
   const { stdout, stderr } = await execa("pnpm", ["mud", "deploy", "--rpc", rpc, "--saveDeployment", "false"], {
     cwd: "../contracts",
     stdio: "pipe",
