@@ -22,10 +22,10 @@ contract UniqueEntityModule is Module {
   // known tables, we can deploy it once and register it in multiple Worlds.
   UniqueEntitySystem private immutable uniqueEntitySystem = new UniqueEntitySystem();
 
-  function installRoot(bytes memory args) public {
+  function installRoot(bytes memory encodedArgs) public {
     // Naive check to ensure this is only installed once
     // TODO: only revert if there's nothing to do
-    requireNotInstalled(__self, args);
+    requireNotInstalled(__self, encodedArgs);
 
     IBaseWorld world = IBaseWorld(_world());
 
@@ -51,10 +51,10 @@ contract UniqueEntityModule is Module {
     if (!success) revertWithBytes(data);
   }
 
-  function install(bytes memory args) public {
+  function install(bytes memory encodedArgs) public {
     // Naive check to ensure this is only installed once
     // TODO: only revert if there's nothing to do
-    requireNotInstalled(__self, args);
+    requireNotInstalled(__self, encodedArgs);
 
     IBaseWorld world = IBaseWorld(_world());
 

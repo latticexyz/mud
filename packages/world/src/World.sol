@@ -84,20 +84,20 @@ contract World is StoreData, IWorldKernel {
   /**
    * @notice Installs a given root module in the World.
    * @param module The module to be installed.
-   * @param args Arguments for module installation.
+   * @param encodedArgs Arguments for module installation.
    * @dev The caller must own the root namespace.
    */
-  function installRootModule(IModule module, bytes memory args) public prohibitDirectCallback {
+  function installRootModule(IModule module, bytes memory encodedArgs) public prohibitDirectCallback {
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
-    _installRootModule(module, args);
+    _installRootModule(module, encodedArgs);
   }
 
   /**
    * @dev Internal function to install a root module.
    * @param module The module to be installed.
-   * @param args Arguments for module installation.
+   * @param encodedArgs Arguments for module installation.
    */
-  function _installRootModule(IModule module, bytes memory args) internal {
+  function _installRootModule(IModule module, bytes memory encodedArgs) internal {
     // Require the provided address to implement the IModule interface
     requireInterface(address(module), type(IModule).interfaceId);
 
@@ -105,11 +105,11 @@ contract World is StoreData, IWorldKernel {
       msgSender: msg.sender,
       msgValue: 0,
       target: address(module),
-      callData: abi.encodeCall(IModule.installRoot, (args))
+      callData: abi.encodeCall(IModule.installRoot, (encodedArgs))
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules._set(address(module), keccak256(args), true);
+    InstalledModules._set(address(module), keccak256(encodedArgs), true);
   }
 
   /************************************************************************

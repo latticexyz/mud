@@ -32,20 +32,20 @@ abstract contract Module is IModule, WorldContextConsumer {
   /**
    * @dev Check if a module with the given name and arguments is installed.
    * @param moduleAddress The address of the module.
-   * @param args The arguments for the module installation.
+   * @param encodedArgs The arguments for the module installation.
    * @return true if the module is installed, false otherwise.
    */
-  function isInstalled(address moduleAddress, bytes memory args) internal view returns (bool) {
-    return InstalledModules.get(moduleAddress, keccak256(args));
+  function isInstalled(address moduleAddress, bytes memory encodedArgs) internal view returns (bool) {
+    return InstalledModules.get(moduleAddress, keccak256(encodedArgs));
   }
 
   /**
    * @dev Revert if the module with the given name and arguments is already installed.
    * @param moduleAddress The address of the module.
-   * @param args The arguments for the module installation.
+   * @param encodedArgs The arguments for the module installation.
    */
-  function requireNotInstalled(address moduleAddress, bytes memory args) internal view {
-    if (isInstalled(moduleAddress, args)) {
+  function requireNotInstalled(address moduleAddress, bytes memory encodedArgs) internal view {
+    if (isInstalled(moduleAddress, encodedArgs)) {
       revert Module_AlreadyInstalled();
     }
   }
