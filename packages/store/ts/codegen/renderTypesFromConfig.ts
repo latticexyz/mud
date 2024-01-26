@@ -1,6 +1,9 @@
 import { renderEnums } from "@latticexyz/common/codegen";
 import { StoreConfig } from "../config";
 
+/**
+ * Renders Solidity code for enums defined in the provided config
+ */
 export function renderTypesFromConfig(config: StoreConfig) {
   const enums = Object.keys(config.enums).map((name) => ({
     name,
