@@ -32,7 +32,7 @@ abstract contract Module is IModule, WorldContextConsumer {
   /**
    * @dev Check if a module with the given name and arguments is installed.
    * @param moduleAddress The address of the module.
-   * @param encodedArgs The ABI encoded arguments that may be needed during the installation process.
+   * @param encodedArgs The ABI encoded arguments for the module installation.
    * @return true if the module is installed, false otherwise.
    */
   function isInstalled(address moduleAddress, bytes memory encodedArgs) internal view returns (bool) {
@@ -42,7 +42,7 @@ abstract contract Module is IModule, WorldContextConsumer {
   /**
    * @dev Revert if the module with the given name and arguments is already installed.
    * @param moduleAddress The address of the module.
-   * @param encodedArgs The ABI encoded arguments that may be needed during the installation process.
+   * @param encodedArgs The ABI encoded arguments for the module installation.
    */
   function requireNotInstalled(address moduleAddress, bytes memory encodedArgs) internal view {
     if (isInstalled(moduleAddress, encodedArgs)) {

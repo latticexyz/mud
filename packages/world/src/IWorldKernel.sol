@@ -14,7 +14,7 @@ interface IWorldModuleInstallation {
    * @notice Install the given root module in the World.
    * @dev Requires the caller to own the root namespace. The module is delegatecalled and installed in the root namespace.
    * @param module The module to be installed.
-   * @param encodedArgs The ABI encoded arguments that may be needed during the installation process.
+   * @param encodedArgs The ABI encoded arguments for the module installation.
    */
   function installRootModule(IModule module, bytes memory encodedArgs) external;
 }
