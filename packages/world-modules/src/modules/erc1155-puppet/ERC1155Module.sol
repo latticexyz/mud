@@ -14,21 +14,20 @@ import { createPuppet } from "../puppet/createPuppet.sol";
 import { MODULE_NAME as PUPPET_MODULE_NAME } from "../puppet/constants.sol";
 import { Balances } from "../tokens/tables/Balances.sol";
 
-import { MODULE_NAME, MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC721_REGISTRY_TABLE_ID } from "./constants.sol";
-import { _erc721SystemId, _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId } from "./utils.sol";
-import { ERC721System } from "./ERC721System.sol";
+import { MODULE_NAME, MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC1155_REGISTRY_TABLE_ID } from "./constants.sol";
+import { _erc1155SystemId, _tokenUriTableId, _balancesTableId, _metadataTableId, _operatorApprovalTableId } from "./utils.sol";
+import { ERC1155System } from "./ERC1155System.sol";
 
-import { ERC721OperatorApproval } from "./tables/ERC721OperatorApproval.sol";
-import { ERC721Owners } from "./tables/ERC721Owners.sol";
-import { ERC721TokenApproval } from "./tables/ERC721TokenApproval.sol";
-import { ERC721TokenURI } from "./tables/ERC721TokenURI.sol";
-import { ERC721Registry } from "./tables/ERC721Registry.sol";
-import { ERC721Metadata, ERC721MetadataData } from "./tables/ERC721Metadata.sol";
+import { ERC1155Balances } from "./tables/ERC1155Balances.sol";
+import { ERC1155OperatorApproval } from "./tables/ERC1155OperatorApproval.sol";
+import { ERC1155TokenURI } from "./tables/ERC1155TokenURI.sol";
+import { ERC1155Registry } from "./tables/ERC1155Registry.sol";
+import { ERC1155Metadata, ERC1155MetadataData } from "./tables/ERC1155Metadata.sol";
 
-contract ERC721Module is Module {
-  error ERC721Module_InvalidNamespace(bytes14 namespace);
+contract ERC1155Module is Module {
+  error ERC1155Module_InvalidNamespace(bytes14 namespace);
 
-  address immutable registrationLibrary = address(new ERC721ModuleRegistrationLibrary());
+  address immutable registrationLibrary = address(new ERC1155ModuleRegistrationLibrary());
 
   function getName() public pure override returns (bytes16) {
     return MODULE_NAME;
@@ -46,40 +45,40 @@ contract ERC721Module is Module {
     requireNotInstalled(MODULE_NAME, args);
 
     // Extract args
-    (bytes14 namespace, ERC721MetadataData memory metadata) = abi.decode(args, (bytes14, ERC721MetadataData));
+    (bytes14 namespace, ERC1155MetadataData memory metadata) = abi.decode(args, (bytes14, ERC1155MetadataData));
 
     // Require the namespace to not be the module's namespace
     if (namespace == MODULE_NAMESPACE) {
-      revert ERC721Module_InvalidNamespace(namespace);
+      revert ERC1155Module_InvalidNamespace(namespace);
     }
 
     // Require dependencies
     _requireDependencies();
 
-    // Register the ERC721 tables and system
+    // Register the ERC1155 tables and system
     IBaseWorld world = IBaseWorld(_world());
     (bool success, bytes memory returnData) = registrationLibrary.delegatecall(
-      abi.encodeCall(ERC721ModuleRegistrationLibrary.register, (world, namespace))
+      abi.encodeCall(ERC1155ModuleRegistrationLibrary.register, (world, namespace))
     );
     if (!success) revertWithBytes(returnData);
 
     // Initialize the Metadata
-    ERC721Metadata.set(_metadataTableId(namespace), metadata);
+    ERC1155Metadata.set(_metadataTableId(namespace), metadata);
 
-    // Deploy and register the ERC721 puppet.
-    ResourceId erc721SystemId = _erc721SystemId(namespace);
-    address puppet = createPuppet(world, erc721SystemId);
+    // Deploy and register the ERC1155 puppet.
+    ResourceId erc1155SystemId = _erc1155SystemId(namespace);
+    address puppet = createPuppet(world, erc1155SystemId);
 
     // Transfer ownership of the namespace to the caller
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     world.transferOwnership(namespaceId, _msgSender());
 
-    // Register the ERC721 in the ERC20Registry
-    if (!ResourceIds.getExists(ERC721_REGISTRY_TABLE_ID)) {
+    // Register the ERC1155 in the ERC20Registry
+    if (!ResourceIds.getExists(ERC1155_REGISTRY_TABLE_ID)) {
       world.registerNamespace(MODULE_NAMESPACE_ID);
-      ERC721Registry.register(ERC721_REGISTRY_TABLE_ID);
+      ERC1155Registry.register(ERC1155_REGISTRY_TABLE_ID);
     }
-    ERC721Registry.set(ERC721_REGISTRY_TABLE_ID, namespaceId, puppet);
+    ERC1155Registry.set(ERC1155_REGISTRY_TABLE_ID, namespaceId, puppet);
   }
 
   function installRoot(bytes memory) public pure {
@@ -87,9 +86,9 @@ contract ERC721Module is Module {
   }
 }
 
-contract ERC721ModuleRegistrationLibrary {
+contract ERC1155ModuleRegistrationLibrary {
   /**
-   * Register systems and tables for a new ERC721 token in a given namespace
+   * Register systems and tables for a new ERC1155 token in a given namespace
    */
   function register(IBaseWorld world, bytes14 namespace) public {
     // Register the namespace if it doesn't exist yet
@@ -99,14 +98,12 @@ contract ERC721ModuleRegistrationLibrary {
     }
 
     // Register the tables
-    ERC721OperatorApproval.register(_operatorApprovalTableId(namespace));
-    ERC721Owners.register(_ownersTableId(namespace));
-    ERC721TokenApproval.register(_tokenApprovalTableId(namespace));
-    ERC721TokenURI.register(_tokenUriTableId(namespace));
-    Balances.register(_balancesTableId(namespace));
-    ERC721Metadata.register(_metadataTableId(namespace));
+    ERC1155TokenURI.register(_tokenUriTableId(namespace));
+    ERC1155Balances.register(_balancesTableId(namespace));
+    ERC1155Metadata.register(_metadataTableId(namespace));
+    ERC1155OperatorApproval.register(_operatorApprovalTableId(namespace));
 
     // Register a new ERC20System
-    world.registerSystem(_erc721SystemId(namespace), new ERC721System(), true);
+    world.registerSystem(_erc1155SystemId(namespace), new ERC1155System(), true);
   }
 }

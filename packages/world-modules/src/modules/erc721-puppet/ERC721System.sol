@@ -15,10 +15,10 @@ import { IERC721Mintable } from "./IERC721Mintable.sol";
 import { IERC721Receiver } from "./IERC721Receiver.sol";
 
 import { ERC721Metadata } from "./tables/ERC721Metadata.sol";
-import { OperatorApproval } from "./tables/OperatorApproval.sol";
-import { Owners } from "./tables/Owners.sol";
-import { TokenApproval } from "./tables/TokenApproval.sol";
-import { TokenURI } from "./tables/TokenURI.sol";
+import { ERC721OperatorApproval } from "./tables/ERC721OperatorApproval.sol";
+import { ERC721Owners } from "./tables/ERC721Owners.sol";
+import { ERC721TokenApproval } from "./tables/ERC721TokenApproval.sol";
+import { ERC721TokenURI } from "./tables/ERC721TokenURI.sol";
 
 import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId } from "./utils.sol";
 
@@ -63,7 +63,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
     _requireOwned(tokenId);
 
     string memory baseURI = _baseURI();
-    string memory _tokenURI = TokenURI.get(_tokenUriTableId(_namespace()), tokenId);
+    string memory _tokenURI = ERC721TokenURI.get(_tokenUriTableId(_namespace()), tokenId);
     _tokenURI = bytes(_tokenURI).length > 0 ? _tokenURI : string(abi.encodePacked(tokenId));
     return bytes(baseURI).length > 0 ? string.concat(baseURI, _tokenURI) : _tokenURI;
   }
@@ -103,7 +103,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
    * @dev See {IERC721-isApprovedForAll}.
    */
   function isApprovedForAll(address owner, address operator) public view virtual returns (bool) {
-    return OperatorApproval.get(_operatorApprovalTableId(_namespace()), owner, operator);
+    return ERC721OperatorApproval.get(_operatorApprovalTableId(_namespace()), owner, operator);
   }
 
   /**
@@ -201,14 +201,14 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
    * `balanceOf(a)` must be equal to the number of tokens such that `_ownerOf(tokenId)` is `a`.
    */
   function _ownerOf(uint256 tokenId) internal view virtual returns (address) {
-    return Owners.get(_ownersTableId(_namespace()), tokenId);
+    return ERC721Owners.get(_ownersTableId(_namespace()), tokenId);
   }
 
   /**
    * @dev Returns the approved address for `tokenId`. Returns 0 if `tokenId` is not minted.
    */
   function _getApproved(uint256 tokenId) internal view virtual returns (address) {
-    return TokenApproval.get(_tokenApprovalTableId(_namespace()), tokenId);
+    return ERC721TokenApproval.get(_tokenApprovalTableId(_namespace()), tokenId);
   }
 
   /**
@@ -295,7 +295,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
       }
     }
 
-    Owners.set(_ownersTableId(_namespace()), tokenId, to);
+    ERC721Owners.set(_ownersTableId(_namespace()), tokenId, to);
 
     // Emit Transfer event on puppet
     puppet().log(Transfer.selector, toTopic(from), toTopic(to), toTopic(tokenId), new bytes(0));
@@ -455,7 +455,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
       }
     }
 
-    TokenApproval.set(_tokenApprovalTableId(_namespace()), tokenId, to);
+    ERC721TokenApproval.set(_tokenApprovalTableId(_namespace()), tokenId, to);
   }
 
   /**
@@ -470,7 +470,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
     if (operator == address(0)) {
       revert ERC721InvalidOperator(operator);
     }
-    OperatorApproval.set(_operatorApprovalTableId(_namespace()), owner, operator, approved);
+    ERC721OperatorApproval.set(_operatorApprovalTableId(_namespace()), owner, operator, approved);
 
     // Emit ApprovalForAll event on puppet
     puppet().log(ApprovalForAll.selector, toTopic(owner), toTopic(operator), abi.encode(approved));
