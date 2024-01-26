@@ -2,7 +2,8 @@ import { CollapseCode } from "../../../components/CollapseCode";
 
 # Add a table
 
-In this tutorial you add a table of historical counter values and the time in which the counter reached those values, after the `World` is already deployed.
+In this tutorial you add a table of historical counter values and the time in which the counter reached those values.
+In contrast [to the Hello, World tutorial](/guides/hello-world/add-table), here we do it _after_ the `World` is already deployed, without losing the existing data.
 
 ## Setup
 
@@ -14,7 +15,7 @@ In this tutorial you add a table of historical counter values and the time in wh
 ## Create the new table code
 
 1. Create a new package.
-   This step is necessary because if we modify the `contracts` package the `pnpm dev` process detects the changes and redeploys the `World`, which is not the behavior we want here.
+   This step is necessary because if we modify the `contracts` package the `pnpm dev` process detects the changes and if needed redeploys the `World`, which is not the behavior we want here.
 
    ```sh copy
    cd packages
@@ -50,7 +51,7 @@ In this tutorial you add a table of historical counter values and the time in wh
    ```
 
     <details>
- <summary>Explanation</summary>
+  <summary>Explanation</summary>
 
    A MUD table has two schemas:
 
@@ -116,13 +117,6 @@ In this tutorial you add a table of historical counter values and the time in wh
    import { console } from "forge-std/console.sol";
    import { IBaseWorld } from "@latticexyz/world-modules/src/interfaces/IBaseWorld.sol";
 
-   import { WorldRegistrationSystem } from "@latticexyz/world/src/modules/core/implementations/WorldRegistrationSystem.sol";
-
-   // Create resource identifiers (for the namespace and system)
-   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-   import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
-   import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
-
    // For registering the table
    import { History, HistoryTableId } from "../src/codegen/index.sol";
    import { IStore } from "@latticexyz/store/src/IStore.sol";
@@ -132,8 +126,6 @@ In this tutorial you add a table of historical counter values and the time in wh
      function run() external {
        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
        address worldAddress = vm.envAddress("WORLD_ADDRESS");
-
-       WorldRegistrationSystem world = WorldRegistrationSystem(worldAddress);
 
        vm.startBroadcast(deployerPrivateKey);
        StoreSwitch.setStoreAddress(worldAddress);
@@ -185,7 +177,7 @@ Normally this happens automatically because the table is in `mud.config.ts`, but
 
    <CollapseCode>
 
-   ```ts filename="setupNetwork.ts" copy showLineNumbers {9,27,83}
+   ```ts filename="setupNetwork.ts" copy showLineNumbers {9,27,82}
    /*
     * The MUD client code is built on top of viem
     * (https://viem.sh/docs/getting-started.html).
@@ -276,8 +268,8 @@ Normally this happens automatically because the table is in `mud.config.ts`, but
      const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
        world,
        config: mudConfig,
-       address: networkConfig.worldAddress as Hex,
        tables: resolveConfig(historyConfig).tables,
+       address: networkConfig.worldAddress as Hex,
        publicClient,
        startBlock: BigInt(networkConfig.initialBlockNumber),
      });
@@ -325,7 +317,7 @@ Normally this happens automatically because the table is in `mud.config.ts`, but
    }
    ```
 
-   </CollapseCode>
+    </CollapseCode>
 
 1. Browse to the application, which is typically at [http://localhost:3000](http://localhost:3000).
 
@@ -334,4 +326,42 @@ Normally this happens automatically because the table is in `mud.config.ts`, but
 1. Click **Components > :History** to see the history table.
    At this point it is empty.
 
-## Hook into changes in `:Counter`
+## Put changes into `:History`
+
+Finally, we need to update `:History` whenever `:Counter` changes.
+The easiest way to do this is to modify `IncrementSystem`.
+
+1. Copy `History.sol` into the `contracts` package.
+
+   ```sh copy
+   cd ../contracts
+   mkdir src/other_tables
+   cp ../history/src/codegen/tables/History.sol src/other_tables/History.sol
+   ```
+
+1. Edit `src/systems/IncrementSystem.sol`.
+
+   <CollapseCode>
+
+   ```solidity filename="IncrementSystem.sol" copy showLineNumbers {6,13}
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.0;
+
+   import { System } from "@latticexyz/world/src/System.sol";
+   import { Counter } from "../codegen/index.sol";
+   import { History } from "../other_tables/History.sol";
+
+   contract IncrementSystem is System {
+     function increment() public returns (uint32) {
+       uint32 counter = Counter.get();
+       uint32 newValue = counter + 1;
+       Counter.set(newValue);
+       History.set(newValue, block.number, block.timestamp);
+       return newValue;
+     }
+   }
+   ```
+
+   </CollapseCode>
+
+1. Click **Increment** a few times to see that `:History` is updated.
