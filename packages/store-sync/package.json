@@ -68,6 +68,7 @@
     "@latticexyz/world": "workspace:*",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
+    "@viem/anvil": "^0.0.6",
     "change-case": "^5.2.0",
     "debug": "^4.3.4",
     "drizzle-orm": "^0.28.5",
