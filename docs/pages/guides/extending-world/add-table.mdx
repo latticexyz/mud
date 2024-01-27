@@ -14,64 +14,65 @@ In contrast [to the Hello, World tutorial](/guides/hello-world/add-table), here 
 
 ## Create the new table code
 
-1. Create a new package.
-   This step is necessary because if we modify the `contracts` package the `pnpm dev` process detects the changes and if needed redeploys the `World`, which is not the behavior we want here.
+1.  Create a new package.
+    This step is necessary because if we modify the `contracts` package the `pnpm dev` process detects the changes and if needed redeploys the `World`, which is not the behavior we want here.
 
-   ```sh copy
-   cd packages
-   mkdir history
-   cd history
-   ```
+    ```sh copy
+    cd packages
+    mkdir history
+    cd history
+    ```
 
-1. Install the necessary modules in the new package.
+1.  Install the necessary modules in the new package.
 
-   ```sh copy
-   cp ../contracts/package.json .
-   pnpm install
-   ```
+    ```sh copy
+    cp ../contracts/package.json .
+    pnpm install
+    ```
 
-1. Create a MUD configuration file, `history.config.ts`, with the new table's definition.
+1.  Create a MUD configuration file, `history.config.ts`, with the new table's definition.
 
-   ```ts filename="history.config.ts" copy
-   import { mudConfig } from "@latticexyz/world/register";
+    ```ts filename="history.config.ts" copy
+    import { mudConfig } from "@latticexyz/world/register";
 
-   export default mudConfig({
-     tables: {
-       History: {
-         keySchema: {
-           counterValue: "uint32",
-         },
-         valueSchema: {
-           blockNumber: "uint256",
-           time: "uint256",
-         },
-       },
-     },
-   });
-   ```
+    export default mudConfig({
+      tables: {
+        History: {
+          keySchema: {
+            counterValue: "uint32",
+          },
+          valueSchema: {
+            blockNumber: "uint256",
+            time: "uint256",
+          },
+        },
+      },
+    });
+    ```
 
-    <details>
-  <summary>Explanation</summary>
+         <details>
 
-   A MUD table has two schemas:
+    <summary>Explanation</summary>
 
-   - `keySchema`, the key used to find entries
-   - `valueSchema`, the value in the entry
+    A MUD table has two schemas:
 
-   Each schema is represented as a structure with field names as keys, and the appropriate [Solidity data types](https://docs.soliditylang.org/en/latest/types.html) as their values.
-   Note that the data types in the key schema are limited to those that are fixed length such at `bytes<n>`.
-   You cannot use strings, arrays, etc.
+    - `keySchema`, the key used to find entries
+    - `valueSchema`, the value in the entry
 
-   In this case, the counter value is represented as a 32 bit unsigned integer, because that is what `Counter` uses.
-   Block numbers and timestamps can be values up to `uint256`, so we'll use this type for these fields.
+    Each schema is represented as a structure with field names as keys, and the appropriate [Solidity data types](https://docs.soliditylang.org/en/latest/types.html) as their values.
+    Note that the data types in the key schema are limited to those that are fixed length such at `bytes<n>`.
+    You cannot use strings, arrays, etc.
 
-    </details>
+    In this case, the counter value is represented as a 32 bit unsigned integer, because that is what `Counter` uses.
+    Block numbers and timestamps can be values up to `uint256`, so we'll use this type for these fields.
 
-1. Run this command to generate the table library.
+         </details>
 
-   ```sh copy
-   pnpm mud tablegen --configPath history.config.ts
-   ```
+1.  Run this command to generate the table library.
+
+    ```sh copy
+    pnpm mud tablegen --configPath history.config.ts
+    ```
 
 ## Deploy the new table
 
