@@ -42,11 +42,13 @@ library SystemSwitch {
     // If we're in the World context
     if (address(this) == worldAddress) {
       (address systemAddress, ) = Systems.get(systemId);
+
       // Check if the system exists
       if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
 
+      bool success;
       // Call the system and forward any return data
-      (success, data) = systemId.getNamespace() == ROOT_NAMESPACE // Use delegatecall for root systems (= registered in the root namespace)
+      (success, returnData) = systemId.getNamespace() == ROOT_NAMESPACE // Use delegatecall for root systems (= registered in the root namespace)
         ? WorldContextProviderLib.delegatecallWithContext({
           msgSender: WorldContextConsumerLib._msgSender(),
           msgValue: WorldContextConsumerLib._msgValue(),
@@ -60,6 +62,7 @@ library SystemSwitch {
           callData: callData
         });
 
+      if (!success) revertWithBytes(returnData);
       return returnData;
     }
 
