@@ -1,5 +1,5 @@
 import { bench, describe } from "vitest";
-import worldRpcLogs from "../../../test-data/world-logs-100.json";
+import worldRpcLogs from "../../../test-data/world-logs-10000.json";
 import { recsStorageAdapter, sqliteStorageAdapter, zustandStorageAdapter } from "../test/utils";
 import { logsToBlocks } from "../test/logsToBlocks";
 
