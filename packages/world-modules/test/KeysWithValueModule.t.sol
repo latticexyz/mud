@@ -105,6 +105,16 @@ contract KeysWithValueModuleTest is Test, GasReporter {
   }
 
   function testInstallTwice() public {
+    // Register source table
+    world.registerTable(
+      sourceTableId,
+      sourceTableFieldLayout,
+      sourceTableKeySchema,
+      sourceTableSchema,
+      new string[](1),
+      new string[](1)
+    );
+
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
     vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));

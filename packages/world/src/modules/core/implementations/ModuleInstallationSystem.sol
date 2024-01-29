@@ -19,9 +19,9 @@ contract ModuleInstallationSystem is System, LimitedCallContext {
    * @dev Validates the given module against the IModule interface and delegates the installation process.
    * The module is then registered in the InstalledModules table.
    * @param module The module to be installed.
-   * @param args Arguments for the module installation.
+   * @param encodedArgs The ABI encoded arguments for module installation.
    */
-  function installModule(IModule module, bytes memory args) public onlyDelegatecall {
+  function installModule(IModule module, bytes memory encodedArgs) public onlyDelegatecall {
     // Require the provided address to implement the IModule interface
     requireInterface(address(module), type(IModule).interfaceId);
 
@@ -29,10 +29,10 @@ contract ModuleInstallationSystem is System, LimitedCallContext {
       msgSender: _msgSender(),
       msgValue: 0,
       target: address(module),
-      callData: abi.encodeCall(IModule.install, (args))
+      callData: abi.encodeCall(IModule.install, (encodedArgs))
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules._set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(address(module), keccak256(encodedArgs), true);
   }
 }

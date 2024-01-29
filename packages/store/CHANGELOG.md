@@ -1,5 +1,46 @@
 # Change Log
 
+## 2.0.0-next.16
+
+### Minor Changes
+
+- 3ac68ade: Removed `allowEmpty` option from `FieldLayout.validate()` as field layouts should never be empty.
+- 103f635e: Improved error messages for invalid `FieldLayout`s
+
+  ```diff
+  -error FieldLayoutLib_InvalidLength(uint256 length);
+  +error FieldLayoutLib_TooManyFields(uint256 numFields, uint256 maxFields);
+  +error FieldLayoutLib_TooManyDynamicFields(uint256 numFields, uint256 maxFields);
+  +error FieldLayoutLib_Empty();
+  ```
+
+### Patch Changes
+
+- c6c13f2e: Storage events are now emitted after "before" hooks, so that the resulting logs are now correctly ordered and reflect onchain logic. This resolves issues with store writes and event emissions happening in "before" hooks.
+- e6c03a87: Renamed the `requireNoCallback` modifier to `prohibitDirectCallback`.
+- 37c228c6: Refactored various files to specify integers in a hex base instead of decimals.
+- 1bf2e908: Updated codegen to not render `push` and `pop` methods for static arrays. The `length` method now returns the hardcoded known length instead of calculating it like with a dynamic array.
+- 37c228c6: Refactored `ResourceId` to use a global Solidity `using` statement.
+- 37c228c6: Refactored EIP165 usages to use the built-in interfaceId property instead of pre-defined constants.
+- 7b28d32e: Added a custom error `Store_InvalidBounds` for when the `start:end` slice in `getDynamicFieldSlice` is invalid (it used to revert with the default overflow error)
+- 9f8b84e7: Aligned the order of function arguments in the `Storage` library.
+
+  ```solidity
+  store(uint256 storagePointer, uint256 offset, bytes memory data)
+  store(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer)
+  load(uint256 storagePointer, uint256 offset, uint256 length)
+  load(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer)
+  ```
+
+- ad4ac445: Added more validation checks for `FieldLayout` and `Schema`.
+- 37c228c6: Refactored various Solidity files to not explicitly initialise variables to zero.
+- 37c228c6: Refactored some Store functions to use a right bit mask instead of left.
+- 37c228c6: Simplified a check in `Slice.getSubslice`.
+- 37c228c6: Optimised the `Schema.validate` function to decrease gas use.
+  - @latticexyz/common@2.0.0-next.16
+  - @latticexyz/config@2.0.0-next.16
+  - @latticexyz/schema-type@2.0.0-next.16
+
 ## 2.0.0-next.15
 
 ### Patch Changes

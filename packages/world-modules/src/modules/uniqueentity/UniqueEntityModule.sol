@@ -11,7 +11,7 @@ import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { UniqueEntity } from "./tables/UniqueEntity.sol";
 import { UniqueEntitySystem } from "./UniqueEntitySystem.sol";
 
-import { MODULE_NAME, TABLE_ID, SYSTEM_ID, NAMESPACE_ID } from "./constants.sol";
+import { TABLE_ID, SYSTEM_ID, NAMESPACE_ID } from "./constants.sol";
 
 /**
  * This module creates a table that stores a nonce, and
@@ -22,14 +22,10 @@ contract UniqueEntityModule is Module {
   // known tables, we can deploy it once and register it in multiple Worlds.
   UniqueEntitySystem private immutable uniqueEntitySystem = new UniqueEntitySystem();
 
-  function getName() public pure returns (bytes16) {
-    return MODULE_NAME;
-  }
-
-  function installRoot(bytes memory args) public {
+  function installRoot(bytes memory encodedArgs) public {
     // Naive check to ensure this is only installed once
     // TODO: only revert if there's nothing to do
-    requireNotInstalled(getName(), args);
+    requireNotInstalled(__self, encodedArgs);
 
     IBaseWorld world = IBaseWorld(_world());
 
@@ -55,10 +51,10 @@ contract UniqueEntityModule is Module {
     if (!success) revertWithBytes(data);
   }
 
-  function install(bytes memory args) public {
+  function install(bytes memory encodedArgs) public {
     // Naive check to ensure this is only installed once
     // TODO: only revert if there's nothing to do
-    requireNotInstalled(getName(), args);
+    requireNotInstalled(__self, encodedArgs);
 
     IBaseWorld world = IBaseWorld(_world());
 

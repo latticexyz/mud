@@ -27,7 +27,7 @@ import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
 import { Systems } from "../../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "../../../codegen/tables/FunctionSignatures.sol";
-import { requireNamespace } from "../../../requireNamespace.sol";
+import { validateNamespace } from "../../../validateNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
 
@@ -45,7 +45,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    */
   function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall {
     // Require namespace ID to be a valid namespace
-    requireNamespace(namespaceId);
+    validateNamespace(namespaceId);
 
     // Require namespace to not exist yet
     if (ResourceIds._getExists(namespaceId)) {
@@ -81,6 +81,9 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
 
     // Require the provided address to implement the ISystemHook interface
     requireInterface(address(hookAddress), type(ISystemHook).interfaceId);
+
+    // Require the system to exist
+    AccessControl.requireExistence(systemId);
 
     // Require the system's namespace to exist
     AccessControl.requireExistence(systemId.getNamespaceId());
@@ -195,14 +198,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
 
     // Compute global function selector
     string memory namespaceString = WorldResourceIdLib.toTrimmedString(systemId.getNamespace());
-    string memory nameString = WorldResourceIdLib.toTrimmedString(systemId.getName());
-    bytes memory worldFunctionSignature = abi.encodePacked(
-      namespaceString,
-      "_",
-      nameString,
-      "_",
-      systemFunctionSignature
-    );
+    bytes memory worldFunctionSignature = abi.encodePacked(namespaceString, "__", systemFunctionSignature);
     worldFunctionSelector = bytes4(keccak256(worldFunctionSignature));
 
     // Require the function selector to be globally unique
@@ -307,7 +303,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     bytes memory initCallData
   ) public onlyDelegatecall {
     // Require namespace ID to be a valid namespace
-    requireNamespace(namespaceId);
+    validateNamespace(namespaceId);
 
     // Require the delegation to not be unlimited
     if (!Delegation.isLimited(delegationControlId)) {
@@ -342,7 +338,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    */
   function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelegatecall {
     // Require namespace ID to be a valid namespace
-    requireNamespace(namespaceId);
+    validateNamespace(namespaceId);
 
     // Require the namespace to exist
     AccessControl.requireExistence(namespaceId);

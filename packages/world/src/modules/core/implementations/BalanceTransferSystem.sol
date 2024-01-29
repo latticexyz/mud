@@ -11,7 +11,7 @@ import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";
 
 import { Balances } from "../../../codegen/tables/Balances.sol";
-import { requireNamespace } from "../../../requireNamespace.sol";
+import { validateNamespace } from "../../../validateNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
 
@@ -35,9 +35,9 @@ contract BalanceTransferSystem is System, IWorldErrors, LimitedCallContext {
     uint256 amount
   ) public virtual onlyDelegatecall {
     // Require the from namespace to be a valid namespace ID
-    requireNamespace(fromNamespaceId);
+    validateNamespace(fromNamespaceId);
     // Require the to namespace to be a valid namespace ID
-    requireNamespace(toNamespaceId);
+    validateNamespace(toNamespaceId);
 
     // Require the namespace to exist
     AccessControl.requireExistence(toNamespaceId);

@@ -259,6 +259,11 @@ library StoreCore {
       revert IStoreErrors.Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
     }
 
+    // Require the table to exist
+    if (!ResourceIds._getExists(tableId)) {
+      revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
+    }
+
     StoreHooks.push(tableId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
   }
 

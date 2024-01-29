@@ -57,7 +57,7 @@ import { DelegationControlMock } from "./DelegationControlMock.sol";
 import { createCoreModule } from "./createCoreModule.sol";
 
 interface IWorldTestSystem {
-  function testNamespace_testSystem_err(string memory input) external pure;
+  function testNamespace__err(string memory input) external pure;
 }
 
 struct WorldTestSystemReturn {
@@ -346,6 +346,23 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(IWorldErrors.World_ResourceAlreadyExists.selector, namespaceId, namespaceId.toString())
     );
     world.registerNamespace(namespaceId);
+  }
+
+  function testRegisterInvalidNamespace() public {
+    ResourceId invalidNamespaceId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "namespace", "system");
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_InvalidResourceType.selector,
+        RESOURCE_NAMESPACE,
+        invalidNamespaceId,
+        invalidNamespaceId.toString()
+      )
+    );
+    world.registerNamespace(invalidNamespaceId);
+
+    bytes14 invalidNamespace = "invld__nmsp";
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InvalidNamespace.selector, invalidNamespace));
+    world.registerNamespace(WorldResourceIdLib.encodeNamespace(invalidNamespace));
   }
 
   function testRegisterCoreNamespacesRevert() public {
@@ -1432,6 +1449,24 @@ contract WorldTest is Test, GasReporter {
     world.call(systemId, callData);
   }
 
+  function testRegisterSystemHookBeforeSystem() public {
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "testSystem"
+    });
+
+    // Register a new system
+    world.registerNamespace(systemId.getNamespaceId());
+
+    // Register a new hook
+    ISystemHook systemHook = new EchoSystemHook();
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, systemId, systemId.toString())
+    );
+    world.registerSystemHook(systemId, systemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
+  }
+
   function testUnregisterSystemHook() public {
     ResourceId systemId = WorldResourceIdLib.encode({
       typeId: RESOURCE_SYSTEM,
@@ -1580,7 +1615,7 @@ contract WorldTest is Test, GasReporter {
     bytes4 functionSelector = world.registerFunctionSelector(systemId, "msgSender()");
     endGasReport();
 
-    string memory expectedWorldFunctionSignature = "testNamespace_testSystem_msgSender()";
+    string memory expectedWorldFunctionSignature = "testNamespace__msgSender()";
     bytes4 expectedWorldFunctionSelector = bytes4(keccak256(abi.encodePacked(expectedWorldFunctionSignature)));
     assertEq(functionSelector, expectedWorldFunctionSelector, "wrong function selector returned");
 
@@ -1595,7 +1630,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect errors to be passed through
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
-    IWorldTestSystem(address(world)).testNamespace_testSystem_err("test error");
+    IWorldTestSystem(address(world)).testNamespace__err("test error");
   }
 
   function testRegisterRootFunctionSelector() public {
