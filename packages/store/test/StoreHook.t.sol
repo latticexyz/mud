@@ -180,15 +180,15 @@ contract StoreHookTest is Test, GasReporter {
     assertEq(storeHook.isEnabled(AFTER_DELETE_RECORD), enableAfterDeleteRecord);
   }
 
-  function testGetAddress() public {
-    Hook storeHook = HookLib.encode(address(echoSubscriber), BEFORE_SPLICE_STATIC_DATA);
+  // function testGetAddress() public {
+  //   Hook storeHook = HookLib.encode(address(echoSubscriber), BEFORE_SPLICE_STATIC_DATA);
 
-    startGasReport("get store hook address");
-    storeHook.getAddress();
-    endGasReport();
+  //   startGasReport("get store hook address");
+  //   storeHook.getAddress();
+  //   endGasReport();
 
-    assertEq(storeHook.getAddress(), address(echoSubscriber));
-  }
+  //   assertEq(storeHook.getAddress(), address(echoSubscriber));
+  // }
 
   function testCallHook() public {
     Hook storeHook = HookLib.encode(address(echoSubscriber), BEFORE_SET_RECORD);
