@@ -705,7 +705,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "register subscriber",
-    "gasUsed": 55664
+    "gasUsed": 56903
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -729,7 +729,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "register subscriber",
-    "gasUsed": 55664
+    "gasUsed": 56903
   },
   {
     "file": "test/StoreCoreGas.t.sol",

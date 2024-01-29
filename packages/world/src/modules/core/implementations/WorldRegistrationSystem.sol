@@ -82,6 +82,9 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     // Require the provided address to implement the ISystemHook interface
     requireInterface(address(hookAddress), type(ISystemHook).interfaceId);
 
+    // Require the system to exist
+    AccessControl.requireExistence(systemId);
+
     // Require the system's namespace to exist
     AccessControl.requireExistence(systemId.getNamespaceId());
 
