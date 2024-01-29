@@ -39,22 +39,38 @@ library SystemSwitch {
   function call(ResourceId systemId, bytes memory callData) internal returns (bytes memory returnData) {
     address worldAddress = WorldContextConsumerLib._world();
 
-    // If we're in the World context, call the system directly via delegatecall
+    // If we're in the World context
     if (address(this) == worldAddress) {
       (address systemAddress, ) = Systems.get(systemId);
       // Check if the system exists
       if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
 
-      bool success;
-      (success, returnData) = WorldContextProviderLib.delegatecallWithContext({
-        msgSender: WorldContextConsumerLib._msgSender(),
-        msgValue: WorldContextConsumerLib._msgValue(),
-        target: systemAddress,
-        callData: callData
-      });
+      // If we are calling a root system
+      if (systemId.getNamespace() == ROOT_NAMESPACE) {
+        // call the system directly via delegatecall
+        bool success;
+        (success, returnData) = WorldContextProviderLib.delegatecallWithContext({
+          msgSender: WorldContextConsumerLib._msgSender(),
+          msgValue: WorldContextConsumerLib._msgValue(),
+          target: systemAddress,
+          callData: callData
+        });
 
-      if (!success) revertWithBytes(returnData);
-      return returnData;
+        if (!success) revertWithBytes(returnData);
+        return returnData;
+      } else {
+        // call the system
+        bool success;
+        (success, returnData) = WorldContextProviderLib.callWithContext({
+          msgSender: WorldContextConsumerLib._msgSender(),
+          msgValue: WorldContextConsumerLib._msgValue(),
+          target: systemAddress,
+          callData: callData
+        });
+
+        if (!success) revertWithBytes(returnData);
+        return returnData;
+      }
     }
 
     // Otherwise, call the system via world.call
