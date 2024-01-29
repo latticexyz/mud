@@ -3,7 +3,7 @@ import worldRpcLogs from "../../../test-data/world-logs-10000.json";
 import { recsStorageAdapter, sqliteStorageAdapter, zustandStorageAdapter } from "../test/utils";
 import { logsToBlocks } from "../test/logsToBlocks";
 
-const blocks = logsToBlocks(worldRpcLogs);
+const blocks = logsToBlocks(worldRpcLogs.slice(0, 10000));
 
 describe("Storage Adapter 10000 logs", () => {
   bench("recs: `storageAdapter`", async () => {
