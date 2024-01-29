@@ -14,7 +14,7 @@ import { Balances } from "../tokens/tables/Balances.sol";
 import { IERC721Mintable } from "./IERC721Mintable.sol";
 import { IERC721Receiver } from "./IERC721Receiver.sol";
 
-import { ERC721Metadata } from "./tables/ERC721Metadata.sol";
+import { Metadata } from "../tokens/tables/Metadata.sol";
 import { OperatorApproval } from "../tokens/tables/OperatorApproval.sol";
 import { ERC721Owners } from "./tables/ERC721Owners.sol";
 import { ERC721TokenApproval } from "./tables/ERC721TokenApproval.sol";
@@ -46,14 +46,14 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
    * @dev See {IERC721Metadata-name}.
    */
   function name() public view virtual returns (string memory) {
-    return ERC721Metadata.getName(_metadataTableId(_namespace()));
+    return Metadata.getName(_metadataTableId(_namespace()));
   }
 
   /**
    * @dev See {IERC721Metadata-symbol}.
    */
   function symbol() public view virtual returns (string memory) {
-    return ERC721Metadata.getSymbol(_metadataTableId(_namespace()));
+    return Metadata.getSymbol(_metadataTableId(_namespace()));
   }
 
   /**
@@ -73,7 +73,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
    * token will be the concatenation of the `baseURI` and the `tokenId`.
    */
   function _baseURI() internal view virtual returns (string memory) {
-    return ERC721Metadata.getBaseURI(_metadataTableId(_namespace()));
+    return Metadata.getBaseURI(_metadataTableId(_namespace()));
   }
 
   /**

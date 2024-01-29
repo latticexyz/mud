@@ -27,7 +27,7 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0014010014000000000000000000000000000000000000000000000000000000
 );
 
-library ERC20Registry {
+library Registry {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

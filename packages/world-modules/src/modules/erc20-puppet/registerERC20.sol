@@ -10,7 +10,7 @@ import { MODULE_NAMESPACE_ID, ERC20_REGISTRY_TABLE_ID } from "./constants.sol";
 import { IERC20Mintable } from "./IERC20Mintable.sol";
 
 import { ERC20MetadataData } from "./tables/ERC20Metadata.sol";
-import { ERC20Registry } from "./tables/ERC20Registry.sol";
+import { Registry } from "../tokens/tables/Registry.sol";
 
 /**
  * @notice Register a new ERC20 token with the given metadata in a given namespace
@@ -31,5 +31,5 @@ function registerERC20(
   world.installModule(erc20Module, abi.encode(namespace, metadata));
 
   // Return the newly created ERC20 token
-  token = IERC20Mintable(ERC20Registry.get(ERC20_REGISTRY_TABLE_ID, WorldResourceIdLib.encodeNamespace(namespace)));
+  token = IERC20Mintable(Registry.get(ERC20_REGISTRY_TABLE_ID, WorldResourceIdLib.encodeNamespace(namespace)));
 }

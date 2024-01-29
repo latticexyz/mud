@@ -16,7 +16,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { PuppetModule } from "../src/modules/puppet/PuppetModule.sol";
 import { ERC721Module } from "../src/modules/erc721-puppet/ERC721Module.sol";
-import { ERC721MetadataData } from "../src/modules/erc721-puppet/tables/ERC721Metadata.sol";
+import { MetadataData } from "../src/modules/tokens/tables/Metadata.sol";
 import { IERC721Mintable } from "../src/modules/erc721-puppet/IERC721Mintable.sol";
 import { registerERC721 } from "../src/modules/erc721-puppet/registerERC721.sol";
 import { IERC721Errors } from "../src/modules/erc721-puppet/IERC721Errors.sol";
@@ -78,7 +78,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     StoreSwitch.setStoreAddress(address(world));
 
     // Register a new ERC721 token
-    token = registerERC721(world, "myERC721", ERC721MetadataData({ name: "Token", symbol: "TKN", baseURI: "" }));
+    token = registerERC721(world, "myERC721", MetadataData({ name: "Token", symbol: "TKN", baseURI: "" }));
   }
 
   function _expectAccessDenied(address caller) internal {
@@ -142,7 +142,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     IERC721Mintable anotherToken = registerERC721(
       world,
       "anotherERC721",
-      ERC721MetadataData({ name: "Token", symbol: "TKN", baseURI: "" })
+      MetadataData({ name: "Token", symbol: "TKN", baseURI: "" })
     );
     assertTrue(address(anotherToken) != address(0));
     assertTrue(address(anotherToken) != address(token));

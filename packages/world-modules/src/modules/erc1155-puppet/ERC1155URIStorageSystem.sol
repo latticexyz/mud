@@ -5,7 +5,7 @@ pragma solidity ^0.8.20;
 
 import { ERC1155System } from "./ERC1155System.sol";
 
-import { ERC1155Metadata } from "./tables/ERC1155Metadata.sol";
+import { Metadata } from "../tokens/tables/Metadata.sol";
 import { TokenURI } from "../tokens/tables/TokenURI.sol";
 
 import { _tokenUriTableId, _metadataTableId } from "./utils.sol";
@@ -42,7 +42,7 @@ contract ERC1155URIStorageSystem is ERC1155System {
     // If token URI is set, concatenate base URI and tokenURI (via string.concat).
     return
       bytes(tokenURI).length > 0
-        ? string.concat(ERC1155Metadata.getBaseURI(_metadataTableId(_namespace())), tokenURI)
+        ? string.concat(Metadata.getBaseURI(_metadataTableId(_namespace())), tokenURI)
         : super.uri(tokenId);
   }
 
@@ -58,6 +58,6 @@ contract ERC1155URIStorageSystem is ERC1155System {
    * @dev Sets `baseURI` as the `_baseURI` for all tokens
    */
   function _setBaseURI(string memory baseURI) internal virtual {
-    ERC1155Metadata.setBaseURI(_metadataTableId(_namespace()), baseURI);
+    Metadata.setBaseURI(_metadataTableId(_namespace()), baseURI);
   }
 }

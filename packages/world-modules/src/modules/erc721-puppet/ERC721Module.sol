@@ -21,8 +21,8 @@ import { OperatorApproval } from "../tokens/tables/OperatorApproval.sol";
 import { ERC721Owners } from "./tables/ERC721Owners.sol";
 import { ERC721TokenApproval } from "./tables/ERC721TokenApproval.sol";
 import { TokenURI } from "../tokens/tables/TokenURI.sol";
-import { ERC721Registry } from "./tables/ERC721Registry.sol";
-import { ERC721Metadata, ERC721MetadataData } from "./tables/ERC721Metadata.sol";
+import { Registry } from "../tokens/tables/Registry.sol";
+import { Metadata, MetadataData } from "../tokens/tables/Metadata.sol";
 
 contract ERC721Module is Module {
   error ERC721Module_InvalidNamespace(bytes14 namespace);
@@ -34,7 +34,7 @@ contract ERC721Module is Module {
     requireNotInstalled(__self, encodedArgs);
 
     // Decode args
-    (bytes14 namespace, ERC721MetadataData memory metadata) = abi.decode(encodedArgs, (bytes14, ERC721MetadataData));
+    (bytes14 namespace, MetadataData memory metadata) = abi.decode(encodedArgs, (bytes14, MetadataData));
 
     // Require the namespace to not be the module's namespace
     if (namespace == MODULE_NAMESPACE) {
@@ -49,7 +49,7 @@ contract ERC721Module is Module {
     if (!success) revertWithBytes(returnData);
 
     // Initialize the Metadata
-    ERC721Metadata.set(_metadataTableId(namespace), metadata);
+    Metadata.set(_metadataTableId(namespace), metadata);
 
     // Deploy and register the ERC721 puppet.
     ResourceId erc721SystemId = _erc721SystemId(namespace);
@@ -62,9 +62,9 @@ contract ERC721Module is Module {
     // Register the ERC721 in the ERC20Registry
     if (!ResourceIds.getExists(ERC721_REGISTRY_TABLE_ID)) {
       world.registerNamespace(MODULE_NAMESPACE_ID);
-      ERC721Registry.register(ERC721_REGISTRY_TABLE_ID);
+      Registry.register(ERC721_REGISTRY_TABLE_ID);
     }
-    ERC721Registry.set(ERC721_REGISTRY_TABLE_ID, namespaceId, puppet);
+    Registry.set(ERC721_REGISTRY_TABLE_ID, namespaceId, puppet);
   }
 
   function installRoot(bytes memory) public pure {
@@ -89,7 +89,7 @@ contract ERC721ModuleRegistrationLibrary {
     ERC721TokenApproval.register(_tokenApprovalTableId(namespace));
     TokenURI.register(_tokenUriTableId(namespace));
     Balances.register(_balancesTableId(namespace));
-    ERC721Metadata.register(_metadataTableId(namespace));
+    Metadata.register(_metadataTableId(namespace));
 
     // Register a new ERC20System
     world.registerSystem(_erc721SystemId(namespace), new ERC721System(), true);

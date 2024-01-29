@@ -11,8 +11,8 @@ import { ERC721Module } from "./ERC721Module.sol";
 import { MODULE_NAMESPACE_ID, ERC721_REGISTRY_TABLE_ID } from "./constants.sol";
 import { IERC721Mintable } from "./IERC721Mintable.sol";
 
-import { ERC721MetadataData } from "./tables/ERC721Metadata.sol";
-import { ERC721Registry } from "./tables/ERC721Registry.sol";
+import { MetadataData } from "../tokens/tables/Metadata.sol";
+import { Registry } from "../tokens/tables/Registry.sol";
 
 /**
  * @notice Register a new ERC721 token with the given metadata in a given namespace
@@ -21,7 +21,7 @@ import { ERC721Registry } from "./tables/ERC721Registry.sol";
 function registerERC721(
   IBaseWorld world,
   bytes14 namespace,
-  ERC721MetadataData memory metadata
+  MetadataData memory metadata
 ) returns (IERC721Mintable token) {
   // Get the ERC721 module
   ERC721Module erc721Module = ERC721Module(NamespaceOwner.get(MODULE_NAMESPACE_ID));
@@ -33,5 +33,5 @@ function registerERC721(
   world.installModule(erc721Module, abi.encode(namespace, metadata));
 
   // Return the newly created ERC721 token
-  token = IERC721Mintable(ERC721Registry.get(ERC721_REGISTRY_TABLE_ID, WorldResourceIdLib.encodeNamespace(namespace)));
+  token = IERC721Mintable(Registry.get(ERC721_REGISTRY_TABLE_ID, WorldResourceIdLib.encodeNamespace(namespace)));
 }

@@ -22,7 +22,7 @@ import { IERC1155Errors } from "./IERC1155Errors.sol";
 import { IERC1155Events } from "./IERC1155Events.sol";
 
 import { ERC1155Balances } from "./tables/ERC1155Balances.sol";
-import { ERC1155Metadata } from "./tables/ERC1155Metadata.sol";
+import { Metadata } from "../tokens/tables/Metadata.sol";
 import { OperatorApproval } from "../tokens/tables/OperatorApproval.sol";
 
 import { _balancesTableId, _metadataTableId, _operatorApprovalTableId } from "./utils.sol";
@@ -58,7 +58,7 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1
    * actual token type ID.
    */
   function uri(uint256 /* id */) public view virtual returns (string memory) {
-    return ERC1155Metadata.getBaseURI(_metadataTableId(_namespace()));
+    return Metadata.getBaseURI(_metadataTableId(_namespace()));
   }
 
   /**
@@ -317,7 +317,7 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1
    * this function emits no events.
    */
   function _setURI(string memory newuri) internal virtual {
-    ERC1155Metadata.setBaseURI(_metadataTableId(_namespace()), newuri);
+    Metadata.setBaseURI(_metadataTableId(_namespace()), newuri);
   }
 
   /**

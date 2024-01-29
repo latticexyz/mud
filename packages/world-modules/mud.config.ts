@@ -152,6 +152,26 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
+    Metadata: {
+      directory: "modules/tokens/tables",
+      keySchema: {},
+      valueSchema: {
+        name: "string",
+        symbol: "string",
+        baseURI: "string",
+      },
+      tableIdArgument: true,
+    },
+    Registry: {
+      directory: "modules/tokens/tables",
+      keySchema: {
+        namespaceId: "ResourceId",
+      },
+      valueSchema: {
+        tokenAddress: "address",
+      },
+      tableIdArgument: true,
+    },
     /************************************************************************
      *
      *    ERC20 MODULE
@@ -186,31 +206,11 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
-    ERC20Registry: {
-      directory: "modules/erc20-puppet/tables",
-      keySchema: {
-        namespaceId: "ResourceId",
-      },
-      valueSchema: {
-        tokenAddress: "address",
-      },
-      tableIdArgument: true,
-    },
     /************************************************************************
      *
      *    ERC721 MODULE
      *
      ************************************************************************/
-    ERC721Metadata: {
-      directory: "modules/erc721-puppet/tables",
-      keySchema: {},
-      valueSchema: {
-        name: "string",
-        symbol: "string",
-        baseURI: "string",
-      },
-      tableIdArgument: true,
-    },
     ERC721Owners: {
       directory: "modules/erc721-puppet/tables",
       keySchema: {
@@ -231,31 +231,11 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
-    ERC721Registry: {
-      directory: "modules/erc721-puppet/tables",
-      keySchema: {
-        namespaceId: "ResourceId",
-      },
-      valueSchema: {
-        tokenAddress: "address",
-      },
-      tableIdArgument: true,
-    },
     /************************************************************************
      *
      *    ERC721 MODULE
      *
      ************************************************************************/
-    ERC1155Metadata: {
-      directory: "modules/erc1155-puppet/tables",
-      keySchema: {},
-      valueSchema: {
-        name: "string",
-        symbol: "string",
-        baseURI: "string",
-      },
-      tableIdArgument: true,
-    },
     ERC1155Balances: {
       directory: "modules/erc1155-puppet/tables",
       keySchema: {
@@ -264,16 +244,6 @@ export default mudConfig({
       },
       valueSchema: {
         balance: "uint256",
-      },
-      tableIdArgument: true,
-    },
-    ERC1155Registry: {
-      directory: "modules/erc1155-puppet/tables",
-      keySchema: {
-        namespaceId: "ResourceId",
-      },
-      valueSchema: {
-        tokenAddress: "address",
       },
       tableIdArgument: true,
     },
