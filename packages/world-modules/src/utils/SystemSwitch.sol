@@ -39,15 +39,13 @@ library SystemSwitch {
   function call(ResourceId systemId, bytes memory callData) internal returns (bytes memory returnData) {
     address worldAddress = WorldContextConsumerLib._world();
 
-    // If we're in the World context
     if (address(this) == worldAddress) {
       (address systemAddress, ) = Systems.get(systemId);
       // Check if the system exists
       if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
 
-      // If we are calling a root system
+      // If we're in the World context and calling a root system, call it directly via delegatecall
       if (systemId.getNamespace() == ROOT_NAMESPACE) {
-        // call the system directly via delegatecall
         bool success;
         (success, returnData) = WorldContextProviderLib.delegatecallWithContext({
           msgSender: WorldContextConsumerLib._msgSender(),
@@ -59,7 +57,6 @@ library SystemSwitch {
         if (!success) revertWithBytes(returnData);
         return returnData;
       } else {
-        // call the system
         bool success;
         (success, returnData) = WorldContextProviderLib.callWithContext({
           msgSender: WorldContextConsumerLib._msgSender(),
