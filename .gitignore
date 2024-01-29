@@ -17,6 +17,4 @@ templates/*/pnpm-lock.yaml
 
 .env
 
-test-data/world-logs-100.json
-test-data/world-logs-1000.json
 test-data/world-logs-10000.json
