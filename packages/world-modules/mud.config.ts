@@ -278,5 +278,12 @@ export default mudConfig({
       tableIdArgument: true,
     },
   },
-  excludeSystems: ["UniqueEntitySystem", "PuppetFactorySystem", "ERC20System", "ERC721System", "ERC1155System"],
+  excludeSystems: [
+    "UniqueEntitySystem",
+    "PuppetFactorySystem",
+    "ERC20System",
+    "ERC721System",
+    "ERC1155System",
+    "ERC1155StorageSystem",
+  ],
 });

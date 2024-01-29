@@ -24,9 +24,8 @@ import { IERC1155Events } from "./IERC1155Events.sol";
 import { ERC1155Balances } from "./tables/ERC1155Balances.sol";
 import { ERC1155Metadata } from "./tables/ERC1155Metadata.sol";
 import { OperatorApproval } from "../tokens/tables/OperatorApproval.sol";
-import { TokenURI } from "../tokens/tables/TokenURI.sol";
 
-import { _tokenUriTableId, _balancesTableId, _metadataTableId, _operatorApprovalTableId } from "./utils.sol";
+import { _balancesTableId, _metadataTableId, _operatorApprovalTableId } from "./utils.sol";
 
 /**
  * @dev Implementation of the basic standard multi-token.
@@ -34,12 +33,9 @@ import { _tokenUriTableId, _balancesTableId, _metadataTableId, _operatorApproval
  * Originally based on code by Enjin: https://github.com/enjin/erc-1155
  */
 contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1155Burnable, System, PuppetMaster {
-  /**
-   * @dev See {_setURI}.
-   */
-  constructor(string memory uri_) {
-    ERC1155Metadata.setBaseURI();
-  }
+  using WorldResourceIdInstance for ResourceId;
+
+  // constructor has been removed, since initialization is done during registration through ERC1155Module
 
   /**
    * @dev See {IERC165-supportsInterface}.
@@ -62,14 +58,14 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1
    * actual token type ID.
    */
   function uri(uint256 /* id */) public view virtual returns (string memory) {
-    return _uri;
+    return ERC1155Metadata.getBaseURI(_metadataTableId(_namespace()));
   }
 
   /**
    * @dev See {IERC1155-balanceOf}.
    */
   function balanceOf(address account, uint256 id) public view virtual returns (uint256) {
-    return _balances[id][account];
+    return ERC1155Balances.get(_balancesTableId(_namespace()), id, account);
   }
 
   /**
@@ -90,7 +86,7 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1
     uint256[] memory batchBalances = new uint256[](accounts.length);
 
     for (uint256 i = 0; i < accounts.length; ++i) {
-      batchBalances[i] = balanceOf(accounts.unsafeMemoryAccess(i), ids.unsafeMemoryAccess(i));
+      batchBalances[i] = ERC1155Balances.get(_balancesTableId(_namespace()), ids[i], accounts[i]);
     }
 
     return batchBalances;
@@ -107,7 +103,7 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1
    * @dev See {IERC1155-isApprovedForAll}.
    */
   function isApprovedForAll(address account, address operator) public view virtual returns (bool) {
-    return _operatorApprovals[account][operator];
+    return OperatorApproval.get(_operatorApprovalTableId(_namespace()), account, operator);
   }
 
   /**
@@ -139,6 +135,38 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1
   }
 
   /**
+   * @dev see {IERC1155Mintable-mint}.
+   */
+  function mint(address account, uint256 id, uint256 amount, bytes memory data) public {
+    _requireOwner();
+    _mint(account, id, amount, data);
+  }
+
+  /**
+   * @dev see {IERC1155Mintable-mintBatch}.
+   */
+  function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data) public {
+    _requireOwner();
+    _mintBatch(to, ids, amounts, data);
+  }
+
+  /**
+   * @dev {IERC1155Burnable-burn}.
+   */
+  function burn(address account, uint256 id, uint256 value) public {
+    _requireOwner();
+    _burn(account, id, value);
+  }
+
+  /**
+   * @dev {IERC1155Burnable-burnBatch}.
+   */
+  function burnBatch(address account, uint256[] memory ids, uint256[] memory values) public {
+    _requireOwner();
+    _burnBatch(account, ids, values);
+  }
+
+  /**
    * @dev Transfers a `value` amount of tokens of type `id` from `from` to `to`. Will mint (or burn) if `from`
    * (or `to`) is the zero address.
    *
@@ -160,28 +188,30 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1
     address operator = _msgSender();
 
     for (uint256 i = 0; i < ids.length; ++i) {
-      uint256 id = ids.unsafeMemoryAccess(i);
-      uint256 value = values.unsafeMemoryAccess(i);
+      uint256 id = ids[i];
+      uint256 value = values[i];
 
       if (from != address(0)) {
-        uint256 fromBalance = _balances[id][from];
+        uint256 fromBalance = ERC1155Balances.get(_balancesTableId(_namespace()), id, from);
         if (fromBalance < value) {
           revert ERC1155InsufficientBalance(from, fromBalance, value, id);
         }
-        unchecked {
-          // Overflow not possible: value <= fromBalance
-          _balances[id][from] = fromBalance - value;
-        }
+        ERC1155Balances.set(_balancesTableId(_namespace()), id, from, (fromBalance - value));
       }
 
       if (to != address(0)) {
-        _balances[id][to] += value;
+        ERC1155Balances.set(
+          _balancesTableId(_namespace()),
+          id,
+          to,
+          ERC1155Balances.get(_balancesTableId(_namespace()), id, to) + value
+        );
       }
     }
 
     if (ids.length == 1) {
-      uint256 id = ids.unsafeMemoryAccess(0);
-      uint256 value = values.unsafeMemoryAccess(0);
+      uint256 id = ids[0];
+      uint256 value = values[0];
       emit TransferSingle(operator, from, to, id, value);
     } else {
       emit TransferBatch(operator, from, to, ids, values);
@@ -208,8 +238,8 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1
     if (to != address(0)) {
       address operator = _msgSender();
       if (ids.length == 1) {
-        uint256 id = ids.unsafeMemoryAccess(0);
-        uint256 value = values.unsafeMemoryAccess(0);
+        uint256 id = ids[0];
+        uint256 value = values[0];
         _doSafeTransferAcceptanceCheck(operator, from, to, id, value, data);
       } else {
         _doSafeBatchTransferAcceptanceCheck(operator, from, to, ids, values, data);
@@ -287,7 +317,7 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1
    * this function emits no events.
    */
   function _setURI(string memory newuri) internal virtual {
-    _uri = newuri;
+    ERC1155Metadata.setBaseURI(_metadataTableId(_namespace()), newuri);
   }
 
   /**
@@ -377,7 +407,8 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1
     if (operator == address(0)) {
       revert ERC1155InvalidOperator(address(0));
     }
-    _operatorApprovals[owner][operator] = approved;
+    OperatorApproval.set(_operatorApprovalTableId(_namespace()), owner, operator, approved);
+    //_operatorApprovals[owner][operator] = approved;
     emit ApprovalForAll(owner, operator, approved);
   }
 
@@ -469,5 +500,14 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1
       // Update the free memory pointer by pointing after the second array
       mstore(0x40, add(array2, 0x40))
     }
+  }
+
+  function _namespace() internal view returns (bytes14 namespace) {
+    ResourceId systemId = SystemRegistry.get(address(this));
+    return systemId.getNamespace();
+  }
+
+  function _requireOwner() internal view {
+    AccessControlLib.requireOwner(SystemRegistry.get(address(this)), _msgSender());
   }
 }

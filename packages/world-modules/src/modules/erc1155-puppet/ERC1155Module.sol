@@ -19,8 +19,8 @@ import { _erc1155SystemId, _tokenUriTableId, _balancesTableId, _metadataTableId,
 import { ERC1155System } from "./ERC1155System.sol";
 
 import { ERC1155Balances } from "./tables/ERC1155Balances.sol";
-import { ERC1155OperatorApproval } from "./tables/ERC1155OperatorApproval.sol";
-import { ERC1155TokenURI } from "./tables/ERC1155TokenURI.sol";
+import { OperatorApproval } from "../tokens/tables/OperatorApproval.sol";
+import { TokenURI } from "../tokens/tables/TokenURI.sol";
 import { ERC1155Registry } from "./tables/ERC1155Registry.sol";
 import { ERC1155Metadata, ERC1155MetadataData } from "./tables/ERC1155Metadata.sol";
 
@@ -98,10 +98,10 @@ contract ERC1155ModuleRegistrationLibrary {
     }
 
     // Register the tables
-    ERC1155TokenURI.register(_tokenUriTableId(namespace));
+    TokenURI.register(_tokenUriTableId(namespace));
     ERC1155Balances.register(_balancesTableId(namespace));
     ERC1155Metadata.register(_metadataTableId(namespace));
-    ERC1155OperatorApproval.register(_operatorApprovalTableId(namespace));
+    OperatorApproval.register(_operatorApprovalTableId(namespace));
 
     // Register a new ERC20System
     world.registerSystem(_erc1155SystemId(namespace), new ERC1155System(), true);
