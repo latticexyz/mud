@@ -24,7 +24,7 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0000000100000000000000000000000000000000000000000000000000000000
 );
 
-library ERC721TokenURI {
+library TokenURI {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

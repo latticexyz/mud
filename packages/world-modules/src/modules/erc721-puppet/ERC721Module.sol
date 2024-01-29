@@ -18,10 +18,10 @@ import { MODULE_NAME, MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC721_REGISTRY_TAB
 import { _erc721SystemId, _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId } from "./utils.sol";
 import { ERC721System } from "./ERC721System.sol";
 
-import { ERC721OperatorApproval } from "./tables/ERC721OperatorApproval.sol";
+import { OperatorApproval } from "../tokens/tables/OperatorApproval.sol";
 import { ERC721Owners } from "./tables/ERC721Owners.sol";
 import { ERC721TokenApproval } from "./tables/ERC721TokenApproval.sol";
-import { ERC721TokenURI } from "./tables/ERC721TokenURI.sol";
+import { TokenURI } from "../tokens/tables/TokenURI.sol";
 import { ERC721Registry } from "./tables/ERC721Registry.sol";
 import { ERC721Metadata, ERC721MetadataData } from "./tables/ERC721Metadata.sol";
 
@@ -99,10 +99,10 @@ contract ERC721ModuleRegistrationLibrary {
     }
 
     // Register the tables
-    ERC721OperatorApproval.register(_operatorApprovalTableId(namespace));
+    OperatorApproval.register(_operatorApprovalTableId(namespace));
     ERC721Owners.register(_ownersTableId(namespace));
     ERC721TokenApproval.register(_tokenApprovalTableId(namespace));
-    ERC721TokenURI.register(_tokenUriTableId(namespace));
+    TokenURI.register(_tokenUriTableId(namespace));
     Balances.register(_balancesTableId(namespace));
     ERC721Metadata.register(_metadataTableId(namespace));
 

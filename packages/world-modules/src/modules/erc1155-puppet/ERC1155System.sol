@@ -16,13 +16,15 @@ import { Balances } from "../tokens/tables/Balances.sol";
 import { IERC1155 } from "./IERC1155.sol";
 import { IERC1155Receiver } from "./IERC1155Receiver.sol";
 import { IERC1155MetadataURI } from "./IERC1155Metadata.sol";
+import { IERC1155Mintable } from "./IERC1155Mintable.sol";
+import { IERC1155Burnable } from "./IERC1155Burnable.sol";
 import { IERC1155Errors } from "./IERC1155Errors.sol";
 import { IERC1155Events } from "./IERC1155Events.sol";
 
 import { ERC1155Balances } from "./tables/ERC1155Balances.sol";
 import { ERC1155Metadata } from "./tables/ERC1155Metadata.sol";
-import { ERC1155OperatorApproval } from "./tables/ERC1155OperatorApproval.sol";
-import { ERC1155TokenURI } from "./tables/ERC1155TokenURI.sol";
+import { OperatorApproval } from "../tokens/tables/OperatorApproval.sol";
+import { TokenURI } from "../tokens/tables/TokenURI.sol";
 
 import { _tokenUriTableId, _balancesTableId, _metadataTableId, _operatorApprovalTableId } from "./utils.sol";
 
@@ -31,7 +33,7 @@ import { _tokenUriTableId, _balancesTableId, _metadataTableId, _operatorApproval
  * See https://eips.ethereum.org/EIPS/eip-1155
  * Originally based on code by Enjin: https://github.com/enjin/erc-1155
  */
-contract ERC1155 is IERC1155, IERC1155MetadataURI, System, PuppetMaster {
+contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1155Burnable, System, PuppetMaster {
   /**
    * @dev See {_setURI}.
    */
