@@ -284,6 +284,6 @@ export default mudConfig({
     "ERC20System",
     "ERC721System",
     "ERC1155System",
-    "ERC1155StorageSystem",
+    "ERC1155URIStorageSystem",
   ],
 });
