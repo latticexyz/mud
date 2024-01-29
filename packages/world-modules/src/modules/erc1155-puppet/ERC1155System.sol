@@ -17,7 +17,6 @@ import { IERC1155 } from "./IERC1155.sol";
 import { IERC1155Receiver } from "./IERC1155Receiver.sol";
 import { IERC1155MetadataURI } from "./IERC1155Metadata.sol";
 import { IERC1155Mintable } from "./IERC1155Mintable.sol";
-import { IERC1155Burnable } from "./IERC1155Burnable.sol";
 import { IERC1155Errors } from "./IERC1155Errors.sol";
 import { IERC1155Events } from "./IERC1155Events.sol";
 
@@ -32,7 +31,7 @@ import { _balancesTableId, _metadataTableId, _operatorApprovalTableId } from "./
  * See https://eips.ethereum.org/EIPS/eip-1155
  * Originally based on code by Enjin: https://github.com/enjin/erc-1155
  */
-contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, IERC1155Burnable, System, PuppetMaster {
+contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, System, PuppetMaster {
   using WorldResourceIdInstance for ResourceId;
 
   // constructor has been removed, since initialization is done during registration through ERC1155Module

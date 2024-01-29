@@ -14,7 +14,7 @@ interface IERC1155Mintable is IERC1155 {
    *
    * - `account` cannot be the zero address.
    *
-   * Emits a {Transfer} event.
+   * Emits a {TransferSingle} event.
    */
   function mint(address account, uint256 id, uint256 amount, bytes memory data) external;
 
@@ -25,7 +25,29 @@ interface IERC1155Mintable is IERC1155 {
    *
    * - `account` cannot be the zero address.
    *
-   * Emits a {Transfer} event.
+   * Emits a {TransferBatch} event.
    */
   function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data) external;
+
+  /**
+   * @dev Burns `value` of `id` tokens that belonged to `account`.
+   *
+   * Requirements:
+   *
+   * - `account` cannot be the zero address.
+   *
+   * Emits a {Transfer} event.
+   */
+  function burn(address account, uint256 id, uint256 value) external;
+
+  /**
+   * @dev Burns `values` of `ids` tokens that belonged to `account`.
+   *
+   * Requirements:
+   *
+   * - `account` cannot be the zero address.
+   *
+   * Emits a {Transfer} event.
+   */
+  function burnBatch(address account, uint256[] memory ids, uint256[] memory values) external;
 }
