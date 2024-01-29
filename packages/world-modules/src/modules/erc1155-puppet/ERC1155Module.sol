@@ -11,10 +11,9 @@ import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { Puppet } from "../puppet/Puppet.sol";
 import { createPuppet } from "../puppet/createPuppet.sol";
-import { MODULE_NAME as PUPPET_MODULE_NAME } from "../puppet/constants.sol";
 import { Balances } from "../tokens/tables/Balances.sol";
 
-import { MODULE_NAME, MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC1155_REGISTRY_TABLE_ID } from "./constants.sol";
+import { MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC1155_REGISTRY_TABLE_ID } from "./constants.sol";
 import { _erc1155SystemId, _tokenUriTableId, _balancesTableId, _metadataTableId, _operatorApprovalTableId } from "./utils.sol";
 import { ERC1155System } from "./ERC1155System.sol";
 
@@ -29,31 +28,17 @@ contract ERC1155Module is Module {
 
   address immutable registrationLibrary = address(new ERC1155ModuleRegistrationLibrary());
 
-  function getName() public pure override returns (bytes16) {
-    return MODULE_NAME;
-  }
-
-  function _requireDependencies() internal view {
-    // Require PuppetModule to be installed
-    if (!isInstalled(PUPPET_MODULE_NAME, new bytes(0))) {
-      revert Module_MissingDependency(string(bytes.concat(PUPPET_MODULE_NAME)));
-    }
-  }
-
-  function install(bytes memory args) public {
+  function install(bytes memory encodedArgs) public {
     // Require the module to not be installed with these args yet
-    requireNotInstalled(MODULE_NAME, args);
+    requireNotInstalled(__self, encodedArgs);
 
     // Extract args
-    (bytes14 namespace, ERC1155MetadataData memory metadata) = abi.decode(args, (bytes14, ERC1155MetadataData));
+    (bytes14 namespace, ERC1155MetadataData memory metadata) = abi.decode(encodedArgs, (bytes14, ERC1155MetadataData));
 
     // Require the namespace to not be the module's namespace
     if (namespace == MODULE_NAMESPACE) {
       revert ERC1155Module_InvalidNamespace(namespace);
     }
-
-    // Require dependencies
-    _requireDependencies();
 
     // Register the ERC1155 tables and system
     IBaseWorld world = IBaseWorld(_world());
