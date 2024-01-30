@@ -264,7 +264,7 @@ library StoreCore {
       revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
 
-    StoreHooks.push(tableId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
+    StoreHooks._push(tableId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
   }
 
   /**
