@@ -1453,6 +1453,24 @@ contract WorldTest is Test, GasReporter {
     world.call(systemId, callData);
   }
 
+  function testRegisterSystemHookBeforeSystem() public {
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "testSystem"
+    });
+
+    // Register a new system
+    world.registerNamespace(systemId.getNamespaceId());
+
+    // Register a new hook
+    ISystemHook systemHook = new EchoSystemHook();
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, systemId, systemId.toString())
+    );
+    world.registerSystemHook(systemId, systemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
+  }
+
   function testUnregisterSystemHook() public {
     ResourceId systemId = WorldResourceIdLib.encode({
       typeId: RESOURCE_SYSTEM,

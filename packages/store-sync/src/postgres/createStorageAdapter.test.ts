@@ -48,7 +48,7 @@ describe("createStorageAdapter", async () => {
     expect(await db.select().from(storageAdapter.tables.configTable)).toMatchInlineSnapshot(`
       [
         {
-          "blockNumber": 12n,
+          "blockNumber": 21n,
           "chainId": 31337,
           "version": "0.0.4",
         },
@@ -68,8 +68,8 @@ describe("createStorageAdapter", async () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342",
-          "blockNumber": 12n,
+          "address": "0x1A33F58dE9acC2645630B4EdC3d3116c755016e0",
+          "blockNumber": 21n,
           "dynamicData": "0x000001a400000045",
           "encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
           "isDeleted": false,

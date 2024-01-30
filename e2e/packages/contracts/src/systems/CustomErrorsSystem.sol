@@ -4,6 +4,8 @@ pragma solidity >=0.8.21;
 import { System } from "@latticexyz/world/src/System.sol";
 import { Position } from "../CustomTypes.sol";
 
+error ThisErrorShouldBeAbsentFromTheGeneratedSystemInterface();
+
 contract CustomErrorsSystem is System {
   error TestError1();
   error TestError2(Position position, uint256 value, string name, bool flag);
