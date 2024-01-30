@@ -4,14 +4,14 @@ import { CollapseCode } from "../../components/CollapseCode";
 
 On this page you learn how to add [delegations](https://mud.dev/world/account-delegation) to enable addresses to act on behalf of other addresses.
 This is important, for example, because typically every game move is a transaction, but you wouldn't want the player to constantly have to confirm every move on the wallet extension.
-The common pattern is to create a burner address and have the wallet user address authorize it to play on its behalf.
+The common pattern is to create a burner wallet and have the user's main wallet authorize it to play on its behalf.
 
 ## The sample application
 
-The application is located [in our monorepository](https://github.com/latticexyz/mud/tree/main/examples/multiple-accounts).
+The application is located [in the MUD monorepository](https://github.com/latticexyz/mud/tree/main/examples/multiple-accounts).
 It creates multiple burner addresses, and keeps track onchain when they last submitted a transaction.
 
-There are the steps to run the initial application.
+Here are the steps to run the initial application:
 
 1. Clone the monorepo, move the application out, and delete the monorepo again.
 
