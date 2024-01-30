@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { STORE_VERSION } from "./version.sol";
 import { IStoreData } from "./IStoreData.sol";

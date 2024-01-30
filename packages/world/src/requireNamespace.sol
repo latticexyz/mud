@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
-import { Bytes } from "@latticexyz/store/src/Bytes.sol";
-
-import { ResourceId, WorldResourceIdInstance, NAMESPACE_BYTES, WorldResourceIdLib } from "./WorldResourceId.sol";
+import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { RESOURCE_NAMESPACE } from "./worldResourceTypes.sol";
 import { IWorldErrors } from "./IWorldErrors.sol";
 
