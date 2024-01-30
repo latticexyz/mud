@@ -45,25 +45,25 @@
     "file": "test/BatchCall.t.sol",
     "test": "testBatchCallFromReturnData",
     "name": "call systems with batchCallFrom",
-    "gasUsed": 52611
+    "gasUsed": 52477
   },
   {
     "file": "test/BatchCall.t.sol",
     "test": "testBatchCallReturnData",
     "name": "call systems with batchCall",
-    "gasUsed": 51457
+    "gasUsed": 51323
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testCreate2Factory",
     "name": "deploy contract via Create2",
-    "gasUsed": 4797613
+    "gasUsed": 4768291
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 13018827
+    "gasUsed": 12961878
   },
   {
     "file": "test/World.t.sol",
@@ -105,13 +105,13 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 81992
+    "gasUsed": 81069
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 124482
+    "gasUsed": 123559
   },
   {
     "file": "test/World.t.sol",
@@ -129,13 +129,13 @@
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 536849
+    "gasUsed": 534893
   },
   {
     "file": "test/World.t.sol",
     "test": "testRenounceNamespace",
     "name": "Renounce namespace ownership",
-    "gasUsed": 40304
+    "gasUsed": 39381
   },
   {
     "file": "test/World.t.sol",
@@ -153,7 +153,7 @@
     "file": "test/World.t.sol",
     "test": "testUnregisterNamespaceDelegation",
     "name": "unregister a namespace delegation",
-    "gasUsed": 31891
+    "gasUsed": 30968
   },
   {
     "file": "test/World.t.sol",
@@ -207,6 +207,6 @@
     "file": "test/WorldResourceId.t.sol",
     "test": "testToString",
     "name": "convert resource ID to string",
-    "gasUsed": 3313
+    "gasUsed": 2390
   }
 ]
