@@ -2,4 +2,4 @@
 "@latticexyz/world": minor
 ---
 
-Added `msg.sender` to the `WorldFactory` deployment salt, so the World address is derived from the creator of the world.
+`WorldFactory` now derives a salt based on number of worlds deployed by `msg.sender`, which should help with predictable world deployments across chains.
