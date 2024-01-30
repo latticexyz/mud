@@ -7,6 +7,7 @@
 "@latticexyz/store": major
 "@latticexyz/world": major
 "@latticexyz/cli": minor
+"create-mud": minor
 ---
 
 Bumped Solidity version to 0.8.24.
