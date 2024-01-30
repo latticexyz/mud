@@ -18,7 +18,7 @@ interface IWorldFactory {
    * @param account The account.
    * @return The total number of World contracts deployed by this factory per account.
    */
-  function accountCount(address account) external view returns (uint256);
+  function worldCounts(address account) external view returns (uint256);
 
   /**
    * @notice Deploys a new World contract.

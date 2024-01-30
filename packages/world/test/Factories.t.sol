@@ -51,7 +51,7 @@ contract FactoriesTest is Test, GasReporter {
 
     // Confirm worldFactory was deployed correctly
     IWorldFactory worldFactory = IWorldFactory(calculatedAddress);
-    assertEq(uint256(worldFactory.accountCount(address(0))), uint256(0));
+    assertEq(uint256(worldFactory.worldCounts(address(0))), uint256(0));
   }
 
   function testWorldFactory(address account) public {
@@ -84,7 +84,7 @@ contract FactoriesTest is Test, GasReporter {
     StoreSwitch.setStoreAddress(calculatedAddress);
 
     // Confirm accountCount (which is salt) has incremented
-    assertEq(uint256(worldFactory.accountCount(account)), uint256(1));
+    assertEq(uint256(worldFactory.worldCounts(account)), uint256(1));
 
     // Confirm correct Core is installed
     assertTrue(InstalledModules.get(address(coreModule), keccak256(new bytes(0))));
@@ -111,7 +111,7 @@ contract FactoriesTest is Test, GasReporter {
     worldFactory.deployWorld();
 
     // Confirm accountCount (which is salt) has incremented
-    assertEq(uint256(worldFactory.accountCount(account)), uint256(2));
+    assertEq(uint256(worldFactory.worldCounts(account)), uint256(2));
 
     // Set the store address manually
     StoreSwitch.setStoreAddress(calculatedAddress);
