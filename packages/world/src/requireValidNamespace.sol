@@ -11,16 +11,10 @@ using WorldResourceIdInstance for ResourceId;
 
 /**
  * @notice Checks if a given `resourceId` is a valid namespace.
- * @dev Reverts with IWorldErrors.World_InvalidResourceType if the ID does not have the correct components.
- * @dev Reverts with IWorldErrors.World_InvalidNamespace if the namespace includes the reserved separator string ("__").
+ * @dev Reverts with IWorldErrors.World_InvalidNamespace if the namespace includes the reserved `__` separator string or ends with `_`.
  * @param resourceId The resource ID to verify.
  */
-function validateNamespace(ResourceId resourceId) pure {
-  // Require the resourceId to have the namespace type
-  if (ResourceId.unwrap(resourceId) != ResourceId.unwrap(resourceId.getNamespaceId())) {
-    revert IWorldErrors.World_InvalidResourceType(RESOURCE_NAMESPACE, resourceId, resourceId.toString());
-  }
-
+function requireValidNamespace(ResourceId resourceId) pure {
   // Require the namespace to not include the reserved separator
   bytes14 namespace = resourceId.getNamespace();
   for (uint256 i; i < NAMESPACE_BYTES - 1; i++) {

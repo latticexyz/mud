@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactory",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 13018541
+    "gasUsed": 13015010
   },
   {
     "file": "test/World.t.sol",
@@ -111,7 +111,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 124482
+    "gasUsed": 127013
   },
   {
     "file": "test/World.t.sol",
@@ -135,7 +135,7 @@
     "file": "test/World.t.sol",
     "test": "testRenounceNamespace",
     "name": "Renounce namespace ownership",
-    "gasUsed": 40304
+    "gasUsed": 36773
   },
   {
     "file": "test/World.t.sol",
@@ -153,7 +153,7 @@
     "file": "test/World.t.sol",
     "test": "testUnregisterNamespaceDelegation",
     "name": "unregister a namespace delegation",
-    "gasUsed": 31891
+    "gasUsed": 28360
   },
   {
     "file": "test/World.t.sol",
