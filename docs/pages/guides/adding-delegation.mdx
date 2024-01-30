@@ -13,29 +13,11 @@ It creates multiple burner addresses, and keeps track onchain when they last sub
 
 Here are the steps to run the initial application:
 
-1. Clone the monorepo, move the application out, and delete the monorepo again.
+1. Clone the monorepo and go the example.
 
    ```sh copy
    git clone https://github.com/latticexyz/mud
-   mv mud/examples/multiple-accounts .
-   rm -rf mud
-   cd multiple-accounts
-   ```
-
-1. Create `packages/contracts/.env`.
-
-   ```sh copy filename=".env"
-   # This .env file is for demonstration purposes only.
-   #
-   # This should usually be excluded via .gitignore and the env vars attached to
-   # your deployment environment, but we're including this here for ease of local
-   # development. Please do not commit changes to this file!
-   #
-   # Enable debug logs for MUD CLI
-   DEBUG=mud:*
-   #
-   # Anvil default private key:
-   PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+   cd mud/examples/multiple-accounts
    ```
 
 1. Install the Node packages and start the application.
@@ -88,7 +70,7 @@ To deploy the delegation system:
     # Anvil default private key:
     PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
-    WORLD_ADDRESS=0xc44504ab6a2c4df9a9ce82aecfc453fec3c8771c
+    WORLD_ADDRESS=0xf599e8f01a5ca469cda10711c3f2ffa4eeed755e
     ```
 
     </CollapseCode>
@@ -97,7 +79,7 @@ To deploy the delegation system:
 
     <CollapseCode>
 
-    ```solidity filename="DeployDelegation.s.sol" copy showLineNumbers {21-23}
+    ```solidity filename="DeployDelegation.s.sol" copy showLineNumbers {19-20}
     // SPDX-License-Identifier: MIT
     pragma solidity >=0.8.21;
 
@@ -194,7 +176,7 @@ Before moving over to the client, we will verify things work as expected using a
    USER_ADDRESS=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
    USER_ADDRESS_2=0x70997970C51812dc3A010C7d01b50e0d17dc79C8
 
-   WORLD_ADDRESS=0xc44504ab6a2c4df9a9ce82aecfc453fec3c8771c
+   WORLD_ADDRESS=0xf599e8f01a5ca469cda10711c3f2ffa4eeed755e
    ```
 
    </CollapseCode>
@@ -368,10 +350,16 @@ Here is the modified `packages/client/src/App.tsx`:
 
 <CollapseCode>
 
-```typescript filename="App.tsx" copy showLineNumbers {1,8-56,119-138,178-202}
+```typescript filename="App.tsx" copy showLineNumbers {1,3,8-53,116-135,159-199}
 import { encodeFunctionData } from "viem";
 import { useMUD } from "./MUDContext";
-import { getBurnerPrivateKey, createBurnerAccount, transportObserver, getContract } from "@latticexyz/common";
+import {
+  resourceToHex,
+  getBurnerPrivateKey,
+  createBurnerAccount,
+  transportObserver,
+  getContract,
+} from "@latticexyz/common";
 import { createPublicClient, createWalletClient, fallback, webSocket, http, ClientConfig, Hex } from "viem";
 import { getNetworkConfig } from "./mud/getNetworkConfig";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
@@ -411,20 +399,17 @@ const ABI = [
 ];
 
 // Create the system name constants
+const LASTCALL_SYSTEM_ID = resourceToHex({
+  type: "system",
+  namespace: "LastCall",
+  name: "LastCallSystem",
+});
 
-const name2hex = (name, length) => {
-  let result = "";
-  for (let i = 0; i < name.length; i++) result += name.charCodeAt(i).toString(16);
-
-  if (length >= name.length) return result.padEnd(length * 2, "0");
-  else return result.slice(0, length * 2);
-};
-
-const systemId = (namespace, systemName) =>
-  "0x" + name2hex("sy", 2) + name2hex(namespace, 14) + name2hex(systemName, 16);
-
-const LASTCALL_SYSTEM_ID = systemId("LastCall", "LastCallSystem");
-const SYSTEMBOUND_DELEGATION = systemId("", "systembound");
+const SYSTEMBOUND_DELEGATION = resourceToHex({
+  type: "system",
+  namespace: "",
+  name: "systembound",
+});
 
 // A lot of code that would normally go in mud/getNetworkConfig.ts is part of the application here,
 // because `getNetworkConfig.ts` assumes you use one wallet, and here we need several.
@@ -484,10 +469,10 @@ export const App = () => {
 
   // Call newCall() on LastCall:LastCallSystem.
   const newCall = async (worldContract) => {
-    const tx = await worldContract.write.LastCall_LastCallSystem_newCall();
+    const tx = await worldContract.write.LastCall__newCall();
   };
 
-  // Delegate to a contract
+  // Delegate to an address
   const delegate = async (delegatorContract, delegateeAddress) => {
     const callData = encodeFunctionData({
       abi: ABI,
@@ -498,7 +483,7 @@ export const App = () => {
     const tx = await delegatorContract.write.registerDelegation([delegateeAddress, SYSTEMBOUND_DELEGATION, callData]);
   };
 
-  // Call as a different contract
+  // Call as a different address
   const callFrom = async (delegateeContract, delegatorAddress) => {
     const callData = encodeFunctionData({
       abi: ABI,
@@ -544,7 +529,7 @@ export const App = () => {
                 await newCall(worldContract.world);
               }}
             >
-              Call yourself
+              Call as yourself
             </button>
             <br />
             <button
@@ -607,20 +592,17 @@ The [ABI definitions](https://docs.soliditylang.org/en/latest/abi-spec.html) for
 
 ```typescript
 // Create the system name constants
+const LASTCALL_SYSTEM_ID = resourceToHex({
+  type: "system",
+  namespace: "LastCall",
+  name: "LastCallSystem",
+});
 
-const name2hex = (name, length) => {
-  let result = "";
-  for (let i = 0; i < name.length; i++) result += name.charCodeAt(i).toString(16);
-
-  if (length >= name.length) return result.padEnd(length * 2, "0");
-  else return result.slice(0, length * 2);
-};
-
-const systemId = (namespace, systemName) =>
-  "0x" + name2hex("sy", 2) + name2hex(namespace, 14) + name2hex(systemName, 16);
-
-const LASTCALL_SYSTEM_ID = systemId("LastCall", "LastCallSystem");
-const SYSTEMBOUND_DELEGATION = systemId("", "systembound");
+const SYSTEMBOUND_DELEGATION = resourceToHex({
+  type: "system",
+  namespace: "",
+  name: "systembound",
+});
 ```
 
 Create the `System` resource IDs as hexadecimal values.
@@ -639,7 +621,7 @@ export const App = () => {
   .
   .
   .
-  // Delegate to a contract
+  // Delegate to an address
   const delegate = async (delegatorContract, delegateeAddress) => {
     const callData = encodeFunctionData({
       abi: ABI,
@@ -659,7 +641,7 @@ We create the call to `SystemboundDelegationControl.initDelegation` which will b
 Call `registerDelegation` to register the new delegation.
 
 ```typescript
-// Call as a different contract
+// Call as a different address
 const callFrom = async (delegateeContract, delegatorAddress) => {
   const callData = encodeFunctionData({
     abi: ABI,
@@ -670,7 +652,7 @@ const callFrom = async (delegateeContract, delegatorAddress) => {
 };
 ```
 
-This function is similar to `delegate` above, except now we execute as the delegatee, and provider the delegator's address as a parameter.
+This function is similar to `delegate` above, except now we execute as the delegatee, and provide the delegator's address as a parameter.
 
 ```typescript
   return (
