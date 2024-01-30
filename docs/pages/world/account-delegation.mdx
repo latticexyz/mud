@@ -15,6 +15,10 @@ This enables multiple use cases.
   This is conceptually similar to how ERC20's [`approve`/`transferFrom`](https://eips.ethereum.org/EIPS/eip-20#transferfrom) enables atomic swaps by allowing contracts to withdraw from a user's balance and then deposit a different asset in a single transaction.
   For example, an agent could exchange two in-game assets atomically if the two sides of the trade give it the necessary permission.
 
+**Note:** Delegations cannot be used for a delegator to commit to doing something (or allowing something to be done).
+A delegator can always call [`unregisterDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L283-L291) to remove the delegation.
+If you need a commitment, you have to create a table with a `System` that lets the address that commits write the commitment and have an action that other addresses can call only if the proper commitment is there - without giving the committed address an option to delete the entry.
+
 ## Creating a delegation
 
 First, the delegator has to call [`registerDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L234-L263).
