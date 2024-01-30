@@ -34,7 +34,7 @@ contract BalanceTransferSystem is System, IWorldErrors, LimitedCallContext {
     ResourceId toNamespaceId,
     uint256 amount
   ) public virtual onlyDelegatecall {
-    // Ensure the "from" Ensure namespace resource is a namespace
+    // Ensure the "from" namespace resource is a namespace
     requireNamespace(fromNamespaceId);
     // Ensure the "to" namespace resource is a namespace
     requireNamespace(toNamespaceId);
