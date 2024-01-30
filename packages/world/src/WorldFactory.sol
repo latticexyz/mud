@@ -33,7 +33,7 @@ contract WorldFactory is IWorldFactory {
   function deployWorld() public returns (address worldAddress) {
     // Deploy a new World and increase the WorldCount
     bytes memory bytecode = type(World).creationCode;
-    worldAddress = Create2.deploy(bytecode, worldCount++);
+    worldAddress = Create2.deploy(bytecode, uint256(keccak256(abi.encode(msg.sender, worldCount++))));
     IBaseWorld world = IBaseWorld(worldAddress);
 
     // Initialize the World and transfer ownership to the caller

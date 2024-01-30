@@ -61,7 +61,11 @@ contract FactoriesTest is Test, GasReporter {
     IWorldFactory worldFactory = IWorldFactory(worldFactoryAddress);
 
     // Address we expect for World
-    address calculatedAddress = calculateAddress(worldFactoryAddress, bytes32(0), type(World).creationCode);
+    address calculatedAddress = calculateAddress(
+      worldFactoryAddress,
+      keccak256(abi.encode(address(this), 0)),
+      type(World).creationCode
+    );
 
     // Check for HelloWorld event from World
     vm.expectEmit(true, true, true, true);
