@@ -19,13 +19,13 @@ import { requireInterface } from "./requireInterface.sol";
 import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
+import { CoreModuleAddress } from "./codegen/tables/CoreModuleAddress.sol";
 
-import { IModule, MODULE_INTERFACE_ID } from "./IModule.sol";
+import { IModule, IModule } from "./IModule.sol";
 import { IWorldKernel } from "./IWorldKernel.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
-import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 /**
  * @title World Contract
@@ -71,9 +71,11 @@ contract World is StoreData, IWorldKernel {
     }
 
     // The World can only be initialized once
-    if (InstalledModules._get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
+    if (CoreModuleAddress.get() != address(0)) {
       revert World_AlreadyInitialized();
     }
+
+    CoreModuleAddress.set(address(coreModule));
 
     // Initialize the World by installing the core module
     _installRootModule(coreModule, new bytes(0));
@@ -82,32 +84,32 @@ contract World is StoreData, IWorldKernel {
   /**
    * @notice Installs a given root module in the World.
    * @param module The module to be installed.
-   * @param args Arguments for module installation.
+   * @param encodedArgs The ABI encoded arguments for module installation.
    * @dev The caller must own the root namespace.
    */
-  function installRootModule(IModule module, bytes memory args) public prohibitDirectCallback {
+  function installRootModule(IModule module, bytes memory encodedArgs) public prohibitDirectCallback {
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
-    _installRootModule(module, args);
+    _installRootModule(module, encodedArgs);
   }
 
   /**
    * @dev Internal function to install a root module.
    * @param module The module to be installed.
-   * @param args Arguments for module installation.
+   * @param encodedArgs The ABI encoded arguments for module installation.
    */
-  function _installRootModule(IModule module, bytes memory args) internal {
+  function _installRootModule(IModule module, bytes memory encodedArgs) internal {
     // Require the provided address to implement the IModule interface
-    requireInterface(address(module), MODULE_INTERFACE_ID);
+    requireInterface(address(module), type(IModule).interfaceId);
 
     WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: msg.sender,
       msgValue: 0,
       target: address(module),
-      callData: abi.encodeCall(IModule.installRoot, (args))
+      callData: abi.encodeCall(IModule.installRoot, (encodedArgs))
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules._set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(address(module), keccak256(encodedArgs), true);
   }
 
   /************************************************************************

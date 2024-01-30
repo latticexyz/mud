@@ -16,7 +16,7 @@ import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
-import { ResourceId, ResourceIdInstance } from "./ResourceId.sol";
+import { ResourceId } from "./ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.sol";
 
 /**
@@ -24,7 +24,6 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.so
  * @notice This library includes implementations for all IStore methods and events related to the store actions.
  */
 library StoreCore {
-  using ResourceIdInstance for ResourceId;
   /**
    * @notice Emitted when a new record is set in the store.
    * @param tableId The ID of the table where the record is set.
@@ -205,6 +204,28 @@ library StoreCore {
     if (valueSchema.numFields() != fieldLayout.numFields()) {
       revert IStoreErrors.Store_InvalidValueSchemaLength(fieldLayout.numFields(), valueSchema.numFields());
     }
+    if (valueSchema.numStaticFields() != fieldLayout.numStaticFields()) {
+      revert IStoreErrors.Store_InvalidValueSchemaStaticLength(
+        fieldLayout.numStaticFields(),
+        valueSchema.numStaticFields()
+      );
+    }
+    if (valueSchema.numDynamicFields() != fieldLayout.numDynamicFields()) {
+      revert IStoreErrors.Store_InvalidValueSchemaDynamicLength(
+        fieldLayout.numDynamicFields(),
+        valueSchema.numDynamicFields()
+      );
+    }
+
+    // Verify that static field lengths are consistent between Schema and FieldLayout
+    for (uint256 i; i < fieldLayout.numStaticFields(); i++) {
+      if (fieldLayout.atIndex(i) != valueSchema.atIndex(i).getStaticByteLength()) {
+        revert IStoreErrors.Store_InvalidStaticDataLength(
+          fieldLayout.atIndex(i),
+          valueSchema.atIndex(i).getStaticByteLength()
+        );
+      }
+    }
 
     // Verify there is no resource with this ID yet
     if (ResourceIds._getExists(tableId)) {
@@ -236,6 +257,11 @@ library StoreCore {
     // Hooks are only supported for tables, not for offchain tables
     if (tableId.getType() != RESOURCE_TABLE) {
       revert IStoreErrors.Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
+    }
+
+    // Require the table to exist
+    if (!ResourceIds._getExists(tableId)) {
+      revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
 
     StoreHooks.push(tableId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
@@ -911,6 +937,10 @@ library StoreCore {
     uint256 start,
     uint256 end
   ) internal view returns (bytes memory) {
+    // Verify the slice bounds are valid
+    if (start > end) {
+      revert IStoreErrors.Store_InvalidBounds(start, end);
+    }
     // Verify the accessed data is within the bounds of the dynamic field.
     // This is necessary because we don't delete the dynamic data when a record is deleted,
     // but only decrease its length.
@@ -923,7 +953,9 @@ library StoreCore {
     // Get the length and storage location of the dynamic field
     uint256 location = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
 
-    return Storage.load({ storagePointer: location, offset: start, length: end - start });
+    unchecked {
+      return Storage.load({ storagePointer: location, offset: start, length: end - start });
+    }
   }
 }
 
@@ -933,8 +965,6 @@ library StoreCore {
  * They are not intended to be used directly by consumers of StoreCore.
  */
 library StoreCoreInternal {
-  using ResourceIdInstance for ResourceId;
-
   bytes32 internal constant SLOT = keccak256("mud.store");
   bytes32 internal constant DYNAMIC_DATA_SLOT = keccak256("mud.store.dynamicData");
   bytes32 internal constant DYNAMIC_DATA_LENGTH_SLOT = keccak256("mud.store.dynamicDataLength");

@@ -4,19 +4,20 @@ pragma solidity >=0.8.21;
 import { Test, console } from "forge-std/Test.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
 import { ResourceId } from "../src/WorldResourceId.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { CORE_MODULE_NAME } from "../src/modules/core/constants.sol";
 import { Create2Factory } from "../src/Create2Factory.sol";
 import { WorldFactory } from "../src/WorldFactory.sol";
 import { IWorldFactory } from "../src/IWorldFactory.sol";
 import { InstalledModules } from "../src/codegen/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ROOT_NAMESPACE_ID } from "../src/constants.sol";
+import { createCoreModule } from "./createCoreModule.sol";
 
-contract FactoriesTest is Test {
+contract FactoriesTest is Test, GasReporter {
   event ContractDeployed(address addr, uint256 salt);
   event WorldDeployed(address indexed newContract);
   event HelloWorld(bytes32 indexed version);
@@ -35,7 +36,7 @@ contract FactoriesTest is Test {
     Create2Factory create2Factory = new Create2Factory();
 
     // Encode constructor arguments for WorldFactory
-    bytes memory encodedArguments = abi.encode(new CoreModule());
+    bytes memory encodedArguments = abi.encode(createCoreModule());
     bytes memory combinedBytes = abi.encodePacked(type(WorldFactory).creationCode, encodedArguments);
 
     // Address we expect for deployed WorldFactory
@@ -44,7 +45,9 @@ contract FactoriesTest is Test {
     // Confirm event for deployment
     vm.expectEmit(true, false, false, false);
     emit ContractDeployed(calculatedAddress, uint256(0));
+    startGasReport("deploy contract via Create2");
     create2Factory.deployContract(combinedBytes, uint256(0));
+    endGasReport();
 
     // Confirm worldFactory was deployed correctly
     IWorldFactory worldFactory = IWorldFactory(calculatedAddress);
@@ -53,7 +56,7 @@ contract FactoriesTest is Test {
 
   function testWorldFactory() public {
     // Deploy WorldFactory with current CoreModule
-    CoreModule coreModule = new CoreModule();
+    CoreModule coreModule = createCoreModule();
     address worldFactoryAddress = address(new WorldFactory(coreModule));
     IWorldFactory worldFactory = IWorldFactory(worldFactoryAddress);
 
@@ -67,16 +70,15 @@ contract FactoriesTest is Test {
     // Check for WorldDeployed event from Factory
     vm.expectEmit(true, false, false, false);
     emit WorldDeployed(calculatedAddress);
+    startGasReport("deploy world via WorldFactory");
     worldFactory.deployWorld();
+    endGasReport();
 
     // Set the store address manually
     StoreSwitch.setStoreAddress(calculatedAddress);
 
-    // Retrieve CoreModule address from InstalledModule table
-    address installedModule = InstalledModules.get(CORE_MODULE_NAME, keccak256(new bytes(0)));
-
     // Confirm correct Core is installed
-    assertEq(installedModule, address(coreModule));
+    assertTrue(InstalledModules.get(address(coreModule), keccak256(new bytes(0))));
 
     // Confirm worldCount (which is salt) has incremented
     assertEq(uint256(worldFactory.worldCount()), uint256(1));

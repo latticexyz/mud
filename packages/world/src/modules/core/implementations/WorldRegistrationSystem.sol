@@ -2,11 +2,11 @@
 pragma solidity >=0.8.21;
 
 import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
-import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
 import { System } from "../../../System.sol";
-import { WorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../../../WorldContext.sol";
+import { WorldContextConsumer, IWorldContextConsumer } from "../../../WorldContext.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { SystemCall } from "../../../SystemCall.sol";
 import { ROOT_NAMESPACE_ID, ROOT_NAME } from "../../../constants.sol";
@@ -18,22 +18,24 @@ import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { UserDelegationControl } from "../../../codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "../../../codegen/tables/NamespaceDelegationControl.sol";
-import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../../../ISystemHook.sol";
+import { ISystemHook } from "../../../ISystemHook.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";
-import { DELEGATION_CONTROL_INTERFACE_ID } from "../../../IDelegationControl.sol";
+import { IDelegationControl } from "../../../IDelegationControl.sol";
 
 import { SystemHooks, SystemHooksTableId } from "../../../codegen/tables/SystemHooks.sol";
 import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
 import { Systems } from "../../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "../../../codegen/tables/FunctionSignatures.sol";
+import { validateNamespace } from "../../../validateNamespace.sol";
+
+import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
  * @title WorldRegistrationSystem
  * @dev This contract provides functions related to registering resources other than tables in the World.
  */
-contract WorldRegistrationSystem is System, IWorldErrors {
-  using ResourceIdInstance for ResourceId;
+contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
   using WorldResourceIdInstance for ResourceId;
 
   /**
@@ -41,11 +43,9 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @dev Creates a new namespace resource with the given ID
    * @param namespaceId The unique identifier for the new namespace
    */
-  function registerNamespace(ResourceId namespaceId) public virtual {
-    // Require the provided namespace ID to have type RESOURCE_NAMESPACE
-    if (namespaceId.getType() != RESOURCE_NAMESPACE) {
-      revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
-    }
+  function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall {
+    // Require namespace ID to be a valid namespace
+    validateNamespace(namespaceId);
 
     // Require namespace to not exist yet
     if (ResourceIds._getExists(namespaceId)) {
@@ -69,9 +69,24 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param hookAddress The address of the hook being registered
    * @param enabledHooksBitmap Bitmap indicating which hooks are enabled
    */
-  function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) public virtual {
+  function registerSystemHook(
+    ResourceId systemId,
+    ISystemHook hookAddress,
+    uint8 enabledHooksBitmap
+  ) public virtual onlyDelegatecall {
+    // Require the provided system ID to have type RESOURCE_SYSTEM
+    if (systemId.getType() != RESOURCE_SYSTEM) {
+      revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
+    }
+
     // Require the provided address to implement the ISystemHook interface
-    requireInterface(address(hookAddress), SYSTEM_HOOK_INTERFACE_ID);
+    requireInterface(address(hookAddress), type(ISystemHook).interfaceId);
+
+    // Require the system to exist
+    AccessControl.requireExistence(systemId);
+
+    // Require the system's namespace to exist
+    AccessControl.requireExistence(systemId.getNamespaceId());
 
     // Require caller to own the namespace
     AccessControl.requireOwner(systemId, _msgSender());
@@ -86,7 +101,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param systemId The ID of the system
    * @param hookAddress The address of the hook being unregistered
    */
-  function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) public virtual {
+  function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) public virtual onlyDelegatecall {
     // Require caller to own the namespace
     AccessControl.requireOwner(systemId, _msgSender());
 
@@ -107,7 +122,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param system The system being registered
    * @param publicAccess Flag indicating if access control check is bypassed
    */
-  function registerSystem(ResourceId systemId, WorldContextConsumer system, bool publicAccess) public virtual {
+  function registerSystem(ResourceId systemId, System system, bool publicAccess) public virtual onlyDelegatecall {
     // Require the provided system ID to have type RESOURCE_SYSTEM
     if (systemId.getType() != RESOURCE_SYSTEM) {
       revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
@@ -121,7 +136,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     AccessControl.requireOwner(namespaceId, _msgSender());
 
     // Require the provided address to implement the WorldContextConsumer interface
-    requireInterface(address(system), WORLD_CONTEXT_CONSUMER_INTERFACE_ID);
+    requireInterface(address(system), type(IWorldContextConsumer).interfaceId);
 
     // Require the name to not be the namespace's root name
     if (systemId.getName() == ROOT_NAME) revert World_InvalidResourceId(systemId, systemId.toString());
@@ -169,20 +184,21 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   function registerFunctionSelector(
     ResourceId systemId,
     string memory systemFunctionSignature
-  ) public returns (bytes4 worldFunctionSelector) {
+  ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
+    // Require the provided system ID to have type RESOURCE_SYSTEM
+    if (systemId.getType() != RESOURCE_SYSTEM) {
+      revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
+    }
+
+    // Require the resource to exist
+    AccessControl.requireExistence(systemId);
+
     // Require the caller to own the namespace
     AccessControl.requireOwner(systemId, _msgSender());
 
     // Compute global function selector
     string memory namespaceString = WorldResourceIdLib.toTrimmedString(systemId.getNamespace());
-    string memory nameString = WorldResourceIdLib.toTrimmedString(systemId.getName());
-    bytes memory worldFunctionSignature = abi.encodePacked(
-      namespaceString,
-      "_",
-      nameString,
-      "_",
-      systemFunctionSignature
-    );
+    bytes memory worldFunctionSignature = abi.encodePacked(namespaceString, "__", systemFunctionSignature);
     worldFunctionSelector = bytes4(keccak256(worldFunctionSignature));
 
     // Require the function selector to be globally unique
@@ -210,7 +226,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceId systemId,
     string memory worldFunctionSignature,
     bytes4 systemFunctionSelector
-  ) public returns (bytes4 worldFunctionSelector) {
+  ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the root namespace
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, _msgSender());
 
@@ -236,7 +252,11 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * @param delegationControlId The ID controlling the delegation
    * @param initCallData The initialization data for the delegation
    */
-  function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData) public {
+  function registerDelegation(
+    address delegatee,
+    ResourceId delegationControlId,
+    bytes memory initCallData
+  ) public onlyDelegatecall {
     // Store the delegation control contract address
     UserDelegationControl._set({
       delegator: _msgSender(),
@@ -245,10 +265,10 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     });
 
     // If the delegation is limited...
-    if (Delegation.isLimited(delegationControlId) && initCallData.length > 0) {
+    if (Delegation.isLimited(delegationControlId)) {
       // Require the delegationControl contract to implement the IDelegationControl interface
       address delegationControl = Systems._getSystem(delegationControlId);
-      requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
+      requireInterface(delegationControl, type(IDelegationControl).interfaceId);
 
       // Call the delegation control contract's init function
       SystemCall.callWithHooksOrRevert({
@@ -258,6 +278,16 @@ contract WorldRegistrationSystem is System, IWorldErrors {
         value: 0
       });
     }
+  }
+
+  /**
+   * @notice Unregisters a delegation
+   * @dev Deletes the new delegation from the caller to the specified delegatee
+   * @param delegatee The address of the delegatee
+   */
+  function unregisterDelegation(address delegatee) public onlyDelegatecall {
+    // Delete the delegation control contract address
+    UserDelegationControl.deleteRecord({ delegator: _msgSender(), delegatee: delegatee });
   }
 
   /**
@@ -271,11 +301,9 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceId namespaceId,
     ResourceId delegationControlId,
     bytes memory initCallData
-  ) public {
-    // Require the namespaceId to be a valid namespace ID
-    if (namespaceId.getType() != RESOURCE_NAMESPACE) {
-      revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
-    }
+  ) public onlyDelegatecall {
+    // Require namespace ID to be a valid namespace
+    validateNamespace(namespaceId);
 
     // Require the delegation to not be unlimited
     if (!Delegation.isLimited(delegationControlId)) {
@@ -287,7 +315,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
 
     // Require the delegationControl contract to implement the IDelegationControl interface
     address delegationControl = Systems._getSystem(delegationControlId);
-    requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
+    requireInterface(delegationControl, type(IDelegationControl).interfaceId);
 
     // Register the delegation control
     NamespaceDelegationControl._set(namespaceId, delegationControlId);
@@ -301,5 +329,24 @@ contract WorldRegistrationSystem is System, IWorldErrors {
         value: 0
       });
     }
+  }
+
+  /**
+   * @notice Unregisters a delegation for a namespace
+   * @dev Deletes the delegation control for a specific namespace
+   * @param namespaceId The ID of the namespace
+   */
+  function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelegatecall {
+    // Require namespace ID to be a valid namespace
+    validateNamespace(namespaceId);
+
+    // Require the namespace to exist
+    AccessControl.requireExistence(namespaceId);
+
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(namespaceId, _msgSender());
+
+    // Delete the delegation control
+    NamespaceDelegationControl.deleteRecord(namespaceId);
   }
 }

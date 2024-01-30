@@ -28,11 +28,11 @@ export default mudConfig({
     },
     InstalledModules: {
       keySchema: {
-        moduleName: "bytes16",
+        moduleAddress: "address",
         argumentsHash: "bytes32", // Hash of the params passed to the `install` function
       },
       valueSchema: {
-        moduleAddress: "address",
+        isInstalled: "bool",
       },
     },
     UserDelegationControl: {
@@ -103,10 +103,14 @@ export default mudConfig({
       },
       offchainOnly: true,
     },
+    CoreModuleAddress: {
+      keySchema: {},
+      valueSchema: "address",
+    },
   },
   excludeSystems: [
     // Worldgen currently does not support systems inheriting logic
-    // from other contracts, so all parts of CoreSystem are named
+    // from other contracts, so all parts of CoreRegistrationSystem are named
     // System too to be included in the IBaseWorld interface.
     // However, IStoreRegistrationSystem overlaps with IStore if
     // included in IBaseWorld, so it needs to be excluded from worldgen.

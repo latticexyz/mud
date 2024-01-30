@@ -9,6 +9,9 @@ import {
 } from "./types";
 import { posixPath } from "../utils";
 
+/**
+ * Common header for all codegenerated solidity files
+ */
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
@@ -29,17 +32,28 @@ export function renderArguments(args: (string | undefined)[]): string {
   return internalRenderList(",", filteredArgs, (arg) => arg);
 }
 
+interface RenderedCommonData {
+  /** `_tableId` variable prefixed with its type (empty string if absent) */
+  _typedTableId: string;
+  /** Comma-separated table key names prefixed with their types (empty string if 0 keys) */
+  _typedKeyArgs: string;
+  /** Definition and initialization of the dynamic `_keyTuple` bytes32 array */
+  _keyTupleDefinition: string;
+}
+
+/**
+ * Renders some solidity statements commonly used within table libraries
+ * @param param0.staticResourceData static data about the table library
+ * @param param0.keyTuple key tuple of the table library
+ * @returns Rendered statement strings
+ */
 export function renderCommonData({
   staticResourceData,
   keyTuple,
 }: {
   staticResourceData?: StaticResourceData;
   keyTuple: RenderKeyTuple[];
-}): {
-  _typedTableId: string;
-  _typedKeyArgs: string;
-  _keyTupleDefinition: string;
-} {
+}): RenderedCommonData {
   // static resource means static tableId as well, and no tableId arguments
   const _typedTableId = staticResourceData ? "" : "ResourceId _tableId";
   const _typedKeyArgs = renderArguments(keyTuple.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
@@ -118,15 +132,28 @@ export function renderAbsoluteImports(imports: AbsoluteImportDatum[]): string {
   return renderedImports.join("\n");
 }
 
+interface RenderWithStoreCallbackData {
+  /** `_store` variable prefixed with its type (undefined if library name) */
+  _typedStore: string | undefined;
+  /**  `_store` variable (undefined if library name) */
+  _store: string;
+  /** Empty string if storeArgument is false, otherwise `" (using the specified store)"` */
+  _commentSuffix: string;
+  /** Prefix to differentiate different kinds of store usage within methods */
+  _methodNamePrefix: string;
+  /** Whether FieldLayout variable should be passed to store methods */
+  _useExplicitFieldLayout?: boolean;
+}
+
+/**
+ * Renders several versions of the callback's result, which access Store in different ways
+ * @param storeArgument whether to render a version with `IStore _store` as an argument
+ * @param callback renderer for a method which uses store
+ * @returns Concatenated results of all callback calls
+ */
 export function renderWithStore(
   storeArgument: boolean,
-  callback: (data: {
-    _typedStore: string | undefined;
-    _store: string;
-    _commentSuffix: string;
-    _methodNamePrefix: string;
-    _useExplicitFieldLayout?: boolean;
-  }) => string
+  callback: (data: RenderWithStoreCallbackData) => string
 ): string {
   let result = "";
   result += callback({ _typedStore: undefined, _store: "StoreSwitch", _commentSuffix: "", _methodNamePrefix: "" });
@@ -152,6 +179,13 @@ export function renderWithStore(
   return result;
 }
 
+/**
+ * Renders several versions of the callback's result, which have different method name suffixes
+ * @param withSuffixlessFieldMethods whether to render methods with an empty suffix
+ * @param fieldName name of the field which the methods access, used for a suffix
+ * @param callback renderer for a method to be suffixed
+ * @returns Concatenated results of all callback calls
+ */
 export function renderWithFieldSuffix(
   withSuffixlessFieldMethods: boolean,
   fieldName: string,
@@ -168,12 +202,18 @@ export function renderWithFieldSuffix(
   return result;
 }
 
-export function renderTableId({ namespace, name, offchainOnly, tableIdName }: StaticResourceData): {
-  hardcodedTableId: string;
-  tableIdDefinition: string;
-} {
-  const hardcodedTableId = `
-    ResourceId.wrap(
+/**
+ * Renders `_tableId` variable definition and initialization, and its alias which uses the provided `tableIdName`.
+ * @param param0 static resource data needed to construct the table id
+ */
+export function renderTableId({
+  namespace,
+  name,
+  offchainOnly,
+  tableIdName,
+}: Pick<StaticResourceData, "namespace" | "name" | "offchainOnly" | "tableIdName">): string {
+  return `
+    ResourceId constant _tableId = ResourceId.wrap(
       bytes32(
         abi.encodePacked(
           ${offchainOnly ? "RESOURCE_OFFCHAIN_TABLE" : "RESOURCE_TABLE"},
@@ -181,20 +221,20 @@ export function renderTableId({ namespace, name, offchainOnly, tableIdName }: St
           bytes16("${name}")
         )
       )
-    )
-  `;
-
-  const tableIdDefinition = `
-    ResourceId constant _tableId = ${hardcodedTableId};
+    );
     ResourceId constant ${tableIdName} = _tableId;
   `;
-  return {
-    hardcodedTableId,
-    tableIdDefinition,
-  };
 }
 
-export function renderValueTypeToBytes32(name: string, { typeUnwrap, internalTypeId }: RenderType): string {
+/**
+ * Renders solidity typecasts to get from the given type to `bytes32`
+ * @param name variable name to be typecasted
+ * @param param1 type data
+ */
+export function renderValueTypeToBytes32(
+  name: string,
+  { typeUnwrap, internalTypeId }: Pick<RenderType, "typeUnwrap" | "internalTypeId">
+): string {
   const innerText = typeUnwrap.length ? `${typeUnwrap}(${name})` : name;
 
   if (internalTypeId === "bytes32") {
@@ -214,10 +254,16 @@ export function renderValueTypeToBytes32(name: string, { typeUnwrap, internalTyp
   }
 }
 
+/**
+ * Whether the storage representation of the given solidity type is left aligned
+ */
 export function isLeftAligned(field: Pick<RenderType, "internalTypeId">): boolean {
   return /^bytes\d{1,2}$/.test(field.internalTypeId);
 }
 
+/**
+ * The number of padding bits in the storage representation of a right-aligned solidity type
+ */
 export function getLeftPaddingBits(field: Pick<RenderType, "internalTypeId" | "staticByteLength">): number {
   if (isLeftAligned(field)) {
     return 0;
@@ -226,6 +272,9 @@ export function getLeftPaddingBits(field: Pick<RenderType, "internalTypeId" | "s
   }
 }
 
+/**
+ * Internal helper to render `lineTerminator`-separated list of items mapped by `renderItem`
+ */
 function internalRenderList<T>(
   lineTerminator: string,
   list: T[],

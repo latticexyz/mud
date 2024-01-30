@@ -23,12 +23,13 @@ export function createStorageAdapter<tables extends Tables>({
     const updatedIds: string[] = [];
     const deletedIds: string[] = [];
 
+    const rawRecords = { ...store.getState().rawRecords };
+
     for (const log of logs) {
       const table = store.getState().tables[log.args.tableId];
       if (!table) {
         const { namespace, name } = hexToResource(log.args.tableId);
         debug(`skipping update for unknown table: ${namespace}:${name} (${log.args.tableId}) at ${log.address}`);
-        console.log(store.getState().tables, log.args.tableId);
         continue;
       }
 
@@ -41,20 +42,15 @@ export function createStorageAdapter<tables extends Tables>({
           id,
           log,
         });
+        rawRecords[id] = {
+          id,
+          tableId: log.args.tableId,
+          keyTuple: log.args.keyTuple,
+          staticData: log.args.staticData,
+          encodedLengths: log.args.encodedLengths,
+          dynamicData: log.args.dynamicData,
+        };
         updatedIds.push(id);
-        store.setState({
-          rawRecords: {
-            ...store.getState().rawRecords,
-            [id]: {
-              id,
-              tableId: log.args.tableId,
-              keyTuple: log.args.keyTuple,
-              staticData: log.args.staticData,
-              encodedLengths: log.args.encodedLengths,
-              dynamicData: log.args.dynamicData,
-            },
-          },
-        });
       } else if (log.eventName === "Store_SpliceStaticData") {
         debug("splicing static data", {
           namespace: table.namespace,
@@ -62,8 +58,7 @@ export function createStorageAdapter<tables extends Tables>({
           id,
           log,
         });
-        updatedIds.push(id);
-        const previousRecord = (store.getState().rawRecords[id] as RawRecord | undefined) ?? {
+        const previousRecord = (rawRecords[id] as RawRecord | undefined) ?? {
           id,
           tableId: log.args.tableId,
           keyTuple: log.args.keyTuple,
@@ -72,15 +67,11 @@ export function createStorageAdapter<tables extends Tables>({
           dynamicData: "0x",
         };
         const staticData = spliceHex(previousRecord.staticData, log.args.start, size(log.args.data), log.args.data);
-        store.setState({
-          rawRecords: {
-            ...store.getState().rawRecords,
-            [id]: {
-              ...previousRecord,
-              staticData,
-            },
-          },
-        });
+        rawRecords[id] = {
+          ...previousRecord,
+          staticData,
+        };
+        updatedIds.push(id);
       } else if (log.eventName === "Store_SpliceDynamicData") {
         debug("splicing dynamic data", {
           namespace: table.namespace,
@@ -88,8 +79,7 @@ export function createStorageAdapter<tables extends Tables>({
           id,
           log,
         });
-        updatedIds.push(id);
-        const previousRecord = (store.getState().rawRecords[id] as RawRecord | undefined) ?? {
+        const previousRecord = (rawRecords[id] as RawRecord | undefined) ?? {
           id,
           tableId: log.args.tableId,
           keyTuple: log.args.keyTuple,
@@ -99,16 +89,12 @@ export function createStorageAdapter<tables extends Tables>({
         };
         const encodedLengths = log.args.encodedLengths;
         const dynamicData = spliceHex(previousRecord.dynamicData, log.args.start, log.args.deleteCount, log.args.data);
-        store.setState({
-          rawRecords: {
-            ...store.getState().rawRecords,
-            [id]: {
-              ...previousRecord,
-              encodedLengths,
-              dynamicData,
-            },
-          },
-        });
+        rawRecords[id] = {
+          ...previousRecord,
+          encodedLengths,
+          dynamicData,
+        };
+        updatedIds.push(id);
       } else if (log.eventName === "Store_DeleteRecord") {
         debug("deleting record", {
           namespace: table.namespace,
@@ -116,9 +102,8 @@ export function createStorageAdapter<tables extends Tables>({
           id,
           log,
         });
+        delete rawRecords[id];
         deletedIds.push(id);
-        const { [id]: deletedRecord, ...rawRecords } = store.getState().rawRecords;
-        store.setState({ rawRecords });
       }
     }
 
@@ -129,7 +114,7 @@ export function createStorageAdapter<tables extends Tables>({
       ...Object.fromEntries(
         updatedIds
           .map((id) => {
-            const rawRecord = store.getState().rawRecords[id];
+            const rawRecord = rawRecords[id] as RawRecord | undefined;
             if (!rawRecord) {
               console.warn("no raw record found for updated ID", id);
               return;
@@ -155,6 +140,6 @@ export function createStorageAdapter<tables extends Tables>({
       ),
     };
 
-    store.setState({ records });
+    store.setState({ rawRecords, records });
   };
 }
