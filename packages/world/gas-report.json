@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 13045646
+    "gasUsed": 13018827
   },
   {
     "file": "test/World.t.sol",
