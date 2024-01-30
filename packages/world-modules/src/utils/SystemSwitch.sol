@@ -11,6 +11,7 @@ import { AccessControl } from "@latticexyz/world/src/AccessControl.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "@latticexyz/world/src/systemHookTypes.sol";
+import { SystemCall } from "@latticexyz/world/src/SystemCall.sol";
 
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { ISystemHook } from "@latticexyz/world/src/ISystemHook.sol";
@@ -39,27 +40,14 @@ library SystemSwitch {
   function call(ResourceId systemId, bytes memory callData) internal returns (bytes memory returnData) {
     address worldAddress = WorldContextConsumerLib._world();
 
-    // If we're in the World context
+    // If we're in the World context, call via the internal library
     if (address(this) == worldAddress) {
-      address systemAddress = Systems.getSystem(systemId);
-      // Check if the system exists
-      if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
-
-      bool success;
-      // Call the system and forward any return data
-      (success, returnData) = systemId.getNamespace() == ROOT_NAMESPACE // Use delegatecall for root systems (= registered in the root namespace)
-        ? WorldContextProviderLib.delegatecallWithContext({
-          msgSender: WorldContextConsumerLib._msgSender(),
-          msgValue: WorldContextConsumerLib._msgValue(),
-          target: systemAddress,
-          callData: callData
-        })
-        : WorldContextProviderLib.callWithContext({
-          msgSender: WorldContextConsumerLib._msgSender(),
-          msgValue: WorldContextConsumerLib._msgValue(),
-          target: systemAddress,
-          callData: callData
-        });
+      (bool success, bytes memory returnData) = SystemCall.call({
+        caller: WorldContextConsumerLib._msgSender(),
+        value: WorldContextConsumerLib._msgValue(),
+        systemId: systemId,
+        callData: callData
+      });
 
       if (!success) revertWithBytes(returnData);
       return returnData;
