@@ -13,7 +13,8 @@ using WorldResourceIdInstance for ResourceId;
  * @param resourceId The resource ID to check.
  */
 function requireNamespace(ResourceId resourceId) pure {
-  // Require the resourceId to have the namespace type
+  // Require the resourceId to have the namespace type and the root name
+  // (the resource ID is identical to the resource ID of its namespace)
   if (ResourceId.unwrap(resourceId) != ResourceId.unwrap(resourceId.getNamespaceId())) {
     revert IWorldErrors.World_InvalidResourceType(RESOURCE_NAMESPACE, resourceId, resourceId.toString());
   }
