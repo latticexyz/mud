@@ -8,5 +8,5 @@ pragma solidity >=0.8.21;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface ILastCallSystem {
-  function LastCall_LastCallSystem_newCall() external;
+  function LastCall__newCall() external;
 }

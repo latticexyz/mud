@@ -20,7 +20,7 @@ contract PostDeploy is Script {
     vm.startBroadcast(deployerPrivateKey);
 
     // Add a last call
-    IWorld(worldAddress).LastCall_LastCallSystem_newCall();
+    IWorld(worldAddress).LastCall__newCall();
 
     vm.stopBroadcast();
   }

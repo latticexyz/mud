@@ -62,7 +62,7 @@ export const App = () => {
 
   // Call newCall() on LastCall:LastCallSystem.
   const newCall = async (worldContract) => {
-    const tx = await worldContract.write.LastCall_LastCallSystem_newCall();
+    const tx = await worldContract.write.LastCall__newCall();
   };
 
   return (
