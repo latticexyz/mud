@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
-import { leftMask } from "./leftMask.sol";
+import { rightMask } from "./rightMask.sol";
 import { Memory } from "./Memory.sol";
 import { BYTE_TO_BITS } from "./constants.sol";
 
@@ -57,7 +57,7 @@ library Storage {
           wordRemainder = 32 - offset;
         }
 
-        uint256 mask = leftMask(length);
+        uint256 mask = ~rightMask(length);
         /// @solidity memory-safe-assembly
         assembly {
           // Load data from memory and offset it to match storage
@@ -103,16 +103,16 @@ library Storage {
 
     // For the last partial word, apply a mask to the end
     if (length > 0) {
-      uint256 mask = leftMask(length);
+      uint256 mask = rightMask(length);
       /// @solidity memory-safe-assembly
       assembly {
         sstore(
           storagePointer,
           or(
             // store the left part
-            and(mload(memoryPointer), mask),
+            and(mload(memoryPointer), not(mask)),
             // preserve the right part
-            and(sload(storagePointer), not(mask))
+            and(sload(storagePointer), mask)
           )
         )
       }
@@ -160,7 +160,7 @@ library Storage {
     assembly {
       // Solidity's YulUtilFunctions::roundUpFunction
       function round_up_to_mul_of_32(value) -> _result {
-        _result := and(add(value, 31), not(31))
+        _result := and(add(value, 0x1F), not(0x1F))
       }
 
       // Allocate memory
@@ -202,9 +202,9 @@ library Storage {
 
         uint256 mask;
         if (length < wordRemainder) {
-          mask = leftMask(length);
+          mask = rightMask(length);
         } else {
-          mask = leftMask(wordRemainder);
+          mask = rightMask(wordRemainder);
         }
         /// @solidity memory-safe-assembly
         assembly {
@@ -215,9 +215,9 @@ library Storage {
             memoryPointer,
             or(
               // store the left part
-              and(offsetData, mask),
+              and(offsetData, not(mask)),
               // preserve the right parts
-              and(mload(memoryPointer), not(mask))
+              and(mload(memoryPointer), mask)
             )
           )
         }
@@ -249,16 +249,16 @@ library Storage {
 
     // For the last partial word, apply a mask to the end
     if (length > 0) {
-      uint256 mask = leftMask(length);
+      uint256 mask = rightMask(length);
       /// @solidity memory-safe-assembly
       assembly {
         mstore(
           memoryPointer,
           or(
             // store the left part
-            and(sload(storagePointer), mask),
+            and(sload(storagePointer), not(mask)),
             // preserve the right part
-            and(mload(memoryPointer), not(mask))
+            and(mload(memoryPointer), mask)
           )
         )
       }

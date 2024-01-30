@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { ResourceId, ResourceIdInstance, TYPE_BITS } from "@latticexyz/store/src/ResourceId.sol";
@@ -7,6 +7,7 @@ import { ResourceId, ResourceIdInstance, TYPE_BITS } from "@latticexyz/store/src
 import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
 import { RESOURCE_NAMESPACE, MASK_RESOURCE_NAMESPACE } from "./worldResourceTypes.sol";
 
+uint256 constant NAMESPACE_BYTES = 14;
 uint256 constant NAMESPACE_BITS = 14 * 8; // 14 bytes * 8 bits per byte
 uint256 constant NAME_BITS = 16 * 8; // 16 bytes * 8 bits per byte
 

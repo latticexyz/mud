@@ -34,6 +34,6 @@
   "devDependencies": {
     "rimraf": "^3.0.2",
     "vite": "^4.2.1",
-    "vitest": "0.31.4"
+    "vitest": "0.34.6"
   }
 }

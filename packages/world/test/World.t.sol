@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
-import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "@latticexyz/store/src/IStoreHook.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
@@ -27,10 +27,10 @@ import { System } from "../src/System.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, ROOT_NAMESPACE_ID, UNLIMITED_DELEGATION, WORLD_NAMESPACE_ID, STORE_NAMESPACE_ID } from "../src/constants.sol";
 import { RESOURCE_TABLE, RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "../src/worldResourceTypes.sol";
-import { WorldContextProviderLib, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
+import { WorldContextProviderLib, IWorldContextConsumer } from "../src/WorldContext.sol";
 import { SystemHook } from "../src/SystemHook.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
-import { Module, MODULE_INTERFACE_ID } from "../src/Module.sol";
+import { Module, IModule } from "../src/Module.sol";
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
@@ -48,7 +48,7 @@ import { FunctionSelectors } from "../src/codegen/tables/FunctionSelectors.sol";
 
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/IWorldErrors.sol";
-import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../src/ISystemHook.sol";
+import { ISystemHook } from "../src/ISystemHook.sol";
 
 import { Bool } from "./codegen/tables/Bool.sol";
 import { TwoFields, TwoFieldsData } from "./codegen/tables/TwoFields.sol";
@@ -57,7 +57,7 @@ import { DelegationControlMock } from "./DelegationControlMock.sol";
 import { createCoreModule } from "./createCoreModule.sol";
 
 interface IWorldTestSystem {
-  function testNamespace_testSystem_err(string memory input) external pure;
+  function testNamespace__err(string memory input) external pure;
 }
 
 struct WorldTestSystemReturn {
@@ -225,11 +225,12 @@ contract WorldTest is Test, GasReporter {
     CoreRegistrationSystem coreRegistrationSystem = CoreRegistrationSystem(
       Systems.getSystem(CORE_REGISTRATION_SYSTEM_ID)
     );
-    bytes4[19] memory coreFunctionSignatures = [
+    bytes4[22] memory coreFunctionSignatures = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
       AccessManagementSystem.transferOwnership.selector,
+      AccessManagementSystem.renounceOwnership.selector,
       // --- BalanceTransferSystem ---
       BalanceTransferSystem.transferBalanceToNamespace.selector,
       BalanceTransferSystem.transferBalanceToAddress.selector,
@@ -250,7 +251,9 @@ contract WorldTest is Test, GasReporter {
       coreRegistrationSystem.registerFunctionSelector.selector,
       coreRegistrationSystem.registerRootFunctionSelector.selector,
       coreRegistrationSystem.registerDelegation.selector,
-      coreRegistrationSystem.registerNamespaceDelegation.selector
+      coreRegistrationSystem.unregisterDelegation.selector,
+      coreRegistrationSystem.registerNamespaceDelegation.selector,
+      coreRegistrationSystem.unregisterNamespaceDelegation.selector
     ];
 
     for (uint256 i; i < coreFunctionSignatures.length; i++) {
@@ -281,7 +284,7 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(
         IWorldErrors.World_InterfaceNotSupported.selector,
         Module(address(world)), // The World contract does not implement the IModule interface
-        MODULE_INTERFACE_ID
+        type(IModule).interfaceId
       )
     );
     world.installModule(Module(address(world)), new bytes(0));
@@ -291,7 +294,7 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(
         IWorldErrors.World_InterfaceNotSupported.selector,
         Module(address(world)), // The World contract does not implement the IModule interface
-        MODULE_INTERFACE_ID
+        type(IModule).interfaceId
       )
     );
     world.installRootModule(Module(address(world)), new bytes(0));
@@ -343,6 +346,23 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(IWorldErrors.World_ResourceAlreadyExists.selector, namespaceId, namespaceId.toString())
     );
     world.registerNamespace(namespaceId);
+  }
+
+  function testRegisterInvalidNamespace() public {
+    ResourceId invalidNamespaceId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "namespace", "system");
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_InvalidResourceType.selector,
+        RESOURCE_NAMESPACE,
+        invalidNamespaceId,
+        invalidNamespaceId.toString()
+      )
+    );
+    world.registerNamespace(invalidNamespaceId);
+
+    bytes14 invalidNamespace = "invld__nmsp";
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InvalidNamespace.selector, invalidNamespace));
+    world.registerNamespace(WorldResourceIdLib.encodeNamespace(invalidNamespace));
   }
 
   function testRegisterCoreNamespacesRevert() public {
@@ -424,6 +444,33 @@ contract WorldTest is Test, GasReporter {
     // Expect revert if caller is not the owner
     _expectAccessDenied(address(this), namespace, 0, RESOURCE_NAMESPACE);
     world.transferOwnership(namespaceId, address(1));
+  }
+
+  function testRenounceNamespace() public {
+    bytes14 namespace = "testRenounce";
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+
+    world.registerNamespace(namespaceId);
+
+    // Expect the new owner to not be namespace owner before transfer
+    assertFalse(
+      (NamespaceOwner.get(namespaceId)) == address(0),
+      "new owner should not be namespace owner before transfer"
+    );
+
+    startGasReport("Renounce namespace ownership");
+    world.renounceOwnership(namespaceId);
+    endGasReport();
+
+    // Expect the new owner to be zero address
+    assertEq(NamespaceOwner.get(namespaceId), address(0), "zero address should be namespace owner");
+
+    // Expect previous owner to no longer have access
+    assertEq(ResourceAccess.get(namespaceId, address(this)), false, "caller should no longer have access");
+
+    // Expect revert if caller is not the owner
+    _expectAccessDenied(address(this), namespace, 0, RESOURCE_NAMESPACE);
+    world.renounceOwnership(namespaceId);
   }
 
   function testRegisterTable() public {
@@ -587,7 +634,7 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(
         IWorldErrors.World_InterfaceNotSupported.selector,
         address(world),
-        WORLD_CONTEXT_CONSUMER_INTERFACE_ID
+        type(IWorldContextConsumer).interfaceId
       )
     );
     world.registerSystem(
@@ -1112,6 +1159,112 @@ contract WorldTest is Test, GasReporter {
     );
   }
 
+  function testUnregisterUnlimitedDelegation() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "testSystem"
+    });
+    world.registerNamespace(systemId.getNamespaceId());
+    world.registerSystem(systemId, system, true);
+
+    // Register an unlimited delegation
+    address delegator = address(1);
+    address delegatee = address(2);
+    vm.prank(delegator);
+    world.registerDelegation(delegatee, UNLIMITED_DELEGATION, new bytes(0));
+
+    // Call a system from the delegatee on behalf of the delegator
+    vm.prank(delegatee);
+    bytes memory returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    address returnedAddress = abi.decode(returnData, (address));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedAddress, delegator);
+
+    // Unregister the delegation
+    vm.prank(delegator);
+    startGasReport("unregister an unlimited delegation");
+    world.unregisterDelegation(delegatee);
+    endGasReport();
+
+    // Expect a revert when attempting to perform a call on behalf of an address that doesn't have a delegation
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_DelegationNotFound.selector,
+        delegator,
+        delegatee // Invalid delegatee
+      )
+    );
+    vm.prank(delegatee);
+    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+  }
+
+  function testUnregisterNamespaceDelegation() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "testSystem"
+    });
+    world.registerNamespace(systemId.getNamespaceId());
+    world.registerSystem(systemId, system, true);
+
+    // Register a delegation control mock system
+    DelegationControlMock delegationControlMock = new DelegationControlMock();
+    ResourceId delegationControlMockId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "delegation",
+      name: "mock"
+    });
+    world.registerNamespace(delegationControlMockId.getNamespaceId());
+    world.registerSystem(delegationControlMockId, delegationControlMock, true);
+
+    address delegator = address(1);
+    address delegatee = address(2);
+    ResourceId namespaceId = systemId.getNamespaceId();
+
+    // Expect a revert when attempting to perform a call via callFrom before a delegation was created
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
+    vm.prank(delegatee);
+    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+
+    // Register the delegation mock as the delegation control for the namespace
+    // with `delegatee` and `namespaceId` in the init call data
+    world.registerNamespaceDelegation(
+      namespaceId,
+      delegationControlMockId,
+      abi.encodeWithSelector(delegationControlMock.initDelegation.selector, namespaceId, delegatee)
+    );
+
+    // Call a system from the delegatee on behalf of the delegator
+    vm.prank(delegatee);
+    bytes memory returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    address returnedAddress = abi.decode(returnData, (address));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedAddress, delegator);
+
+    // Unregister the delegation
+    startGasReport("unregister a namespace delegation");
+    world.unregisterNamespaceDelegation(namespaceId);
+    endGasReport();
+
+    // Expect a revert when attempting to perform a call on behalf of the previous delegatee
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.World_DelegationNotFound.selector,
+        delegator,
+        delegatee // Invalid delegatee
+      )
+    );
+    vm.prank(delegatee);
+    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+  }
+
   function testRegisterStoreHook() public {
     FieldLayout fieldLayout = Bool.getFieldLayout();
     Schema valueSchema = Bool.getValueSchema();
@@ -1166,7 +1319,11 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to register an address that doesn't implement the IStoreHook interface
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.World_InterfaceNotSupported.selector, address(world), STORE_HOOK_INTERFACE_ID)
+      abi.encodeWithSelector(
+        IWorldErrors.World_InterfaceNotSupported.selector,
+        address(world),
+        type(IStoreHook).interfaceId
+      )
     );
     world.registerStoreHook(
       tableId,
@@ -1263,7 +1420,7 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(
         IWorldErrors.World_InterfaceNotSupported.selector,
         address(world),
-        SYSTEM_HOOK_INTERFACE_ID
+        type(ISystemHook).interfaceId
       )
     );
     world.registerSystemHook(
@@ -1290,6 +1447,24 @@ contract WorldTest is Test, GasReporter {
 
     // Call a system fallback function without arguments via the World
     world.call(systemId, callData);
+  }
+
+  function testRegisterSystemHookBeforeSystem() public {
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "testSystem"
+    });
+
+    // Register a new system
+    world.registerNamespace(systemId.getNamespaceId());
+
+    // Register a new hook
+    ISystemHook systemHook = new EchoSystemHook();
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, systemId, systemId.toString())
+    );
+    world.registerSystemHook(systemId, systemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
   }
 
   function testUnregisterSystemHook() public {
@@ -1440,7 +1615,7 @@ contract WorldTest is Test, GasReporter {
     bytes4 functionSelector = world.registerFunctionSelector(systemId, "msgSender()");
     endGasReport();
 
-    string memory expectedWorldFunctionSignature = "testNamespace_testSystem_msgSender()";
+    string memory expectedWorldFunctionSignature = "testNamespace__msgSender()";
     bytes4 expectedWorldFunctionSelector = bytes4(keccak256(abi.encodePacked(expectedWorldFunctionSignature)));
     assertEq(functionSelector, expectedWorldFunctionSelector, "wrong function selector returned");
 
@@ -1455,7 +1630,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect errors to be passed through
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
-    IWorldTestSystem(address(world)).testNamespace_testSystem_err("test error");
+    IWorldTestSystem(address(world)).testNamespace__err("test error");
   }
 
   function testRegisterRootFunctionSelector() public {

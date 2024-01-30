@@ -1,16 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { ROOT_NAMESPACE } from "../../constants.sol";
 import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
-
-/**
- * @dev Name of the core module.
- * @dev Represented as a bytes16 constant.
- */
-bytes16 constant CORE_MODULE_NAME = bytes16("core");
 
 /**
  * @dev Resource ID for access management system.

@@ -1,3 +1,199 @@
+## Version 2.0.0-next.16
+
+Release date: Tue Jan 23 2024
+
+### Major changes
+
+**[feat(world): remove system name from function signatures/selectors [M-05] (#2160)](https://github.com/latticexyz/mud/commit/0f27afddb73d855d119ea432d7943cd96952e4da)** (@latticexyz/world-modules, @latticexyz/world)
+
+World function signatures for namespaced systems have changed from `{namespace}_{systemName}_{functionName}` to `{namespace}__{functionName}` (double underscore, no system name). This is more ergonomic and is more consistent with namespaced resources in other parts of the codebase (e.g. MUD config types, table names in the schemaful indexer).
+
+If you have a project using the `namespace` key in your `mud.config.ts` or are manually registering systems and function selectors on a namespace, you will likely need to codegen your system interfaces (`pnpm build`) and update any calls to these systems through the world's namespaced function signatures.
+
+**[chore: add module addresses changeset (#2172)](https://github.com/latticexyz/mud/commit/865253dba0aeccf30615e446c8946583ee6b1068)** (@latticexyz/world, @latticexyz/world-modules)
+
+Refactored `InstalledModules` to key modules by addresses instead of pre-defined names. Previously, modules could report arbitrary names, meaning misconfigured modules could be installed under a name intended for another module.
+
+**[feat(world): require namespace to exist before registering systems/tables in it [C-01] (#2007)](https://github.com/latticexyz/mud/commit/063daf80ef9aa9151903061fc7d80c170a96cb07)** (@latticexyz/cli, @latticexyz/world-modules, @latticexyz/world)
+
+Previously `registerSystem` and `registerTable` had a side effect of registering namespaces if the system or table's namespace didn't exist yet.
+This caused a possible frontrunning issue, where an attacker could detect a `registerSystem`/`registerTable` transaction in the mempool,
+insert a `registerNamespace` transaction before it, grant themselves access to the namespace, transfer ownership of the namespace to the victim,
+so that the `registerSystem`/`registerTable` transactions still went through successfully.
+To mitigate this issue, the side effect of registering a namespace in `registerSystem` and `registerTable` has been removed.
+Calls to these functions now expect the respective namespace to exist and the caller to own the namespace, otherwise they revert.
+
+Changes in consuming projects are only necessary if tables or systems are registered manually.
+If only the MUD deployer is used to register tables and systems, no changes are necessary, as the MUD deployer has been updated accordingly.
+
+```diff
++  world.registerNamespace(namespaceId);
+   world.registerSystem(systemId, system, true);
+```
+
+```diff
++  world.registerNamespace(namespaceId);
+   MyTable.register();
+```
+
+**[refactor(cli,world,world-modules): split and separately deploy core systems (#2128)](https://github.com/latticexyz/mud/commit/57d8965dfaa5275bd803a48c22d42b50b83c23ed)** (@latticexyz/cli)
+
+Separated core systems deployment from `CoreModule`, and added the systems as arguments to `CoreModule`
+
+**[refactor(cli,world,world-modules): split and separately deploy core systems (#2128)](https://github.com/latticexyz/mud/commit/57d8965dfaa5275bd803a48c22d42b50b83c23ed)** (@latticexyz/world)
+
+- Split `CoreSystem` into `AccessManagementSystem`, `BalanceTransferSystem`, `BatchCallSystem`, `CoreRegistrationSystem`
+- Changed `CoreModule` to receive the addresses of these systems as arguments, instead of deploying them
+- Replaced `CORE_SYSTEM_ID` constant with `ACCESS_MANAGEMENT_SYSTEM_ID`, `BALANCE_TRANSFER_SYSTEM_ID`, `BATCH_CALL_SYSTEM_ID`, `CORE_REGISTRATION_SYSTEM_ID`, for each respective system
+
+These changes separate the initcode of `CoreModule` from the bytecode of core systems, which effectively removes a limit on the total bytecode of all core systems.
+
+**[feat(world): prevent invalid namespace strings [M-05] (#2169)](https://github.com/latticexyz/mud/commit/c642ff3a0ad0d6f47d53d7c381ad6d3fffe52bbf)** (@latticexyz/world)
+
+Namespaces are not allowed to contain double underscores ("\_\_") anymore, as this sequence of characters is used to [separate the namespace and function selector](https://github.com/latticexyz/mud/pull/2168) in namespaced systems.
+This is to prevent signature clashes of functions in different namespaces.
+
+(Example: If namespaces were allowed to contain this separator string, a function "function" in namespace "namespace\_\_my" would result in the namespaced function selector "namespace\_\_my\_\_function",
+and would clash with a function "my\_\_function" in namespace "namespace".)
+
+**[fix(cli): mud set-version --link shouldn't fetch versions (#2000)](https://github.com/latticexyz/mud/commit/854de0761fd3744c2076a2b995f0f9274a8ef971)** (@latticexyz/store-sync)
+
+Postgres storage adapter now uses snake case for decoded table names and column names. This allows for better SQL ergonomics when querying these tables.
+
+To avoid naming conflicts for now, schemas are still case-sensitive and need to be queried with double quotes. We may change this in the future with [namespace validation](https://github.com/latticexyz/mud/issues/1991).
+
+### Minor changes
+
+**[feat(store): never allow empty FieldLayout (#2122)](https://github.com/latticexyz/mud/commit/3ac68ade6e60dae2caad9f12ca146b1d461cb1c4)** (@latticexyz/store)
+
+Removed `allowEmpty` option from `FieldLayout.validate()` as field layouts should never be empty.
+
+**[feat(store): improve FieldLayout errors [N-03] (#2114)](https://github.com/latticexyz/mud/commit/103f635ebc20ac1aecc5c526c4bcb928e860a7ed)** (@latticexyz/store)
+
+Improved error messages for invalid `FieldLayout`s
+
+```diff
+-error FieldLayoutLib_InvalidLength(uint256 length);
++error FieldLayoutLib_TooManyFields(uint256 numFields, uint256 maxFields);
++error FieldLayoutLib_TooManyDynamicFields(uint256 numFields, uint256 maxFields);
++error FieldLayoutLib_Empty();
+```
+
+### Patch changes
+
+**[fix(store): emit event after calling beforeSetRecord hook [L-02] (#2017)](https://github.com/latticexyz/mud/commit/c6c13f2ea7e405cac2bc9cf77659d2d66bfdc0d2)** (@latticexyz/store)
+
+Storage events are now emitted after "before" hooks, so that the resulting logs are now correctly ordered and reflect onchain logic. This resolves issues with store writes and event emissions happening in "before" hooks.
+
+**[refactor(world-modules): simplify getUniqueEntity call (#2161)](https://github.com/latticexyz/mud/commit/eaa766ef7d68b76bb783531a1a2691abdaa27df5)** (@latticexyz/world-modules)
+
+Removed `IUniqueEntitySystem` in favor of calling `getUniqueEntity` via `world.call` instead of the world function selector. This had a small gas improvement.
+
+**[refactor(store,world): rename ambiguous elements [N-03] (#2091)](https://github.com/latticexyz/mud/commit/e6c03a87a5c80b5ed9ddc1aaf6ad73f544c03648)** (@latticexyz/store, @latticexyz/world)
+
+Renamed the `requireNoCallback` modifier to `prohibitDirectCallback`.
+
+**[refactor(world): use \_getSystem when fetching system addresses [N-11] (#2022)](https://github.com/latticexyz/mud/commit/c207d35e822afe5f04225d6854fb039116cc7840)** (@latticexyz/world)
+
+Optimised `StoreRegistrationSystem` and `WorldRegistrationSystem` by fetching individual fields instead of entire records where possible.
+
+**[fix(world): inline debug constants [L-11] (#1976)](https://github.com/latticexyz/mud/commit/d00c4a9af5fe54b1d21caa9f5cd525e48b3960f5)** (@latticexyz/world)
+
+Removed `ROOT_NAMESPACE_STRING` and `ROOT_NAME_STRING` exports in favor of inlining these constants, to avoid reuse as they're meant for internal error messages and debugging.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/store, @latticexyz/world)
+
+Refactored various files to specify integers in a hex base instead of decimals.
+
+**[fix(store): do not render push and pop for static arrays, use static length [M-02] (#2175)](https://github.com/latticexyz/mud/commit/1bf2e908763529e08c3d233f68eaf6705c9fffab)** (@latticexyz/store)
+
+Updated codegen to not render `push` and `pop` methods for static arrays. The `length` method now returns the hardcoded known length instead of calculating it like with a dynamic array.
+
+**[fix(world): module supports world context consumer id [L-12] (#2032)](https://github.com/latticexyz/mud/commit/f6f402896d8256da3b868f865a960db68393caf4)** (@latticexyz/world)
+
+Added the WorldContextConsumer interface ID to `supportsInterface` in the Module contract.
+
+**[fix(world): limit call context of `CoreSystem` to delegatecall [C-02] (#2111)](https://github.com/latticexyz/mud/commit/08b4221712cb004867e5c43b4b408aa45d9e3355)** (@latticexyz/world)
+
+Systems are expected to be always called via the central World contract.
+Depending on whether it is a root or non-root system, the call is performed via `delegatecall` or `call`.
+Since Systems are expected to be stateless and only interact with the World state, it is not necessary to prevent direct calls to the systems.
+However, since the `CoreSystem` is known to always be registered as a root system in the World, it is always expected to be delegatecalled,
+so we made this expectation explicit by reverting if it is not delegatecalled.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/world)
+
+Made the `coreModule` variable in `WorldFactory` immutable.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/world)
+
+Removed the unnecessary `extcodesize` check from the `Create2` library.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/world-modules, @latticexyz/store, @latticexyz/world)
+
+Refactored `ResourceId` to use a global Solidity `using` statement.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/world-modules, @latticexyz/store, @latticexyz/world)
+
+Refactored EIP165 usages to use the built-in interfaceId property instead of pre-defined constants.
+
+**[fix(world): prevent initialising the world multiple times [L-05] (#2170)](https://github.com/latticexyz/mud/commit/2bfee9217c0b08b2cca5b4a5aef6f4c2f0e7d2f2)** (@latticexyz/world)
+
+Added a table to track the `CoreModule` address the world was initialised with.
+
+**[fix(store-sync): improve syncToZustand hydration speed (#2145)](https://github.com/latticexyz/mud/commit/a735e14b44f7bd0ed72745610d49b55a181f5401)** (@latticexyz/store-sync)
+
+Improved `syncToZustand` speed of hydrating from snapshot by only applying block logs once per block instead of once per log.
+
+**[fix(store): revert if slice bound is invalid [L-10] (#2034)](https://github.com/latticexyz/mud/commit/7b28d32e579a0ed09122982617bb938b3e2b5a98)** (@latticexyz/store)
+
+Added a custom error `Store_InvalidBounds` for when the `start:end` slice in `getDynamicFieldSlice` is invalid (it used to revert with the default overflow error)
+
+**[refactor(store): order load function arguments [N-02] (#2033)](https://github.com/latticexyz/mud/commit/9f8b84e733412323103fdd81067f8edc9d681a17)** (@latticexyz/store)
+
+Aligned the order of function arguments in the `Storage` library.
+
+```solidity
+store(uint256 storagePointer, uint256 offset, bytes memory data)
+store(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer)
+load(uint256 storagePointer, uint256 offset, uint256 length)
+load(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer)
+```
+
+**[fix(world): check namespace exists before balance transfer [L-03] (#2095)](https://github.com/latticexyz/mud/commit/aee8020a65ca5cfebb2ca479357a535bbf07269b)** (@latticexyz/world)
+
+Namespace balances can no longer be transferred to non-existent namespaces.
+
+**[fix(store): add missing FieldLayout and Schema validations [L-07] (#2046)](https://github.com/latticexyz/mud/commit/ad4ac44594f222fdfeca77e4d262eb47ef735836)** (@latticexyz/store)
+
+Added more validation checks for `FieldLayout` and `Schema`.
+
+**[fix(world): prevent misconfigured delegations, allow unregistering [L-04] (#2096)](https://github.com/latticexyz/mud/commit/e4a6189df7b2bbf5c88cc050c529d8f0ee49bc5a)** (@latticexyz/world)
+
+Prevented invalid delegations by performing full validation regardless of whether `initCallData` is empty. Added an `unregisterDelegation` function which allows explicit unregistration, as opposed of passing in zero bytes into `registerDelegation`.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/world-modules, @latticexyz/store, @latticexyz/world)
+
+Refactored various Solidity files to not explicitly initialise variables to zero.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/store)
+
+Refactored some Store functions to use a right bit mask instead of left.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/store)
+
+Simplified a check in `Slice.getSubslice`.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/world)
+
+Refactored `WorldContext` to get the world address from `WorldContextConsumerLib` instead of `StoreSwitch`.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/store)
+
+Optimised the `Schema.validate` function to decrease gas use.
+
+---
+
 ## Version 2.0.0-next.15
 
 Release date: Wed Jan 03 2024

@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { Position } from "../CustomTypes.sol";
+
+error ThisErrorShouldBeAbsentFromTheGeneratedSystemInterface();
 
 contract CustomErrorsSystem is System {
   error TestError1();

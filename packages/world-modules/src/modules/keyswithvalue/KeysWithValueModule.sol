@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
@@ -35,17 +35,13 @@ contract KeysWithValueModule is Module {
   // from the source table id (passed as argument to the hook methods)
   KeysWithValueHook private immutable hook = new KeysWithValueHook();
 
-  function getName() public pure returns (bytes16) {
-    return bytes16("index");
-  }
-
-  function installRoot(bytes memory args) public {
+  function installRoot(bytes memory encodedArgs) public {
     // Naive check to ensure this is only installed once
     // TODO: only revert if there's nothing to do
-    requireNotInstalled(getName(), args);
+    requireNotInstalled(__self, encodedArgs);
 
     // Extract source table id from args
-    ResourceId sourceTableId = ResourceId.wrap(abi.decode(args, (bytes32)));
+    ResourceId sourceTableId = ResourceId.wrap(abi.decode(encodedArgs, (bytes32)));
     ResourceId targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
 
     IBaseWorld world = IBaseWorld(_world());

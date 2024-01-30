@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 /**
  * @title ResourceId type definition and related utilities
@@ -7,6 +7,8 @@ pragma solidity >=0.8.21;
  * type and a name
  */
 type ResourceId is bytes32;
+
+using ResourceIdInstance for ResourceId global;
 
 /// @dev Number of bits reserved for the type in the ResourceId.
 uint256 constant TYPE_BITS = 2 * 8; // 2 bytes * 8 bits per byte

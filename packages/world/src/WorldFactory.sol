@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Create2 } from "./Create2.sol";
 import { World } from "./World.sol";
@@ -15,7 +15,7 @@ import { ROOT_NAMESPACE_ID } from "./constants.sol";
  */
 contract WorldFactory is IWorldFactory {
   /// @notice Address of the core module to be set in the World instances.
-  IModule public coreModule;
+  IModule public immutable coreModule;
 
   /// @notice Counter to keep track of the number of World instances deployed.
   uint256 public worldCount;

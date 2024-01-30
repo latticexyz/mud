@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 library ArrayLib {
   function equal(bytes32[] memory arr1, bytes32[] memory arr2) internal pure returns (bool) {
@@ -36,7 +36,7 @@ library ArrayLib {
 
   function filter(bytes32[] memory arr, bytes32 element) internal pure returns (bytes32[] memory) {
     bytes32[] memory filtered = new bytes32[](arr.length);
-    uint256 filteredIndex = 0;
+    uint256 filteredIndex;
     for (uint256 i; i < arr.length; i++) {
       if (arr[i] != element) {
         filtered[filteredIndex] = arr[i];

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -9,7 +9,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
-import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
@@ -29,7 +29,6 @@ import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.
 import { getTargetTableId, MODULE_NAMESPACE_BITS, TABLE_NAMESPACE_BITS } from "../src/modules/keyswithvalue/getTargetTableId.sol";
 
 contract KeysWithValueModuleTest is Test, GasReporter {
-  using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
   IBaseWorld world;
@@ -106,6 +105,16 @@ contract KeysWithValueModuleTest is Test, GasReporter {
   }
 
   function testInstallTwice() public {
+    // Register source table
+    world.registerTable(
+      sourceTableId,
+      sourceTableFieldLayout,
+      sourceTableKeySchema,
+      sourceTableSchema,
+      new string[](1),
+      new string[](1)
+    );
+
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
     vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
