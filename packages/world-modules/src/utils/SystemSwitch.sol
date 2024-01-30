@@ -41,7 +41,7 @@ library SystemSwitch {
 
     // If we're in the World context
     if (address(this) == worldAddress) {
-      (address systemAddress, ) = Systems.get(systemId);
+      address systemAddress = Systems.getSystem(systemId);
       // Check if the system exists
       if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
 
