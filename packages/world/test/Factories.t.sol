@@ -51,7 +51,7 @@ contract FactoriesTest is Test, GasReporter {
 
     // Confirm worldFactory was deployed correctly
     IWorldFactory worldFactory = IWorldFactory(calculatedAddress);
-    assertEq(uint256(worldFactory.worldCount()), uint256(0));
+    assertEq(uint256(worldFactory.accountCount(address(0))), uint256(0));
   }
 
   function testWorldFactory() public {
@@ -85,7 +85,7 @@ contract FactoriesTest is Test, GasReporter {
     assertTrue(InstalledModules.get(address(coreModule), keccak256(new bytes(0))));
 
     // Confirm worldCount (which is salt) has incremented
-    assertEq(uint256(worldFactory.worldCount()), uint256(1));
+    assertEq(uint256(worldFactory.accountCount(address(this))), uint256(1));
 
     // Confirm the msg.sender is owner of the root namespace of the new world
     assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), address(this));
