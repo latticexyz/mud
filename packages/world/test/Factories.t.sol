@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test, console } from "forge-std/Test.sol";
 
@@ -51,17 +51,23 @@ contract FactoriesTest is Test, GasReporter {
 
     // Confirm worldFactory was deployed correctly
     IWorldFactory worldFactory = IWorldFactory(calculatedAddress);
-    assertEq(uint256(worldFactory.worldCount()), uint256(0));
+    assertEq(uint256(worldFactory.worldCounts(address(0))), uint256(0));
   }
 
-  function testWorldFactory() public {
+  function testWorldFactory(address account) public {
+    vm.startPrank(account);
+
     // Deploy WorldFactory with current CoreModule
     CoreModule coreModule = createCoreModule();
     address worldFactoryAddress = address(new WorldFactory(coreModule));
     IWorldFactory worldFactory = IWorldFactory(worldFactoryAddress);
 
     // Address we expect for World
-    address calculatedAddress = calculateAddress(worldFactoryAddress, bytes32(0), type(World).creationCode);
+    address calculatedAddress = calculateAddress(
+      worldFactoryAddress,
+      keccak256(abi.encode(account, 0)),
+      type(World).creationCode
+    );
 
     // Check for HelloWorld event from World
     vm.expectEmit(true, true, true, true);
@@ -77,13 +83,47 @@ contract FactoriesTest is Test, GasReporter {
     // Set the store address manually
     StoreSwitch.setStoreAddress(calculatedAddress);
 
+    // Confirm accountCount (which is salt) has incremented
+    assertEq(uint256(worldFactory.worldCounts(account)), uint256(1));
+
     // Confirm correct Core is installed
     assertTrue(InstalledModules.get(address(coreModule), keccak256(new bytes(0))));
 
-    // Confirm worldCount (which is salt) has incremented
-    assertEq(uint256(worldFactory.worldCount()), uint256(1));
+    // Confirm the msg.sender is owner of the root namespace of the new world
+    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
+
+    // Deploy another world
+
+    // Address we expect for World
+    calculatedAddress = calculateAddress(
+      worldFactoryAddress,
+      keccak256(abi.encode(account, 1)),
+      type(World).creationCode
+    );
+
+    // Check for HelloWorld event from World
+    vm.expectEmit(true, true, true, true);
+    emit HelloWorld(WORLD_VERSION);
+
+    // Check for WorldDeployed event from Factory
+    vm.expectEmit(true, false, false, false);
+    emit WorldDeployed(calculatedAddress);
+    worldFactory.deployWorld();
+
+    // Confirm accountCount (which is salt) has incremented
+    assertEq(uint256(worldFactory.worldCounts(account)), uint256(2));
+
+    // Set the store address manually
+    StoreSwitch.setStoreAddress(calculatedAddress);
+
+    // Confirm correct Core is installed
+    assertTrue(InstalledModules.get(address(coreModule), keccak256(new bytes(0))));
 
     // Confirm the msg.sender is owner of the root namespace of the new world
-    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), address(this));
+    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
+  }
+
+  function testWorldFactoryGas() public {
+    testWorldFactory(address(this));
   }
 }
