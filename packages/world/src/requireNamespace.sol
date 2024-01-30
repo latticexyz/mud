@@ -9,7 +9,7 @@ using WorldResourceIdInstance for ResourceId;
 
 /**
  * @notice Checks if a given `resourceId` is a namespace.
- * @dev Reverts with IWorldErrors.World_InvalidResourceType if the ID does not have the correct components.
+ * @dev Reverts with `IWorldErrors.World_InvalidResourceType` if the ID does not have the correct components.
  * @param resourceId The resource ID to check.
  */
 function requireNamespace(ResourceId resourceId) pure {

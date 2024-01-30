@@ -10,8 +10,8 @@ using WorldResourceIdInstance for ResourceId;
 
 /**
  * @notice Checks if a given `resourceId` is a valid namespace.
- * @dev Reverts with IWorldErrors.World_InvalidNamespace if the namespace includes the reserved `__` separator string or ends with `_`.
- * @param resourceId The resource ID to verify.
+ * @dev Reverts with `IWorldErrors.World_InvalidNamespace` if the namespace includes the reserved `__` separator string or ends with `_`.
+ * @param resourceId The resource ID to validate.
  */
 function requireValidNamespace(ResourceId resourceId) pure {
   // Require the namespace to not include the reserved separator
