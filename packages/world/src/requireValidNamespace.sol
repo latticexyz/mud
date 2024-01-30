@@ -17,15 +17,18 @@ using WorldResourceIdInstance for ResourceId;
 function requireValidNamespace(ResourceId resourceId) pure {
   // Require the namespace to not include the reserved separator
   bytes14 namespace = resourceId.getNamespace();
-  for (uint256 i; i < NAMESPACE_BYTES - 1; i++) {
-    if (Bytes.slice1(namespace, i) == bytes1("_") && Bytes.slice1(namespace, i + 1) == bytes1("_")) {
+  string memory trimmedNamespace = WorldResourceIdLib.toTrimmedString(namespace);
+  uint256 trimmedNamespaceLength = bytes(trimmedNamespace).length;
+
+  if (trimmedNamespaceLength > 0) {
+    if (Bytes.slice1(bytes(trimmedNamespace), trimmedNamespaceLength - 1) == "_") {
       revert IWorldErrors.World_InvalidNamespace(namespace);
     }
-  }
 
-  // Require the namespace to not end with an underscore
-  uint256 namespaceStringLength = bytes(WorldResourceIdLib.toTrimmedString(namespace)).length;
-  if (namespaceStringLength > 0 && Bytes.slice1(namespace, namespaceStringLength - 1) == "_") {
-    revert IWorldErrors.World_InvalidNamespace(namespace);
+    for (uint256 i; i < trimmedNamespaceLength - 1; i++) {
+      if (Bytes.slice1(bytes(trimmedNamespace), i) == "_" && Bytes.slice1(bytes(trimmedNamespace), i + 1) == "_") {
+        revert IWorldErrors.World_InvalidNamespace(namespace);
+      }
+    }
   }
 }
