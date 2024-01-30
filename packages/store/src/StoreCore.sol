@@ -9,7 +9,7 @@ import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { StoreHooks, Tables, TablesTableId, ResourceIds, StoreHooksTableId } from "./codegen/index.sol";
+import { Tables, TablesTableId, ResourceIds, ResourceIdsTableId, StoreHooks, StoreHooksTableId } from "./codegen/index.sol";
 import { _fieldLayout as TablesTableFieldLayout } from "./codegen/tables/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
@@ -93,10 +93,40 @@ library StoreCore {
    * any table data to allow indexers to decode table events.
    */
   function registerCoreTables() internal {
-    // Register core tables
-    Tables.register();
+    // Because `registerTable` writes to both `Tables` and `ResourceIds`, we can't use it
+    // directly here without creating a race condition, where we'd write to one or the other
+    // before they exist (depending on the order of registration).
+    //
+    // Instead, we'll register them manually, writing everything to the `Tables` table first,
+    // then the `ResourceIds` table. The logic here ought to be kept in sync with the internals
+    // of the `registerTable` function below.
+    if (ResourceIds._getExists(TablesTableId)) {
+      revert IStoreErrors.Store_TableAlreadyExists(TablesTableId, string(abi.encodePacked(TablesTableId)));
+    }
+    if (ResourceIds._getExists(ResourceIdsTableId)) {
+      revert IStoreErrors.Store_TableAlreadyExists(ResourceIdsTableId, string(abi.encodePacked(ResourceIdsTableId)));
+    }
+    Tables._set(
+      TablesTableId,
+      Tables.getFieldLayout(),
+      Tables.getKeySchema(),
+      Tables.getValueSchema(),
+      abi.encode(Tables.getKeyNames()),
+      abi.encode(Tables.getFieldNames())
+    );
+    Tables._set(
+      ResourceIdsTableId,
+      ResourceIds.getFieldLayout(),
+      ResourceIds.getKeySchema(),
+      ResourceIds.getValueSchema(),
+      abi.encode(ResourceIds.getKeyNames()),
+      abi.encode(ResourceIds.getFieldNames())
+    );
+    ResourceIds._setExists(TablesTableId, true);
+    ResourceIds._setExists(ResourceIdsTableId, true);
+
+    // Now we can register the rest of the core tables as regular tables.
     StoreHooks.register();
-    ResourceIds.register();
   }
 
   /************************************************************************
