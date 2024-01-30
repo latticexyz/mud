@@ -35,13 +35,13 @@ contract KeysWithValueModule is Module {
   // from the source table id (passed as argument to the hook methods)
   KeysWithValueHook private immutable hook = new KeysWithValueHook();
 
-  function installRoot(bytes memory args) public {
+  function installRoot(bytes memory encodedArgs) public {
     // Naive check to ensure this is only installed once
     // TODO: only revert if there's nothing to do
-    requireNotInstalled(__self, args);
+    requireNotInstalled(__self, encodedArgs);
 
     // Extract source table id from args
-    ResourceId sourceTableId = ResourceId.wrap(abi.decode(args, (bytes32)));
+    ResourceId sourceTableId = ResourceId.wrap(abi.decode(encodedArgs, (bytes32)));
     ResourceId targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
 
     IBaseWorld world = IBaseWorld(_world());

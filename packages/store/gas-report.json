@@ -27,7 +27,7 @@
     "file": "test/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "Callbacks: push 1 element",
-    "gasUsed": 32521
+    "gasUsed": 32520
   },
   {
     "file": "test/FieldLayout.t.sol",
@@ -705,7 +705,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "register subscriber",
-    "gasUsed": 57945
+    "gasUsed": 56903
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -729,7 +729,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "register subscriber",
-    "gasUsed": 57945
+    "gasUsed": 56903
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -801,7 +801,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetDynamicData",
     "name": "compare: Set complex record with dynamic data using native solidity",
-    "gasUsed": 116821
+    "gasUsed": 116845
   },
   {
     "file": "test/StoreCoreGas.t.sol",

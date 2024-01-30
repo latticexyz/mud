@@ -1131,6 +1131,32 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(keccak256(indexedData), keccak256(abi.encodePacked(bytes16(0))));
   }
 
+  function testRegisterHookBeforeTable() public {
+    ResourceId tableId = _tableId;
+
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = "some key";
+
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
+
+    // Create subscriber
+    MirrorSubscriber subscriber = new MirrorSubscriber(
+      tableId,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](1)
+    );
+
+    vm.expectRevert(
+      abi.encodeWithSelector(IStoreErrors.Store_TableNotFound.selector, tableId, string(abi.encodePacked(tableId)))
+    );
+    IStore(this).registerStoreHook(tableId, subscriber, BEFORE_ALL);
+  }
+
   function testUnregisterHook() public {
     ResourceId tableId = _tableId;
 

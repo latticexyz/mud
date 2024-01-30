@@ -25,12 +25,12 @@ contract ERC20Module is Module {
 
   address immutable registrationLibrary = address(new ERC20ModuleRegistrationLibrary());
 
-  function install(bytes memory args) public {
+  function install(bytes memory encodedArgs) public {
     // Require the module to not be installed with these args yet
-    requireNotInstalled(__self, args);
+    requireNotInstalled(__self, encodedArgs);
 
-    // Extract args
-    (bytes14 namespace, ERC20MetadataData memory metadata) = abi.decode(args, (bytes14, ERC20MetadataData));
+    // Decode args
+    (bytes14 namespace, ERC20MetadataData memory metadata) = abi.decode(encodedArgs, (bytes14, ERC20MetadataData));
 
     // Require the namespace to not be the module's namespace
     if (namespace == MODULE_NAMESPACE) {

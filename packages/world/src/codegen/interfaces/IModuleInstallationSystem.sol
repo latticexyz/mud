@@ -10,5 +10,5 @@ import { IModule } from "./../../IModule.sol";
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IModuleInstallationSystem {
-  function installModule(IModule module, bytes memory args) external;
+  function installModule(IModule module, bytes memory encodedArgs) external;
 }

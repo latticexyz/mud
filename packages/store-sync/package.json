@@ -48,6 +48,7 @@
     }
   },
   "scripts": {
+    "bench": "vitest bench",
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
