@@ -81,11 +81,43 @@ contract FactoriesTest is Test, GasReporter {
     // Set the store address manually
     StoreSwitch.setStoreAddress(calculatedAddress);
 
+    // Confirm worldCount (which is salt) has incremented
+    assertEq(uint256(worldFactory.accountCount(address(this))), uint256(1));
+
     // Confirm correct Core is installed
     assertTrue(InstalledModules.get(address(coreModule), keccak256(new bytes(0))));
 
+    // Confirm the msg.sender is owner of the root namespace of the new world
+    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), address(this));
+
+    // Deploy another world
+
+    // Address we expect for World
+    calculatedAddress = calculateAddress(
+      worldFactoryAddress,
+      keccak256(abi.encode(address(this), 1)),
+      type(World).creationCode
+    );
+
+    // Check for HelloWorld event from World
+    vm.expectEmit(true, true, true, true);
+    emit HelloWorld(WORLD_VERSION);
+
+    // Check for WorldDeployed event from Factory
+    vm.expectEmit(true, false, false, false);
+    emit WorldDeployed(calculatedAddress);
+    startGasReport("deploy world via WorldFactory");
+    worldFactory.deployWorld();
+    endGasReport();
+
     // Confirm worldCount (which is salt) has incremented
-    assertEq(uint256(worldFactory.accountCount(address(this))), uint256(1));
+    assertEq(uint256(worldFactory.accountCount(address(this))), uint256(2));
+
+    // Set the store address manually
+    StoreSwitch.setStoreAddress(calculatedAddress);
+
+    // Confirm correct Core is installed
+    assertTrue(InstalledModules.get(address(coreModule), keccak256(new bytes(0))));
 
     // Confirm the msg.sender is owner of the root namespace of the new world
     assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), address(this));
