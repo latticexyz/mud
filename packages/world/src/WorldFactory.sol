@@ -8,8 +8,6 @@ import { IBaseWorld } from "./codegen/interfaces/IBaseWorld.sol";
 import { IModule } from "./IModule.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
 
-import { Test, console } from "forge-std/Test.sol";
-
 /*
  * @title WorldFactory
  * @notice A factory contract to deploy new World instances.

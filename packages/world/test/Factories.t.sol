@@ -54,7 +54,7 @@ contract FactoriesTest is Test, GasReporter {
     assertEq(uint256(worldFactory.worldCounts(address(0))), uint256(0));
   }
 
-  function testWorldFactory(address account) public {
+  function testWorldFactory(address account, uint salt) public {
     vm.startPrank(account);
 
     // Deploy WorldFactory with current CoreModule
@@ -63,9 +63,9 @@ contract FactoriesTest is Test, GasReporter {
     IWorldFactory worldFactory = IWorldFactory(worldFactoryAddress);
 
     // User defined bytes for create2
-    bytes memory _salt0 = abi.encode(0);
+    bytes memory _salt0 = abi.encode(salt);
 
-    // Address we expect for World
+    // Address we expect for first World
     address calculatedAddress = calculateAddress(
       worldFactoryAddress,
       keccak256(abi.encode(account, _salt0)),
@@ -95,12 +95,15 @@ contract FactoriesTest is Test, GasReporter {
     // Confirm the msg.sender is owner of the root namespace of the new world
     assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
 
-    // Deploy another world
+    // Deploy a second world
 
     // User defined bytes for create2
-    bytes memory _salt1 = abi.encode(1);
-
-    // Address we expect for World
+    // unchecked for the fuzzing test
+    bytes memory _salt1;
+    unchecked {
+      _salt1 = abi.encode(salt - 1);
+    }
+    // Address we expect for second World
     calculatedAddress = calculateAddress(
       worldFactoryAddress,
       keccak256(abi.encode(account, _salt1)),
@@ -134,6 +137,10 @@ contract FactoriesTest is Test, GasReporter {
   }
 
   function testWorldFactoryGas() public {
-    testWorldFactory(address(this));
+    testWorldFactory(address(this), 0);
+  }
+
+  function testFuzzWorldDeploy(address account, uint _salt) public {
+    testWorldFactory(account, _salt);
   }
 }
