@@ -171,19 +171,19 @@ contract SystemSwitchTest is Test, GasReporter {
     assertEq(abi.decode(returnData, (address)), caller);
   }
 
-  function testNonCallRootFromRootWorld() public {
+  function testCallNonRootFromRootWorld() public {
     vm.prank(caller);
     bytes memory returnData = _executeFromRootSystemA(systemBId, abi.encodeCall(EchoSystem.world, ()));
     assertEq(abi.decode(returnData, (address)), address(world));
   }
 
-  function testNonCallRootFromRootEcho() public {
+  function testCallNonRootFromRootEcho() public {
     vm.prank(caller);
     bytes memory returnData = _executeFromRootSystemA(systemBId, abi.encodeCall(EchoSystem.echo, ("hello")));
     assertEq(abi.decode(returnData, (string)), "hello");
   }
 
-  function testNonCallRootFromRootWorldSelector() public {
+  function testCallNonRootFromRootWorldSelector() public {
     bytes4 worldFunctionSelector = world.registerRootFunctionSelector(
       systemBId,
       "echo(string)",
@@ -204,19 +204,19 @@ contract SystemSwitchTest is Test, GasReporter {
     assertEq(abi.decode(returnData, (address)), address(systemA));
   }
 
-  function testNonCallRootFromNonRootWorld() public {
+  function testCallNonRootFromNonRootWorld() public {
     vm.prank(caller);
     bytes memory returnData = _executeFromSystemA(systemBId, abi.encodeCall(EchoSystem.world, ()));
     assertEq(abi.decode(returnData, (address)), address(world));
   }
 
-  function testNonCallRootFromNonRootEcho() public {
+  function testCallNonRootFromNonRootEcho() public {
     vm.prank(caller);
     bytes memory returnData = _executeFromSystemA(systemBId, abi.encodeCall(EchoSystem.echo, ("hello")));
     assertEq(abi.decode(returnData, (string)), "hello");
   }
 
-  function testNonCallRootFromNonRootWorldSelector() public {
+  function testCallNonRootFromNonRootWorldSelector() public {
     bytes4 worldFunctionSelector = world.registerRootFunctionSelector(
       systemBId,
       "echo(string)",
