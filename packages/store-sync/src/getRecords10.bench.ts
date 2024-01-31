@@ -12,7 +12,7 @@ import {
   zustandStorageAdapter,
 } from "../test/utils";
 import { logsToBlocks } from "../test/logsToBlocks";
-import worldRpcLogs from "../../../test-data/world-logs-10000.json";
+import worldRpcLogs from "../../../test-data/world-logs-10.json";
 
 const blocks = logsToBlocks(worldRpcLogs);
 
@@ -20,7 +20,7 @@ for (const block of blocks) {
   await Promise.all([recsStorageAdapter(block), zustandStorageAdapter(block), sqliteStorageAdapter(block)]);
 }
 
-describe("Get all records for table 10000 logs", () => {
+describe("Get all records for table 10 logs", () => {
   bench("recs: `getComponentValue`", async () => {
     for (const entity of getComponentEntities(components.Number)) {
       getComponentValue(components.Number, entity);

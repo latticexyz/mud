@@ -10,7 +10,7 @@ import {
 } from "../test/utils";
 import { encodeEntity } from "./recs";
 import { logsToBlocks } from "../test/logsToBlocks";
-import worldRpcLogs from "../../../test-data/world-logs-10000.json";
+import worldRpcLogs from "../../../test-data/world-logs-10.json";
 
 const blocks = logsToBlocks(worldRpcLogs);
 
@@ -18,7 +18,7 @@ for (const block of blocks) {
   await Promise.all([recsStorageAdapter(block), zustandStorageAdapter(block), sqliteStorageAdapter(block)]);
 }
 
-describe("Get single record by key 10000 logs", () => {
+describe("Get single record by key 10 logs", () => {
   bench("recs: `getComponentValue`", async () => {
     getComponentValue(components.Number, encodeEntity({ key: "uint256" }, { key: 0n }));
   });

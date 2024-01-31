@@ -16,10 +16,10 @@ const publicClient = createPublicClient({
 
 export const tables = resolveConfig(mudConfig).tables;
 
-export const { components, storageAdapter: recsStorageAdapter } = recsStorage({ world: createWorld(), tables });
 export function createRecsStorage(): any {
   return recsStorage({ world: createWorld(), tables });
 }
+export const { components, storageAdapter: recsStorageAdapter } = createRecsStorage();
 
 export const useStore = createStore({ tables });
 export const zustandStorageAdapter = createStorageAdapter({ store: useStore });
@@ -31,7 +31,7 @@ export function createZustandStorageAdapter(): any {
 const SqlJs = await initSqlJs();
 export const db = drizzle(new SqlJs.Database(), {});
 export const sqliteStorageAdapter = await sqliteStorage({ database: db, publicClient });
-export async function createSqliteStorageAdapter(): any {
+export async function createSqliteStorageAdapter(): Promise<any> {
   const SqlJs = await initSqlJs();
   const db = drizzle(new SqlJs.Database(), {});
   return await sqliteStorage({ database: db, publicClient });

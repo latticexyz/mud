@@ -18,7 +18,7 @@ import { storeEventsAbi } from "@latticexyz/store";
 import { privateKeyToAccount } from "viem/accounts";
 import IWorldAbi from "../contracts/out/IWorld.sol/IWorld.abi.json";
 
-const SIZES = [100, 1000, 10000];
+const SIZES = [10, 100, 1000];
 
 console.log("starting proxy");
 await startProxy({
