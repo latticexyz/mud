@@ -30,7 +30,7 @@ contract EchoSystem is System {
     return _index;
   }
 
-  function echo(string memory message) public view returns (string memory) {
+  function echo(string memory message) public pure returns (string memory) {
     return message;
   }
 
@@ -138,6 +138,13 @@ contract SystemSwitchTest is Test, GasReporter {
     assertEq(abi.decode(returnData, (string)), "hello");
   }
 
+  function testCallRootFromRootIndex() public {
+    vm.prank(caller);
+    bytes memory returnData = _executeFromRootSystemA(rootSystemBId, abi.encodeCall(EchoSystem.index, ()));
+    // `index` should be zero because that variable does not exist on the world
+    assertEq(abi.decode(returnData, (uint256)), 0);
+  }
+
   // - ROOT FROM NON ROOT ---------------------------------------------------------------------------- //
 
   function testCallRootFromNonRootMsgSender() public {
@@ -169,6 +176,13 @@ contract SystemSwitchTest is Test, GasReporter {
     vm.prank(caller);
     bytes memory returnData = _executeFromSystemA(callData);
     assertEq(abi.decode(returnData, (string)), "hello");
+  }
+
+  function testCallRootFromNonRootIndex() public {
+    vm.prank(caller);
+    bytes memory returnData = _executeFromSystemA(rootSystemBId, abi.encodeCall(EchoSystem.index, ()));
+    // `index` should be zero because that variable does not exist on the world
+    assertEq(abi.decode(returnData, (uint256)), 0);
   }
 
   // - NON ROOT FROM ROOT ---------------------------------------------------------------------------- //
@@ -241,5 +255,11 @@ contract SystemSwitchTest is Test, GasReporter {
     vm.prank(caller);
     bytes memory returnData = _executeFromSystemA(callData);
     assertEq(abi.decode(returnData, (string)), "hello");
+  }
+
+  function testCallNonRootFromNonRootIndex() public {
+    vm.prank(caller);
+    bytes memory returnData = _executeFromSystemA(systemBId, abi.encodeCall(EchoSystem.index, ()));
+    assertEq(abi.decode(returnData, (uint256)), INDEX);
   }
 }
