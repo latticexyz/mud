@@ -4,20 +4,20 @@ pragma solidity >=0.8.24;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
+import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
+import { ResourceIdsTableId } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+import { StoreCore } from "@latticexyz/store/src/Storecore.sol";
+
 import { System } from "@latticexyz/world/src/System.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { World } from "@latticexyz/world/src/World.sol";
 import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
-import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { RESOURCE_SYSTEM, RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
 import { SystemSwitch } from "../src/utils/SystemSwitch.sol";
 
-uint256 constant INDEX = 7;
-
 contract EchoSystem is System {
-  uint256 public _index = INDEX;
-
   function msgSender() public view returns (address) {
     return _msgSender();
   }
@@ -26,8 +26,8 @@ contract EchoSystem is System {
     return _world();
   }
 
-  function index() public view returns (uint256) {
-    return _index;
+  function readTable() public view {
+    StoreCore.getKeySchema(ResourceIdsTableId);
   }
 
   function echo(string memory message) public pure returns (string memory) {
@@ -138,11 +138,9 @@ contract SystemSwitchTest is Test, GasReporter {
     assertEq(abi.decode(returnData, (string)), "hello");
   }
 
-  function testCallRootFromRootIndex() public {
+  function testCallRootFromRootReadTable() public {
     vm.prank(caller);
-    bytes memory returnData = _executeFromRootSystemA(rootSystemBId, abi.encodeCall(EchoSystem.index, ()));
-    // `index` should be zero because that variable does not exist on the world
-    assertEq(abi.decode(returnData, (uint256)), 0);
+    _executeFromRootSystemA(rootSystemBId, abi.encodeCall(EchoSystem.readTable, ()));
   }
 
   // - ROOT FROM NON ROOT ---------------------------------------------------------------------------- //
@@ -178,11 +176,9 @@ contract SystemSwitchTest is Test, GasReporter {
     assertEq(abi.decode(returnData, (string)), "hello");
   }
 
-  function testCallRootFromNonRootIndex() public {
+  function testCallRootFromNonRootReadTable() public {
     vm.prank(caller);
-    bytes memory returnData = _executeFromSystemA(rootSystemBId, abi.encodeCall(EchoSystem.index, ()));
-    // `index` should be zero because that variable does not exist on the world
-    assertEq(abi.decode(returnData, (uint256)), 0);
+    _executeFromSystemA(rootSystemBId, abi.encodeCall(EchoSystem.readTable, ()));
   }
 
   // - NON ROOT FROM ROOT ---------------------------------------------------------------------------- //
@@ -218,10 +214,18 @@ contract SystemSwitchTest is Test, GasReporter {
     assertEq(abi.decode(returnData, (string)), "hello");
   }
 
-  function testCallNonRootFromRootIndex() public {
+  function testCallNonRootFromRootReadTable() public {
     vm.prank(caller);
-    bytes memory returnData = _executeFromRootSystemA(systemBId, abi.encodeCall(EchoSystem.index, ()));
-    assertEq(abi.decode(returnData, (uint256)), INDEX);
+
+    // Call should revert because the non-root system storage does not have the key schema
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IStoreErrors.Store_TableNotFound.selector,
+        ResourceIdsTableId,
+        string(abi.encodePacked(ResourceIdsTableId))
+      )
+    );
+    _executeFromRootSystemA(systemBId, abi.encodeCall(EchoSystem.readTable, ()));
   }
 
   // - NON ROOT FROM NON ROOT ---------------------------------------------------------------------------- //
@@ -257,9 +261,17 @@ contract SystemSwitchTest is Test, GasReporter {
     assertEq(abi.decode(returnData, (string)), "hello");
   }
 
-  function testCallNonRootFromNonRootIndex() public {
+  function testCallNonRootFromNonRootReadTable() public {
     vm.prank(caller);
-    bytes memory returnData = _executeFromSystemA(systemBId, abi.encodeCall(EchoSystem.index, ()));
-    assertEq(abi.decode(returnData, (uint256)), INDEX);
+
+    // Call should revert because the non-root system storage does not have the key schema
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IStoreErrors.Store_TableNotFound.selector,
+        ResourceIdsTableId,
+        string(abi.encodePacked(ResourceIdsTableId))
+      )
+    );
+    _executeFromSystemA(systemBId, abi.encodeCall(EchoSystem.readTable, ()));
   }
 }
