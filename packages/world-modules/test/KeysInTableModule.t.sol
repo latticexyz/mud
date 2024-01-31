@@ -164,6 +164,8 @@ contract KeysInTableModuleTest is Test, GasReporter {
   }
 
   function testInstallTwice() public {
+    world.registerTable(tableId, tableFieldLayout, tableKeySchema, tableValueSchema, new string[](1), new string[](1));
+
     world.installRootModule(keysInTableModule, abi.encode(tableId));
     vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
     world.installRootModule(keysInTableModule, abi.encode(tableId));
