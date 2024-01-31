@@ -447,7 +447,7 @@ contract KeysInTableModuleTest is Test, GasReporter {
     assertEq(keysInTable[0][0], key1);
   }
 
-  // edge case tests for key lengths differ only in keyLength and whether they revert or not
+  // Helper for key length edge case tests
   function _registerTableWithKeySchemaOfGivenLength(uint256 keyLength) internal {
     SchemaType[] memory schemaTypes = new SchemaType[](keyLength);
     for (uint256 i; i < keyLength; i++) {
@@ -468,14 +468,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
   function testKeyLengthMaxValid() public {
     uint256 keyLength = KeysInTableDynamicFieldIndex.FIELD_COUNT;
     _registerTableWithKeySchemaOfGivenLength(keyLength);
-    // the module should be installed without errors
+    // The module should be installed without errors
     world.installRootModule(keysInTableModule, abi.encode(tableId));
   }
 
   function testKeyLengthOverflow() public {
     uint256 keyLength = 1 + KeysInTableDynamicFieldIndex.FIELD_COUNT;
     _registerTableWithKeySchemaOfGivenLength(keyLength);
-    // max key length should be checked when the module is installed, since keySchema is immutable
+    // Overflow should be checked when the module is installed, since keySchema is immutable
     vm.expectRevert(
       abi.encodeWithSelector(
         KeysInTableModule.KeysInTableModule_KeyLengthOverflow.selector,
