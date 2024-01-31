@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC1155/IERC1155Receiver.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.24;
 
 /**
  * @dev Interface that must be implemented by smart contracts in order to receive
