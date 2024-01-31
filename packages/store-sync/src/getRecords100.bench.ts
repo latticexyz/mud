@@ -1,7 +1,6 @@
 import { bench, describe } from "vitest";
 import { getComponentEntities, getComponentValue } from "@latticexyz/recs";
-import { eq } from "drizzle-orm";
-import { mudStoreTables } from "./sqlite";
+import { buildTable, getTables } from "./sqlite";
 import {
   components,
   db,
@@ -32,6 +31,9 @@ describe("Get all records for table 100 logs", () => {
   });
 
   bench("sqlite: `select`", async () => {
-    db.select().from(mudStoreTables).where(eq(mudStoreTables.name, "Number")).all();
+    const tables = getTables(db).filter((table) => table.name === "Number");
+    const sqlTable = buildTable(tables[0]);
+
+    db.select().from(sqlTable).all();
   });
 });
