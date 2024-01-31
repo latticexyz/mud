@@ -8,7 +8,7 @@ import { IBaseWorld } from "./codegen/interfaces/IBaseWorld.sol";
 import { IModule } from "./IModule.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
 
-/*
+/**
  * @title WorldFactory
  * @notice A factory contract to deploy new World instances.
  * @dev This contract allows users to deploy a new World, install the CoreModule, and transfer the ownership.
@@ -25,7 +25,7 @@ contract WorldFactory is IWorldFactory {
     coreModule = _coreModule;
   }
 
-  /*
+  /**
    * @notice Deploys a new World instance, installs the CoreModule and transfers ownership to the caller.
    * @dev Uses the Create2 for deterministic deployment.
    * @param _salt User defined salt for deterministic world addresses across chains
