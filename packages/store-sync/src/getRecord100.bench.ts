@@ -20,7 +20,7 @@ for (const block of blocks) {
 
 describe("Get single record by key 100 logs", () => {
   bench("recs: `getComponentValue`", async () => {
-    getComponentValue(components.Number, encodeEntity({ key: "uint256" }, { key: 0n }));
+    getComponentValue(components.Number, encodeEntity({ key: "uint32" }, { key: 0 }));
   });
 
   bench("zustand: `getRecord`", async () => {
