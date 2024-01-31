@@ -112,7 +112,7 @@ contract WrongReturnDataERC1155Recipient is IERC1155Receiver {
 
 contract NonERC1155Recipient {}
 
-contract ERC1155Test is Test, GasReporter, IERC1155Events, IERC1155Errors {
+contract ERC1155Test is Test, GasReporter, IERC1155Events, IERC1155Errors, IERC1155Receiver {
   using WorldResourceIdInstance for ResourceId;
 
   IBaseWorld world;
@@ -121,6 +121,21 @@ contract ERC1155Test is Test, GasReporter, IERC1155Events, IERC1155Errors {
 
   mapping(address => mapping(uint256 => uint256)) public userMintAmounts;
   mapping(address => mapping(uint256 => uint256)) public userTransferOrBurnAmounts;
+
+  //required for the transfer-from-self (e.g. this test contract) unit tests to work
+  function onERC1155Received(address, address, uint256, uint256, bytes calldata) public pure returns (bytes4) {
+    return IERC1155Receiver.onERC1155Received.selector;
+  }
+
+  function onERC1155BatchReceived(
+    address,
+    address,
+    uint256[] calldata,
+    uint256[] calldata,
+    bytes calldata
+  ) public pure returns (bytes4) {
+    return IERC1155Receiver.onERC1155BatchReceived.selector;
+  }
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
@@ -1013,6 +1028,7 @@ contract ERC1155Test is Test, GasReporter, IERC1155Events, IERC1155Errors {
     ERC1155Recipient to = new ERC1155Recipient();
 
     uint256 minLength = _min2(ids.length, amounts.length);
+    vm.assume(minLength != 1); // if that's not the case it will fall back to a non-batch event
 
     uint256[] memory normalizedIds = new uint256[](minLength);
     uint256[] memory normalizedAmounts = new uint256[](minLength);
@@ -1101,6 +1117,7 @@ contract ERC1155Test is Test, GasReporter, IERC1155Events, IERC1155Errors {
   }
 
   function testApproveAll(address to, bool approved) public {
+    vm.assume(to != address(0));
     token.setApprovalForAll(to, approved);
 
     assertEq(token.isApprovedForAll(address(this), to), approved);
@@ -1251,6 +1268,7 @@ contract ERC1155Test is Test, GasReporter, IERC1155Events, IERC1155Errors {
     ERC1155Recipient to = new ERC1155Recipient();
 
     uint256 minLength = _min3(ids.length, mintAmounts.length, transferAmounts.length);
+    vm.assume(minLength != 1);
 
     uint256[] memory normalizedIds = new uint256[](minLength);
     uint256[] memory normalizedMintAmounts = new uint256[](minLength);
