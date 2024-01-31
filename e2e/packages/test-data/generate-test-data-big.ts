@@ -30,14 +30,15 @@ await startProxy({
 });
 
 for (let i = 0; i < SIZES.length; i++) {
-  const poolId = SIZES[i];
+  const size = SIZES[i];
 
   const logsFilename = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
-    `../../../test-data/world-logs-${poolId}.json`
+    `../../../test-data/world-logs-${size}.json`
   );
 
-  const rpc = `http://127.0.0.1:8545/${poolId}`;
+  // each set of logs gets a fresh anvil instance
+  const rpc = `http://127.0.0.1:8545/${size}`;
 
   console.log("deploying world");
   const { stdout, stderr } = await execa("pnpm", ["mud", "deploy", "--rpc", rpc, "--saveDeployment", "false"], {
@@ -79,12 +80,12 @@ for (let i = 0; i < SIZES.length; i++) {
     walletClient,
   });
 
-  console.log(`Setting {poolId} records`);
-  for (let i = 0; i < poolId - 1; i++) {
+  console.log(`Setting ${size} records`);
+  for (let i = 0; i < size - 1; i++) {
     await worldContract.write.setNumber([i, i]);
   }
 
-  const lastTx = await worldContract.write.setNumber([poolId, poolId]);
+  const lastTx = await worldContract.write.setNumber([size, size]);
 
   console.log("waiting for tx");
   const receipt = await publicClient.waitForTransactionReceipt({ hash: lastTx });
@@ -112,7 +113,6 @@ for (let i = 0; i < SIZES.length; i++) {
   console.log("writing", logs.length, "logs to", logsFilename);
   await fs.writeFile(logsFilename, JSON.stringify(logs, null, 2));
 }
-// TODO: figure out why anvil doesn't stop immediately
-// console.log("stopping anvil");
-// await anvil.stop();
+
+// exit to kill the proxy
 process.exit(0);
