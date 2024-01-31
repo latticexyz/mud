@@ -9,6 +9,7 @@ export default mudConfig({
       },
       valueSchema: {
         callTime: "uint256",
+        sender: "address",
       },
     },
   },

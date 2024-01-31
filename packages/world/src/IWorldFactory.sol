@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 /**
  * @title World Factory Interface
@@ -14,10 +14,11 @@ interface IWorldFactory {
   event WorldDeployed(address indexed newContract);
 
   /**
-   * @notice Returns the total count of deployed World contracts.
-   * @return The total number of World contracts deployed by this factory.
+   * @notice Returns the total count of deployed World contracts per account.
+   * @param account The account.
+   * @return The total number of World contracts deployed by this factory per account.
    */
-  function worldCount() external view returns (uint256);
+  function worldCounts(address account) external view returns (uint256);
 
   /**
    * @notice Deploys a new World contract.
