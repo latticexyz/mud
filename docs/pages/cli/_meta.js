@@ -1,5 +1,4 @@
 export default {
-  config: "Config",
   tablegen: "mud tablegen",
   worldgen: "mud worldgen",
   test: "mud test",
