@@ -13,13 +13,21 @@ import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
 import { SystemSwitch } from "../src/utils/SystemSwitch.sol";
 
+uint256 constant INDEX = 7;
+
 contract EchoSystem is System {
+  uint256 public _index = INDEX;
+
   function msgSender() public view returns (address) {
     return _msgSender();
   }
 
   function world() public view returns (address) {
     return _world();
+  }
+
+  function index() public view returns (uint256) {
+    return _index;
   }
 
   function echo(string memory message) public view returns (string memory) {
@@ -194,6 +202,12 @@ contract SystemSwitchTest is Test, GasReporter {
     vm.prank(caller);
     bytes memory returnData = _executeFromRootSystemA(callData);
     assertEq(abi.decode(returnData, (string)), "hello");
+  }
+
+  function testCallNonRootFromRootIndex() public {
+    vm.prank(caller);
+    bytes memory returnData = _executeFromRootSystemA(systemBId, abi.encodeCall(EchoSystem.index, ()));
+    assertEq(abi.decode(returnData, (uint256)), INDEX);
   }
 
   // - NON ROOT FROM NON ROOT ---------------------------------------------------------------------------- //
