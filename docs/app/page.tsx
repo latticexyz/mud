@@ -231,13 +231,13 @@ export default async function HomePage() {
             <div className="font-mono uppercase text-2xl">Find us</div>
             <p className="text-lg text-white/60">Discover more MUD resources, and join our community online.</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <a
-              href="https://world.mirror.xyz/"
+              href="https://newsletter.lattice.xyz/"
               // eslint-disable-next-line max-len
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
-              Magazine
+              Newsletter
             </a>
             <a
               href="https://discord.lattice.xyz/"
@@ -265,6 +265,15 @@ export default async function HomePage() {
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               YouTube
+            </a>
+            <a
+              href="https://airtable.com/apph2KJY9nRM37M8Z/pag1r9S91UIkIoPsm/form"
+              target="_blank"
+              rel="noopener noreferrer"
+              // eslint-disable-next-line max-len
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
+            >
+              Reach out
             </a>
           </div>
         </div>
