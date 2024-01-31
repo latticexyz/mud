@@ -1,0 +1,91 @@
+# `mud abi-ts`
+
+This command converts [JSON files](https://www.json.org/json-en.html) that contain the [ABI](https://docs.soliditylang.org/en/latest/abi-spec.html) to [TypeScript](https://www.typescriptlang.org/) with strong types so they can be used to infer types for tools like [`viem`](https://viem.sh/) or [`wagmi`](https://wagmi.sh/).
+
+## Using the command
+
+1. Build your Solidity files (e.g. with [`forge`](https://book.getfoundry.sh/)) to obtain an ABI JSON file.
+   For example, you can use this file:
+
+   ```json filename="greeter.abi.json" copy
+   [
+     {
+       "inputs": [
+         {
+           "internalType": "string",
+           "name": "_greeting",
+           "type": "string"
+         }
+       ],
+       "stateMutability": "nonpayable",
+       "type": "constructor"
+     },
+     {
+       "anonymous": false,
+       "inputs": [
+         {
+           "indexed": false,
+           "internalType": "address",
+           "name": "sender",
+           "type": "address"
+         },
+         {
+           "indexed": false,
+           "internalType": "string",
+           "name": "greeting",
+           "type": "string"
+         }
+       ],
+       "name": "SetGreeting",
+       "type": "event"
+     },
+     {
+       "inputs": [],
+       "name": "greet",
+       "outputs": [
+         {
+           "internalType": "string",
+           "name": "",
+           "type": "string"
+         }
+       ],
+       "stateMutability": "view",
+       "type": "function"
+     },
+     {
+       "inputs": [
+         {
+           "internalType": "string",
+           "name": "_greeting",
+           "type": "string"
+         }
+       ],
+       "name": "setGreeting",
+       "outputs": [],
+       "stateMutability": "nonpayable",
+       "type": "function"
+     }
+   ]
+   ```
+
+1. Run the command.
+
+   ```sh copy
+   pnpm mud abi-ts --input greeting.abi.json
+   ```
+
+   Note that if you don't include the `--input` parameter the command runs on every file with the extension `.abi.json` in the directory where it is run and every directory below it.
+
+1. See the new file.
+
+   ```sh copy
+   less greeting.abi.json.d.ts
+   ```
+
+## Debugging
+
+Set the `DEBUG` environment variable to `abi-ts` to get debugging outputs.
+
+```sh copy
+export DEBUG=abi-ts
+```

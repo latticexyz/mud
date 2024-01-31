@@ -1,26 +1,39 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
-import "forge-std/Test.sol";
-import { KeyEncoding, KeyEncodingTableId } from "../src/codegen/Tables.sol";
-import { ExampleEnum } from "../src/codegen/Types.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract KeyEncodingTest is Test, StoreReadWithStubs {
-  function testRegisterAndGetSchema() public {
-    // !gasreport register KeyEncoding schema
-    KeyEncoding.registerSchema();
+import { StoreMock } from "./StoreMock.sol";
+import { KeyEncoding, KeyEncodingTableId } from "./codegen/index.sol";
+import { ExampleEnum } from "./codegen/common.sol";
 
-    Schema registeredSchema = StoreCore.getSchema(KeyEncodingTableId);
-    Schema declaredSchema = KeyEncoding.getSchema();
+contract KeyEncodingTest is Test, GasReporter, StoreMock {
+  function testRegisterAndGetFieldLayout() public {
+    startGasReport("register KeyEncoding table");
+    KeyEncoding.register();
+    endGasReport();
+
+    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(KeyEncodingTableId);
+    FieldLayout declaredFieldLayout = KeyEncoding.getFieldLayout();
+
+    assertEq(keccak256(abi.encode(registeredFieldLayout)), keccak256(abi.encode(declaredFieldLayout)));
+  }
+
+  function testRegisterAndGetSchema() public {
+    KeyEncoding.register();
+
+    Schema registeredSchema = StoreCore.getValueSchema(KeyEncodingTableId);
+    Schema declaredSchema = KeyEncoding.getValueSchema();
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
   }
 
   function testSetAndGet() public {
-    KeyEncoding.registerSchema();
+    KeyEncoding.register();
 
     KeyEncoding.set(
       42,
@@ -45,7 +58,7 @@ contract KeyEncodingTest is Test, StoreReadWithStubs {
   }
 
   function testKeyEncoding() public {
-    KeyEncoding.registerSchema();
+    KeyEncoding.register();
 
     bytes32[] memory keyTuple = KeyEncoding.encodeKeyTuple(
       42,

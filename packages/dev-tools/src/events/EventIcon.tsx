@@ -1,21 +1,20 @@
-import { StoreEvent } from "../useStore";
-import { exhaustiveCheck } from "../exhaustiveCheck";
+import { assertExhaustive } from "@latticexyz/common/utils";
+import { StorageAdapterLog } from "@latticexyz/store-sync";
 
 type Props = {
-  eventName: StoreEvent["event"];
+  type: StorageAdapterLog["eventName"];
 };
 
-export function EventIcon({ eventName }: Props) {
-  switch (eventName) {
-    case "StoreSetRecord":
+export function EventIcon({ type }: Props) {
+  switch (type) {
+    case "Store_SetRecord":
       return <span className="text-green-500 font-bold">=</span>;
-    case "StoreSetField":
+    case "Store_SpliceStaticData":
+    case "Store_SpliceDynamicData":
       return <span className="text-cyan-500 font-bold">+</span>;
-    case "StoreDeleteRecord":
+    case "Store_DeleteRecord":
       return <span className="text-red-500 font-bold">-</span>;
-    case "StoreEphemeralRecord":
-      return <span className="text-violet-400 font-bold">~</span>;
     default:
-      return exhaustiveCheck(eventName, `Unexpected event name: ${eventName}`);
+      return assertExhaustive(type, `Unexpected event type: ${type}`);
   }
 }

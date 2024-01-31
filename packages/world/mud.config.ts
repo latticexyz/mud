@@ -1,178 +1,121 @@
 import { mudConfig } from "./ts/register";
 
 export default mudConfig({
-  worldImportPath: "../",
+  worldImportPath: "../../",
   worldgenDirectory: "interfaces",
   worldInterfaceName: "IBaseWorld",
-  codegenDirectory: "",
+  namespace: "world" as const, // NOTE: this namespace is only used for tables, the core system is deployed in the root namespace.
+  userTypes: {
+    ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", internalType: "bytes32" },
+  },
   tables: {
-    /************************************************************************
-     *
-     *    CORE TABLES
-     *
-     ************************************************************************/
     NamespaceOwner: {
       keySchema: {
-        namespace: "bytes16",
+        namespaceId: "ResourceId",
       },
-      schema: {
+      valueSchema: {
         owner: "address",
       },
     },
     ResourceAccess: {
       keySchema: {
-        resourceSelector: "bytes32",
+        resourceId: "ResourceId",
         caller: "address",
       },
-      schema: {
+      valueSchema: {
         access: "bool",
       },
     },
     InstalledModules: {
       keySchema: {
-        moduleName: "bytes16",
+        moduleAddress: "address",
         argumentsHash: "bytes32", // Hash of the params passed to the `install` function
       },
-      schema: {
-        moduleAddress: "address",
+      valueSchema: {
+        isInstalled: "bool",
       },
-      // TODO: this is a workaround to use `getRecord` instead of `getField` in the autogen library,
-      // to allow using the table before it is registered. This is because `getRecord` passes the schema
-      // to store, while `getField` loads it from storage. Remove this once we have support for passing the
-      // schema in `getField` too. (See https://github.com/latticexyz/mud/issues/444)
-      dataStruct: true,
     },
-    /************************************************************************
-     *
-     *    MODULE TABLES
-     *
-     ************************************************************************/
-    Systems: {
-      directory: "modules/core/tables",
+    UserDelegationControl: {
       keySchema: {
-        resourceSelector: "bytes32",
+        delegator: "address",
+        delegatee: "address",
       },
-      schema: {
+      valueSchema: {
+        delegationControlId: "ResourceId",
+      },
+    },
+    NamespaceDelegationControl: {
+      keySchema: {
+        namespaceId: "ResourceId",
+      },
+      valueSchema: {
+        delegationControlId: "ResourceId",
+      },
+    },
+    Balances: {
+      keySchema: {
+        namespaceId: "ResourceId",
+      },
+      valueSchema: {
+        balance: "uint256",
+      },
+    },
+    Systems: {
+      keySchema: {
+        systemId: "ResourceId",
+      },
+      valueSchema: {
         system: "address",
         publicAccess: "bool",
       },
       dataStruct: false,
     },
     SystemRegistry: {
-      directory: "modules/core/tables",
       keySchema: {
         system: "address",
       },
-      schema: {
-        resourceSelector: "bytes32",
+      valueSchema: {
+        systemId: "ResourceId",
       },
     },
     SystemHooks: {
-      directory: "modules/core/tables",
       keySchema: {
-        resourceSelector: "bytes32",
+        systemId: "ResourceId",
       },
-      schema: "address[]",
-    },
-    ResourceType: {
-      directory: "modules/core/tables",
-      keySchema: {
-        resourceSelector: "bytes32",
-      },
-      schema: {
-        resourceType: "Resource",
-      },
+      valueSchema: "bytes21[]",
     },
     FunctionSelectors: {
-      directory: "modules/core/tables",
       keySchema: {
         functionSelector: "bytes4",
       },
-      schema: {
-        namespace: "bytes16",
-        name: "bytes16",
+      valueSchema: {
+        systemId: "ResourceId",
         systemFunctionSelector: "bytes4",
       },
       dataStruct: false,
     },
-    KeysWithValue: {
-      directory: "modules/keyswithvalue/tables",
+    FunctionSignatures: {
       keySchema: {
-        valueHash: "bytes32",
+        functionSelector: "bytes4",
       },
-      schema: {
-        keysWithValue: "bytes32[]", // For now only supports 1 key per value
+      valueSchema: {
+        functionSignature: "string",
       },
-      tableIdArgument: true,
+      offchainOnly: true,
     },
-    KeysInTable: {
-      directory: "modules/keysintable/tables",
-      keySchema: { sourceTable: "bytes32" },
-      schema: {
-        keyParts0: "bytes32[]",
-        keyParts1: "bytes32[]",
-        keyParts2: "bytes32[]",
-        keyParts3: "bytes32[]",
-        keyParts4: "bytes32[]",
-      },
-    },
-    UsedKeysIndex: {
-      directory: "modules/keysintable/tables",
-      keySchema: {
-        sourceTable: "bytes32",
-        keysHash: "bytes32",
-      },
-      schema: { has: "bool", index: "uint40" },
-      dataStruct: false,
-    },
-    UniqueEntity: {
-      directory: "modules/uniqueentity/tables",
+    CoreModuleAddress: {
       keySchema: {},
-      schema: "uint256",
-      tableIdArgument: true,
-      storeArgument: true,
-    },
-    /************************************************************************
-     *
-     *    TEST TABLES
-     *
-     ************************************************************************/
-    Bool: {
-      directory: "../test/tables",
-      keySchema: {},
-      schema: {
-        value: "bool",
-      },
-      tableIdArgument: true,
-    },
-    AddressArray: {
-      directory: "../test/tables",
-      schema: "address[]",
-      tableIdArgument: true,
+      valueSchema: "address",
     },
   },
-  enums: {
-    Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
-  },
-
   excludeSystems: [
-    // IUniqueEntitySystem is not part of the root namespace and
-    // installed separately by UniqueEntityModule.
-    // TODO: Move optional modules into a separate package
-    // (see https://github.com/latticexyz/mud/pull/584)
-    "UniqueEntitySystem",
-
-    "SnapSyncSystem",
-
     // Worldgen currently does not support systems inheriting logic
-    // from other contracts, so all parts of CoreSystem are named
+    // from other contracts, so all parts of CoreRegistrationSystem are named
     // System too to be included in the IBaseWorld interface.
     // However, IStoreRegistrationSystem overlaps with IStore if
     // included in IBaseWorld, so it needs to be excluded from worldgen.
     // TODO: add support for inheritance to worldgen
     // (see: https://github.com/latticexyz/mud/issues/631)
     "StoreRegistrationSystem",
-    // Similar overlap occurs for IEphemeralRecordSystem. IWorldEphemeral is included instead.
-    "EphemeralRecordSystem",
   ],
 });

@@ -5,14 +5,21 @@ import { ethers } from "ethers";
 import { loadConfig } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
 import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { TableId } from "@latticexyz/utils";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
-import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
-import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
-import { getChainId, getExistingContracts } from "../utils";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
+import worldConfig from "@latticexyz/world/mud.config";
+import { resourceToHex } from "@latticexyz/common";
+import { getExistingContracts } from "../utils/getExistingContracts";
+import { createClient, http } from "viem";
+import { getChainId } from "viem/actions";
 
-const systemsTableId = new TableId("", "Systems");
+// TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
+const systemsTableId = resourceToHex({
+  type: "system",
+  namespace: worldConfig.namespace,
+  name: worldConfig.tables.Systems.name,
+});
 
 type Options = {
   tx: string;
@@ -64,17 +71,19 @@ const commandModule: CommandModule<Options, Options> = {
 
     // Create World contract instance from deployed address
     const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
-    const WorldContract = new ethers.Contract(worldAddress, IBaseWorldData.abi, provider) as IBaseWorld;
+    const WorldContract = new ethers.Contract(worldAddress, IBaseWorldAbi, provider);
 
     // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
     const namespace = mudConfig.namespace;
     const names = Object.values(resolvedConfig.systems).map(({ name }) => name);
 
+    // Fetch system table field layout from chain
+    const systemTableFieldLayout = await WorldContract.getFieldLayout(systemsTableId);
     const labels: { name: string; address: string }[] = [];
     for (const name of names) {
-      const systemSelector = new TableId(namespace, name);
+      const systemSelector = resourceToHex({ type: "system", namespace, name });
       // Get the first field of `Systems` table (the table maps system name to its address and other data)
-      const address = await WorldContract.getField(systemsTableId.toHexString(), [systemSelector.toHexString()], 0);
+      const address = await WorldContract.getField(systemsTableId, [systemSelector], 0, systemTableFieldLayout);
       labels.push({ name, address });
     }
 
@@ -95,7 +104,8 @@ export default commandModule;
 
 async function getWorldAddress(worldsFile: string, rpc: string) {
   if (existsSync(worldsFile)) {
-    const chainId = await getChainId(rpc);
+    const client = createClient({ transport: http(rpc) });
+    const chainId = await getChainId(client);
     const deploys = JSON.parse(readFileSync(worldsFile, "utf-8"));
 
     if (!deploys[chainId]) {

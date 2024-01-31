@@ -1,8 +1,13 @@
-import chalk from "chalk";
 import prettier from "prettier";
 import prettierPluginSolidity from "prettier-plugin-solidity";
 
-export async function formatSolidity(content: string, prettierConfigPath?: string) {
+/**
+ * Formats solidity code using prettier
+ * @param content solidity code
+ * @param prettierConfigPath optional path to a prettier config
+ * @returns formatted solidity code
+ */
+export async function formatSolidity(content: string, prettierConfigPath?: string): Promise<string> {
   let config;
   if (prettierConfigPath) {
     config = await prettier.resolveConfig(prettierConfigPath);
@@ -27,12 +32,17 @@ export async function formatSolidity(content: string, prettierConfigPath?: strin
     } else {
       message = error;
     }
-    console.log(chalk.yellow(`Error during output formatting: ${message}`));
+    console.log(`Error during output formatting: ${message}`);
     return content;
   }
 }
 
-export async function formatTypescript(content: string) {
+/**
+ * Formats typescript code using prettier
+ * @param content typescript code
+ * @returns formatted typescript code
+ */
+export async function formatTypescript(content: string): Promise<string> {
   return prettier.format(content, {
     parser: "typescript",
   });

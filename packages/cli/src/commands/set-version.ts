@@ -1,65 +1,71 @@
 import chalk from "chalk";
-import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import path from "path";
 import type { CommandModule } from "yargs";
 import { MUDError } from "@latticexyz/common/errors";
 import { logError } from "../utils/errors";
 import localPackageJson from "../../package.json" assert { type: "json" };
+import glob from "glob";
+import { mudPackages } from "../mudPackages";
 
 type Options = {
   backup?: boolean;
   force?: boolean;
   restore?: boolean;
   mudVersion?: string;
+  tag?: string;
+  commit?: string;
   link?: string;
 };
-
-const BACKUP_FILE = ".mudbackup";
-const MUD_PREFIX = "@latticexyz";
 
 const commandModule: CommandModule<Options, Options> = {
   command: "set-version",
 
-  describe: "Install a custom MUD version and optionally backup the previously installed version",
+  describe: "Set MUD version in all package.json files and optionally backup the previously installed version",
 
   builder(yargs) {
     return yargs.options({
-      backup: { type: "boolean", description: `Back up the current MUD versions to "${BACKUP_FILE}"` },
-      force: {
-        type: "boolean",
-        description: `Backup fails if a "${BACKUP_FILE}" file is found, unless --force is provided`,
+      mudVersion: { alias: "v", type: "string", description: "Set MUD to the given version" },
+      tag: {
+        alias: "t",
+        type: "string",
+        description: "Set MUD to the latest version with the given tag from npm",
       },
-      restore: { type: "boolean", description: `Restore the previous MUD versions from "${BACKUP_FILE}"` },
-      mudVersion: { alias: "v", type: "string", description: "The MUD version to install" },
+      commit: {
+        alias: "c",
+        type: "string",
+        description: "Set MUD to the version based on a given git commit hash from npm",
+      },
       link: { alias: "l", type: "string", description: "Relative path to the local MUD root directory to link" },
     });
   },
 
   async handler(options) {
     try {
-      if (!options.mudVersion && !options.link && !options.restore) {
-        throw new MUDError("`--mudVersion` or `--link` is required unless --restore is provided.");
+      const mutuallyExclusiveOptions = ["mudVersion", "link", "tag", "commit", "restore"];
+      const numMutuallyExclusiveOptions = mutuallyExclusiveOptions.reduce(
+        (acc, opt) => (options[opt] ? acc + 1 : acc),
+        0
+      );
+
+      if (numMutuallyExclusiveOptions === 0) {
+        throw new MUDError(`You need to provide one these options: ${mutuallyExclusiveOptions.join(", ")}`);
       }
 
-      // `link` and `mudVersion` are mutually exclusive
-      if (options.link && options.mudVersion) {
-        throw new MUDError("Options `--link` and `--mudVersion` are mutually exclusive");
+      if (numMutuallyExclusiveOptions > 1) {
+        throw new MUDError(`These options are mutually exclusive: ${mutuallyExclusiveOptions.join(", ")}`);
       }
 
-      // Resolve the `canary` version number if needed
-      options.mudVersion =
-        options.mudVersion === "canary" ? await getCanaryVersion(localPackageJson.name) : options.mudVersion;
+      // If the --link flag is not set, we call resolveVersion to get the version
+      // Resolve the version number from available options like `tag` or `commit`
+      if (!options.link) {
+        options.mudVersion = await resolveVersion(options);
+      }
 
-      // Read the current package.json
-      const rootPath = "./package.json";
-      const { workspaces } = updatePackageJson(rootPath, options);
-
-      // Load the package.json of each workspace
-      if (workspaces) {
-        for (const workspace of workspaces) {
-          const filePath = path.join(workspace, "/package.json");
-          updatePackageJson(filePath, options);
-        }
+      // Update all package.json below the current working directory (except in node_modules)
+      const packageJsons = glob.sync("**/package.json").filter((p) => !p.includes("node_modules"));
+      for (const packageJson of packageJsons) {
+        updatePackageJson(packageJson, options);
       }
     } catch (e) {
       logError(e);
@@ -69,64 +75,76 @@ const commandModule: CommandModule<Options, Options> = {
   },
 };
 
-function updatePackageJson(filePath: string, options: Options): { workspaces?: string[] } {
-  const { restore, force, link } = options;
-  let { backup, mudVersion } = options;
+async function resolveVersion(options: Options) {
+  // Backwards compatibility to previous behavior of this script where passing "canary" as the version resolved to the latest commit on main
+  if (options.mudVersion === "canary") options.tag = "main";
 
-  const backupFilePath = path.join(path.dirname(filePath), BACKUP_FILE);
-  const backupFileExists = existsSync(backupFilePath);
-
-  // Create a backup file for previous MUD versions by default if linking to local MUD
-  if (link && !backupFileExists) backup = true;
-
-  // If `backup` is true and force not set, check if a backup file already exists and throw an error if it does
-  if (backup && !force && backupFileExists) {
-    throw new MUDError(
-      `A backup file already exists at ${backupFilePath}.\nUse --force to overwrite it or --restore to restore it.`
-    );
+  let npmResult;
+  try {
+    console.log(chalk.blue(`Fetching available versions`));
+    npmResult = await (await fetch(`https://registry.npmjs.org/${localPackageJson.name}`)).json();
+  } catch (e) {
+    throw new MUDError(`Could not fetch available MUD versions`);
   }
 
-  const packageJson = readPackageJson(filePath);
+  if (options.tag) {
+    const version = npmResult["dist-tags"][options.tag];
+    if (!version) {
+      throw new MUDError(`Could not find npm version with tag "${options.tag}"`);
+    }
+    console.log(chalk.green(`Latest version with tag ${options.tag}: ${version}`));
+    return version;
+  }
 
-  // Load .mudbackup if `restore` is true
-  const backupJson = restore ? readPackageJson(backupFilePath) : undefined;
+  if (options.commit) {
+    // Find a version with this commit hash
+    const commit = options.commit.substring(0, 8); // changesets uses the first 8 characters of the commit hash as version for prereleases/snapshot releases
+    const version = Object.keys(npmResult["versions"]).find((v) => (v as string).includes(commit));
+    if (!version) {
+      throw new MUDError(`Could not find npm version based on commit "${options.commit}"`);
+    }
+    console.log(chalk.green(`Version from commit ${options.commit}: ${version}`));
+    return version;
+  }
+
+  // If neither a tag nor a commit option is given, return the `mudVersion`
+  return options.mudVersion;
+}
+
+function updatePackageJson(filePath: string, options: Options): { workspaces?: string[] } {
+  const { link } = options;
+  let { mudVersion } = options;
+
+  const packageJson = readPackageJson(filePath);
+  const mudPackageNames = Object.keys(mudPackages);
 
   // Find all MUD dependencies
   const mudDependencies: Record<string, string> = {};
-  for (const key in packageJson.dependencies) {
-    if (key.startsWith(MUD_PREFIX)) {
-      mudDependencies[key] = packageJson.dependencies[key];
+  for (const packageName in packageJson.dependencies) {
+    if (mudPackageNames.includes(packageName)) {
+      mudDependencies[packageName] = packageJson.dependencies[packageName];
     }
   }
 
   // Find all MUD devDependencies
   const mudDevDependencies: Record<string, string> = {};
-  for (const key in packageJson.devDependencies) {
-    if (key.startsWith(MUD_PREFIX)) {
-      mudDevDependencies[key] = packageJson.devDependencies[key];
+  for (const packageName in packageJson.devDependencies) {
+    if (mudPackageNames.includes(packageName)) {
+      mudDevDependencies[packageName] = packageJson.devDependencies[packageName];
     }
   }
 
-  // Back up the current dependencies if `backup` is true
-  if (backup) {
-    writeFileSync(
-      backupFilePath,
-      JSON.stringify({ dependencies: mudDependencies, devDependencies: mudDevDependencies }, null, 2)
-    );
-    console.log(chalk.green(`Backed up MUD dependencies from ${filePath} to ${backupFilePath}`));
-  }
-
   // Update the dependencies
-  for (const key in packageJson.dependencies) {
-    if (key.startsWith(MUD_PREFIX)) {
-      packageJson.dependencies[key] = resolveMudVersion(key, "dependencies");
+  for (const packageName in packageJson.dependencies) {
+    if (mudPackageNames.includes(packageName)) {
+      packageJson.dependencies[packageName] = resolveMudVersion(packageName, "dependencies");
     }
   }
 
   // Update the devDependencies
-  for (const key in packageJson.devDependencies) {
-    if (key.startsWith(MUD_PREFIX)) {
-      packageJson.devDependencies[key] = resolveMudVersion(key, "devDependencies");
+  for (const packageName in packageJson.devDependencies) {
+    if (mudPackageNames.includes(packageName)) {
+      packageJson.devDependencies[packageName] = resolveMudVersion(packageName, "devDependencies");
     }
   }
 
@@ -137,17 +155,9 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
   logComparison(mudDependencies, packageJson.dependencies);
   logComparison(mudDevDependencies, packageJson.devDependencies);
 
-  // Remove the backup file if `restore` is true and `backup` is false
-  // because the old backup file is no longer needed
-  if (restore && !backup) {
-    rmSync(backupFilePath);
-    console.log(chalk.green(`Cleaned up ${backupFilePath}`));
-  }
-
   return packageJson;
 
   function resolveMudVersion(key: string, type: "dependencies" | "devDependencies") {
-    if (restore && backupJson) return backupJson[type][key];
     if (link) mudVersion = resolveLinkPath(filePath, link, key);
     if (!mudVersion) return packageJson[type][key];
     return mudVersion;
@@ -167,18 +177,6 @@ function readPackageJson(path: string): {
   }
 }
 
-async function getCanaryVersion(pkg: string) {
-  try {
-    console.log(chalk.blue("fetching MUD canary version..."));
-    const result = await (await fetch(`https://registry.npmjs.org/${pkg}`)).json();
-    const canary = result["dist-tags"].canary;
-    console.log(chalk.green("MUD canary version:", canary));
-    return canary;
-  } catch (e) {
-    throw new MUDError(`Could not fetch canary version of ${pkg}`);
-  }
-}
-
 function logComparison(prev: Record<string, string>, curr: Record<string, string>) {
   for (const key in prev) {
     if (prev[key] !== curr[key]) {
@@ -190,10 +188,9 @@ function logComparison(prev: Record<string, string>, curr: Record<string, string
 /**
  * Returns path of the package to link, given a path to a local MUD clone and a package
  */
-function resolveLinkPath(packageJsonPath: string, mudLinkPath: string, pkg: string) {
-  const pkgName = pkg.replace(MUD_PREFIX, "");
+function resolveLinkPath(packageJsonPath: string, mudLinkPath: string, packageName: string) {
   const packageJsonToRootPath = path.relative(path.dirname(packageJsonPath), process.cwd());
-  const linkPath = path.join(packageJsonToRootPath, mudLinkPath, "packages", pkgName);
+  const linkPath = path.join(packageJsonToRootPath, mudLinkPath, mudPackages[packageName].localPath);
   return "link:" + linkPath;
 }
 

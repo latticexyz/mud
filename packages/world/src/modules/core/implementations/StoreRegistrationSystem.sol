@@ -1,98 +1,104 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
-import { IStoreRegistration, IStoreHook } from "@latticexyz/store/src/IStore.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { System } from "../../../System.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
-import { ResourceSelector } from "../../../ResourceSelector.sol";
-import { Call } from "../../../Call.sol";
+import { ResourceId, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
+import { ROOT_NAME } from "../../../constants.sol";
+import { AccessControl } from "../../../AccessControl.sol";
+import { requireInterface } from "../../../requireInterface.sol";
+import { revertWithBytes } from "../../../revertWithBytes.sol";
 
-import { Systems } from "../tables/Systems.sol";
-import { CORE_SYSTEM_NAME } from "../constants.sol";
+import { IWorldErrors } from "../../../IWorldErrors.sol";
+
+import { CORE_REGISTRATION_SYSTEM_ID } from "../constants.sol";
+import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 import { WorldRegistrationSystem } from "./WorldRegistrationSystem.sol";
 
 /**
- * World framework implementation of IStoreRegistration.
- *
- * See {IStoreRegistration}
+ * @title Store Registration System
+ * @dev This contract provides functionality for the registration of store-related resources within the World framework.
  */
-contract StoreRegistrationSystem is IStoreRegistration, System {
-  using ResourceSelector for bytes32;
+contract StoreRegistrationSystem is System, IWorldErrors, LimitedCallContext {
+  using WorldResourceIdInstance for ResourceId;
 
   /**
-   * Register the given schema for the given table id.
-   * This overload exists to conform with the IStore interface.
-   * Access is checked based on the namespace or name (encoded in the tableId).
+   * @notice Register a table within the World framework.
+   * @dev Registers a table with the specified configuration. If the namespace for the table does not exist, it's created.
+   * Existing namespaces require the caller to be the owner for table registration.
+   * @param tableId The resource ID of the table.
+   * @param fieldLayout The field layout structure for the table.
+   * @param keySchema The schema for the keys of the table.
+   * @param valueSchema The schema for the values within the table.
+   * @param keyNames The names associated with the keys in the table.
+   * @param fieldNames The names of the fields in the table.
    */
-  function registerSchema(bytes32 tableId, Schema valueSchema, Schema keySchema) public virtual {
-    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
+  function registerTable(
+    ResourceId tableId,
+    FieldLayout fieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
+    string[] calldata keyNames,
+    string[] calldata fieldNames
+  ) public virtual onlyDelegatecall {
+    // Require the name to not be the namespace's root name
+    if (tableId.getName() == ROOT_NAME) {
+      revert World_InvalidResourceId(tableId, tableId.toString());
+    }
 
-    // We can't call IBaseWorld(this).registerSchema directly because it would be handled like
-    // an external call, so msg.sender would be the address of the World contract
-    Call.withSender({
-      msgSender: _msgSender(),
-      target: systemAddress,
-      funcSelectorAndArgs: abi.encodeWithSelector(
-        WorldRegistrationSystem.registerTable.selector,
-        tableId.getNamespace(),
-        tableId.getName(),
-        valueSchema,
-        keySchema
-      ),
-      delegate: true,
-      value: 0
-    });
+    // Require the table's namespace to exist
+    AccessControl.requireExistence(tableId.getNamespaceId());
+
+    // Require the caller to own the table's namespace
+    AccessControl.requireOwner(tableId, _msgSender());
+
+    // Register the table
+    StoreCore.registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }
 
   /**
-   * Register metadata (tableName, fieldNames) for the table at the given tableId.
-   * This overload exists to conform with the `IStore` interface.
-   * Access is checked based on the namespace or name (encoded in the tableId).
+   * @notice Register a storage hook for a specified table.
+   * @dev The caller must be the owner of the namespace to which the table belongs.
+   * The hook must conform to the IStoreHook interface.
+   * @param tableId The resource ID of the table for which the hook is being registered.
+   * @param hookAddress The address of the storage hook contract.
+   * @param enabledHooksBitmap A bitmap indicating which hook functionalities are enabled.
    */
-  function setMetadata(bytes32 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
-    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
 
-    // We can't call IBaseWorld(this).setMetadata directly because it would be handled like
-    // an external call, so msg.sender would be the address of the World contract
-    Call.withSender({
-      msgSender: _msgSender(),
-      target: systemAddress,
-      funcSelectorAndArgs: abi.encodeWithSelector(
-        WorldRegistrationSystem.setMetadata.selector,
-        tableId.getNamespace(),
-        tableId.getName(),
-        tableName,
-        fieldNames
-      ),
-      delegate: true,
-      value: 0
-    });
+  function registerStoreHook(
+    ResourceId tableId,
+    IStoreHook hookAddress,
+    uint8 enabledHooksBitmap
+  ) public virtual onlyDelegatecall {
+    // Require the hook to implement the store hook interface
+    requireInterface(address(hookAddress), type(IStoreHook).interfaceId);
+
+    // Require the table's namespace to exist
+    AccessControl.requireExistence(tableId.getNamespaceId());
+
+    // Require caller to own the namespace
+    AccessControl.requireOwner(tableId, _msgSender());
+
+    // Register the hook
+    StoreCore.registerStoreHook(tableId, hookAddress, enabledHooksBitmap);
   }
 
   /**
-   * Register a hook for the table at the given tableId.
-   * This overload exists to conform with the `IStore` interface.
-   * Access is checked based on the namespace or name (encoded in the tableId).
+   * @notice Unregister a previously registered storage hook for a specified table.
+   * @dev The caller must be the owner of the namespace to which the table belongs.
+   * @param tableId The resource ID of the table from which the hook is being unregistered.
+   * @param hookAddress The address of the storage hook contract.
    */
-  function registerStoreHook(bytes32 tableId, IStoreHook hook) public virtual {
-    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
+  function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) public virtual onlyDelegatecall {
+    // Require caller to own the namespace
+    AccessControl.requireOwner(tableId, _msgSender());
 
-    // We can't call IBaseWorld(this).registerStoreHook directly because it would be handled like
-    // an external call, so msg.sender would be the address of the World contract
-    Call.withSender({
-      msgSender: _msgSender(),
-      target: systemAddress,
-      funcSelectorAndArgs: abi.encodeWithSelector(
-        WorldRegistrationSystem.registerTableHook.selector,
-        tableId.getNamespace(),
-        tableId.getName(),
-        hook
-      ),
-      delegate: true,
-      value: 0
-    });
+    // Unregister the hook
+    StoreCore.unregisterStoreHook(tableId, hookAddress);
   }
 }

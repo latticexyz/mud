@@ -2,7 +2,6 @@ import { AbiType } from "abitype";
 import { TupleSplit } from "./utils";
 
 // Keep this array in sync with SchemaType.sol enum
-
 export const schemaAbiTypes = [
   "uint8",
   "uint16",
@@ -212,3 +211,7 @@ export const dynamicAbiTypes = schemaAbiTypes.slice(98) as any as TupleSplit<typ
 
 export type StaticAbiType = (typeof staticAbiTypes)[number];
 export type DynamicAbiType = (typeof dynamicAbiTypes)[number];
+
+export function isSchemaAbiType(abiType: unknown): abiType is SchemaAbiType {
+  return schemaAbiTypes.includes(abiType as SchemaAbiType);
+}

@@ -1,9 +1,11 @@
 *
 
-!abi/**
+!out/**/*.json
+!out/**/*.abi.json
+!out/**/*.abi.json.d.ts
 !src/**
 !ts/**
-!types/**
+!mud.config.ts
 !package.json
 !README.md
 !dist/**

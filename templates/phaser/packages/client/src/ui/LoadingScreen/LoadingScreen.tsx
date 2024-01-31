@@ -1,35 +1,37 @@
 import React from "react";
 import styled from "styled-components";
-import { SyncState } from "@latticexyz/network";
 import { LoadingBar } from "./LoadingBar";
 import { BootScreen } from "./BootScreen";
 import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "../../store";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
+import { SyncStep } from "@latticexyz/store-sync";
 
 export const LoadingScreen = () => {
   const {
     networkLayer: {
-      components: { LoadingState },
-      singletonEntity,
+      components: { SyncProgress },
     },
   } = useMUD();
 
-  const loadingState = useComponentValue(LoadingState, singletonEntity, {
-    msg: "Connecting...",
+  const syncProgress = useComponentValue(SyncProgress, singletonEntity, {
+    message: "Connecting",
     percentage: 0,
-    state: SyncState.CONNECTING,
+    step: SyncStep.INITIALIZE,
+    latestBlockNumber: 0n,
+    lastBlockNumberProcessed: 0n,
   });
 
-  if (loadingState.state === SyncState.LIVE) {
+  if (syncProgress.step === SyncStep.LIVE) {
     return null;
   }
 
   return (
     <BootScreen>
-      {loadingState.msg}
+      {syncProgress.message}…
       <LoadingContainer>
-        {Math.floor(loadingState.percentage)}%
-        <Loading percentage={loadingState.percentage} />
+        {Math.floor(syncProgress.percentage)}%
+        <Loading percentage={syncProgress.percentage} />
       </LoadingContainer>
     </BootScreen>
   );

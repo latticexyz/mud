@@ -1,10 +1,15 @@
 export default {
-  "world-101": "World 101",
-  "config": "World Config",
-  "deployer": "Deployer",
-  "subsystems": "Pattern: Sub-systems",
-  "modules": "Modules",
-  "community-computers": "Community Computers",
-  "querying": "Querying",
-  "internals": "Internal tables & systems",
+  introduction: "Introduction",
+  "namespaces-access-control": "Namespaces & Access Control",
+  tables: "Tables",
+  systems: "Systems",
+  "system-hooks": "System Hooks",
+  "function-selectors": "Function Selectors",
+  balance: "Balance",
+  "account-delegation": "Account Delegation",
+  "batch-calls": "Batch Calls",
+  modules: "Modules",
+  "world-table-illustration": {
+    display: "hidden",
+  },
 };

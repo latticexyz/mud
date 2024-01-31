@@ -1,0 +1,46 @@
+import TableIntro from "./table-intro.mdx";
+
+# Introduction
+
+`Store` is an alternative to Solidity's storage engine.
+It enforces a data model that can be mapped directly to a relational database, enables [automatic indexing](../services/indexer) by emitting events on each storage operation, and [packs data more tightly](./encoding) than Solidity's storage engine.
+It also allows external contract storage to be read onchain without being limited by existing `view` functions and [without a new opcode](https://eips.ethereum.org/EIPS/eip-2330).
+
+## Data model
+
+<TableIntro />
+
+## Reading and writing data
+
+The [`StoreCore`](./reference) library implements low-level methods for reading and writing data in a `Store` contract and the [`IStore`](./reference) interface exposes some of these methods to external callers.
+
+Note that when exposing `IStoreWrite` methods to external callers, it is necessary to implement an access control mechanism, or use the [access control mechanisms provided by `World`](/world/namespaces-access-control).
+
+Due to the lack of generics in Solidity, the only way to allow functions to act on data of different types is to cast the data to raw "untyped" `bytes`.
+To improve the developer experience, `Store` automatically [generates a library for each table](./table-libraries) which acts as a type wrapper.
+These libraries provide getter and setter functions with strong types for the table's keys and values, encode them using the [Store encoding](./encoding) before passing them to the Store, and decode them before passing them back to the user.
+
+```solidity
+// Example: reading and writing data via table libraries
+
+// The Position table library turns the typed
+// address parameter into a bytes32[] keyTuple,
+// and decodes the return value to (uint32, uint32).
+(uint32 x, uint32 y) = Position.get(msg.sender);
+
+// The Position table library turns the typed
+// address parameter into a bytes32[] keyTuple,
+// and encodes the (uint32,uint32) tuple into
+// a tightly packed bytes blob.
+Position.set(msg.sender, x, y);
+```
+
+## Schema definition at runtime
+
+Unlike Solidity's storage engine, which requires the storage types to be known at compile time, `Store` allows new tables with new schemas to be registered after the `Store` contract has been deployed.
+This allows advanced use cases like the [`World` protocol](../world/introduction).
+
+## Automatic indexing
+
+`Store` automatically emits events on every write operation, including when a new table is registered in the `Store` at runtime.
+These events allow [automatic indexers](../services/indexer) to replicate the onchain state of each table in each `Store` contract in a relational database for offchain use, without the need for custom integrations.

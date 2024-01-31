@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { z, ZodError, ZodIssueCode } from "zod";
 import { fromZodError } from "zod-validation-error";
 
@@ -15,7 +14,7 @@ export class MUDContextNotCreatedError extends Error {
 // Wrapper with preset styles, only requires a `prefix`
 export function fromZodErrorCustom(error: ZodError, prefix: string) {
   return fromZodError(error, {
-    prefix: chalk.red(prefix),
+    prefix: prefix,
     prefixSeparator: "\n- ",
     issueSeparator: "\n- ",
   });

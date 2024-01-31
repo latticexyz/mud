@@ -1,6 +1,6 @@
 [profile.default]
 # check all "WARNING:" comments before changing major solidity versions
-solc_version = "0.8.13"
+solc = "0.8.24"
 ffi = false
 fuzz_runs = 256
 optimizer = true
@@ -10,3 +10,7 @@ allow_paths = ["../../node_modules", "../"]
 src = "contracts/src"
 out = "contracts/out"
 test = "contracts/test"
+extra_output_files = [
+  "abi",
+  "evm.bytecode"
+]

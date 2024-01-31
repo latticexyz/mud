@@ -1,0 +1,21 @@
+name: Setup prerequisites
+description: Setup pnpm, Node.js, and Foundry
+runs:
+  using: composite
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8.x
+
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: .nvmrc
+        registry-url: https://registry.npmjs.org
+        cache: pnpm
+
+    - name: Setup foundry
+      uses: foundry-rs/foundry-toolchain@v1
+      with:
+        version: nightly

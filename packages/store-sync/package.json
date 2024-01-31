@@ -1,0 +1,93 @@
+{
+  "name": "@latticexyz/store-sync",
+  "version": "2.0.0-next.16",
+  "description": "Utilities to sync MUD Store events with a client or cache",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/store-sync"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./indexer-client": "./dist/indexer-client/index.js",
+    "./postgres": "./dist/postgres/index.js",
+    "./postgres-decoded": "./dist/postgres-decoded/index.js",
+    "./recs": "./dist/recs/index.js",
+    "./sqlite": "./dist/sqlite/index.js",
+    "./trpc-indexer": "./dist/trpc-indexer/index.js",
+    "./zustand": "./dist/zustand/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./src/index.ts"
+      ],
+      "indexer-client": [
+        "./src/indexer-client/index.ts"
+      ],
+      "postgres": [
+        "./src/postgres/index.ts"
+      ],
+      "postgres-decoded": [
+        "./src/postgres-decoded/index.ts"
+      ],
+      "recs": [
+        "./src/recs/index.ts"
+      ],
+      "sqlite": [
+        "./src/sqlite/index.ts"
+      ],
+      "trpc-indexer": [
+        "./src/trpc-indexer/index.ts"
+      ],
+      "zustand": [
+        "./src/zustand/index.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "bench": "vitest bench",
+    "build": "pnpm run build:js",
+    "build:js": "tsup",
+    "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist",
+    "dev": "tsup --watch",
+    "lint": "eslint .",
+    "test": "DATABASE_URL=http://127.0.0.1:5432/postgres vitest",
+    "test:ci": "vitest --run"
+  },
+  "dependencies": {
+    "@latticexyz/block-logs-stream": "workspace:*",
+    "@latticexyz/common": "workspace:*",
+    "@latticexyz/protocol-parser": "workspace:*",
+    "@latticexyz/recs": "workspace:*",
+    "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "@latticexyz/world": "workspace:*",
+    "@trpc/client": "10.34.0",
+    "@trpc/server": "10.34.0",
+    "change-case": "^5.2.0",
+    "debug": "^4.3.4",
+    "drizzle-orm": "^0.28.5",
+    "kysely": "^0.26.3",
+    "postgres": "^3.3.5",
+    "rxjs": "7.5.5",
+    "sql.js": "^1.8.0",
+    "superjson": "^1.12.4",
+    "viem": "1.14.0",
+    "zod": "^3.21.4",
+    "zustand": "^4.3.7"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/sql.js": "^1.4.4",
+    "tsup": "^6.7.0",
+    "vitest": "0.34.6"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+}

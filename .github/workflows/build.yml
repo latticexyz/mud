@@ -30,8 +30,9 @@ jobs:
       - name: Outdated files, run `pnpm build` and commit them
         uses: ./.github/actions/require-empty-diff
 
-      - name: Generate gas reports
-        run: pnpm gas-report
+      - name: Build API docs
+        shell: bash
+        run: pnpm docs:generate:api
 
-      - name: Outdated files, run `pnpm gas-report` and commit them
+      - name: Outdated files, run `pnpm docs:generate:api` and commit them
         uses: ./.github/actions/require-empty-diff

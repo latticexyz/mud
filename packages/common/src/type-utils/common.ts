@@ -17,3 +17,12 @@ export type OrDefault<T, Default> = T extends undefined ? Default : T;
 export type OrDefaults<T extends object, Defaults> = {
   [key in keyof Defaults]: key extends keyof T ? OrDefault<T[key], Defaults[key]> : Defaults[key];
 };
+
+export type UnionOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
+export type UnionKeys<T> = T extends any ? keyof T : never;
+export type UnionPick<T, K extends UnionKeys<T>> = T extends any ? Pick<T, Extract<K, keyof T>> : never;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ReverseMap<T extends Record<any, any>> = {
+  [K in keyof T as T[K]]: K;
+};

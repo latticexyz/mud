@@ -1,30 +1,38 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
-import { IModule } from "../../../interfaces/IModule.sol";
+import { IModule } from "../../../IModule.sol";
 import { System } from "../../../System.sol";
-import { AccessControl } from "../../../AccessControl.sol";
-import { Call } from "../../../Call.sol";
-import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { InstalledModules } from "../../../tables/InstalledModules.sol";
+import { WorldContextProviderLib } from "../../../WorldContext.sol";
+import { InstalledModules } from "../../../codegen/tables/InstalledModules.sol";
+import { requireInterface } from "../../../requireInterface.sol";
+
+import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
- * Installation of (non-root) modules in the World.
+ * @title Module Installation System
+ * @dev A system contract to handle the installation of (non-root) modules in the World.
  */
-contract ModuleInstallationSystem is System {
+contract ModuleInstallationSystem is System, LimitedCallContext {
   /**
-   * Install the given module at the given namespace in the World.
+   * @notice Installs a module into the World under a specified namespace.
+   * @dev Validates the given module against the IModule interface and delegates the installation process.
+   * The module is then registered in the InstalledModules table.
+   * @param module The module to be installed.
+   * @param encodedArgs The ABI encoded arguments for module installation.
    */
-  function installModule(IModule module, bytes memory args) public {
-    Call.withSender({
+  function installModule(IModule module, bytes memory encodedArgs) public onlyDelegatecall {
+    // Require the provided address to implement the IModule interface
+    requireInterface(address(module), type(IModule).interfaceId);
+
+    WorldContextProviderLib.callWithContextOrRevert({
       msgSender: _msgSender(),
+      msgValue: 0,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
-      delegate: false,
-      value: 0
+      callData: abi.encodeCall(IModule.install, (encodedArgs))
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules.set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(address(module), keccak256(encodedArgs), true);
   }
 }

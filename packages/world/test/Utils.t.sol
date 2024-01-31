@@ -1,15 +1,18 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 
 import { Utils } from "../src/Utils.sol";
 import { System } from "../src/System.sol";
 import { World } from "../src/World.sol";
-import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { createCoreModule } from "./createCoreModule.sol";
 
 contract UtilsTestSystem is System {
   function systemNamespace() public view returns (bytes16) {
@@ -18,25 +21,34 @@ contract UtilsTestSystem is System {
 }
 
 contract UtilsTest is Test {
-  using ResourceSelector for bytes32;
+  using WorldResourceIdInstance for ResourceId;
   IBaseWorld internal world;
+
+  error SomeError(uint256 someValue, string someString);
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world.initialize(createCoreModule());
+    StoreSwitch.setStoreAddress(address(world));
   }
 
-  function _registerAndGetNamespace(bytes16 namespace) internal returns (bytes16 returnedNamespace) {
+  function _registerAndGetNamespace(bytes14 namespace) internal returns (bytes16 returnedNamespace) {
     UtilsTestSystem testSystem = new UtilsTestSystem();
     bytes16 name = "testSystem";
-    world.registerSystem(namespace, name, testSystem, true);
+    ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+    if (!ResourceIds.getExists(namespaceId)) {
+      world.registerNamespace(namespaceId);
+    }
+    world.registerSystem(systemId, testSystem, true);
 
-    bytes memory data = world.call(namespace, name, abi.encodeWithSelector(UtilsTestSystem.systemNamespace.selector));
+    bytes memory data = world.call(systemId, abi.encodeCall(UtilsTestSystem.systemNamespace, ()));
+
     returnedNamespace = abi.decode(data, (bytes16));
   }
 
   function testSystemNamespace() public {
-    bytes16 namespace;
+    bytes14 namespace;
     bytes16 returnedNamespace;
 
     namespace = "";
@@ -47,7 +59,7 @@ contract UtilsTest is Test {
     returnedNamespace = _registerAndGetNamespace(namespace);
     assertEq(returnedNamespace, namespace);
 
-    namespace = "maxlen_namespace";
+    namespace = "max_len_nmspce";
     returnedNamespace = _registerAndGetNamespace(namespace);
     assertEq(returnedNamespace, namespace);
   }

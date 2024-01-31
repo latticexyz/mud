@@ -1,11 +1,13 @@
 import { CommandModule } from "yargs";
 
+import gasReport from "@latticexyz/gas-report";
+import abiTs from "@latticexyz/abi-ts";
+
+import build from "./build";
 import devnode from "./devnode";
 import faucet from "./faucet";
-import gasReport from "./gas-report";
 import hello from "./hello";
 import tablegen from "./tablegen";
-import tsgen from "./tsgen";
 import deploy from "./deploy";
 import worldgen from "./worldgen";
 import setVersion from "./set-version";
@@ -15,16 +17,17 @@ import devContracts from "./dev-contracts";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Each command has different options
 export const commands: CommandModule<any, any>[] = [
+  build,
   deploy,
   devnode,
   faucet,
-  gasReport,
+  gasReport as CommandModule,
   hello,
   tablegen,
-  tsgen,
   worldgen,
   setVersion,
   test,
   trace,
   devContracts,
+  abiTs,
 ];

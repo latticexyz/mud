@@ -16,15 +16,10 @@ export const latticeTestnet = {
     },
   },
   blockExplorers: {
-    otterscan: {
-      name: "Otterscan",
-      url: "https://explorer.testnet-chain.linfra.xyz",
-    },
     default: {
       name: "Otterscan",
       url: "https://explorer.testnet-chain.linfra.xyz",
     },
   },
-  modeUrl: "https://mode.testnet-mud-services.linfra.xyz",
   faucetUrl: "https://faucet.testnet-mud-services.linfra.xyz",
 } as const satisfies MUDChain;

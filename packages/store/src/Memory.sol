@@ -1,66 +1,64 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
-import { Utils } from "./Utils.sol";
+import { rightMask } from "./rightMask.sol";
 
+/**
+ * @title Memory Operations
+ * @notice A library for performing low-level memory operations.
+ * @dev This library provides low-level memory operations with safety checks.
+ */
 library Memory {
-  function load(uint256 memoryPointer) internal pure returns (bytes32 data) {
-    assembly {
-      data := mload(memoryPointer)
-    }
-  }
-
-  function load(uint256 memoryPointer, uint256 offset) internal pure returns (bytes32 data) {
-    assembly {
-      data := mload(add(memoryPointer, offset))
-    }
-  }
-
+  /**
+   * @notice Gets the actual data pointer of dynamic arrays.
+   * @dev In dynamic arrays, the first word stores the length of the data, after which comes the actual data.
+   * Example: 0x40 0x01 0x02
+   *          ^len ^data
+   * @param data The dynamic bytes data from which to get the pointer.
+   * @return memoryPointer The pointer to the actual data (skipping the length).
+   */
   function dataPointer(bytes memory data) internal pure returns (uint256 memoryPointer) {
     assembly {
       memoryPointer := add(data, 0x20)
     }
   }
 
-  function lengthPointer(bytes memory data) internal pure returns (uint256 memoryPointer) {
-    assembly {
-      memoryPointer := data
-    }
-  }
-
-  function store(uint256 memoryPointer, bytes32 value) internal pure {
-    assembly {
-      mstore(memoryPointer, value)
-    }
-  }
-
-  function copy(uint256 fromPointer, uint256 toPointer, uint256 length) internal view {
-    if (length > 32) {
+  /**
+   * @notice Copies memory from one location to another.
+   * @dev Safely copies memory in chunks of 32 bytes, then handles any residual bytes.
+   * @param fromPointer The memory location to copy from.
+   * @param toPointer The memory location to copy to.
+   * @param length The number of bytes to copy.
+   */
+  function copy(uint256 fromPointer, uint256 toPointer, uint256 length) internal pure {
+    // Copy 32-byte chunks
+    while (length >= 32) {
+      /// @solidity memory-safe-assembly
       assembly {
-        pop(
-          staticcall(
-            gas(), // gas (unused is returned)
-            0x04, // identity precompile address
-            fromPointer, // argsOffset
-            length, // argsSize: byte size to copy
-            toPointer, // retOffset
-            length // retSize: byte size to copy
-          )
-        )
+        mstore(toPointer, mload(fromPointer))
       }
-    } else {
-      uint256 mask = Utils.leftMask(length);
-      assembly {
-        mstore(
-          toPointer,
-          or(
-            // Store the left part
-            and(mload(fromPointer), mask),
-            // Preserve the right part
-            and(mload(toPointer), not(mask))
-          )
-        )
+      // Safe because total addition will be <= length (ptr+len is implicitly safe)
+      unchecked {
+        toPointer += 32;
+        fromPointer += 32;
+        length -= 32;
       }
+    }
+    if (length == 0) return;
+
+    // Copy the 0-31 length tail
+    uint256 mask = rightMask(length);
+    /// @solidity memory-safe-assembly
+    assembly {
+      mstore(
+        toPointer,
+        or(
+          // store the left part
+          and(mload(fromPointer), not(mask)),
+          // preserve the right part
+          and(mload(toPointer), mask)
+        )
+      )
     }
   }
 }

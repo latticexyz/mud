@@ -1,7 +1,8 @@
-import { utils } from "ethers";
 import { ZodIssueCode, RefinementCtx } from "zod";
+import { isAddress } from "viem";
 
-export const STORE_SELECTOR_MAX_LENGTH = 16;
+export const STORE_NAME_MAX_LENGTH = 16;
+export const STORE_NAMESPACE_MAX_LENGTH = 14;
 
 export function validateName(name: string, ctx: RefinementCtx) {
   if (!/^\w+$/.test(name)) {
@@ -119,7 +120,7 @@ export const validateBaseRoute = _factoryForValidateRoute(false, false);
 export const validateSingleLevelRoute = _factoryForValidateRoute(true, true);
 
 export function validateEthereumAddress(address: string, ctx: RefinementCtx) {
-  if (!utils.isAddress(address)) {
+  if (!isAddress(address)) {
     ctx.addIssue({
       code: ZodIssueCode.custom,
       message: `Address must be a valid Ethereum address`,
@@ -139,11 +140,11 @@ export function getDuplicates<T>(array: T[]) {
   return [...duplicates];
 }
 
-export function validateSelector(name: string, ctx: RefinementCtx) {
-  if (name.length > STORE_SELECTOR_MAX_LENGTH) {
+export function validateNamespace(name: string, ctx: RefinementCtx) {
+  if (name.length > STORE_NAMESPACE_MAX_LENGTH) {
     ctx.addIssue({
       code: ZodIssueCode.custom,
-      message: `Selector must be <= ${STORE_SELECTOR_MAX_LENGTH} characters`,
+      message: `Namespace must be <= ${STORE_NAMESPACE_MAX_LENGTH} characters`,
     });
   }
   if (!/^\w*$/.test(name)) {

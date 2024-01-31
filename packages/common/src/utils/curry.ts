@@ -1,4 +1,7 @@
-export function curry<F extends (...params: [...P, ...any[]]) => any, P extends any[]>(func: F, ...partialParams: P) {
+export function curry<F extends (...params: [...P, ...any[]]) => any, P extends any[]>(
+  func: F,
+  ...partialParams: P
+): CurryParams<F, P> {
   return ((...args: any[]) => func(...partialParams, ...args)) as CurryParams<F, P>;
 }
 

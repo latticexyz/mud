@@ -53,10 +53,10 @@ MUD is MIT-licensed, open source and free to use.
 ## Quickstart
 
 ```
-pnpm create mud@canary my-project
+pnpm create mud@next my-project
 ```
 
-More more information on how to get started, have a look at the [MUD documentation](https://mud.dev/quick-start).
+For more information on how to get started, have a look at the [MUD documentation](https://mud.dev/quick-start).
 
 ## Talks
 
@@ -70,16 +70,12 @@ More more information on how to get started, have a look at the [MUD documentati
 
 MUD consists of several libraries. They can be used independently, but are best used together.
 
-| Package                                                                                                                   | Version                                                                                                                               |
-| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **[@latticexyz/solecs](/packages/solecs)** <br />Solidity Entity Component System library                                 | [![npm version](https://img.shields.io/npm/v/@latticexyz/solecs.svg)](https://www.npmjs.org/package/@latticexyz/solecs)               |
-| **[@latticexyz/network](/packages/network)** <br />TypeScript networking library for automatic contract/client state sync | [![npm version](https://img.shields.io/npm/v/@latticexyz/network.svg)](https://www.npmjs.org/package/@latticexyz/network)             |
-| **[@latticexyz/recs](/packages/recs)** <br />TypeScript Reactive Entity Component System library                          | [![npm version](https://img.shields.io/npm/v/@latticexyz/recs.svg)](https://www.npmjs.org/package/@latticexyz/recs)                   |
-| **[@latticexyz/services](/packages/services)** <br />Go services for indexer, faucet, message relay                       | [![npm version](https://img.shields.io/npm/v/@latticexyz/services.svg)](https://www.npmjs.org/package/@latticexyz/services)           |
-| **[@latticexyz/cli](/packages/cli)** <br />Command line interface for types, testing, faucet, deployment and more         | [![npm version](https://img.shields.io/npm/v/@latticexyz/cli.svg)](https://www.npmjs.org/package/@latticexyz/cli)                     |
-| **[@latticexyz/std-contracts](/packages/std-contracts)** <br />Solidity standard library                                  | [![npm version](https://img.shields.io/npm/v/@latticexyz/std-contracts.svg)](https://www.npmjs.org/package/@latticexyz/std-contracts) |
-| **[@latticexyz/std-client](/packages/std-client)** <br />Typescript standard library                                      | [![npm version](https://img.shields.io/npm/v/@latticexyz/std-client.svg)](https://www.npmjs.org/package/@latticexyz/std-client)       |
-| **[@latticexyz/noise](/packages/noise)** <br />Solidity and AssemblyScript implementations of Perlin noise                | [![npm version](https://img.shields.io/npm/v/@latticexyz/noise.svg)](https://www.npmjs.org/package/@latticexyz/noise)                 |
+| Package                                                                                                           | Version                                                                                                                     |
+| ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **[@latticexyz/recs](/packages/recs)** <br />TypeScript Reactive Entity Component System library                  | [![npm version](https://img.shields.io/npm/v/@latticexyz/recs.svg)](https://www.npmjs.org/package/@latticexyz/recs)         |
+| **[@latticexyz/services](/packages/services)** <br />Go services for indexer, faucet, message relay               | [![npm version](https://img.shields.io/npm/v/@latticexyz/services.svg)](https://www.npmjs.org/package/@latticexyz/services) |
+| **[@latticexyz/cli](/packages/cli)** <br />Command line interface for types, testing, faucet, deployment and more | [![npm version](https://img.shields.io/npm/v/@latticexyz/cli.svg)](https://www.npmjs.org/package/@latticexyz/cli)           |
+| **[@latticexyz/noise](/packages/noise)** <br />Solidity and AssemblyScript implementations of Perlin noise        | [![npm version](https://img.shields.io/npm/v/@latticexyz/noise.svg)](https://www.npmjs.org/package/@latticexyz/noise)       |
 
 ## Contribute
 
@@ -91,29 +87,25 @@ We'd love your support in improving MUD! This monorepo includes all of MUD's sou
 The following steps are only necessary if you want to contribute to MUD. To use MUD in your project, install the [packages](#packages) from npm or [set up a new project with the MUD cli](#quickstart).
 !!!
 
-1. Install go (required to build [packages/services](packages/services/)): [https://go.dev/doc/install](https://go.dev/doc/install)
+1. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
 
-2. Install protobuf (required to build [packages/services](packages/services/)): [https://grpc.io/docs/protoc-installation/](https://grpc.io/docs/protoc-installation/)
+2. Install pnpm
 
-3. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
+   ```
+   npm install pnpm --global
+   ```
 
-4. Install pnpm
+3. Clone the MUD monorepo
 
-```bash
-npm install pnpm --global
-```
+   ```
+   git clone https://github.com/latticexyz/mud
+   ```
 
-5. Clone the MUD monorepo
+4. Install MUD dependencies and setup local environment
 
-```
-git clone https://github.com/latticexyz/mud
-```
-
-6. Install MUD dependencies and setup local environment
-
-```
-cd mud && pnpm install
-```
+   ```
+   cd mud && pnpm install && pnpm build
+   ```
 
 ### Pull requests
 

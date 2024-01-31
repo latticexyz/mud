@@ -1,0 +1,12 @@
+/* CardGrid.css */
+
+.cardGrid {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .cardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

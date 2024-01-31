@@ -12,7 +12,6 @@ export * from "./promise";
 export * from "./sleep";
 export * from "./iterable";
 export * from "./area";
-export * from "./hash";
 export * from "./worker";
 export * from "./pack";
 export * from "./CoordMap";

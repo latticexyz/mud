@@ -1,38 +1,96 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
-import { IModule } from "../../../interfaces/IModule.sol";
 import { System } from "../../../System.sol";
 import { AccessControl } from "../../../AccessControl.sol";
-import { Call } from "../../../Call.sol";
-import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { InstalledModules } from "../../../tables/InstalledModules.sol";
+import { ResourceId } from "../../../WorldResourceId.sol";
+import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
+import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
+import { validateNamespace } from "../../../validateNamespace.sol";
+
+import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
- * Granting and revoking access from/to resources.
+ * @title Access Management System
+ * @dev This contract manages the granting and revoking of access from/to resources.
  */
-contract AccessManagementSystem is System {
+contract AccessManagementSystem is System, LimitedCallContext {
   /**
-   * Grant access to the resource at the given namespace and name.
-   * Requires the caller to own the namespace.
+   * @notice Grant access to the resource at the given resource ID.
+   * @dev Requires the caller to own the namespace.
+   * @param resourceId The ID of the resource to grant access to.
+   * @param grantee The address to which access should be granted.
    */
-  function grantAccess(bytes16 namespace, bytes16 name, address grantee) public virtual {
+  function grantAccess(ResourceId resourceId, address grantee) public virtual onlyDelegatecall {
+    // Require the resource to exist
+    AccessControl.requireExistence(resourceId);
+
     // Require the caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
+    AccessControl.requireOwner(resourceId, _msgSender());
 
     // Grant access to the given resource
-    ResourceAccess.set(resourceSelector, grantee, true);
+    ResourceAccess._set(resourceId, grantee, true);
   }
 
   /**
-   * Revoke access from the resource at the given namespace and name.
-   * Requires the caller to own the namespace.
+   * @notice Revoke access from the resource at the given resource ID.
+   * @dev Requires the caller to own the namespace.
+   * @param resourceId The ID of the resource to revoke access from.
+   * @param grantee The address from which access should be revoked.
    */
-  function revokeAccess(bytes16 namespace, bytes16 name, address grantee) public virtual {
+  function revokeAccess(ResourceId resourceId, address grantee) public virtual onlyDelegatecall {
     // Require the caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
+    AccessControl.requireOwner(resourceId, _msgSender());
 
     // Revoke access from the given resource
-    ResourceAccess.deleteRecord(resourceSelector, grantee);
+    ResourceAccess._deleteRecord(resourceId, grantee);
+  }
+
+  /**
+   * @notice Transfer ownership of the given namespace to newOwner and manages the access.
+   * @dev Requires the caller to own the namespace. Revoke ResourceAccess for previous owner and grant to newOwner.
+   * @param namespaceId The ID of the namespace to transfer ownership.
+   * @param newOwner The address to which ownership should be transferred.
+   */
+  function transferOwnership(ResourceId namespaceId, address newOwner) public virtual onlyDelegatecall {
+    // Require the namespace ID to be a valid namespace
+    validateNamespace(namespaceId);
+
+    // Require the namespace to exist
+    AccessControl.requireExistence(namespaceId);
+
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(namespaceId, _msgSender());
+
+    // Set namespace new owner
+    NamespaceOwner._set(namespaceId, newOwner);
+
+    // Revoke access from old owner
+    ResourceAccess._deleteRecord(namespaceId, _msgSender());
+
+    // Grant access to new owner
+    ResourceAccess._set(namespaceId, newOwner, true);
+  }
+
+  /**
+   * @notice Renounces ownership of the given namespace
+   * @dev Requires the caller to own the namespace. Revoke ResourceAccess for previous owner
+   * @param namespaceId The ID of the namespace to transfer ownership.
+   */
+  function renounceOwnership(ResourceId namespaceId) public virtual onlyDelegatecall {
+    // Require the namespace ID to be a valid namespace
+    validateNamespace(namespaceId);
+
+    // Require the namespace to exist
+    AccessControl.requireExistence(namespaceId);
+
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(namespaceId, _msgSender());
+
+    // Delete namespace owner
+    NamespaceOwner._deleteRecord(namespaceId);
+
+    // Revoke access from old owner
+    ResourceAccess._deleteRecord(namespaceId, _msgSender());
   }
 }

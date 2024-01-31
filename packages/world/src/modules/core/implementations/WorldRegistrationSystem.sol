@@ -1,245 +1,352 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
-import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
 import { System } from "../../../System.sol";
-import { ResourceSelector } from "../../../ResourceSelector.sol";
-import { Resource } from "../../../Types.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
+import { WorldContextConsumer, IWorldContextConsumer } from "../../../WorldContext.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
+import { SystemCall } from "../../../SystemCall.sol";
+import { ROOT_NAMESPACE_ID, ROOT_NAME } from "../../../constants.sol";
+import { RESOURCE_NAMESPACE, RESOURCE_SYSTEM } from "../../../worldResourceTypes.sol";
 import { AccessControl } from "../../../AccessControl.sol";
-import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
-import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
+import { Delegation } from "../../../Delegation.sol";
+import { requireInterface } from "../../../requireInterface.sol";
+import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
+import { UserDelegationControl } from "../../../codegen/tables/UserDelegationControl.sol";
+import { NamespaceDelegationControl } from "../../../codegen/tables/NamespaceDelegationControl.sol";
+import { ISystemHook } from "../../../ISystemHook.sol";
+import { IWorldErrors } from "../../../IWorldErrors.sol";
+import { IDelegationControl } from "../../../IDelegationControl.sol";
 
-import { ResourceType } from "../tables/ResourceType.sol";
-import { SystemHooks } from "../tables/SystemHooks.sol";
-import { SystemRegistry } from "../tables/SystemRegistry.sol";
-import { Systems } from "../tables/Systems.sol";
-import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
+import { SystemHooks, SystemHooksTableId } from "../../../codegen/tables/SystemHooks.sol";
+import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
+import { Systems } from "../../../codegen/tables/Systems.sol";
+import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
+import { FunctionSignatures } from "../../../codegen/tables/FunctionSignatures.sol";
+import { validateNamespace } from "../../../validateNamespace.sol";
+
+import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
- * Functions related to registering resources in the World.
+ * @title WorldRegistrationSystem
+ * @dev This contract provides functions related to registering resources other than tables in the World.
  */
-contract WorldRegistrationSystem is System, IWorldErrors {
-  using ResourceSelector for bytes32;
+contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
+  using WorldResourceIdInstance for ResourceId;
 
   /**
-   * Register a new namespace
+   * @notice Registers a new namespace
+   * @dev Creates a new namespace resource with the given ID
+   * @param namespaceId The unique identifier for the new namespace
    */
-  function registerNamespace(bytes16 namespace) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(namespace);
+  function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall {
+    // Require namespace ID to be a valid namespace
+    validateNamespace(namespaceId);
 
     // Require namespace to not exist yet
-    if (ResourceType.get(namespace) != Resource.NONE) revert ResourceExists(resourceSelector.toString());
+    if (ResourceIds._getExists(namespaceId)) {
+      revert World_ResourceAlreadyExists(namespaceId, namespaceId.toString());
+    }
 
-    // Register namespace resource
-    ResourceType.set(namespace, Resource.NAMESPACE);
+    // Register namespace resource ID
+    ResourceIds._setExists(namespaceId, true);
 
     // Register caller as the namespace owner
-    NamespaceOwner.set(namespace, _msgSender());
+    NamespaceOwner._set(namespaceId, _msgSender());
 
     // Give caller access to the new namespace
-    ResourceAccess.set(resourceSelector, _msgSender(), true);
+    ResourceAccess._set(namespaceId, _msgSender(), true);
   }
 
   /**
-   * Register a table with given schema in the given namespace
+   * @notice Registers a new system hook
+   * @dev Adds a new hook for the system at the provided system ID
+   * @param systemId The ID of the system
+   * @param hookAddress The address of the hook being registered
+   * @param enabledHooksBitmap Bitmap indicating which hooks are enabled
    */
-  function registerTable(
-    bytes16 namespace,
-    bytes16 name,
-    Schema valueSchema,
-    Schema keySchema
-  ) public virtual returns (bytes32 resourceSelector) {
-    resourceSelector = ResourceSelector.from(namespace, name);
-
-    // Require the name to not be the namespace's root name
-    if (name == ROOT_NAME) revert InvalidSelector(resourceSelector.toString());
-
-    // If the namespace doesn't exist yet, register it
-    // otherwise require caller to own the namespace
-    if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else AccessControl.requireOwnerOrSelf(namespace, ROOT_NAME, _msgSender());
-
-    // Require no resource to exist at this selector yet
-    if (ResourceType.get(resourceSelector) != Resource.NONE) {
-      revert ResourceExists(resourceSelector.toString());
+  function registerSystemHook(
+    ResourceId systemId,
+    ISystemHook hookAddress,
+    uint8 enabledHooksBitmap
+  ) public virtual onlyDelegatecall {
+    // Require the provided system ID to have type RESOURCE_SYSTEM
+    if (systemId.getType() != RESOURCE_SYSTEM) {
+      revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
     }
 
-    // Store the table resource type
-    ResourceType.set(resourceSelector, Resource.TABLE);
+    // Require the provided address to implement the ISystemHook interface
+    requireInterface(address(hookAddress), type(ISystemHook).interfaceId);
 
-    // Register the table's schema
-    StoreCore.registerSchema(resourceSelector, valueSchema, keySchema);
-  }
+    // Require the system to exist
+    AccessControl.requireExistence(systemId);
 
-  /**
-   * Register metadata (tableName, fieldNames) for the table at the given namespace and name.
-   * Requires the caller to own the namespace.
-   */
-  function setMetadata(
-    bytes16 namespace,
-    bytes16 name,
-    string calldata tableName,
-    string[] calldata fieldNames
-  ) public virtual {
+    // Require the system's namespace to exist
+    AccessControl.requireExistence(systemId.getNamespaceId());
+
     // Require caller to own the namespace
-    bytes32 tableId = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
-
-    // Set the metadata
-    StoreCore.setMetadata(tableId, tableName, fieldNames);
-  }
-
-  /**
-   * Register the given store hook for the table at the given namespace and name.
-   * Hooks on table names must implement the IStoreHook interface,
-   * and hooks on system names must implement the ISystemHook interface.
-   */
-  function registerHook(bytes16 namespace, bytes16 name, address hook) public virtual {
-    Resource resourceType = ResourceType.get(ResourceSelector.from(namespace, name));
-
-    if (resourceType == Resource.TABLE) {
-      return registerTableHook(namespace, name, IStoreHook(hook));
-    }
-
-    if (resourceType == Resource.SYSTEM) {
-      return registerSystemHook(namespace, name, ISystemHook(hook));
-    }
-
-    revert InvalidSelector(ResourceSelector.from(namespace, name).toString());
-  }
-
-  /**
-   * Register a hook for the table at the given namepace and name.
-   * Requires the caller to own the namespace.
-   */
-  function registerTableHook(bytes16 namespace, bytes16 name, IStoreHook hook) public virtual {
-    // Require caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
+    AccessControl.requireOwner(systemId, _msgSender());
 
     // Register the hook
-    StoreCore.registerStoreHook(resourceSelector, hook);
+    SystemHooks.push(systemId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
   }
 
   /**
-   * Register a hook for the system at the given namespace and name
+   * @notice Unregisters a system hook
+   * @dev Removes a hook for the system at the provided system ID
+   * @param systemId The ID of the system
+   * @param hookAddress The address of the hook being unregistered
    */
-  function registerSystemHook(bytes16 namespace, bytes16 name, ISystemHook hook) public virtual {
+  function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) public virtual onlyDelegatecall {
     // Require caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
+    AccessControl.requireOwner(systemId, _msgSender());
 
-    // Register the hook
-    SystemHooks.push(resourceSelector, address(hook));
+    // Remove the hook from the list of hooks for this system in the system hooks table
+    HookLib.filterListByAddress(SystemHooksTableId, systemId, address(hookAddress));
   }
 
   /**
-   * Register the given system in the given namespace.
+   * @notice Registers a system
+   * @dev Registers or upgrades a system at the given ID
    * If the namespace doesn't exist yet, it is registered.
-   * The system is granted access to its namespace, so it can write to any table in the same namespace.
+   * The system is granted access to its namespace, so it can write to any
+   * table in the same namespace.
    * If publicAccess is true, no access control check is performed for calling the system.
+   * This function doesn't check whether a system already exists at the given selector,
+   * making it possible to upgrade systems.
+   * @param systemId The unique identifier for the system
+   * @param system The system being registered
+   * @param publicAccess Flag indicating if access control check is bypassed
    */
-  function registerSystem(
-    bytes16 namespace,
-    bytes16 name,
-    System system,
-    bool publicAccess
-  ) public virtual returns (bytes32 resourceSelector) {
-    resourceSelector = ResourceSelector.from(namespace, name);
-
-    // Require the name to not be the namespace's root name
-    if (name == ROOT_NAME) revert InvalidSelector(resourceSelector.toString());
-
-    // Require the system to not exist yet
-    if (SystemRegistry.get(address(system)) != 0) revert SystemExists(address(system));
-
-    // If the namespace doesn't exist yet, register it
-    // otherwise require caller to own the namespace
-    if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else AccessControl.requireOwnerOrSelf(namespace, ROOT_NAME, _msgSender());
-
-    // Require no resource to exist at this selector yet
-    if (ResourceType.get(resourceSelector) != Resource.NONE) {
-      revert ResourceExists(resourceSelector.toString());
+  function registerSystem(ResourceId systemId, System system, bool publicAccess) public virtual onlyDelegatecall {
+    // Require the provided system ID to have type RESOURCE_SYSTEM
+    if (systemId.getType() != RESOURCE_SYSTEM) {
+      revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
     }
 
-    // Store the system resource type
-    ResourceType.set(resourceSelector, Resource.SYSTEM);
+    // Require the system's namespace to exist
+    ResourceId namespaceId = systemId.getNamespaceId();
+    AccessControl.requireExistence(namespaceId);
 
-    // Systems = mapping from resourceSelector to system address and publicAccess
-    Systems.set(resourceSelector, address(system), publicAccess);
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(namespaceId, _msgSender());
 
-    // SystemRegistry = mapping from system address to resourceSelector
-    SystemRegistry.set(address(system), resourceSelector);
+    // Require the provided address to implement the WorldContextConsumer interface
+    requireInterface(address(system), type(IWorldContextConsumer).interfaceId);
+
+    // Require the name to not be the namespace's root name
+    if (systemId.getName() == ROOT_NAME) revert World_InvalidResourceId(systemId, systemId.toString());
+
+    // Require this system to not be registered at a different system ID yet
+    ResourceId existingSystemId = SystemRegistry._get(address(system));
+    if (
+      ResourceId.unwrap(existingSystemId) != 0 && ResourceId.unwrap(existingSystemId) != ResourceId.unwrap(systemId)
+    ) {
+      revert World_SystemAlreadyExists(address(system));
+    }
+
+    // Check if a system already exists at this system ID
+    address existingSystem = Systems._getSystem(systemId);
+
+    // If there is an existing system with this system ID, remove it
+    if (existingSystem != address(0)) {
+      // Remove the existing system from the system registry
+      SystemRegistry._deleteRecord(existingSystem);
+
+      // Remove the existing system's access to its namespace
+      ResourceAccess._deleteRecord(namespaceId, existingSystem);
+    } else {
+      // Otherwise, this is a new system, so register its resource ID
+      ResourceIds._setExists(systemId, true);
+    }
+
+    // Systems = mapping from system ID to system address and public access flag
+    Systems._set(systemId, address(system), publicAccess);
+
+    // SystemRegistry = mapping from system address to system ID
+    SystemRegistry._set(address(system), systemId);
 
     // Grant the system access to its namespace
-    ResourceAccess.set(namespace, address(system), true);
+    ResourceAccess._set(namespaceId, address(system), true);
   }
 
   /**
-   * Register a World function selector for the given namespace, name and system function.
-   * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
-   * which would save one sload per call, but add some complexity to upgrading systems. TBD.
-   * (see https://github.com/latticexyz/mud/issues/444)
+   * @notice Registers a new World function selector
+   * @dev Creates a mapping between a World function and its associated system function
+   * @param systemId The system ID
+   * @param systemFunctionSignature The signature of the system function
+   * @return worldFunctionSelector The selector of the World function
    */
   function registerFunctionSelector(
-    bytes16 namespace,
-    bytes16 name,
-    string memory systemFunctionName,
-    string memory systemFunctionArguments
-  ) public returns (bytes4 worldFunctionSelector) {
+    ResourceId systemId,
+    string memory systemFunctionSignature
+  ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
+    // Require the provided system ID to have type RESOURCE_SYSTEM
+    if (systemId.getType() != RESOURCE_SYSTEM) {
+      revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
+    }
+
+    // Require the resource to exist
+    AccessControl.requireExistence(systemId);
+
     // Require the caller to own the namespace
-    AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
+    AccessControl.requireOwner(systemId, _msgSender());
 
     // Compute global function selector
-    string memory namespaceString = ResourceSelector.toTrimmedString(namespace);
-    string memory nameString = ResourceSelector.toTrimmedString(name);
-    worldFunctionSelector = bytes4(
-      keccak256(abi.encodePacked(namespaceString, "_", nameString, "_", systemFunctionName, systemFunctionArguments))
-    );
+    string memory namespaceString = WorldResourceIdLib.toTrimmedString(systemId.getNamespace());
+    bytes memory worldFunctionSignature = abi.encodePacked(namespaceString, "__", systemFunctionSignature);
+    worldFunctionSelector = bytes4(keccak256(worldFunctionSignature));
 
     // Require the function selector to be globally unique
-    bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);
-    bytes16 existingName = FunctionSelectors.getName(worldFunctionSelector);
+    ResourceId existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
 
-    if (existingNamespace != 0 || existingName != 0) revert FunctionSelectorExists(worldFunctionSelector);
+    if (ResourceId.unwrap(existingSystemId) != 0) revert World_FunctionSelectorAlreadyExists(worldFunctionSelector);
 
     // Register the function selector
-    bytes memory systemFunctionSignature = abi.encodePacked(systemFunctionName, systemFunctionArguments);
-    bytes4 systemFunctionSelector = systemFunctionSignature.length == 0
-      ? bytes4(0) // Save gas by storing 0x0 for empty function signatures (= fallback function)
-      : bytes4(keccak256(systemFunctionSignature));
-    FunctionSelectors.set(worldFunctionSelector, namespace, name, systemFunctionSelector);
+    bytes4 systemFunctionSelector = bytes4(keccak256(bytes(systemFunctionSignature)));
+    FunctionSelectors._set(worldFunctionSelector, systemId, systemFunctionSelector);
+
+    // Register the function signature for offchain use
+    FunctionSignatures._set(worldFunctionSelector, string(worldFunctionSignature));
   }
 
   /**
-   * Register a root World function selector (without namespace / name prefix).
-   * Requires the caller to own the root namespace.
-   * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
-   * which would save one sload per call, but add some complexity to upgrading systems. TBD.
-   * (see https://github.com/latticexyz/mud/issues/444)
+   * @notice Registers a root World function selector
+   * @dev Creates a mapping for a root World function without namespace or name prefix
+   * @param systemId The system ID
+   * @param worldFunctionSignature The signature of the World function
+   * @param systemFunctionSelector The selector of the system function
+   * @return worldFunctionSelector The selector of the World function
    */
   function registerRootFunctionSelector(
-    bytes16 namespace,
-    bytes16 name,
-    bytes4 worldFunctionSelector,
+    ResourceId systemId,
+    string memory worldFunctionSignature,
     bytes4 systemFunctionSelector
-  ) public returns (bytes4) {
+  ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the root namespace
-    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, ROOT_NAME, _msgSender());
+    AccessControl.requireOwner(ROOT_NAMESPACE_ID, _msgSender());
+
+    // Compute the function selector from the provided signature
+    worldFunctionSelector = bytes4(keccak256(bytes(worldFunctionSignature)));
 
     // Require the function selector to be globally unique
-    bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);
-    bytes16 existingName = FunctionSelectors.getName(worldFunctionSelector);
+    ResourceId existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
 
-    if (!(existingNamespace == 0 && existingName == 0)) revert FunctionSelectorExists(worldFunctionSelector);
+    if (ResourceId.unwrap(existingSystemId) != 0) revert World_FunctionSelectorAlreadyExists(worldFunctionSelector);
 
     // Register the function selector
-    FunctionSelectors.set(worldFunctionSelector, namespace, name, systemFunctionSelector);
+    FunctionSelectors._set(worldFunctionSelector, systemId, systemFunctionSelector);
 
-    return worldFunctionSelector;
+    // Register the function signature for offchain use
+    FunctionSignatures._set(worldFunctionSelector, worldFunctionSignature);
+  }
+
+  /**
+   * @notice Registers a delegation for the caller
+   * @dev Creates a new delegation from the caller to the specified delegatee
+   * @param delegatee The address of the delegatee
+   * @param delegationControlId The ID controlling the delegation
+   * @param initCallData The initialization data for the delegation
+   */
+  function registerDelegation(
+    address delegatee,
+    ResourceId delegationControlId,
+    bytes memory initCallData
+  ) public onlyDelegatecall {
+    // Store the delegation control contract address
+    UserDelegationControl._set({
+      delegator: _msgSender(),
+      delegatee: delegatee,
+      delegationControlId: delegationControlId
+    });
+
+    // If the delegation is limited...
+    if (Delegation.isLimited(delegationControlId)) {
+      // Require the delegationControl contract to implement the IDelegationControl interface
+      address delegationControl = Systems._getSystem(delegationControlId);
+      requireInterface(delegationControl, type(IDelegationControl).interfaceId);
+
+      // Call the delegation control contract's init function
+      SystemCall.callWithHooksOrRevert({
+        caller: _msgSender(),
+        systemId: delegationControlId,
+        callData: initCallData,
+        value: 0
+      });
+    }
+  }
+
+  /**
+   * @notice Unregisters a delegation
+   * @dev Deletes the new delegation from the caller to the specified delegatee
+   * @param delegatee The address of the delegatee
+   */
+  function unregisterDelegation(address delegatee) public onlyDelegatecall {
+    // Delete the delegation control contract address
+    UserDelegationControl.deleteRecord({ delegator: _msgSender(), delegatee: delegatee });
+  }
+
+  /**
+   * @notice Registers a delegation for a namespace
+   * @dev Sets up a new delegation control for a specific namespace
+   * @param namespaceId The ID of the namespace
+   * @param delegationControlId The ID controlling the delegation
+   * @param initCallData The initialization data for the delegation
+   */
+  function registerNamespaceDelegation(
+    ResourceId namespaceId,
+    ResourceId delegationControlId,
+    bytes memory initCallData
+  ) public onlyDelegatecall {
+    // Require namespace ID to be a valid namespace
+    validateNamespace(namespaceId);
+
+    // Require the delegation to not be unlimited
+    if (!Delegation.isLimited(delegationControlId)) {
+      revert World_UnlimitedDelegationNotAllowed();
+    }
+
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(namespaceId, _msgSender());
+
+    // Require the delegationControl contract to implement the IDelegationControl interface
+    address delegationControl = Systems._getSystem(delegationControlId);
+    requireInterface(delegationControl, type(IDelegationControl).interfaceId);
+
+    // Register the delegation control
+    NamespaceDelegationControl._set(namespaceId, delegationControlId);
+
+    // Call the delegation control contract's init function
+    if (initCallData.length > 0) {
+      SystemCall.callWithHooksOrRevert({
+        caller: _msgSender(),
+        systemId: delegationControlId,
+        callData: initCallData,
+        value: 0
+      });
+    }
+  }
+
+  /**
+   * @notice Unregisters a delegation for a namespace
+   * @dev Deletes the delegation control for a specific namespace
+   * @param namespaceId The ID of the namespace
+   */
+  function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelegatecall {
+    // Require namespace ID to be a valid namespace
+    validateNamespace(namespaceId);
+
+    // Require the namespace to exist
+    AccessControl.requireExistence(namespaceId);
+
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(namespaceId, _msgSender());
+
+    // Delete the delegation control
+    NamespaceDelegationControl.deleteRecord(namespaceId);
   }
 }

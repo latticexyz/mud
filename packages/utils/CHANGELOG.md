@@ -1,5 +1,71 @@
 # Change Log
 
+## 2.0.0-next.16
+
+## 2.0.0-next.15
+
+### Patch Changes
+
+- 59054203: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+
+## 2.0.0-next.14
+
+## 2.0.0-next.13
+
+### Major Changes
+
+- 52182f70: Removed `keccak256` and `keccak256Coord` hash utils in favor of [viem's `keccak256`](https://viem.sh/docs/utilities/keccak256.html#keccak256).
+
+  ```diff
+  - import { keccak256 } from "@latticexyz/utils";
+  + import { keccak256, toHex } from "viem";
+
+  - const hash = keccak256("some string");
+  + const hash = keccak256(toHex("some string"));
+  ```
+
+  ```diff
+  - import { keccak256Coord } from "@latticexyz/utils";
+  + import { encodeAbiParameters, keccak256, parseAbiParameters } from "viem";
+
+    const coord = { x: 1, y: 1 };
+  - const hash = keccak256Coord(coord);
+  + const hash = keccak256(encodeAbiParameters(parseAbiParameters("int32, int32"), [coord.x, coord.y]));
+  ```
+
+## 2.0.0-next.12
+
+## 2.0.0-next.11
+
+## 2.0.0-next.10
+
+## 2.0.0-next.9
+
+## 2.0.0-next.8
+
+## 2.0.0-next.7
+
+## 2.0.0-next.6
+
+## 2.0.0-next.5
+
+## 2.0.0-next.4
+
+## 2.0.0-next.3
+
+## 2.0.0-next.2
+
+## 2.0.0-next.1
+
+## 2.0.0-next.0
+
+### Patch Changes
+
+- [#1165](https://github.com/latticexyz/mud/pull/1165) [`4e4a3415`](https://github.com/latticexyz/mud/commit/4e4a34150aeae988c8e61e25d55c227afb6c2d4b) Thanks [@holic](https://github.com/holic)! - bump to latest TS version (5.1.6)
+
+- Updated dependencies [[`8d51a034`](https://github.com/latticexyz/mud/commit/8d51a03486bc20006d8cc982f798dfdfe16f169f), [`53522998`](https://github.com/latticexyz/mud/commit/535229984565539e6168042150b45fe0f9b48b0f), [`0c4f9fea`](https://github.com/latticexyz/mud/commit/0c4f9fea9e38ba122316cdd52c3d158c62f8cfee)]:
+  - @latticexyz/common@2.0.0-next.0
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 

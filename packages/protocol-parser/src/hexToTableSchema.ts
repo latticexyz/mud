@@ -8,7 +8,5 @@ export function hexToTableSchema(data: Hex): TableSchema {
   return {
     keySchema,
     valueSchema,
-    isEmpty: data === "0x",
-    schemaData: data,
   };
 }

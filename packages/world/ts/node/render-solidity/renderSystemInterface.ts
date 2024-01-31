@@ -4,24 +4,28 @@ import { RenderSystemInterfaceOptions } from "./types";
 export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
   const { imports, name, functionPrefix, functions, errors } = options;
 
-  return `${renderedSolidityHeader}
+  return `
+    ${renderedSolidityHeader}
 
-${renderImports(imports)}
+    ${renderImports(imports)}
 
-interface ${name} {
-  ${renderList(errors, ({ name, parameters }) => `error ${name}(${renderArguments(parameters)});`)}
+    /**
+     * @title ${name}
+     * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
+     */
+    interface ${name} {
+      ${renderList(errors, ({ name, parameters }) => `error ${name}(${renderArguments(parameters)});`)}
 
-  ${renderList(
-    functions,
-    ({ name, parameters, stateMutability, returnParameters }) => `
-    function ${functionPrefix}${name}(
-      ${renderArguments(parameters)}
-    ) external ${stateMutability} ${renderReturnParameters(returnParameters)};
-  `
-  )}
-}
-
-`;
+      ${renderList(
+        functions,
+        ({ name, parameters, stateMutability, returnParameters }) => `
+          function ${functionPrefix}${name}(
+            ${renderArguments(parameters)}
+          ) external ${stateMutability} ${renderReturnParameters(returnParameters)};
+        `
+      )}
+    }
+  `;
 }
 
 function renderReturnParameters(returnParameters: string[]) {

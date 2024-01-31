@@ -1,6 +1,9 @@
 import { RenderField, RenderKeyTuple, RenderType } from "./types";
 
-export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: RenderKeyTuple[] }) {
+/**
+ * Renders the necessary helper functions to typecast to/from the types of given fields and keys
+ */
+export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: RenderKeyTuple[] }): string {
   const { fields, keyTuple } = options;
 
   let result = "";
@@ -12,6 +15,12 @@ export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: Re
   // bool is special - it's the only primitive value type that can't be typecasted to/from
   if (fields.some(({ internalTypeId }) => internalTypeId.match("bool"))) {
     result += `
+    /**
+     * @notice Cast a value to a bool.
+     * @dev Boolean values are encoded as uint8 (1 = true, 0 = false), but Solidity doesn't allow casting between uint8 and bool.
+     * @param value The uint8 value to convert.
+     * @return result The boolean value.
+     */
     function _toBool(uint8 value) pure returns (bool result) {
       assembly {
         result := value
@@ -21,6 +30,10 @@ export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: Re
   }
   if (keyTuple.some(({ internalTypeId }) => internalTypeId.match("bool"))) {
     result += `
+    /**
+     * @notice Cast a bool to a bytes32.
+     * @dev The boolean value is casted to a bytes32 value with 0 or 1 at the least significant bit.
+     */
     function _boolToBytes32(bool value) pure returns (bytes32 result) {
       assembly {
         result := value
@@ -32,9 +45,9 @@ export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: Re
   return result;
 }
 
-function getWrappingHelpers(array: RenderType[]) {
-  const wrappers = new Map();
-  const unwrappers = new Map();
+function getWrappingHelpers(array: RenderType[]): string[] {
+  const wrappers = new Map<string, string>();
+  const unwrappers = new Map<string, string>();
   for (const { typeWrappingData, typeWrap, typeUnwrap, internalTypeId } of array) {
     if (!typeWrappingData) continue;
     const { kind } = typeWrappingData;
@@ -49,41 +62,78 @@ function getWrappingHelpers(array: RenderType[]) {
   return [...wrappers.values(), ...unwrappers.values()];
 }
 
+/**
+ * Renders a function to cast a dynamic array to a static array.
+ * @param functionName name of the function to be rendered
+ * @param elementType type of the array's element
+ * @param staticLength length of the static array
+ * @param internalTypeId solidity type name of the dynamic array
+ * @returns
+ */
 function renderWrapperStaticArray(
   functionName: string,
   elementType: string,
   staticLength: number,
   internalTypeId: string
-) {
+): string {
   // WARNING: ensure this still works if changing major solidity versions!
   // (the memory layout for static arrays may change)
   return `
+    /**
+     * @notice Cast a dynamic array to a static array.
+     * @dev In memory static arrays are just dynamic arrays without the 32 length bytes,
+     * so this function moves the pointer to the first element of the dynamic array.
+     * If the length of the dynamic array is smaller than the static length,
+     * the function returns an uninitialized array to avoid memory corruption.
+     * @param _value The dynamic array to cast.
+     * @return _result The static array.
+     */
     function ${functionName}(
       ${internalTypeId} memory _value
     ) pure returns (
       ${elementType}[${staticLength}] memory _result
     ) {
-      // in memory static arrays are just dynamic arrays without the length byte
-      assembly {
-        _result := add(_value, 0x20)
+      if (_value.length < ${staticLength}) {
+        // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
+        return _result;
+      } else {
+        // in memory static arrays are just dynamic arrays without the 32 length bytes
+        // (without the length check this could lead to memory corruption)
+        assembly {
+          _result := add(_value, 0x20)
+        }
       }
     }
   `;
 }
 
+/**
+ * Renders a function to cast a static array to a dynamic array.
+ * @param functionName name of the function to be rendered
+ * @param elementType type of the array's element
+ * @param staticLength length of the static array
+ * @param internalTypeId solidity type name of the dynamic array
+ * @returns
+ */
 function renderUnwrapperStaticArray(
   functionName: string,
   elementType: string,
   staticLength: number,
   internalTypeId: string
-) {
+): string {
   // byte length for memory copying (more efficient than a loop)
   const byteLength = staticLength * 32;
   // TODO to optimize memory usage consider generalizing TightEncoder to a render-time utility
   return `
+    /**
+     * @notice Copy a static array to a dynamic array.
+     * @dev Static arrays don't have a length prefix, so this function copies the memory from the static array to a new dynamic array.
+     * @param _value The static array to copy.
+     * @return _result The dynamic array.
+     */ 
     function ${functionName}(
       ${elementType}[${staticLength}] memory _value
-    ) view returns (
+    ) pure returns (
       ${internalTypeId} memory _result
     ) {
       _result = new ${internalTypeId}(${staticLength});

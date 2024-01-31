@@ -1,102 +1,89 @@
-import { setupMUDV2Network } from "@latticexyz/std-client";
-import { createFastTxExecutor, createFaucetService, getSnapSyncRecords } from "@latticexyz/network";
+import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
+import { createFaucetService } from "@latticexyz/services/faucet";
+import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
-import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
-import { Contract, Signer, utils } from "ethers";
-import { JsonRpcProvider } from "@ethersproject/providers";
-import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
-import { getTableIds } from "@latticexyz/utils";
-import storeConfig from "contracts/mud.config";
+import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
+import { ContractWrite, createBurnerAccount, getContract, resourceToHex, transportObserver } from "@latticexyz/common";
+import { Subject, share } from "rxjs";
+import mudConfig from "contracts/mud.config";
+import { createClient as createFaucetClient } from "@latticexyz/faucet";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
 export async function setupNetwork() {
-  const contractComponents = defineContractComponents(world);
   const networkConfig = await getNetworkConfig();
-  const result = await setupMUDV2Network<typeof contractComponents, typeof storeConfig>({
-    networkConfig,
-    world,
-    contractComponents,
-    syncThread: "main",
-    storeConfig,
-    worldAbi: IWorld__factory.abi,
+
+  const clientOptions = {
+    chain: networkConfig.chain,
+    transport: transportObserver(fallback([webSocket(), http()])),
+    pollingInterval: 1000,
+  } as const satisfies ClientConfig;
+
+  const publicClient = createPublicClient(clientOptions);
+
+  const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+  const burnerWalletClient = createWalletClient({
+    ...clientOptions,
+    account: burnerAccount,
   });
 
-  // Request drip from faucet
-  const signer = result.network.signer.get();
-  if (networkConfig.faucetServiceUrl && signer) {
-    const address = await signer.getAddress();
-    console.info("[Dev Faucet]: Player address -> ", address);
+  const write$ = new Subject<ContractWrite>();
+  const worldContract = getContract({
+    address: networkConfig.worldAddress as Hex,
+    abi: IWorldAbi,
+    publicClient,
+    walletClient: burnerWalletClient,
+    onWrite: (write) => write$.next(write),
+  });
 
-    const faucet = createFaucetService(networkConfig.faucetServiceUrl);
+  const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
+    world,
+    config: mudConfig,
+    tables: {
+      KeysWithValue: {
+        namespace: "keywval",
+        name: "Inventory",
+        tableId: resourceToHex({ type: "table", namespace: "keywval", name: "Inventory" }),
+        keySchema: {
+          valueHash: { type: "bytes32" },
+        },
+        valueSchema: {
+          keysWithValue: { type: "bytes32[]" },
+        },
+      },
+    },
+    address: networkConfig.worldAddress as Hex,
+    publicClient,
+    startBlock: BigInt(networkConfig.initialBlockNumber),
+  } as const);
 
-    const requestDrip = async () => {
-      const balance = await signer.getBalance();
-      console.info(`[Dev Faucet]: Player balance -> ${balance}`);
-      const lowBalance = balance?.lte(utils.parseEther("1"));
-      if (lowBalance) {
-        console.info("[Dev Faucet]: Balance is low, dripping funds to player");
-        // Double drip
-        await faucet.dripDev({ address });
-        await faucet.dripDev({ address });
-      }
+  try {
+    console.log("creating faucet client");
+    const faucet = createFaucetClient({ url: "http://localhost:3002/trpc" });
+
+    const drip = async () => {
+      console.log("dripping");
+      const tx = await faucet.drip.mutate({ address: burnerAccount.address });
+      console.log("got drip", tx);
     };
 
-    requestDrip();
-    // Request a drip every 20 seconds
-    setInterval(requestDrip, 20000);
-  }
-
-  const provider = result.network.providers.get().json;
-  const signerOrProvider = signer ?? provider;
-  // Create a World contract instance
-  const worldContract = IWorld__factory.connect(networkConfig.worldAddress, signerOrProvider);
-
-  if (networkConfig.snapSync) {
-    const currentBlockNumber = await provider.getBlockNumber();
-    const tableRecords = await getSnapSyncRecords(
-      networkConfig.worldAddress,
-      getTableIds(storeConfig),
-      currentBlockNumber,
-      signerOrProvider
-    );
-
-    console.log(`Syncing ${tableRecords.length} records`);
-    result.startSync(tableRecords, currentBlockNumber);
-  } else {
-    result.startSync();
-  }
-
-  // Create a fast tx executor
-  const fastTxExecutor =
-    signer?.provider instanceof JsonRpcProvider
-      ? await createFastTxExecutor(signer as Signer & { provider: JsonRpcProvider })
-      : null;
-
-  // TODO: infer this from fastTxExecute signature?
-  type BoundFastTxExecuteFn<C extends Contract> = <F extends keyof C>(
-    func: F,
-    args: Parameters<C[F]>,
-    options?: {
-      retryCount?: number;
-    }
-  ) => Promise<ReturnType<C[F]>>;
-
-  function bindFastTxExecute<C extends Contract>(contract: C): BoundFastTxExecuteFn<C> {
-    return async function (...args) {
-      if (!fastTxExecutor) {
-        throw new Error("no signer");
-      }
-      const { tx } = await fastTxExecutor.fastTxExecute(contract, ...args);
-      return await tx;
-    };
+    drip();
+    setInterval(drip, 20_000);
+  } catch (e) {
+    console.error(e);
   }
 
   return {
-    ...result,
+    world,
+    components,
+    playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
+    publicClient,
+    walletClient: burnerWalletClient,
+    latestBlock$,
+    storedBlockLogs$,
+    waitForTransaction,
     worldContract,
-    worldSend: bindFastTxExecute(worldContract),
-    fastTxExecutor,
+    write$: write$.asObservable().pipe(share()),
   };
 }

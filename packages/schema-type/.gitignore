@@ -1,8 +1,6 @@
 cache
-abi
 out
 dist
-types/ethers-contracts
 docs
 _docs
 DOCS.md

@@ -1,0 +1,25 @@
+# mud tablegen
+
+Autogenerate MUD Store table libraries based on the config file.
+
+## Sample usage
+
+Use the definitions in `mud.config.ts` to generate the Solidity definitions for tables and put them in `src/codegen/tables`, with an overall index that imports all the definitions in `src/codegen/index.sol`.
+
+## Options
+
+These are the command line options you can specify on `mud tablegen`:
+
+| Option         | Meaning                 | Type    | Default value   |
+| -------------- | ----------------------- | ------- | --------------- |
+| `--version`    | Show version number     | boolean | false           |
+| `--configPath` | Path to the config file | string  | `mud.config.ts` |
+| `--help`       | Show help               | boolean | false           |
+
+## Debugging
+
+To generate debug messages, use this command:
+
+```sh copy
+export DEBUG=mud:common:codegen
+```

@@ -1,18 +1,12 @@
-import { getComponentValue } from "@latticexyz/recs";
-import { awaitStreamValue } from "@latticexyz/utils";
-import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
-export function createSystemCalls(
-  { worldSend, txReduced$, singletonEntity }: SetupNetworkResult,
-  { Counter }: ClientComponents
-) {
+export function createSystemCalls({ tables, useStore, worldContract, waitForTransaction }: SetupNetworkResult) {
   const increment = async () => {
-    const tx = await worldSend("increment", []);
-    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
-    return getComponentValue(Counter, singletonEntity);
+    const tx = await worldContract.write.increment();
+    await waitForTransaction(tx);
+    return useStore.getState().getRecord(tables.CounterTable, {})?.value.value;
   };
 
   return {

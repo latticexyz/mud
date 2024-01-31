@@ -1,220 +1,207 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
-import { Bytes } from "./Bytes.sol";
 
-// - 2 bytes static length of the schema
-// - 1 byte for number of static size fields
-// - 1 byte for number of dynamic size fields
-// - 28 bytes for 28 schema types (MAX_DYNAMIC_FIELDS allows us to pack the lengths into 1 word)
+import { WORD_LAST_INDEX, BYTE_TO_BITS, MAX_TOTAL_FIELDS, MAX_DYNAMIC_FIELDS, LayoutOffsets } from "./constants.sol";
+
+/**
+ * @title Schema handling in Lattice
+ * @dev Defines and handles the encoding/decoding of Schemas which describe the layout of data structures.
+ * 2 bytes length of all the static (in size) fields in the schema
+ * 1 byte for number of static size fields
+ * 1 byte for number of dynamic size fields
+ * 28 bytes for 28 schema types (MAX_DYNAMIC_FIELDS allows us to pack the lengths into 1 word)
+ */
 type Schema is bytes32;
 
-using SchemaLib for Schema global;
+using SchemaInstance for Schema global;
 
+/**
+ * @dev Static utility functions for handling Schemas.
+ */
 library SchemaLib {
+  /// @dev Error raised when the provided schema has an invalid length.
   error SchemaLib_InvalidLength(uint256 length);
+
+  /// @dev Error raised when a static type is placed after a dynamic type in a schema.
   error SchemaLib_StaticTypeAfterDynamicType();
 
-  // Based on PackedCounter's capacity
-  uint256 internal constant MAX_DYNAMIC_FIELDS = 5;
-
-  /************************************************************************
-   *
-   *    STATIC FUNCTIONS
-   *
-   ************************************************************************/
-
   /**
-   * Encode the given schema into a single bytes32
+   * @notice Encodes a given schema into a single bytes32.
+   * @param schemas The list of SchemaTypes that constitute the schema.
+   * @return The encoded Schema.
    */
-  function encode(SchemaType[] memory _schema) internal pure returns (Schema) {
-    if (_schema.length > 28) revert SchemaLib_InvalidLength(_schema.length);
-    bytes32 schema;
-    uint16 length;
-    uint8 staticFields;
+  function encode(SchemaType[] memory schemas) internal pure returns (Schema) {
+    if (schemas.length > MAX_TOTAL_FIELDS) revert SchemaLib_InvalidLength(schemas.length);
+    uint256 schema;
+    uint256 totalLength;
+    uint256 dynamicFields;
 
     // Compute the length of the schema and the number of static fields
     // and store the schema types in the encoded schema
-    bool hasDynamicFields;
-    for (uint256 i = 0; i < _schema.length; ) {
-      uint16 staticByteLength = uint16(_schema[i].getStaticByteLength());
+    for (uint256 i = 0; i < schemas.length; ) {
+      uint256 staticByteLength = schemas[i].getStaticByteLength();
 
-      // Increase the static field count if the field is static
-      if (staticByteLength > 0) {
+      if (staticByteLength == 0) {
+        // Increase the dynamic field count if the field is dynamic
+        // (safe because of the initial _schema.length check)
+        unchecked {
+          dynamicFields++;
+        }
+      } else if (dynamicFields > 0) {
         // Revert if we have seen a dynamic field before, but now we see a static field
-        if (hasDynamicFields) revert SchemaLib_StaticTypeAfterDynamicType();
-        staticFields++;
-      } else {
-        // Flag that we have seen a dynamic field
-        hasDynamicFields = true;
+        revert SchemaLib_StaticTypeAfterDynamicType();
       }
 
-      length += staticByteLength;
-      schema = Bytes.setBytes1(schema, i + 4, bytes1(uint8(_schema[i])));
       unchecked {
+        // (safe because 28 (max _schema.length) * 32 (max static length) < 2**16)
+        totalLength += staticByteLength;
+        // Sequentially store schema types after the first 4 bytes (which are reserved for length and field numbers)
+        // (safe because of the initial _schema.length check)
+        schema |= uint256(schemas[i]) << ((WORD_LAST_INDEX - 4 - i) * BYTE_TO_BITS);
         i++;
       }
     }
 
     // Require MAX_DYNAMIC_FIELDS
-    uint8 dynamicFields = uint8(_schema.length) - staticFields;
     if (dynamicFields > MAX_DYNAMIC_FIELDS) revert SchemaLib_InvalidLength(dynamicFields);
 
-    // Store total static length, and number of static and dynamic fields
-    schema = Bytes.setBytes2(schema, 0, (bytes2(length))); // 2 length bytes
-    schema = Bytes.setBytes1(schema, 2, bytes1(staticFields)); // number of static fields
-    schema = Bytes.setBytes1(schema, 3, bytes1(dynamicFields)); // number of dynamic fields
+    // Get the static field count
+    uint256 staticFields;
+    unchecked {
+      staticFields = schemas.length - dynamicFields;
+    }
 
-    return Schema.wrap(schema);
+    // Store total static length in the first 2 bytes,
+    // number of static fields in the 3rd byte,
+    // number of dynamic fields in the 4th byte
+    // (optimizer can handle this, no need for unchecked or single-line assignment)
+    schema |= totalLength << LayoutOffsets.TOTAL_LENGTH;
+    schema |= staticFields << LayoutOffsets.NUM_STATIC_FIELDS;
+    schema |= dynamicFields << LayoutOffsets.NUM_DYNAMIC_FIELDS;
+
+    return Schema.wrap(bytes32(schema));
   }
+}
 
-  // Overrides for encode functions
-  function encode(SchemaType a) internal pure returns (Schema) {
-    SchemaType[] memory schema = new SchemaType[](1);
-    schema[0] = a;
-    return encode(schema);
-  }
-
-  function encode(SchemaType a, SchemaType b) internal pure returns (Schema) {
-    SchemaType[] memory schema = new SchemaType[](2);
-    schema[0] = a;
-    schema[1] = b;
-    return encode(schema);
-  }
-
-  function encode(SchemaType a, SchemaType b, SchemaType c) internal pure returns (Schema) {
-    SchemaType[] memory schema = new SchemaType[](3);
-    schema[0] = a;
-    schema[1] = b;
-    schema[2] = c;
-    return encode(schema);
-  }
-
-  function encode(SchemaType a, SchemaType b, SchemaType c, SchemaType d) internal pure returns (Schema) {
-    SchemaType[] memory schema = new SchemaType[](4);
-    schema[0] = a;
-    schema[1] = b;
-    schema[2] = c;
-    schema[3] = d;
-    return encode(schema);
-  }
-
-  function encode(SchemaType a, SchemaType b, SchemaType c, SchemaType d, SchemaType e) internal pure returns (Schema) {
-    SchemaType[] memory schema = new SchemaType[](5);
-    schema[0] = a;
-    schema[1] = b;
-    schema[2] = c;
-    schema[3] = d;
-    schema[4] = e;
-    return encode(schema);
-  }
-
-  function encode(
-    SchemaType a,
-    SchemaType b,
-    SchemaType c,
-    SchemaType d,
-    SchemaType e,
-    SchemaType f
-  ) internal pure returns (Schema) {
-    SchemaType[] memory schema = new SchemaType[](6);
-    schema[0] = a;
-    schema[1] = b;
-    schema[2] = c;
-    schema[3] = d;
-    schema[4] = e;
-    schema[5] = f;
-    return encode(schema);
-  }
-
-  /************************************************************************
-   *
-   *    INSTANCE FUNCTIONS
-   *
-   ************************************************************************/
-
+/**
+ * @dev Instance utility functions for handling a Schema instance.
+ */
+library SchemaInstance {
   /**
-   * Get the length of the static data for the given schema
+   * @notice Get the length of static data for the given schema.
+   * @param schema The schema to inspect.
+   * @return The static data length.
    */
   function staticDataLength(Schema schema) internal pure returns (uint256) {
-    return uint256(uint16(bytes2(Schema.unwrap(schema))));
+    return uint256(Schema.unwrap(schema)) >> LayoutOffsets.TOTAL_LENGTH;
   }
 
   /**
-   * Get the type of the data for the given schema at the given index
+   * @notice Get the SchemaType at a given index in the schema.
+   * @param schema The schema to inspect.
+   * @param index The index of the SchemaType to retrieve.
+   * @return The SchemaType at the given index.
    */
   function atIndex(Schema schema, uint256 index) internal pure returns (SchemaType) {
-    return SchemaType(uint8(Bytes.slice1(Schema.unwrap(schema), index + 4)));
+    unchecked {
+      return SchemaType(uint8(uint256(schema.unwrap()) >> ((WORD_LAST_INDEX - 4 - index) * 8)));
+    }
   }
 
   /**
-   * Get the number of dynamic length fields for the given schema
+   * @notice Get the number of static (fixed length) fields in the schema.
+   * @param schema The schema to inspect.
+   * @return The number of static fields.
    */
-  function numDynamicFields(Schema schema) internal pure returns (uint8) {
-    return uint8(Bytes.slice1(Schema.unwrap(schema), 3));
+  function numStaticFields(Schema schema) internal pure returns (uint256) {
+    return uint8(uint256(schema.unwrap()) >> LayoutOffsets.NUM_STATIC_FIELDS);
   }
 
   /**
-   * Get the number of static  fields for the given schema
+   * @notice Get the number of dynamic length fields in the schema.
+   * @param schema The schema to inspect.
+   * @return The number of dynamic length fields.
    */
-  function numStaticFields(Schema schema) internal pure returns (uint8) {
-    return uint8(Bytes.slice1(Schema.unwrap(schema), 2));
+  function numDynamicFields(Schema schema) internal pure returns (uint256) {
+    return uint8(uint256(schema.unwrap()) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
   }
 
   /**
-   * Get the total number of fields for the given schema
+   * @notice Get the total number of fields in the schema.
+   * @param schema The schema to inspect.
+   * @return The total number of fields.
    */
-  function numFields(Schema schema) internal pure returns (uint8) {
-    return numStaticFields(schema) + numDynamicFields(schema);
+  function numFields(Schema schema) internal pure returns (uint256) {
+    unchecked {
+      return
+        uint8(uint256(schema.unwrap()) >> LayoutOffsets.NUM_STATIC_FIELDS) +
+        uint8(uint256(schema.unwrap()) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
+    }
   }
 
   /**
-   * Check if the given schema is empty
+   * @notice Checks if the provided schema is empty.
+   * @param schema The schema to check.
+   * @return true if the schema is empty, false otherwise.
    */
   function isEmpty(Schema schema) internal pure returns (bool) {
     return Schema.unwrap(schema) == bytes32(0);
   }
 
+  /**
+   * @notice Validates the given schema.
+   * @param schema The schema to validate.
+   * @param allowEmpty Determines if an empty schema is valid or not.
+   */
   function validate(Schema schema, bool allowEmpty) internal pure {
     // Schema must not be empty
-    if (!allowEmpty && schema.isEmpty()) revert SchemaLib_InvalidLength(0);
+    if (!allowEmpty && schema.isEmpty()) revert SchemaLib.SchemaLib_InvalidLength(0);
 
     // Schema must have no more than MAX_DYNAMIC_FIELDS
     uint256 _numDynamicFields = schema.numDynamicFields();
-    if (_numDynamicFields > MAX_DYNAMIC_FIELDS) revert SchemaLib_InvalidLength(_numDynamicFields);
+    if (_numDynamicFields > MAX_DYNAMIC_FIELDS) revert SchemaLib.SchemaLib_InvalidLength(_numDynamicFields);
 
     uint256 _numStaticFields = schema.numStaticFields();
-    // Schema must not have more than 28 fields in total
-    if (_numStaticFields + _numDynamicFields > 28) revert SchemaLib_InvalidLength(_numStaticFields + _numDynamicFields);
+    // Schema must not have more than MAX_TOTAL_FIELDS in total
+    uint256 _numTotalFields = _numStaticFields + _numDynamicFields;
+    if (_numTotalFields > MAX_TOTAL_FIELDS) revert SchemaLib.SchemaLib_InvalidLength(_numTotalFields);
 
-    // No static field can be after a dynamic field
-    uint256 countStaticFields;
-    uint256 countDynamicFields;
-    for (uint256 i; i < _numStaticFields + _numDynamicFields; ) {
-      if (schema.atIndex(i).getStaticByteLength() > 0) {
-        // Static field in dynamic part
-        if (i >= _numStaticFields) revert SchemaLib_StaticTypeAfterDynamicType();
-        countStaticFields++;
-      } else {
-        // Dynamic field in static part
-        if (i < _numStaticFields) revert SchemaLib_StaticTypeAfterDynamicType();
-        countDynamicFields++;
+    // No dynamic field can be before a dynamic field
+    uint256 _staticDataLength;
+    for (uint256 i; i < _numStaticFields; ) {
+      uint256 staticByteLength = schema.atIndex(i).getStaticByteLength();
+      if (staticByteLength == 0) {
+        revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
       }
+      _staticDataLength += staticByteLength;
       unchecked {
         i++;
       }
     }
 
-    // Number of static fields must match
-    if (countStaticFields != _numStaticFields) revert SchemaLib_InvalidLength(countStaticFields);
+    // Static length sums must match
+    if (_staticDataLength != schema.staticDataLength()) {
+      revert SchemaLib.SchemaLib_InvalidLength(schema.staticDataLength());
+    }
 
-    // Number of dynamic fields must match
-    if (countDynamicFields != _numDynamicFields) revert SchemaLib_InvalidLength(countDynamicFields);
+    // No static field can be after a dynamic field
+    for (uint256 i = _numStaticFields; i < _numTotalFields; ) {
+      uint256 staticByteLength = schema.atIndex(i).getStaticByteLength();
+      if (staticByteLength > 0) {
+        revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
+      }
+      unchecked {
+        i++;
+      }
+    }
   }
 
   /**
-   * Unwrap the schema
+   * @notice Unwraps the schema to its underlying bytes32 representation.
+   * @param schema The schema to unwrap.
+   * @return The bytes32 representation of the schema.
    */
   function unwrap(Schema schema) internal pure returns (bytes32) {
     return Schema.unwrap(schema);

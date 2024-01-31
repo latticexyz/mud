@@ -1,5 +1,10 @@
 import { parse, visit } from "@solidity-parser/parser";
-import type { SourceUnit, TypeName, VariableDeclaration } from "@solidity-parser/parser/dist/src/ast-types";
+import type {
+  ContractDefinition,
+  SourceUnit,
+  TypeName,
+  VariableDeclaration,
+} from "@solidity-parser/parser/dist/src/ast-types";
 import { MUDError } from "../../errors";
 
 export interface ContractInterfaceFunction {
@@ -26,55 +31,65 @@ interface SymbolImport {
  * @param contractName name of the contract
  * @returns interface data
  */
-export function contractToInterface(data: string, contractName: string) {
+export function contractToInterface(
+  data: string,
+  contractName: string
+): {
+  functions: ContractInterfaceFunction[];
+  errors: ContractInterfaceError[];
+  symbolImports: SymbolImport[];
+} {
   const ast = parse(data);
 
-  let withContract = false;
+  const contractNode = findContractNode(parse(data), contractName);
   let symbolImports: SymbolImport[] = [];
   const functions: ContractInterfaceFunction[] = [];
   const errors: ContractInterfaceError[] = [];
 
-  visit(ast, {
-    ContractDefinition({ name }) {
-      if (name === contractName) {
-        withContract = true;
-      }
-    },
-    FunctionDefinition(
-      { name, visibility, parameters, stateMutability, returnParameters, isConstructor, isFallback, isReceiveEther },
-      parent
-    ) {
-      if (parent !== undefined && parent.type === "ContractDefinition" && parent.name === contractName) {
-        try {
-          // skip constructor and fallbacks
-          if (isConstructor || isFallback || isReceiveEther) return;
-          // forbid default visibility (this check might be unnecessary, modern solidity already disallows this)
-          if (visibility === "default") throw new MUDError(`Visibility is not specified`);
+  if (!contractNode) {
+    throw new MUDError(`Contract not found: ${contractName}`);
+  }
 
-          if (visibility === "external" || visibility === "public") {
-            functions.push({
-              name: name === null ? "" : name,
-              parameters: parameters.map(parseParameter),
-              stateMutability: stateMutability || "",
-              returnParameters: returnParameters === null ? [] : returnParameters.map(parseParameter),
-            });
+  visit(contractNode, {
+    FunctionDefinition({
+      name,
+      visibility,
+      parameters,
+      stateMutability,
+      returnParameters,
+      isConstructor,
+      isFallback,
+      isReceiveEther,
+    }) {
+      try {
+        // skip constructor and fallbacks
+        if (isConstructor || isFallback || isReceiveEther) return;
+        // forbid default visibility (this check might be unnecessary, modern solidity already disallows this)
+        if (visibility === "default") throw new MUDError(`Visibility is not specified`);
 
-            for (const { typeName } of parameters.concat(returnParameters ?? [])) {
-              const symbols = typeNameToSymbols(typeName);
-              symbolImports = symbolImports.concat(symbolsToImports(ast, symbols));
-            }
+        if (visibility === "external" || visibility === "public") {
+          functions.push({
+            name: name === null ? "" : name,
+            parameters: parameters.map(parseParameter),
+            stateMutability: stateMutability || "",
+            returnParameters: returnParameters === null ? [] : returnParameters.map(parseParameter),
+          });
+
+          for (const { typeName } of parameters.concat(returnParameters ?? [])) {
+            const symbols = typeNameToSymbols(typeName);
+            symbolImports = symbolImports.concat(symbolsToImports(ast, symbols));
           }
-        } catch (error: unknown) {
-          if (error instanceof MUDError) {
-            error.message = `Function "${name}" in contract "${contractName}": ${error.message}`;
-          }
-          throw error;
         }
+      } catch (error: unknown) {
+        if (error instanceof MUDError) {
+          error.message = `Function "${name}" in contract "${contractName}": ${error.message}`;
+        }
+        throw error;
       }
     },
     CustomErrorDefinition({ name, parameters }) {
       errors.push({
-        name: name === null ? "" : name,
+        name,
         parameters: parameters.map(parseParameter),
       });
 
@@ -85,15 +100,25 @@ export function contractToInterface(data: string, contractName: string) {
     },
   });
 
-  if (!withContract) {
-    throw new MUDError(`Contract not found: ${contractName}`);
-  }
-
   return {
     functions,
     errors,
     symbolImports,
   };
+}
+
+function findContractNode(ast: SourceUnit, contractName: string): ContractDefinition | undefined {
+  let contract = undefined;
+
+  visit(ast, {
+    ContractDefinition(node) {
+      if (node.name === contractName) {
+        contract = node;
+      }
+    },
+  });
+
+  return contract;
 }
 
 function parseParameter({ name, typeName, storageLocation }: VariableDeclaration): string {
@@ -178,7 +203,7 @@ function typeNameToSymbols(typeName: TypeName | null): string[] {
 // symbols used for args/returns must always be imported from an auxiliary file.
 // To avoid parsing the entire project to build dependencies,
 // symbols must be imported with an explicit `import { symbol } from ...`
-function symbolsToImports(ast: SourceUnit, symbols: string[]) {
+function symbolsToImports(ast: SourceUnit, symbols: string[]): SymbolImport[] {
   const imports: SymbolImport[] = [];
 
   for (const symbol of symbols) {

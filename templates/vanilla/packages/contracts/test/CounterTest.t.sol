@@ -1,21 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
 import "forge-std/Test.sol";
-import { MudV2Test } from "@latticexyz/std-contracts/src/test/MudV2Test.t.sol";
-import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
+import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
+import { getKeysWithValue } from "@latticexyz/world-modules/src/modules/keyswithvalue/getKeysWithValue.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { Counter, CounterTableId } from "../src/codegen/Tables.sol";
+import { Counter, CounterTableId } from "../src/codegen/index.sol";
 
-contract CounterTest is MudV2Test {
-  IWorld public world;
-
-  function setUp() public override {
-    super.setUp();
-    world = IWorld(worldAddress);
-  }
-
+contract CounterTest is MudTest {
   function testWorldExists() public {
     uint256 codeSize;
     address addr = worldAddress;
@@ -27,12 +20,12 @@ contract CounterTest is MudV2Test {
 
   function testCounter() public {
     // Expect the counter to be 1 because it was incremented in the PostDeploy script.
-    uint32 counter = Counter.get(world);
+    uint32 counter = Counter.get();
     assertEq(counter, 1);
 
     // Expect the counter to be 2 after calling increment.
-    world.increment();
-    counter = Counter.get(world);
+    IWorld(worldAddress).increment();
+    counter = Counter.get();
     assertEq(counter, 2);
   }
 }

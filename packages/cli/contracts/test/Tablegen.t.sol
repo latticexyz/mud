@@ -1,36 +1,38 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
 import "forge-std/Test.sol";
-import { StoreReadWithStubs } from "@latticexyz/store/src/StoreReadWithStubs.sol";
+import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
+import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
 
-import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Ephemeral } from "../src/codegen/Tables.sol";
+import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Offchain, UserTyped, UserTypedData } from "../src/codegen/index.sol";
+import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "../src/types.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-import { Enum1, Enum2 } from "../src/codegen/Types.sol";
+import { Enum1, Enum2 } from "../src/codegen/common.sol";
 
-contract TablegenTest is Test, StoreReadWithStubs {
+contract TablegenTest is Test, StoreMock {
   function testStaticsSetAndGet() public {
-    Statics.registerSchema();
+    Statics.register();
 
     uint256 k1 = 1;
     int32 k2 = -1;
     bytes16 k3 = hex"02";
     address k4 = address(123);
     bool k5 = true;
-    Enum1 k6 = Enum1.E3;
-    Enum2 k7 = Enum2.E1;
+    Enum2 k6 = Enum2.E1;
 
-    Statics.setV1(k1, k2, k3, k4, k5, k6, k7, 4);
-    assertEq(Statics.getV1(k1, k2, k3, k4, k5, k6, k7), 4);
+    Statics.setV1(k1, k2, k3, k4, k5, k6, 4);
+    assertEq(Statics.getV1(k1, k2, k3, k4, k5, k6), 4);
 
-    StaticsData memory data = StaticsData(4, -5, hex"06", address(456), false, Enum1.E2, Enum2.E1);
-    Statics.set(k1, k2, k3, k4, k5, k6, k7, data);
-    assertEq(abi.encode(Statics.get(k1, k2, k3, k4, k5, k6, k7)), abi.encode(data));
+    StaticsData memory data = StaticsData(4, -5, hex"06", address(456), false, Enum1.E2);
+    Statics.set(k1, k2, k3, k4, k5, k6, data);
+    assertEq(abi.encode(Statics.get(k1, k2, k3, k4, k5, k6)), abi.encode(data));
   }
 
   function testDynamicsSetAndGet() public {
-    Dynamics1.registerSchema();
-    Dynamics2.registerSchema();
+    Dynamics1.register();
+    Dynamics2.register();
 
     bytes32 key = keccak256("key");
 
@@ -93,7 +95,7 @@ contract TablegenTest is Test, StoreReadWithStubs {
   }
 
   function testDynamicsPushAndPop() public {
-    Dynamics2.registerSchema();
+    Dynamics2.register();
 
     bytes32 key = keccak256("key");
 
@@ -123,7 +125,7 @@ contract TablegenTest is Test, StoreReadWithStubs {
   }
 
   function testSingletonSetAndGet() public {
-    Singleton.registerSchema();
+    Singleton.register();
 
     Singleton.set(-10, [uint32(1), 2], [uint32(3), 4], [uint32(5)]);
     assertEq(Singleton.getV1(), -10);
@@ -141,12 +143,30 @@ contract TablegenTest is Test, StoreReadWithStubs {
     assertEq(abi.encode(Singleton.getV4()), abi.encode([uint32(5)]));
     assertEq(Singleton.lengthV4(), 1);
     assertEq(Singleton.getItemV4(0), 5);
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 4, 4));
     assertEq(Singleton.getItemV4(1), 0);
   }
 
-  function testEphemeral() public {
-    Ephemeral.registerSchema();
+  function testOffchain() public {
+    Offchain.register();
 
-    Ephemeral.emitEphemeral("key", 123);
+    Offchain.set("key", 123);
+  }
+
+  function testUserTypes() public {
+    UserTyped.register();
+
+    TestTypeAddress k1 = TestTypeAddress.wrap(address(123));
+    TestTypeInt64 k2 = TestTypeInt64.wrap(-1);
+    TestTypeLibrary.TestTypeBool k3 = TestTypeLibrary.TestTypeBool.wrap(true);
+    TestTypeLibrary.TestTypeUint128 k4 = TestTypeLibrary.TestTypeUint128.wrap(123456);
+    ResourceId k5 = ResourceId.wrap("test");
+
+    UserTyped.setV1(k1, k2, k3, k4, k5, TestTypeAddress.wrap(address(this)));
+    assertEq(TestTypeAddress.unwrap(UserTyped.getV1(k1, k2, k3, k4, k5)), address(this));
+
+    UserTypedData memory data = UserTypedData(k1, k2, k3, k4, k5);
+    UserTyped.set(k1, k2, k3, k4, k5, data);
+    assertEq(abi.encode(UserTyped.get(k1, k2, k3, k4, k5)), abi.encode(data));
   }
 }

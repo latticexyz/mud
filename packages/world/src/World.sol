@@ -1,61 +1,115 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
-import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
-import { IStoreData } from "@latticexyz/store/src/IStore.sol";
+import { StoreData } from "@latticexyz/store/src/StoreData.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
-import { System } from "./System.sol";
-import { ResourceSelector } from "./ResourceSelector.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
+import { WORLD_VERSION } from "./version.sol";
+import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
+import { ROOT_NAMESPACE_ID } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
-import { Call } from "./Call.sol";
+import { SystemCall } from "./SystemCall.sol";
+import { WorldContextProviderLib } from "./WorldContext.sol";
+import { Delegation } from "./Delegation.sol";
+import { requireInterface } from "./requireInterface.sol";
 
-import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
-import { InstalledModules } from "./tables/InstalledModules.sol";
+import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
+import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
+import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
+import { CoreModuleAddress } from "./codegen/tables/CoreModuleAddress.sol";
 
-import { ISystemHook } from "./interfaces/ISystemHook.sol";
-import { IModule } from "./interfaces/IModule.sol";
-import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
+import { IModule, IModule } from "./IModule.sol";
+import { IWorldKernel } from "./IWorldKernel.sol";
 
-import { Systems } from "./modules/core/tables/Systems.sol";
-import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
-import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
+import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
+import { Balances } from "./codegen/tables/Balances.sol";
 
-contract World is StoreRead, IStoreData, IWorldKernel {
-  using ResourceSelector for bytes32;
+/**
+ * @title World Contract
+ * @dev This contract is the core "World" contract containing various methods for
+ * data manipulation, system calls, and dynamic function selector handling.
+ */
+contract World is StoreData, IWorldKernel {
+  using WorldResourceIdInstance for ResourceId;
 
+  /// @notice Address of the contract's creator.
+  address public immutable creator;
+
+  /// @return The current version of the world contract.
+  function worldVersion() public pure returns (bytes32) {
+    return WORLD_VERSION;
+  }
+
+  /// @dev Event emitted when the World contract is created.
   constructor() {
-    // Register internal NamespaceOwner table and give ownership of the root
-    // namespace to msg.sender. This is done in the constructor instead of a
-    // module, so that we can use it for access control checks in `installRootModule`.
-    NamespaceOwner.registerSchema();
-    NamespaceOwner.set(ROOT_NAMESPACE, msg.sender);
-
-    // Other internal tables are registered by the CoreModule to reduce World's bytecode size.
-
-    emit HelloWorld();
+    creator = msg.sender;
+    emit HelloWorld(WORLD_VERSION);
   }
 
   /**
-   * Install the given root module in the World.
-   * Requires the caller to own the root namespace.
-   * The module is delegatecalled and installed in the root namespace.
+   * @dev Prevents the World contract from calling itself.
    */
-  function installRootModule(IModule module, bytes memory args) public {
-    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, ROOT_NAME, msg.sender);
+  modifier prohibitDirectCallback() {
+    if (msg.sender == address(this)) {
+      revert World_CallbackNotAllowed(msg.sig);
+    }
+    _;
+  }
 
-    Call.withSender({
+  /**
+   * @notice Initializes the World by installing the core module.
+   * @param coreModule The core module to initialize the World with.
+   * @dev Only the initial creator can initialize. This can be done only once.
+   */
+  function initialize(IModule coreModule) public prohibitDirectCallback {
+    // Only the initial creator of the World can initialize it
+    if (msg.sender != creator) {
+      revert World_AccessDenied(ROOT_NAMESPACE_ID.toString(), msg.sender);
+    }
+
+    // The World can only be initialized once
+    if (CoreModuleAddress.get() != address(0)) {
+      revert World_AlreadyInitialized();
+    }
+
+    CoreModuleAddress.set(address(coreModule));
+
+    // Initialize the World by installing the core module
+    _installRootModule(coreModule, new bytes(0));
+  }
+
+  /**
+   * @notice Installs a given root module in the World.
+   * @param module The module to be installed.
+   * @param encodedArgs The ABI encoded arguments for module installation.
+   * @dev The caller must own the root namespace.
+   */
+  function installRootModule(IModule module, bytes memory encodedArgs) public prohibitDirectCallback {
+    AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
+    _installRootModule(module, encodedArgs);
+  }
+
+  /**
+   * @dev Internal function to install a root module.
+   * @param module The module to be installed.
+   * @param encodedArgs The ABI encoded arguments for module installation.
+   */
+  function _installRootModule(IModule module, bytes memory encodedArgs) internal {
+    // Require the provided address to implement the IModule interface
+    requireInterface(address(module), type(IModule).interfaceId);
+
+    WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: msg.sender,
+      msgValue: 0,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
-      delegate: true, // The module is delegate called so it can edit any table
-      value: 0
+      callData: abi.encodeCall(IModule.installRoot, (encodedArgs))
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules.set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(address(module), keccak256(encodedArgs), true);
   }
 
   /************************************************************************
@@ -65,181 +119,209 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    ************************************************************************/
 
   /**
-   * Write a record in the table at the given namespace and name.
-   * Requires the caller to have access to the namespace or name.
+   * @notice Writes a record in the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param staticData Static data (fixed length fields) of the record.
+   * @param encodedLengths Encoded lengths of data.
+   * @param dynamicData Dynamic data (variable length fields) of the record.
+   * @dev Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
-  function setRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key, bytes calldata data) public virtual {
+  function setRecord(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    bytes calldata staticData,
+    PackedCounter encodedLengths,
+    bytes calldata dynamicData
+  ) public virtual prohibitDirectCallback {
     // Require access to the namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
+    AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(resourceSelector, key, data);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
   }
 
   /**
-   * Write a field in the table at the given namespace and name.
-   * Requires the caller to have access to the namespace or name.
+   * @notice Modifies static (fixed length) data in a record at the specified position.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param start Position from where the static data modification should start.
+   * @param data Data to splice into the static data of the record.
+   */
+  function spliceStaticData(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint48 start,
+    bytes calldata data
+  ) public virtual prohibitDirectCallback {
+    // Require access to the namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Splice the static data
+    StoreCore.spliceStaticData(tableId, keyTuple, start, data);
+  }
+
+  /**
+   * @notice Modifies dynamic (variable length) data in a record for a specified field.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param dynamicFieldIndex Index of the dynamic field to modify.
+   * @param startWithinField Start position within the specified dynamic field.
+   * @param deleteCount Number of bytes to delete starting from the `startWithinField`.
+   * @param data Data to splice into the dynamic data of the field.
+   */
+  function spliceDynamicData(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes calldata data
+  ) public virtual prohibitDirectCallback {
+    // Require access to the namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Splice the dynamic data
+    StoreCore.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
+  }
+
+  /**
+   * @notice Writes data into a specified field in the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param fieldIndex Index of the field to modify.
+   * @param data Data to write into the specified field.
    */
   function setField(
-    bytes16 namespace,
-    bytes16 name,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     bytes calldata data
-  ) public virtual {
+  ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
+    AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the field
-    StoreCore.setField(resourceSelector, key, schemaIndex, data);
+    StoreCore.setField(tableId, keyTuple, fieldIndex, data);
   }
 
   /**
-   * Push data to the end of a field in the table at the given namespace and name.
-   * Requires the caller to have access to the namespace or name.
-   */
-  function pushToField(
-    bytes16 namespace,
-    bytes16 name,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    bytes calldata dataToPush
-  ) public virtual {
-    // Require access to namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
-
-    // Push to the field
-    StoreCore.pushToField(resourceSelector, key, schemaIndex, dataToPush);
-  }
-
-  /**
-   * Pop data from the end of a field in the table at the given namespace and name.
-   * Requires the caller to have access to the namespace or name.
-   */
-  function popFromField(
-    bytes16 namespace,
-    bytes16 name,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    uint256 byteLengthToPop
-  ) public virtual {
-    // Require access to namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
-
-    // Push to the field
-    StoreCore.popFromField(resourceSelector, key, schemaIndex, byteLengthToPop);
-  }
-
-  /**
-   * Update data at `startByteIndex` of a field in the table at the given namespace and name.
-   * Requires the caller to have access to the namespace or name.
-   */
-  function updateInField(
-    bytes16 namespace,
-    bytes16 name,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    uint256 startByteIndex,
-    bytes calldata dataToSet
-  ) public virtual {
-    // Require access to namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
-
-    // Update data in the field
-    StoreCore.updateInField(resourceSelector, key, schemaIndex, startByteIndex, dataToSet);
-  }
-
-  /**
-   * Delete a record in the table at the given namespace and name.
-   * Requires the caller to have access to the namespace or name.
-   */
-  function deleteRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key) public virtual {
-    // Require access to namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
-
-    // Delete the record
-    StoreCore.deleteRecord(resourceSelector, key);
-  }
-
-  /************************************************************************
-   *
-   *    STORE OVERRIDE METHODS
-   *
-   ************************************************************************/
-
-  /**
-   * Write a record in the table at the given tableId.
-   * This overload exists to conform with the `IStore` interface.
-   * Access is checked based on the namespace or name (encoded in the tableId).
-   */
-  function setRecord(bytes32 tableId, bytes32[] calldata key, bytes calldata data) public virtual {
-    setRecord(tableId.getNamespace(), tableId.getName(), key, data);
-  }
-
-  /**
-   * Write a field in the table at the given tableId.
-   * This overload exists to conform with the `IStore` interface.
-   * Access is checked based on the namespace or name (encoded in the tableId).
+   * @notice Writes data into a specified field in the table, adhering to a specific layout.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param fieldIndex Index of the field to modify.
+   * @param data Data to write into the specified field.
+   * @param fieldLayout The layout to adhere to when modifying the field.
    */
   function setField(
-    bytes32 tableId,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
+    bytes calldata data,
+    FieldLayout fieldLayout
+  ) public virtual prohibitDirectCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Set the field
+    StoreCore.setField(tableId, keyTuple, fieldIndex, data, fieldLayout);
+  }
+
+  /**
+   * @notice Writes data into a static (fixed length) field in the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param fieldIndex Index of the static field to modify.
+   * @param data Data to write into the specified static field.
+   * @param fieldLayout The layout to adhere to when modifying the field.
+   * @dev Requires the caller to have access to the table's namespace or name (encoded in the tableId).
+   */
+  function setStaticField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
+    bytes calldata data,
+    FieldLayout fieldLayout
+  ) public virtual prohibitDirectCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Set the field
+    StoreCore.setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
+  }
+
+  /**
+   * @notice Writes data into a dynamic (varible length) field in the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param dynamicFieldIndex Index of the dynamic field to modify.
+   * @param data Data to write into the specified dynamic field.
+   */
+  function setDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
     bytes calldata data
-  ) public virtual override {
-    setField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, data);
+  ) public virtual prohibitDirectCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Set the field
+    StoreCore.setDynamicField(tableId, keyTuple, dynamicFieldIndex, data);
   }
 
   /**
-   * Push data to the end of a field in the table at the given tableId.
-   * This overload exists to conform with the `IStore` interface.
-   * Access is checked based on the namespace or name (encoded in the tableId).
+   * @notice Appends data to the end of a dynamic (variable length) field in the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param dynamicFieldIndex Index of the dynamic field to append to.
+   * @param dataToPush Data to append to the specified dynamic field.
    */
-  function pushToField(
-    bytes32 tableId,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
+  function pushToDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
     bytes calldata dataToPush
-  ) public override {
-    pushToField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, dataToPush);
+  ) public virtual prohibitDirectCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Push to the field
+    StoreCore.pushToDynamicField(tableId, keyTuple, dynamicFieldIndex, dataToPush);
   }
 
   /**
-   * Pop data from the end of a field in the table at the given tableId.
-   * This overload exists to conform with the `IStore` interface.
-   * Access is checked based on the namespace or name (encoded in the tableId).
+   * @notice Removes a specified amount of data from the end of a dynamic (variable length) field in the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record.
+   * @param dynamicFieldIndex Index of the dynamic field to remove data from.
+   * @param byteLengthToPop The number of bytes to remove from the end of the dynamic field.
    */
-  function popFromField(
-    bytes32 tableId,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
+  function popFromDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
     uint256 byteLengthToPop
-  ) public override {
-    popFromField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, byteLengthToPop);
+  ) public virtual prohibitDirectCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Push to the field
+    StoreCore.popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
   }
 
   /**
-   * Update data at `startByteIndex` of a field in the table at the given tableId.
-   * This overload exists to conform with the `IStore` interface.
-   * Access is checked based on the namespace or name (encoded in the tableId).
+   * @notice Deletes a record from the table identified by `tableId`.
+   * @param tableId The unique identifier for the table.
+   * @param keyTuple Array of keys identifying the record to delete.
+   * @dev Requires the caller to have access to the table's namespace or name.
    */
-  function updateInField(
-    bytes32 tableId,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    uint256 startByteIndex,
-    bytes calldata dataToSet
-  ) public virtual {
-    updateInField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, startByteIndex, dataToSet);
-  }
+  function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple) public virtual prohibitDirectCallback {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
 
-  /**
-   * Delete a record in the table at the given tableId.
-   * This overload exists to conform with the `IStore` interface.
-   * Access is checked based on the namespace or name (encoded in the tableId).
-   */
-  function deleteRecord(bytes32 tableId, bytes32[] calldata key) public virtual override {
-    deleteRecord(tableId.getNamespace(), tableId.getName(), key);
+    // Delete the record
+    StoreCore.deleteRecord(tableId, keyTuple);
   }
 
   /************************************************************************
@@ -249,60 +331,60 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    ************************************************************************/
 
   /**
-   * Call the system at the given namespace and name.
-   * If the system is not public, the caller must have access to the namespace or name.
+   * @notice Calls a system with a given system ID.
+   * @param systemId The ID of the system to be called.
+   * @param callData The data for the system call.
+   * @return Return data from the system call.
+   * @dev If system is private, caller must have appropriate access.
    */
   function call(
-    bytes16 namespace,
-    bytes16 name,
-    bytes memory funcSelectorAndArgs
-  ) external payable virtual returns (bytes memory) {
-    return _call(namespace, name, funcSelectorAndArgs, msg.value);
+    ResourceId systemId,
+    bytes memory callData
+  ) external payable virtual prohibitDirectCallback returns (bytes memory) {
+    return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
   }
 
   /**
-   * Call the system at the given namespace and name and pass the given value.
-   * If the system is not public, the caller must have access to the namespace or name.
+   * @notice Calls a system with a given system ID on behalf of the given delegator.
+   * @param delegator The address on whose behalf the system is called.
+   * @param systemId The ID of the system to be called.
+   * @param callData The ABI data for the system call.
+   * @return Return data from the system call.
+   * @dev If system is private, caller must have appropriate access.
    */
-  function _call(
-    bytes16 namespace,
-    bytes16 name,
-    bytes memory funcSelectorAndArgs,
-    uint256 value
-  ) internal virtual returns (bytes memory data) {
-    // Load the system data
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
-    (address systemAddress, bool publicAccess) = Systems.get(resourceSelector);
-
-    // Check if the system exists
-    if (systemAddress == address(0)) revert ResourceNotFound(resourceSelector.toString());
-
-    // Allow access if the system is public or the caller has access to the namespace or name
-    if (!publicAccess) AccessControl.requireAccess(namespace, name, msg.sender);
-
-    // Get system hooks
-    address[] memory hooks = SystemHooks.get(resourceSelector);
-
-    // Call onBeforeCallSystem hooks (before calling the system)
-    for (uint256 i; i < hooks.length; i++) {
-      ISystemHook hook = ISystemHook(hooks[i]);
-      hook.onBeforeCallSystem(msg.sender, systemAddress, funcSelectorAndArgs);
+  function callFrom(
+    address delegator,
+    ResourceId systemId,
+    bytes memory callData
+  ) external payable virtual prohibitDirectCallback returns (bytes memory) {
+    // If the delegator is the caller, call the system directly
+    if (delegator == msg.sender) {
+      return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
     }
 
-    // Call the system and forward any return data
-    data = Call.withSender({
-      msgSender: msg.sender,
-      target: systemAddress,
-      funcSelectorAndArgs: funcSelectorAndArgs,
-      delegate: namespace == ROOT_NAMESPACE, // Use delegatecall for root systems (= registered in the root namespace)
-      value: value
-    });
+    // Check if there is an individual authorization for this caller to perform actions on behalf of the delegator
+    ResourceId individualDelegationId = UserDelegationControl._get({ delegator: delegator, delegatee: msg.sender });
 
-    // Call onAfterCallSystem hooks (after calling the system)
-    for (uint256 i; i < hooks.length; i++) {
-      ISystemHook hook = ISystemHook(hooks[i]);
-      hook.onAfterCallSystem(msg.sender, systemAddress, funcSelectorAndArgs);
+    if (Delegation.verify(individualDelegationId, delegator, msg.sender, systemId, callData)) {
+      // forward the call as `delegator`
+      return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
     }
+
+    // Check if the delegator has a fallback delegation control set
+    ResourceId userFallbackDelegationId = UserDelegationControl._get({ delegator: delegator, delegatee: address(0) });
+    if (Delegation.verify(userFallbackDelegationId, delegator, msg.sender, systemId, callData)) {
+      // forward the call as `delegator`
+      return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
+    }
+
+    // Check if the namespace has a fallback delegation control set
+    ResourceId namespaceFallbackDelegationId = NamespaceDelegationControl._get(systemId.getNamespaceId());
+    if (Delegation.verify(namespaceFallbackDelegationId, delegator, msg.sender, systemId, callData)) {
+      // forward the call as `delegator`
+      return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
+    }
+
+    revert World_DelegationNotFound(delegator, msg.sender);
   }
 
   /************************************************************************
@@ -312,23 +394,28 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    ************************************************************************/
 
   /**
-   * Allow the World to receive ETH
+   * @notice Accepts ETH and adds to the root namespace's balance.
    */
-  receive() external payable {}
+  receive() external payable {
+    uint256 rootBalance = Balances._get(ROOT_NAMESPACE_ID);
+    Balances._set(ROOT_NAMESPACE_ID, rootBalance + msg.value);
+  }
 
   /**
-   * Fallback function to call registered function selectors
+   * @dev Fallback function to call registered function selectors.
    */
-  fallback() external payable {
-    (bytes16 namespace, bytes16 name, bytes4 systemFunctionSelector) = FunctionSelectors.get(msg.sig);
+  fallback() external payable prohibitDirectCallback {
+    (ResourceId systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
-    if (namespace == 0 && name == 0) revert FunctionSelectorNotFound(msg.sig);
+    if (ResourceId.unwrap(systemId) == 0) revert World_FunctionSelectorNotFound(msg.sig);
 
     // Replace function selector in the calldata with the system function selector
     bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);
 
-    // Call the function and forward the call value
-    bytes memory returnData = _call(namespace, name, callData, msg.value);
+    // Call the function and forward the call data
+    bytes memory returnData = SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
+
+    // If the call was successful, return the return data
     assembly {
       return(add(returnData, 0x20), mload(returnData))
     }

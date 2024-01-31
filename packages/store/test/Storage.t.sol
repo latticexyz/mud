@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Storage } from "../src/Storage.sol";
-import { Utils } from "../src/Utils.sol";
 import { Bytes } from "../src/Bytes.sol";
 
-contract StorageTest is Test {
+contract StorageTest is Test, GasReporter {
   function testStoreLoad() public {
     bytes memory data1 = abi.encodePacked(
       bytes1(0x01),
@@ -26,15 +26,17 @@ contract StorageTest is Test {
 
     // First store some data to storage at the target slot and two slots after the target slot
 
-    // !gasreport store 1 storage slot
-    Storage.store({ storagePointer: storagePointer, data: originalDataFirstSlot });
+    startGasReport("store 1 storage slot");
+    Storage.store({ storagePointer: storagePointer, offset: 0, data: originalDataFirstSlot });
+    endGasReport();
 
-    Storage.store({ storagePointer: storagePointerTwoSlotsAfter, data: originalDataLastSlot });
+    Storage.store({ storagePointer: storagePointerTwoSlotsAfter, offset: 0, data: originalDataLastSlot });
 
     // Then set the target slot, partially overwriting the first and third slot, but using safeTrail and offset
 
-    // !gasreport store 34 bytes over 3 storage slots (with offset and safeTrail))
+    startGasReport("store 34 bytes over 3 storage slots (with offset and safeTrail))");
     Storage.store({ storagePointer: storagePointer, offset: 31, data: data1 });
+    endGasReport();
 
     // Assert the first slot has the correct value
     assertEq(
@@ -56,8 +58,9 @@ contract StorageTest is Test {
 
     // Assert we can load the correct partial value from storage
 
-    // !gasreport load 34 bytes over 3 storage slots (with offset and safeTrail))
-    bytes memory data = Storage.load({ storagePointer: storagePointer, length: 34, offset: 31 });
+    startGasReport("load 34 bytes over 3 storage slots (with offset and safeTrail))");
+    bytes memory data = Storage.load({ storagePointer: storagePointer, offset: 31, length: 34 });
+    endGasReport();
 
     assertEq(Bytes.slice1(data, 0), bytes1(0x01));
     assertEq(Bytes.slice32(data, 1), bytes32(0x0200000000000000000000000000000000000000000000000000000000000003));
@@ -70,6 +73,61 @@ contract StorageTest is Test {
     vm.assume(storagePointer > 0);
 
     Storage.store({ storagePointer: uint256(storagePointer), offset: offset, data: data });
-    assertEq(Storage.load({ storagePointer: uint256(storagePointer), length: data.length, offset: offset }), data);
+    assertEq(Storage.load({ storagePointer: uint256(storagePointer), offset: offset, length: data.length }), data);
+  }
+
+  function testStoreLoadFieldBytes32Fuzzy(bytes32 data, uint256 storagePointer, uint256 offset) public {
+    vm.assume(offset < type(uint256).max);
+    vm.assume(storagePointer > 0);
+    vm.assume(storagePointer < type(uint256).max - offset);
+
+    Storage.store({ storagePointer: storagePointer, offset: offset, data: abi.encodePacked((data)) });
+    assertEq(Storage.loadField({ storagePointer: storagePointer, length: 32, offset: offset }), data);
+  }
+
+  function testStoreLoadFieldBytes16Fuzzy(bytes16 data, uint256 storagePointer, uint256 offset) public {
+    vm.assume(offset < type(uint256).max);
+    vm.assume(storagePointer > 0);
+    vm.assume(storagePointer < type(uint256).max - offset);
+
+    Storage.store({ storagePointer: storagePointer, offset: offset, data: abi.encodePacked((data)) });
+    assertEq(bytes16(Storage.loadField({ storagePointer: storagePointer, length: 16, offset: offset })), data);
+  }
+
+  function testStoreLoadToPointer() public {
+    uint256 memoryCorruptionCheck = 0x0101010101010101010101010101010101010101010101010101010101010101;
+    uint80 prefix = 0x01010101010101010101;
+    uint80 dataBeforeLoad = 0x00000000000000000000;
+    uint80 dataAfterLoad = 0xbeeeeeeeeeeeeeeeeeef;
+    uint256 postfix = 0x010101010101010101010101;
+
+    bytes memory testData = abi.encodePacked(
+      memoryCorruptionCheck,
+      prefix,
+      dataBeforeLoad,
+      postfix,
+      memoryCorruptionCheck
+    );
+    bytes memory expectedData = abi.encodePacked(
+      memoryCorruptionCheck,
+      prefix,
+      dataAfterLoad,
+      postfix,
+      memoryCorruptionCheck
+    );
+    uint256 memoryPointer;
+    /// @solidity memory-safe-assembly
+    assembly {
+      memoryPointer := add(testData, 0x20)
+    }
+    // skip prefixes
+    memoryPointer += 32 + 10;
+
+    uint256 storagePointer = uint256(keccak256("some location"));
+    Storage.store({ storagePointer: storagePointer, offset: 10, data: abi.encodePacked(dataAfterLoad) });
+
+    Storage.load({ storagePointer: storagePointer, offset: 10, length: 10, memoryPointer: memoryPointer });
+
+    assertEq(testData, expectedData);
   }
 }

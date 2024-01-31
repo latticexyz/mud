@@ -1,5 +1,5 @@
 import {
-  RelativeImportDatum,
+  ImportDatum,
   RenderDynamicField,
   RenderField,
   RenderKeyTuple,
@@ -9,12 +9,12 @@ import {
 
 export interface RenderTableOptions {
   /** List of symbols to import, and their file paths */
-  imports: RelativeImportDatum[];
+  imports: ImportDatum[];
   /** Name of the library to render. */
   libraryName: string;
   /** Name of the struct to render. If undefined, struct and its methods aren't rendered. */
   structName?: string;
-  /** Data used to statically registed the table. If undefined, all methods receive `_tableId` as an argument. */
+  /** Data used to statically register the table. If undefined, all methods receive `_tableId` as an argument. */
   staticResourceData?: StaticResourceData;
   /** Path for store package imports */
   storeImportPath: string;
@@ -22,12 +22,14 @@ export interface RenderTableOptions {
   fields: RenderField[];
   staticFields: RenderStaticField[];
   dynamicFields: RenderDynamicField[];
-  /** Whether to render methods for individual fields (get/set, and more for dynamic elements) */
-  withFieldMethods: boolean;
+  /** Whether to render getter functions */
+  withGetters: boolean;
+  /** Whether to render dynamic field methods (push, pop, update) */
+  withDynamicFieldMethods: boolean;
   /** Whether to render get/set methods for the whole record */
   withRecordMethods: boolean;
-  /** Whether to render emitEphemeral methods */
-  withEphemeralMethods: boolean;
+  /** Whether to additionally render field methods without a field name suffix */
+  withSuffixlessFieldMethods: boolean;
   /** Whether to render additional methods that accept a manual `IStore` argument */
   storeArgument: boolean;
 }

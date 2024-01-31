@@ -1,27 +1,15 @@
 import { NavButton } from "../NavButton";
-import { useTables } from "../tables/useTables";
+import { useTables } from "../zustand/useTables";
 
 export function TablesSummary() {
   const tables = useTables();
   return (
-    <>
-      {tables.length ? (
-        <>
-          <div className="flex flex-col gap-1 items-start">
-            {tables.map((table) => (
-              <NavButton
-                key={table.component}
-                to={`/tables/${table.component}`}
-                className="font-mono text-xs hover:text-white"
-              >
-                {table.tableId.namespace}:{table.tableId.name}
-              </NavButton>
-            ))}
-          </div>
-        </>
-      ) : (
-        <div>Waiting for tables…</div>
-      )}
-    </>
+    <div className="flex flex-col gap-1 items-start">
+      {tables.map((table) => (
+        <NavButton key={table.tableId} to={`/tables/${table.tableId}`} className="font-mono text-xs hover:text-white">
+          {table.namespace}:{table.name}
+        </NavButton>
+      ))}
+    </div>
   );
 }

@@ -1,28 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Bytes } from "../../src/Bytes.sol";
 import { EncodeArray } from "../../src/tightcoder/EncodeArray.sol";
 
-contract EncodeArrayTest is Test {
-  function testEncodeBytesArray() public {
-    bytes[] memory input = new bytes[](2);
-    input[0] = new bytes(32);
-    input[0][0] = 0x01;
-    input[0][31] = 0x02;
-    input[1] = new bytes(32);
-    input[1][0] = 0x03;
-    input[1][31] = 0x04;
-
-    // !gasreport encode packed bytes[]
-    bytes memory output = EncodeArray.encode(input);
-
-    assertEq(output.length, 64);
-    assertEq(uint256(Bytes.toBytes32(output, 0)), 0x0100000000000000000000000000000000000000000000000000000000000002);
-    assertEq(uint256(Bytes.toBytes32(output, 32)), 0x0300000000000000000000000000000000000000000000000000000000000004);
-  }
-
+contract EncodeArrayTest is Test, GasReporter {
   function testEncodeUint8Array() public {
     uint8 val0 = 0x01;
     uint8 val1 = 0x02;
@@ -30,8 +14,9 @@ contract EncodeArrayTest is Test {
     input[0] = val0;
     input[1] = val1;
 
-    // !gasreport encode packed uint8[]
+    startGasReport("encode packed uint8[]");
     bytes memory output = EncodeArray.encode(input);
+    endGasReport();
 
     assertEq(output, abi.encodePacked(val0, val1));
   }
@@ -45,8 +30,9 @@ contract EncodeArrayTest is Test {
     input[1] = val1;
     input[2] = val2;
 
-    // !gasreport encode packed uint16[]
+    startGasReport("encode packed uint16[]");
     bytes memory output = EncodeArray.encode(input);
+    endGasReport();
 
     assertEq(output, abi.encodePacked(val0, val1, val2));
   }
@@ -58,8 +44,9 @@ contract EncodeArrayTest is Test {
     input[0] = val0;
     input[1] = val1;
 
-    // !gasreport encode packed uint32[]
+    startGasReport("encode packed uint32[]");
     bytes memory output = EncodeArray.encode(input);
+    endGasReport();
 
     assertEq(output, abi.encodePacked(val0, val1));
   }

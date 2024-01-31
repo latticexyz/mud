@@ -11,21 +11,25 @@ import {
   // validation utils
   getDuplicates,
   parseStaticArray,
-  STORE_SELECTOR_MAX_LENGTH,
+  STORE_NAME_MAX_LENGTH,
   // config
   MUDCoreUserConfig,
   // schemas
   zObjectName,
-  zSelector,
   zUserEnum,
   zValueName,
+  zNamespace,
+  zName,
 } from "@latticexyz/config";
 import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
+import { UserType } from "@latticexyz/common/codegen";
+import { SchemaAbiType, isSchemaAbiType, schemaAbiTypes } from "@latticexyz/schema-type";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
 const zColumnName = zValueName;
 const zUserEnumName = zObjectName;
+const zUserTypeName = zObjectName;
 
 // Fields can use AbiType or one of user-defined wrapper types
 // (user types are refined later, based on the appropriate config options)
@@ -67,6 +71,36 @@ const zShorthandSchemaConfig = zFieldData.transform((fieldData) => {
 
 export const zSchemaConfig = zFullSchemaConfig.or(zShorthandSchemaConfig);
 
+type ResolvedSchema<
+  TSchema extends Record<string, string>,
+  TUserTypes extends Record<string, Pick<UserType, "internalType">>
+> = {
+  [key in keyof TSchema]: TSchema[key] extends keyof TUserTypes
+    ? TUserTypes[TSchema[key]]["internalType"]
+    : TSchema[key];
+};
+
+// TODO: add strong types to UserTypes config and use them here
+// (see https://github.com/latticexyz/mud/pull/1588)
+export function resolveUserTypes<
+  TSchema extends Record<string, string>,
+  TUserTypes extends Record<string, Pick<UserType, "internalType">>
+>(schema: TSchema, userTypes: TUserTypes): ResolvedSchema<TSchema, TUserTypes> {
+  const resolvedSchema: Record<string, SchemaAbiType> = {};
+  for (const [key, value] of Object.entries(schema)) {
+    if (isSchemaAbiType(value)) {
+      resolvedSchema[key] = value;
+    } else if (userTypes[value] !== undefined) {
+      resolvedSchema[key] = userTypes[value].internalType as SchemaAbiType;
+    } else {
+      const staticArray = parseStaticArray(value);
+      if (!staticArray) throw new Error(`Unexpected type: ${value}`);
+      resolvedSchema[key] = `${staticArray.elementType as StaticAbiType}[]`;
+    }
+  }
+  return resolvedSchema as ResolvedSchema<TSchema, TUserTypes>;
+}
+
 /************************************************************************
  *
  *    TABLE
@@ -85,19 +119,26 @@ export interface TableConfig<
   storeArgument?: boolean;
   /** Include a data struct and methods for it. Default is false for 1-column tables; true for multi-column tables. */
   dataStruct?: boolean;
-  /** Generate only `emitEphemeral` which emits an event without writing to storage. Default is false. */
-  ephemeral?: boolean;
-  /** Table's key schema names mapped to their types. Default is `{ key: "bytes32" }` */
+  /** Offchain tables don't write to onchain storage, but only emit events for offchain clients. Default is false. */
+  offchainOnly?: boolean;
+  /**
+   * Table's key names mapped to their types.
+   * Default is `{ key: "bytes32" }`
+   * Key names' first letter should be lowercase.
+   */
   keySchema?: Record<string, KeySchema<StaticUserTypes>>;
-  /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
-  schema: SchemaConfig<UserTypes>;
+  /**
+   * Table's field names mapped to their types.
+   * Field names' first letter should be lowercase.
+   */
+  valueSchema: SchemaConfig<UserTypes>;
 }
 
 export type FullTableConfig<
   UserTypes extends StringForUnion = StringForUnion,
   StaticUserTypes extends StringForUnion = StringForUnion
 > = Required<TableConfig<UserTypes, StaticUserTypes>> & {
-  schema: FullSchemaConfig<UserTypes>;
+  valueSchema: FullSchemaConfig<UserTypes>;
 };
 
 export interface ExpandTableConfig<T extends TableConfig<string, string>, TableName extends string>
@@ -108,29 +149,29 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
       name: TableName;
       tableIdArgument: typeof TABLE_DEFAULTS.tableIdArgument;
       storeArgument: typeof TABLE_DEFAULTS.storeArgument;
-      // dataStruct isn't expanded, because its value is conditional on the number of schema fields
+      // dataStruct isn't expanded, because its value is conditional on the number of value schema fields
       dataStruct: boolean;
       keySchema: typeof TABLE_DEFAULTS.keySchema;
-      ephemeral: typeof TABLE_DEFAULTS.ephemeral;
+      offchainOnly: typeof TABLE_DEFAULTS.offchainOnly;
     }
   > {
-  schema: ExpandSchemaConfig<T["schema"]>;
+  valueSchema: ExpandSchemaConfig<T["valueSchema"]>;
 }
 
 const zFullTableConfig = z
   .object({
     directory: z.string().default(TABLE_DEFAULTS.directory),
-    name: zSelector.optional(),
+    name: zName.optional(),
     tableIdArgument: z.boolean().default(TABLE_DEFAULTS.tableIdArgument),
     storeArgument: z.boolean().default(TABLE_DEFAULTS.storeArgument),
     dataStruct: z.boolean().optional(),
     keySchema: zKeySchema,
-    schema: zSchemaConfig,
-    ephemeral: z.boolean().default(TABLE_DEFAULTS.ephemeral),
+    valueSchema: zSchemaConfig,
+    offchainOnly: z.boolean().default(TABLE_DEFAULTS.offchainOnly),
   })
   .transform((arg) => {
-    // default dataStruct value depends on schema's length
-    if (Object.keys(arg.schema).length === 1) {
+    // default dataStruct value depends on value schema's length
+    if (Object.keys(arg.valueSchema).length === 1) {
       arg.dataStruct ??= false;
     } else {
       arg.dataStruct ??= true;
@@ -140,7 +181,7 @@ const zFullTableConfig = z
 
 const zShorthandTableConfig = zFieldData.transform((fieldData) => {
   return zFullTableConfig.parse({
-    schema: {
+    valueSchema: {
       value: fieldData,
     },
   });
@@ -163,7 +204,7 @@ export const zTablesConfig = z.record(zTableName, zTableConfig).transform((table
   // default name depends on tableName
   for (const tableName of Object.keys(tables)) {
     const table = tables[tableName];
-    table.name = tableName.slice(0, STORE_SELECTOR_MAX_LENGTH);
+    table.name = tableName.slice(0, STORE_NAME_MAX_LENGTH);
 
     tables[tableName] = table;
   }
@@ -177,7 +218,7 @@ export type FullTablesConfig<
 
 export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
   [TableName in keyof T]: T[TableName] extends FieldData<string>
-    ? ExpandTableConfig<{ schema: { value: T[TableName] } }, TableName extends string ? TableName : never>
+    ? ExpandTableConfig<{ valueSchema: { value: T[TableName] } }, TableName extends string ? TableName : never>
     : T[TableName] extends TableConfig<string, string>
     ? ExpandTableConfig<T[TableName], TableName extends string ? TableName : never>
     : // Weakly typed values get a weakly typed expansion.
@@ -187,7 +228,7 @@ export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
 
 /************************************************************************
  *
- *    USER TYPES
+ *    ENUMS
  *
  ************************************************************************/
 
@@ -228,6 +269,54 @@ export const zEnumsConfig = z.object({
 
 /************************************************************************
  *
+ *    USER TYPES
+ *
+ ************************************************************************/
+
+export type UserTypesConfig<UserTypeNames extends StringForUnion = StringForUnion> = never extends UserTypeNames
+  ? {
+      /**
+       * User types mapped to file paths from which to import them.
+       * Paths are treated as relative to root.
+       * Paths that don't start with a "." have foundry remappings applied to them first.
+       *
+       * (user types are inferred to be absent)
+       */
+      userTypes?: Record<UserTypeNames, UserType>;
+    }
+  : StringForUnion extends UserTypeNames
+  ? {
+      /**
+       * User types mapped to file paths from which to import them.
+       * Paths are treated as relative to root.
+       * Paths that don't start with a "." have foundry remappings applied to them first.
+       *
+       * (user types aren't inferred - use `mudConfig` or `storeConfig` helper, and `as const` for variables)
+       */
+      userTypes?: Record<UserTypeNames, UserType>;
+    }
+  : {
+      /**
+       * User types mapped to file paths from which to import them.
+       * Paths are treated as relative to root.
+       * Paths that don't start with a "." have foundry remappings applied to them first.
+       *
+       * User types defined here can be used as types in table schemas/keys
+       */
+      userTypes: Record<UserTypeNames, UserType>;
+    };
+
+const zUserTypeConfig = z.object({
+  filePath: z.string(),
+  internalType: z.enum(schemaAbiTypes),
+});
+
+export const zUserTypesConfig = z.object({
+  userTypes: z.record(zUserTypeName, zUserTypeConfig).default(DEFAULTS.userTypes),
+});
+
+/************************************************************************
+ *
  *    FINAL
  *
  ************************************************************************/
@@ -237,9 +326,11 @@ export const zEnumsConfig = z.object({
 export type MUDUserConfig<
   T extends MUDCoreUserConfig = MUDCoreUserConfig,
   EnumNames extends StringForUnion = StringForUnion,
-  StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
+  UserTypeNames extends StringForUnion = StringForUnion,
+  StaticUserTypes extends ExtractUserTypes<EnumNames | UserTypeNames> = ExtractUserTypes<EnumNames | UserTypeNames>
 > = T &
-  EnumsConfig<EnumNames> & {
+  EnumsConfig<EnumNames> &
+  UserTypesConfig<UserTypeNames> & {
     /**
      * Configuration for each table.
      *
@@ -254,21 +345,25 @@ export type MUDUserConfig<
     namespace?: string;
     /** Path for store package imports. Default is "@latticexyz/store/src/" */
     storeImportPath?: string;
-    /** Path to the file where common user types will be generated and imported from. Default is "Types" */
-    userTypesPath?: string;
+    /** Filename where common user types will be generated and imported from. Default is "common.sol" */
+    userTypesFilename?: string;
     /** Path to the directory where generated files will be placed. (Default is "codegen") */
     codegenDirectory?: string;
+    /** Filename where codegen index will be generated. Default is "index.sol" */
+    codegenIndexFilename?: string;
   };
 
 const StoreConfigUnrefined = z
   .object({
-    namespace: zSelector.default(DEFAULTS.namespace),
+    namespace: zNamespace.default(DEFAULTS.namespace),
     storeImportPath: z.string().default(PATH_DEFAULTS.storeImportPath),
     tables: zTablesConfig,
-    userTypesPath: z.string().default(PATH_DEFAULTS.userTypesPath),
+    userTypesFilename: z.string().default(PATH_DEFAULTS.userTypesFilename),
     codegenDirectory: z.string().default(PATH_DEFAULTS.codegenDirectory),
+    codegenIndexFilename: z.string().default(PATH_DEFAULTS.codegenIndexFilename),
   })
-  .merge(zEnumsConfig);
+  .merge(zEnumsConfig)
+  .merge(zUserTypesConfig);
 
 // finally validate global conditions
 export const zStoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
@@ -290,7 +385,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
   // Local table variables must be unique within the table
   for (const table of Object.values(config.tables)) {
     const keySchemaNames = Object.keys(table.keySchema);
-    const fieldNames = Object.keys(table.schema);
+    const fieldNames = Object.keys(table.valueSchema);
     const duplicateVariableNames = getDuplicates([...keySchemaNames, ...fieldNames]);
     if (duplicateVariableNames.length > 0) {
       ctx.addIssue({
@@ -301,14 +396,16 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
   }
   // Global names must be unique
   const tableLibraryNames = Object.keys(config.tables);
-  const staticUserTypeNames = Object.keys(config.enums);
+  const staticUserTypeNames = [...Object.keys(config.enums), ...Object.keys(config.userTypes)];
   const userTypeNames = staticUserTypeNames;
   const globalNames = [...tableLibraryNames, ...userTypeNames];
   const duplicateGlobalNames = getDuplicates(globalNames);
   if (duplicateGlobalNames.length > 0) {
     ctx.addIssue({
       code: ZodIssueCode.custom,
-      message: `Table library names, enum names must be globally unique: ${duplicateGlobalNames.join(", ")}`,
+      message: `Table library names, enum names, user type names must be globally unique: ${duplicateGlobalNames.join(
+        ", "
+      )}`,
     });
   }
   // Table names used for tableId must be unique
@@ -325,7 +422,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
     for (const keySchemaType of Object.values(table.keySchema)) {
       validateStaticAbiOrUserType(staticUserTypeNames, keySchemaType, ctx);
     }
-    for (const fieldType of Object.values(table.schema)) {
+    for (const fieldType of Object.values(table.valueSchema)) {
       validateAbiOrUserType(userTypeNames, staticUserTypeNames, fieldType, ctx);
     }
   }

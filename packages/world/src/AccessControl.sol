@@ -1,52 +1,66 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
-import { ResourceSelector } from "./ResourceSelector.sol";
-import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
-import { ResourceAccess } from "./tables/ResourceAccess.sol";
-import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
+import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
+import { IWorldErrors } from "./IWorldErrors.sol";
 
+import { ResourceAccess } from "./codegen/tables/ResourceAccess.sol";
+import { NamespaceOwner } from "./codegen/tables/NamespaceOwner.sol";
+
+/**
+ * @title AccessControl
+ * @dev Provides access control functions for checking permissions and ownership within a namespace.
+ */
 library AccessControl {
-  using ResourceSelector for bytes32;
+  using WorldResourceIdInstance for ResourceId;
 
   /**
-   * Returns true if the caller has access to the namespace or name, false otherwise.
+   * @notice Checks if the caller has access to the given resource ID or its namespace.
+   * @param resourceId The resource ID to check access for.
+   * @param caller The address of the caller.
+   * @return true if the caller has access, false otherwise.
    */
-  function hasAccess(bytes16 namespace, bytes16 name, address caller) internal view returns (bool) {
+  function hasAccess(ResourceId resourceId, address caller) internal view returns (bool) {
     return
-      address(this) == caller || // First check if the World is calling itself
-      ResourceAccess.get(ResourceSelector.from(namespace, 0), caller) || // Then check access based on the namespace
-      ResourceAccess.get(ResourceSelector.from(namespace, name), caller); // If caller has no namespace access, check access on the name
+      // First check access based on the namespace. If caller has no namespace access, check access on the resource.
+      ResourceAccess._get(resourceId.getNamespaceId(), caller) || ResourceAccess._get(resourceId, caller);
   }
 
   /**
-   * Check for access at the given namespace or name.
-   * Returns the resourceSelector if the caller has access.
-   * Reverts with AccessDenied if the caller has no access.
+   * @notice Check for access at the given namespace or resource.
+   * @param resourceId The resource ID to check access for.
+   * @param caller The address of the caller.
+   * @dev Reverts with IWorldErrors.World_AccessDenied if access is denied.
    */
-  function requireAccess(
-    bytes16 namespace,
-    bytes16 name,
-    address caller
-  ) internal view returns (bytes32 resourceSelector) {
-    resourceSelector = ResourceSelector.from(namespace, name);
-
+  function requireAccess(ResourceId resourceId, address caller) internal view {
     // Check if the given caller has access to the given namespace or name
-    if (!hasAccess(namespace, name, caller)) {
-      revert IWorldErrors.AccessDenied(resourceSelector.toString(), caller);
+    if (!hasAccess(resourceId, caller)) {
+      revert IWorldErrors.World_AccessDenied(resourceId.toString(), caller);
     }
   }
 
-  function requireOwnerOrSelf(
-    bytes16 namespace,
-    bytes16 name,
-    address caller
-  ) internal view returns (bytes32 resourceSelector) {
-    resourceSelector = ResourceSelector.from(namespace, name);
+  /**
+   * @notice Check for ownership of the namespace of the given resource ID.
+   * @dev Reverts with IWorldErrors.World_AccessDenied if caller is not owner of the namespace of the resource.
+   * @param resourceId The resource ID to check ownership for.
+   * @param caller The address of the caller.
+   */
+  function requireOwner(ResourceId resourceId, address caller) internal view {
+    if (NamespaceOwner._get(resourceId.getNamespaceId()) != caller) {
+      revert IWorldErrors.World_AccessDenied(resourceId.toString(), caller);
+    }
+  }
 
-    if (address(this) != caller && NamespaceOwner.get(namespace) != caller) {
-      revert IWorldErrors.AccessDenied(resourceSelector.toString(), caller);
+  /**
+   * @notice Check for existence of the given resource ID.
+   * @dev Reverts with IWorldErrors.World_ResourceNotFound if the resource does not exist.
+   * @param resourceId The resource ID to check existence for.
+   */
+  function requireExistence(ResourceId resourceId) internal view {
+    if (!ResourceIds._getExists(resourceId)) {
+      revert IWorldErrors.World_ResourceNotFound(resourceId, resourceId.toString());
     }
   }
 }

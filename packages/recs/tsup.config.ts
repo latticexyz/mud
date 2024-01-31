@@ -1,10 +1,10 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts"],
+  entry: ["src/index.ts", "src/deprecated/index.ts"],
   target: "esnext",
   format: ["esm"],
-  dts: false,
+  dts: true,
   sourcemap: true,
   clean: true,
   minify: true,

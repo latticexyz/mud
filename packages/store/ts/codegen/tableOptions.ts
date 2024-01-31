@@ -1,23 +1,33 @@
 import path from "path";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type/deprecated";
 import {
-  RelativeImportDatum,
+  ImportDatum,
   RenderDynamicField,
   RenderField,
   RenderKeyTuple,
   RenderStaticField,
+  SolidityUserDefinedType,
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
 import { StoreConfig } from "../config";
 import { getSchemaTypeInfo, importForAbiOrUserType, resolveAbiOrUserType } from "./userType";
 
 export interface TableOptions {
+  /** Path where the file is expected to be written (relative to project root) */
   outputPath: string;
+  /** Name of the table, as used in filename and library name */
   tableName: string;
+  /** Options for `renderTable` function */
   renderOptions: RenderTableOptions;
 }
 
-export function getTableOptions(config: StoreConfig): TableOptions[] {
+/**
+ * Transforms store config and available solidity user types into useful options for `tablegen` and `renderTable`
+ */
+export function getTableOptions(
+  config: StoreConfig,
+  solidityUserTypes: Record<string, SolidityUserDefinedType>
+): TableOptions[] {
   const storeImportPath = config.storeImportPath;
 
   const options = [];
@@ -26,18 +36,18 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
 
     // struct adds methods to get/set all values at once
     const withStruct = tableData.dataStruct;
-    // operate on all fields at once; for only 1 field keep them only if struct is also kept
-    const withRecordMethods = withStruct || Object.keys(tableData.schema).length > 1;
-    // field methods can be simply get/set if there's only 1 field and no record methods
-    const noFieldMethodSuffix = !withRecordMethods && Object.keys(tableData.schema).length === 1;
+    // operate on all fields at once; always render for offchain tables; for only 1 field keep them if struct is also kept
+    const withRecordMethods = withStruct || tableData.offchainOnly || Object.keys(tableData.valueSchema).length > 1;
+    // field methods can include simply get/set if there's only 1 field and no record methods
+    const withSuffixlessFieldMethods = !withRecordMethods && Object.keys(tableData.valueSchema).length === 1;
     // list of any symbols that need to be imported
-    const imports: RelativeImportDatum[] = [];
+    const imports: ImportDatum[] = [];
 
     const keyTuple = Object.keys(tableData.keySchema).map((name) => {
       const abiOrUserType = tableData.keySchema[name];
-      const { renderType } = resolveAbiOrUserType(abiOrUserType, config);
+      const { renderType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
 
-      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
+      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config, solidityUserTypes);
       if (importDatum) imports.push(importDatum);
 
       if (renderType.isDynamic) throw new Error(`Parsing error: found dynamic key ${name} in table ${tableName}`);
@@ -50,11 +60,11 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
       return keyTuple;
     });
 
-    const fields = Object.keys(tableData.schema).map((name) => {
-      const abiOrUserType = tableData.schema[name];
-      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, config);
+    const fields = Object.keys(tableData.valueSchema).map((name) => {
+      const abiOrUserType = tableData.valueSchema[name];
+      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
 
-      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
+      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config, solidityUserTypes);
       if (importDatum) imports.push(importDatum);
 
       const elementType = SchemaTypeArrayToElement[schemaType];
@@ -62,7 +72,6 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         ...renderType,
         arrayElement: elementType !== undefined ? getSchemaTypeInfo(elementType) : undefined,
         name,
-        methodNameSuffix: noFieldMethodSuffix ? "" : `${name[0].toUpperCase()}${name.slice(1)}`,
       };
       return field;
     });
@@ -72,17 +81,14 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
 
     // With tableIdArgument: tableId is a dynamic argument for each method
     // Without tableIdArgument: tableId is a file-level constant generated from `staticResourceData`
-    const staticResourceData = (() => {
-      if (tableData.tableIdArgument) {
-        return;
-      } else {
-        return {
+    const staticResourceData = tableData.tableIdArgument
+      ? undefined
+      : {
           tableIdName: tableName + "TableId",
           namespace: config.namespace,
           name: tableData.name,
+          offchainOnly: tableData.offchainOnly,
         };
-      }
-    })();
 
     options.push({
       outputPath: path.join(tableData.directory, `${tableName}.sol`),
@@ -97,9 +103,10 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         fields,
         staticFields,
         dynamicFields,
-        withFieldMethods: !tableData.ephemeral,
-        withRecordMethods: withRecordMethods && !tableData.ephemeral,
-        withEphemeralMethods: tableData.ephemeral,
+        withGetters: !tableData.offchainOnly,
+        withRecordMethods,
+        withDynamicFieldMethods: !tableData.offchainOnly,
+        withSuffixlessFieldMethods,
         storeArgument: tableData.storeArgument,
       },
     });

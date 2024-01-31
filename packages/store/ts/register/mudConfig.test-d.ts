@@ -12,12 +12,12 @@ describe("mudConfig", () => {
             keySchema: {
               a: "Enum1";
             };
-            schema: {
+            valueSchema: {
               b: "Enum2";
             };
           };
           Table2: {
-            schema: {
+            valueSchema: {
               a: "uint32";
             };
           };
@@ -28,29 +28,31 @@ describe("mudConfig", () => {
         };
       }>
     >
-  >().toEqualTypeOf<{
+  >().toMatchTypeOf<{
     enums: {
       Enum1: ["E1"];
       Enum2: ["E1"];
     };
+    userTypes: Record<string, never>;
     tables: {
       Table1: {
         keySchema: {
           a: "Enum1";
         };
-        schema: {
+        valueSchema: {
           b: "Enum2";
         };
       };
       Table2: {
-        schema: {
+        valueSchema: {
           a: "uint32";
         };
       };
     };
     namespace: "";
     storeImportPath: "@latticexyz/store/src/";
-    userTypesPath: "Types";
+    userTypesFilename: "common.sol";
     codegenDirectory: "codegen";
+    codegenIndexFilename: "index.sol";
   }>();
 });

@@ -1,5 +1,121 @@
 # Change Log
 
+## 2.0.0-next.16
+
+### Patch Changes
+
+- @latticexyz/utils@2.0.0-next.16
+
+## 2.0.0-next.15
+
+### Patch Changes
+
+- 59054203: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- Updated dependencies [59054203]
+  - @latticexyz/utils@2.0.0-next.15
+
+## 2.0.0-next.14
+
+### Patch Changes
+
+- @latticexyz/utils@2.0.0-next.14
+
+## 2.0.0-next.13
+
+### Patch Changes
+
+- Updated dependencies [52182f70]
+  - @latticexyz/utils@2.0.0-next.13
+
+## 2.0.0-next.12
+
+### Patch Changes
+
+- @latticexyz/utils@2.0.0-next.12
+
+## 2.0.0-next.11
+
+### Patch Changes
+
+- @latticexyz/utils@2.0.0-next.11
+
+## 2.0.0-next.10
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.10
+
+## 2.0.0-next.9
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.9
+
+## 2.0.0-next.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.8
+
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.7
+
+## 2.0.0-next.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.6
+
+## 2.0.0-next.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.5
+
+## 2.0.0-next.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.4
+
+## 2.0.0-next.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.3
+
+## 2.0.0-next.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.2
+
+## 2.0.0-next.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.1
+
+## 2.0.0-next.0
+
+### Patch Changes
+
+- Updated dependencies [[`4e4a3415`](https://github.com/latticexyz/mud/commit/4e4a34150aeae988c8e61e25d55c227afb6c2d4b)]:
+  - @latticexyz/utils@2.0.0-next.0
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 

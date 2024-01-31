@@ -1,32 +1,47 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.24;
 
-import "forge-std/Test.sol";
-import { Vector2, Vector2Data, Vector2TableId } from "../src/codegen/Tables.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
+import { StoreMock } from "../test/StoreMock.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract Vector2Test is Test, StoreReadWithStubs {
+import { Vector2, Vector2Data, Vector2TableId } from "./codegen/index.sol";
+
+contract Vector2Test is Test, GasReporter, StoreMock {
+  function testRegisterAndGetFieldLayout() public {
+    startGasReport("register Vector2 field layout");
+    Vector2.register();
+    endGasReport();
+
+    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(Vector2TableId);
+    FieldLayout declaredFieldLayout = Vector2.getFieldLayout();
+
+    assertEq(FieldLayout.unwrap(registeredFieldLayout), FieldLayout.unwrap(declaredFieldLayout));
+  }
+
   function testRegisterAndGetSchema() public {
-    // !gasreport register Vector2 schema
-    Vector2.registerSchema();
+    Vector2.register();
 
-    Schema registeredSchema = StoreCore.getSchema(Vector2TableId);
-    Schema declaredSchema = Vector2.getSchema();
+    Schema registeredSchema = StoreCore.getValueSchema(Vector2TableId);
+    Schema declaredSchema = Vector2.getValueSchema();
 
-    assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
+    assertEq(Schema.unwrap(registeredSchema), Schema.unwrap(declaredSchema));
   }
 
   function testSetAndGet() public {
-    Vector2.registerSchema();
+    Vector2.register();
     bytes32 key = keccak256("somekey");
 
-    // !gasreport set Vector2 record
+    startGasReport("set Vector2 record");
     Vector2.set({ key: key, x: 1, y: 2 });
+    endGasReport();
 
-    // !gasreport get Vector2 record
+    startGasReport("get Vector2 record");
     Vector2Data memory vector = Vector2.get(key);
+    endGasReport();
 
     assertEq(vector.x, 1);
     assertEq(vector.y, 2);

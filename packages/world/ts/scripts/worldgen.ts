@@ -3,9 +3,9 @@ import path, { basename } from "path";
 import { rmSync } from "fs";
 import { loadConfig } from "@latticexyz/config/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
-import { WorldConfig } from "../library";
 import { worldgen } from "../node";
 import { StoreConfig } from "@latticexyz/store";
+import { WorldConfig } from "../config/types";
 
 // TODO dedupe this and cli's worldgen command
 const configPath = undefined;
@@ -27,4 +27,6 @@ const outputBaseDirectory = path.join(srcDir, mudConfig.codegenDirectory);
 if (clean) rmSync(path.join(outputBaseDirectory, mudConfig.worldgenDirectory), { recursive: true, force: true });
 
 // generate new interfaces
-await worldgen(mudConfig, existingContracts, outputBaseDirectory);
+// override the namespace to be the root namespace for generating the core system interface
+const rootMudConfig = { ...mudConfig, namespace: "" };
+await worldgen(rootMudConfig, existingContracts, outputBaseDirectory);

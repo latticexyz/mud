@@ -1,7 +1,10 @@
 import { renderArguments, renderList, renderedSolidityHeader } from "./common";
 import { RenderEnum } from "./types";
 
-export function renderEnums(enums: RenderEnum[]) {
+/**
+ * Render a list of enum data as solidity enum definitions
+ */
+export function renderEnums(enums: RenderEnum[]): string {
   let result = renderedSolidityHeader;
 
   result += renderList(

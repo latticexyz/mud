@@ -2,6 +2,7 @@ import { useComponentValue } from "@latticexyz/react";
 import React from "react";
 import { useMUD } from "../store";
 import styled from "styled-components";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
 
 const TitleContainer = styled.div`
   position: absolute;
@@ -15,7 +16,6 @@ export function Title() {
   const {
     networkLayer: {
       components: { CounterTable },
-      singletonEntity,
     },
   } = useMUD();
 

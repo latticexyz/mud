@@ -1,6 +1,0 @@
-AddressComponent
-BoolComponent
-CoordComponent
-StringComponent
-Uint32Component
-Uint256Component

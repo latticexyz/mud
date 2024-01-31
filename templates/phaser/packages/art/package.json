@@ -15,13 +15,12 @@
     "@types/glob": "^7.2.0",
     "@types/node": "^18.0.3",
     "ejs": "^3.1.8",
-    "ethers": "^5.7.0",
     "free-tex-packer-cli": "^0.3.0",
     "free-tex-packer-core": "^0.3.4",
     "glob": "^8.0.3",
     "optimist": "^0.6.1",
     "ts-node": "^10.8.2",
-    "typescript": "^4.7.4",
+    "typescript": "5.1.6",
     "xml-js": "^1.6.11"
   }
 }

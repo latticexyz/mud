@@ -6,7 +6,7 @@ import { worldgen } from "@latticexyz/world/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import path from "path";
 import { rmSync } from "fs";
-import { getExistingContracts } from "../utils";
+import { getExistingContracts } from "../utils/getExistingContracts";
 
 type Options = {
   configPath?: string;
@@ -23,7 +23,11 @@ const commandModule: CommandModule<Options, Options> = {
   builder(yargs) {
     return yargs.options({
       configPath: { type: "string", desc: "Path to the config file" },
-      clean: { type: "boolean", desc: "Clear the worldgen directory before generating new interfaces" },
+      clean: {
+        type: "boolean",
+        desc: "Clear the worldgen directory before generating new interfaces (defaults to true)",
+        default: true,
+      },
     });
   },
 

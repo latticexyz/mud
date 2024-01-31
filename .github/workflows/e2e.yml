@@ -1,0 +1,55 @@
+name: End-to-end tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  main:
+    name: Run end-to-end tests
+    runs-on: ubuntu-latest-16-cores
+    services:
+      postgres:
+        image: postgres:12.1-alpine
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build
+        uses: ./.github/actions/build
+
+      - name: Install end-to-end testing dependencies
+        working-directory: ./e2e
+        run: pnpm install
+
+      - name: Install Playwright Dependencies
+        working-directory: ./e2e
+        run: pnpm run playwright-install
+
+      - name: Clean end-to-end project
+        working-directory: ./e2e
+        run: pnpm run clean
+
+      - name: Build end-to-end project
+        working-directory: ./e2e
+        run: pnpm run build
+
+      - name: Outdated files, run `pnpm run build` in `e2e` and commit them
+        uses: ./.github/actions/require-empty-diff
+
+      - name: Run sync tests
+        env:
+          DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
+        working-directory: ./e2e/packages/sync-test
+        run: pnpm test:ci
