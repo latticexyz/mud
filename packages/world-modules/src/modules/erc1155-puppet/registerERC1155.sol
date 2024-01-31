@@ -9,8 +9,8 @@ import { ERC1155Module } from "./ERC1155Module.sol";
 import { MODULE_NAMESPACE_ID, ERC1155_REGISTRY_TABLE_ID } from "./constants.sol";
 import { IERC1155Mintable } from "./IERC1155Mintable.sol";
 
-import { MetadataData } from "../tokens/tables/Metadata.sol";
-import { Registry } from "../tokens//tables/Registry.sol";
+import { TokenMetadataData } from "../tokens/tables/TokenMetadata.sol";
+import { TokenRegistry } from "../tokens//tables/TokenRegistry.sol";
 
 /**
  * @notice Register a new ERC1155 token with the given metadata in a given namespace
@@ -19,7 +19,7 @@ import { Registry } from "../tokens//tables/Registry.sol";
 function registerERC1155(
   IBaseWorld world,
   bytes14 namespace,
-  MetadataData memory metadata
+  TokenMetadataData memory metadata
 ) returns (IERC1155Mintable token) {
   // Get the ERC1155 module
   ERC1155Module erc1155Module = ERC1155Module(NamespaceOwner.get(MODULE_NAMESPACE_ID));
@@ -31,5 +31,5 @@ function registerERC1155(
   world.installModule(erc1155Module, abi.encode(namespace, metadata));
 
   // Return the newly created ERC1155 token
-  token = IERC1155Mintable(Registry.get(ERC1155_REGISTRY_TABLE_ID, WorldResourceIdLib.encodeNamespace(namespace)));
+  token = IERC1155Mintable(TokenRegistry.get(ERC1155_REGISTRY_TABLE_ID, WorldResourceIdLib.encodeNamespace(namespace)));
 }

@@ -24,13 +24,13 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0000000300000000000000000000000000000000000000000000000000000000
 );
 
-struct MetadataData {
+struct ERC721MetadataData {
   string name;
   string symbol;
   string baseURI;
 }
 
-library Metadata {
+library ERC721Metadata {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.
@@ -542,7 +542,7 @@ library Metadata {
   /**
    * @notice Get the full data.
    */
-  function get(ResourceId _tableId) internal view returns (MetadataData memory _table) {
+  function get(ResourceId _tableId) internal view returns (ERC721MetadataData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
@@ -556,7 +556,7 @@ library Metadata {
   /**
    * @notice Get the full data.
    */
-  function _get(ResourceId _tableId) internal view returns (MetadataData memory _table) {
+  function _get(ResourceId _tableId) internal view returns (ERC721MetadataData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
@@ -596,7 +596,7 @@ library Metadata {
   /**
    * @notice Set the full data using the data struct.
    */
-  function set(ResourceId _tableId, MetadataData memory _table) internal {
+  function set(ResourceId _tableId, ERC721MetadataData memory _table) internal {
     bytes memory _staticData;
     PackedCounter _encodedLengths = encodeLengths(_table.name, _table.symbol, _table.baseURI);
     bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol, _table.baseURI);
@@ -609,7 +609,7 @@ library Metadata {
   /**
    * @notice Set the full data using the data struct.
    */
-  function _set(ResourceId _tableId, MetadataData memory _table) internal {
+  function _set(ResourceId _tableId, ERC721MetadataData memory _table) internal {
     bytes memory _staticData;
     PackedCounter _encodedLengths = encodeLengths(_table.name, _table.symbol, _table.baseURI);
     bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol, _table.baseURI);
@@ -656,7 +656,7 @@ library Metadata {
     bytes memory,
     PackedCounter _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (MetadataData memory _table) {
+  ) internal pure returns (ERC721MetadataData memory _table) {
     (_table.name, _table.symbol, _table.baseURI) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 

@@ -14,11 +14,11 @@ import { Balances } from "../tokens/tables/Balances.sol";
 import { IERC721Mintable } from "./IERC721Mintable.sol";
 import { IERC721Receiver } from "./IERC721Receiver.sol";
 
-import { Metadata } from "../tokens/tables/Metadata.sol";
-import { OperatorApproval } from "../tokens/tables/OperatorApproval.sol";
-import { ERC721Owners } from "./tables/ERC721Owners.sol";
-import { ERC721TokenApproval } from "./tables/ERC721TokenApproval.sol";
-import { TokenURI } from "../tokens/tables/TokenURI.sol";
+import { ERC721Metadata } from "./tables/ERC721Metadata.sol";
+import { OperatorApproval } from "./tables/OperatorApproval.sol";
+import { Owners } from "./tables/Owners.sol";
+import { TokenApproval } from "./tables/TokenApproval.sol";
+import { TokenURI } from "./tables/TokenURI.sol";
 
 import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId } from "./utils.sol";
 
@@ -46,14 +46,14 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
    * @dev See {IERC721Metadata-name}.
    */
   function name() public view virtual returns (string memory) {
-    return Metadata.getName(_metadataTableId(_namespace()));
+    return ERC721Metadata.getName(_metadataTableId(_namespace()));
   }
 
   /**
    * @dev See {IERC721Metadata-symbol}.
    */
   function symbol() public view virtual returns (string memory) {
-    return Metadata.getSymbol(_metadataTableId(_namespace()));
+    return ERC721Metadata.getSymbol(_metadataTableId(_namespace()));
   }
 
   /**
@@ -73,7 +73,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
    * token will be the concatenation of the `baseURI` and the `tokenId`.
    */
   function _baseURI() internal view virtual returns (string memory) {
-    return Metadata.getBaseURI(_metadataTableId(_namespace()));
+    return ERC721Metadata.getBaseURI(_metadataTableId(_namespace()));
   }
 
   /**
@@ -201,14 +201,14 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
    * `balanceOf(a)` must be equal to the number of tokens such that `_ownerOf(tokenId)` is `a`.
    */
   function _ownerOf(uint256 tokenId) internal view virtual returns (address) {
-    return ERC721Owners.get(_ownersTableId(_namespace()), tokenId);
+    return Owners.get(_ownersTableId(_namespace()), tokenId);
   }
 
   /**
    * @dev Returns the approved address for `tokenId`. Returns 0 if `tokenId` is not minted.
    */
   function _getApproved(uint256 tokenId) internal view virtual returns (address) {
-    return ERC721TokenApproval.get(_tokenApprovalTableId(_namespace()), tokenId);
+    return TokenApproval.get(_tokenApprovalTableId(_namespace()), tokenId);
   }
 
   /**
@@ -295,7 +295,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
       }
     }
 
-    ERC721Owners.set(_ownersTableId(_namespace()), tokenId, to);
+    Owners.set(_ownersTableId(_namespace()), tokenId, to);
 
     // Emit Transfer event on puppet
     puppet().log(Transfer.selector, toTopic(from), toTopic(to), toTopic(tokenId), new bytes(0));
@@ -455,7 +455,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
       }
     }
 
-    ERC721TokenApproval.set(_tokenApprovalTableId(_namespace()), tokenId, to);
+    TokenApproval.set(_tokenApprovalTableId(_namespace()), tokenId, to);
   }
 
   /**

@@ -5,8 +5,8 @@ pragma solidity ^0.8.20;
 
 import { ERC1155System } from "./ERC1155System.sol";
 
-import { Metadata } from "../tokens/tables/Metadata.sol";
-import { TokenURI } from "../tokens/tables/TokenURI.sol";
+import { TokenMetadata } from "../tokens/tables/TokenMetadata.sol";
+import { TokenURIStorage } from "../tokens/tables/TokenURIStorage.sol";
 
 import { _tokenUriTableId, _metadataTableId } from "./utils.sol";
 
@@ -37,12 +37,12 @@ contract ERC1155URIStorageSystem is ERC1155System {
    *   uri value set, then the result is empty.
    */
   function uri(uint256 tokenId) public view virtual override returns (string memory) {
-    string memory tokenURI = TokenURI.get(_tokenUriTableId(_namespace()), tokenId);
+    string memory tokenURI = TokenURIStorage.get(_tokenUriTableId(_namespace()), tokenId);
 
     // If token URI is set, concatenate base URI and tokenURI (via string.concat).
     return
       bytes(tokenURI).length > 0
-        ? string.concat(Metadata.getBaseURI(_metadataTableId(_namespace())), tokenURI)
+        ? string.concat(TokenMetadata.getBaseURI(_metadataTableId(_namespace())), tokenURI)
         : super.uri(tokenId);
   }
 
@@ -50,7 +50,7 @@ contract ERC1155URIStorageSystem is ERC1155System {
    * @dev Sets `tokenURI` as the tokenURI of `tokenId`.
    */
   function _setURI(uint256 tokenId, string memory tokenURI) internal virtual {
-    TokenURI.set(_tokenUriTableId(_namespace()), tokenId, tokenURI);
+    TokenURIStorage.set(_tokenUriTableId(_namespace()), tokenId, tokenURI);
     emit URI(uri(tokenId), tokenId);
   }
 
@@ -58,6 +58,6 @@ contract ERC1155URIStorageSystem is ERC1155System {
    * @dev Sets `baseURI` as the `_baseURI` for all tokens
    */
   function _setBaseURI(string memory baseURI) internal virtual {
-    Metadata.setBaseURI(_metadataTableId(_namespace()), baseURI);
+    TokenMetadata.setBaseURI(_metadataTableId(_namespace()), baseURI);
   }
 }

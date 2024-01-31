@@ -21,8 +21,8 @@ import { IERC1155Errors } from "./IERC1155Errors.sol";
 import { IERC1155Events } from "./IERC1155Events.sol";
 
 import { ERC1155Balances } from "./tables/ERC1155Balances.sol";
-import { Metadata } from "../tokens/tables/Metadata.sol";
-import { OperatorApproval } from "../tokens/tables/OperatorApproval.sol";
+import { TokenMetadata } from "../tokens/tables/TokenMetadata.sol";
+import { TokenOperatorApproval } from "../tokens/tables/TokenOperatorApproval.sol";
 
 import { _balancesTableId, _metadataTableId, _operatorApprovalTableId } from "./utils.sol";
 
@@ -57,7 +57,7 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, Syste
    * actual token type ID.
    */
   function uri(uint256 /* id */) public view virtual returns (string memory) {
-    return Metadata.getBaseURI(_metadataTableId(_namespace()));
+    return TokenMetadata.getBaseURI(_metadataTableId(_namespace()));
   }
 
   /**
@@ -102,7 +102,7 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, Syste
    * @dev See {IERC1155-isApprovedForAll}.
    */
   function isApprovedForAll(address account, address operator) public view virtual returns (bool) {
-    return OperatorApproval.get(_operatorApprovalTableId(_namespace()), account, operator);
+    return TokenOperatorApproval.get(_operatorApprovalTableId(_namespace()), account, operator);
   }
 
   /**
@@ -316,7 +316,7 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, Syste
    * this function emits no events.
    */
   function _setURI(string memory newuri) internal virtual {
-    Metadata.setBaseURI(_metadataTableId(_namespace()), newuri);
+    TokenMetadata.setBaseURI(_metadataTableId(_namespace()), newuri);
   }
 
   /**
@@ -406,7 +406,7 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, Syste
     if (operator == address(0)) {
       revert ERC1155InvalidOperator(address(0));
     }
-    OperatorApproval.set(_operatorApprovalTableId(_namespace()), owner, operator, approved);
+    TokenOperatorApproval.set(_operatorApprovalTableId(_namespace()), owner, operator, approved);
     //_operatorApprovals[owner][operator] = approved;
     emit ApprovalForAll(owner, operator, approved);
   }

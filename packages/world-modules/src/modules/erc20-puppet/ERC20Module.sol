@@ -16,7 +16,7 @@ import { MODULE_NAMESPACE, MODULE_NAMESPACE_ID, ERC20_REGISTRY_TABLE_ID } from "
 import { _allowancesTableId, _balancesTableId, _metadataTableId, _erc20SystemId } from "./utils.sol";
 import { ERC20System } from "./ERC20System.sol";
 
-import { Registry } from "../tokens/tables/Registry.sol";
+import { ERC20Registry } from "./tables/ERC20Registry.sol";
 import { Allowances } from "./tables/Allowances.sol";
 import { ERC20Metadata, ERC20MetadataData } from "./tables/ERC20Metadata.sol";
 
@@ -58,9 +58,9 @@ contract ERC20Module is Module {
     // Register the ERC20 in the ERC20Registry
     if (!ResourceIds.getExists(ERC20_REGISTRY_TABLE_ID)) {
       world.registerNamespace(MODULE_NAMESPACE_ID);
-      Registry.register(ERC20_REGISTRY_TABLE_ID);
+      ERC20Registry.register(ERC20_REGISTRY_TABLE_ID);
     }
-    Registry.set(ERC20_REGISTRY_TABLE_ID, namespaceId, puppet);
+    ERC20Registry.set(ERC20_REGISTRY_TABLE_ID, namespaceId, puppet);
   }
 
   function installRoot(bytes memory) public pure {

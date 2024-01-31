@@ -20,11 +20,14 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
+// Import user types
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0014010014000000000000000000000000000000000000000000000000000000
 );
 
-library ERC721TokenApproval {
+library ERC721Registry {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.
@@ -39,7 +42,7 @@ library ERC721TokenApproval {
    */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _keySchema = new SchemaType[](1);
-    _keySchema[0] = SchemaType.UINT256;
+    _keySchema[0] = SchemaType.BYTES32;
 
     return SchemaLib.encode(_keySchema);
   }
@@ -61,7 +64,7 @@ library ERC721TokenApproval {
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
-    keyNames[0] = "tokenId";
+    keyNames[0] = "namespaceId";
   }
 
   /**
@@ -70,7 +73,7 @@ library ERC721TokenApproval {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
-    fieldNames[0] = "account";
+    fieldNames[0] = "tokenAddress";
   }
 
   /**
@@ -88,95 +91,95 @@ library ERC721TokenApproval {
   }
 
   /**
-   * @notice Get account.
+   * @notice Get tokenAddress.
    */
-  function getAccount(ResourceId _tableId, uint256 tokenId) internal view returns (address account) {
+  function getTokenAddress(ResourceId _tableId, ResourceId namespaceId) internal view returns (address tokenAddress) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /**
-   * @notice Get account.
+   * @notice Get tokenAddress.
    */
-  function _getAccount(ResourceId _tableId, uint256 tokenId) internal view returns (address account) {
+  function _getTokenAddress(ResourceId _tableId, ResourceId namespaceId) internal view returns (address tokenAddress) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /**
-   * @notice Get account.
+   * @notice Get tokenAddress.
    */
-  function get(ResourceId _tableId, uint256 tokenId) internal view returns (address account) {
+  function get(ResourceId _tableId, ResourceId namespaceId) internal view returns (address tokenAddress) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /**
-   * @notice Get account.
+   * @notice Get tokenAddress.
    */
-  function _get(ResourceId _tableId, uint256 tokenId) internal view returns (address account) {
+  function _get(ResourceId _tableId, ResourceId namespaceId) internal view returns (address tokenAddress) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (address(bytes20(_blob)));
   }
 
   /**
-   * @notice Set account.
+   * @notice Set tokenAddress.
    */
-  function setAccount(ResourceId _tableId, uint256 tokenId, address account) internal {
+  function setTokenAddress(ResourceId _tableId, ResourceId namespaceId, address tokenAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((account)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((tokenAddress)), _fieldLayout);
   }
 
   /**
-   * @notice Set account.
+   * @notice Set tokenAddress.
    */
-  function _setAccount(ResourceId _tableId, uint256 tokenId, address account) internal {
+  function _setTokenAddress(ResourceId _tableId, ResourceId namespaceId, address tokenAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((account)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((tokenAddress)), _fieldLayout);
   }
 
   /**
-   * @notice Set account.
+   * @notice Set tokenAddress.
    */
-  function set(ResourceId _tableId, uint256 tokenId, address account) internal {
+  function set(ResourceId _tableId, ResourceId namespaceId, address tokenAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((account)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((tokenAddress)), _fieldLayout);
   }
 
   /**
-   * @notice Set account.
+   * @notice Set tokenAddress.
    */
-  function _set(ResourceId _tableId, uint256 tokenId, address account) internal {
+  function _set(ResourceId _tableId, ResourceId namespaceId, address tokenAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((account)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((tokenAddress)), _fieldLayout);
   }
 
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(ResourceId _tableId, uint256 tokenId) internal {
+  function deleteRecord(ResourceId _tableId, ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -184,9 +187,9 @@ library ERC721TokenApproval {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(ResourceId _tableId, uint256 tokenId) internal {
+  function _deleteRecord(ResourceId _tableId, ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -195,8 +198,8 @@ library ERC721TokenApproval {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(address account) internal pure returns (bytes memory) {
-    return abi.encodePacked(account);
+  function encodeStatic(address tokenAddress) internal pure returns (bytes memory) {
+    return abi.encodePacked(tokenAddress);
   }
 
   /**
@@ -205,8 +208,8 @@ library ERC721TokenApproval {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(address account) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(account);
+  function encode(address tokenAddress) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+    bytes memory _staticData = encodeStatic(tokenAddress);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -217,9 +220,9 @@ library ERC721TokenApproval {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple(uint256 tokenId) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(ResourceId namespaceId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(tokenId));
+    _keyTuple[0] = ResourceId.unwrap(namespaceId);
 
     return _keyTuple;
   }

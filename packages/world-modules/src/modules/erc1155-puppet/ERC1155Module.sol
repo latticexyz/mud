@@ -18,10 +18,10 @@ import { _erc1155SystemId, _tokenUriTableId, _balancesTableId, _metadataTableId,
 import { ERC1155System } from "./ERC1155System.sol";
 
 import { ERC1155Balances } from "./tables/ERC1155Balances.sol";
-import { OperatorApproval } from "../tokens/tables/OperatorApproval.sol";
-import { TokenURI } from "../tokens/tables/TokenURI.sol";
-import { Registry } from "../tokens/tables/Registry.sol";
-import { Metadata, MetadataData } from "../tokens/tables/Metadata.sol";
+import { TokenOperatorApproval } from "../tokens/tables/TokenOperatorApproval.sol";
+import { TokenURIStorage } from "../tokens/tables/TokenURIStorage.sol";
+import { TokenRegistry } from "../tokens/tables/TokenRegistry.sol";
+import { TokenMetadata, TokenMetadataData } from "../tokens/tables/TokenMetadata.sol";
 
 contract ERC1155Module is Module {
   error ERC1155Module_InvalidNamespace(bytes14 namespace);
@@ -33,7 +33,7 @@ contract ERC1155Module is Module {
     requireNotInstalled(__self, encodedArgs);
 
     // Extract args
-    (bytes14 namespace, MetadataData memory metadata) = abi.decode(encodedArgs, (bytes14, MetadataData));
+    (bytes14 namespace, TokenMetadataData memory metadata) = abi.decode(encodedArgs, (bytes14, TokenMetadataData));
 
     // Require the namespace to not be the module's namespace
     if (namespace == MODULE_NAMESPACE) {
@@ -48,7 +48,7 @@ contract ERC1155Module is Module {
     if (!success) revertWithBytes(returnData);
 
     // Initialize the Metadata
-    Metadata.set(_metadataTableId(namespace), metadata);
+    TokenMetadata.set(_metadataTableId(namespace), metadata);
 
     // Deploy and register the ERC1155 puppet.
     ResourceId erc1155SystemId = _erc1155SystemId(namespace);
@@ -61,9 +61,9 @@ contract ERC1155Module is Module {
     // Register the ERC1155 in the ERC20Registry
     if (!ResourceIds.getExists(ERC1155_REGISTRY_TABLE_ID)) {
       world.registerNamespace(MODULE_NAMESPACE_ID);
-      Registry.register(ERC1155_REGISTRY_TABLE_ID);
+      TokenRegistry.register(ERC1155_REGISTRY_TABLE_ID);
     }
-    Registry.set(ERC1155_REGISTRY_TABLE_ID, namespaceId, puppet);
+    TokenRegistry.set(ERC1155_REGISTRY_TABLE_ID, namespaceId, puppet);
   }
 
   function installRoot(bytes memory) public pure {
@@ -83,10 +83,10 @@ contract ERC1155ModuleRegistrationLibrary {
     }
 
     // Register the tables
-    TokenURI.register(_tokenUriTableId(namespace));
+    TokenURIStorage.register(_tokenUriTableId(namespace));
     ERC1155Balances.register(_balancesTableId(namespace));
-    Metadata.register(_metadataTableId(namespace));
-    OperatorApproval.register(_operatorApprovalTableId(namespace));
+    TokenMetadata.register(_metadataTableId(namespace));
+    TokenOperatorApproval.register(_operatorApprovalTableId(namespace));
 
     // Register a new ERC20System
     world.registerSystem(_erc1155SystemId(namespace), new ERC1155System(), true);
