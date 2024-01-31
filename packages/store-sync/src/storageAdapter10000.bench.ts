@@ -1,7 +1,7 @@
 import { bench, describe } from "vitest";
 import { recsStorageAdapter, sqliteStorageAdapter, zustandStorageAdapter } from "../test/utils";
 import { logsToBlocks } from "../test/logsToBlocks";
-import worldRpcLogs from "../../../test-data/world-logs-1000.json";
+import worldRpcLogs from "../../../test-data/world-logs-10000.json";
 
 const blocks = logsToBlocks(worldRpcLogs);
 
