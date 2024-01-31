@@ -62,10 +62,13 @@ contract FactoriesTest is Test, GasReporter {
     address worldFactoryAddress = address(new WorldFactory(coreModule));
     IWorldFactory worldFactory = IWorldFactory(worldFactoryAddress);
 
+    // User defined bytes for create2
+    bytes memory _salt0 = abi.encode(0);
+
     // Address we expect for World
     address calculatedAddress = calculateAddress(
       worldFactoryAddress,
-      keccak256(abi.encode(account, 0)),
+      keccak256(abi.encode(account, _salt0)),
       type(World).creationCode
     );
 
@@ -77,7 +80,7 @@ contract FactoriesTest is Test, GasReporter {
     vm.expectEmit(true, false, false, false);
     emit WorldDeployed(calculatedAddress);
     startGasReport("deploy world via WorldFactory");
-    worldFactory.deployWorld();
+    worldFactory.deployWorld(_salt0);
     endGasReport();
 
     // Set the store address manually
@@ -94,10 +97,13 @@ contract FactoriesTest is Test, GasReporter {
 
     // Deploy another world
 
+    // User defined bytes for create2
+    bytes memory _salt1 = abi.encode(1);
+
     // Address we expect for World
     calculatedAddress = calculateAddress(
       worldFactoryAddress,
-      keccak256(abi.encode(account, 1)),
+      keccak256(abi.encode(account, _salt1)),
       type(World).creationCode
     );
 
@@ -108,7 +114,7 @@ contract FactoriesTest is Test, GasReporter {
     // Check for WorldDeployed event from Factory
     vm.expectEmit(true, false, false, false);
     emit WorldDeployed(calculatedAddress);
-    worldFactory.deployWorld();
+    worldFactory.deployWorld(_salt1);
 
     // Confirm accountCount (which is salt) has incremented
     assertEq(uint256(worldFactory.worldCounts(account)), uint256(2));
@@ -121,6 +127,10 @@ contract FactoriesTest is Test, GasReporter {
 
     // Confirm the msg.sender is owner of the root namespace of the new world
     assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
+
+    // Expect revert when deploying world with same bytes salt as already deployed world
+    vm.expectRevert();
+    worldFactory.deployWorld(_salt1);
   }
 
   function testWorldFactoryGas() public {

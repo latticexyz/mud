@@ -8,7 +8,9 @@ import { IBaseWorld } from "./codegen/interfaces/IBaseWorld.sol";
 import { IModule } from "./IModule.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
 
-/**
+import { Test, console } from "forge-std/Test.sol";
+
+/*
  * @title WorldFactory
  * @notice A factory contract to deploy new World instances.
  * @dev This contract allows users to deploy a new World, install the CoreModule, and transfer the ownership.
@@ -25,15 +27,18 @@ contract WorldFactory is IWorldFactory {
     coreModule = _coreModule;
   }
 
-  /**
+  /*
    * @notice Deploys a new World instance, installs the CoreModule and transfers ownership to the caller.
    * @dev Uses the Create2 for deterministic deployment.
+   * @param _salt User defined salt for deterministic world addresses across chains
    * @return worldAddress The address of the newly deployed World contract.
    */
-  function deployWorld() public returns (address worldAddress) {
+  function deployWorld(bytes memory _salt) public returns (address worldAddress) {
     // Deploy a new World and increase the WorldCount
     bytes memory bytecode = type(World).creationCode;
-    uint256 salt = uint256(keccak256(abi.encode(msg.sender, worldCounts[msg.sender]++)));
+    uint256 salt = uint256(keccak256(abi.encode(msg.sender, _salt)));
+    worldCounts[msg.sender]++;
+
     worldAddress = Create2.deploy(bytecode, salt);
     IBaseWorld world = IBaseWorld(worldAddress);
 
