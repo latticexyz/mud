@@ -17,6 +17,8 @@ import { PuppetModule } from "../src/modules/puppet/PuppetModule.sol";
 
 import { ERC20Module } from "../src/modules/erc20-puppet/ERC20Module.sol";
 import { ERC20MetadataData } from "../src/modules/erc20-puppet/tables/ERC20Metadata.sol";
+import { ERC20Registry } from "../src/modules/erc20-puppet/tables/ERC20Registry.sol";
+import { ERC20_REGISTRY_TABLE_ID } from "../src/modules/erc20-puppet/constants.sol";
 import { IERC20Mintable } from "../src/modules/erc20-puppet/IERC20Mintable.sol";
 import { registerERC20 } from "../src/modules/erc20-puppet/registerERC20.sol";
 import { IERC20Errors } from "../src/modules/erc20-puppet/IERC20Errors.sol";
