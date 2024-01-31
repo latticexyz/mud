@@ -54,7 +54,7 @@ This means that if you need in a `World` to implement multiple delegation algori
 You can use [`unregisterDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L283-L291) to remove a delegation.
 
 Because of `unregisterDelegation` delegations cannot be used for a delegator to commit to allow something to be done in the future.
-If you need a *commitment*, create a table with a `System` that lets the address that commits write the commitment and have an action that other addresses can call only if the proper commitment is there - without giving the committed address an option to delete the entry.
+If you need a _commitment_, create a table with a `System` that lets the address that commits write the commitment and have an action that other addresses can call only if the proper commitment is there - without giving the committed address an option to delete the entry.
 
 ## Namespace delegation
 
