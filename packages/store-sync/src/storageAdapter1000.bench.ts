@@ -1,9 +1,9 @@
 import { bench, describe } from "vitest";
-import worldRpcLogs from "../../../test-data/world-logs-10000.json";
 import { recsStorageAdapter, sqliteStorageAdapter, zustandStorageAdapter } from "../test/utils";
 import { logsToBlocks } from "../test/logsToBlocks";
+import worldRpcLogs from "../../../test-data/world-logs-1000.json";
 
-const blocks = logsToBlocks(worldRpcLogs.slice(0, 1000));
+const blocks = logsToBlocks(worldRpcLogs);
 
 describe("Storage Adapter 1000 logs", () => {
   bench("recs: `storageAdapter`", async () => {
