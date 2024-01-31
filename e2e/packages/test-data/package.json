@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "generate-test-data": "tsx generate-test-data.ts",
-    "generate-test-data-10000": "tsx generate-test-data-10000.ts"
+    "generate-test-data-big": "tsx generate-test-data-big.ts"
   },
   "devDependencies": {
     "@latticexyz/block-logs-stream": "link:../../../packages/block-logs-stream",
