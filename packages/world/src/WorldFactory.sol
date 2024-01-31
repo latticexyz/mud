@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Create2 } from "./Create2.sol";
 import { World } from "./World.sol";
@@ -17,8 +17,8 @@ contract WorldFactory is IWorldFactory {
   /// @notice Address of the core module to be set in the World instances.
   IModule public immutable coreModule;
 
-  /// @notice Counter to keep track of the number of World instances deployed.
-  uint256 public worldCount;
+  /// @notice Counters to keep track of the number of World instances deployed per address.
+  mapping(address creator => uint256 worldCount) public worldCounts;
 
   /// @param _coreModule The address of the core module.
   constructor(IModule _coreModule) {
@@ -33,7 +33,8 @@ contract WorldFactory is IWorldFactory {
   function deployWorld() public returns (address worldAddress) {
     // Deploy a new World and increase the WorldCount
     bytes memory bytecode = type(World).creationCode;
-    worldAddress = Create2.deploy(bytecode, worldCount++);
+    uint256 salt = uint256(keccak256(abi.encode(msg.sender, worldCounts[msg.sender]++)));
+    worldAddress = Create2.deploy(bytecode, salt);
     IBaseWorld world = IBaseWorld(worldAddress);
 
     // Initialize the World and transfer ownership to the caller

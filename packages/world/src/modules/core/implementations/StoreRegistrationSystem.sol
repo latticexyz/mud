@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
