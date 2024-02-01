@@ -8,10 +8,10 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Tables } from "@latticexyz/store/src/codegen/index.sol";
 
 import { WorldContextProviderLib } from "../src/WorldContext.sol";
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { InitModule } from "../src/modules/core/InitModule.sol";
 import { ResourceId, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 
-import { createCoreModule } from "./createCoreModule.sol";
+import { createInitModule } from "./createInitModule.sol";
 
 contract WorldMock is StoreRead {
   constructor() {
@@ -28,12 +28,12 @@ contract WorldMock is StoreRead {
   }
 }
 
-contract CoreModuleTest is Test {
-  CoreModule coreModule;
+contract InitModuleTest is Test {
+  InitModule initModule;
   WorldMock worldMock;
 
   function setUp() public {
-    coreModule = createCoreModule();
+    initModule = createInitModule();
     worldMock = new WorldMock();
     StoreSwitch.setStoreAddress(address(worldMock));
   }
@@ -43,7 +43,7 @@ contract CoreModuleTest is Test {
     bytes32[] memory tableIds = getTableIdsFromStoreAndWorldConfigs();
 
     // Invoke installRoot
-    worldMock.delegatecallFromWorld(address(coreModule), abi.encodeCall(CoreModule.installRoot, (new bytes(0))));
+    worldMock.delegatecallFromWorld(address(initModule), abi.encodeCall(InitModule.installRoot, (new bytes(0))));
 
     // Confirm that each tableId is registered
     for (uint256 i; i < tableIds.length; i++) {

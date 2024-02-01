@@ -8,11 +8,11 @@ import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSyst
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
 /**
- * @title Core Registration System for World
+ * @title Registration System for World
  * @notice This system aggregates World registration and installation functionalities externalized from the World contract, aiming to keep the World contract's bytecode lean.
  * @dev Aggregates multiple system implementations for the World.
  */
-contract CoreRegistrationSystem is
+contract RegistrationSystem is
   IWorldErrors,
   ModuleInstallationSystem,
   StoreRegistrationSystem,

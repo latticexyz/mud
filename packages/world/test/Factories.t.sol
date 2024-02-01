@@ -8,14 +8,14 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
 import { ResourceId } from "../src/WorldResourceId.sol";
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { InitModule } from "../src/modules/core/InitModule.sol";
 import { Create2Factory } from "../src/Create2Factory.sol";
 import { WorldFactory } from "../src/WorldFactory.sol";
 import { IWorldFactory } from "../src/IWorldFactory.sol";
 import { InstalledModules } from "../src/codegen/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ROOT_NAMESPACE_ID } from "../src/constants.sol";
-import { createCoreModule } from "./createCoreModule.sol";
+import { createInitModule } from "./createInitModule.sol";
 
 contract FactoriesTest is Test, GasReporter {
   event ContractDeployed(address addr, uint256 salt);
@@ -36,7 +36,7 @@ contract FactoriesTest is Test, GasReporter {
     Create2Factory create2Factory = new Create2Factory();
 
     // Encode constructor arguments for WorldFactory
-    bytes memory encodedArguments = abi.encode(createCoreModule());
+    bytes memory encodedArguments = abi.encode(createInitModule());
     bytes memory combinedBytes = abi.encodePacked(type(WorldFactory).creationCode, encodedArguments);
 
     // Address we expect for deployed WorldFactory
@@ -57,9 +57,9 @@ contract FactoriesTest is Test, GasReporter {
   function testWorldFactory(address account) public {
     vm.startPrank(account);
 
-    // Deploy WorldFactory with current CoreModule
-    CoreModule coreModule = createCoreModule();
-    address worldFactoryAddress = address(new WorldFactory(coreModule));
+    // Deploy WorldFactory with current InitModule
+    InitModule initModule = createInitModule();
+    address worldFactoryAddress = address(new WorldFactory(initModule));
     IWorldFactory worldFactory = IWorldFactory(worldFactoryAddress);
 
     // Address we expect for World
@@ -87,7 +87,7 @@ contract FactoriesTest is Test, GasReporter {
     assertEq(uint256(worldFactory.worldCounts(account)), uint256(1));
 
     // Confirm correct Core is installed
-    assertTrue(InstalledModules.get(address(coreModule), keccak256(new bytes(0))));
+    assertTrue(InstalledModules.get(address(initModule), keccak256(new bytes(0))));
 
     // Confirm the msg.sender is owner of the root namespace of the new world
     assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
@@ -117,7 +117,7 @@ contract FactoriesTest is Test, GasReporter {
     StoreSwitch.setStoreAddress(calculatedAddress);
 
     // Confirm correct Core is installed
-    assertTrue(InstalledModules.get(address(coreModule), keccak256(new bytes(0))));
+    assertTrue(InstalledModules.get(address(initModule), keccak256(new bytes(0))));
 
     // Confirm the msg.sender is owner of the root namespace of the new world
     assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);

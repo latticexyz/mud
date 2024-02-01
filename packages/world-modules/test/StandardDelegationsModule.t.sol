@@ -13,7 +13,7 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { IDelegationControl } from "@latticexyz/world/src/IDelegationControl.sol";
 
-import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
+import { createInitModule } from "@latticexyz/world/test/createInitModule.sol";
 import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 
 import { StandardDelegationsModule } from "../src/modules/std-delegations/StandardDelegationsModule.sol";
@@ -34,7 +34,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.initialize(createCoreModule());
+    world.initialize(createInitModule());
     world.installRootModule(new StandardDelegationsModule(), new bytes(0));
 
     // Register a new system

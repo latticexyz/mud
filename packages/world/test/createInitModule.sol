@@ -5,15 +5,15 @@ import { AccessManagementSystem } from "../src/modules/core/implementations/Acce
 import { BalanceTransferSystem } from "../src/modules/core/implementations/BalanceTransferSystem.sol";
 import { BatchCallSystem } from "../src/modules/core/implementations/BatchCallSystem.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { CoreRegistrationSystem } from "../src/modules/core/CoreRegistrationSystem.sol";
+import { InitModule } from "../src/modules/core/InitModule.sol";
+import { RegistrationSystem } from "../src/modules/core/RegistrationSystem.sol";
 
-function createCoreModule() returns (CoreModule) {
+function createInitModule() returns (InitModule) {
   return
-    new CoreModule(
+    new InitModule(
       new AccessManagementSystem(),
       new BalanceTransferSystem(),
       new BatchCallSystem(),
-      new CoreRegistrationSystem()
+      new RegistrationSystem()
     );
 }

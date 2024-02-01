@@ -12,7 +12,7 @@ import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID } from "../src/constants.sol";
 import { Balances } from "../src/codegen/tables/Balances.sol";
 import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "../src/worldResourceTypes.sol";
-import { createCoreModule } from "./createCoreModule.sol";
+import { createInitModule } from "./createInitModule.sol";
 
 using WorldResourceIdInstance for ResourceId;
 
@@ -36,7 +36,7 @@ contract WorldBalanceTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.initialize(createCoreModule());
+    world.initialize(createInitModule());
     StoreSwitch.setStoreAddress(address(world));
 
     world.registerNamespace(namespaceId);

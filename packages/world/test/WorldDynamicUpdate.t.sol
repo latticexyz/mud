@@ -21,7 +21,7 @@ import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
 import { AddressArray } from "./codegen/tables/AddressArray.sol";
 
-import { createCoreModule } from "./createCoreModule.sol";
+import { createInitModule } from "./createInitModule.sol";
 
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/IWorldErrors.sol";
@@ -47,7 +47,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.initialize(createCoreModule());
+    world.initialize(createInitModule());
     StoreSwitch.setStoreAddress(address(world));
 
     key = "testKey";
