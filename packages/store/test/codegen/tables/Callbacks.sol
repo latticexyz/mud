@@ -18,7 +18,6 @@ import { FieldLayout, FieldLayoutLib } from "../../../src/FieldLayout.sol";
 import { Schema, SchemaLib } from "../../../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../../src/PackedCounter.sol";
 import { ResourceId } from "../../../src/ResourceId.sol";
-import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../../../src/storeResourceTypes.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(0x746273746f726500000000000000000043616c6c6261636b7300000000000000);
 ResourceId constant CallbacksTableId = _tableId;

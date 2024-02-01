@@ -18,11 +18,8 @@ import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.s
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("LastCall"), bytes16("LastCall")))
-);
+ResourceId constant _tableId = ResourceId.wrap(0x74624c61737443616c6c0000000000004c61737443616c6c0000000000000000);
 ResourceId constant LastCallTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
@@ -328,7 +325,7 @@ library LastCall {
    * @notice Encode all of a record's fields.
    * @return The static (fixed length) data, encoded into a sequence of bytes.
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
-   * @return The dyanmic (variable length) data, encoded into a sequence of bytes.
+   * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
   function encode(uint256 callTime, address sender) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(callTime, sender);

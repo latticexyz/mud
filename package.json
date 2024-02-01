@@ -10,6 +10,7 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "turbo run clean",
+    "codegen-all": "for dir in packages/store packages/world packages/world-modules packages/cli e2e/packages/contracts examples/*/packages/contracts templates/*/packages/contracts; do (cd \"$dir\" && pnpm build); done",
     "dev": "turbo run dev --concurrency 100",
     "dist-tag-rm": "pnpm recursive exec -- sh -c 'npm dist-tag rm $(cat package.json | jq -r \".name\") $TAG || true'",
     "docs:generate:api": "bun scripts/render-api-docs.ts",
