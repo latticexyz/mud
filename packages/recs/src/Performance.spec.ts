@@ -47,22 +47,6 @@ describe("V2", () => {
   });
 });
 
-// Set up array
-array = [];
-const randomOtherArr: number[] = [];
-for (let i = 0; i < size; i++) {
-  array.push(i);
-  randomOtherArr.push(i);
-}
-
-// Set up buffer
-const buffer = new ArrayBuffer(4 * size);
-typedArray = new Uint32Array(buffer);
-
-for (let i = 0; i < size; i++) {
-  typedArray[i] = i;
-}
-
 describe("TypedArray", () => {
   let array: number[];
   let typedArray: Uint32Array;
