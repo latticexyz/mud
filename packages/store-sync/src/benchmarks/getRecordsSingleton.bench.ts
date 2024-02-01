@@ -6,7 +6,7 @@ import { createRecsStorage, createSqliteStorage, createZustandStorage, tables } 
 
 const { components, storageAdapter: recsStorageAdapter } = createRecsStorage();
 const { useStore, storageAdapter: zustandStorageAdapter } = createZustandStorage();
-const { db, storageAdapter: sqliteStorageAdapter } = await createSqliteStorage();
+const { database, storageAdapter: sqliteStorageAdapter } = await createSqliteStorage();
 
 for (const block of blocks) {
   await Promise.all([recsStorageAdapter(block), zustandStorageAdapter(block), sqliteStorageAdapter(block)]);
@@ -24,9 +24,9 @@ describe("Get all records for table: singleton", () => {
   });
 
   bench("sqlite: `select`", async () => {
-    const tables = getTables(db).filter((table) => table.name === "NumberList");
+    const tables = getTables(database).filter((table) => table.name === "NumberList");
     const sqlTable = buildTable(tables[0]);
 
-    db.select().from(sqlTable).all();
+    database.select().from(sqlTable).all();
   });
 });

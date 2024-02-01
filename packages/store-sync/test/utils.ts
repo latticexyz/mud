@@ -26,7 +26,7 @@ export function createZustandStorage(): {
 }
 
 export async function createSqliteStorage(): Promise<{
-  db: SQLJsDatabase<Record<string, never>>;
+  database: SQLJsDatabase<Record<string, never>>;
   storageAdapter: StorageAdapter;
 }> {
   const publicClient = createPublicClient({
@@ -35,6 +35,6 @@ export async function createSqliteStorage(): Promise<{
   });
 
   const SqlJs = await initSqlJs();
-  const db = drizzle(new SqlJs.Database(), {});
-  return { db, storageAdapter: await sqliteStorage({ database: db, publicClient }) };
+  const database = drizzle(new SqlJs.Database(), {});
+  return { database, storageAdapter: await sqliteStorage({ database, publicClient }) };
 }
