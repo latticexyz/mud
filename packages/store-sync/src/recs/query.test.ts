@@ -1,0 +1,32 @@
+import { describe, expect, it } from "vitest";
+import { Has, runQuery } from "@latticexyz/recs";
+import { createRecsStorage } from "../../test/utils";
+import { logsToBlocks } from "../../test/logsToBlocks";
+import worldRpcLogs10 from "../../../../test-data/world-logs-10.json";
+
+describe("Get records with query", async () => {
+  const blocks = logsToBlocks(worldRpcLogs10);
+
+  const { components, storageAdapter } = createRecsStorage();
+
+  for (const block of blocks) {
+    storageAdapter(block);
+  }
+
+  it("zustand: `runQuery`", async () => {
+    expect(runQuery([Has(components.Number), Has(components.Number)])).toMatchInlineSnapshot(`
+    Set {
+      "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "0x0000000000000000000000000000000000000000000000000000000000000003",
+      "0x0000000000000000000000000000000000000000000000000000000000000004",
+      "0x0000000000000000000000000000000000000000000000000000000000000005",
+      "0x0000000000000000000000000000000000000000000000000000000000000006",
+      "0x0000000000000000000000000000000000000000000000000000000000000007",
+      "0x0000000000000000000000000000000000000000000000000000000000000008",
+      "0x000000000000000000000000000000000000000000000000000000000000000a",
+    }
+  `);
+  });
+});
