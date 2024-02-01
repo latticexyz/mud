@@ -108,7 +108,7 @@ contract CoreModule is Module {
   }
 
   /**
-   * @notice Register the intenral systems in the World.
+   * @notice Register the internal systems in the World.
    */
   function _registerInternalSystems() internal {
     _registerInternalSystem(accessManagementSystem, ACCESS_MANAGEMENT_SYSTEM_ID);
