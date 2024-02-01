@@ -3,6 +3,7 @@ pragma solidity >=0.8.24;
 
 import { BEFORE_SET_RECORD, AFTER_SPLICE_STATIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { Module } from "@latticexyz/world/src/Module.sol";
 
@@ -15,6 +16,7 @@ import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { KeysInTableHook } from "./KeysInTableHook.sol";
 import { KeysInTable, KeysInTableTableId } from "./tables/KeysInTable.sol";
 import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol";
+import { KeysInTableDynamicFieldIndex } from "./KeysInTableDynamicFieldIndex.sol";
 
 /**
  * This module deploys a hook that is called when a value is set in the `sourceTableId`
@@ -29,6 +31,8 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol"
 contract KeysInTableModule is Module {
   using WorldResourceIdInstance for ResourceId;
 
+  error KeysInTableModule_KeyLengthOverflow(uint256 max, uint256 received);
+
   // The KeysInTableHook is deployed once and infers the target table id
   // from the source table id (passed as argument to the hook methods)
   KeysInTableHook private immutable hook = new KeysInTableHook();
@@ -42,6 +46,12 @@ contract KeysInTableModule is Module {
     ResourceId sourceTableId = ResourceId.wrap(abi.decode(encodedArgs, (bytes32)));
 
     IBaseWorld world = IBaseWorld(_world());
+
+    // Each key part is kept in a separate table field, and the number of fields is limited
+    Schema keySchema = world.getKeySchema(sourceTableId);
+    if (keySchema.numFields() > KeysInTableDynamicFieldIndex.FIELD_COUNT) {
+      revert KeysInTableModule_KeyLengthOverflow(KeysInTableDynamicFieldIndex.FIELD_COUNT, keySchema.numFields());
+    }
 
     // Initialize variable to reuse in low level calls
     bool success;

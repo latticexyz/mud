@@ -20,6 +20,7 @@ import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
+import { KeysInTableDynamicFieldIndex } from "../src/modules/keysintable/KeysInTableDynamicFieldIndex.sol";
 import { getKeysInTable } from "../src/modules/keysintable/getKeysInTable.sol";
 import { hasKey } from "../src/modules/keysintable/hasKey.sol";
 
@@ -163,6 +164,8 @@ contract KeysInTableModuleTest is Test, GasReporter {
   }
 
   function testInstallTwice() public {
+    world.registerTable(tableId, tableFieldLayout, tableKeySchema, tableValueSchema, new string[](1), new string[](1));
+
     world.installRootModule(keysInTableModule, abi.encode(tableId));
     vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
     world.installRootModule(keysInTableModule, abi.encode(tableId));
@@ -442,5 +445,44 @@ contract KeysInTableModuleTest is Test, GasReporter {
     // Assert that the list is correct
     assertEq(keysInTable.length, 1);
     assertEq(keysInTable[0][0], key1);
+  }
+
+  // Helper for key length edge case tests
+  function _registerTableWithKeySchemaOfGivenLength(uint256 keyLength) internal {
+    SchemaType[] memory schemaTypes = new SchemaType[](keyLength);
+    for (uint256 i; i < keyLength; i++) {
+      schemaTypes[i] = SchemaType.BYTES32;
+    }
+    Schema longKeySchema = SchemaLib.encode(schemaTypes);
+
+    world.registerTable(
+      tableId,
+      tableFieldLayout,
+      longKeySchema,
+      tableValueSchema,
+      new string[](keyLength),
+      new string[](1)
+    );
+  }
+
+  function testKeyLengthMaxValid() public {
+    uint256 keyLength = KeysInTableDynamicFieldIndex.FIELD_COUNT;
+    _registerTableWithKeySchemaOfGivenLength(keyLength);
+    // The module should be installed without errors
+    world.installRootModule(keysInTableModule, abi.encode(tableId));
+  }
+
+  function testKeyLengthOverflow() public {
+    uint256 keyLength = 1 + KeysInTableDynamicFieldIndex.FIELD_COUNT;
+    _registerTableWithKeySchemaOfGivenLength(keyLength);
+    // Overflow should be checked when the module is installed, since keySchema is immutable
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        KeysInTableModule.KeysInTableModule_KeyLengthOverflow.selector,
+        KeysInTableDynamicFieldIndex.FIELD_COUNT,
+        keyLength
+      )
+    );
+    world.installRootModule(keysInTableModule, abi.encode(tableId));
   }
 }
