@@ -1,8 +1,11 @@
 import { bench, describe } from "vitest";
 import { getComponentEntities, getComponentValue } from "@latticexyz/recs";
 import { buildTable, getTables } from "../sqlite";
-import { blocks } from "../../test/blocks";
 import { createRecsStorage, createSqliteStorage, createZustandStorage, tables } from "../../test/utils";
+import { logsToBlocks } from "../../test/logsToBlocks";
+import worldRpcLogs from "../../../../test-data/world-logs.json";
+
+const blocks = logsToBlocks(worldRpcLogs);
 
 const { components, storageAdapter: recsStorageAdapter } = createRecsStorage();
 const { useStore, storageAdapter: zustandStorageAdapter } = createZustandStorage();

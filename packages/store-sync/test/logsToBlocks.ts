@@ -3,7 +3,9 @@ import { storeEventsAbi } from "@latticexyz/store";
 import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
 import { StoreEventsLog } from "../src/common";
 
-export function logsToBlocks(rpcLogs: any[]): GroupLogsByBlockNumberResult<StoreEventsLog> {
+export function logsToBlocks(
+  rpcLogs: { data: string; topics: string[] }[]
+): GroupLogsByBlockNumberResult<StoreEventsLog> {
   return groupLogsByBlockNumber(
     rpcLogs.map((log) => {
       const { eventName, args } = decodeEventLog({

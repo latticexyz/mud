@@ -1,10 +1,13 @@
 import { bench, describe } from "vitest";
 import { getComponentValue } from "@latticexyz/recs";
-import { blocks } from "../../test/blocks";
 import { singletonEntity } from "../recs";
 import { buildTable, getTables } from "../sqlite";
 import { eq } from "drizzle-orm";
 import { createRecsStorage, createSqliteStorage, createZustandStorage, tables } from "../../test/utils";
+import worldRpcLogs from "../../../../test-data/world-logs.json";
+import { logsToBlocks } from "../../test/logsToBlocks";
+
+const blocks = logsToBlocks(worldRpcLogs);
 
 const { components, storageAdapter: recsStorageAdapter } = createRecsStorage();
 const { useStore, storageAdapter: zustandStorageAdapter } = createZustandStorage();
