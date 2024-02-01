@@ -20,9 +20,7 @@ import { PackedCounter, PackedCounterLib } from "../../../src/PackedCounter.sol"
 import { ResourceId } from "../../../src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../../../src/storeResourceTypes.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("store"), bytes16("Mixed")))
-);
+ResourceId constant _tableId = ResourceId.wrap(0x746273746f72650000000000000000004d697865640000000000000000000000);
 ResourceId constant MixedTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(

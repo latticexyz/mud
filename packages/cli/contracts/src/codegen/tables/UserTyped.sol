@@ -24,9 +24,7 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/s
 import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "./../../types.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("UserTyped")))
-);
+ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000055736572547970656400000000000000);
 ResourceId constant UserTypedTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(

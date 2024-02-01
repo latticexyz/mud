@@ -23,9 +23,7 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/s
 // Import user types
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("world"), bytes16("NamespaceDelegat")))
-);
+ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c640000000000000000004e616d65737061636544656c65676174);
 ResourceId constant NamespaceDelegationControlTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(

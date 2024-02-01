@@ -23,9 +23,7 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../../../src/storeResou
 // Import user types
 import { ExampleEnum } from "./../common.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("store"), bytes16("KeyEncoding")))
-);
+ResourceId constant _tableId = ResourceId.wrap(0x746273746f72650000000000000000004b6579456e636f64696e670000000000);
 ResourceId constant KeyEncodingTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(

@@ -23,9 +23,7 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/s
 // Import user types
 import { Enum2, Enum1 } from "./../common.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Statics")))
-);
+ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000053746174696373000000000000000000);
 ResourceId constant StaticsTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(

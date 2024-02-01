@@ -20,9 +20,7 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_OFFCHAIN_TABLE, bytes14("world"), bytes16("FunctionSignatur")))
-);
+ResourceId constant _tableId = ResourceId.wrap(0x6f74776f726c6400000000000000000046756e6374696f6e5369676e61747572);
 ResourceId constant FunctionSignaturesTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(

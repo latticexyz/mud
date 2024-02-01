@@ -23,9 +23,7 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../../storeResourceType
 // Import user types
 import { ResourceId } from "./../../ResourceId.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("store"), bytes16("StoreHooks")))
-);
+ResourceId constant _tableId = ResourceId.wrap(0x746273746f726500000000000000000053746f7265486f6f6b73000000000000);
 ResourceId constant StoreHooksTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(

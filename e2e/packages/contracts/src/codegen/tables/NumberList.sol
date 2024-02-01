@@ -20,9 +20,7 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("NumberList")))
-);
+ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000004e756d6265724c697374000000000000);
 ResourceId constant NumberListTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
