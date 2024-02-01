@@ -22,7 +22,7 @@ import worldRpcLogs1000 from "../../../../test-data/world-logs-1000.json";
 
   describe("Get single record by key: 10 logs", () => {
     bench("recs: `getComponentValue`", async () => {
-      getComponentValue(components.Number, encodeEntity({ key: "uint32" }, { key: 0 }));
+      getComponentValue(components.Number, encodeEntity(components.Number.metadata.keySchema, { key: 0 }));
     });
 
     bench("zustand: `getRecord`", async () => {
@@ -54,7 +54,7 @@ import worldRpcLogs1000 from "../../../../test-data/world-logs-1000.json";
 
   describe("Get single record by key: 100 logs", () => {
     bench("recs: `getComponentValue`", async () => {
-      getComponentValue(components.Number, encodeEntity({ key: "uint32" }, { key: 0 }));
+      getComponentValue(components.Number, encodeEntity(components.Number.metadata.keySchema, { key: 0 }));
     });
 
     bench("zustand: `getRecord`", async () => {
@@ -86,7 +86,7 @@ import worldRpcLogs1000 from "../../../../test-data/world-logs-1000.json";
 
   describe("Get single record by key: 1000 logs", () => {
     bench("recs: `getComponentValue`", async () => {
-      getComponentValue(components.Number, encodeEntity({ key: "uint32" }, { key: 0 }));
+      getComponentValue(components.Number, encodeEntity(components.Number.metadata.keySchema, { key: 0 }));
     });
 
     bench("zustand: `getRecord`", async () => {
