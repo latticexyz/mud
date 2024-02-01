@@ -1,0 +1,126 @@
+# Replicating onchain state from MUD Store events
+
+This guide captures how you might recreate onchain state from MUD’s Store events. We use this pattern in our sync stack to hydrate a client or indexer database from blockchain logs fetched from an RPC.
+
+## Store: MUD’s onchain storage
+
+First, it’s helpful to understand how MUD stores its data on chain. Like a native Solidity `mapping`, MUD stores values at keys. However, it handles both keys and values in a particular way to 1) give a bit more flexibility in data modeling and 2) squeeze out a bit more gas.
+
+- In MUD, keys are represented as a combination of table ID and key tuple (i.e. a composite key). Internally, the storage slot is derived from a hash of the table ID, key tuple, and “section” of data (static or dynamic).
+- All static (fixed length) fields are tightly packed into a single bytes value stored in a single storage slot. Two `uint32` fields and a `bool` field would be packed into 9 bytes (4 + 4 + 1).
+- For all dynamic (variable length) fields, we encode and store a “dynamic data layout” (also called “encoded lengths”) that represents the length of each dynamic field (i.e. number of items in an array, length of string or bytes). Each dynamic field is given its own storage slot that contains its value.
+
+  - For arrays, all items of the array are packed tightly based on the underlying type. A `bool[]` field with three items would be packed into 3 bytes (1 + 1 + 1). The length (3) would be stored as part of the record’s dynamic data layout.
+
+    This array packing method allows us to get better storage efficiency (and thus better gas) for array operations than native Solidity. However, in practice, these gas savings may be negated by the overhead of the Store protocol overall (i.e. event emissions, encoding/decoding, etc.).
+
+Field order is preserved based on the table’s schema (registered via MUD config) and encoded in a “field layout” used throughout Store and the codegen’ed table libraries. A table’s schema is also registered onchain, but we won’t cover that here as we’ll only be operating on the bytes representation of onchain records, not the decoded records.
+
+## Store protocol events
+
+MUD emits the following events for its onchain storage operations:
+
+```solidity
+event Store_SetRecord(bytes32 indexed tableId, bytes32[] keyTuple, bytes staticData, bytes32 encodedLengths, bytes dynamicData)
+event Store_SpliceStaticData(bytes32 indexed tableId, bytes32[] keyTuple, uint48 start, bytes data)
+event Store_SpliceDynamicData(bytes32 indexed tableId, bytes32[] keyTuple, uint48 start, uint40 deleteCount, bytes32 encodedLengths, bytes data)
+event Store_DeleteRecord(bytes32 indexed tableId, bytes32[] keyTuple)
+```
+
+- `Store_SetRecord` sets the entire record value (all fields) for a particular key tuple in a particular table.
+- `Store_SpliceStaticData` is a “splice” operation on the bytes that represents the encoded/packed values of all static (fixed length) fields for a particular key tuple in a particular table.
+- `Store_SpliceDynamicData` is a “splice” operation on the bytes that represents the encoded/packed values of all dynamic (variable length) fields for a particular key tuple in a particular table. It includes some additional fields on the static splice event:
+
+  - “delete count” for removing or replacing an item in an array or splicing strings/bytes
+  - an updated “encoded lengths” value for the record’s dynamic fields
+
+- `Store_DeleteRecord` removes the entire record at a particular key tuple in a particular table.
+
+It's worth noting that MUD also has a notion of "offchain tables", where only the set and delete events above are emitted and no onchain storage reads/writes are done. This is useful for allowing offchain indexers, like we're about to build below, to capture certain kinds of data in a very gas-efficient way. These tables can be identified by their table ID, but we'll cover that in a later guide.
+
+## Recreating onchain state
+
+We’ll use TypeScript to prototype a state representation of the bytes on chain as we receive different storage events. To make our life easier, we'll set up a little bit of boilerplate and helpers first.
+
+```ts
+type Hex = `0x${string}`;
+
+type Record = {
+  staticData: Hex;
+  encodedLengths: Hex;
+  dynamicData: Hex;
+};
+
+const store = new Map<string, Record>();
+
+// Create a key string from a table ID and key tuple to use in our store Map above
+function storeKey(tableId: Hex, keyTuple: Hex[]): string {
+  return `${tableId}:${keyTuple.join(",")}`;
+}
+
+// Like `Array.splice`, but for strings of bytes
+function bytesSplice(data: Hex, start: number, deleteCount = 0, newData: Hex = "0x"): Hex {
+  const dataNibbles = data.replace(/^0x/, "").split("");
+  const newDataNibbles = newData.replace(/^0x/, "").split("");
+  return `0x${dataNibbles
+    .splice(start, deleteCount * 2)
+    .concat(newDataNibbles)
+    .join("")}`;
+}
+
+function bytesLength(data: Hex): number {
+  return data.replace(/^0x/, "").length / 2;
+}
+```
+
+Let’s assume we’re iterating over the logs in a block. We’ll handle each event in a conditional. Setting a record is easy, because we can just replace the entire record with the arguments from the event log.
+
+```ts
+if (log.eventName === "Store_SetRecord") {
+  const key = storeKey(log.args.tableId, log.args.keyTuple);
+  store.set(key, {
+    staticData: log.args.staticData,
+    encodedLengths: log.args.encodedLengths,
+    dynamicData: log.args.dynamicData,
+  });
+}
+```
+
+Likewise, deleting a record is easy.
+
+```ts
+if (log.eventName === "Store_DeleteRecord") {
+  const key = storeKey(log.args.tableId, log.args.keyTuple);
+  store.delete(key);
+}
+```
+
+The splice events are modeled after JavaScript’s `Array.splice` and we can use our `bytesSplice` method above to simplify handling the event.
+
+```ts
+if (log.eventName === "Store_SpliceStaticData") {
+  const key = storeKey(log.args.tableId, log.args.keyTuple);
+  const record = store.get(key) ?? { staticData: "0x", encodedLengths: "0x", dynamicData: "0x" };
+  store.set(key, {
+    staticData: bytesSplice(record.staticData, log.args.start, bytesLength(log.args.data), log.args.data),
+    encodedLengths: record.encodedLengths,
+    dynamicData: record.dynamicData,
+  });
+}
+```
+
+Splicing dynamic data is roughly the same.
+
+```ts
+if (log.eventName === "Store_SpliceDynamicData") {
+  const key = storeKey(log.args.tableId, log.args.keyTuple);
+  const record = store.get(key) ?? { staticData: "0x", encodedLengths: "0x", dynamicData: "0x" };
+  store.set(key, {
+    staticData: record.staticData,
+    encodedLengths: log.args.encodedLengths,
+    dynamicData: bytesSplice(record.dynamicData, log.args.start, log.args.deleteCount, log.args.data),
+  });
+}
+```
+
+And that’s it! We’ve got our onchain state represented in TypeScript, reconstructed via MUD’s Store event logs.

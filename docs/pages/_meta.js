@@ -18,6 +18,7 @@ export default {
   "state-query": "State Query",
   services: "Services",
   "---": {
+    title: "", // no title renders as a line
     type: "separator",
   },
   guides: "Guides",
