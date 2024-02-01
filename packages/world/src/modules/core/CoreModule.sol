@@ -62,8 +62,8 @@ contract CoreModule is Module {
    * @dev Registers core tables, systems, and function selectors in the World.
    */
   function installRoot(bytes memory) public override {
-    _registerCoreTables();
-    _registerCoreSystems();
+    _registerInternalTables();
+    _registerInternalSystems();
     _registerFunctionSelectors();
   }
 
@@ -76,11 +76,11 @@ contract CoreModule is Module {
   }
 
   /**
-   * @notice Register core tables in the World.
+   * @notice Register World's internal tables.
    * @dev This internal function registers various tables and sets initial permissions.
    */
-  function _registerCoreTables() internal {
-    StoreCore.registerCoreTables();
+  function _registerInternalTables() internal {
+    StoreCore.registerInternalTables();
     NamespaceOwner.register();
     Balances.register();
     InstalledModules.register();
@@ -108,20 +108,20 @@ contract CoreModule is Module {
   }
 
   /**
-   * @notice Register the core systems in the World.
+   * @notice Register the intenral systems in the World.
    */
-  function _registerCoreSystems() internal {
-    _registerSystem(accessManagementSystem, ACCESS_MANAGEMENT_SYSTEM_ID);
-    _registerSystem(balanceTransferSystem, BALANCE_TRANSFER_SYSTEM_ID);
-    _registerSystem(batchCallSystem, BATCH_CALL_SYSTEM_ID);
-    _registerSystem(coreRegistrationSystem, CORE_REGISTRATION_SYSTEM_ID);
+  function _registerInternalSystems() internal {
+    _registerInternalSystem(accessManagementSystem, ACCESS_MANAGEMENT_SYSTEM_ID);
+    _registerInternalSystem(balanceTransferSystem, BALANCE_TRANSFER_SYSTEM_ID);
+    _registerInternalSystem(batchCallSystem, BATCH_CALL_SYSTEM_ID);
+    _registerInternalSystem(coreRegistrationSystem, CORE_REGISTRATION_SYSTEM_ID);
   }
 
   /**
-   * @notice Register the core system in the World.
-   * @dev Uses the CoreRegistrationSystem's `registerSystem` implementation to register the system on the World.
+   * @notice Register the internal system in the World.
+   * @dev Uses the WorldRegistrationSystem's `registerSystem` implementation to register the system on the World.
    */
-  function _registerSystem(address target, ResourceId systemId) internal {
+  function _registerInternalSystem(address target, ResourceId systemId) internal {
     WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
       msgValue: 0,
