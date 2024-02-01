@@ -1,9 +1,11 @@
 import { bench, describe } from "vitest";
-import { getComponentEntities, getComponentValue } from "@latticexyz/recs";
-import { buildTable, getTables } from "../sqlite";
-import { createRecsStorage, createSqliteStorage, createZustandStorage, tables } from "../../test/utils";
-import { logsToBlocks } from "../../test/logsToBlocks";
-import worldRpcLogs from "../../../../test-data/world-logs.json";
+import { getComponentValue } from "@latticexyz/recs";
+import { singletonEntity } from "../src/recs";
+import { buildTable, getTables } from "../src/sqlite";
+import { eq } from "drizzle-orm";
+import { createRecsStorage, createSqliteStorage, createZustandStorage, tables } from "../test/utils";
+import worldRpcLogs from "../../../test-data/world-logs.json";
+import { logsToBlocks } from "../test/logsToBlocks";
 
 const blocks = logsToBlocks(worldRpcLogs);
 
@@ -15,21 +17,19 @@ for (const block of blocks) {
   await Promise.all([recsStorageAdapter(block), zustandStorageAdapter(block), sqliteStorageAdapter(block)]);
 }
 
-describe("Get all records for table: singleton", () => {
+describe("Get single record by key: singleton", () => {
   bench("recs: `getComponentValue`", async () => {
-    for (const entity of getComponentEntities(components.NumberList)) {
-      getComponentValue(components.NumberList, entity);
-    }
+    getComponentValue(components.NumberList, singletonEntity);
   });
 
-  bench("zustand: `getRecords`", async () => {
-    useStore.getState().getRecords(tables.NumberList);
+  bench("zustand: `getRecord`", async () => {
+    useStore.getState().getRecord(tables.NumberList, {});
   });
 
   bench("sqlite: `select`", async () => {
     const tables = getTables(database).filter((table) => table.name === "NumberList");
     const sqlTable = buildTable(tables[0]);
 
-    database.select().from(sqlTable).all();
+    database.select().from(sqlTable).where(eq(sqlTable.__key, "0x")).all();
   });
 });

@@ -1,13 +1,13 @@
 import { bench, describe } from "vitest";
 import { getComponentValue } from "@latticexyz/recs";
-import { createRecsStorage, createSqliteStorage, createZustandStorage, tables } from "../../test/utils";
-import { encodeEntity } from "../recs";
-import { logsToBlocks } from "../../test/logsToBlocks";
-import { buildTable, getTables } from "../sqlite";
+import { createRecsStorage, createSqliteStorage, createZustandStorage, tables } from "../test/utils";
+import { encodeEntity } from "../src/recs";
+import { logsToBlocks } from "../test/logsToBlocks";
+import { buildTable, getTables } from "../src/sqlite";
 import { eq } from "drizzle-orm";
-import worldRpcLogs10 from "../../../../test-data/world-logs-10.json";
-import worldRpcLogs100 from "../../../../test-data/world-logs-100.json";
-import worldRpcLogs1000 from "../../../../test-data/world-logs-1000.json";
+import worldRpcLogs10 from "../../../test-data/world-logs-10.json";
+import worldRpcLogs100 from "../../../test-data/world-logs-100.json";
+import worldRpcLogs1000 from "../../../test-data/world-logs-1000.json";
 
 describe.each([
   { numRecords: 10, logs: worldRpcLogs10 },
