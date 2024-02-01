@@ -54,6 +54,7 @@ import { Bool } from "./codegen/tables/Bool.sol";
 import { TwoFields, TwoFieldsData } from "./codegen/tables/TwoFields.sol";
 import { AddressArray } from "./codegen/tables/AddressArray.sol";
 import { DelegationControlMock } from "./DelegationControlMock.sol";
+import { createWorld } from "./createWorld.sol";
 import { createInitModule } from "./createInitModule.sol";
 
 interface IWorldTestSystem {
@@ -174,8 +175,7 @@ contract WorldTest is Test, GasReporter {
   bytes32[] singletonKey;
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(createInitModule());
+    world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
 
     key = "testKey";

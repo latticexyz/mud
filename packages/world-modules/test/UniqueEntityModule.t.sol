@@ -12,7 +12,7 @@ import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
-import { createInitModule } from "@latticexyz/world/test/createInitModule.sol";
+import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { UniqueEntityModule } from "../src/modules/uniqueentity/UniqueEntityModule.sol";
 import { UniqueEntity } from "../src/modules/uniqueentity/tables/UniqueEntity.sol";
 import { getUniqueEntity } from "../src/modules/uniqueentity/getUniqueEntity.sol";
@@ -36,8 +36,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
   ResourceId _tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: NAMESPACE, name: TABLE_NAME });
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(createInitModule());
+    world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
   }
 

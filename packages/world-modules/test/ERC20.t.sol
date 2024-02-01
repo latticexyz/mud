@@ -8,7 +8,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World } from "@latticexyz/world/src/World.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
-import { createInitModule } from "@latticexyz/world/test/createInitModule.sol";
+import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -30,8 +30,7 @@ contract ERC20Test is Test, GasReporter, IERC20Events, IERC20Errors {
   IERC20Mintable token;
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(createInitModule());
+    world = createWorld();
     world.installModule(new PuppetModule(), new bytes(0));
     StoreSwitch.setStoreAddress(address(world));
 
