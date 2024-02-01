@@ -1,7 +1,9 @@
 import { bench, describe } from "vitest";
-
-import { blocks } from "../../test/blocks";
 import { createRecsStorage, createSqliteStorage, createZustandStorage } from "../../test/utils";
+import { logsToBlocks } from "../../test/logsToBlocks";
+import worldRpcLogs from "../../../../test-data/world-logs.json";
+
+const blocks = logsToBlocks(worldRpcLogs);
 
 const { storageAdapter: recsStorageAdapter } = createRecsStorage();
 const { storageAdapter: zustandStorageAdapter } = createZustandStorage();
