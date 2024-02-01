@@ -23,7 +23,7 @@ event Store_DeleteRecord(bytes32 indexed tableId, bytes32[] keyTuple)
 
 - `Store_SetRecord` sets the entire record value (all fields) for a particular key tuple in a particular table.
 - `Store_SpliceStaticData` modifies a subset of the bytes that represents the encoded values of all static (fixed length) fields for a particular key tuple in a particular table.
-- `Store_SpliceDynamicData` modifies a subset of the bytes that represents the encoded values of all dynamic (variable length) fields for a particular key tuple in a particular table. It includes some additional fields on the static splice event.
+- `Store_SpliceDynamicData` modifies a subset of the bytes that represents the encoded values of all dynamic (variable length) fields for a particular key tuple in a particular table. Because dynamic fields need to additionally keep track of lengths, it has a few more arguments than the static splice event.
 - `Store_DeleteRecord` removes the entire record at a particular key tuple in a particular table.
 
 ## Recreating onchain state
