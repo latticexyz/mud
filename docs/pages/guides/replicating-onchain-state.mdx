@@ -8,7 +8,7 @@ Before we get started, it's helpful to understand [how MUD stores its data on ch
 
 You can think of tables like a native Solidity `mapping`, where its keys and values are [encoded in a standardized way](/store/encoding) to 1) more easily replicate and represent data offchain, like in relational databases, and 2) require less onchain storage and gas than native Solidity.
 
-Internally, MUD stores static (fixed-length) field values separately from dynamic (variable-length) field values. You'll see this distinction expressed in the events below.
+Internally, MUD stores [static (fixed-length) field values](/store/encoding#static-length-data) separately from [dynamic (variable-length) field values](/store/encoding#dynamic-length-data). You'll see this distinction expressed in the events below.
 
 ## Store protocol events
 
