@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { startProxy } from "@viem/anvil";
 import { generateLogs } from "./generateLogs";
 
-const COUNTS = [10, 100, 1000];
+const NUM_RECORDS = [10, 100, 1000];
 
 console.log("starting proxy");
 await startProxy({
@@ -15,18 +15,18 @@ await startProxy({
   },
 });
 
-for (let i = 0; i < COUNTS.length; i++) {
-  const count = COUNTS[i];
+for (let i = 0; i < NUM_RECORDS.length; i++) {
+  const numRecords = NUM_RECORDS[i];
 
   // each group of logs gets a fresh anvil instance
-  const rpc = `http://127.0.0.1:8545/${count}`;
+  const rpc = `http://127.0.0.1:8545/${numRecords}`;
 
-  console.log(`generating logs for ${count} records`);
-  const logs = await generateLogs(count, rpc);
+  console.log(`generating logs for ${numRecords} records`);
+  const logs = await generateLogs(numRecords, rpc);
 
   const logsFilename = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
-    `../../../test-data/world-logs-${count}.json`
+    `../../../test-data/world-logs-${numRecords}.json`
   );
 
   console.log("writing", logs.length, "logs to", logsFilename);

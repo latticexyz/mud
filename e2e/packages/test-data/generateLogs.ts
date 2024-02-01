@@ -14,7 +14,7 @@ import { storeEventsAbi } from "@latticexyz/store";
 import { privateKeyToAccount } from "viem/accounts";
 import IWorldAbi from "../contracts/out/IWorld.sol/IWorld.abi.json";
 
-export async function generateLogs(count: number, rpc: string) {
+export async function generateLogs(numRecords: number, rpc: string) {
   console.log("deploying world");
   const { stdout, stderr } = await execa("pnpm", ["mud", "deploy", "--rpc", rpc, "--saveDeployment", "false"], {
     cwd: "../contracts",
@@ -56,11 +56,11 @@ export async function generateLogs(count: number, rpc: string) {
   });
 
   console.log("calling setNumber");
-  for (let i = 0; i < count - 1; i++) {
+  for (let i = 0; i < numRecords - 1; i++) {
     await worldContract.write.setNumber([i, i]);
   }
 
-  const lastTx = await worldContract.write.setNumber([count, count]);
+  const lastTx = await worldContract.write.setNumber([numRecords, numRecords]);
 
   console.log("waiting for tx");
   const receipt = await publicClient.waitForTransactionReceipt({ hash: lastTx });
