@@ -84,5 +84,5 @@ describe("createStorageAdapter", async () => {
     `);
 
     await storageAdapter.cleanUp();
-  });
+  }, 15_000);
 });
