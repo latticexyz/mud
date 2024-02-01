@@ -8,7 +8,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
 import { ResourceId } from "../src/WorldResourceId.sol";
-import { InitModule } from "../src/modules/core/InitModule.sol";
+import { InitModule } from "../src/modules/init/InitModule.sol";
 import { Create2Factory } from "../src/Create2Factory.sol";
 import { WorldFactory } from "../src/WorldFactory.sol";
 import { IWorldFactory } from "../src/IWorldFactory.sol";

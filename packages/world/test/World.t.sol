@@ -35,13 +35,13 @@ import { Module, IModule } from "../src/Module.sol";
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
 
-import { AccessManagementSystem } from "../src/modules/core/implementations/AccessManagementSystem.sol";
-import { BalanceTransferSystem } from "../src/modules/core/implementations/BalanceTransferSystem.sol";
-import { BatchCallSystem } from "../src/modules/core/implementations/BatchCallSystem.sol";
+import { AccessManagementSystem } from "../src/modules/init/implementations/AccessManagementSystem.sol";
+import { BalanceTransferSystem } from "../src/modules/init/implementations/BalanceTransferSystem.sol";
+import { BatchCallSystem } from "../src/modules/init/implementations/BatchCallSystem.sol";
 
-import { InitModule } from "../src/modules/core/InitModule.sol";
-import { RegistrationSystem } from "../src/modules/core/RegistrationSystem.sol";
-import { REGISTRATION_SYSTEM_ID } from "../src/modules/core/constants.sol";
+import { InitModule } from "../src/modules/init/InitModule.sol";
+import { RegistrationSystem } from "../src/modules/init/RegistrationSystem.sol";
+import { REGISTRATION_SYSTEM_ID } from "../src/modules/init/constants.sol";
 import { Systems } from "../src/codegen/tables/Systems.sol";
 import { SystemRegistry } from "../src/codegen/tables/SystemRegistry.sol";
 import { FunctionSelectors } from "../src/codegen/tables/FunctionSelectors.sol";

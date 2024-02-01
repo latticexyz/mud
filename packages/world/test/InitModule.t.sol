@@ -8,7 +8,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Tables } from "@latticexyz/store/src/codegen/index.sol";
 
 import { WorldContextProviderLib } from "../src/WorldContext.sol";
-import { InitModule } from "../src/modules/core/InitModule.sol";
+import { InitModule } from "../src/modules/init/InitModule.sol";
 import { ResourceId, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 
 import { createInitModule } from "./createInitModule.sol";

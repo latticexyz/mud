@@ -13,7 +13,7 @@ import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
 import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
-import { SystemCallData, SystemCallFromData } from "../src/modules/core/types.sol";
+import { SystemCallData, SystemCallFromData } from "../src/modules/init/types.sol";
 
 import { createInitModule } from "./createInitModule.sol";
 
