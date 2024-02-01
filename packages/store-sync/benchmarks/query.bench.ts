@@ -21,7 +21,7 @@ describe.each([
   }
 
   bench("recs: `runQuery`", async () => {
-    runQuery([Has(components.Number), Has(components.NumberList)]);
+    runQuery([Has(components.Number), Has(components.Number)]);
   });
 
   bench("zustand: `getRecords`", async () => {
