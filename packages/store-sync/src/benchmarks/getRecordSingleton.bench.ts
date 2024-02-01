@@ -1,24 +1,20 @@
 import { bench, describe } from "vitest";
 import { getComponentValue } from "@latticexyz/recs";
-import { blocks } from "../test/blocks";
-import {
-  components,
-  db,
-  recsStorageAdapter,
-  sqliteStorageAdapter,
-  tables,
-  useStore,
-  zustandStorageAdapter,
-} from "../test/utils";
-import { singletonEntity } from "./recs";
-import { buildTable, getTables } from "./sqlite";
+import { blocks } from "../../test/blocks";
+import { singletonEntity } from "../recs";
+import { buildTable, getTables } from "../sqlite";
 import { eq } from "drizzle-orm";
+import { createRecsStorage, createSqliteStorage, createZustandStorage, tables } from "../../test/utils";
+
+const { components, storageAdapter: recsStorageAdapter } = createRecsStorage();
+const { useStore, storageAdapter: zustandStorageAdapter } = createZustandStorage();
+const { db, storageAdapter: sqliteStorageAdapter } = await createSqliteStorage();
 
 for (const block of blocks) {
   await Promise.all([recsStorageAdapter(block), zustandStorageAdapter(block), sqliteStorageAdapter(block)]);
 }
 
-describe("Get single record by key", () => {
+describe("Get single record by key: singleton", () => {
   bench("recs: `getComponentValue`", async () => {
     getComponentValue(components.NumberList, singletonEntity);
   });
