@@ -1,4 +1,4 @@
-# The World config
+# MUD config
 
 Certain CLI commands, such as [`mud tablegen`](/cli/tablegen) and [`mud worldgen`](/cli/worldgen) require the MUD configuration file.
 This file needs to be named `mud.config.ts` and be in the same folder as your `foundry.toml` file.
@@ -6,7 +6,7 @@ This file needs to be named `mud.config.ts` and be in the same folder as your `f
 The config is used to define:
 
 - The tables in your project in the `tables` object of your configuration.
-- The [namespace](/world/namespaces-access-control) the [`System`s](/world/systems) and tables will be deployed in.
+- The [namespace](/world/namespaces-access-control) that [systems](/world/systems) and tables will be deployed in.
 - The `System`s in your project.
   By default, the deployer will find all Solidity matching `*System.sol` (so any file ending in `System.sol`, in any folder) and deploy them as public `System`.
   If you want greater control over your systems (to change their public access or their name), you can use the `systems` object in the config.
