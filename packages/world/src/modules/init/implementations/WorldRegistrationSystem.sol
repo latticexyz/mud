@@ -27,7 +27,8 @@ import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
 import { Systems } from "../../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "../../../codegen/tables/FunctionSignatures.sol";
-import { validateNamespace } from "../../../validateNamespace.sol";
+import { requireNamespace } from "../../../requireNamespace.sol";
+import { requireValidNamespace } from "../../../requireValidNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
 
@@ -44,8 +45,10 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @param namespaceId The unique identifier for the new namespace
    */
   function registerNamespace(ResourceId namespaceId) public virtual onlyDelegatecall {
-    // Require namespace ID to be a valid namespace
-    validateNamespace(namespaceId);
+    // Ensure namespace resource is a namespace
+    requireNamespace(namespaceId);
+    // and is valid (does not include reserved characters)
+    requireValidNamespace(namespaceId);
 
     // Require namespace to not exist yet
     if (ResourceIds._getExists(namespaceId)) {
@@ -302,8 +305,8 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public onlyDelegatecall {
-    // Require namespace ID to be a valid namespace
-    validateNamespace(namespaceId);
+    // Ensure namespace resource is a namespace
+    requireNamespace(namespaceId);
 
     // Require the delegation to not be unlimited
     if (!Delegation.isLimited(delegationControlId)) {
@@ -337,8 +340,8 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @param namespaceId The ID of the namespace
    */
   function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelegatecall {
-    // Require namespace ID to be a valid namespace
-    validateNamespace(namespaceId);
+    // Ensure namespace resource is a namespace
+    requireNamespace(namespaceId);
 
     // Require the namespace to exist
     AccessControl.requireExistence(namespaceId);

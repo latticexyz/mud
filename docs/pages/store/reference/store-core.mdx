@@ -21,15 +21,15 @@ StoreSwitch uses internal methods to write data instead of external calls._
 function initialize() internal;
 ```
 
-#### registerCoreTables
+### registerInternalTables
 
-Register core tables in the store.
+Register Store protocol's internal tables in the store.
 
 _Consumers must call this function in their constructor before setting
 any table data to allow indexers to decode table events._
 
 ```solidity
-function registerCoreTables() internal;
+function registerInternalTables() internal;
 ```
 
 #### getFieldLayout
