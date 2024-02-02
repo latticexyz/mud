@@ -48,13 +48,10 @@ contract FactoriesTest is Test, GasReporter {
     startGasReport("deploy contract via Create2");
     create2Factory.deployContract(combinedBytes, uint256(0));
     endGasReport();
-
-    // Confirm worldFactory was deployed correctly
-    IWorldFactory worldFactory = IWorldFactory(calculatedAddress);
-    assertEq(uint256(worldFactory.worldCounts(address(0))), uint256(0));
   }
 
-  function testWorldFactory(address account, uint256 salt) public {
+  function testWorldFactory(address account, uint256 salt1, uint256 salt2) public {
+    vm.assume(salt1 != salt2);
     vm.startPrank(account);
 
     // Deploy WorldFactory with current CoreModule
@@ -63,48 +60,10 @@ contract FactoriesTest is Test, GasReporter {
     IWorldFactory worldFactory = IWorldFactory(worldFactoryAddress);
 
     // User defined bytes for create2
-    bytes memory _salt0 = abi.encode(salt);
+    bytes memory _salt1 = abi.encode(salt1);
 
     // Address we expect for first World
     address calculatedAddress = calculateAddress(
-      worldFactoryAddress,
-      keccak256(abi.encode(account, _salt0)),
-      type(World).creationCode
-    );
-
-    // Check for HelloWorld event from World
-    vm.expectEmit(true, true, true, true);
-    emit HelloWorld(WORLD_VERSION);
-
-    // Check for WorldDeployed event from Factory
-    vm.expectEmit(true, false, false, false);
-    emit WorldDeployed(calculatedAddress);
-    startGasReport("deploy world via WorldFactory");
-    worldFactory.deployWorld(_salt0);
-    endGasReport();
-
-    // Set the store address manually
-    StoreSwitch.setStoreAddress(calculatedAddress);
-
-    // Confirm accountCount (which is salt) has incremented
-    assertEq(uint256(worldFactory.worldCounts(account)), uint256(1));
-
-    // Confirm correct Core is installed
-    assertTrue(InstalledModules.get(address(coreModule), keccak256(new bytes(0))));
-
-    // Confirm the msg.sender is owner of the root namespace of the new world
-    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
-
-    // Deploy a second world
-
-    // User defined bytes for create2
-    // unchecked for the fuzzing test
-    bytes memory _salt1;
-    unchecked {
-      _salt1 = abi.encode(salt - 1);
-    }
-    // Address we expect for second World
-    calculatedAddress = calculateAddress(
       worldFactoryAddress,
       keccak256(abi.encode(account, _salt1)),
       type(World).creationCode
@@ -117,10 +76,40 @@ contract FactoriesTest is Test, GasReporter {
     // Check for WorldDeployed event from Factory
     vm.expectEmit(true, false, false, false);
     emit WorldDeployed(calculatedAddress);
+    startGasReport("deploy world via WorldFactory");
     worldFactory.deployWorld(_salt1);
+    endGasReport();
 
-    // Confirm accountCount (which is salt) has incremented
-    assertEq(uint256(worldFactory.worldCounts(account)), uint256(2));
+    // Set the store address manually
+    StoreSwitch.setStoreAddress(calculatedAddress);
+
+    // Confirm correct Core is installed
+    assertTrue(InstalledModules.get(address(coreModule), keccak256(new bytes(0))));
+
+    // Confirm the msg.sender is owner of the root namespace of the new world
+    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
+
+    // Deploy a second world
+
+    // User defined bytes for create2
+    // unchecked for the fuzzing test
+    bytes memory _salt2 = abi.encode(salt2);
+
+    // Address we expect for second World
+    calculatedAddress = calculateAddress(
+      worldFactoryAddress,
+      keccak256(abi.encode(account, _salt2)),
+      type(World).creationCode
+    );
+
+    // Check for HelloWorld event from World
+    vm.expectEmit(true, true, true, true);
+    emit HelloWorld(WORLD_VERSION);
+
+    // Check for WorldDeployed event from Factory
+    vm.expectEmit(true, false, false, false);
+    emit WorldDeployed(calculatedAddress);
+    worldFactory.deployWorld(_salt2);
 
     // Set the store address manually
     StoreSwitch.setStoreAddress(calculatedAddress);
@@ -137,10 +126,6 @@ contract FactoriesTest is Test, GasReporter {
   }
 
   function testWorldFactoryGas() public {
-    testWorldFactory(address(this), 0);
-  }
-
-  function testFuzzWorldDeploy(address account, uint _salt) public {
-    testWorldFactory(account, _salt);
+    testWorldFactory(address(this), 0, 1);
   }
 }

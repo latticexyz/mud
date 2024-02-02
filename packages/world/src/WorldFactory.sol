@@ -17,9 +17,6 @@ contract WorldFactory is IWorldFactory {
   /// @notice Address of the core module to be set in the World instances.
   IModule public immutable coreModule;
 
-  /// @notice Counters to keep track of the number of World instances deployed per address.
-  mapping(address creator => uint256 worldCount) public worldCounts;
-
   /// @param _coreModule The address of the core module.
   constructor(IModule _coreModule) {
     coreModule = _coreModule;
@@ -35,7 +32,6 @@ contract WorldFactory is IWorldFactory {
     // Deploy a new World and increase the WorldCount
     bytes memory bytecode = type(World).creationCode;
     uint256 salt = uint256(keccak256(abi.encode(msg.sender, _salt)));
-    worldCounts[msg.sender]++;
 
     worldAddress = Create2.deploy(bytecode, salt);
     IBaseWorld world = IBaseWorld(worldAddress);
