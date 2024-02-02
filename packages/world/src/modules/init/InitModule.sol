@@ -62,8 +62,8 @@ contract InitModule is Module {
    * @dev Registers core tables, systems, and function selectors in the World.
    */
   function installRoot(bytes memory) public override {
-    _registerInternalTables();
-    _registerInternalSystems();
+    _registerTables();
+    _registerSystems();
     _registerFunctionSelectors();
   }
 
@@ -76,10 +76,10 @@ contract InitModule is Module {
   }
 
   /**
-   * @notice Register World's internal tables.
+   * @notice Register World's tables.
    * @dev This internal function registers various tables and sets initial permissions.
    */
-  function _registerInternalTables() internal {
+  function _registerTables() internal {
     StoreCore.registerInternalTables();
     NamespaceOwner.register();
     Balances.register();
@@ -108,20 +108,20 @@ contract InitModule is Module {
   }
 
   /**
-   * @notice Register the internal systems in the World.
+   * @notice Register the systems in the World.
    */
-  function _registerInternalSystems() internal {
-    _registerInternalSystem(accessManagementSystem, ACCESS_MANAGEMENT_SYSTEM_ID);
-    _registerInternalSystem(balanceTransferSystem, BALANCE_TRANSFER_SYSTEM_ID);
-    _registerInternalSystem(batchCallSystem, BATCH_CALL_SYSTEM_ID);
-    _registerInternalSystem(registrationSystem, REGISTRATION_SYSTEM_ID);
+  function _registerSystems() internal {
+    _registerSystem(accessManagementSystem, ACCESS_MANAGEMENT_SYSTEM_ID);
+    _registerSystem(balanceTransferSystem, BALANCE_TRANSFER_SYSTEM_ID);
+    _registerSystem(batchCallSystem, BATCH_CALL_SYSTEM_ID);
+    _registerSystem(registrationSystem, REGISTRATION_SYSTEM_ID);
   }
 
   /**
    * @notice Register the internal system in the World.
    * @dev Uses the WorldRegistrationSystem's `registerSystem` implementation to register the system on the World.
    */
-  function _registerInternalSystem(address target, ResourceId systemId) internal {
+  function _registerSystem(address target, ResourceId systemId) internal {
     WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
       msgValue: 0,
