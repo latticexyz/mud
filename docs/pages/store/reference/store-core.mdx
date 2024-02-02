@@ -8,7 +8,7 @@ This library includes implementations for all IStore methods and events related 
 
 ### Functions
 
-### initialize
+#### initialize
 
 Initialize the store address in StoreSwitch.
 
@@ -21,7 +21,7 @@ StoreSwitch uses internal methods to write data instead of external calls._
 function initialize() internal;
 ```
 
-### registerCoreTables
+#### registerCoreTables
 
 Register core tables in the store.
 
@@ -32,7 +32,7 @@ any table data to allow indexers to decode table events._
 function registerCoreTables() internal;
 ```
 
-### getFieldLayout
+#### getFieldLayout
 
 SCHEMA
 
@@ -54,7 +54,7 @@ function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout);
 | -------- | ------------- | ---------------------------------------- |
 | `<none>` | `FieldLayout` | The field layout for the given table ID. |
 
-### getKeySchema
+#### getKeySchema
 
 Get the key schema for the given table ID.
 
@@ -76,7 +76,7 @@ function getKeySchema(ResourceId tableId) internal view returns (Schema keySchem
 | ----------- | -------- | -------------------------------------- |
 | `keySchema` | `Schema` | The key schema for the given table ID. |
 
-### getValueSchema
+#### getValueSchema
 
 Get the value schema for the given table ID.
 
@@ -98,7 +98,7 @@ function getValueSchema(ResourceId tableId) internal view returns (Schema valueS
 | ------------- | -------- | ---------------------------------------- |
 | `valueSchema` | `Schema` | The value schema for the given table ID. |
 
-### registerTable
+#### registerTable
 
 Register a new table with the given configuration.
 
@@ -133,7 +133,7 @@ function registerTable(
 | `keyNames`    | `string[]`    | The names of the keys in the table.   |
 | `fieldNames`  | `string[]`    | The names of the fields in the table. |
 
-### registerStoreHook
+#### registerStoreHook
 
 REGISTER HOOKS
 
@@ -154,7 +154,7 @@ function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 ena
 | `hookAddress`        | `IStoreHook` | The address of the hook contract to register. |
 | `enabledHooksBitmap` | `uint8`      | The bitmap of enabled hooks.                  |
 
-### unregisterStoreHook
+#### unregisterStoreHook
 
 Unregister a hook from the given table ID.
 
@@ -169,7 +169,7 @@ function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) interna
 | `tableId`     | `ResourceId` | The ID of the table to unregister the hook from. |
 | `hookAddress` | `IStoreHook` | The address of the hook to unregister.           |
 
-### setRecord
+#### setRecord
 
 SET DATA
 
@@ -199,7 +199,7 @@ function setRecord(
 | `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.  |
 | `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
 
-### setRecord
+#### setRecord
 
 Set a full data record for the given table ID, key tuple, and field layout.
 
@@ -230,7 +230,7 @@ function setRecord(
 | `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
 | `fieldLayout`    | `FieldLayout`   | The field layout for the record.                        |
 
-### spliceStaticData
+#### spliceStaticData
 
 Splice the static data for the given table ID and key tuple.
 
@@ -251,7 +251,7 @@ function spliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 
 | `start`    | `uint48`     | The start position in bytes for the splice operation.                 |
 | `data`     | `bytes`      | The data to write to the static data of the record at the start byte. |
 
-### spliceDynamicData
+#### spliceDynamicData
 
 Splice the dynamic data for the given table ID, key tuple, and dynamic field index.
 
@@ -281,7 +281,7 @@ function spliceDynamicData(
 | `deleteCount`       | `uint40`     | The number of bytes to delete in the splice operation.                                                  |
 | `data`              | `bytes`      | The data to insert into the dynamic data of the record at the start byte.                               |
 
-### setField
+#### setField
 
 Set data for a field at the given index in a table with the given tableId, key tuple, and value field layout.
 
@@ -303,7 +303,7 @@ function setField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldInde
 | `fieldIndex` | `uint8`      | The index of the field to set.                |
 | `data`       | `bytes`      | The data to set for the field.                |
 
-### setField
+#### setField
 
 Set data for a field at the given index in a table with the given tableId, key tuple, and value field layout.
 
@@ -333,7 +333,7 @@ function setField(
 | `data`        | `bytes`       | The data to set for the field.                          |
 | `fieldLayout` | `FieldLayout` | The field layout for the record.                        |
 
-### setStaticField
+#### setStaticField
 
 Set a static field for the given table ID, key tuple, field index, and field layout.
 
@@ -361,7 +361,7 @@ function setStaticField(
 | `data`        | `bytes`       | The data to set for the static field.            |
 | `fieldLayout` | `FieldLayout` | The field layout for the record.                 |
 
-### setDynamicField
+#### setDynamicField
 
 Set a dynamic field for the given table ID, key tuple, and dynamic field index.
 
@@ -387,7 +387,7 @@ function setDynamicField(
 | `dynamicFieldIndex` | `uint8`      | The index of the dynamic field to set. (Dynamic field index = field index - number of static fields). |
 | `data`              | `bytes`      | The data to set for the dynamic field.                                                                |
 
-### deleteRecord
+#### deleteRecord
 
 Delete a record for the given table ID and key tuple.
 
@@ -408,7 +408,7 @@ function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) internal;
 | `tableId`  | `ResourceId` | The ID of the table to delete the record from.          |
 | `keyTuple` | `bytes32[]`  | An array representing the composite key for the record. |
 
-### deleteRecord
+#### deleteRecord
 
 Delete a record for the given table ID and key tuple.
 
@@ -429,7 +429,7 @@ function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout
 | `keyTuple`    | `bytes32[]`   | An array representing the composite key for the record. |
 | `fieldLayout` | `FieldLayout` | The field layout for the record.                        |
 
-### pushToDynamicField
+#### pushToDynamicField
 
 Push data to a field at the dynamic field index in a table with the given table ID and key tuple.
 
@@ -455,7 +455,7 @@ function pushToDynamicField(
 | `dynamicFieldIndex` | `uint8`      | The index of the dynamic field to push data to.         |
 | `dataToPush`        | `bytes`      | The data to push to the dynamic field.                  |
 
-### popFromDynamicField
+#### popFromDynamicField
 
 Pop data from a field at the dynamic field index in a table with the given table ID and key tuple.
 
@@ -481,7 +481,7 @@ function popFromDynamicField(
 | `dynamicFieldIndex` | `uint8`      | The index of the dynamic field to pop data from.        |
 | `byteLengthToPop`   | `uint256`    | The byte length to pop from the dynamic field.          |
 
-### getRecord
+#### getRecord
 
 GET DATA
 
@@ -512,7 +512,7 @@ function getRecord(
 | `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record. |
 | `dynamicData`    | `bytes`         | The dynamic data of the record.                        |
 
-### getRecord
+#### getRecord
 
 Get the full record (all fields, static and dynamic data) for the given table ID and key tuple, with the given field layout.
 
@@ -540,7 +540,7 @@ function getRecord(
 | `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record. |
 | `dynamicData`    | `bytes`         | The dynamic data of the record.                        |
 
-### getField
+#### getField
 
 Get a single field from the given table ID and key tuple.
 
@@ -564,7 +564,7 @@ function getField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldInde
 | -------- | ------- | ---------------------- |
 | `<none>` | `bytes` | The data of the field. |
 
-### getField
+#### getField
 
 Get a single field from the given table ID and key tuple, with the given field layout.
 
@@ -592,7 +592,7 @@ function getField(
 | -------- | ------- | ---------------------- |
 | `<none>` | `bytes` | The data of the field. |
 
-### getStaticField
+#### getStaticField
 
 Get a single static field from the given table ID and key tuple, with the given value field layout.
 
@@ -623,7 +623,7 @@ function getStaticField(
 | -------- | --------- | ----------------------------- |
 | `<none>` | `bytes32` | The data of the static field. |
 
-### getDynamicField
+#### getDynamicField
 
 Get a single dynamic field from the given table ID and key tuple.
 
@@ -649,7 +649,7 @@ function getDynamicField(
 | -------- | ------- | ------------------------------ |
 | `<none>` | `bytes` | The data of the dynamic field. |
 
-### getFieldLength
+#### getFieldLength
 
 Get the byte length of a single field from the given table ID and key tuple.
 
@@ -678,7 +678,7 @@ function getFieldLength(
 | -------- | --------- | ----------------------------- |
 | `<none>` | `uint256` | The byte length of the field. |
 
-### getFieldLength
+#### getFieldLength
 
 Get the byte length of a single field from the given table ID and key tuple.
 
@@ -706,7 +706,7 @@ function getFieldLength(
 | -------- | --------- | ----------------------------- |
 | `<none>` | `uint256` | The byte length of the field. |
 
-### getDynamicFieldLength
+#### getDynamicFieldLength
 
 Get the byte length of a single dynamic field from the given table ID and key tuple.
 
@@ -732,7 +732,7 @@ function getDynamicFieldLength(
 | -------- | --------- | ------------------------------------- |
 | `<none>` | `uint256` | The byte length of the dynamic field. |
 
-### getDynamicFieldSlice
+#### getDynamicFieldSlice
 
 Get a byte slice (including start, excluding end) of a single dynamic field from the given table ID and key tuple.
 
@@ -764,7 +764,7 @@ function getDynamicFieldSlice(
 
 ### Events
 
-### Store_SetRecord
+#### Store_SetRecord
 
 Emitted when a new record is set in the store.
 
@@ -784,7 +784,7 @@ event Store_SetRecord(
 | `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.  |
 | `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
 
-### Store_SpliceStaticData
+#### Store_SpliceStaticData
 
 Emitted when static data in the store is spliced.
 
@@ -804,7 +804,7 @@ event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uin
 | `start`    | `uint48`     | The start position in bytes for the splice operation.                 |
 | `data`     | `bytes`      | The data to write to the static data of the record at the start byte. |
 
-### Store_SpliceDynamicData
+#### Store_SpliceDynamicData
 
 Emitted when dynamic data in the store is spliced.
 
@@ -830,7 +830,7 @@ event Store_SpliceDynamicData(
 | `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.                    |
 | `data`           | `bytes`         | The data to insert into the dynamic data of the record at the start byte. |
 
-### Store_DeleteRecord
+#### Store_DeleteRecord
 
 Emitted when a record is deleted from the store.
 

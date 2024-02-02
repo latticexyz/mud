@@ -6,7 +6,7 @@
 
 ### Functions
 
-### onBeforeSetRecord
+#### onBeforeSetRecord
 
 Called before setting a record in the store.
 
@@ -32,7 +32,7 @@ function onBeforeSetRecord(
 | `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
 | `fieldLayout`    | `FieldLayout`   | The layout of the field, see FieldLayout.sol.           |
 
-### onAfterSetRecord
+#### onAfterSetRecord
 
 Called after setting a record in the store.
 
@@ -58,7 +58,7 @@ function onAfterSetRecord(
 | `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
 | `fieldLayout`    | `FieldLayout`   | The layout of the field, see FieldLayout.sol.           |
 
-### onBeforeSpliceStaticData
+#### onBeforeSpliceStaticData
 
 Called before splicing static data in the store.
 
@@ -83,7 +83,7 @@ function onBeforeSpliceStaticData(
 | `start`    | `uint48`     | The start byte position for splicing.                                      |
 | `data`     | `bytes`      | The data to be written to the static data of the record at the start byte. |
 
-### onAfterSpliceStaticData
+#### onAfterSpliceStaticData
 
 Called after splicing static data in the store.
 
@@ -108,7 +108,7 @@ function onAfterSpliceStaticData(
 | `start`    | `uint48`     | The start byte position for splicing.                                |
 | `data`     | `bytes`      | The data written to the static data of the record at the start byte. |
 
-### onBeforeSpliceDynamicData
+#### onBeforeSpliceDynamicData
 
 Called before splicing dynamic data in the store.
 
@@ -139,7 +139,7 @@ function onBeforeSpliceDynamicData(
 | `encodedLengths`    | `PackedCounter` | The encoded lengths of the dynamic data of the record.                         |
 | `data`              | `bytes`         | The data to be inserted into the dynamic data of the record at the start byte. |
 
-### onAfterSpliceDynamicData
+#### onAfterSpliceDynamicData
 
 Called after splicing dynamic data in the store.
 
@@ -170,7 +170,7 @@ function onAfterSpliceDynamicData(
 | `encodedLengths`    | `PackedCounter` | The encoded lengths of the dynamic data of the record.                   |
 | `data`              | `bytes`         | The data inserted into the dynamic data of the record at the start byte. |
 
-### onBeforeDeleteRecord
+#### onBeforeDeleteRecord
 
 Called before deleting a record from the store.
 
@@ -186,7 +186,7 @@ function onBeforeDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, Fie
 | `keyTuple`    | `bytes32[]`   | An array representing the composite key for the record. |
 | `fieldLayout` | `FieldLayout` | The layout of the field, see FieldLayout.sol.           |
 
-### onAfterDeleteRecord
+#### onAfterDeleteRecord
 
 Called after deleting a record from the store.
 
@@ -204,7 +204,7 @@ function onAfterDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, Fiel
 
 ### Errors
 
-### StoreHook_NotImplemented
+#### StoreHook_NotImplemented
 
 Error emitted when a function is not implemented.
 
