@@ -19,14 +19,14 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c64000000000000000000436f72654d6f64756c65416464726573);
-ResourceId constant CoreModuleAddressTableId = _tableId;
+ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c64000000000000000000496e69744d6f64756c65416464726573);
+ResourceId constant InitModuleAddressTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0014010014000000000000000000000000000000000000000000000000000000
 );
 
-library CoreModuleAddress {
+library InitModuleAddress {
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

@@ -18,7 +18,7 @@ import { ResourceId } from "../src/ResourceId.sol";
 contract StoreMock is IStore, StoreData {
   constructor() {
     StoreCore.initialize();
-    StoreCore.registerCoreTables();
+    StoreCore.registerInternalTables();
     StoreSwitch.setStoreAddress(address(this));
   }
 
