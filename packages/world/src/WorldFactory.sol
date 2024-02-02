@@ -17,9 +17,9 @@ contract WorldFactory is IWorldFactory {
   /// @notice Address of the init module to be set in the World instances.
   IModule public immutable initModule;
 
-  /// @param _coreModule The address of the core module.
-  constructor(IModule _coreModule) {
-    coreModule = _coreModule;
+  /// @param _initModule The address of the init module.
+  constructor(IModule _initModule) {
+    initModule = _initModule;
   }
 
   /**
