@@ -54,7 +54,7 @@ contract FactoriesTest is Test, GasReporter {
     assertEq(uint256(worldFactory.worldCounts(address(0))), uint256(0));
   }
 
-  function testWorldFactory(address account, uint salt) public {
+  function testWorldFactory(address account, uint256 salt) public {
     vm.startPrank(account);
 
     // Deploy WorldFactory with current CoreModule
