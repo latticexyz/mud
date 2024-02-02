@@ -20,41 +20,41 @@ import { AccessManagementSystem } from "./implementations/AccessManagementSystem
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
 import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
 
-import { CoreRegistrationSystem } from "./CoreRegistrationSystem.sol";
-import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, CORE_REGISTRATION_SYSTEM_ID } from "./constants.sol";
+import { RegistrationSystem } from "./RegistrationSystem.sol";
+import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, REGISTRATION_SYSTEM_ID } from "./constants.sol";
 
 import { Systems } from "../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../codegen/tables/FunctionSelectors.sol";
 import { FunctionSignatures } from "../../codegen/tables/FunctionSignatures.sol";
 import { SystemHooks } from "../../codegen/tables/SystemHooks.sol";
 import { SystemRegistry } from "../../codegen/tables/SystemRegistry.sol";
-import { CoreModuleAddress } from "../../codegen/tables/CoreModuleAddress.sol";
+import { InitModuleAddress } from "../../codegen/tables/InitModuleAddress.sol";
 import { Balances } from "../../codegen/tables/Balances.sol";
 
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
 /**
- * @title Core Module
+ * @title Init Module
  * @notice Registers internal World tables, systems, and their function selectors.
  * @dev This module only supports `installRoot` because it installs root tables, systems and function selectors.
  */
 
-contract CoreModule is Module {
+contract InitModule is Module {
   address internal immutable accessManagementSystem;
   address internal immutable balanceTransferSystem;
   address internal immutable batchCallSystem;
-  address internal immutable coreRegistrationSystem;
+  address internal immutable registrationSystem;
 
   constructor(
     AccessManagementSystem _accessManagementSystem,
     BalanceTransferSystem _balanceTransferSystem,
     BatchCallSystem _batchCallSystem,
-    CoreRegistrationSystem _coreRegistrationSystem
+    RegistrationSystem _registrationSystem
   ) {
     accessManagementSystem = address(_accessManagementSystem);
     balanceTransferSystem = address(_balanceTransferSystem);
     batchCallSystem = address(_batchCallSystem);
-    coreRegistrationSystem = address(_coreRegistrationSystem);
+    registrationSystem = address(_registrationSystem);
   }
 
   /**
@@ -92,7 +92,7 @@ contract CoreModule is Module {
     FunctionSignatures.register();
     SystemHooks.register();
     SystemRegistry.register();
-    CoreModuleAddress.register();
+    InitModuleAddress.register();
 
     ResourceIds._setExists(ROOT_NAMESPACE_ID, true);
     NamespaceOwner._set(ROOT_NAMESPACE_ID, _msgSender());
@@ -114,7 +114,7 @@ contract CoreModule is Module {
     _registerSystem(accessManagementSystem, ACCESS_MANAGEMENT_SYSTEM_ID);
     _registerSystem(balanceTransferSystem, BALANCE_TRANSFER_SYSTEM_ID);
     _registerSystem(batchCallSystem, BATCH_CALL_SYSTEM_ID);
-    _registerSystem(coreRegistrationSystem, CORE_REGISTRATION_SYSTEM_ID);
+    _registerSystem(registrationSystem, REGISTRATION_SYSTEM_ID);
   }
 
   /**
@@ -125,7 +125,7 @@ contract CoreModule is Module {
     WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
       msgValue: 0,
-      target: coreRegistrationSystem,
+      target: registrationSystem,
       callData: abi.encodeCall(WorldRegistrationSystem.registerSystem, (systemId, System(target), true))
     });
   }
@@ -164,7 +164,7 @@ contract CoreModule is Module {
       _registerRootFunctionSelector(BATCH_CALL_SYSTEM_ID, functionSignaturesBatchCall[i]);
     }
 
-    string[14] memory functionSignaturesCoreRegistration = [
+    string[14] memory functionSignaturesRegistration = [
       // --- ModuleInstallationSystem ---
       "installModule(address,bytes)",
       // --- StoreRegistrationSystem ---
@@ -183,20 +183,20 @@ contract CoreModule is Module {
       "registerNamespaceDelegation(bytes32,bytes32,bytes)",
       "unregisterNamespaceDelegation(bytes32)"
     ];
-    for (uint256 i = 0; i < functionSignaturesCoreRegistration.length; i++) {
-      _registerRootFunctionSelector(CORE_REGISTRATION_SYSTEM_ID, functionSignaturesCoreRegistration[i]);
+    for (uint256 i = 0; i < functionSignaturesRegistration.length; i++) {
+      _registerRootFunctionSelector(REGISTRATION_SYSTEM_ID, functionSignaturesRegistration[i]);
     }
   }
 
   /**
    * @notice Register the function selector in the World.
-   * @dev Uses the CoreRegistrationSystem's `registerRootFunctionSelector` to register the function selector.
+   * @dev Uses the RegistrationSystem's `registerRootFunctionSelector` to register the function selector.
    */
   function _registerRootFunctionSelector(ResourceId systemId, string memory functionSignature) internal {
     WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
       msgValue: 0,
-      target: coreRegistrationSystem,
+      target: registrationSystem,
       callData: abi.encodeCall(
         WorldRegistrationSystem.registerRootFunctionSelector,
         (systemId, functionSignature, bytes4(keccak256(bytes(functionSignature))))
