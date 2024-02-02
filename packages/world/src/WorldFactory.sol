@@ -11,11 +11,11 @@ import { ROOT_NAMESPACE_ID } from "./constants.sol";
 /**
  * @title WorldFactory
  * @notice A factory contract to deploy new World instances.
- * @dev This contract allows users to deploy a new World, install the CoreModule, and transfer the ownership.
+ * @dev This contract allows users to deploy a new World, install the InitModule, and transfer the ownership.
  */
 contract WorldFactory is IWorldFactory {
-  /// @notice Address of the core module to be set in the World instances.
-  IModule public immutable coreModule;
+  /// @notice Address of the init module to be set in the World instances.
+  IModule public immutable initModule;
 
   /// @param _coreModule The address of the core module.
   constructor(IModule _coreModule) {
@@ -23,7 +23,7 @@ contract WorldFactory is IWorldFactory {
   }
 
   /**
-   * @notice Deploys a new World instance, installs the CoreModule and transfers ownership to the caller.
+   * @notice Deploys a new World instance, installs the InitModule and transfers ownership to the caller.
    * @dev Uses the Create2 for deterministic deployment.
    * @param _salt User defined salt for deterministic world addresses across chains
    * @return worldAddress The address of the newly deployed World contract.
@@ -37,7 +37,7 @@ contract WorldFactory is IWorldFactory {
     IBaseWorld world = IBaseWorld(worldAddress);
 
     // Initialize the World and transfer ownership to the caller
-    world.initialize(coreModule);
+    world.initialize(initModule);
     world.transferOwnership(ROOT_NAMESPACE_ID, msg.sender);
 
     emit WorldDeployed(worldAddress);

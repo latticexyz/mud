@@ -8,7 +8,7 @@
     "read-indexer": "tsx index.ts"
   },
   "dependencies": {
-    "@latticexyz/store-sync": "2.0.0-main-9a7c9009",
+    "@latticexyz/store-sync": "link:../../packages/store-sync",
     "tsx": "^3.12.7"
   }
 }
