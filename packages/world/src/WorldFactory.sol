@@ -25,15 +25,15 @@ contract WorldFactory is IWorldFactory {
   /**
    * @notice Deploys a new World instance, installs the InitModule and transfers ownership to the caller.
    * @dev Uses the Create2 for deterministic deployment.
-   * @param _salt User defined salt for deterministic world addresses across chains
+   * @param salt User defined salt for deterministic world addresses across chains
    * @return worldAddress The address of the newly deployed World contract.
    */
-  function deployWorld(bytes memory _salt) public returns (address worldAddress) {
+  function deployWorld(bytes memory salt) public returns (address worldAddress) {
     // Deploy a new World and increase the WorldCount
     bytes memory bytecode = type(World).creationCode;
-    uint256 salt = uint256(keccak256(abi.encode(msg.sender, _salt)));
+    uint256 _salt = uint256(keccak256(abi.encode(msg.sender, salt)));
 
-    worldAddress = Create2.deploy(bytecode, salt);
+    worldAddress = Create2.deploy(bytecode, _salt);
     IBaseWorld world = IBaseWorld(worldAddress);
 
     // Initialize the World and transfer ownership to the caller
