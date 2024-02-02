@@ -22,6 +22,7 @@ import { ResourceId } from "../../../src/ResourceId.sol";
 // Import user types
 import { ExampleEnum } from "./../common.sol";
 
+// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "KeyEncoding", typeId: RESOURCE_TABLE });`
 ResourceId constant _tableId = ResourceId.wrap(0x746273746f72650000000000000000004b6579456e636f64696e670000000000);
 ResourceId constant KeyEncodingTableId = _tableId;
 

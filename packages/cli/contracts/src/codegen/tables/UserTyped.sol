@@ -23,6 +23,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "./../../types.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
+// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "UserTyped", typeId: RESOURCE_TABLE });`
 ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000055736572547970656400000000000000);
 ResourceId constant UserTypedTableId = _tableId;
 

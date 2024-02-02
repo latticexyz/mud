@@ -19,6 +19,7 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
+// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Tasks", typeId: RESOURCE_TABLE });`
 ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000005461736b730000000000000000000000);
 ResourceId constant TasksTableId = _tableId;
 

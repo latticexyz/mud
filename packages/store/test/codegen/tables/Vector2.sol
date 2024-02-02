@@ -19,6 +19,7 @@ import { Schema, SchemaLib } from "../../../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../../src/PackedCounter.sol";
 import { ResourceId } from "../../../src/ResourceId.sol";
 
+// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "Vector2", typeId: RESOURCE_TABLE });`
 ResourceId constant _tableId = ResourceId.wrap(0x746273746f7265000000000000000000566563746f7232000000000000000000);
 ResourceId constant Vector2TableId = _tableId;
 

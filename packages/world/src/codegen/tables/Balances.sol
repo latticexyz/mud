@@ -22,6 +22,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 // Import user types
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
+// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "Balances", typeId: RESOURCE_TABLE });`
 ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c6400000000000000000042616c616e6365730000000000000000);
 ResourceId constant BalancesTableId = _tableId;
 

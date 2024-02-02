@@ -24,6 +24,7 @@ import { ResourceId } from "./../../ResourceId.sol";
 import { FieldLayout } from "./../../FieldLayout.sol";
 import { Schema } from "./../../Schema.sol";
 
+// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "Tables", typeId: RESOURCE_TABLE });`
 ResourceId constant _tableId = ResourceId.wrap(0x746273746f72650000000000000000005461626c657300000000000000000000);
 ResourceId constant TablesTableId = _tableId;
 

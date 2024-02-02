@@ -22,6 +22,7 @@ import { ResourceId } from "../../ResourceId.sol";
 // Import user types
 import { ResourceId } from "./../../ResourceId.sol";
 
+// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "StoreHooks", typeId: RESOURCE_TABLE });`
 ResourceId constant _tableId = ResourceId.wrap(0x746273746f726500000000000000000053746f7265486f6f6b73000000000000);
 ResourceId constant StoreHooksTableId = _tableId;
 
