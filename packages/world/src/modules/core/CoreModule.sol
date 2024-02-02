@@ -62,8 +62,8 @@ contract CoreModule is Module {
    * @dev Registers core tables, systems, and function selectors in the World.
    */
   function installRoot(bytes memory) public override {
-    _registerCoreTables();
-    _registerCoreSystems();
+    _registerTables();
+    _registerSystems();
     _registerFunctionSelectors();
   }
 
@@ -76,11 +76,11 @@ contract CoreModule is Module {
   }
 
   /**
-   * @notice Register core tables in the World.
+   * @notice Register World's tables.
    * @dev This internal function registers various tables and sets initial permissions.
    */
-  function _registerCoreTables() internal {
-    StoreCore.registerCoreTables();
+  function _registerTables() internal {
+    StoreCore.registerInternalTables();
     NamespaceOwner.register();
     Balances.register();
     InstalledModules.register();
@@ -108,9 +108,9 @@ contract CoreModule is Module {
   }
 
   /**
-   * @notice Register the core systems in the World.
+   * @notice Register the systems in the World.
    */
-  function _registerCoreSystems() internal {
+  function _registerSystems() internal {
     _registerSystem(accessManagementSystem, ACCESS_MANAGEMENT_SYSTEM_ID);
     _registerSystem(balanceTransferSystem, BALANCE_TRANSFER_SYSTEM_ID);
     _registerSystem(batchCallSystem, BATCH_CALL_SYSTEM_ID);
@@ -118,8 +118,8 @@ contract CoreModule is Module {
   }
 
   /**
-   * @notice Register the core system in the World.
-   * @dev Uses the CoreRegistrationSystem's `registerSystem` implementation to register the system on the World.
+   * @notice Register the internal system in the World.
+   * @dev Uses the WorldRegistrationSystem's `registerSystem` implementation to register the system on the World.
    */
   function _registerSystem(address target, ResourceId systemId) internal {
     WorldContextProviderLib.delegatecallWithContextOrRevert({
