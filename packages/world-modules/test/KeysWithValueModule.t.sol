@@ -21,7 +21,7 @@ import { WorldResourceIdLib, WorldResourceIdInstance, NAME_BITS, TYPE_BITS } fro
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
 import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
 
-import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
+import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
 import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
@@ -54,8 +54,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: sourceName });
     targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
 
-    world = IBaseWorld(address(new World()));
-    world.initialize(createCoreModule());
+    world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
 
     keyTuple1 = new bytes32[](1);

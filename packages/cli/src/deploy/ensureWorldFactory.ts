@@ -1,9 +1,9 @@
 import accessManagementSystemBuild from "@latticexyz/world/out/AccessManagementSystem.sol/AccessManagementSystem.json" assert { type: "json" };
 import balanceTransferSystemBuild from "@latticexyz/world/out/BalanceTransferSystem.sol/BalanceTransferSystem.json" assert { type: "json" };
 import batchCallSystemBuild from "@latticexyz/world/out/BatchCallSystem.sol/BatchCallSystem.json" assert { type: "json" };
-import coreRegistrationSystemBuild from "@latticexyz/world/out/CoreRegistrationSystem.sol/CoreRegistrationSystem.json" assert { type: "json" };
-import coreModuleBuild from "@latticexyz/world/out/CoreModule.sol/CoreModule.json" assert { type: "json" };
-import coreModuleAbi from "@latticexyz/world/out/CoreModule.sol/CoreModule.abi.json" assert { type: "json" };
+import registrationSystemBuild from "@latticexyz/world/out/RegistrationSystem.sol/RegistrationSystem.json" assert { type: "json" };
+import initModuleBuild from "@latticexyz/world/out/InitModule.sol/InitModule.json" assert { type: "json" };
+import initModuleAbi from "@latticexyz/world/out/InitModule.sol/InitModule.abi.json" assert { type: "json" };
 import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json" assert { type: "json" };
 import worldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
 import { Client, Transport, Chain, Account, Hex, getCreate2Address, encodeDeployData, size } from "viem";
@@ -45,33 +45,31 @@ export const batchCallSystemBytecode = encodeDeployData({
 });
 export const batchCallSystem = getCreate2Address({ from: deployer, bytecode: batchCallSystemBytecode, salt });
 
-export const coreRegistrationSystemDeployedBytecodeSize = size(
-  coreRegistrationSystemBuild.deployedBytecode.object as Hex
-);
-export const coreRegistrationSystemBytecode = encodeDeployData({
-  bytecode: coreRegistrationSystemBuild.bytecode.object as Hex,
+export const registrationDeployedBytecodeSize = size(registrationSystemBuild.deployedBytecode.object as Hex);
+export const registrationBytecode = encodeDeployData({
+  bytecode: registrationSystemBuild.bytecode.object as Hex,
   abi: [],
 });
-export const coreRegistrationSystem = getCreate2Address({
+export const registration = getCreate2Address({
   from: deployer,
-  bytecode: coreRegistrationSystemBytecode,
+  bytecode: registrationBytecode,
   salt,
 });
 
-export const coreModuleDeployedBytecodeSize = size(coreModuleBuild.deployedBytecode.object as Hex);
-export const coreModuleBytecode = encodeDeployData({
-  bytecode: coreModuleBuild.bytecode.object as Hex,
-  abi: coreModuleAbi,
-  args: [accessManagementSystem, balanceTransferSystem, batchCallSystem, coreRegistrationSystem],
+export const initModuleDeployedBytecodeSize = size(initModuleBuild.deployedBytecode.object as Hex);
+export const initModuleBytecode = encodeDeployData({
+  bytecode: initModuleBuild.bytecode.object as Hex,
+  abi: initModuleAbi,
+  args: [accessManagementSystem, balanceTransferSystem, batchCallSystem, registration],
 });
 
-export const coreModule = getCreate2Address({ from: deployer, bytecode: coreModuleBytecode, salt });
+export const initModule = getCreate2Address({ from: deployer, bytecode: initModuleBytecode, salt });
 
 export const worldFactoryDeployedBytecodeSize = size(worldFactoryBuild.deployedBytecode.object as Hex);
 export const worldFactoryBytecode = encodeDeployData({
   bytecode: worldFactoryBuild.bytecode.object as Hex,
   abi: worldFactoryAbi,
-  args: [coreModule],
+  args: [initModule],
 });
 
 export const worldFactory = getCreate2Address({ from: deployer, bytecode: worldFactoryBytecode, salt });
@@ -93,13 +91,13 @@ export const worldFactoryContracts: readonly Contract[] = [
     label: "batch call system",
   },
   {
-    bytecode: coreRegistrationSystemBytecode,
-    deployedBytecodeSize: coreRegistrationSystemDeployedBytecodeSize,
+    bytecode: registrationBytecode,
+    deployedBytecodeSize: registrationDeployedBytecodeSize,
     label: "core registration system",
   },
   {
-    bytecode: coreModuleBytecode,
-    deployedBytecodeSize: coreModuleDeployedBytecodeSize,
+    bytecode: initModuleBytecode,
+    deployedBytecodeSize: initModuleDeployedBytecodeSize,
     label: "core module",
   },
   {
@@ -112,7 +110,7 @@ export const worldFactoryContracts: readonly Contract[] = [
 export async function ensureWorldFactory(
   client: Client<Transport, Chain | undefined, Account>
 ): Promise<readonly Hex[]> {
-  // WorldFactory constructor doesn't call CoreModule, only sets its address, so we can do these in parallel since the address is deterministic
+  // WorldFactory constructor doesn't call InitModule, only sets its address, so we can do these in parallel since the address is deterministic
   return await ensureContractsDeployed({
     client,
     contracts: worldFactoryContracts,

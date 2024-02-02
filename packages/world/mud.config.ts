@@ -103,14 +103,14 @@ export default mudConfig({
       },
       offchainOnly: true,
     },
-    CoreModuleAddress: {
+    InitModuleAddress: {
       keySchema: {},
       valueSchema: "address",
     },
   },
   excludeSystems: [
     // Worldgen currently does not support systems inheriting logic
-    // from other contracts, so all parts of CoreRegistrationSystem are named
+    // from other contracts, so all parts of RegistrationSystem are named
     // System too to be included in the IBaseWorld interface.
     // However, IStoreRegistrationSystem overlaps with IStore if
     // included in IBaseWorld, so it needs to be excluded from worldgen.
