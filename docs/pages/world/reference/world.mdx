@@ -57,14 +57,14 @@ Initializes the World by installing the core module.
 _Only the initial creator can initialize. This can be done only once._
 
 ```solidity
-function initialize(IModule coreModule) public prohibitDirectCallback;
+function initialize(IModule initModule) public prohibitDirectCallback;
 ```
 
 **Parameters**
 
 | Name         | Type      | Description                                   |
 | ------------ | --------- | --------------------------------------------- |
-| `coreModule` | `IModule` | The core module to initialize the World with. |
+| `initModule` | `IModule` | The core module to initialize the World with. |
 
 #### installRootModule
 
@@ -412,16 +412,16 @@ fallback() external payable prohibitDirectCallback;
 
 A factory contract to deploy new World instances.
 
-_This contract allows users to deploy a new World, install the CoreModule, and transfer the ownership._
+_This contract allows users to deploy a new World, install the InitModule, and transfer the ownership._
 
 ### State Variables
 
-#### coreModule
+#### initModule
 
-Address of the core module to be set in the World instances.
+Address of the init module to be set in the World instances.
 
 ```solidity
-IModule public immutable coreModule;
+IModule public immutable initModule;
 ```
 
 #### worldCounts
@@ -437,18 +437,18 @@ mapping(address creator => uint256 worldCount) public worldCounts;
 #### constructor
 
 ```solidity
-constructor(IModule _coreModule);
+constructor(IModule _initModule);
 ```
 
 **Parameters**
 
 | Name          | Type      | Description                     |
 | ------------- | --------- | ------------------------------- |
-| `_coreModule` | `IModule` | The address of the core module. |
+| `_initModule` | `IModule` | The address of the init module. |
 
 #### deployWorld
 
-Deploys a new World instance, installs the CoreModule and transfers ownership to the caller.
+Deploys a new World instance, installs the InitModule and transfers ownership to the caller.
 
 _Uses the Create2 for deterministic deployment._
 

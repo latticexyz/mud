@@ -346,7 +346,7 @@ function callFrom(
 
 The IWorldKernel interface includes all methods that are part of the World contract's
 internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
-registered functions selectors from the `CoreModule`.
+registered functions selectors from the `InitModule`.
 
 ### Functions
 
@@ -385,14 +385,14 @@ Initializes the World.
 _Can only be called once by the creator._
 
 ```solidity
-function initialize(IModule coreModule) external;
+function initialize(IModule initModule) external;
 ```
 
 **Parameters**
 
 | Name         | Type      | Description                                           |
 | ------------ | --------- | ----------------------------------------------------- |
-| `coreModule` | `IModule` | The CoreModule to be installed during initialization. |
+| `initModule` | `IModule` | The InitModule to be installed during initialization. |
 
 ### Events
 
