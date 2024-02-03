@@ -227,13 +227,13 @@ const PUBLIC_APIS: PublicApis = {
       return content.replace("Constants", "constants.sol").replace("Constants", "version.sol constants");
     },
   },
-  "world/reference/core-module.mdx": {
+  "world/reference/init-module.mdx": {
     inputFiles: [
-      { source: "world/src/modules/core/CoreModule.sol" },
-      { source: "world/src/modules/core/constants.sol" },
-      { source: "world/src/modules/core/CoreRegistrationSystem.sol" },
-      { source: "world/src/modules/core/LimitedCallContext.sol" },
-      { source: "world/src/modules/core/types.sol" },
+      { source: "world/src/modules/init/InitModule.sol" },
+      { source: "world/src/modules/init/constants.sol" },
+      { source: "world/src/modules/init/RegistrationSystem.sol" },
+      { source: "world/src/modules/init/LimitedCallContext.sol" },
+      { source: "world/src/modules/init/types.sol" },
     ],
     processContent: (content) => {
       content = formatHeadings(content);
@@ -242,14 +242,14 @@ const PUBLIC_APIS: PublicApis = {
       return content.replace("Constants", "constants.sol");
     },
   },
-  "world/reference/core-module-implementation.mdx": {
+  "world/reference/init-module-implementation.mdx": {
     inputFiles: [
-      { source: "world/src/modules/core/implementations/AccessManagementSystem.sol" },
-      { source: "world/src/modules/core/implementations/ModuleInstallationSystem.sol" },
-      { source: "world/src/modules/core/implementations/BalanceTransferSystem.sol" },
-      { source: "world/src/modules/core/implementations/StoreRegistrationSystem.sol" },
-      { source: "world/src/modules/core/implementations/BatchCallSystem.sol" },
-      { source: "world/src/modules/core/implementations/WorldRegistrationSystem.sol" },
+      { source: "world/src/modules/init/implementations/AccessManagementSystem.sol" },
+      { source: "world/src/modules/init/implementations/ModuleInstallationSystem.sol" },
+      { source: "world/src/modules/init/implementations/BalanceTransferSystem.sol" },
+      { source: "world/src/modules/init/implementations/StoreRegistrationSystem.sol" },
+      { source: "world/src/modules/init/implementations/BatchCallSystem.sol" },
+      { source: "world/src/modules/init/implementations/WorldRegistrationSystem.sol" },
     ],
     processContent: (content) => {
       content = formatHeadings(content);
@@ -301,10 +301,10 @@ const worldInheritence = [
   { contract: "IWorldErrors", link: "./world-external#iworlderrors" },
   { contract: "IWorldModuleInstallation", link: "./world-external#iworldmoduleinstallation" },
   { contract: "IWorldContextConsumer", link: "./world-context-external#iworldcontextconsumer" },
-  { contract: "ModuleInstallationSystem", link: "./core-module-implementation#moduleinstallationsystem" },
-  { contract: "StoreRegistrationSystem", link: "./core-module-implementation#storeregistrationsystem" },
-  { contract: "WorldRegistrationSystem", link: "./core-module-implementation#worldregistrationsystem" },
-  { contract: "LimitedCallContext", link: "./core-module#limitedcallcontext" },
+  { contract: "ModuleInstallationSystem", link: "./init-module-implementation#moduleinstallationsystem" },
+  { contract: "StoreRegistrationSystem", link: "./init-module-implementation#storeregistrationsystem" },
+  { contract: "WorldRegistrationSystem", link: "./init-module-implementation#worldregistrationsystem" },
+  { contract: "LimitedCallContext", link: "./init-module#limitedcallcontext" },
 ];
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////

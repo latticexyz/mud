@@ -2,10 +2,10 @@
 
 ## AccessManagementSystem
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/AccessManagementSystem.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/AccessManagementSystem.sol)
 
 **Inherits:**
-[System](./system#system), [LimitedCallContext](./core-module#limitedcallcontext)
+[System](./system#system), [LimitedCallContext](./init-module#limitedcallcontext)
 
 _This contract manages the granting and revoking of access from/to resources._
 
@@ -80,10 +80,10 @@ function renounceOwnership(ResourceId namespaceId) public virtual onlyDelegateca
 
 ## ModuleInstallationSystem
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/ModuleInstallationSystem.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/ModuleInstallationSystem.sol)
 
 **Inherits:**
-[System](./system#system), [LimitedCallContext](./core-module#limitedcallcontext)
+[System](./system#system), [LimitedCallContext](./init-module#limitedcallcontext)
 
 _A system contract to handle the installation of (non-root) modules in the World._
 
@@ -109,10 +109,10 @@ function installModule(IModule module, bytes memory encodedArgs) public onlyDele
 
 ## BalanceTransferSystem
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/BalanceTransferSystem.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/BalanceTransferSystem.sol)
 
 **Inherits:**
-[System](./system#system), [IWorldErrors](./world-external#iworlderrors), [LimitedCallContext](./core-module#limitedcallcontext)
+[System](./system#system), [IWorldErrors](./world-external#iworlderrors), [LimitedCallContext](./init-module#limitedcallcontext)
 
 _A system contract that facilitates balance transfers in the World and outside of the World._
 
@@ -164,10 +164,10 @@ function transferBalanceToAddress(
 
 ## StoreRegistrationSystem
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/StoreRegistrationSystem.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/StoreRegistrationSystem.sol)
 
 **Inherits:**
-[System](./system#system), [IWorldErrors](./world-external#iworlderrors), [LimitedCallContext](./core-module#limitedcallcontext)
+[System](./system#system), [IWorldErrors](./world-external#iworlderrors), [LimitedCallContext](./init-module#limitedcallcontext)
 
 _This contract provides functionality for the registration of store-related resources within the World framework._
 
@@ -244,10 +244,10 @@ function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) public 
 
 ## BatchCallSystem
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/BatchCallSystem.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/BatchCallSystem.sol)
 
 **Inherits:**
-[System](./system#system), [LimitedCallContext](./core-module#limitedcallcontext)
+[System](./system#system), [LimitedCallContext](./init-module#limitedcallcontext)
 
 _A system contract that facilitates batching of calls to various systems in a single transaction._
 
@@ -301,10 +301,10 @@ function batchCallFrom(
 
 ## WorldRegistrationSystem
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol)
 
 **Inherits:**
-[System](./system#system), [IWorldErrors](./world-external#iworlderrors), [LimitedCallContext](./core-module#limitedcallcontext)
+[System](./system#system), [IWorldErrors](./world-external#iworlderrors), [LimitedCallContext](./init-module#limitedcallcontext)
 
 _This contract provides functions related to registering resources other than tables in the World._
 
