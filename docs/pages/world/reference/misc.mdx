@@ -97,26 +97,6 @@ function revertWithBytes(bytes memory reason) pure;
 | -------- | ------- | ---------------------------- |
 | `reason` | `bytes` | The raw bytes revert reason. |
 
-## validateNamespace
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/validateNamespace.sol)
-
-Checks if a given `resourceId` is a valid namespace.
-
-_Reverts with IWorldErrors.World_InvalidResourceType if the ID does not have the correct components._
-
-_Reverts with IWorldErrors.World_InvalidNamespace if the namespace includes the reserved separator string ("\_\_")._
-
-```solidity
-function validateNamespace(ResourceId resourceId) pure;
-```
-
-**Parameters**
-
-| Name         | Type         | Description                |
-| ------------ | ------------ | -------------------------- |
-| `resourceId` | `ResourceId` | The resource ID to verify. |
-
 ## version.sol constants
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/version.sol)

@@ -212,13 +212,12 @@ const PUBLIC_APIS: PublicApis = {
         .replace("Constants", "worldResourceTypes.sol constants");
     },
   },
-
   "world/reference/misc.mdx": {
     inputFiles: [
       { source: "world/src/Utils.sol" },
       { source: "world/src/constants.sol" },
       { source: "world/src/revertWithBytes.sol" },
-      { source: "world/src/validateNamespace.sol" },
+      //      { source: "world/src/validateNamespace.sol" },
       { source: "world/src/version.sol" },
     ],
     processContent: (content) => {
