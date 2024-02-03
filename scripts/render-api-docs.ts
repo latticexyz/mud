@@ -14,14 +14,15 @@ const DOCS_ROOT = "docs/pages";
 const PUBLIC_APIS: PublicApis = {
   "store/reference/store-core.mdx": {
     inputFiles: [
-      {
-        source: "store/src/StoreCore.sol",
-        filterFiles: (fileName) => !fileName.includes("StoreCoreInternal"),
-      },
+      { source: "store/src/StoreCore.sol" },
+      { source: "store/src/StoreData.sol" },
+      { source: "store/src/StoreRead.sol" },
+      { source: "store/src/StoreSwitch.sol" },
     ],
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
+      content = fixInheritence(content);
       return content;
     },
   },
@@ -38,13 +39,8 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
-      return content
-        .replace("/src/IStoreData.sol/interface.IStoreData.md", "#istoredata")
-        .replace("/src/IStoreRegistration.sol/interface.IStoreRegistration.md", "#istoreregistration")
-        .replace("/src/IStoreRead.sol/interface.IStoreRead.md", "#istoreread")
-        .replace("/src/IStoreWrite.sol/interface.IStoreWrite.md", "#istorewrite")
-        .replace("/src/IStoreEvents.sol/interface.IStoreEvents.md", "#istoreevents")
-        .replace("/src/IStoreErrors.sol/interface.IStoreErrors.md", "#istoreerrors");
+      content = fixInheritence(content);
+      return content;
     },
   },
   "store/reference/store-hook.mdx": {
@@ -56,7 +52,39 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
-      return content.replace(`**Inherits:**\n[IERC165](/src/IERC165.sol/interface.IERC165.md)`, "");
+      content = fixInheritence(content);
+      return content;
+    },
+  },
+  "store/reference/misc.mdx": {
+    inputFiles: [
+      { source: "store/src/Bytes.sol" },
+      { source: "store/src/FieldLayout.sol" },
+      { source: "store/src/Hook.sol" },
+      { source: "store/src/Memory.sol" },
+      /*
+      { source: "store/src/PackedCounter.sol" },
+      */
+      { source: "store/src/ResourceId.sol" },
+      { source: "store/src/Schema.sol" },
+      { source: "store/src/Slice.sol" },
+      { source: "store/src/Storage.sol" },
+      { source: "store/src/constants.sol" },
+      { source: "store/src/rightMask.sol" },
+      { source: "store/src/storeHookTypes.sol" },
+      { source: "store/src/storeResourceTypes.sol" },
+      { source: "store/src/version.sol" },
+    ],
+    processContent: (content) => {
+      content = formatHeadings(content);
+      content = fixGithubLinks(content, "store");
+      content = fixInheritence(content);
+      return content
+        .replace("## Constants", "## ResourceId.sol constants")
+        .replace("## Constants", "## constants.sol")
+        .replace("## Constants", "## storeHookTypes.sol constants")
+        .replace("## Constants", "## storeResourceTypes.sol constants")
+        .replace("## Constants", "## version.sol constants");
     },
   },
   "world/reference/access-control.mdx": {
@@ -68,7 +96,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content;
     },
   },
@@ -77,7 +105,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content;
     },
   },
@@ -86,7 +114,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content;
     },
   },
@@ -95,7 +123,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content;
     },
   },
@@ -104,7 +132,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content
         .replaceAll("{IERC165}", "[IERC165](./erc165-external#ierc165)")
         .replaceAll("{IERC165-supportsInterface}", "[IERC165.supportsInterface](./erc165-external#supportsinterface)");
@@ -115,7 +143,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content;
     },
   },
@@ -124,7 +152,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content;
     },
   },
@@ -133,7 +161,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content;
     },
   },
@@ -147,7 +175,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content.replace("Constants", "systemHookTypes.sol constants");
     },
   },
@@ -156,7 +184,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content;
     },
   },
@@ -165,9 +193,8 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
-      return content; // .replace("StoreData", "[StoreData]()")
-      // Should be added once we have StoreData in Store > Reference
+      content = fixInheritence(content);
+      return content.replace("StoreData", "[StoreData](/store/reference/store-core#storedata)");
     },
   },
   "world/reference/world-external.mdx": {
@@ -179,7 +206,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content;
     },
   },
@@ -188,7 +215,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content.replace("Constants", "WorldContext.sol constants");
     },
   },
@@ -197,7 +224,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content;
     },
   },
@@ -206,7 +233,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content
         .replace("Constants", "WorldResourceId.sol constants")
         .replace("Constants", "worldResourceTypes.sol constants");
@@ -217,13 +244,12 @@ const PUBLIC_APIS: PublicApis = {
       { source: "world/src/Utils.sol" },
       { source: "world/src/constants.sol" },
       { source: "world/src/revertWithBytes.sol" },
-      //      { source: "world/src/validateNamespace.sol" },
       { source: "world/src/version.sol" },
     ],
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content.replace("Constants", "constants.sol").replace("Constants", "version.sol constants");
     },
   },
@@ -238,7 +264,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content.replace("Constants", "constants.sol");
     },
   },
@@ -254,7 +280,7 @@ const PUBLIC_APIS: PublicApis = {
     processContent: (content) => {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
-      content = fixWorldInheritence(content);
+      content = fixInheritence(content);
       return content.replace("Constants", "constants.sol");
     },
   },
@@ -271,13 +297,13 @@ function fixGithubLinks(content: string, packageName: string) {
   return content.replace(pattern, replacement);
 }
 
-/* Fix inheritence links in the `World` reference.
+/* Fix inheritence links.
  * Creating the pattern a new for every call is inefficient, but I'm optimizing for programmer time
  */
-function fixWorldInheritence(content: string) {
+function fixInheritence(content: string) {
   let newContent = content;
-  for (let i = 0; i < worldInheritence.length; i++) {
-    const item = worldInheritence[i];
+  for (let i = 0; i < inheritence.length; i++) {
+    const item = inheritence[i];
     const pattern = `\\[${item.contract}\\]\\([/a-zA-Z0-9.#]+\\)`;
     newContent = newContent.replaceAll(new RegExp(pattern, "g"), `[${item.contract}](${item.link})`);
   }
@@ -286,26 +312,37 @@ function fixWorldInheritence(content: string) {
 }
 
 // The inheritence links that need to be fixed
-const worldInheritence = [
-  { contract: "Module", link: "./module#module" },
-  { contract: "System", link: "./system#system" },
-  { contract: "IDelegationControl", link: "./delegation-external#idelegationcontrol" },
-  { contract: "IWorldContextConsumer", link: "./world-context-external#iworldcontextconsumer" },
-  { contract: "IModule", link: "./module-external#imodule" },
-  { contract: "WorldContextConsumer", link: "./world-context#worldcontextconsumer" },
-  { contract: "IERC165", link: "./erc165-external#ierc165" },
-  { contract: "ISystemHook", link: "./system-external#isystemhook" },
-  { contract: "IWorldKernel", link: "./world-external#iworldkernel" },
-  { contract: "IWorldFactory", link: "./world-external#iworldfactory" },
-  { contract: "IWorldCall", link: "./world-external#iworldcall" },
-  { contract: "IWorldErrors", link: "./world-external#iworlderrors" },
-  { contract: "IWorldModuleInstallation", link: "./world-external#iworldmoduleinstallation" },
-  { contract: "IWorldContextConsumer", link: "./world-context-external#iworldcontextconsumer" },
-  { contract: "ModuleInstallationSystem", link: "./init-module-implementation#moduleinstallationsystem" },
-  { contract: "StoreRegistrationSystem", link: "./init-module-implementation#storeregistrationsystem" },
-  { contract: "WorldRegistrationSystem", link: "./init-module-implementation#worldregistrationsystem" },
-  { contract: "LimitedCallContext", link: "./init-module#limitedcallcontext" },
-  { contract: "IERC165-supportsInterface", link: "./erc165-external#supportsinterface" },
+const inheritence = [
+  { contract: "StoreRead", link: "/store/reference/store-core#storeread" },
+  { contract: "StoreData", link: "/store/reference/store-core#storedata" },
+  { contract: "IStoreData", link: "/store/reference/store#istoredata" },
+  { contract: "IStoreRead", link: "/store/reference/store#istoreread" },
+  { contract: "IStoreWrite", link: "/store/reference/store#istorewrite" },
+  { contract: "IStoreErrors", link: "/store/reference/store#istoreerrors" },
+  { contract: "IStoreEvents", link: "/store/reference/store#istoreevents" },
+  { contract: "IStoreRegistration", link: "/store/reference/store#istoreregistration" },
+  { contract: "Module", link: "/world/reference/module#module" },
+  { contract: "System", link: "/world/reference/system#system" },
+  { contract: "IDelegationControl", link: "/world/reference/delegation-external#idelegationcontrol" },
+  { contract: "IWorldContextConsumer", link: "/world/reference/world-context-external#iworldcontextconsumer" },
+  { contract: "IModule", link: "/world/reference/module-external#imodule" },
+  { contract: "WorldContextConsumer", link: "/world/reference/world-context#worldcontextconsumer" },
+  { contract: "IERC165", link: "/world/reference/erc165-external#ierc165" },
+  { contract: "ISystemHook", link: "/world/reference/system-external#isystemhook" },
+  { contract: "IWorldKernel", link: "/world/reference/world-external#iworldkernel" },
+  { contract: "IWorldFactory", link: "/world/reference/world-external#iworldfactory" },
+  { contract: "IWorldCall", link: "/world/reference/world-external#iworldcall" },
+  { contract: "IWorldErrors", link: "/world/reference/world-external#iworlderrors" },
+  { contract: "IWorldModuleInstallation", link: "/world/reference/world-external#iworldmoduleinstallation" },
+  { contract: "IWorldContextConsumer", link: "/world/reference/world-context-external#iworldcontextconsumer" },
+  {
+    contract: "ModuleInstallationSystem",
+    link: "/world/reference/init-module-implementation#moduleinstallationsystem",
+  },
+  { contract: "StoreRegistrationSystem", link: "/world/reference/init-module-implementation#storeregistrationsystem" },
+  { contract: "WorldRegistrationSystem", link: "/world/reference/init-module-implementation#worldregistrationsystem" },
+  { contract: "LimitedCallContext", link: "/world/reference/init-module#limitedcallcontext" },
+  { contract: "IERC165-supportsInterface", link: "/world/reference/erc165-external#supportsinterface" },
 ];
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
