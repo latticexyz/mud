@@ -278,7 +278,7 @@ function fixWorldInheritence(content: string) {
   let newContent = content;
   for (let i = 0; i < worldInheritence.length; i++) {
     const item = worldInheritence[i];
-    const pattern = `\\[${item.contract}\\]\\([/a-zA-Z0-9.]+\\)`;
+    const pattern = `\\[${item.contract}\\]\\([/a-zA-Z0-9.#]+\\)`;
     newContent = newContent.replaceAll(new RegExp(pattern, "g"), `[${item.contract}](${item.link})`);
   }
 
@@ -305,6 +305,7 @@ const worldInheritence = [
   { contract: "StoreRegistrationSystem", link: "./init-module-implementation#storeregistrationsystem" },
   { contract: "WorldRegistrationSystem", link: "./init-module-implementation#worldregistrationsystem" },
   { contract: "LimitedCallContext", link: "./init-module#limitedcallcontext" },
+  { contract: "IERC165-supportsInterface", link: "./erc165-external#supportsinterface" },
 ];
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
