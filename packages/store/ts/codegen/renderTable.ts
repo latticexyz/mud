@@ -55,7 +55,6 @@ export function renderTable(options: RenderTableOptions) {
     import { Schema, SchemaLib } from "${storeImportPath}Schema.sol";
     import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter.sol";
     import { ResourceId } from "${storeImportPath}ResourceId.sol";
-    import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "${storeImportPath}storeResourceTypes.sol";
 
     ${
       imports.length > 0

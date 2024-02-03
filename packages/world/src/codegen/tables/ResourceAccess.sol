@@ -18,14 +18,12 @@ import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.s
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 // Import user types
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("world"), bytes16("ResourceAccess")))
-);
+// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "ResourceAccess", typeId: RESOURCE_TABLE });`
+ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c640000000000000000005265736f757263654163636573730000);
 ResourceId constant ResourceAccessTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
