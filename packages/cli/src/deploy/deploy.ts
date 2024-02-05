@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Client, Transport, getAddress } from "viem";
+import { Account, Address, Chain, Client, Transport, getAddress, toHex } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
@@ -21,6 +21,8 @@ type DeployOptions<configInput extends ConfigInput> = {
   config: Config<configInput>;
   worldAddress?: Address;
 };
+
+const SALT = toHex("SALT");
 
 /**
  * Given a viem client and MUD config, we attempt to introspect the world
@@ -58,7 +60,7 @@ export async function deploy<configInput extends ConfigInput>({
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client);
+    : await deployWorld(client, SALT);
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);

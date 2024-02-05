@@ -1,5 +1,4 @@
-import { ethers } from "ethers";
-import { Account, Chain, Client, Log, Transport } from "viem";
+import { Account, Chain, Client, Hex, Log, Transport } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { ensureWorldFactory, worldFactory } from "./ensureWorldFactory";
 import WorldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
@@ -10,11 +9,9 @@ import { WorldDeploy } from "./common";
 
 export async function deployWorld(
   client: Client<Transport, Chain | undefined, Account>,
-  salt: string
+  salt: Hex
 ): Promise<WorldDeploy> {
   await ensureWorldFactory(client);
-
-  const formattedSalt = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(salt));
 
   debug("deploying world");
   const tx = await writeContract(client, {
@@ -22,7 +19,7 @@ export async function deployWorld(
     address: worldFactory,
     abi: WorldFactoryAbi,
     functionName: "deployWorld",
-    args: [formattedSalt as `0x${string}`],
+    args: [salt],
   });
 
   debug("waiting for world deploy");
