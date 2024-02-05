@@ -89,6 +89,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
             saveDeployment: true,
             worldAddress,
             srcDir,
+            salt: undefined,
           });
           worldAddress = deploy.address;
           // if there were changes while we were deploying, trigger it again
