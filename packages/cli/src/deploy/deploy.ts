@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Client, Transport, getAddress, toHex } from "viem";
+import { Account, Address, Chain, Client, Transport, getAddress } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
@@ -15,14 +15,13 @@ import { resourceLabel } from "./resourceLabel";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { worldFactoryContracts } from "./ensureWorldFactory";
+import { randomBytes } from "crypto";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
   config: Config<configInput>;
   worldAddress?: Address;
 };
-
-const SALT = toHex("SALT");
 
 /**
  * Given a viem client and MUD config, we attempt to introspect the world
@@ -60,7 +59,7 @@ export async function deploy<configInput extends ConfigInput>({
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client, SALT);
+    : await deployWorld(client, `0x${randomBytes(32).toString("hex")}`);
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);
