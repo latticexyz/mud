@@ -41,4 +41,4 @@ jobs:
         run: pnpm run generate-test-data-records
 
       - name: Run benchmarks
-        run: pnpm run bench --silent
+        run: pnpm run bench
