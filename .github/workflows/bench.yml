@@ -31,6 +31,14 @@ jobs:
         working-directory: ./e2e
         run: pnpm install
 
+      - name: Clean end-to-end project
+        working-directory: ./e2e
+        run: pnpm run clean
+
+      - name: Build end-to-end project
+        working-directory: ./e2e
+        run: pnpm run build
+
       - name: Generate test data
         working-directory: ./e2e
         run: pnpm run generate-test-data-records
