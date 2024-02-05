@@ -18,5 +18,5 @@ interface IWorldFactory {
    * @dev The deployment of the World contract will result in the `WorldDeployed` event being emitted.
    * @return worldAddress The address of the newly deployed World contract.
    */
-  function deployWorld(bytes memory _salt) external returns (address worldAddress);
+  function deployWorld(bytes memory salt) external returns (address worldAddress);
 }
