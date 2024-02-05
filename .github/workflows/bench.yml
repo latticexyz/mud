@@ -27,22 +27,13 @@ jobs:
       - name: Build
         uses: ./.github/actions/build
 
-      - name: Run tests
-        env:
-          DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
-        run: pnpm test:ci
+      - name: Install end-to-end testing dependencies
+        working-directory: ./e2e
+        run: pnpm install
 
-      - name: Generate gas reports
-        run: pnpm gas-report
+      - name: Generate test data
+        working-directory: ./e2e
+        run: pnpm run generate-test-data-records
 
-      - name: Outdated files, run `pnpm gas-report` and commit them
-        uses: ./.github/actions/require-empty-diff
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Sort package.json
-        run: pnpm sort-package-json
-
-      - name: Outdated files, run `sort-package-json` and commit them
-        uses: ./.github/actions/require-empty-diff
+      - name: Run benchmarks
+        run: pnpm run bench
