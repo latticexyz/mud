@@ -32,7 +32,6 @@ contract WorldFactory is IWorldFactory {
     // Deploy a new World and increase the WorldCount
     bytes memory bytecode = type(World).creationCode;
     uint256 _salt = uint256(keccak256(abi.encode(msg.sender, salt)));
-
     worldAddress = Create2.deploy(bytecode, _salt);
     IBaseWorld world = IBaseWorld(worldAddress);
 
