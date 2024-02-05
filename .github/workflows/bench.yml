@@ -7,13 +7,6 @@ jobs:
   test:
     name: Run benchmarks
     runs-on: ubuntu-latest-16-cores
-    services:
-      postgres:
-        image: postgres:12.1-alpine
-        ports:
-          - 5432:5432
-        # needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Checkout
         uses: actions/checkout@v3
