@@ -29,6 +29,10 @@ export const deployOptions = {
     type: "boolean",
     desc: "Always run PostDeploy.s.sol after each deploy (including during upgrades). By default, PostDeploy.s.sol is only run once after a new world is deployed.",
   },
+  salt: {
+    type: "string",
+    desc: "The deployment salt to use. Defaults to a random salt.",
+  },
 } as const satisfies Record<string, Options>;
 
 export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
@@ -79,6 +83,7 @@ in your contracts directory to use the default anvil private key.`
 
   const startTime = Date.now();
   const worldDeploy = await deploy({
+    salt: opts.salt as Hex | undefined,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
     config: resolvedConfig,
