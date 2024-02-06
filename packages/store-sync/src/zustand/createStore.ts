@@ -51,6 +51,10 @@ export type ZustandState<tables extends Tables> = {
     entity: Entity
   ) => TableRecord<table>["value"] | undefined;
   readonly getComponentValueStrict: <table extends Table>(table: table, entity: Entity) => TableRecord<table>["value"];
+  readonly getEntitiesWithValue: <table extends Table>(
+    table: table,
+    value: TableRecord<table>["value"]
+  ) => keyof TableRecords<table>;
   readonly getComponentEntities: <table extends Table>(table: table) => keyof TableRecords<table>;
 };
 
@@ -59,6 +63,21 @@ export type ZustandStore<tables extends Tables> = UseBoundStore<StoreApi<Zustand
 export type CreateStoreOptions<tables extends Tables> = {
   tables: tables;
 };
+
+function componentValueEquals<table extends Table>(
+  a?: TableRecord<table>["value"],
+  b?: TableRecord<table>["value"]
+): boolean {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
+
+  let equals = true;
+  for (const key of Object.keys(a)) {
+    equals = a[key] === b[key];
+    if (!equals) return false;
+  }
+  return equals;
+}
 
 export function createStore<tables extends Tables>(opts: CreateStoreOptions<tables>): ZustandStore<tables> {
   return create<ZustandState<tables>>((set, get) => {
@@ -112,11 +131,31 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
       if (!value) throw new Error(`No value for table ${table.name} on entity ${entity}`);
       return value;
     }
+
     /**
-     * Get a set of all entities of the given component.
+     * Get a set of entities that have the given component value in the given component.
      *
-     * @param component {@link defineComponent Component} to get all entities from
-     * @returns Set of all entities in the given component.
+     * @param component {@link defineComponent Component} to get entities with the given value from.
+     * @param value look for entities with this {@link ComponentValue}.
+     * @returns Set with {@link Entity Entities} with the given component value.
+     */
+    function getEntitiesWithValue<table extends Table>(
+      table: table,
+      value: TableRecord<table>["value"]
+    ): keyof TableRecords<table> {
+      const records = get().records;
+      return Object.keys(
+        Object.entries(records).filter(
+          ([id, record]) => record.table.tableId === table.tableId && componentValueEquals(record.value, value)
+        )
+      ) as unknown as keyof TableRecords<table>;
+    }
+
+    /**
+     * Get a set of all entities of the given table.
+     *
+     * @param table to get all entities from
+     * @returns Set of all entities in the given table.
      */
     function getComponentEntities<table extends Table>(table: table): keyof TableRecords<table> {
       const records = get().records;
@@ -159,6 +198,7 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
       hasComponent,
       getComponentValue,
       getComponentValueStrict,
+      getEntitiesWithValue,
       getComponentEntities,
     };
   });

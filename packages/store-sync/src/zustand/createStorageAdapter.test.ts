@@ -97,5 +97,14 @@ describe("createStorageAdapter", () => {
         "0",
       ]
     `);
+
+    // This gives an unexpected output due to how array equality is handled
+    expect(
+      useStore.getState().getEntitiesWithValue(tables.NumberList, {
+        value: [420, 69],
+      })
+    ).toMatchInlineSnapshot(`
+      []
+    `);
   });
 });
