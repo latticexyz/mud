@@ -57,13 +57,13 @@
     "file": "test/Factories.t.sol",
     "test": "testCreate2Factory",
     "name": "deploy contract via Create2",
-    "gasUsed": 4586875
+    "gasUsed": 4609895
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12716027
+    "gasUsed": 12694691
   },
   {
     "file": "test/World.t.sol",

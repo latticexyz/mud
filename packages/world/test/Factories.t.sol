@@ -48,13 +48,10 @@ contract FactoriesTest is Test, GasReporter {
     startGasReport("deploy contract via Create2");
     create2Factory.deployContract(combinedBytes, uint256(0));
     endGasReport();
-
-    // Confirm worldFactory was deployed correctly
-    IWorldFactory worldFactory = IWorldFactory(calculatedAddress);
-    assertEq(uint256(worldFactory.worldCounts(address(0))), uint256(0));
   }
 
-  function testWorldFactory(address account) public {
+  function testWorldFactory(address account, uint256 salt1, uint256 salt2) public {
+    vm.assume(salt1 != salt2);
     vm.startPrank(account);
 
     // Deploy WorldFactory with current InitModule
@@ -62,10 +59,13 @@ contract FactoriesTest is Test, GasReporter {
     address worldFactoryAddress = address(new WorldFactory(initModule));
     IWorldFactory worldFactory = IWorldFactory(worldFactoryAddress);
 
-    // Address we expect for World
+    // User defined bytes for create2
+    bytes memory _salt1 = abi.encode(salt1);
+
+    // Address we expect for first World
     address calculatedAddress = calculateAddress(
       worldFactoryAddress,
-      keccak256(abi.encode(account, 0)),
+      keccak256(abi.encode(account, _salt1)),
       type(World).creationCode
     );
 
@@ -77,14 +77,11 @@ contract FactoriesTest is Test, GasReporter {
     vm.expectEmit(true, false, false, false);
     emit WorldDeployed(calculatedAddress);
     startGasReport("deploy world via WorldFactory");
-    worldFactory.deployWorld();
+    worldFactory.deployWorld(_salt1);
     endGasReport();
 
     // Set the store address manually
     StoreSwitch.setStoreAddress(calculatedAddress);
-
-    // Confirm accountCount (which is salt) has incremented
-    assertEq(uint256(worldFactory.worldCounts(account)), uint256(1));
 
     // Confirm correct Core is installed
     assertTrue(InstalledModules.get(address(initModule), keccak256(new bytes(0))));
@@ -92,12 +89,16 @@ contract FactoriesTest is Test, GasReporter {
     // Confirm the msg.sender is owner of the root namespace of the new world
     assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
 
-    // Deploy another world
+    // Deploy a second world
 
-    // Address we expect for World
+    // User defined bytes for create2
+    // unchecked for the fuzzing test
+    bytes memory _salt2 = abi.encode(salt2);
+
+    // Address we expect for second World
     calculatedAddress = calculateAddress(
       worldFactoryAddress,
-      keccak256(abi.encode(account, 1)),
+      keccak256(abi.encode(account, _salt2)),
       type(World).creationCode
     );
 
@@ -108,10 +109,7 @@ contract FactoriesTest is Test, GasReporter {
     // Check for WorldDeployed event from Factory
     vm.expectEmit(true, false, false, false);
     emit WorldDeployed(calculatedAddress);
-    worldFactory.deployWorld();
-
-    // Confirm accountCount (which is salt) has incremented
-    assertEq(uint256(worldFactory.worldCounts(account)), uint256(2));
+    worldFactory.deployWorld(_salt2);
 
     // Set the store address manually
     StoreSwitch.setStoreAddress(calculatedAddress);
@@ -121,9 +119,13 @@ contract FactoriesTest is Test, GasReporter {
 
     // Confirm the msg.sender is owner of the root namespace of the new world
     assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
+
+    // Expect revert when deploying world with same bytes salt as already deployed world
+    vm.expectRevert();
+    worldFactory.deployWorld(_salt1);
   }
 
   function testWorldFactoryGas() public {
-    testWorldFactory(address(this));
+    testWorldFactory(address(this), 0, 1);
   }
 }
