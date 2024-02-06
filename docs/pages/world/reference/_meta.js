@@ -10,6 +10,5 @@ export default {
   "world-context-external": "World context (interface)",  
   "resource-ids": "Resource IDs",  
   "misc": "Miscellaneous", 
-  "init-module-implementation": "Init Module Implementations",
   "internal": "Internals",
 };
