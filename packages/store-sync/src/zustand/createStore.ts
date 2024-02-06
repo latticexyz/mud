@@ -1,13 +1,13 @@
 import { SchemaToPrimitives, Table, Tables } from "@latticexyz/store";
 import { StoreApi, UseBoundStore, create } from "zustand";
 import { RawRecord, TableRecord } from "./common";
-import { Hex } from "viem";
+import { Hex, decodeAbiParameters } from "viem";
 import { encodeKey } from "@latticexyz/protocol-parser";
 import { flattenSchema } from "../flattenSchema";
 import { getId } from "./getId";
 import { SyncStep } from "../SyncStep";
 import { Entity } from "@latticexyz/recs";
-import { decodeEntity } from "./decodeEntity";
+import { entityToHexKeyTuple } from "../recs";
 
 type TableRecords<table extends Table> = {
   readonly [id: string]: TableRecord<table>;
@@ -60,6 +60,26 @@ export type CreateStoreOptions<tables extends Tables> = {
 
 export function createStore<tables extends Tables>(opts: CreateStoreOptions<tables>): ZustandStore<tables> {
   return create<ZustandState<tables>>((set, get) => {
+    function decodeEntity<table extends Table>(
+      table: table["keySchema"],
+      entity: Entity
+    ): SchemaToPrimitives<table["keySchema"]> {
+      const hexKeyTuple = entityToHexKeyTuple(entity);
+      if (hexKeyTuple.length !== Object.keys(table.keySchema).length) {
+        throw new Error(
+          `entity key tuple length ${hexKeyTuple.length} does not match key schema length ${
+            Object.keys(table.keySchema).length
+          }`
+        );
+      }
+      return Object.fromEntries(
+        Object.entries(table.keySchema).map(([key, type], index) => [
+          key,
+          decodeAbiParameters([{ type }], hexKeyTuple[index] as Hex)[0],
+        ])
+      ) as SchemaToPrimitives<table["keySchema"]>;
+    }
+
     /**
      * Check whether a table contains a value for a given entity.
      *
