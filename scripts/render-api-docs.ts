@@ -23,7 +23,7 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
       content = fixInheritence(content);
-      return content;
+      return content.replaceAll("SET DATA\n", "").replaceAll("GET DATA\n", "").replaceAll("HELPER FUNCTIONS\n", "");
     },
   },
   "store/reference/store.mdx": {

@@ -171,8 +171,6 @@ function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) interna
 
 #### setRecord
 
-SET DATA
-
 Set a full record for the given table ID and key tuple.
 
 _Calling this method emits a Store_SetRecord event.
@@ -482,8 +480,6 @@ function popFromDynamicField(
 | `byteLengthToPop`   | `uint256`    | The byte length to pop from the dynamic field.          |
 
 #### getRecord
-
-GET DATA
 
 Get the full record (all fields, static and dynamic data) for the given table ID and key tuple.
 
@@ -876,8 +872,6 @@ bytes32 internal constant DYNAMIC_DATA_LENGTH_SLOT = keccak256("mud.store.dynami
 
 #### \_spliceDynamicData
 
-SET DATA
-
 Splice dynamic data in the store.
 
 _This function checks various conditions to ensure the operation is valid.
@@ -913,8 +907,6 @@ function _spliceDynamicData(
 | `previousEncodedLengths` | `PackedCounter` | The previous encoded lengths of the dynamic data of the record.                                                                                           |
 
 #### \_getStaticData
-
-GET DATA
 
 Get full static data for the given table ID and key tuple, with the given length in bytes.
 
@@ -969,8 +961,6 @@ function _getStaticFieldBytes(
 | `<none>` | `bytes` | The static field data as dynamic bytes in the size of the field. |
 
 #### \_getStaticDataLocation
-
-HELPER FUNCTIONS
 
 Compute the storage location based on table ID and key tuple.
 
