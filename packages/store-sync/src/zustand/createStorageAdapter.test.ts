@@ -7,6 +7,7 @@ import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
 import { resolveConfig, storeEventsAbi } from "@latticexyz/store";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { createStore } from "./createStore";
+import { singletonEntity } from "../recs";
 
 const tables = resolveConfig(mudConfig).tables;
 
@@ -61,6 +62,28 @@ describe("createStorageAdapter", () => {
     `);
 
     expect(useStore.getState().getValue(tables.NumberList, {})).toMatchInlineSnapshot(`
+      {
+        "value": [
+          420,
+          69,
+        ],
+      }
+    `);
+
+    expect(useStore.getState().hasComponent(tables.NumberList, singletonEntity)).toMatchInlineSnapshot(`
+      true
+    `);
+
+    expect(useStore.getState().getComponentValue(tables.NumberList, singletonEntity)).toMatchInlineSnapshot(`
+      {
+        "value": [
+          420,
+          69,
+        ],
+      }
+    `);
+
+    expect(useStore.getState().getComponentValueStrict(tables.NumberList, singletonEntity)).toMatchInlineSnapshot(`
       {
         "value": [
           420,
