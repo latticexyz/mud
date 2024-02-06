@@ -87,7 +87,7 @@ const PUBLIC_APIS: PublicApis = {
         .replace("## Constants", "## version.sol constants");
     },
   },
-  "world/reference/access-control.mdx": {
+  "world/reference/internal/access-control.mdx": {
     inputFiles: [
       {
         source: "world/src/AccessControl.sol",
@@ -100,7 +100,7 @@ const PUBLIC_APIS: PublicApis = {
       return content;
     },
   },
-  "world/reference/create.mdx": {
+  "world/reference/internal/create.mdx": {
     inputFiles: [{ source: "world/src/Create2.sol" }, { source: "world/src/Create2Factory.sol" }],
     processContent: (content) => {
       content = formatHeadings(content);
@@ -109,7 +109,7 @@ const PUBLIC_APIS: PublicApis = {
       return content;
     },
   },
-  "world/reference/delegation.mdx": {
+  "world/reference/internal/delegation.mdx": {
     inputFiles: [{ source: "world/src/Delegation.sol" }, { source: "world/src/DelegationControl.sol" }],
     processContent: (content) => {
       content = formatHeadings(content);
@@ -127,7 +127,7 @@ const PUBLIC_APIS: PublicApis = {
       return content;
     },
   },
-  "world/reference/erc165.mdx": {
+  "world/reference/internal/erc165.mdx": {
     inputFiles: [{ source: "world/src/ERC165Checker.sol" }, { source: "world/src/requireInterface.sol" }],
     processContent: (content) => {
       content = formatHeadings(content);
@@ -138,7 +138,7 @@ const PUBLIC_APIS: PublicApis = {
         .replaceAll("{IERC165-supportsInterface}", "[IERC165.supportsInterface](./erc165-external#supportsinterface)");
     },
   },
-  "world/reference/erc165-external.mdx": {
+  "world/reference/internal/erc165-external.mdx": {
     inputFiles: [{ source: "world/src/IERC165.sol" }],
     processContent: (content) => {
       content = formatHeadings(content);
@@ -253,7 +253,7 @@ const PUBLIC_APIS: PublicApis = {
       return content.replace("Constants", "constants.sol").replace("Constants", "version.sol constants");
     },
   },
-  "world/reference/init-module.mdx": {
+  "world/reference/internal/init-module.mdx": {
     inputFiles: [
       { source: "world/src/modules/init/InitModule.sol" },
       { source: "world/src/modules/init/constants.sol" },
@@ -268,7 +268,7 @@ const PUBLIC_APIS: PublicApis = {
       return content.replace("Constants", "constants.sol");
     },
   },
-  "world/reference/init-module-implementation.mdx": {
+  "world/reference/internal/init-module-implementation.mdx": {
     inputFiles: [
       { source: "world/src/modules/init/implementations/AccessManagementSystem.sol" },
       { source: "world/src/modules/init/implementations/ModuleInstallationSystem.sol" },
@@ -327,7 +327,7 @@ const inheritence = [
   { contract: "IWorldContextConsumer", link: "/world/reference/world-context-external#iworldcontextconsumer" },
   { contract: "IModule", link: "/world/reference/module-external#imodule" },
   { contract: "WorldContextConsumer", link: "/world/reference/world-context#worldcontextconsumer" },
-  { contract: "IERC165", link: "/world/reference/erc165-external#ierc165" },
+  { contract: "IERC165", link: "/world/reference/internal/erc165-external#ierc165" },
   { contract: "ISystemHook", link: "/world/reference/system-external#isystemhook" },
   { contract: "IWorldKernel", link: "/world/reference/world-external#iworldkernel" },
   { contract: "IWorldFactory", link: "/world/reference/world-external#iworldfactory" },
@@ -337,12 +337,18 @@ const inheritence = [
   { contract: "IWorldContextConsumer", link: "/world/reference/world-context-external#iworldcontextconsumer" },
   {
     contract: "ModuleInstallationSystem",
-    link: "/world/reference/init-module-implementation#moduleinstallationsystem",
+    link: "/world/reference/internal/init-module-implementation#moduleinstallationsystem",
   },
-  { contract: "StoreRegistrationSystem", link: "/world/reference/init-module-implementation#storeregistrationsystem" },
-  { contract: "WorldRegistrationSystem", link: "/world/reference/init-module-implementation#worldregistrationsystem" },
-  { contract: "LimitedCallContext", link: "/world/reference/init-module#limitedcallcontext" },
-  { contract: "IERC165-supportsInterface", link: "/world/reference/erc165-external#supportsinterface" },
+  {
+    contract: "StoreRegistrationSystem",
+    link: "/world/reference/internal/init-module-implementation#storeregistrationsystem",
+  },
+  {
+    contract: "WorldRegistrationSystem",
+    link: "/world/reference/internal/init-module-implementation#worldregistrationsystem",
+  },
+  { contract: "LimitedCallContext", link: "/world/reference/internal/init-module#limitedcallcontext" },
+  { contract: "IERC165-supportsInterface", link: "/world/reference/internal/erc165-external#supportsinterface" },
 ];
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////

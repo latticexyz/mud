@@ -1,10 +1,5 @@
 export default {
-  "access-control": "Access Control",
-  create: "Create2",
-  "delegation": "Delegation",
   "delegation-external": "Delegation (interface)",  
-  "erc165": "ERC165",
-  "erc165-external": "ERC165 (interface)",
   "module": "Modules",
   "module-external": "Modules (interface)",
   "system": "Systems",
@@ -15,6 +10,6 @@ export default {
   "world-context-external": "World context (interface)",  
   "resource-ids": "Resource IDs",  
   "misc": "Miscellaneous", 
-  "init-module": "Init Module",
   "init-module-implementation": "Init Module Implementations",
+  "internal": "Internals",
 };
