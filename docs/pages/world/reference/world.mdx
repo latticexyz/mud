@@ -424,14 +424,6 @@ Address of the init module to be set in the World instances.
 IModule public immutable initModule;
 ```
 
-#### worldCounts
-
-Counters to keep track of the number of World instances deployed per address.
-
-```solidity
-mapping(address creator => uint256 worldCount) public worldCounts;
-```
-
 ### Functions
 
 #### constructor
@@ -453,8 +445,14 @@ Deploys a new World instance, installs the InitModule and transfers ownership to
 _Uses the Create2 for deterministic deployment._
 
 ```solidity
-function deployWorld() public returns (address worldAddress);
+function deployWorld(bytes memory salt) public returns (address worldAddress);
 ```
+
+**Parameters**
+
+| Name   | Type    | Description                                                       |
+| ------ | ------- | ----------------------------------------------------------------- |
+| `salt` | `bytes` | User defined salt for deterministic world addresses across chains |
 
 **Returns**
 
