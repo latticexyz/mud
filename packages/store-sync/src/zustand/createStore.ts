@@ -1,13 +1,13 @@
 import { SchemaToPrimitives, Table, Tables } from "@latticexyz/store";
 import { StoreApi, UseBoundStore, create } from "zustand";
 import { RawRecord, TableRecord } from "./common";
-import { Hex, decodeAbiParameters } from "viem";
+import { Hex } from "viem";
 import { encodeKey } from "@latticexyz/protocol-parser";
 import { flattenSchema } from "../flattenSchema";
 import { getId } from "./getId";
 import { SyncStep } from "../SyncStep";
 import { Entity } from "@latticexyz/recs";
-import { entityToHexKeyTuple } from "../recs";
+import { decodeEntity } from "./decodeEntity";
 
 type TableRecords<table extends Table> = {
   readonly [id: string]: TableRecord<table>;
@@ -44,12 +44,14 @@ export type ZustandState<tables extends Tables> = {
     table: table,
     key: SchemaToPrimitives<table["keySchema"]>
   ) => TableRecord<table>["value"] | undefined;
+  /** ECS helpers */
   readonly hasComponent: <table extends Table>(table: table, entity: Entity) => boolean;
   readonly getComponentValue: <table extends Table>(
     table: table,
     entity: Entity
   ) => TableRecord<table>["value"] | undefined;
   readonly getComponentValueStrict: <table extends Table>(table: table, entity: Entity) => TableRecord<table>["value"];
+  readonly getComponentEntities: <table extends Table>(table: table) => keyof TableRecords<table>;
 };
 
 export type ZustandStore<tables extends Tables> = UseBoundStore<StoreApi<ZustandState<tables>>>;
@@ -60,26 +62,6 @@ export type CreateStoreOptions<tables extends Tables> = {
 
 export function createStore<tables extends Tables>(opts: CreateStoreOptions<tables>): ZustandStore<tables> {
   return create<ZustandState<tables>>((set, get) => {
-    function decodeEntity<table extends Table>(
-      keySchema: table["keySchema"],
-      entity: Entity
-    ): SchemaToPrimitives<table["keySchema"]> {
-      const hexKeyTuple = entityToHexKeyTuple(entity);
-      if (hexKeyTuple.length !== Object.keys(keySchema).length) {
-        throw new Error(
-          `entity key tuple length ${hexKeyTuple.length} does not match key schema length ${
-            Object.keys(keySchema).length
-          }`
-        );
-      }
-      return Object.fromEntries(
-        Object.entries(keySchema).map(([key, type], index) => [
-          key,
-          decodeAbiParameters([{ type }], hexKeyTuple[index] as Hex)[0],
-        ])
-      ) as SchemaToPrimitives<table["keySchema"]>;
-    }
-
     /**
      * Check whether a table contains a value for a given entity.
      *
@@ -130,6 +112,18 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
       if (!value) throw new Error(`No value for table ${table.name} on entity ${entity}`);
       return value;
     }
+    /**
+     * Get a set of all entities of the given component.
+     *
+     * @param component {@link defineComponent Component} to get all entities from
+     * @returns Set of all entities in the given component.
+     */
+    function getComponentEntities<table extends Table>(table: table): keyof TableRecords<table> {
+      const records = get().records;
+      return Object.keys(
+        Object.entries(records).filter(([id, record]) => record.table.tableId === table.tableId)
+      ) as unknown as keyof TableRecords<table>;
+    }
 
     return {
       syncProgress: {
@@ -165,6 +159,7 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
       hasComponent,
       getComponentValue,
       getComponentValueStrict,
+      getComponentEntities,
     };
   });
 }

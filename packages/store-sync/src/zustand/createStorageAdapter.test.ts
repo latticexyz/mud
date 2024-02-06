@@ -91,5 +91,11 @@ describe("createStorageAdapter", () => {
         ],
       }
     `);
+
+    expect(useStore.getState().getComponentEntities(tables.NumberList)).toMatchInlineSnapshot(`
+      [
+        "0",
+      ]
+    `);
   });
 });
