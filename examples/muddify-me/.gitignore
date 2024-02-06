@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+forge-std
 
 # Editor directories and files
 .vscode/*
