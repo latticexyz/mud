@@ -5,7 +5,7 @@
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/AccessManagementSystem.sol)
 
 **Inherits:**
-[System](/world/reference/system#system), [LimitedCallContext](/world/reference/init-module#limitedcallcontext)
+[System](/world/reference/system#system), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
 
 _This contract manages the granting and revoking of access from/to resources._
 
@@ -83,7 +83,7 @@ function renounceOwnership(ResourceId namespaceId) public virtual onlyDelegateca
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/ModuleInstallationSystem.sol)
 
 **Inherits:**
-[System](/world/reference/system#system), [LimitedCallContext](/world/reference/init-module#limitedcallcontext)
+[System](/world/reference/system#system), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
 
 _A system contract to handle the installation of (non-root) modules in the World._
 
@@ -112,7 +112,7 @@ function installModule(IModule module, bytes memory encodedArgs) public onlyDele
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/BalanceTransferSystem.sol)
 
 **Inherits:**
-[System](/world/reference/system#system), [IWorldErrors](/world/reference/world-external#iworlderrors), [LimitedCallContext](/world/reference/init-module#limitedcallcontext)
+[System](/world/reference/system#system), [IWorldErrors](/world/reference/world-external#iworlderrors), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
 
 _A system contract that facilitates balance transfers in the World and outside of the World._
 
@@ -167,7 +167,7 @@ function transferBalanceToAddress(
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/StoreRegistrationSystem.sol)
 
 **Inherits:**
-[System](/world/reference/system#system), [IWorldErrors](/world/reference/world-external#iworlderrors), [LimitedCallContext](/world/reference/init-module#limitedcallcontext)
+[System](/world/reference/system#system), [IWorldErrors](/world/reference/world-external#iworlderrors), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
 
 _This contract provides functionality for the registration of store-related resources within the World framework._
 
@@ -247,7 +247,7 @@ function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) public 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/BatchCallSystem.sol)
 
 **Inherits:**
-[System](/world/reference/system#system), [LimitedCallContext](/world/reference/init-module#limitedcallcontext)
+[System](/world/reference/system#system), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
 
 _A system contract that facilitates batching of calls to various systems in a single transaction._
 
@@ -304,7 +304,7 @@ function batchCallFrom(
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol)
 
 **Inherits:**
-[System](/world/reference/system#system), [IWorldErrors](/world/reference/world-external#iworlderrors), [LimitedCallContext](/world/reference/init-module#limitedcallcontext)
+[System](/world/reference/system#system), [IWorldErrors](/world/reference/world-external#iworlderrors), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
 
 _This contract provides functions related to registering resources other than tables in the World._
 
