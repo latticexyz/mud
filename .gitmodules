@@ -1,0 +1,3 @@
+[submodule "examples/muddify-me/packages/contracts/lib/forge-std"]
+	path = examples/muddify-me/packages/contracts/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
