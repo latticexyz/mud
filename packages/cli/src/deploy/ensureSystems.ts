@@ -8,19 +8,22 @@ import { getResourceAccess } from "./getResourceAccess";
 import { uniqueBy, wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
+import { ConcurrencyLock } from "./concurrencyLock";
 
 export async function ensureSystems({
   client,
   worldDeploy,
   systems,
+  lock,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly worldDeploy: WorldDeploy;
   readonly systems: readonly System[];
+  readonly lock: ConcurrencyLock;
 }): Promise<readonly Hex[]> {
   const [worldSystems, worldAccess] = await Promise.all([
-    getSystems({ client, worldDeploy }),
-    getResourceAccess({ client, worldDeploy }),
+    getSystems({ client, worldDeploy, lock }),
+    getResourceAccess({ client, worldDeploy, lock }),
   ]);
   const systemIds = systems.map((system) => system.systemId);
   const currentAccess = worldAccess.filter(({ resourceId }) => systemIds.includes(resourceId));
@@ -134,6 +137,7 @@ export async function ensureSystems({
       deployedBytecodeSize: system.deployedBytecodeSize,
       label: `${resourceLabel(system)} system`,
     })),
+    lock,
   });
 
   const registerTxs = missingSystems.map((system) =>

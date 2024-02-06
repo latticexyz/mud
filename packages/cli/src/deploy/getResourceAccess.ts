@@ -5,13 +5,16 @@ import { storeSpliceStaticDataEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
 import { decodeKey } from "@latticexyz/protocol-parser";
 import { getTableValue } from "./getTableValue";
+import { ConcurrencyLock } from "./concurrencyLock";
 
 export async function getResourceAccess({
   client,
   worldDeploy,
+  lock,
 }: {
   readonly client: Client;
   readonly worldDeploy: WorldDeploy;
+  readonly lock: ConcurrencyLock;
 }): Promise<readonly { readonly resourceId: Hex; readonly address: Address }[]> {
   // This assumes we only use `ResourceAccess._set(...)`, which is true as of this writing.
   // TODO: PR to viem's getLogs to accept topics array so we can filter on all store events and quickly recreate this table's current state
@@ -33,9 +36,11 @@ export async function getResourceAccess({
 
   const access = (
     await Promise.all(
-      keys.map(
-        async (key) =>
-          [key, await getTableValue({ client, worldDeploy, table: worldTables.world_ResourceAccess, key })] as const
+      keys.map(async (key) =>
+        lock.run(
+          async () =>
+            [key, await getTableValue({ client, worldDeploy, table: worldTables.world_ResourceAccess, key })] as const
+        )
       )
     )
   )

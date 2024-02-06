@@ -8,15 +8,18 @@ import { resourceLabel } from "./resourceLabel";
 import { getTables } from "./getTables";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
+import { ConcurrencyLock } from "./concurrencyLock";
 
 export async function ensureTables({
   client,
   worldDeploy,
   tables,
+  lock,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly worldDeploy: WorldDeploy;
   readonly tables: readonly Table[];
+  readonly lock: ConcurrencyLock;
 }): Promise<readonly Hex[]> {
   const worldTables = await getTables({ client, worldDeploy });
   const worldTableIds = worldTables.map((table) => table.tableId);
@@ -31,31 +34,33 @@ export async function ensureTables({
     debug("registering tables", missingTables.map(resourceLabel).join(", "));
     return await Promise.all(
       missingTables.map((table) =>
-        pRetry(
-          () =>
-            writeContract(client, {
-              chain: client.chain ?? null,
-              address: worldDeploy.address,
-              abi: worldAbi,
-              // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-              functionName: "registerTable",
-              args: [
-                table.tableId,
-                valueSchemaToFieldLayoutHex(table.valueSchema),
-                keySchemaToHex(table.keySchema),
-                valueSchemaToHex(table.valueSchema),
-                Object.keys(table.keySchema),
-                Object.keys(table.valueSchema),
-              ],
-            }),
-          {
-            retries: 3,
-            onFailedAttempt: async (error) => {
-              const delay = error.attemptNumber * 500;
-              debug(`failed to register table ${resourceLabel(table)}, retrying in ${delay}ms...`);
-              await wait(delay);
-            },
-          }
+        lock.run(async () =>
+          pRetry(
+            () =>
+              writeContract(client, {
+                chain: client.chain ?? null,
+                address: worldDeploy.address,
+                abi: worldAbi,
+                // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
+                functionName: "registerTable",
+                args: [
+                  table.tableId,
+                  valueSchemaToFieldLayoutHex(table.valueSchema),
+                  keySchemaToHex(table.keySchema),
+                  valueSchemaToHex(table.valueSchema),
+                  Object.keys(table.keySchema),
+                  Object.keys(table.valueSchema),
+                ],
+              }),
+            {
+              retries: 3,
+              onFailedAttempt: async (error) => {
+                const delay = error.attemptNumber * 500;
+                debug(`failed to register table ${resourceLabel(table)}, retrying in ${delay}ms...`);
+                await wait(delay);
+              },
+            }
+          )
         )
       )
     );

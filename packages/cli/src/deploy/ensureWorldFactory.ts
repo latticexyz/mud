@@ -11,6 +11,7 @@ import { deployer } from "./ensureDeployer";
 import { salt } from "./common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { Contract } from "./ensureContract";
+import { ConcurrencyLock } from "./concurrencyLock";
 
 export const accessManagementSystemDeployedBytecodeSize = size(
   accessManagementSystemBuild.deployedBytecode.object as Hex
@@ -108,11 +109,13 @@ export const worldFactoryContracts: readonly Contract[] = [
 ];
 
 export async function ensureWorldFactory(
-  client: Client<Transport, Chain | undefined, Account>
+  client: Client<Transport, Chain | undefined, Account>,
+  lock: ConcurrencyLock
 ): Promise<readonly Hex[]> {
   // WorldFactory constructor doesn't call InitModule, only sets its address, so we can do these in parallel since the address is deterministic
   return await ensureContractsDeployed({
     client,
     contracts: worldFactoryContracts,
+    lock,
   });
 }

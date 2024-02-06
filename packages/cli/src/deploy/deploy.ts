@@ -15,11 +15,13 @@ import { resourceLabel } from "./resourceLabel";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { worldFactoryContracts } from "./ensureWorldFactory";
+import { ConcurrencyLock } from "./concurrencyLock";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
   config: Config<configInput>;
   worldAddress?: Address;
+  rpcConcurrency?: number;
 };
 
 /**
@@ -32,11 +34,14 @@ export async function deploy<configInput extends ConfigInput>({
   client,
   config,
   worldAddress: existingWorldAddress,
+  rpcConcurrency,
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   const tables = Object.values(config.tables) as Table[];
   const systems = Object.values(config.systems);
 
   await ensureDeployer(client);
+
+  const lock = new ConcurrencyLock({ concurrency: rpcConcurrency });
 
   // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
   await ensureContractsDeployed({
@@ -54,11 +59,12 @@ export async function deploy<configInput extends ConfigInput>({
         label: `${mod.name} module`,
       })),
     ],
+    lock,
   });
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client);
+    : await deployWorld(client, lock);
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);
@@ -71,6 +77,7 @@ export async function deploy<configInput extends ConfigInput>({
     client,
     worldDeploy,
     resourceIds: [...tables.map((table) => table.tableId), ...systems.map((system) => system.systemId)],
+    lock,
   });
 
   debug("waiting for all namespace registration transactions to confirm");
@@ -82,21 +89,25 @@ export async function deploy<configInput extends ConfigInput>({
     client,
     worldDeploy,
     tables,
+    lock,
   });
   const systemTxs = await ensureSystems({
     client,
     worldDeploy,
     systems,
+    lock,
   });
   const functionTxs = await ensureFunctions({
     client,
     worldDeploy,
     functions: systems.flatMap((system) => system.functions),
+    lock,
   });
   const moduleTxs = await ensureModules({
     client,
     worldDeploy,
     modules: config.modules,
+    lock,
   });
 
   const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs];

@@ -4,15 +4,18 @@ import { hexToResource, resourceToHex, writeContract } from "@latticexyz/common"
 import { getResourceIds } from "./getResourceIds";
 import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
+import { ConcurrencyLock } from "./concurrencyLock";
 
 export async function ensureNamespaceOwner({
   client,
   worldDeploy,
   resourceIds,
+  lock,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly worldDeploy: WorldDeploy;
   readonly resourceIds: readonly Hex[];
+  readonly lock: ConcurrencyLock;
 }): Promise<readonly Hex[]> {
   const desiredNamespaces = Array.from(new Set(resourceIds.map((resourceId) => hexToResource(resourceId).namespace)));
   const existingResourceIds = await getResourceIds({ client, worldDeploy });
@@ -31,15 +34,17 @@ export async function ensureNamespaceOwner({
   // Assert ownership of existing namespaces
   const existingDesiredNamespaces = desiredNamespaces.filter((namespace) => existingNamespaces.has(namespace));
   const namespaceOwners = await Promise.all(
-    existingDesiredNamespaces.map(async (namespace) => {
-      const { owner } = await getTableValue({
-        client,
-        worldDeploy,
-        table: worldTables.world_NamespaceOwner,
-        key: { namespaceId: resourceToHex({ type: "namespace", namespace, name: "" }) },
-      });
-      return [namespace, owner];
-    })
+    existingDesiredNamespaces.map(async (namespace) =>
+      lock.run(async () => {
+        const { owner } = await getTableValue({
+          client,
+          worldDeploy,
+          table: worldTables.world_NamespaceOwner,
+          key: { namespaceId: resourceToHex({ type: "namespace", namespace, name: "" }) },
+        });
+        return [namespace, owner];
+      })
+    )
   );
 
   const unauthorizedNamespaces = namespaceOwners
@@ -57,13 +62,15 @@ export async function ensureNamespaceOwner({
   }
   const registrationTxs = Promise.all(
     missingNamespaces.map((namespace) =>
-      writeContract(client, {
-        chain: client.chain ?? null,
-        address: worldDeploy.address,
-        abi: worldAbi,
-        functionName: "registerNamespace",
-        args: [resourceToHex({ namespace, type: "namespace", name: "" })],
-      })
+      lock.run(async () =>
+        writeContract(client, {
+          chain: client.chain ?? null,
+          address: worldDeploy.address,
+          abi: worldAbi,
+          functionName: "registerNamespace",
+          args: [resourceToHex({ namespace, type: "namespace", name: "" })],
+        })
+      )
     )
   );
 

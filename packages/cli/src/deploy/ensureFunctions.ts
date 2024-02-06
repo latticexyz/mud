@@ -5,17 +5,20 @@ import { debug } from "./debug";
 import { getFunctions } from "./getFunctions";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
+import { ConcurrencyLock } from "./concurrencyLock";
 
 export async function ensureFunctions({
   client,
   worldDeploy,
   functions,
+  lock,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly worldDeploy: WorldDeploy;
   readonly functions: readonly WorldFunction[];
+  readonly lock: ConcurrencyLock;
 }): Promise<readonly Hex[]> {
-  const worldFunctions = await getFunctions({ client, worldDeploy });
+  const worldFunctions = await getFunctions({ client, worldDeploy, lock });
   const worldSelectorToFunction = Object.fromEntries(worldFunctions.map((func) => [func.selector, func]));
 
   const toSkip = functions.filter((func) => worldSelectorToFunction[func.selector]);

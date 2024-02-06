@@ -6,9 +6,13 @@ import { writeContract } from "@latticexyz/common";
 import { debug } from "./debug";
 import { logsToWorldDeploy } from "./logsToWorldDeploy";
 import { WorldDeploy } from "./common";
+import { ConcurrencyLock } from "./concurrencyLock";
 
-export async function deployWorld(client: Client<Transport, Chain | undefined, Account>): Promise<WorldDeploy> {
-  await ensureWorldFactory(client);
+export async function deployWorld(
+  client: Client<Transport, Chain | undefined, Account>,
+  lock: ConcurrencyLock
+): Promise<WorldDeploy> {
+  await ensureWorldFactory(client, lock);
 
   debug("deploying world");
   const tx = await writeContract(client, {

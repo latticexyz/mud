@@ -6,13 +6,16 @@ import { getLogs } from "viem/actions";
 import { decodeValueArgs } from "@latticexyz/protocol-parser";
 import { getTableValue } from "./getTableValue";
 import { hexToResource } from "@latticexyz/common";
+import { ConcurrencyLock } from "./concurrencyLock";
 
 export async function getFunctions({
   client,
   worldDeploy,
+  lock,
 }: {
   readonly client: Client;
   readonly worldDeploy: WorldDeploy;
+  readonly lock: ConcurrencyLock;
 }): Promise<readonly WorldFunction[]> {
   // This assumes we only use `FunctionSelectors._set(...)`, which is true as of this writing.
   debug("looking up function signatures for", worldDeploy.address);
@@ -33,25 +36,27 @@ export async function getFunctions({
 
   // TODO: parallelize with a bulk getRecords
   const functions = await Promise.all(
-    signatures.map(async (signature) => {
-      const selector = getFunctionSelector(signature);
-      const { systemId, systemFunctionSelector } = await getTableValue({
-        client,
-        worldDeploy,
-        table: worldTables.world_FunctionSelectors,
-        key: { functionSelector: selector },
-      });
-      const { namespace, name } = hexToResource(systemId);
-      // TODO: find away around undoing contract logic (https://github.com/latticexyz/mud/issues/1708)
-      const systemFunctionSignature = namespace === "" ? signature : signature.replace(`${namespace}_${name}_`, "");
-      return {
-        signature,
-        selector,
-        systemId,
-        systemFunctionSignature,
-        systemFunctionSelector,
-      };
-    })
+    signatures.map(async (signature) =>
+      lock.run(async () => {
+        const selector = getFunctionSelector(signature);
+        const { systemId, systemFunctionSelector } = await getTableValue({
+          client,
+          worldDeploy,
+          table: worldTables.world_FunctionSelectors,
+          key: { functionSelector: selector },
+        });
+        const { namespace, name } = hexToResource(systemId);
+        // TODO: find away around undoing contract logic (https://github.com/latticexyz/mud/issues/1708)
+        const systemFunctionSignature = namespace === "" ? signature : signature.replace(`${namespace}_${name}_`, "");
+        return {
+          signature,
+          selector,
+          systemId,
+          systemFunctionSignature,
+          systemFunctionSelector,
+        };
+      })
+    )
   );
 
   return functions;
