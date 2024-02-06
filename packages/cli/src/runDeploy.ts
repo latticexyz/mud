@@ -2,7 +2,7 @@ import path from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
-import { createWalletClient, http, Hex } from "viem";
+import { createWalletClient, http, Hex, isHex, InvalidHexValueError } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
@@ -42,6 +42,11 @@ export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
  * This is used by the deploy, test, and dev-contracts CLI commands.
  */
 export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
+  const salt = opts.salt;
+  if (salt != null && !isHex(salt)) {
+    throw new MUDError("Expected hex string for salt");
+  }
+
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
   const config = (await loadConfig(opts.configPath)) as StoreConfig & WorldConfig;
@@ -83,7 +88,7 @@ in your contracts directory to use the default anvil private key.`
 
   const startTime = Date.now();
   const worldDeploy = await deploy({
-    salt: opts.salt as Hex | undefined,
+    salt,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
     config: resolvedConfig,
