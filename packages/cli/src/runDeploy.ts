@@ -2,7 +2,7 @@ import path from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
-import { createWalletClient, http, Hex, isHex, InvalidHexValueError } from "viem";
+import { createWalletClient, http, Hex, isHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
