@@ -61,19 +61,19 @@ export type CreateStoreOptions<tables extends Tables> = {
 export function createStore<tables extends Tables>(opts: CreateStoreOptions<tables>): ZustandStore<tables> {
   return create<ZustandState<tables>>((set, get) => {
     function decodeEntity<table extends Table>(
-      table: table["keySchema"],
+      keySchema: table["keySchema"],
       entity: Entity
     ): SchemaToPrimitives<table["keySchema"]> {
       const hexKeyTuple = entityToHexKeyTuple(entity);
-      if (hexKeyTuple.length !== Object.keys(table.keySchema).length) {
+      if (hexKeyTuple.length !== Object.keys(keySchema).length) {
         throw new Error(
           `entity key tuple length ${hexKeyTuple.length} does not match key schema length ${
-            Object.keys(table.keySchema).length
+            Object.keys(keySchema).length
           }`
         );
       }
       return Object.fromEntries(
-        Object.entries(table.keySchema).map(([key, type], index) => [
+        Object.entries(keySchema).map(([key, type], index) => [
           key,
           decodeAbiParameters([{ type }], hexKeyTuple[index] as Hex)[0],
         ])
