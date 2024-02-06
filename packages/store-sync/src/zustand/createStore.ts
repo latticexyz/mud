@@ -85,8 +85,8 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
      * Check whether a table contains a value for a given entity.
      *
      * @param table to check whether it has a value for the given entity.
-     * @param entity {@link Entity} to check whether it has a value in the given component.
-     * @returns true if the component contains a value for the given entity, else false.
+     * @param entity {@link Entity} to check whether it has a value in the given table.
+     * @returns true if the table contains a value for the given entity, else false.
      */
     function hasComponent<table extends Table>(table: table, entity: Entity): boolean {
       const key = decodeEntity(table.keySchema, entity);
@@ -133,10 +133,10 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
     }
 
     /**
-     * Get a set of entities that have the given component value in the given component.
+     * Get a set of entities that have the given table value in the given table.
      *
-     * @param component {@link defineComponent Component} to get entities with the given value from.
-     * @param value look for entities with this {@link ComponentValue}.
+     * @param table to get entities with the given value from.
+     * @param value look for entities with this value.
      * @returns Set with {@link Entity Entities} with the given component value.
      */
     function getEntitiesWithValue<table extends Table>(
