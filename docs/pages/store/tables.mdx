@@ -3,7 +3,7 @@ import { Callout } from "nextra/components";
 # Tables
 
 Each piece of data in `Store` is stored as a _record_ in a _table_.
-You can think of tables in two ways, either as a relational database or as a key-value store.
+You can think of tables in two ways, either [as a relational database](./how-mud-models-data) or as a key-value store.
 
 - Each table is identified by a unique `ResourceId tableId`.
 - Each record in a table is identified by a unique `bytes32[] keyTuple`.
@@ -13,7 +13,7 @@ You can think of tables in two ways, either as a relational database or as a key
 
 Tables are registered in the `Store` contract at runtime.
 When a table is registered, its ID, key and value types, as well as key and field names are stored in the internal `Tables` table.
-This emits an event that can be used by [offchain indexers](../services/indexer) to start replicating the state of the new table.
+This emits an event that can be used by [offchain indexers](../services/indexer) to start [replicating the state](/guides/replicating-onchain-state) of the new table.
 
 The recommended way of reading from tables and writing to tables is via the [typed table libraries](./table-libraries).
 However, it is also possible to use the low-level [`IStore` (external)](./reference/store) or [`StoreCore` (internal)](./reference/store-core) API directly.
@@ -24,7 +24,7 @@ There are two types of tables in `Store`: _Onchain tables_ and _offchain tables_
 We often omit the prefix from onchain tables and just call them tables.
 
 As the name suggests, **onchain tables** store their state onchain, in the `Store` contract.
-In addition, an event is emitted on every write operation, to allow [offchain indexers](../services/indexer) to replicate the onchain state.
+In addition, an event is emitted on every write operation, to allow [offchain indexers](../services/indexer) to [replicate the onchain state](/guides/replicating-onchain-state).
 
 **Offchain tables** on the other hand don't store any state onchain, but only emit the events for [offchain indexers](../services/indexer).
 This makes them suitable for use cases where data doesn't need to be retrieved onchain, but should still be synchronized from the `Store` contract to [offchain indexers](../services/indexer).
@@ -126,7 +126,7 @@ FieldLayout fieldLayout = FieldLayoutLib.encode({
 
 ### Manually register a table
 
-Registering a table is a prerequisite for writing to the table, and allows [offchain indexers](../services/indexer) to replicate the onchain state.
+Registering a table is a prerequisite for writing to the table, and allows [offchain indexers](../services/indexer) to [replicate the onchain state](/guides/replicating-onchain-state).
 
 ```solidity
 import { IStore } from "@latticexyz/store/src/IStore.sol";
