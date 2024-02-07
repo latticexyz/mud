@@ -1,5 +1,5 @@
 export default {
   "hello-world": "Hello World",
-  "extending-world": "Extending World",
+  "extending-a-world": "Extending a World",
   emojimon: "Emojimon",
 };
