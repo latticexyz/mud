@@ -37,7 +37,7 @@ See [the development status page](https://status.mud.dev/).
 pnpm create mud@next my-project
 ```
 
-For more information on how to get started, have a look at the [MUD documentation](https://mud.dev/quick-start).
+For more information on how to get started, have a look at the [MUD documentation](https://mud.dev/templates/typescript/getting-started).
 
 ## Talks
 
