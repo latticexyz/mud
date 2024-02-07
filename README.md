@@ -19,36 +19,17 @@
   </a>
 </p>
 
-MUD is a framework for complex Ethereum applications.
-
-It adds some conventions for organizing data and logic and abstracts away low-level complexities so you can focus on the features of your app.
-
-It standardizes the way data is stored on-chain.
-With this standard data model, MUD can provide all network code to synchronize contract and client state. This includes synchronizing state directly from an RPC node or a general-purpose MUD indexer.
+MUD is a framework for ambitious Ethereum applications. It compresses the complexity of building EVM apps with a tightly integrated software stack.
 
 MUD is MIT-licensed, open source and free to use.
 
 ## Features
 
+<!--
 ![MUD features](./docs/public/features.png)
+-->
 
-### Today
-
-- State synchronization between contracts and clients without custom networking code
-- General purpose indexers (without custom indexing code)
-- Seamless contract upgrades (+ automatic contract upgrades during development)
-- Shared contract state
-- Optimistic updates
-- Automatic type generation for contracts and systems
-- Query language to interact with contract state
-- Data explorer to inspect and modify contract and local state
-- Bitpacking utilities
-
-### Soon
-
-- Local simulation of transactions (including optimistic state)
-- Built-in support for account abstraction
-- Contract package manager
+See [the development status page](https://status.mud.dev/).
 
 ## Quickstart
 
