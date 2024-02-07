@@ -216,6 +216,11 @@ export default withNextra({
         destination: "/config",
         permanent: false,
       },
+      {
+        source: "/guides/extending-world",
+        destination: "/guides/extending-a-world",
+        permanent: false,
+      },
     ];
   },
 });
