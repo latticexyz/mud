@@ -52,37 +52,7 @@ MUD consists of several libraries. They can be used independently, but are best 
 
 ## Contribute
 
-We'd love your support in improving MUD! This monorepo includes all of MUD's source code, and pull requests are always welcome. To discuss new features or changes [join our Discord](https://lattice.xyz/discord).
-
-### Local development setup
-
-!!!
-The following steps are only necessary if you want to contribute to MUD. To use MUD in your project, install the [packages](#packages) from npm or [set up a new project with the MUD cli](#quickstart).
-!!!
-
-1. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
-
-2. Install pnpm
-
-   ```
-   npm install pnpm --global
-   ```
-
-3. Clone the MUD monorepo
-
-   ```
-   git clone https://github.com/latticexyz/mud
-   ```
-
-4. Install MUD dependencies and setup local environment
-
-   ```
-   cd mud && pnpm install && pnpm build
-   ```
-
-### Pull requests
-
-MUD follows the [conventional commit specification](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages and PR titles. Please keep the scope of your PR small (rather open multiple small PRs than one huge PR) and follow the conventional commit spec.
+We'd love your support in improving MUD, [see here for instructions](https://mud.dev/contribute#pull-requests). This monorepo includes all of MUD's source code, and pull requests are always welcome. To discuss new features or changes [join our Discord](https://lattice.xyz/discord).
 
 ## Community support
 
@@ -90,4 +60,4 @@ MUD follows the [conventional commit specification](https://www.conventionalcomm
 
 ## License
 
-MUD is open-source software [licensed as MIT](LICENSE).
+MUD is open-source software [under the MIT license](LICENSE).
