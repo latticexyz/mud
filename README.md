@@ -2,7 +2,7 @@
 
 <div align="center">
 <img src="docs/public/mud-cover-photo.png" width="500" style="margin: 0 0 30px 0;" alt="MUD logo" />
-<p>MUD - Engine for Autonomous Worlds</p>
+<p>Battle-tested onchain framework for developers</p>
 </div>
 
 <p align="center">
