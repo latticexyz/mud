@@ -19,17 +19,14 @@
   </a>
 </p>
 
-MUD is a framework for ambitious Ethereum applications. It compresses the complexity of building EVM apps with a tightly integrated software stack.
-
-MUD is MIT-licensed, open source and free to use.
-
-## Features
+MUD is a framework for ambitious Ethereum applications.
+It compresses the complexity of building EVM apps with a tightly integrated software stack that handles data storage, upgrades,
 
 <!--
 ![MUD features](./docs/public/features.png)
 -->
 
-See [the development status page](https://status.mud.dev/).
+You can see MUD's features, both those available and those still in development, on [the development status page](https://status.mud.dev/).
 
 ## Quickstart
 
@@ -37,11 +34,15 @@ See [the development status page](https://status.mud.dev/).
 pnpm create mud@next my-project
 ```
 
+Then follow the directions onscreen.
+
 For more information on how to get started, have a look at the [MUD documentation](https://mud.dev/templates/typescript/getting-started).
 
 ## Contribute
 
-We'd love your support in improving MUD, [see here for instructions](https://mud.dev/contribute). This monorepo includes all of MUD's source code, and pull requests are always welcome. To discuss new features or changes [join our Discord](https://lattice.xyz/discord).
+We'd love your support in improving MUD, [see here for instructions](https://mud.dev/contribute).
+This monorepo includes all of MUD's source code, and pull requests are always welcome.
+To discuss new features or changes [join our Discord](https://lattice.xyz/discord).
 
 ## Community support
 
