@@ -45,7 +45,7 @@ library SystemSwitch {
       bool success;
       (success, returnData) = SystemCall.call({
         caller: WorldContextConsumerLib._msgSender(),
-        value: WorldContextConsumerLib._msgValue(),
+        value: 0,
         systemId: systemId,
         callData: callData
       });
