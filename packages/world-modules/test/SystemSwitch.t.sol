@@ -7,7 +7,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
 import { ResourceIds, ResourceIdsTableId } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { StoreCore } from "@latticexyz/store/src/Storecore.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
