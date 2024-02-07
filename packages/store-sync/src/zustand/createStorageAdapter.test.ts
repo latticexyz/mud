@@ -98,7 +98,7 @@ describe("createStorageAdapter", () => {
       ]
     `);
 
-    // This gives an unexpected output due to how array equality is handled
+    // RECS does not properly handle array equality, that behaviour is preserved here for now
     expect(
       useStore.getState().getEntitiesWithValue(tables.NumberList, {
         value: [420, 69],
