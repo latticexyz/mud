@@ -4,7 +4,7 @@ This guide walks through how you might recreate onchain state from MUD's Store e
 
 ## Store: MUD's onchain storage
 
-Before we get started, it's helpful to understand [how MUD stores its data on chain](/store/introduction). MUD introduces [a few new concepts](/store/tables): tables, records, key tuples, and fields.
+Before we get started, it's helpful to understand [how MUD stores its data on chain](/store/introduction). MUD introduces [a few new concepts](/store/data-model): tables, records, key tuples, and fields.
 
 You can think of tables like a native Solidity `mapping`, where its keys and values are [encoded in a standardized way](/store/encoding) to 1) more easily replicate and represent data offchain, like in relational databases, and 2) require less onchain storage and gas than native Solidity.
 

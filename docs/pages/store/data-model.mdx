@@ -117,15 +117,15 @@ Similarly, the relational database representation of that table would look like:
   </tbody>
 </MUDTable>
 
-Because we have a composite key of `x` and `y`, we would have a unique/primary key constraint on the tuple of `(x, y)` .
+Because we have a composite key of `x` and `y`, we would have a unique/primary key constraint on the tuple of `(x, y)`.
 
 ## Tables on chain
 
 Solidity and the EVM have much more limited data structures, so how can we express a relational database onchain? MUD takes the concept of tables and does a few things with them:
 
-- encodes each table record as a key/value pair before storing onchain
-- emits an event for each mutation
-- provides a typed Solidity library to abstract this away
+- [encodes each table record as a key/value pair](./encoding) before storing onchain
+- [emits an event for each mutation](/guides/replicating-onchain-state)
+- [provides a typed Solidity libraries](./table-libraries) to abstract this away
 
 ## Field types
 
