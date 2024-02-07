@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { StoreData } from "@latticexyz/store/src/StoreData.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
@@ -19,7 +19,7 @@ import { requireInterface } from "./requireInterface.sol";
 import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
-import { CoreModuleAddress } from "./codegen/tables/CoreModuleAddress.sol";
+import { InitModuleAddress } from "./codegen/tables/InitModuleAddress.sol";
 
 import { IModule, IModule } from "./IModule.sol";
 import { IWorldKernel } from "./IWorldKernel.sol";
@@ -61,24 +61,24 @@ contract World is StoreData, IWorldKernel {
 
   /**
    * @notice Initializes the World by installing the core module.
-   * @param coreModule The core module to initialize the World with.
+   * @param initModule The core module to initialize the World with.
    * @dev Only the initial creator can initialize. This can be done only once.
    */
-  function initialize(IModule coreModule) public prohibitDirectCallback {
+  function initialize(IModule initModule) public prohibitDirectCallback {
     // Only the initial creator of the World can initialize it
     if (msg.sender != creator) {
       revert World_AccessDenied(ROOT_NAMESPACE_ID.toString(), msg.sender);
     }
 
     // The World can only be initialized once
-    if (CoreModuleAddress.get() != address(0)) {
+    if (InitModuleAddress.get() != address(0)) {
       revert World_AlreadyInitialized();
     }
 
-    CoreModuleAddress.set(address(coreModule));
+    InitModuleAddress.set(address(initModule));
 
     // Initialize the World by installing the core module
-    _installRootModule(coreModule, new bytes(0));
+    _installRootModule(initModule, new bytes(0));
   }
 
   /**

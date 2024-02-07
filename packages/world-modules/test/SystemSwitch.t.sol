@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -7,7 +7,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { World } from "@latticexyz/world/src/World.sol";
-import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
+import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
@@ -54,9 +54,7 @@ contract SystemSwitchTest is Test, GasReporter {
 
   function setUp() public {
     // Deploy world
-    World _world = new World();
-    _world.initialize(createCoreModule());
-    world = IBaseWorld(address(_world));
+    world = createWorld();
 
     // Deploy systems
     systemA = new EchoSystem();

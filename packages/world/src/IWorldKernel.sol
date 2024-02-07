@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { IWorldErrors } from "./IWorldErrors.sol";
 import { IModule } from "./IModule.sol";
@@ -54,7 +54,7 @@ interface IWorldCall {
  * @title World Kernel Interface
  * @notice The IWorldKernel interface includes all methods that are part of the World contract's
  * internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
- * registered functions selectors from the `CoreModule`.
+ * registered functions selectors from the `InitModule`.
  */
 interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors {
   /**
@@ -78,7 +78,7 @@ interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors {
   /**
    * @notice Initializes the World.
    * @dev Can only be called once by the creator.
-   * @param coreModule The CoreModule to be installed during initialization.
+   * @param initModule The InitModule to be installed during initialization.
    */
-  function initialize(IModule coreModule) external;
+  function initialize(IModule initModule) external;
 }

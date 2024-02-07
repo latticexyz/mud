@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -21,7 +21,7 @@ import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
 import { AddressArray } from "./codegen/tables/AddressArray.sol";
 
-import { createCoreModule } from "./createCoreModule.sol";
+import { createWorld } from "./createWorld.sol";
 
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/IWorldErrors.sol";
@@ -46,8 +46,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
   bytes internal encodedData;
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(createCoreModule());
+    world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
 
     key = "testKey";

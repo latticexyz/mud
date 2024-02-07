@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Create2 } from "./Create2.sol";
 import { World } from "./World.sol";
@@ -11,33 +11,32 @@ import { ROOT_NAMESPACE_ID } from "./constants.sol";
 /**
  * @title WorldFactory
  * @notice A factory contract to deploy new World instances.
- * @dev This contract allows users to deploy a new World, install the CoreModule, and transfer the ownership.
+ * @dev This contract allows users to deploy a new World, install the InitModule, and transfer the ownership.
  */
 contract WorldFactory is IWorldFactory {
-  /// @notice Address of the core module to be set in the World instances.
-  IModule public immutable coreModule;
+  /// @notice Address of the init module to be set in the World instances.
+  IModule public immutable initModule;
 
-  /// @notice Counter to keep track of the number of World instances deployed.
-  uint256 public worldCount;
-
-  /// @param _coreModule The address of the core module.
-  constructor(IModule _coreModule) {
-    coreModule = _coreModule;
+  /// @param _initModule The address of the init module.
+  constructor(IModule _initModule) {
+    initModule = _initModule;
   }
 
   /**
-   * @notice Deploys a new World instance, installs the CoreModule and transfers ownership to the caller.
+   * @notice Deploys a new World instance, installs the InitModule and transfers ownership to the caller.
    * @dev Uses the Create2 for deterministic deployment.
+   * @param salt User defined salt for deterministic world addresses across chains
    * @return worldAddress The address of the newly deployed World contract.
    */
-  function deployWorld() public returns (address worldAddress) {
+  function deployWorld(bytes memory salt) public returns (address worldAddress) {
     // Deploy a new World and increase the WorldCount
     bytes memory bytecode = type(World).creationCode;
-    worldAddress = Create2.deploy(bytecode, worldCount++);
+    uint256 _salt = uint256(keccak256(abi.encode(msg.sender, salt)));
+    worldAddress = Create2.deploy(bytecode, _salt);
     IBaseWorld world = IBaseWorld(worldAddress);
 
     // Initialize the World and transfer ownership to the caller
-    world.initialize(coreModule);
+    world.initialize(initModule);
     world.transferOwnership(ROOT_NAMESPACE_ID, msg.sender);
 
     emit WorldDeployed(worldAddress);
