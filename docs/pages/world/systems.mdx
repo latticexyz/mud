@@ -21,8 +21,8 @@ The `World` serves as a central entry point and forwards calls to systems, which
 To call a `System`, you call the `World` in one of these ways:
 
 - If a [function selector for the `System` is registered in the `World`](./function-selectors), you can call it via `world.<namespace>__<function>(<arguments>)`.
-- You can use [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L346-L351).
-- If you have [the proper delegation](/world/account-delegation) you can use [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L353-L394).
+- You can use [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L333-L345).
+- If you have [the proper delegation](/world/account-delegation) you can use [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L347-L388).
 
 ## Writing systems
 
@@ -135,7 +135,7 @@ This upgrade process removes the old `System` contract's access to the namespace
 Any access granted _manually_ to the old `System` is not revoked, nor granted to the upgraded `System`.
 
 **Note:** You _should_ make sure to remove any such manually granted access.
-`System` access is based on the contract address, so somebody else could register a namespace they'd own, register the old `System` contract as a system in their namespace, and then abuse those permissions (if the `System` has code that can be used for that, of course).
+MUD access is based on the contract address, so somebody else could register a namespace they'd own, register the old `System` contract as a system in their namespace, and then abuse those permissions (if the `System` has code that can be used for that, of course).
 
 ## Access control
 
