@@ -1,7 +1,7 @@
 # MUD
 
 <div align="center">
-<img src="https://mud.dev/images/logos/mud-white.svg" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
+<img src="docs/public/mud-cover-photo.png" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
 <p>MUD - Engine for Autonomous Worlds</p>
 </div>
 
