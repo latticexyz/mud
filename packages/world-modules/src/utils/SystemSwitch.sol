@@ -42,7 +42,8 @@ library SystemSwitch {
 
     // If we're in the World context, call via the internal library
     if (address(this) == worldAddress) {
-      (bool success, bytes memory returnData) = SystemCall.call({
+      bool success;
+      (success, returnData) = SystemCall.call({
         caller: WorldContextConsumerLib._msgSender(),
         value: WorldContextConsumerLib._msgValue(),
         systemId: systemId,
