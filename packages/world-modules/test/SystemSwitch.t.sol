@@ -4,6 +4,10 @@ pragma solidity >=0.8.24;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
+import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
+import { ResourceIdsTableId } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+import { StoreCore } from "@latticexyz/store/src/Storecore.sol";
+
 import { System } from "@latticexyz/world/src/System.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { World } from "@latticexyz/world/src/World.sol";
@@ -22,7 +26,11 @@ contract EchoSystem is System {
     return _world();
   }
 
-  function echo(string memory message) public view returns (string memory) {
+  function readTable() public view {
+    StoreCore.getKeySchema(ResourceIdsTableId);
+  }
+
+  function echo(string memory message) public pure returns (string memory) {
     return message;
   }
 
@@ -128,6 +136,11 @@ contract SystemSwitchTest is Test, GasReporter {
     assertEq(abi.decode(returnData, (string)), "hello");
   }
 
+  function testCallRootFromRootReadTable() public {
+    vm.prank(caller);
+    _executeFromRootSystemA(rootSystemBId, abi.encodeCall(EchoSystem.readTable, ()));
+  }
+
   // - ROOT FROM NON ROOT ---------------------------------------------------------------------------- //
 
   function testCallRootFromNonRootMsgSender() public {
@@ -161,6 +174,11 @@ contract SystemSwitchTest is Test, GasReporter {
     assertEq(abi.decode(returnData, (string)), "hello");
   }
 
+  function testCallRootFromNonRootReadTable() public {
+    vm.prank(caller);
+    _executeFromSystemA(rootSystemBId, abi.encodeCall(EchoSystem.readTable, ()));
+  }
+
   // - NON ROOT FROM ROOT ---------------------------------------------------------------------------- //
 
   function testCallNonRootFromRootMsgSender() public {
@@ -169,19 +187,19 @@ contract SystemSwitchTest is Test, GasReporter {
     assertEq(abi.decode(returnData, (address)), caller);
   }
 
-  function testNonCallRootFromRootWorld() public {
+  function testCallNonRootFromRootWorld() public {
     vm.prank(caller);
     bytes memory returnData = _executeFromRootSystemA(systemBId, abi.encodeCall(EchoSystem.world, ()));
     assertEq(abi.decode(returnData, (address)), address(world));
   }
 
-  function testNonCallRootFromRootEcho() public {
+  function testCallNonRootFromRootEcho() public {
     vm.prank(caller);
     bytes memory returnData = _executeFromRootSystemA(systemBId, abi.encodeCall(EchoSystem.echo, ("hello")));
     assertEq(abi.decode(returnData, (string)), "hello");
   }
 
-  function testNonCallRootFromRootWorldSelector() public {
+  function testCallNonRootFromRootWorldSelector() public {
     bytes4 worldFunctionSelector = world.registerRootFunctionSelector(
       systemBId,
       "echo(string)",
@@ -194,6 +212,20 @@ contract SystemSwitchTest is Test, GasReporter {
     assertEq(abi.decode(returnData, (string)), "hello");
   }
 
+  function testCallNonRootFromRootReadTable() public {
+    vm.prank(caller);
+
+    // Call reverts because the non-root system storage does not have table schemas
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IStoreErrors.Store_TableNotFound.selector,
+        ResourceIdsTableId,
+        string(abi.encodePacked(ResourceIdsTableId))
+      )
+    );
+    _executeFromRootSystemA(systemBId, abi.encodeCall(EchoSystem.readTable, ()));
+  }
+
   // - NON ROOT FROM NON ROOT ---------------------------------------------------------------------------- //
 
   function testCallNonRootFromNonRootMsgSender() public {
@@ -202,19 +234,19 @@ contract SystemSwitchTest is Test, GasReporter {
     assertEq(abi.decode(returnData, (address)), address(systemA));
   }
 
-  function testNonCallRootFromNonRootWorld() public {
+  function testCallNonRootFromNonRootWorld() public {
     vm.prank(caller);
     bytes memory returnData = _executeFromSystemA(systemBId, abi.encodeCall(EchoSystem.world, ()));
     assertEq(abi.decode(returnData, (address)), address(world));
   }
 
-  function testNonCallRootFromNonRootEcho() public {
+  function testCallNonRootFromNonRootEcho() public {
     vm.prank(caller);
     bytes memory returnData = _executeFromSystemA(systemBId, abi.encodeCall(EchoSystem.echo, ("hello")));
     assertEq(abi.decode(returnData, (string)), "hello");
   }
 
-  function testNonCallRootFromNonRootWorldSelector() public {
+  function testCallNonRootFromNonRootWorldSelector() public {
     bytes4 worldFunctionSelector = world.registerRootFunctionSelector(
       systemBId,
       "echo(string)",
@@ -225,5 +257,19 @@ contract SystemSwitchTest is Test, GasReporter {
     vm.prank(caller);
     bytes memory returnData = _executeFromSystemA(callData);
     assertEq(abi.decode(returnData, (string)), "hello");
+  }
+
+  function testCallNonRootFromNonRootReadTable() public {
+    vm.prank(caller);
+
+    // Call reverts because the non-root system storage does not have table schemas
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IStoreErrors.Store_TableNotFound.selector,
+        ResourceIdsTableId,
+        string(abi.encodePacked(ResourceIdsTableId))
+      )
+    );
+    _executeFromSystemA(systemBId, abi.encodeCall(EchoSystem.readTable, ()));
   }
 }
