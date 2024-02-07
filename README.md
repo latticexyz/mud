@@ -39,14 +39,6 @@ pnpm create mud@next my-project
 
 For more information on how to get started, have a look at the [MUD documentation](https://mud.dev/templates/typescript/getting-started).
 
-## Talks
-
-<div>
-  <a href="https://www.youtube.com/watch?v=UvIWmzscWp8" target="_blank"><img src="https://img.youtube.com/vi/UvIWmzscWp8/hqdefault.jpg" alt="Getting started with MUD" width="30%" /></a>
-  <a href="https://www.youtube.com/watch?v=j-_Zf8o5Wlo" target="_blank"><img src="https://img.youtube.com/vi/j-_Zf8o5Wlo/hqdefault.jpg" alt="MUD - An Engine for Autonomous Worlds" width="30%" /></a>
-  <a href="https://www.youtube.com/watch?v=mv3jA4USZtg" target="_blank"><img src="https://img.youtube.com/vi/mv3jA4USZtg/hqdefault.jpg" alt="MUD in Practice - How we built OPCraft" width="30%" /></a>
-</div>
-
 ## Packages
 
 MUD consists of several libraries. They can be used independently, but are best used together.
