@@ -226,7 +226,7 @@ contract SystemSwitchTest is Test, GasReporter {
         string(abi.encodePacked(ResourceIdsTableId))
       )
     );
-    _executeFromRootSystemA(systemBId, abi.encodeCall(EchoSystem.readTable, ()));
+    world.call(systemAId, abi.encodeCall(EchoSystem.call, (systemBId, abi.encodeCall(EchoSystem.readTable, ()))));
   }
 
   // - NON ROOT FROM NON ROOT ---------------------------------------------------------------------------- //
@@ -273,6 +273,6 @@ contract SystemSwitchTest is Test, GasReporter {
         string(abi.encodePacked(ResourceIdsTableId))
       )
     );
-    _executeFromSystemA(systemBId, abi.encodeCall(EchoSystem.readTable, ()));
+    world.call(systemAId, abi.encodeCall(EchoSystem.call, (systemBId, abi.encodeCall(EchoSystem.readTable, ()))));
   }
 }
