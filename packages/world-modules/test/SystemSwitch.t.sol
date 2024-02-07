@@ -5,7 +5,8 @@ import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
-import { ResourceIdsTableId } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+import { ResourceIds, ResourceIdsTableId } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { StoreCore } from "@latticexyz/store/src/Storecore.sol";
 
 import { System } from "@latticexyz/world/src/System.sol";
@@ -26,8 +27,8 @@ contract EchoSystem is System {
     return _world();
   }
 
-  function readTable() public view {
-    StoreCore.getKeySchema(ResourceIdsTableId);
+  function readTable() public view returns (Schema) {
+    return StoreCore.getKeySchema(ResourceIdsTableId);
   }
 
   function echo(string memory message) public pure returns (string memory) {
@@ -138,7 +139,8 @@ contract SystemSwitchTest is Test, GasReporter {
 
   function testCallRootFromRootReadTable() public {
     vm.prank(caller);
-    _executeFromRootSystemA(rootSystemBId, abi.encodeCall(EchoSystem.readTable, ()));
+    bytes memory returnData = _executeFromSystemA(rootSystemBId, abi.encodeCall(EchoSystem.readTable, ()));
+    assertEq(Schema.unwrap(abi.decode(returnData, (Schema))), Schema.unwrap(ResourceIds.getKeySchema()));
   }
 
   // - ROOT FROM NON ROOT ---------------------------------------------------------------------------- //
@@ -176,7 +178,8 @@ contract SystemSwitchTest is Test, GasReporter {
 
   function testCallRootFromNonRootReadTable() public {
     vm.prank(caller);
-    _executeFromSystemA(rootSystemBId, abi.encodeCall(EchoSystem.readTable, ()));
+    bytes memory returnData = _executeFromSystemA(rootSystemBId, abi.encodeCall(EchoSystem.readTable, ()));
+    assertEq(Schema.unwrap(abi.decode(returnData, (Schema))), Schema.unwrap(ResourceIds.getKeySchema()));
   }
 
   // - NON ROOT FROM ROOT ---------------------------------------------------------------------------- //
