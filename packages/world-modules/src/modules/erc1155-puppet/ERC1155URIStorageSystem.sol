@@ -4,10 +4,12 @@
 pragma solidity ^0.8.24;
 
 import { ERC1155System } from "./ERC1155System.sol";
+import { System } from "@latticexyz/world/src/System.sol";
 
 import { TokenMetadata } from "../tokens/tables/TokenMetadata.sol";
 import { TokenURIStorage } from "../tokens/tables/TokenURIStorage.sol";
 
+import { toTopic } from "../puppet/utils.sol";
 import { _tokenUriTableId, _metadataTableId } from "./utils.sol";
 
 /**
@@ -51,7 +53,8 @@ contract ERC1155URIStorageSystem is ERC1155System {
    */
   function _setURI(uint256 tokenId, string memory tokenURI) internal virtual {
     TokenURIStorage.set(_tokenUriTableId(_namespace()), tokenId, tokenURI);
-    emit URI(uri(tokenId), tokenId);
+    puppet().log(URI.selector, toTopic(tokenId), abi.encode(uri(tokenId)));
+    emit URI(tokenId, uri(tokenId));
   }
 
   /**

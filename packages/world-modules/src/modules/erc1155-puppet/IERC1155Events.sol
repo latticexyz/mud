@@ -36,5 +36,5 @@ interface IERC1155Events {
    * https://eips.ethereum.org/EIPS/eip-1155#metadata-extensions[guarantees] that `value` will equal the value
    * returned by {IERC1155MetadataURI-uri}.
    */
-  event URI(string value, uint256 indexed id);
+  event URI(uint256 indexed id, string value);
 }

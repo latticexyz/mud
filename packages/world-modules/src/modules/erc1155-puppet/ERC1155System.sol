@@ -211,9 +211,9 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, Syste
     if (ids.length == 1) {
       uint256 id = ids[0];
       uint256 value = values[0];
-      emit TransferSingle(operator, from, to, id, value);
+      puppet().log(TransferSingle.selector, toTopic(operator), toTopic(from), toTopic(to), abi.encode(id, value));
     } else {
-      emit TransferBatch(operator, from, to, ids, values);
+      puppet().log(TransferBatch.selector, toTopic(operator), toTopic(from), toTopic(to), abi.encode(ids, values));
     }
   }
 
@@ -407,8 +407,7 @@ contract ERC1155System is IERC1155, IERC1155MetadataURI, IERC1155Mintable, Syste
       revert ERC1155InvalidOperator(address(0));
     }
     TokenOperatorApproval.set(_operatorApprovalTableId(_namespace()), owner, operator, approved);
-    //_operatorApprovals[owner][operator] = approved;
-    emit ApprovalForAll(owner, operator, approved);
+    puppet().log(ApprovalForAll.selector, toTopic(owner), toTopic(operator), abi.encode(approved));
   }
 
   /**
