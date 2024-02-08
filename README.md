@@ -20,8 +20,7 @@
 </p>
 
 MUD is a framework for ambitious Ethereum applications.
-It compresses the complexity of building EVM apps with a tightly integrated software stack that handles data storage, upgrades,
-
+It compresses the complexity of building EVM apps with a tightly integrated software stack that handles data storage, upgrades, delegations, etc.
 
 You can see MUD's features, both those available and those still in development, on [the development status page](https://status.mud.dev/).
 
