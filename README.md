@@ -1,7 +1,7 @@
 # MUD
 
 <div align="center">
-<img src="docs/public/logo512-black.svg" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
+<img src="docs/public/mud-cover-photo.png" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
 <p>Battle-tested onchain framework for developers</p>
 </div>
 
@@ -22,9 +22,6 @@
 MUD is a framework for ambitious Ethereum applications.
 It compresses the complexity of building EVM apps with a tightly integrated software stack that handles data storage, upgrades,
 
-<!--
-![MUD features](./docs/public/features.png)
--->
 
 You can see MUD's features, both those available and those still in development, on [the development status page](https://status.mud.dev/).
 
