@@ -1,21 +1,5 @@
 import { customType } from "drizzle-orm/pg-core";
-import superjson from "superjson";
 import { Address, ByteArray, bytesToHex, getAddress, Hex, hexToBytes } from "viem";
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const asJson = <TData>(name: string) =>
-  customType<{ data: TData; driverData: string }>({
-    dataType() {
-      // TODO: move to json column type? if we do, we'll prob wanna choose something other than superjson since it adds one level of depth (json/meta keys)
-      return "text";
-    },
-    toDriver(data: TData): string {
-      return superjson.stringify(data);
-    },
-    fromDriver(driverData: string): TData {
-      return superjson.parse(driverData);
-    },
-  })(name);
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const asNumber = (name: string, columnType: string) =>
@@ -112,5 +96,33 @@ export const asBigIntArray = (name: string, columnType: string) =>
     },
     fromDriver(driverData: string[]): bigint[] {
       return driverData.map((datum) => BigInt(datum));
+    },
+  })(name);
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const asHexArray = (name: string) =>
+  customType<{ data: Hex[]; driverData: ByteArray[] }>({
+    dataType() {
+      return "bytea";
+    },
+    toDriver(data: Hex[]): ByteArray[] {
+      return data.map((datum) => hexToBytes(datum));
+    },
+    fromDriver(driverData: ByteArray[]): Hex[] {
+      return driverData.map((datum) => bytesToHex(datum));
+    },
+  })(name);
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const asAddressArray = (name: string) =>
+  customType<{ data: Address[]; driverData: ByteArray[] }>({
+    dataType() {
+      return "bytea";
+    },
+    toDriver(data: Address[]): ByteArray[] {
+      return data.map((datum) => hexToBytes(datum));
+    },
+    fromDriver(driverData: ByteArray[]): Address[] {
+      return driverData.map((datum) => getAddress(bytesToHex(datum)));
     },
   })(name);

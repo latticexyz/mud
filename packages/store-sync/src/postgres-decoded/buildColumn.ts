@@ -6,10 +6,11 @@ import {
   asBigInt,
   asBigIntArray,
   asBoolArray,
+  asHexArray,
   asHex,
-  asJson,
   asNumber,
   asNumberArray,
+  asAddressArray,
 } from "../postgres/columnTypes";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -245,11 +246,10 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
     case "bytes30[]":
     case "bytes31[]":
     case "bytes32[]":
-      return asJson(name);
+      return asHexArray(name);
 
-    // TODO: normalize like address column type
     case "address[]":
-      return asJson(name);
+      return asAddressArray(name);
 
     case "string":
       return text(name);
