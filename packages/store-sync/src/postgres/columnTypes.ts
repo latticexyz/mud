@@ -61,7 +61,7 @@ export const asAddress = (name: string) =>
 export const asBoolArray = (name: string) =>
   customType<{ data: boolean[]; driverData: string[] }>({
     dataType() {
-      return "bool";
+      return "bool[]";
     },
     toDriver(data: boolean[]): string[] {
       return data.map((datum) => String(datum));
@@ -103,12 +103,16 @@ export const asBigIntArray = (name: string, columnType: string) =>
 export const asHexArray = (name: string) =>
   customType<{ data: Hex[]; driverData: ByteArray[] }>({
     dataType() {
-      return "bytea";
+      return "bytea[]";
     },
     toDriver(data: Hex[]): ByteArray[] {
+      console.log(data);
+
       return data.map((datum) => hexToBytes(datum));
     },
     fromDriver(driverData: ByteArray[]): Hex[] {
+      console.log(driverData);
+
       return driverData.map((datum) => bytesToHex(datum));
     },
   })(name);
@@ -117,7 +121,7 @@ export const asHexArray = (name: string) =>
 export const asAddressArray = (name: string) =>
   customType<{ data: Address[]; driverData: ByteArray[] }>({
     dataType() {
-      return "bytea";
+      return "bytea[]";
     },
     toDriver(data: Address[]): ByteArray[] {
       return data.map((datum) => hexToBytes(datum));
