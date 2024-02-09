@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { WorldContextConsumer } from "./WorldContext.sol";
-import { WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "./IWorldContextConsumer.sol";
-import { IModule, MODULE_INTERFACE_ID } from "./IModule.sol";
-import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
+import { IWorldContextConsumer } from "./IWorldContextConsumer.sol";
+import { IModule, IModule } from "./IModule.sol";
+import { IERC165 } from "./IERC165.sol";
 import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 
 /**
@@ -12,6 +12,8 @@ import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
  * @dev Abstract contract that implements the ERC-165 supportsInterface function for IModule.
  */
 abstract contract Module is IModule, WorldContextConsumer {
+  address internal immutable __self = address(this);
+
   /**
    * @notice Checks if the given interfaceId is supported by this contract.
    * @dev Overrides the functionality from IERC165 and WorldContextConsumer to check for supported interfaces.
@@ -22,28 +24,28 @@ abstract contract Module is IModule, WorldContextConsumer {
     bytes4 interfaceId
   ) public pure virtual override(IERC165, WorldContextConsumer) returns (bool) {
     return
-      interfaceId == MODULE_INTERFACE_ID ||
-      interfaceId == WORLD_CONTEXT_CONSUMER_INTERFACE_ID ||
-      interfaceId == ERC165_INTERFACE_ID;
+      interfaceId == type(IModule).interfaceId ||
+      interfaceId == type(IWorldContextConsumer).interfaceId ||
+      interfaceId == type(IERC165).interfaceId;
   }
 
   /**
    * @dev Check if a module with the given name and arguments is installed.
-   * @param moduleName The name of the module.
-   * @param args The arguments for the module installation.
+   * @param moduleAddress The address of the module.
+   * @param encodedArgs The ABI encoded arguments for the module installation.
    * @return true if the module is installed, false otherwise.
    */
-  function isInstalled(bytes16 moduleName, bytes memory args) internal view returns (bool) {
-    return InstalledModules.get(moduleName, keccak256(args)) != address(0);
+  function isInstalled(address moduleAddress, bytes memory encodedArgs) internal view returns (bool) {
+    return InstalledModules.get(moduleAddress, keccak256(encodedArgs));
   }
 
   /**
    * @dev Revert if the module with the given name and arguments is already installed.
-   * @param moduleName The name of the module.
-   * @param args The arguments for the module installation.
+   * @param moduleAddress The address of the module.
+   * @param encodedArgs The ABI encoded arguments for the module installation.
    */
-  function requireNotInstalled(bytes16 moduleName, bytes memory args) internal view {
-    if (isInstalled(moduleName, args)) {
+  function requireNotInstalled(address moduleAddress, bytes memory encodedArgs) internal view {
+    if (isInstalled(moduleAddress, encodedArgs)) {
       revert Module_AlreadyInstalled();
     }
   }

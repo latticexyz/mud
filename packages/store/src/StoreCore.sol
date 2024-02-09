@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { STORE_VERSION } from "./version.sol";
 import { Bytes } from "./Bytes.sol";
@@ -9,14 +9,14 @@ import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { StoreHooks, Tables, TablesTableId, ResourceIds, StoreHooksTableId } from "./codegen/index.sol";
+import { Tables, TablesTableId, ResourceIds, ResourceIdsTableId, StoreHooks, StoreHooksTableId } from "./codegen/index.sol";
 import { _fieldLayout as TablesTableFieldLayout } from "./codegen/tables/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
-import { ResourceId, ResourceIdInstance } from "./ResourceId.sol";
+import { ResourceId } from "./ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.sol";
 
 /**
@@ -24,7 +24,6 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.so
  * @notice This library includes implementations for all IStore methods and events related to the store actions.
  */
 library StoreCore {
-  using ResourceIdInstance for ResourceId;
   /**
    * @notice Emitted when a new record is set in the store.
    * @param tableId The ID of the table where the record is set.
@@ -89,15 +88,45 @@ library StoreCore {
   }
 
   /**
-   * @notice Register core tables in the store.
+   * @notice Register Store protocol's internal tables in the store.
    * @dev Consumers must call this function in their constructor before setting
    * any table data to allow indexers to decode table events.
    */
-  function registerCoreTables() internal {
-    // Register core tables
-    Tables.register();
+  function registerInternalTables() internal {
+    // Because `registerTable` writes to both `Tables` and `ResourceIds`, we can't use it
+    // directly here without creating a race condition, where we'd write to one or the other
+    // before they exist (depending on the order of registration).
+    //
+    // Instead, we'll register them manually, writing everything to the `Tables` table first,
+    // then the `ResourceIds` table. The logic here ought to be kept in sync with the internals
+    // of the `registerTable` function below.
+    if (ResourceIds._getExists(TablesTableId)) {
+      revert IStoreErrors.Store_TableAlreadyExists(TablesTableId, string(abi.encodePacked(TablesTableId)));
+    }
+    if (ResourceIds._getExists(ResourceIdsTableId)) {
+      revert IStoreErrors.Store_TableAlreadyExists(ResourceIdsTableId, string(abi.encodePacked(ResourceIdsTableId)));
+    }
+    Tables._set(
+      TablesTableId,
+      Tables.getFieldLayout(),
+      Tables.getKeySchema(),
+      Tables.getValueSchema(),
+      abi.encode(Tables.getKeyNames()),
+      abi.encode(Tables.getFieldNames())
+    );
+    Tables._set(
+      ResourceIdsTableId,
+      ResourceIds.getFieldLayout(),
+      ResourceIds.getKeySchema(),
+      ResourceIds.getValueSchema(),
+      abi.encode(ResourceIds.getKeyNames()),
+      abi.encode(ResourceIds.getFieldNames())
+    );
+    ResourceIds._setExists(TablesTableId, true);
+    ResourceIds._setExists(ResourceIdsTableId, true);
+
+    // Now we can register the rest of the core tables as regular tables.
     StoreHooks.register();
-    ResourceIds.register();
   }
 
   /************************************************************************
@@ -185,7 +214,7 @@ library StoreCore {
     }
 
     // Verify the field layout is valid
-    fieldLayout.validate({ allowEmpty: false });
+    fieldLayout.validate();
 
     // Verify the schema is valid
     keySchema.validate({ allowEmpty: true });
@@ -204,6 +233,28 @@ library StoreCore {
     // Verify the number of value schema types
     if (valueSchema.numFields() != fieldLayout.numFields()) {
       revert IStoreErrors.Store_InvalidValueSchemaLength(fieldLayout.numFields(), valueSchema.numFields());
+    }
+    if (valueSchema.numStaticFields() != fieldLayout.numStaticFields()) {
+      revert IStoreErrors.Store_InvalidValueSchemaStaticLength(
+        fieldLayout.numStaticFields(),
+        valueSchema.numStaticFields()
+      );
+    }
+    if (valueSchema.numDynamicFields() != fieldLayout.numDynamicFields()) {
+      revert IStoreErrors.Store_InvalidValueSchemaDynamicLength(
+        fieldLayout.numDynamicFields(),
+        valueSchema.numDynamicFields()
+      );
+    }
+
+    // Verify that static field lengths are consistent between Schema and FieldLayout
+    for (uint256 i; i < fieldLayout.numStaticFields(); i++) {
+      if (fieldLayout.atIndex(i) != valueSchema.atIndex(i).getStaticByteLength()) {
+        revert IStoreErrors.Store_InvalidStaticDataLength(
+          fieldLayout.atIndex(i),
+          valueSchema.atIndex(i).getStaticByteLength()
+        );
+      }
     }
 
     // Verify there is no resource with this ID yet
@@ -238,7 +289,12 @@ library StoreCore {
       revert IStoreErrors.Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
     }
 
-    StoreHooks.push(tableId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
+    // Require the table to exist
+    if (!ResourceIds._getExists(tableId)) {
+      revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
+    }
+
+    StoreHooks._push(tableId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
   }
 
   /**
@@ -298,11 +354,10 @@ library StoreCore {
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) internal {
-    // Emit event to notify indexers
-    emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
-
     // Early return if the table is an offchain table
-    if (tableId.getType() != RESOURCE_TABLE) {
+    if (tableId.getType() == RESOURCE_OFFCHAIN_TABLE) {
+      // Emit event to notify indexers
+      emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
       return;
     }
 
@@ -321,6 +376,9 @@ library StoreCore {
         );
       }
     }
+
+    // Emit event to notify indexers
+    emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
 
     // Store the static data at the static data location
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
@@ -387,15 +445,14 @@ library StoreCore {
    * @param data The data to write to the static data of the record at the start byte.
    */
   function spliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 start, bytes memory data) internal {
-    uint256 location = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
-
-    // Emit event to notify offchain indexers
-    emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
-
     // Early return if the table is an offchain table
-    if (tableId.getType() != RESOURCE_TABLE) {
+    if (tableId.getType() == RESOURCE_OFFCHAIN_TABLE) {
+      // Emit event to notify offchain indexers
+      emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
       return;
     }
+
+    uint256 location = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
 
     // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks._get(tableId);
@@ -410,6 +467,9 @@ library StoreCore {
         });
       }
     }
+
+    // Emit event to notify offchain indexers
+    emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
 
     // Store the provided value in storage
     Storage.store({ storagePointer: location, offset: start, data: data });
@@ -583,11 +643,10 @@ library StoreCore {
    * @param fieldLayout The field layout for the record.
    */
   function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
-    // Emit event to notify indexers
-    emit Store_DeleteRecord(tableId, keyTuple);
-
     // Early return if the table is an offchain table
-    if (tableId.getType() != RESOURCE_TABLE) {
+    if (tableId.getType() == RESOURCE_OFFCHAIN_TABLE) {
+      // Emit event to notify indexers
+      emit Store_DeleteRecord(tableId, keyTuple);
       return;
     }
 
@@ -599,6 +658,9 @@ library StoreCore {
         IStoreHook(hook.getAddress()).onBeforeDeleteRecord(tableId, keyTuple, fieldLayout);
       }
     }
+
+    // Emit event to notify indexers
+    emit Store_DeleteRecord(tableId, keyTuple);
 
     // Delete static data
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
@@ -905,6 +967,10 @@ library StoreCore {
     uint256 start,
     uint256 end
   ) internal view returns (bytes memory) {
+    // Verify the slice bounds are valid
+    if (start > end) {
+      revert IStoreErrors.Store_InvalidBounds(start, end);
+    }
     // Verify the accessed data is within the bounds of the dynamic field.
     // This is necessary because we don't delete the dynamic data when a record is deleted,
     // but only decrease its length.
@@ -917,7 +983,9 @@ library StoreCore {
     // Get the length and storage location of the dynamic field
     uint256 location = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
 
-    return Storage.load({ storagePointer: location, offset: start, length: end - start });
+    unchecked {
+      return Storage.load({ storagePointer: location, offset: start, length: end - start });
+    }
   }
 }
 
@@ -927,8 +995,6 @@ library StoreCore {
  * They are not intended to be used directly by consumers of StoreCore.
  */
 library StoreCoreInternal {
-  using ResourceIdInstance for ResourceId;
-
   bytes32 internal constant SLOT = keccak256("mud.store");
   bytes32 internal constant DYNAMIC_DATA_SLOT = keccak256("mud.store.dynamicData");
   bytes32 internal constant DYNAMIC_DATA_LENGTH_SLOT = keccak256("mud.store.dynamicDataLength");
@@ -989,6 +1055,23 @@ library StoreCoreInternal {
     // Update the encoded length
     PackedCounter updatedEncodedLengths = previousEncodedLengths.setAtIndex(dynamicFieldIndex, updatedFieldLength);
 
+    // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = StoreHooks._get(tableId);
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA)) {
+        IStoreHook(hook.getAddress()).onBeforeSpliceDynamicData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          dynamicFieldIndex: dynamicFieldIndex,
+          startWithinField: startWithinField,
+          deleteCount: deleteCount,
+          encodedLengths: previousEncodedLengths,
+          data: data
+        });
+      }
+    }
+
     {
       // Compute start index for the splice
       uint256 start = startWithinField;
@@ -1008,23 +1091,6 @@ library StoreCoreInternal {
         encodedLengths: updatedEncodedLengths,
         data: data
       });
-    }
-
-    // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA)) {
-        IStoreHook(hook.getAddress()).onBeforeSpliceDynamicData({
-          tableId: tableId,
-          keyTuple: keyTuple,
-          dynamicFieldIndex: dynamicFieldIndex,
-          startWithinField: startWithinField,
-          deleteCount: deleteCount,
-          encodedLengths: previousEncodedLengths,
-          data: data
-        });
-      }
     }
 
     // Store the updated encoded lengths in storage

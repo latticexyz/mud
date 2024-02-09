@@ -5,7 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "generate-test-data": "tsx generate-test-data.ts"
+    "generate-test-data": "tsx generate-test-data.ts",
+    "generate-test-data-records": "tsx generate-test-data-records.ts"
   },
   "devDependencies": {
     "@latticexyz/block-logs-stream": "link:../../../packages/block-logs-stream",

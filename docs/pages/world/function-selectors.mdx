@@ -12,7 +12,7 @@ If [you have the necessary delegation](/world/account-delegation) you can also u
 
 To improve the developer experience of calling `System` functions, the namespace owner can register a function selector for each `System` function in the `World` contract.
 This removes the need for the caller to know the system's `ResourceId`, and the need to manually encode the calldata via `abi.encodeCall`.
-Once the namespace owner registers a function selector for a `System` function, anybody can call the `System` via `<World>.<namespace>_<system>_<function>(<args>)`.
+Once the namespace owner registers a function selector for a `System` function, anybody can call the `System` via `<World>.<namespace>__<function>(<args>)`.
 
 To register a function selector, you use [`<world>.registerFunctionSelector`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L164-L201).
 This function takes two parameters:
@@ -21,7 +21,7 @@ This function takes two parameters:
   This value encodes both the namespace and the name of the `System`.
 - [The signature (name and parameter types)](https://docs.soliditylang.org/en/v0.8.22/abi-spec.html#function-selector) of the function within the `System`.
 
-For example, in the [Extending World guide](/guides/extending-world#deploy-to-the-blockchain) we create a namespace called `messaging`, within it a `System` called `message`, and that `System` includes a function called `incrementMessage`.
+For example, in the [Extending a World](/guides/extending-a-world#deploy-to-the-blockchain) guide we create a namespace called `messaging`, within it a `System` called `message`, and that `System` includes a function called `incrementMessage`.
 
 This is the code we use to register the `System` and the function selector:
 
@@ -34,7 +34,7 @@ This is the code we use to register the `System` and the function selector:
 After the function selector is registered, it can be accessed directly on the World:
 
 ```solidity
-    world.messaging_message_incrementMessage("hello");
+    world.messaging__incrementMessage("hello");
 ```
 
 ## Root function selectors

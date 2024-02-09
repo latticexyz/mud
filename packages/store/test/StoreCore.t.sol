@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import "forge-std/Test.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
@@ -16,7 +16,7 @@ import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
 import { Tables, ResourceIds, TablesTableId } from "../src/codegen/index.sol";
-import { ResourceId, ResourceIdLib, ResourceIdInstance } from "../src/ResourceId.sol";
+import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../src/storeResourceTypes.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD, ALL, BEFORE_ALL, AFTER_ALL } from "../src/storeHookTypes.sol";
@@ -34,8 +34,6 @@ struct TestStruct {
 }
 
 contract StoreCoreTest is Test, StoreMock {
-  using ResourceIdInstance for ResourceId;
-
   TestStruct private testStruct;
   event HookCalled(bytes);
 
@@ -304,7 +302,7 @@ contract StoreCoreTest is Test, StoreMock {
       fieldLayout
     );
 
-    assertTrue(Bytes.equals(staticData, loadedStaticData));
+    assertEq(staticData, loadedStaticData);
     assertEq(_encodedLengths.unwrap(), bytes32(0));
     assertEq(_dynamicData, "");
   }
@@ -341,7 +339,7 @@ contract StoreCoreTest is Test, StoreMock {
       fieldLayout
     );
 
-    assertTrue(Bytes.equals(staticData, loadedStaticData));
+    assertEq(staticData, loadedStaticData);
     assertEq(_encodedLengths.unwrap(), bytes32(0));
     assertEq(_dynamicData, "");
   }
@@ -1131,6 +1129,32 @@ contract StoreCoreTest is Test, StoreMock {
     // Get data from indexed table - the indexer should have mirrored the data there
     (indexedData, , ) = IStore(this).getRecord(indexerTableId, keyTuple, fieldLayout);
     assertEq(keccak256(indexedData), keccak256(abi.encodePacked(bytes16(0))));
+  }
+
+  function testRegisterHookBeforeTable() public {
+    ResourceId tableId = _tableId;
+
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = "some key";
+
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
+
+    // Create subscriber
+    MirrorSubscriber subscriber = new MirrorSubscriber(
+      tableId,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](1)
+    );
+
+    vm.expectRevert(
+      abi.encodeWithSelector(IStoreErrors.Store_TableNotFound.selector, tableId, string(abi.encodePacked(tableId)))
+    );
+    IStore(this).registerStoreHook(tableId, subscriber, BEFORE_ALL);
   }
 
   function testUnregisterHook() public {

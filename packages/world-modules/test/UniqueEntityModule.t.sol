@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -12,7 +12,7 @@ import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
-import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
+import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { UniqueEntityModule } from "../src/modules/uniqueentity/UniqueEntityModule.sol";
 import { UniqueEntity } from "../src/modules/uniqueentity/tables/UniqueEntity.sol";
 import { getUniqueEntity } from "../src/modules/uniqueentity/getUniqueEntity.sol";
@@ -36,8 +36,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
   ResourceId _tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: NAMESPACE, name: TABLE_NAME });
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
   }
 

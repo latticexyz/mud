@@ -15,6 +15,11 @@ import { renderDeleteRecordMethods, renderRecordData, renderRecordMethods } from
 import { renderFieldLayout } from "./renderFieldLayout";
 import { RenderTableOptions } from "./types";
 
+/**
+ * Renders Solidity code for a MUD table library, using the specified options
+ * @param options options for rendering the table
+ * @returns string of Solidity code
+ */
 export function renderTable(options: RenderTableOptions) {
   const {
     imports,
@@ -50,7 +55,6 @@ export function renderTable(options: RenderTableOptions) {
     import { Schema, SchemaLib } from "${storeImportPath}Schema.sol";
     import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter.sol";
     import { ResourceId } from "${storeImportPath}ResourceId.sol";
-    import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "${storeImportPath}storeResourceTypes.sol";
 
     ${
       imports.length > 0
@@ -61,7 +65,7 @@ export function renderTable(options: RenderTableOptions) {
         : ""
     }
 
-    ${staticResourceData ? renderTableId(staticResourceData).tableIdDefinition : ""}
+    ${staticResourceData ? renderTableId(staticResourceData) : ""}
 
     ${renderFieldLayout(fields)}
 
@@ -175,6 +179,12 @@ export function renderTable(options: RenderTableOptions) {
   `;
 }
 
+/**
+ * Renders solidity code for `encodeStatic` method, which encodes the provided fields into a blob for storage
+ * (nothing is rendered if static fields array is empty)
+ * @param staticFields array of data about static fields to be encoded
+ * @returns string of Solidity code
+ */
 function renderEncodeStatic(staticFields: RenderStaticField[]) {
   if (staticFields.length === 0) return "";
 
@@ -191,6 +201,12 @@ function renderEncodeStatic(staticFields: RenderStaticField[]) {
   `;
 }
 
+/**
+ * Renders solidity code for `encodeLengths` method, which tightly packs the lengths of the provided fields
+ * (nothing is rendered if dynamic fields array is empty)
+ * @param dynamicFields array of data about dynamic fields to have their lengths encoded
+ * @returns string of Solidity code
+ */
 function renderEncodeLengths(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length === 0) return "";
 
@@ -220,6 +236,12 @@ function renderEncodeLengths(dynamicFields: RenderDynamicField[]) {
   `;
 }
 
+/**
+ * Renders solidity code for `encodeDynamic` method, which encodes the provided fields into a blob for storage
+ * (nothing is rendered if dynamic fields array is empty)
+ * @param dynamicFields array of data about dynamic fields to be encoded
+ * @returns string of Solidity code
+ */
 function renderEncodeDynamic(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length === 0) return "";
 

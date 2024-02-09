@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { StoreData } from "@latticexyz/store/src/StoreData.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
@@ -19,13 +19,13 @@ import { requireInterface } from "./requireInterface.sol";
 import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
+import { InitModuleAddress } from "./codegen/tables/InitModuleAddress.sol";
 
-import { IModule, MODULE_INTERFACE_ID } from "./IModule.sol";
+import { IModule, IModule } from "./IModule.sol";
 import { IWorldKernel } from "./IWorldKernel.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
-import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 /**
  * @title World Contract
@@ -52,7 +52,7 @@ contract World is StoreData, IWorldKernel {
   /**
    * @dev Prevents the World contract from calling itself.
    */
-  modifier requireNoCallback() {
+  modifier prohibitDirectCallback() {
     if (msg.sender == address(this)) {
       revert World_CallbackNotAllowed(msg.sig);
     }
@@ -61,53 +61,55 @@ contract World is StoreData, IWorldKernel {
 
   /**
    * @notice Initializes the World by installing the core module.
-   * @param coreModule The core module to initialize the World with.
+   * @param initModule The core module to initialize the World with.
    * @dev Only the initial creator can initialize. This can be done only once.
    */
-  function initialize(IModule coreModule) public requireNoCallback {
+  function initialize(IModule initModule) public prohibitDirectCallback {
     // Only the initial creator of the World can initialize it
     if (msg.sender != creator) {
       revert World_AccessDenied(ROOT_NAMESPACE_ID.toString(), msg.sender);
     }
 
     // The World can only be initialized once
-    if (InstalledModules._get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
+    if (InitModuleAddress.get() != address(0)) {
       revert World_AlreadyInitialized();
     }
 
+    InitModuleAddress.set(address(initModule));
+
     // Initialize the World by installing the core module
-    _installRootModule(coreModule, new bytes(0));
+    _installRootModule(initModule, new bytes(0));
   }
 
   /**
    * @notice Installs a given root module in the World.
    * @param module The module to be installed.
-   * @param args Arguments for module installation.
+   * @param encodedArgs The ABI encoded arguments for module installation.
    * @dev The caller must own the root namespace.
    */
-  function installRootModule(IModule module, bytes memory args) public requireNoCallback {
+  function installRootModule(IModule module, bytes memory encodedArgs) public prohibitDirectCallback {
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
-    _installRootModule(module, args);
+    _installRootModule(module, encodedArgs);
   }
 
   /**
    * @dev Internal function to install a root module.
    * @param module The module to be installed.
-   * @param args Arguments for module installation.
+   * @param encodedArgs The ABI encoded arguments for module installation.
    */
-  function _installRootModule(IModule module, bytes memory args) internal {
+  function _installRootModule(IModule module, bytes memory encodedArgs) internal {
     // Require the provided address to implement the IModule interface
-    requireInterface(address(module), MODULE_INTERFACE_ID);
+    requireInterface(address(module), type(IModule).interfaceId);
 
     WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: msg.sender,
       msgValue: 0,
       target: address(module),
-      callData: abi.encodeCall(IModule.installRoot, (args))
+      callData: abi.encodeCall(IModule.installRoot, (encodedArgs))
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules._set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(address(module), keccak256(encodedArgs), true);
   }
 
   /************************************************************************
@@ -131,7 +133,7 @@ contract World is StoreData, IWorldKernel {
     bytes calldata staticData,
     PackedCounter encodedLengths,
     bytes calldata dynamicData
-  ) public virtual requireNoCallback {
+  ) public virtual prohibitDirectCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -151,7 +153,7 @@ contract World is StoreData, IWorldKernel {
     bytes32[] calldata keyTuple,
     uint48 start,
     bytes calldata data
-  ) public virtual requireNoCallback {
+  ) public virtual prohibitDirectCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -175,7 +177,7 @@ contract World is StoreData, IWorldKernel {
     uint40 startWithinField,
     uint40 deleteCount,
     bytes calldata data
-  ) public virtual requireNoCallback {
+  ) public virtual prohibitDirectCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -195,7 +197,7 @@ contract World is StoreData, IWorldKernel {
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     bytes calldata data
-  ) public virtual requireNoCallback {
+  ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -217,7 +219,7 @@ contract World is StoreData, IWorldKernel {
     uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
-  ) public virtual requireNoCallback {
+  ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -240,7 +242,7 @@ contract World is StoreData, IWorldKernel {
     uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
-  ) public virtual requireNoCallback {
+  ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -260,7 +262,7 @@ contract World is StoreData, IWorldKernel {
     bytes32[] calldata keyTuple,
     uint8 dynamicFieldIndex,
     bytes calldata data
-  ) public virtual requireNoCallback {
+  ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -280,7 +282,7 @@ contract World is StoreData, IWorldKernel {
     bytes32[] calldata keyTuple,
     uint8 dynamicFieldIndex,
     bytes calldata dataToPush
-  ) public virtual requireNoCallback {
+  ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -300,7 +302,7 @@ contract World is StoreData, IWorldKernel {
     bytes32[] calldata keyTuple,
     uint8 dynamicFieldIndex,
     uint256 byteLengthToPop
-  ) public virtual requireNoCallback {
+  ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -314,7 +316,7 @@ contract World is StoreData, IWorldKernel {
    * @param keyTuple Array of keys identifying the record to delete.
    * @dev Requires the caller to have access to the table's namespace or name.
    */
-  function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple) public virtual requireNoCallback {
+  function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple) public virtual prohibitDirectCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -338,7 +340,7 @@ contract World is StoreData, IWorldKernel {
   function call(
     ResourceId systemId,
     bytes memory callData
-  ) external payable virtual requireNoCallback returns (bytes memory) {
+  ) external payable virtual prohibitDirectCallback returns (bytes memory) {
     return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
   }
 
@@ -354,7 +356,7 @@ contract World is StoreData, IWorldKernel {
     address delegator,
     ResourceId systemId,
     bytes memory callData
-  ) external payable virtual requireNoCallback returns (bytes memory) {
+  ) external payable virtual prohibitDirectCallback returns (bytes memory) {
     // If the delegator is the caller, call the system directly
     if (delegator == msg.sender) {
       return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
@@ -402,7 +404,7 @@ contract World is StoreData, IWorldKernel {
   /**
    * @dev Fallback function to call registered function selectors.
    */
-  fallback() external payable requireNoCallback {
+  fallback() external payable prohibitDirectCallback {
     (ResourceId systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
     if (ResourceId.unwrap(systemId) == 0) revert World_FunctionSelectorNotFound(msg.sig);

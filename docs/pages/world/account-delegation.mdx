@@ -1,7 +1,9 @@
 # Account delegation
 
 _Account delegation_ allows a _delegator_ address to permit a _delegatee_ address to call a `System` on its behalf.
-This enables multiple use cases.
+Alternatively, the namespace owner can register a delegation that applies to all calls to all `System`s in the namespace.
+
+This feature enables multiple use cases.
 
 - **Session wallets**.
   Normally a wallet requires the user to authorize each transaction separately.
@@ -15,7 +17,11 @@ This enables multiple use cases.
   This is conceptually similar to how ERC20's [`approve`/`transferFrom`](https://eips.ethereum.org/EIPS/eip-20#transferfrom) enables atomic swaps by allowing contracts to withdraw from a user's balance and then deposit a different asset in a single transaction.
   For example, an agent could exchange two in-game assets atomically if the two sides of the trade give it the necessary permission.
 
-## Creating a delegation
+## User delegation
+
+The most common type of delegation is when a delegator address allows a specific delegatee address to act on its behalf.
+
+### Creating a user delegation
 
 First, the delegator has to call [`registerDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L234-L263).
 This function takes three parameters:
@@ -29,9 +35,9 @@ This function takes three parameters:
   We have an example of a delegation control `System` in [the `std-delegations` module](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/std-delegations).
 
 - `initCallData`, call data for a function that is called on the `delegationControlId` to inform it of the new delegation.
-  This [call data](https://docs.soliditylang.org/en/latest/abi-spec.html) includes both the function selector of the function to call and arguments to pass to the function (the result of `abi.encodeCall`) .
+  This [call data](https://docs.soliditylang.org/en/latest/abi-spec.html) includes both the function selector of the function to call and arguments to pass to the function (the result of `abi.encodeCall`).
 
-## Using a delegation
+### Using a user delegation
 
 The delegatee can use [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L353-L394).
 This function takes three parameters:
@@ -40,9 +46,19 @@ This function takes three parameters:
 - `systemId`, the `System` to call.
 - `callData`, the [call data](https://docs.soliditylang.org/en/latest/abi-spec.html) to send the `System`, which includes both the function selector and arguments (the result of `abi.encodeCall`).
 
+Note that between a specific delegator and a specific delegatee there can only be one user delegation at a time.
+This means that if you need in a `World` to implement multiple delegation algorithms you might need to create a dispatcher delegation that calls different verification functions based on the `systemId` and `callData` it receives.
+
+### Removing a user delegation
+
+You can use [`unregisterDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L283-L291) to remove a delegation.
+
+Because of `unregisterDelegation` delegations cannot be used for a delegator to commit to allow something to be done in the future.
+If you need a _commitment_, create a table with a `System` that lets the address that commits write the commitment and have an action that other addresses can call only if the proper commitment is there - without giving the committed address an option to delete the entry.
+
 ## Namespace delegation
 
-The owner of a namespace can use [`registerNamespaceDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L265-L306) to register a delegation that applies to all callers of systems in this namespace.
+The owner of a namespace can use [`registerNamespaceDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L300-L332) to register a delegation that applies to all callers of systems in this namespace.
 This functionality is useful, for example, to implement a trusted forwarder for the namespace.
 This is not a security concern because the namespace owner already has full control over any table or `System` in the namespace.
 

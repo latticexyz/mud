@@ -1,5 +1,49 @@
 # @latticexyz/dev-tools
 
+## 2.0.0-next.16
+
+### Patch Changes
+
+- Updated dependencies [c6c13f2e]
+- Updated dependencies [0f27afdd]
+- Updated dependencies [865253db]
+- Updated dependencies [e6c03a87]
+- Updated dependencies [c207d35e]
+- Updated dependencies [d00c4a9a]
+- Updated dependencies [37c228c6]
+- Updated dependencies [1bf2e908]
+- Updated dependencies [f6f40289]
+- Updated dependencies [08b42217]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [063daf80]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [2bfee921]
+- Updated dependencies [a735e14b]
+- Updated dependencies [7b28d32e]
+- Updated dependencies [9f8b84e7]
+- Updated dependencies [aee8020a]
+- Updated dependencies [ad4ac445]
+- Updated dependencies [57d8965d]
+- Updated dependencies [e4a6189d]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [3ac68ade]
+- Updated dependencies [c642ff3a]
+- Updated dependencies [37c228c6]
+- Updated dependencies [103f635e]
+  - @latticexyz/store@2.0.0-next.16
+  - @latticexyz/world@2.0.0-next.16
+  - @latticexyz/store-sync@2.0.0-next.16
+  - @latticexyz/react@2.0.0-next.16
+  - @latticexyz/common@2.0.0-next.16
+  - @latticexyz/recs@2.0.0-next.16
+  - @latticexyz/schema-type@2.0.0-next.16
+  - @latticexyz/utils@2.0.0-next.16
+
 ## 2.0.0-next.15
 
 ### Patch Changes
