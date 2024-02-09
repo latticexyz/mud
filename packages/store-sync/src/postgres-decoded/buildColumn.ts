@@ -128,9 +128,6 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
     case "uint16[]":
     case "int8[]":
     case "int16[]":
-      // smallint = 2 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
-      return asNumberArray(name, "smallint[]");
-
     case "uint24[]":
     case "uint32[]":
     case "int24[]":
