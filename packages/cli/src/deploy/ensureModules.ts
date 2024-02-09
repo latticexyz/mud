@@ -8,10 +8,12 @@ import { ensureContractsDeployed } from "./ensureContractsDeployed";
 
 export async function ensureModules({
   client,
+  deployerAddress,
   worldDeploy,
   modules,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
+  readonly deployerAddress: Hex; // TODO: move this into WorldDeploy to reuse a world's deployer?
   readonly worldDeploy: WorldDeploy;
   readonly modules: readonly Module[];
 }): Promise<readonly Hex[]> {
@@ -19,6 +21,7 @@ export async function ensureModules({
 
   await ensureContractsDeployed({
     client,
+    deployerAddress,
     contracts: uniqueBy(modules, (mod) => getAddress(mod.address)).map((mod) => ({
       bytecode: mod.bytecode,
       deployedBytecodeSize: mod.deployedBytecodeSize,

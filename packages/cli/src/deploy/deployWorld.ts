@@ -9,9 +9,10 @@ import { WorldDeploy } from "./common";
 
 export async function deployWorld(
   client: Client<Transport, Chain | undefined, Account>,
+  deployerAddress: Hex,
   salt: Hex
 ): Promise<WorldDeploy> {
-  await ensureWorldFactory(client);
+  await ensureWorldFactory(client, deployerAddress);
 
   debug("deploying world");
   const tx = await writeContract(client, {

@@ -108,11 +108,13 @@ export const worldFactoryContracts: readonly Contract[] = [
 ];
 
 export async function ensureWorldFactory(
-  client: Client<Transport, Chain | undefined, Account>
+  client: Client<Transport, Chain | undefined, Account>,
+  deployerAddress: Hex
 ): Promise<readonly Hex[]> {
   // WorldFactory constructor doesn't call InitModule, only sets its address, so we can do these in parallel since the address is deterministic
   return await ensureContractsDeployed({
     client,
+    deployerAddress,
     contracts: worldFactoryContracts,
   });
 }

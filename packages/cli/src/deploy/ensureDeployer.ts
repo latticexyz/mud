@@ -1,15 +1,15 @@
-import { Account, Chain, Client, Transport } from "viem";
+import { Account, Chain, Client, Hex, Transport } from "viem";
 import { getBytecode, sendRawTransaction, sendTransaction, waitForTransactionReceipt } from "viem/actions";
 import deployment from "./create2/deployment.json";
 import { debug } from "./debug";
 
 export const deployer = `0x${deployment.address}` as const;
 
-export async function ensureDeployer(client: Client<Transport, Chain | undefined, Account>): Promise<void> {
+export async function ensureDeployer(client: Client<Transport, Chain | undefined, Account>): Promise<Hex> {
   const bytecode = await getBytecode(client, { address: deployer });
   if (bytecode) {
     debug("found create2 deployer at", deployer);
-    return;
+    return deployer;
   }
 
   // send gas to signer
@@ -33,4 +33,6 @@ export async function ensureDeployer(client: Client<Transport, Chain | undefined
     console.error("unexpected contract address for deployer", deployReceipt);
     throw new Error("unexpected contract address for deployer");
   }
+
+  return deployer;
 }

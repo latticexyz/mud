@@ -11,10 +11,12 @@ import { ensureContractsDeployed } from "./ensureContractsDeployed";
 
 export async function ensureSystems({
   client,
+  deployerAddress,
   worldDeploy,
   systems,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
+  readonly deployerAddress: Hex; // TODO: move this into WorldDeploy to reuse a world's deployer?
   readonly worldDeploy: WorldDeploy;
   readonly systems: readonly System[];
 }): Promise<readonly Hex[]> {
@@ -129,6 +131,7 @@ export async function ensureSystems({
 
   await ensureContractsDeployed({
     client,
+    deployerAddress,
     contracts: uniqueBy(missingSystems, (system) => getAddress(system.address)).map((system) => ({
       bytecode: system.bytecode,
       deployedBytecodeSize: system.deployedBytecodeSize,

@@ -24,6 +24,7 @@ export const worldAbi = [...IBaseWorldAbi, ...IModuleAbi] as const;
 export const supportedStoreVersions = ["1.0.0-unaudited"];
 export const supportedWorldVersions = ["1.0.0-unaudited"];
 
+// TODO: extend this to include factory+deployer address? so we can reuse the deployer for a world?
 export type WorldDeploy = {
   readonly address: Address;
   readonly worldVersion: string;
