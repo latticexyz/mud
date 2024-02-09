@@ -6,4 +6,5 @@ cd deterministic-deployment-proxy
 git checkout b3bb19c
 npm install
 npm run build
+cp output/* ../path/to/this/dir
 ```
