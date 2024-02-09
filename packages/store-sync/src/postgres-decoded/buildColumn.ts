@@ -1,7 +1,16 @@
 import { boolean, text } from "drizzle-orm/pg-core";
 import { SchemaAbiType } from "@latticexyz/schema-type";
 import { assertExhaustive } from "@latticexyz/common/utils";
-import { asAddress, asBigInt, asBigIntArray, asHex, asJson, asNumber, asNumberArray } from "../postgres/columnTypes";
+import {
+  asAddress,
+  asBigInt,
+  asBigIntArray,
+  asBoolArray,
+  asHex,
+  asJson,
+  asNumber,
+  asNumberArray,
+} from "../postgres/columnTypes";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
@@ -124,6 +133,9 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
     case "address":
       return asAddress(name);
 
+    case "bool[]":
+      return asBoolArray(name);
+
     case "uint8[]":
     case "uint16[]":
     case "int8[]":
@@ -233,7 +245,6 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
     case "bytes30[]":
     case "bytes31[]":
     case "bytes32[]":
-    case "bool[]":
       return asJson(name);
 
     // TODO: normalize like address column type
