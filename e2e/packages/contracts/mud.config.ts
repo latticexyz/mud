@@ -19,6 +19,12 @@ export default mudConfig({
         y: "int32",
       },
     },
+    BytesList: {
+      keySchema: {},
+      valueSchema: {
+        value: "bytes32[]",
+      },
+    },
     NumberList: {
       keySchema: {},
       valueSchema: {

@@ -69,6 +69,9 @@ const worldContract = getContract({
   walletClient,
 });
 
+console.log("calling pushBytes");
+await worldContract.write.pushBytes(["0x7465737400000000000000000000000000000000000000000000000000000000"]);
+
 console.log("calling set");
 await worldContract.write.set([[420]]);
 console.log("calling push");
