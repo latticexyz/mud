@@ -97,7 +97,7 @@ describe("buildTable", () => {
         "addrs": {
           "dataType": "custom",
           "name": "addrs",
-          "sqlName": "bytea",
+          "sqlName": "bytea[]",
         },
       }
     `);
