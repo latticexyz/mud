@@ -105,12 +105,6 @@ export const asHexArray = (name: string) =>
     dataType() {
       return "bytea[]";
     },
-    toDriver(data: Hex[]): ByteArray[] {
-      return data.map((datum) => hexToBytes(datum));
-    },
-    fromDriver(driverData: ByteArray[]): Hex[] {
-      return driverData.map((datum) => bytesToHex(datum));
-    },
   })(name);
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -118,11 +112,5 @@ export const asAddressArray = (name: string) =>
   customType<{ data: Address[]; driverData: ByteArray[] }>({
     dataType() {
       return "bytea[]";
-    },
-    toDriver(data: Address[]): ByteArray[] {
-      return data.map((datum) => hexToBytes(datum));
-    },
-    fromDriver(driverData: ByteArray[]): Address[] {
-      return driverData.map((datum) => getAddress(bytesToHex(datum)));
     },
   })(name);
