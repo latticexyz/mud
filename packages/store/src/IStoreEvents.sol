@@ -30,7 +30,13 @@ interface IStoreEvents {
    * @param start The start position in bytes for the splice operation.
    * @param data The data to write to the static data of the record at the start byte.
    */
-  event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
+  event Store_SpliceStaticData(
+    ResourceId indexed tableId,
+    bytes32[] keyTuple,
+    uint8 fieldIndex,
+    uint48 start,
+    bytes data
+  );
 
   /**
    * @notice Emitted when dynamic data in the store is spliced.

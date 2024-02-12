@@ -151,6 +151,7 @@ contract World is StoreData, IWorldKernel {
   function spliceStaticData(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     uint48 start,
     bytes calldata data
   ) public virtual prohibitDirectCallback {
@@ -158,7 +159,7 @@ contract World is StoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Splice the static data
-    StoreCore.spliceStaticData(tableId, keyTuple, start, data);
+    StoreCore.spliceStaticData(tableId, keyTuple, fieldIndex, start, data);
   }
 
   /**

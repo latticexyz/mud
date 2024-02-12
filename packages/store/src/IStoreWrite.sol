@@ -20,6 +20,7 @@ interface IStoreWrite is IStoreEvents {
   function spliceStaticData(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     uint48 start,
     bytes calldata data
   ) external;

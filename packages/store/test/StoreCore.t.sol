@@ -469,7 +469,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a Store_SpliceStaticData event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit Store_SpliceStaticData(_data.tableId, keyTuple, 0, _data.firstDataPacked);
+    emit Store_SpliceStaticData(_data.tableId, keyTuple, 0, 0, _data.firstDataPacked);
 
     // Set first field
     IStore(this).setField(_data.tableId, keyTuple, 0, _data.firstDataPacked, _data.fieldLayout);
@@ -491,7 +491,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit Store_SpliceStaticData(_data.tableId, keyTuple, uint48(_data.firstDataPacked.length), _data.secondDataPacked);
+    emit Store_SpliceStaticData(
+      _data.tableId,
+      keyTuple,
+      1,
+      uint48(_data.firstDataPacked.length),
+      _data.secondDataPacked
+    );
 
     IStore(this).setField(_data.tableId, keyTuple, 1, _data.secondDataPacked, _data.fieldLayout);
 
@@ -1222,7 +1228,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSpliceStaticData hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeSpliceStaticData, (tableId, keyTuple, 0, staticData)));
+    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeSpliceStaticData, (tableId, keyTuple, 0, 0, staticData)));
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSpliceStaticData hook is called
     vm.expectEmit(true, true, true, true);

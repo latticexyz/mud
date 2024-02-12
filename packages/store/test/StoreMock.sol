@@ -37,10 +37,11 @@ contract StoreMock is IStore, StoreData {
   function spliceStaticData(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     uint48 start,
     bytes calldata data
   ) public virtual {
-    StoreCore.spliceStaticData(tableId, keyTuple, start, data);
+    StoreCore.spliceStaticData(tableId, keyTuple, fieldIndex, start, data);
   }
 
   // Splice data in the dynamic part of the record

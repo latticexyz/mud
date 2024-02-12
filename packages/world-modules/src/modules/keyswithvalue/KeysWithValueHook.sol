@@ -60,6 +60,7 @@ contract KeysWithValueHook is StoreHook {
   function onBeforeSpliceStaticData(
     ResourceId sourceTableId,
     bytes32[] memory keyTuple,
+    uint8,
     uint48,
     bytes memory
   ) public override {

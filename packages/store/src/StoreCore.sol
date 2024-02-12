@@ -49,7 +49,13 @@ library StoreCore {
    * @param start The start position in bytes for the splice operation.
    * @param data The data to write to the static data of the record at the start byte.
    */
-  event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
+  event Store_SpliceStaticData(
+    ResourceId indexed tableId,
+    bytes32[] keyTuple,
+    uint8 fieldIndex,
+    uint48 start,
+    bytes data
+  );
 
   /**
    * @notice Emitted when dynamic data in the store is spliced.
@@ -444,11 +450,23 @@ library StoreCore {
    * @param start The start position in bytes for the splice operation.
    * @param data The data to write to the static data of the record at the start byte.
    */
-  function spliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 start, bytes memory data) internal {
+  function spliceStaticData(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex,
+    uint48 start,
+    bytes memory data
+  ) internal {
     // Early return if the table is an offchain table
     if (tableId.getType() == RESOURCE_OFFCHAIN_TABLE) {
       // Emit event to notify offchain indexers
-      emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
+      emit StoreCore.Store_SpliceStaticData({
+        tableId: tableId,
+        keyTuple: keyTuple,
+        fieldIndex: fieldIndex,
+        start: start,
+        data: data
+      });
       return;
     }
 
@@ -462,6 +480,7 @@ library StoreCore {
         IStoreHook(hook.getAddress()).onBeforeSpliceStaticData({
           tableId: tableId,
           keyTuple: keyTuple,
+          fieldIndex: fieldIndex,
           start: start,
           data: data
         });
@@ -469,7 +488,13 @@ library StoreCore {
     }
 
     // Emit event to notify offchain indexers
-    emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
+    emit StoreCore.Store_SpliceStaticData({
+      tableId: tableId,
+      keyTuple: keyTuple,
+      fieldIndex: fieldIndex,
+      start: start,
+      data: data
+    });
 
     // Store the provided value in storage
     Storage.store({ storagePointer: location, offset: start, data: data });
@@ -582,6 +607,7 @@ library StoreCore {
     spliceStaticData({
       tableId: tableId,
       keyTuple: keyTuple,
+      fieldIndex: fieldIndex,
       start: uint48(StoreCoreInternal._getStaticDataOffset(fieldLayout, fieldIndex)),
       data: data
     });

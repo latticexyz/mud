@@ -58,6 +58,7 @@ interface IStoreHook is IERC165 {
   function onBeforeSpliceStaticData(
     ResourceId tableId,
     bytes32[] memory keyTuple,
+    uint8 fieldIndex,
     uint48 start,
     bytes memory data
   ) external;

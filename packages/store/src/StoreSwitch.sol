@@ -190,12 +190,18 @@ library StoreSwitch {
    * @param start The position to begin splicing.
    * @param data The data to splice into the record.
    */
-  function spliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 start, bytes memory data) internal {
+  function spliceStaticData(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex,
+    uint48 start,
+    bytes memory data
+  ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.spliceStaticData(tableId, keyTuple, start, data);
+      StoreCore.spliceStaticData(tableId, keyTuple, fieldIndex, start, data);
     } else {
-      IStore(_storeAddress).spliceStaticData(tableId, keyTuple, start, data);
+      IStore(_storeAddress).spliceStaticData(tableId, keyTuple, fieldIndex, start, data);
     }
   }
 

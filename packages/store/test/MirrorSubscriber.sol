@@ -44,11 +44,12 @@ contract MirrorSubscriber is StoreHook {
   function onBeforeSpliceStaticData(
     ResourceId tableId,
     bytes32[] memory keyTuple,
+    uint8 fieldIndex,
     uint48 start,
     bytes memory data
   ) public override {
     if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
-    StoreSwitch.spliceStaticData(indexerTableId, keyTuple, start, data);
+    StoreSwitch.spliceStaticData(indexerTableId, keyTuple, fieldIndex, start, data);
   }
 
   function onBeforeSpliceDynamicData(
