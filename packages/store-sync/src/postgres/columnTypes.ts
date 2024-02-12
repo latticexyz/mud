@@ -106,13 +106,9 @@ export const asHexArray = (name: string) =>
       return "bytea[]";
     },
     toDriver(data: Hex[]): ByteArray[] {
-      console.log(data);
-
       return data.map((datum) => hexToBytes(datum));
     },
     fromDriver(driverData: ByteArray[]): Hex[] {
-      console.log(driverData);
-
       return driverData.map((datum) => bytesToHex(datum));
     },
   })(name);
