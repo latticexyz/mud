@@ -1,0 +1,106 @@
+import { CollapseCode } from "../../components/CollapseCode";
+
+# Resource identifiers
+
+A `ResourceId` is a 32-byte value that uniquely identifies a resource in a `World`.
+It is two bytes of resource type followed by 14 bytes of namespace and then 16 bytes of the name of the actual resource.
+
+Currently, MUD supports these resource types:
+
+- [Table (`tb`)](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeResourceTypes.sol#L11).
+  An onchain table whose information is available both onchain (through calls to `view` functions) and offchain (either through calls to `view` functions, events, or an [indexer](/services/indexer)).
+- [Offchain table (`ot`)](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeResourceTypes.sol#L14).
+  An offchain table whose information is only available offchain (either through events, or through an [indexer](/services/indexer)).
+- [Namespace (`ns`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L15).
+  A namespace is a container for tables, offchain tables, and systems.
+  Namespaces are used for [access control](/world/namespaces-access-control).
+- [System (`sy`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L25).
+  A [system](./systems) contains logic that interact with table data onchain.
+- [Module (`md`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L21).
+  A module is a deployed script that can install tables, systems, etc.
+
+## Creating resource identifiers
+
+To create a resource ID in your Solidity code you can use `WorldResourceIdLib.encode`.
+This function accepts a single parameter, a structure with three string fields:
+
+- `typeId` is the resource type.
+- `namespace` is the namespace in which the resource is located.
+  If this is the root namespace, use the empty string.
+- `name` is the name of the resource, except in the case of namespaces, where it is empty.
+
+For example, in the code below we create a resource for a table in the root namespace whose name is `Tasks`.
+
+<CollapseCode>
+
+```solidity filename="DeployKeyWithValueModule.s.sol" copy showLineNumbers {7-9,20-24}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { KeysWithValueModule } from "@latticexyz/world-modules/src/modules/keyswithvalue/KeysWithValueModule.sol";
+
+contract DeployKeyWithValueModule is Script {
+  function run() external {
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    vm.startBroadcast(deployerPrivateKey);
+    IWorld world = IWorld(worldAddress);
+    StoreSwitch.setStoreAddress(worldAddress);
+    // Deploy the module
+    KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
+    ResourceId sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "Tasks" });
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+## Understanding resource identifiers
+
+Resource identifiers are usually accessible at 32-byte values in hexadecimal.
+For example, in the MUD Dev Tools, when you see a value such as `0x7462...0000`, you can copy it and paste it somewhere else to see the complete value.
+
+### Online calculator
+
+You can use [an online calculator](https://www.duplichecker.com/hex-to-text.php) to convert hex to text.
+The weird `�` characters you see are where the value of a byte is zero.
+
+### JavaScript
+
+You can use this JavaScript code to interpret a resource ID.
+
+```javascript
+num2bytes = (x) => (x < 256n ? [Number(x)] : num2bytes(x / 256n).concat([Number(x % 256n)]));
+num2chars = (x) =>
+  num2bytes(x)
+    .map((x) => String.fromCharCode(x))
+    .map((x) => (x == "\x00" ? "." : x))
+    .join("");
+removeTail = (x) => x.replace(/\.+$/, "");
+resourceIDtoString = (resourceID) => {
+  rawString = num2chars(resourceID);
+  return (
+    rawString.substring(0, 2) +
+    ":" +
+    removeTail(rawString.substring(2, 16)) +
+    ":" +
+    removeTail(rawString.substring(16, 32))
+  );
+};
+```
+
+When you use `resourceIDtoString` remember to add `n` at the end of the resource ID.
+Otherwise it gets interpreted as a normal number and because integers in JavaScript are less than 256 bits it gets turned into a floating point, which is not the desired function.
+
+```javascript
+resourceIDtoString(0x746273746f72650000000000000000005461626c657300000000000000000000n);
+("tb:store:Tables");
+```
