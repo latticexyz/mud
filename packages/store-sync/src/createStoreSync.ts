@@ -48,6 +48,10 @@ type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOpt
   }) => void;
 };
 
+function sleep<T>(timeout: number, returns?: T): Promise<T> {
+  return new Promise<T>((resolve) => setTimeout(() => resolve(returns as T), timeout));
+}
+
 export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>({
   storageAdapter,
   onProgress,
@@ -145,11 +149,12 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         await storageAdapter({ blockNumber, logs: chunk });
         onProgress?.({
           step: SyncStep.SNAPSHOT,
-          percentage: ((i + chunk.length) / chunks.length) * 100,
+          percentage: Math.floor((i / chunks.length) * 100),
           latestBlockNumber: 0n,
           lastBlockNumberProcessed: blockNumber,
           message: "Hydrating from snapshot",
         });
+        await sleep(1);
       }
 
       onProgress?.({
