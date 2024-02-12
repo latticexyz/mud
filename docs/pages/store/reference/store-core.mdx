@@ -239,17 +239,24 @@ _This method emits a `Store_SpliceStaticData` event, updates the data in storage
 For offchain tables, it returns early after emitting the event._
 
 ```solidity
-function spliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 start, bytes memory data) internal;
+function spliceStaticData(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  uint48 start,
+  bytes memory data
+) internal;
 ```
 
 **Parameters**
 
-| Name       | Type         | Description                                                           |
-| ---------- | ------------ | --------------------------------------------------------------------- |
-| `tableId`  | `ResourceId` | The ID of the table to splice the static data for.                    |
-| `keyTuple` | `bytes32[]`  | An array representing the composite key for the record.               |
-| `start`    | `uint48`     | The start position in bytes for the splice operation.                 |
-| `data`     | `bytes`      | The data to write to the static data of the record at the start byte. |
+| Name         | Type         | Description                                                           |
+| ------------ | ------------ | --------------------------------------------------------------------- |
+| `tableId`    | `ResourceId` | The ID of the table to splice the static data for.                    |
+| `keyTuple`   | `bytes32[]`  | An array representing the composite key for the record.               |
+| `fieldIndex` | `uint8`      |                                                                       |
+| `start`      | `uint48`     | The start position in bytes for the splice operation.                 |
+| `data`       | `bytes`      | The data to write to the static data of the record at the start byte. |
 
 ### spliceDynamicData
 
@@ -792,17 +799,20 @@ _In static data, data is always overwritten starting at the start position,
 so the total length of the data remains the same and no data is shifted._
 
 ```solidity
-event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
+event Store_SpliceStaticData(
+    ResourceId indexed tableId, bytes32[] keyTuple, uint8 fieldIndex, uint48 start, bytes data
+);
 ```
 
 **Parameters**
 
-| Name       | Type         | Description                                                           |
-| ---------- | ------------ | --------------------------------------------------------------------- |
-| `tableId`  | `ResourceId` | The ID of the table where the data is spliced.                        |
-| `keyTuple` | `bytes32[]`  | An array representing the key for the record.                         |
-| `start`    | `uint48`     | The start position in bytes for the splice operation.                 |
-| `data`     | `bytes`      | The data to write to the static data of the record at the start byte. |
+| Name         | Type         | Description                                                           |
+| ------------ | ------------ | --------------------------------------------------------------------- |
+| `tableId`    | `ResourceId` | The ID of the table where the data is spliced.                        |
+| `keyTuple`   | `bytes32[]`  | An array representing the key for the record.                         |
+| `fieldIndex` | `uint8`      |                                                                       |
+| `start`      | `uint48`     | The start position in bytes for the splice operation.                 |
+| `data`       | `bytes`      | The data to write to the static data of the record at the start byte. |
 
 ### Store_SpliceDynamicData
 

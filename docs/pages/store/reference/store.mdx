@@ -41,17 +41,20 @@ _In static data, data is always overwritten starting at the start position,
 so the total length of the data remains the same and no data is shifted._
 
 ```solidity
-event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
+event Store_SpliceStaticData(
+    ResourceId indexed tableId, bytes32[] keyTuple, uint8 fieldIndex, uint48 start, bytes data
+);
 ```
 
 **Parameters**
 
-| Name       | Type         | Description                                                           |
-| ---------- | ------------ | --------------------------------------------------------------------- |
-| `tableId`  | `ResourceId` | The ID of the table where the data is spliced.                        |
-| `keyTuple` | `bytes32[]`  | An array representing the key for the record.                         |
-| `start`    | `uint48`     | The start position in bytes for the splice operation.                 |
-| `data`     | `bytes`      | The data to write to the static data of the record at the start byte. |
+| Name         | Type         | Description                                                           |
+| ------------ | ------------ | --------------------------------------------------------------------- |
+| `tableId`    | `ResourceId` | The ID of the table where the data is spliced.                        |
+| `keyTuple`   | `bytes32[]`  | An array representing the key for the record.                         |
+| `fieldIndex` | `uint8`      |                                                                       |
+| `start`      | `uint48`     | The start position in bytes for the splice operation.                 |
+| `data`       | `bytes`      | The data to write to the static data of the record at the start byte. |
 
 ### Store_SpliceDynamicData
 
@@ -391,7 +394,13 @@ function setRecord(
 ### spliceStaticData
 
 ```solidity
-function spliceStaticData(ResourceId tableId, bytes32[] calldata keyTuple, uint48 start, bytes calldata data) external;
+function spliceStaticData(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 fieldIndex,
+  uint48 start,
+  bytes calldata data
+) external;
 ```
 
 ### spliceDynamicData
