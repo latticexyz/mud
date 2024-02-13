@@ -18,7 +18,10 @@ import { storeEventsAbi } from "@latticexyz/store";
 import { privateKeyToAccount } from "viem/accounts";
 import IWorldAbi from "../contracts/out/IWorld.sol/IWorld.abi.json";
 
-const logsFilename = path.join(path.dirname(fileURLToPath(import.meta.url)), `../../../test-data/world-logs.json`);
+const logsFilename = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  `../../../test-data/world-logs-query.json`
+);
 
 const anvil = createAnvil({
   blockTime: 1,
