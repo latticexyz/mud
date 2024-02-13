@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "generate-test-data": "tsx generate-test-data.ts",
+    "generate-test-data-query": "tsx generate-test-data-query.ts",
     "generate-test-data-records": "tsx generate-test-data-records.ts"
   },
   "devDependencies": {
