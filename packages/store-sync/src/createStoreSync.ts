@@ -145,7 +145,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         await storageAdapter({ blockNumber, logs: chunk });
         onProgress?.({
           step: SyncStep.SNAPSHOT,
-          percentage: (i / chunks.length) * 100,
+          percentage: ((i  + 1) / chunks.length) * 100,
           latestBlockNumber: 0n,
           lastBlockNumberProcessed: blockNumber,
           message: "Hydrating from snapshot",
