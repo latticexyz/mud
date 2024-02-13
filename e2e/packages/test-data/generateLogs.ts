@@ -60,7 +60,7 @@ export async function generateLogs(numRecords: number, rpc: string) {
     await worldContract.write.setNumber([i, i]);
   }
 
-  const lastTx = await worldContract.write.setNumber([numRecords, numRecords]);
+  const lastTx = await worldContract.write.setNumber([numRecords - 1, numRecords - 1]);
 
   console.log("waiting for tx");
   const receipt = await publicClient.waitForTransactionReceipt({ hash: lastTx });
