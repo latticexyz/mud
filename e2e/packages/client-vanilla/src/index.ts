@@ -29,6 +29,10 @@ latestBlock$.subscribe((block) => {
 // Update initial sync status in the UI
 components.SyncProgress.update$.subscribe(({ value }) => {
   const syncStep = value[0]?.step;
-  const element = document.querySelector("#sync-step");
-  if (element) element.innerHTML = String(syncStep);
+  const elementStep = document.querySelector("#sync-step");
+  if (elementStep) elementStep.innerHTML = String(syncStep);
+
+  const syncPercentage = value[0]?.percentage;
+  const elementPercentage = document.querySelector("#sync-percentage");
+  if (elementPercentage) elementPercentage.innerHTML = String(syncPercentage);
 });
