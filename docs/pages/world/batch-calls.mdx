@@ -6,3 +6,6 @@ If you have the proper [delegations](/world/account-delegation), you can also us
 
 The calls take place sequentially, and after they all finish successfully you get back the return values from all of them.
 If any of the calls revert, so does `batchCall` / `batchCallFrom`, so all the state changes created by the previous calls are discarded.
+
+The advantage of using `batchCall` rather than [the standard multicall](https://github.com/mds1/multicall) is that `batchCall` is a native MUD function that lives in the `World` contract, so it does not change `msg.sender`.
+As a result, when you use `batchCall` MUD can apply [access control](./namespaces-access-control), and `System`s can rely on the value of [`_msgSender()`](./systems#writing-systems).
