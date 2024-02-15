@@ -18,7 +18,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rxjs": "7.5.5",
-    "viem": "1.14.0"
+    "viem": "1.14.0",
+    "wagmi": "1.4.13"
   },
   "devDependencies": {
     "@types/react": "18.2.22",
