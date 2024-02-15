@@ -1,3 +1,4 @@
+import { CollapseCode } from "../../components/CollapseCode";
 import Illustration from "./world-table-illustration.mdx";
 
 # Tables
@@ -18,3 +19,128 @@ When a `System` reads or writes storage via [table libraries](/store/table-libra
   Additional [access can be granted](./namespaces-access-control) by the namespace owner.
 
 <Illustration />
+
+## Code samples
+
+### Reading from a table
+
+Anybody connected to the blockchain can run the `view` functions that read table content.
+
+<CollapseCode>
+
+```solidity filename="ReadTableInformation.s.sol" copy showLineNumbers {6,8-14,23-25,37-43}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+// Read and manipulate the Systems table
+import { Systems, SystemsTableId } from "@latticexyz/world/src/codegen/index.sol";
+
+// The key is a ResourceId
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+
+contract ReadTableInformation is Script {
+  function run() external {
+    // Load the world address and specify it as the Store address
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    // Table metainformation (field names)
+    string[] memory keyNames = Systems.getKeyNames();
+    string[] memory valueNames = Systems.getFieldNames();
+
+    console.log("Key fields:");
+    for (uint i = 0; i < keyNames.length; i++) {
+      console.log("\t", i, keyNames[i]);
+    }
+
+    console.log("Value fields:");
+    for (uint i = 0; i < valueNames.length; i++) {
+      console.log("\t", i, valueNames[i]);
+    }
+
+    // Read information about the :AccessManagement System
+    ResourceId accessManagementSystem = WorldResourceIdLib.encode(
+      RESOURCE_SYSTEM, // System
+      "", // Root namespace
+      "AccessManagement" // Called AccessManagement
+    );
+    (address systemAddress, bool publicAccess) = Systems.get(accessManagementSystem);
+    console.log("The address for the :AccessManagement System:", systemAddress);
+    console.log("Public access:", publicAccess);
+  }
+}
+```
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+```
+
+We need [the `StoreSwitch` library](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol) library to specify the address of the `World` with the data.
+
+```solidity
+// Read and manipulate the Systems table
+import { Systems, SystemsTableId } from "@latticexyz/world/src/codegen/index.sol";
+```
+
+It is easiest if we import the definitions of the table that were generated using [`mud tablegen`](./cli/tablegen).
+
+```solidity
+// The key is a ResourceId
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+```
+
+The key of the `:Tables` table is the resource ID for the various tables.
+To read the information of a specific table later we need to create the appropriate resource ID.
+
+```solidity
+
+contract ReadTableInformation is Script {
+  function run() external {
+
+    // Load the world address and specify it as the Store address
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    StoreSwitch.setStoreAddress(worldAddress);
+```
+
+[`StoreSwitch.setStoreAddress`](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol#L58-L65) is the function we call to specify the `World`'s address.
+
+```solidity
+    // Table metainformation (field names)
+    string[] memory keyNames = Systems.getKeyNames();
+    string[] memory valueNames = Systems.getFieldNames();
+```
+
+These functions give us the names of the key fields and value field.
+
+```solidity
+    // Read information about the :AccessManagement System
+    ResourceId accessManagementSystem = WorldResourceIdLib.encode(
+      RESOURCE_SYSTEM,     // System
+      "",                  // Root namespace
+      "AccessManagement"   // Called AccessManagement
+    );
+```
+
+Here we create the resource ID for the table whose information we want.
+
+```solidity
+    (address systemAddress, bool publicAccess) = Systems.get(accessManagementSystem);
+```
+
+And actually read the information.
+
+</details>
+
+</CollapseCode>
