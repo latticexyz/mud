@@ -27,7 +27,7 @@ type WorldContract = GetContractReturnType<WorldAbi, PublicClient<Transport, Cha
 
 export async function generateLogs(
   rpc: string,
-  hook: (worldContract: WorldContract) => Promise<Hex>
+  transactionHook: (worldContract: WorldContract) => Promise<Hex>
 ): Promise<RpcLog[]> {
   console.log("deploying world");
   const { stdout, stderr } = await execa("pnpm", ["mud", "deploy", "--rpc", rpc, "--saveDeployment", "false"], {
@@ -72,7 +72,7 @@ export async function generateLogs(
   console.log("calling set");
   await worldContract.write.set([[420]]);
   console.log("calling push");
-  const lastTx = await hook(worldContract);
+  const lastTx = await transactionHook(worldContract);
 
   console.log("waiting for tx");
   const receipt = await publicClient.waitForTransactionReceipt({ hash: lastTx });
