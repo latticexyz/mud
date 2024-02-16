@@ -21,6 +21,6 @@ describe("Get records with query", async () => {
   bench("zustand: `getRecords`", async () => {
     const records = useStore.getState().getRecords(tables.Number);
 
-    Object.keys(useStore.getState().getRecords(tables.Vector)).filter((x) => x in records);
+    Object.keys(useStore.getState().getRecords(tables.Vector)).filter((id) => id in records);
   });
 });
