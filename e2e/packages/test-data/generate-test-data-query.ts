@@ -2,7 +2,6 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createAnvil } from "@viem/anvil";
-import { mudFoundry } from "@latticexyz/common/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import { generateLogs } from "./generateLogs";
 
@@ -20,14 +19,14 @@ const logs = await generateLogs(rpc, async (worldContract) => {
   const account = privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
 
   for (let i = 0; i < 100; i++) {
-    await worldContract.write.setNumber([i, i], { account, chain: mudFoundry });
+    await worldContract.write.setNumber([i, i], { account });
   }
 
   for (let i = 0; i < 50; i++) {
-    await worldContract.write.setVector([i, i, i], { account, chain: mudFoundry });
+    await worldContract.write.setVector([i, i, i], { account });
   }
 
-  const lastTx = await worldContract.write.set([[0]], { account, chain: mudFoundry });
+  const lastTx = await worldContract.write.set([[0]], { account });
 
   return lastTx;
 });

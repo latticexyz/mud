@@ -13,6 +13,8 @@ import {
   isHex,
   numberToHex,
   getContract,
+  Transport,
+  Chain,
 } from "viem";
 import { mudFoundry } from "@latticexyz/common/chains";
 import { storeEventsAbi } from "@latticexyz/store";
@@ -21,7 +23,7 @@ import IWorldAbi from "../contracts/out/IWorld.sol/IWorld.abi.json";
 
 type WorldAbi = typeof IWorldAbi;
 
-type WorldContract = GetContractReturnType<WorldAbi, PublicClient, WalletClient>;
+type WorldContract = GetContractReturnType<WorldAbi, PublicClient<Transport, Chain>, WalletClient<Transport, Chain>>;
 
 export async function generateLogs(
   rpc: string,
