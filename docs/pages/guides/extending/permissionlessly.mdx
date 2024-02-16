@@ -1,15 +1,11 @@
 import { CollapseCode } from "../../../components/CollapseCode";
 
-# Permissionlessly Extending a World
+# Permissionlessly Extending a `World`
 
-On this page you learn how to modify a `World` that is already deployed to the blockchain.
-If you want to learn how to modify a `World` before it is deployed, [see the hello world page](./hello-world).
+One of the great features of blockchains is permissionless extensibility, the ability of unrelated developers to extend an application without cooperation or approval from the original developers.
+In this tutorial you extend the `Counter` example to allow users to leave a message while incrementing the counter.
 
-## The sample program
-
-To learn how to extend a `World`, we will extend the `Counter` example to allow users to leave a message while incrementing the counter.
-[Follow these steps to create the example `World` that we'll extend](/templates/typescript/getting-started).
-You can either do it now, or wait until after you've created the extension resources.
+## The required resources for an extension
 
 To extend the `World` with the message functionality requires adding several resources:
 
@@ -25,10 +21,19 @@ To extend the `World` with the message functionality requires adding several res
 
 ## Create the Solidity code
 
-The easiest way to create the Solidity code is to use the MUD template:
+1. To have a `World` with the `Counter` example to modify, go to a command line window and create a blockchain with a `World` using [the TypeScript template](/template/typescript/getting-started) and start the execution.
+   Choose either the `vanilla` user interface or the `react-ecs` one.
 
-1. Create a new MUD application.
+   ```sh copy
+   pnpm create mud@next extendMe
+   cd extendMe
+   pnpm dev
+   ```
+
+1. The easiest way to create the Solidity code is to use the MUD template.
+   Create a new MUD application.
    Use the `vanilla` template.
+   Run these commands from the same directory as the previous `pnpm create` command but in a separate command line window.
 
    ```sh copy
    pnpm create mud@next extension
@@ -37,16 +42,12 @@ The easiest way to create the Solidity code is to use the MUD template:
 
 1. Edit `mud.config.ts` to include the definitions we need.
 
-   ```ts filename="mud.config.ts" copy showLineNumbers {4,10-17,19-24}
+   ```ts filename="mud.config.ts" copy showLineNumbers {4,6-13,16-19}
    import { mudConfig } from "@latticexyz/world/register";
 
    export default mudConfig({
      namespace: "messaging",
      tables: {
-       Counter: {
-         keySchema: {},
-         valueSchema: "uint32",
-       },
        Messages: {
          keySchema: {
            counterValue: "uint32",
@@ -152,15 +153,6 @@ The easiest way to create the Solidity code is to use the MUD template:
 
 ## Deploy to the blockchain
 
-1. To have a `World` with the `Counter` example to modify, go to a separate command line window and create a blockchain with a `World` using [the TypeScript template](/templates/typescript/getting-started) and start the execution.
-   Choose either the `react-ecs` user interface or the `vanilla` one.
-
-   ```sh copy
-   pnpm create mud@next extendMe
-   cd extendMe
-   pnpm dev
-   ```
-
 1. Back in the extension's `packages/contracts` directory, create a `.env` file with:
 
    - `PRIVATE_KEY` - the private key of an account that has ETH on the blockchain.
@@ -174,7 +166,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    PRIVATE_KEY=0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
 
    # Address for the world we are extending
-   WORLD_ADDRESS=0x6e9474e9c83676b9a71133ff96db43e7aa0a4342
+   WORLD_ADDRESS=0xf599e8f01a5ca469cda10711c3f2ffa4eeed755e
    ```
 
 1. Create this script in `script/MessagingExtension.s.sol`.
@@ -352,7 +344,7 @@ The easiest way to create the Solidity code is to use the MUD template:
            world.registerNamespace(namespaceResource);
    ```
 
-   [Register the namespace](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L39-L63).
+   [Register the namespace](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L35-L66).
 
    ```solidity
            StoreSwitch.setStoreAddress(worldAddress);
@@ -394,17 +386,17 @@ The easiest way to create the Solidity code is to use the MUD template:
    Note that you need to provide the URL in the command line, you can't rely on the `ETH_RPC_URL` environment variable.
 
    ```sh copy
-   forge script script/MessagingExtension.s.sol --rpc-url http://localhost:8545 --broadcast
+   forge script script/MessagingExtension.s.sol --rpc-url http://127.0.0.1:8545 --broadcast
    ```
 
 1. Increment and write a message.
 
    ```sh copy
    source .env
-   cast send $WORLD_ADDRESS --rpc-url http://localhost:8545 --private-key $PRIVATE_KEY "messaging__incrementMessage(string)" "hello"
+   cast send $WORLD_ADDRESS --rpc-url http://127.0.0.1:8545 --private-key $PRIVATE_KEY "messaging__incrementMessage(string)" "hello"
    ```
 
-   When a function is _not_ in the root namespace, it is accessible as `<namespace>__<function name>` (as long as it is [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L164-L201)).
+   When a function is _not_ in the root namespace, it is accessible as `<namespace>__<function name>` (as long as it is [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L180-L218)).
 
    Here we call our `incrementMessage(string)` with the parameter `hello`.
 
@@ -538,6 +530,8 @@ Here we modify the template UI to so it will run properly.
    pnpm vite
    ```
 
+1. Start another command line interface in the same directory (`extension/packages/client`).
+
 1. Open the application at [http://localhost:3001](http://localhost:3001).
    The client will throw errors because we didn't update the client code to work with the new contracts yet - we'll fix that in the next steps.
 
@@ -546,12 +540,12 @@ Here we modify the template UI to so it will run properly.
    By default, you can see this value on the application at URL [http://localhost:3000](http://localhost:3000).
    Edit `../contracts/worlds.json` to set the `World` address for the chain ID (`31337`).
 
-   Note: If you followed the directions above to create `extendMe`, the `World` address is `0x6e9474e9c83676b9a71133ff96db43e7aa0a4342`.
+   Note: If you followed the directions above to create `extendMe`, the `World` address is `0xf599e8f01a5ca469cda10711c3f2ffa4eeed755e`.
 
-   ```json copy {3}
+   ```json filename="worlds.json" copy {3}
    {
      "31337": {
-       "address": "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342"
+       "address": "0xf599e8f01a5ca469cda10711c3f2ffa4eeed755e"
      }
    }
    ```
@@ -561,25 +555,25 @@ We will fix these problems now.
 
 ### Increment and send a message
 
-Edit `src/mud/createSystemCalls.ts` to use the new `messaging__incrementMessage` function instead of `increment`.
+1. Edit `src/mud/createSystemCalls.ts` to use the new `messaging__incrementMessage` function instead of `increment`.
 
    <CollapseCode>
 
-    ```ts filename="createSystemCalls.ts" copy showLineNumbers {43-44}
-    /*
+   ```ts filename="createSystemCalls.ts" copy showLineNumbers {43-44}
+   /*
     * Create the system calls that the client can use to ask
     * for changes in the World state (using the System contracts).
     */
 
-    import { getComponentValue } from "@latticexyz/recs";
-    import { ClientComponents } from "./createClientComponents";
-    import { SetupNetworkResult } from "./setupNetwork";
-    import { singletonEntity } from "@latticexyz/store-sync/recs";
+   import { getComponentValue } from "@latticexyz/recs";
+   import { ClientComponents } from "./createClientComponents";
+   import { SetupNetworkResult } from "./setupNetwork";
+   import { singletonEntity } from "@latticexyz/store-sync/recs";
 
-    export type SystemCalls = ReturnType<typeof createSystemCalls>;
+   export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
-    export function createSystemCalls(
-      /*
+   export function createSystemCalls(
+     /*
       * The parameter list informs TypeScript that:
       *
       * - The first parameter is expected to be a
@@ -598,27 +592,71 @@ Edit `src/mud/createSystemCalls.ts` to use the new `messaging__incrementMessage`
       *   syncToRecs
       *   (https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L77-L83).
       */
-      { worldContract, waitForTransaction }: SetupNetworkResult,
-      { Counter }: ClientComponents
-    ) {
-      const increment = async () => {
-        /*
+     { worldContract, waitForTransaction }: SetupNetworkResult,
+     { Counter }: ClientComponents
+   ) {
+     const increment = async () => {
+       /*
         * Because IncrementSystem
         * (https://mud.dev/templates/typescript/contracts#incrementsystemsol)
         * is in the root namespace, `.increment` can be called directly
         * on the World contract.
         */
-          const tx = await worldContract.write.messaging__incrementMessage(
-              [`message at ${Date()}`]);
-          await waitForTransaction(tx);
-          return getComponentValue(Counter, singletonEntity);
-      };
+       const tx = await worldContract.write.messaging__incrementMessage([`message at ${Date()}`]);
+       await waitForTransaction(tx);
+       return getComponentValue(Counter, singletonEntity);
+     };
 
-      return {
-        increment,
-      };
-    }
-    ```
+     return {
+       increment,
+     };
+   }
+   ```
+
+   </CollapseCode>
+
+1. Edit `src/index.ts` to comment out the counter update.
+
+   <CollapseCode>
+
+   ```ts filename="index.ts" copy showLineNumbers {11,17}
+   import { setup } from "./mud/setup";
+   import mudConfig from "contracts/mud.config";
+
+   const {
+     components,
+     systemCalls: { increment },
+     network,
+   } = await setup();
+
+   // Components expose a stream that triggers when the component is updated.
+   /*
+   components.Counter.update$.subscribe((update) => {
+     const [nextValue, prevValue] = update.value;
+     console.log("Counter updated", update, { nextValue, prevValue });
+     document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+   });
+   */
+
+   // Attach the increment function to the html element with ID `incrementButton` (if it exists)
+   document.querySelector("#incrementButton")?.addEventListener("click", increment);
+
+   // https://vitejs.dev/guide/env-and-mode.html
+   if (import.meta.env.DEV) {
+     const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
+     mountDevTools({
+       config: mudConfig,
+       publicClient: network.publicClient,
+       walletClient: network.walletClient,
+       latestBlock$: network.latestBlock$,
+       storedBlockLogs$: network.storedBlockLogs$,
+       worldAddress: network.worldContract.address,
+       worldAbi: network.worldContract.abi,
+       write$: network.write$,
+       recsWorld: network.world,
+     });
+   }
+   ```
 
    </CollapseCode>
 
@@ -629,7 +667,7 @@ The user interface does not display those messages, but you can open the **MUD D
 
 ### Read the counter
 
-We still don't have the `Counter` value available, because the definition in `mud.config.ts` is in the `messaging` namespace, not the root one.
+We still don't have the `Counter` value available.
 We will now fix this.
 
 1. Add the `@latticexyz/store` package.
@@ -799,5 +837,48 @@ We will now fix this.
 
    </CollapseCode>
 
-Now you can click **Increment** and see the update.
-Also, you can look in **Components > :Counter** and see the counter value.
+1. Edit `src/index.ts` to re-enable the counter update.
+
+   <CollapseCode>
+
+   ```ts filename="index.ts" copy showLineNumbers {10-15}
+   import { setup } from "./mud/setup";
+   import mudConfig from "contracts/mud.config";
+
+   const {
+     components,
+     systemCalls: { increment },
+     network,
+   } = await setup();
+
+   // Components expose a stream that triggers when the component is updated.
+   components.Counter.update$.subscribe((update) => {
+     const [nextValue, prevValue] = update.value;
+     console.log("Counter updated", update, { nextValue, prevValue });
+     document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+   });
+
+   // Attach the increment function to the html element with ID `incrementButton` (if it exists)
+   document.querySelector("#incrementButton")?.addEventListener("click", increment);
+
+   // https://vitejs.dev/guide/env-and-mode.html
+   if (import.meta.env.DEV) {
+     const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
+     mountDevTools({
+       config: mudConfig,
+       publicClient: network.publicClient,
+       walletClient: network.walletClient,
+       latestBlock$: network.latestBlock$,
+       storedBlockLogs$: network.storedBlockLogs$,
+       worldAddress: network.worldContract.address,
+       worldAbi: network.worldContract.abi,
+       write$: network.write$,
+       recsWorld: network.world,
+     });
+   }
+   ```
+
+   </CollapseCode>
+
+1. Now you can click **Increment** and see the update.
+   Also, you can look in **Components > :Counter** and see the counter value.
