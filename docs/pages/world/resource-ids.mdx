@@ -104,3 +104,29 @@ Otherwise it gets interpreted as a normal number and because integers in JavaScr
 resourceIDtoString(0x746273746f72650000000000000000005461626c657300000000000000000000n);
 ("tb:store:Tables");
 ```
+
+### TypeScript
+
+```ts
+type resourceType = "tb" | "ot" | "ns" | "sy" | "md"
+type resource = {
+  type: resourceType;
+  namespace: string;
+  name?: string;
+}
+type resourceId = BigInt
+
+function num2bytes(id : resourceId) : Array<Number> {
+  if (id < 0x100n)
+    return [Number(id)]
+  else
+    return num2bytes(id / 256n).concat(Number(id % 0x100n));
+}
+
+function resourceIDtoString(id : resourceId) : resource {
+
+  for(let i=31; i>=0; i--)
+    bytes[31-i] = number(id & (0xFF << (i*8))
+  return {type: "tb", namespace: "hello"}
+}
+```
