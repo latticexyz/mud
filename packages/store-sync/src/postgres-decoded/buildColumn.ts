@@ -11,17 +11,17 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
 
     case "uint8":
     case "uint16":
+    case "uint24":
     case "int8":
     case "int16":
-    case "uint24":
     case "int24":
-    case "int32":
       // integer = 4 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
       return asNumber(name, "integer");
 
     case "uint32":
     case "uint40":
     case "uint48":
+    case "int32":
     case "int40":
     case "int48":
       // bigint = 8 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
@@ -126,17 +126,17 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
 
     case "uint8[]":
     case "uint16[]":
+    case "uint24[]":
     case "int8[]":
     case "int16[]":
-    case "uint24[]":
     case "int24[]":
-    case "int32[]":
       // integer = 4 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
       return asNumberArray(name, "integer[]");
 
     case "uint32[]":
     case "uint40[]":
     case "uint48[]":
+    case "int32[]":
     case "int40[]":
     case "int48[]":
       // bigint = 8 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
