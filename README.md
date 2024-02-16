@@ -1,7 +1,9 @@
 # MUD
 
 <div align="center">
+
 ![MUD logo](./docs/public/mud-cover-photo.png)
+
 <div  style="margin: 0 0 30px 0;"></div>
 <p>Battle-tested onchain framework for developers</p>
 </div>
