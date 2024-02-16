@@ -88,11 +88,11 @@ library StoreCore {
   }
 
   /**
-   * @notice Register core tables in the store.
+   * @notice Register Store protocol's internal tables in the store.
    * @dev Consumers must call this function in their constructor before setting
    * any table data to allow indexers to decode table events.
    */
-  function registerCoreTables() internal {
+  function registerInternalTables() internal {
     // Because `registerTable` writes to both `Tables` and `ResourceIds`, we can't use it
     // directly here without creating a race condition, where we'd write to one or the other
     // before they exist (depending on the order of registration).

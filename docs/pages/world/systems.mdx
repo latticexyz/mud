@@ -120,7 +120,7 @@ If you need to call a `System` from a `System` in the root namespace you can use
 
 ## Registering systems
 
-For a `System` to be callable from a `World` it has to be [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L97-L201).
+For a `System` to be callable from a `World` it has to be [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L115-L178).
 Only the [namespace owner](./namespaces-access-control#ownership) can register a `System` in a namespace.
 
 `System`s can be registered once per `World`, but the same system can be registered in multiple `World`s.

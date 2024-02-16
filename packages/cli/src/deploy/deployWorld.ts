@@ -1,4 +1,4 @@
-import { Account, Chain, Client, Log, Transport } from "viem";
+import { Account, Chain, Client, Hex, Log, Transport } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { ensureWorldFactory, worldFactory } from "./ensureWorldFactory";
 import WorldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
@@ -7,7 +7,10 @@ import { debug } from "./debug";
 import { logsToWorldDeploy } from "./logsToWorldDeploy";
 import { WorldDeploy } from "./common";
 
-export async function deployWorld(client: Client<Transport, Chain | undefined, Account>): Promise<WorldDeploy> {
+export async function deployWorld(
+  client: Client<Transport, Chain | undefined, Account>,
+  salt: Hex
+): Promise<WorldDeploy> {
   await ensureWorldFactory(client);
 
   debug("deploying world");
@@ -16,6 +19,7 @@ export async function deployWorld(client: Client<Transport, Chain | undefined, A
     address: worldFactory,
     abi: WorldFactoryAbi,
     functionName: "deployWorld",
+    args: [salt],
   });
 
   debug("waiting for world deploy");

@@ -24,7 +24,7 @@ uint256 balance = Balances.get(<namespace>);
 <summary>See this in action</summary>
 
 1. Have a MUD application running.
-   The easiest way to do this is to [run the template locally](/template/typescript/getting-started).
+   The easiest way to do this is to [run the template locally](/templates/typescript/getting-started).
 
 1. Here we are not concerned with the client, so change to the `contracts` page.
    Because we are not concerned with the client, all the file names will be relative to `.../packages/contracts`.
@@ -203,7 +203,7 @@ uint256 balance = Balances.get(<namespace>);
 To transfer ETH out of the `World` you need to have the `access` permission level to the namespace itself.
 Note that `System` contracts within the namespace do have that permission.
 
-You use either [`transferBalanceToNamespace`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/BalanceTransferSystem.sol#L23-L52), if you want to transfer between namespaces in the same `World`, or [`transferBalanceToAddress`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/BalanceTransferSystem.sol#L54-L77), to transfer to a different address.
+You use either [`transferBalanceToNamespace`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/BalanceTransferSystem.sol#L25-L57), if you want to transfer between namespaces in the same `World`, or [`transferBalanceToAddress`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/BalanceTransferSystem.sol#L59-L86), to transfer to a different address.
 
 <details>
 
