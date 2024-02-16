@@ -1,4 +1,5 @@
 import Illustration from "./world-table-illustration.mdx";
+import { CollapseCode } from "../../components/CollapseCode";
 
 # Systems
 
@@ -120,11 +121,71 @@ If you need to call a `System` from a `System` in the root namespace you can use
 
 ## Registering systems
 
-For a `System` to be callable from a `World` it has to be [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L97-L201).
+For a `System` to be callable from a `World` it has to be [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L115-L178).
 Only the [namespace owner](./namespaces-access-control#ownership) can register a `System` in a namespace.
 
 `System`s can be registered once per `World`, but the same system can be registered in multiple `World`s.
 If you need multiple instances of a `System` in the same world, you can deploy the `System` multiple times and register the individual deployments individually.
+
+<CollapseCode>
+
+```solidity filename="MessagingExtension.s.sol" showLineNumbers {20-21,30-31,38-39}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { IBaseWorld } from "@latticexyz/world-modules/src/interfaces/IBaseWorld.sol";
+import { WorldRegistrationSystem } from "@latticexyz/world/src/modules/core/implementations/WorldRegistrationSystem.sol";
+
+// Create resource identifiers (for the namespace and system)
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+// For registering the table
+import { Messages, MessagesTableId } from "../src/codegen/index.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+// For deploying MessageSystem
+import { MessageSystem } from "../src/systems/MessageSystem.sol";
+
+contract MessagingExtension is Script {
+  function run() external {
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    WorldRegistrationSystem world = WorldRegistrationSystem(worldAddress);
+    ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("messaging"));
+    ResourceId systemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "MessageSystem");
+
+    vm.startBroadcast(deployerPrivateKey);
+
+    world.registerNamespace(namespaceResource);
+    StoreSwitch.setStoreAddress(worldAddress);
+    Messages.register();
+    MessageSystem messageSystem = new MessageSystem();
+    world.registerSystem(systemResource, messageSystem, true);
+    world.registerFunctionSelector(systemResource, "incrementMessage(string)");
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+`System` registration requires several steps:
+
+1. Create the resource ID for the `System`.
+1. Deploy the `System` contract.
+1. Use [`WorldRegistrationSystem.registerSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L115-L178) to register the `System`.
+   This function takes three parameters:
+   - The ResourceId for the `System`.
+   - The address of the `System` contract.
+   - Access control - whether access to the `System` is public (`true`) or limited to entities with access either to the namespace or the `System` itself (`false`).
+     <br />
+1. Optionally, register [function selectors](/world/function-selectors) for the `System`.
 
 ### Upgrading systems
 

@@ -1,7 +1,7 @@
 import { boolean, text } from "drizzle-orm/pg-core";
 import { SchemaAbiType } from "@latticexyz/schema-type";
 import { assertExhaustive } from "@latticexyz/common/utils";
-import { asAddress, asBigInt, asHex, asJson, asNumber } from "../postgres/columnTypes";
+import { asAddress, asBigInt, asBigIntArray, asHex, asJson, asNumber, asNumberArray } from "../postgres/columnTypes";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
@@ -13,9 +13,6 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
     case "uint16":
     case "int8":
     case "int16":
-      // smallint = 2 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
-      return asNumber(name, "smallint");
-
     case "uint24":
     case "uint32":
     case "int24":
@@ -129,12 +126,29 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
 
     case "uint8[]":
     case "uint16[]":
+    case "int8[]":
+    case "int16[]":
     case "uint24[]":
     case "uint32[]":
+    case "int24[]":
+    case "int32[]":
+      // integer = 4 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
+      return asNumberArray(name, "integer[]");
+
     case "uint40[]":
     case "uint48[]":
+    case "int40[]":
+    case "int48[]":
+      // bigint = 8 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
+      return asNumberArray(name, "bigint[]");
+
     case "uint56[]":
     case "uint64[]":
+    case "int56[]":
+    case "int64[]":
+      // bigint = 8 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
+      return asBigIntArray(name, "bigint[]");
+
     case "uint72[]":
     case "uint80[]":
     case "uint88[]":
@@ -159,14 +173,6 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
     case "uint240[]":
     case "uint248[]":
     case "uint256[]":
-    case "int8[]":
-    case "int16[]":
-    case "int24[]":
-    case "int32[]":
-    case "int40[]":
-    case "int48[]":
-    case "int56[]":
-    case "int64[]":
     case "int72[]":
     case "int80[]":
     case "int88[]":
@@ -191,6 +197,10 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
     case "int240[]":
     case "int248[]":
     case "int256[]":
+      // variable length (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL)
+      // we could refine this to the specific length for each type, but maybe not worth it
+      return asBigIntArray(name, "numeric[]");
+
     case "bytes1[]":
     case "bytes2[]":
     case "bytes3[]":

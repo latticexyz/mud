@@ -72,3 +72,31 @@ export const asAddress = (name: string) =>
       return getAddress(bytesToHex(driverData));
     },
   })(name);
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const asNumberArray = (name: string, columnType: string) =>
+  customType<{ data: number[]; driverData: string[] }>({
+    dataType() {
+      return columnType;
+    },
+    toDriver(data: number[]): string[] {
+      return data.map((datum) => String(datum));
+    },
+    fromDriver(driverData: string[]): number[] {
+      return driverData.map((datum) => Number(datum));
+    },
+  })(name);
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const asBigIntArray = (name: string, columnType: string) =>
+  customType<{ data: bigint[]; driverData: string[] }>({
+    dataType() {
+      return columnType;
+    },
+    toDriver(data: bigint[]): string[] {
+      return data.map((datum) => String(datum));
+    },
+    fromDriver(driverData: string[]): bigint[] {
+      return driverData.map((datum) => BigInt(datum));
+    },
+  })(name);

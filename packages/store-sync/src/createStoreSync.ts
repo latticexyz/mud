@@ -29,7 +29,7 @@ import {
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
-import { bigIntMax, chunk, isDefined } from "@latticexyz/common/utils";
+import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 
@@ -145,11 +145,16 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         await storageAdapter({ blockNumber, logs: chunk });
         onProgress?.({
           step: SyncStep.SNAPSHOT,
-          percentage: ((i + chunk.length) / chunks.length) * 100,
+          percentage: ((i + 1) / chunks.length) * 100,
           latestBlockNumber: 0n,
           lastBlockNumberProcessed: blockNumber,
           message: "Hydrating from snapshot",
         });
+
+        // RECS is a synchronous API so hydrating in a loop like this blocks downstream render cycles
+        // that would display the percentage climbing up to 100.
+        // We wait for idle callback here to give rendering a chance to complete.
+        await waitForIdle();
       }
 
       onProgress?.({
