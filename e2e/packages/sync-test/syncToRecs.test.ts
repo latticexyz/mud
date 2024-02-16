@@ -11,10 +11,10 @@ import { getNetworkConfig } from "../client-vanilla/src/mud/getNetworkConfig";
 
 const address = "0xad97505a508daf984fe60302109e0115e544b267";
 
-describe("createStoreSync", () => {
+describe("syncToRecs", () => {
   const asyncErrorHandler = createAsyncErrorHandler();
 
-  it("creates the sync", async () => {
+  it("has the correct sync progress percentage", async () => {
     asyncErrorHandler.resetErrors();
 
     await deployContracts(rpcHttpUrl);
@@ -29,6 +29,7 @@ describe("createStoreSync", () => {
     const publicClient = createPublicClient(clientOptions);
 
     const world = createWorld();
+
     const { components } = await syncToRecs({
       world,
       config: mudConfig,
