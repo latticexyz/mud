@@ -26,15 +26,6 @@ RUN wget https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz && \
     tar -C /usr/local/ -xzf go1.20.4.linux-amd64.tar.gz && \
     go version
 
-# foundry
-ENV PATH="${PATH}:/root/.foundry/bin"
-RUN curl -L https://foundry.paradigm.xyz/ | bash && \
-    ${HOME}/.foundry/bin/foundryup && \
-    forge --version && \
-    cast --version && \
-    anvil --version && \
-    chisel --version
-
 # pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="${PATH}:${PNPM_HOME}"
