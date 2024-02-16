@@ -6,10 +6,8 @@ import { createWorld, getComponentValueStrict } from "@latticexyz/recs";
 import { singletonEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import mudConfig from "../contracts/mud.config";
 import { transportObserver } from "@latticexyz/common";
-import { ClientConfig, createPublicClient, http } from "viem";
+import { ClientConfig, createPublicClient, http, isHex } from "viem";
 import { getNetworkConfig } from "../client-vanilla/src/mud/getNetworkConfig";
-
-const address = "0xad97505a508daf984fe60302109e0115e544b267";
 
 describe("syncToRecs", () => {
   const asyncErrorHandler = createAsyncErrorHandler();
@@ -17,7 +15,12 @@ describe("syncToRecs", () => {
   it("has the correct sync progress percentage", async () => {
     asyncErrorHandler.resetErrors();
 
-    await deployContracts(rpcHttpUrl);
+    const { stdout } = await deployContracts(rpcHttpUrl);
+
+    const [, worldAddress] = stdout.match(/worldAddress: '(0x[0-9a-f]+)'/i) ?? [];
+    if (!isHex(worldAddress)) {
+      throw new Error("world address not found in output, did the deploy fail?");
+    }
 
     const networkConfig = await getNetworkConfig();
     const clientOptions = {
@@ -33,7 +36,7 @@ describe("syncToRecs", () => {
     const { components } = await syncToRecs({
       world,
       config: mudConfig,
-      address,
+      address: worldAddress,
       publicClient,
     });
 
