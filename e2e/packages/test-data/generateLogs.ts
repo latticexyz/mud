@@ -1,20 +1,32 @@
 import { execa } from "execa";
 import {
   ClientConfig,
+  GetContractReturnType,
+  Hex,
+  PublicClient,
+  RpcLog,
+  WalletClient,
   createPublicClient,
   createWalletClient,
   encodeEventTopics,
-  getContract,
   http,
   isHex,
   numberToHex,
+  getContract,
 } from "viem";
 import { mudFoundry } from "@latticexyz/common/chains";
 import { storeEventsAbi } from "@latticexyz/store";
 import { privateKeyToAccount } from "viem/accounts";
 import IWorldAbi from "../contracts/out/IWorld.sol/IWorld.abi.json";
 
-export async function generateLogs(numRecords: number, rpc: string) {
+type WorldAbi = typeof IWorldAbi;
+
+type WorldContract = GetContractReturnType<WorldAbi, PublicClient, WalletClient>;
+
+export async function generateLogs(
+  rpc: string,
+  hook: (worldContract: WorldContract) => Promise<Hex>
+): Promise<RpcLog[]> {
   console.log("deploying world");
   const { stdout, stderr } = await execa("pnpm", ["mud", "deploy", "--rpc", rpc, "--saveDeployment", "false"], {
     cwd: "../contracts",
@@ -55,12 +67,10 @@ export async function generateLogs(numRecords: number, rpc: string) {
     walletClient,
   });
 
-  console.log("calling setNumber");
-  for (let i = 0; i < numRecords - 1; i++) {
-    await worldContract.write.setNumber([i, i]);
-  }
-
-  const lastTx = await worldContract.write.setNumber([numRecords - 1, numRecords - 1]);
+  console.log("calling set");
+  await worldContract.write.set([[420]]);
+  console.log("calling push");
+  const lastTx = await hook(worldContract);
 
   console.log("waiting for tx");
   const receipt = await publicClient.waitForTransactionReceipt({ hash: lastTx });
