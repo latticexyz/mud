@@ -18,12 +18,16 @@ import {
 } from "viem";
 import { mudFoundry } from "@latticexyz/common/chains";
 import { storeEventsAbi } from "@latticexyz/store";
-import { privateKeyToAccount } from "viem/accounts";
+import { Account, privateKeyToAccount } from "viem/accounts";
 import IWorldAbi from "../contracts/out/IWorld.sol/IWorld.abi.json";
 
 type WorldAbi = typeof IWorldAbi;
 
-type WorldContract = GetContractReturnType<WorldAbi, PublicClient<Transport, Chain>, WalletClient<Transport, Chain>>;
+type WorldContract = GetContractReturnType<
+  WorldAbi,
+  PublicClient<Transport, Chain>,
+  WalletClient<Transport, Chain, Account>
+>;
 
 export async function generateLogs(
   rpc: string,

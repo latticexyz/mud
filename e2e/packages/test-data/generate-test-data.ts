@@ -2,7 +2,6 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createAnvil } from "@viem/anvil";
-import { privateKeyToAccount } from "viem/accounts";
 import { generateLogs } from "./generateLogs";
 
 const anvil = createAnvil({
@@ -16,12 +15,10 @@ await anvil.start();
 const rpc = `http://${anvil.host}:${anvil.port}`;
 
 const logs = await generateLogs(rpc, async (worldContract) => {
-  const account = privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
-
   console.log("calling set");
-  await worldContract.write.set([[420]], { account });
+  await worldContract.write.set([[420]]);
   console.log("calling push");
-  const lastTx = await worldContract.write.push([69], { account });
+  const lastTx = await worldContract.write.push([69]);
 
   return lastTx;
 });
