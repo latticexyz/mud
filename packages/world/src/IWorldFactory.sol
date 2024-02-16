@@ -14,16 +14,9 @@ interface IWorldFactory {
   event WorldDeployed(address indexed newContract);
 
   /**
-   * @notice Returns the total count of deployed World contracts per account.
-   * @param account The account.
-   * @return The total number of World contracts deployed by this factory per account.
-   */
-  function worldCounts(address account) external view returns (uint256);
-
-  /**
    * @notice Deploys a new World contract.
    * @dev The deployment of the World contract will result in the `WorldDeployed` event being emitted.
    * @return worldAddress The address of the newly deployed World contract.
    */
-  function deployWorld() external returns (address worldAddress);
+  function deployWorld(bytes memory salt) external returns (address worldAddress);
 }

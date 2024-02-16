@@ -18,14 +18,12 @@ import { FieldLayout, FieldLayoutLib } from "../../../src/FieldLayout.sol";
 import { Schema, SchemaLib } from "../../../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../../src/PackedCounter.sol";
 import { ResourceId } from "../../../src/ResourceId.sol";
-import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../../../src/storeResourceTypes.sol";
 
 // Import user types
 import { ExampleEnum } from "./../common.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("store"), bytes16("KeyEncoding")))
-);
+// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "KeyEncoding", typeId: RESOURCE_TABLE });`
+ResourceId constant _tableId = ResourceId.wrap(0x746273746f72650000000000000000004b6579456e636f64696e670000000000);
 ResourceId constant KeyEncodingTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(

@@ -18,11 +18,9 @@ import { FieldLayout, FieldLayoutLib } from "../../../src/FieldLayout.sol";
 import { Schema, SchemaLib } from "../../../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../../src/PackedCounter.sol";
 import { ResourceId } from "../../../src/ResourceId.sol";
-import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../../../src/storeResourceTypes.sol";
 
-ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("store"), bytes16("Callbacks")))
-);
+// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "Callbacks", typeId: RESOURCE_TABLE });`
+ResourceId constant _tableId = ResourceId.wrap(0x746273746f726500000000000000000043616c6c6261636b7300000000000000);
 ResourceId constant CallbacksTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(

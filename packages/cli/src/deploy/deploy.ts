@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Client, Transport, getAddress } from "viem";
+import { Account, Address, Chain, Client, Hex, Transport, getAddress } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
@@ -15,10 +15,12 @@ import { resourceLabel } from "./resourceLabel";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { worldFactoryContracts } from "./ensureWorldFactory";
+import { randomBytes } from "crypto";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
   config: Config<configInput>;
+  salt?: Hex;
   worldAddress?: Address;
 };
 
@@ -31,6 +33,7 @@ type DeployOptions<configInput extends ConfigInput> = {
 export async function deploy<configInput extends ConfigInput>({
   client,
   config,
+  salt,
   worldAddress: existingWorldAddress,
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   const tables = Object.values(config.tables) as Table[];
@@ -58,7 +61,7 @@ export async function deploy<configInput extends ConfigInput>({
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client);
+    : await deployWorld(client, salt ? salt : `0x${randomBytes(32).toString("hex")}`);
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);

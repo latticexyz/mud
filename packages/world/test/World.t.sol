@@ -35,13 +35,13 @@ import { Module, IModule } from "../src/Module.sol";
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
 
-import { AccessManagementSystem } from "../src/modules/core/implementations/AccessManagementSystem.sol";
-import { BalanceTransferSystem } from "../src/modules/core/implementations/BalanceTransferSystem.sol";
-import { BatchCallSystem } from "../src/modules/core/implementations/BatchCallSystem.sol";
+import { AccessManagementSystem } from "../src/modules/init/implementations/AccessManagementSystem.sol";
+import { BalanceTransferSystem } from "../src/modules/init/implementations/BalanceTransferSystem.sol";
+import { BatchCallSystem } from "../src/modules/init/implementations/BatchCallSystem.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { CoreRegistrationSystem } from "../src/modules/core/CoreRegistrationSystem.sol";
-import { CORE_REGISTRATION_SYSTEM_ID } from "../src/modules/core/constants.sol";
+import { InitModule } from "../src/modules/init/InitModule.sol";
+import { RegistrationSystem } from "../src/modules/init/RegistrationSystem.sol";
+import { REGISTRATION_SYSTEM_ID } from "../src/modules/init/constants.sol";
 import { Systems } from "../src/codegen/tables/Systems.sol";
 import { SystemRegistry } from "../src/codegen/tables/SystemRegistry.sol";
 import { FunctionSelectors } from "../src/codegen/tables/FunctionSelectors.sol";
@@ -54,7 +54,8 @@ import { Bool } from "./codegen/tables/Bool.sol";
 import { TwoFields, TwoFieldsData } from "./codegen/tables/TwoFields.sol";
 import { AddressArray } from "./codegen/tables/AddressArray.sol";
 import { DelegationControlMock } from "./DelegationControlMock.sol";
-import { createCoreModule } from "./createCoreModule.sol";
+import { createWorld } from "./createWorld.sol";
+import { createInitModule } from "./createInitModule.sol";
 
 interface IWorldTestSystem {
   function testNamespace__err(string memory input) external pure;
@@ -174,8 +175,7 @@ contract WorldTest is Test, GasReporter {
   bytes32[] singletonKey;
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(createCoreModule());
+    world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
 
     key = "testKey";
@@ -197,7 +197,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testConstructorAndInitialize() public {
-    CoreModule coreModule = createCoreModule();
+    InitModule initModule = createInitModule();
 
     vm.expectEmit(true, true, true, true);
     emit HelloWorld(WORLD_VERSION);
@@ -216,16 +216,14 @@ contract WorldTest is Test, GasReporter {
         address(0x4242)
       )
     );
-    newWorld.initialize(coreModule);
+    newWorld.initialize(initModule);
 
     // Expect the creator to be able to initialize the World
-    newWorld.initialize(coreModule);
+    newWorld.initialize(initModule);
 
     // Should have registered the core system function selectors
-    CoreRegistrationSystem coreRegistrationSystem = CoreRegistrationSystem(
-      Systems.getSystem(CORE_REGISTRATION_SYSTEM_ID)
-    );
-    bytes4[22] memory coreFunctionSignatures = [
+    RegistrationSystem registrationSystem = RegistrationSystem(Systems.getSystem(REGISTRATION_SYSTEM_ID));
+    bytes4[22] memory funcSelectors = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
@@ -238,26 +236,26 @@ contract WorldTest is Test, GasReporter {
       BatchCallSystem.batchCall.selector,
       BatchCallSystem.batchCallFrom.selector,
       // --- ModuleInstallationSystem ---
-      coreRegistrationSystem.installModule.selector,
+      registrationSystem.installModule.selector,
       // --- StoreRegistrationSystem ---
-      coreRegistrationSystem.registerTable.selector,
-      coreRegistrationSystem.registerStoreHook.selector,
-      coreRegistrationSystem.unregisterStoreHook.selector,
+      registrationSystem.registerTable.selector,
+      registrationSystem.registerStoreHook.selector,
+      registrationSystem.unregisterStoreHook.selector,
       // --- WorldRegistrationSystem ---
-      coreRegistrationSystem.registerNamespace.selector,
-      coreRegistrationSystem.registerSystemHook.selector,
-      coreRegistrationSystem.unregisterSystemHook.selector,
-      coreRegistrationSystem.registerSystem.selector,
-      coreRegistrationSystem.registerFunctionSelector.selector,
-      coreRegistrationSystem.registerRootFunctionSelector.selector,
-      coreRegistrationSystem.registerDelegation.selector,
-      coreRegistrationSystem.unregisterDelegation.selector,
-      coreRegistrationSystem.registerNamespaceDelegation.selector,
-      coreRegistrationSystem.unregisterNamespaceDelegation.selector
+      registrationSystem.registerNamespace.selector,
+      registrationSystem.registerSystemHook.selector,
+      registrationSystem.unregisterSystemHook.selector,
+      registrationSystem.registerSystem.selector,
+      registrationSystem.registerFunctionSelector.selector,
+      registrationSystem.registerRootFunctionSelector.selector,
+      registrationSystem.registerDelegation.selector,
+      registrationSystem.unregisterDelegation.selector,
+      registrationSystem.registerNamespaceDelegation.selector,
+      registrationSystem.unregisterNamespaceDelegation.selector
     ];
 
-    for (uint256 i; i < coreFunctionSignatures.length; i++) {
-      assertEq(FunctionSelectors.getSystemFunctionSelector(coreFunctionSignatures[i]), coreFunctionSignatures[i]);
+    for (uint256 i; i < funcSelectors.length; i++) {
+      assertEq(FunctionSelectors.getSystemFunctionSelector(funcSelectors[i]), funcSelectors[i]);
     }
 
     // Should have registered the table data table (fka schema table)
@@ -275,7 +273,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect it to not be possible to initialize the World again
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AlreadyInitialized.selector));
-    newWorld.initialize(coreModule);
+    newWorld.initialize(initModule);
   }
 
   function testRegisterModuleRevertInterfaceNotSupported() public {
@@ -363,6 +361,10 @@ contract WorldTest is Test, GasReporter {
     bytes14 invalidNamespace = "invld__nmsp";
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InvalidNamespace.selector, invalidNamespace));
     world.registerNamespace(WorldResourceIdLib.encodeNamespace(invalidNamespace));
+
+    bytes14 invalidNamespace2 = "invldnmsp_";
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InvalidNamespace.selector, invalidNamespace2));
+    world.registerNamespace(WorldResourceIdLib.encodeNamespace(invalidNamespace2));
   }
 
   function testRegisterCoreNamespacesRevert() public {

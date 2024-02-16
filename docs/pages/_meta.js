@@ -13,11 +13,16 @@ export default {
     title: "Framework",
     type: "separator",
   },
+  config: "Config",
   cli: "CLI",
   "state-query": "State Query",
   services: "Services",
-  templates: "Templates",
+  "---": {
+    title: "", // no title renders as a line
+    type: "separator",
+  },
   guides: "Guides",
+  templates: "Templates",
   contribute: "Contribute",
   changelog: "Changelog",
   retrospectives: "Retrospectives",
