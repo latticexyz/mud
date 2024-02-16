@@ -50,7 +50,7 @@ describe("createStorageAdapter", async () => {
     expect(await db.select().from(storageAdapter.tables.configTable)).toMatchInlineSnapshot(`
       [
         {
-          "blockNumber": 20n,
+          "blockNumber": 19n,
           "chainId": 31337,
           "version": "0.0.4",
         },
@@ -70,15 +70,15 @@ describe("createStorageAdapter", async () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x2964aF56c8aACdE425978a28b018956D21cF50f0",
-          "blockNumber": 20n,
+          "address": "0x6D9332Eaa2e5b5f83378F534b36fD37Bb54db6B4",
+          "blockNumber": 19n,
           "dynamicData": "0x000001a400000045",
           "encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
           "isDeleted": false,
           "key0": null,
           "key1": null,
           "keyBytes": "0x",
-          "logIndex": 1,
+          "logIndex": 2,
           "staticData": null,
           "tableId": "0x746200000000000000000000000000004e756d6265724c697374000000000000",
         },
@@ -89,7 +89,7 @@ describe("createStorageAdapter", async () => {
     expect(tables).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x2964aF56c8aACdE425978a28b018956D21cF50f0",
+          "address": "0x6D9332Eaa2e5b5f83378F534b36fD37Bb54db6B4",
           "keySchema": {},
           "name": "NumberList",
           "namespace": "",
@@ -106,7 +106,7 @@ describe("createStorageAdapter", async () => {
       [
         {
           "__keyBytes": "0x",
-          "__lastUpdatedBlockNumber": 20n,
+          "__lastUpdatedBlockNumber": 19n,
           "value": [
             420,
             69,
