@@ -1,11 +1,7 @@
 import { execa } from "execa";
 import {
   ClientConfig,
-  GetContractReturnType,
-  Hex,
-  PublicClient,
   RpcLog,
-  WalletClient,
   createPublicClient,
   createWalletClient,
   encodeEventTopics,
@@ -13,26 +9,21 @@ import {
   isHex,
   numberToHex,
   getContract,
-  Transport,
-  Chain,
+  ContractFunctionConfig,
 } from "viem";
 import { mudFoundry } from "@latticexyz/common/chains";
 import { storeEventsAbi } from "@latticexyz/store";
-import { Account, privateKeyToAccount } from "viem/accounts";
+import { privateKeyToAccount } from "viem/accounts";
 import IWorldAbi from "../contracts/out/IWorld.sol/IWorld.abi.json";
 
 type WorldAbi = typeof IWorldAbi;
 
-type WorldContract = GetContractReturnType<
-  WorldAbi,
-  PublicClient<Transport, Chain>,
-  WalletClient<Transport, Chain, Account>
+export type SystemCall<functionName extends string = string> = Pick<
+  ContractFunctionConfig<WorldAbi, functionName>,
+  "functionName" | "args"
 >;
 
-export async function generateLogs(
-  rpc: string,
-  transactionHook: (worldContract: WorldContract) => Promise<Hex>
-): Promise<RpcLog[]> {
+export async function generateLogs(rpc: string, systemCalls: SystemCall[]): Promise<RpcLog[]> {
   console.log("deploying world");
   const { stdout, stderr } = await execa("pnpm", ["mud", "deploy", "--rpc", rpc, "--saveDeployment", "false"], {
     cwd: "../contracts",
@@ -73,7 +64,12 @@ export async function generateLogs(
     walletClient,
   });
 
-  const lastTx = await transactionHook(worldContract);
+  for (let i = 0; i < systemCalls.length - 1; i++) {
+    await worldContract.write[systemCalls[i].functionName](systemCalls[i].args);
+  }
+  const lastTx = await worldContract.write[systemCalls[systemCalls.length - 1].functionName](
+    systemCalls[systemCalls.length - 1].args
+  );
 
   console.log("waiting for tx");
   const receipt = await publicClient.waitForTransactionReceipt({ hash: lastTx });

@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { startProxy } from "@viem/anvil";
-import { generateLogs } from "./generateLogs";
+import { SystemCall, generateLogs } from "./generateLogs";
 
 const NUM_RECORDS = [10, 100, 1000];
 
@@ -22,15 +22,13 @@ for (let i = 0; i < NUM_RECORDS.length; i++) {
   const rpc = `http://127.0.0.1:8545/${numRecords}`;
 
   console.log(`generating logs for ${numRecords} records`);
-  const logs = await generateLogs(rpc, async (worldContract) => {
-    console.log("calling setNumber");
-    for (let i = 0; i < numRecords - 1; i++) {
-      await worldContract.write.setNumber([i, i]);
-    }
 
-    const lastTx = await worldContract.write.setNumber([numRecords - 1, numRecords - 1]);
-    return lastTx;
-  });
+  const calls: SystemCall[] = [];
+  for (let i = 0; i < numRecords; i++) {
+    calls.push({ functionName: "setNumber", args: [i, i] });
+  }
+
+  const logs = await generateLogs(rpc, calls);
 
   const logsFilename = path.join(
     path.dirname(fileURLToPath(import.meta.url)),

@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createAnvil } from "@viem/anvil";
-import { generateLogs } from "./generateLogs";
+import { SystemCall, generateLogs } from "./generateLogs";
 
 const anvil = createAnvil({
   blockTime: 1,
@@ -14,19 +14,15 @@ console.log("starting anvil");
 await anvil.start();
 const rpc = `http://${anvil.host}:${anvil.port}`;
 
-const logs = await generateLogs(rpc, async (worldContract) => {
-  for (let i = 0; i < 100; i++) {
-    await worldContract.write.setNumber([i, i]);
-  }
+const calls: SystemCall[] = [];
+for (let i = 0; i < 100; i++) {
+  calls.push({ functionName: "setNumber", args: [i, i] });
+}
+for (let i = 0; i < 50; i++) {
+  calls.push({ functionName: "setVector", args: [i, i, i] });
+}
 
-  for (let i = 0; i < 50; i++) {
-    await worldContract.write.setVector([i, i, i]);
-  }
-
-  const lastTx = await worldContract.write.set([[0]]);
-
-  return lastTx;
-});
+const logs = await generateLogs(rpc, calls);
 
 const logsFilename = path.join(
   path.dirname(fileURLToPath(import.meta.url)),

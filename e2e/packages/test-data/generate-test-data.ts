@@ -14,14 +14,10 @@ console.log("starting anvil");
 await anvil.start();
 const rpc = `http://${anvil.host}:${anvil.port}`;
 
-const logs = await generateLogs(rpc, async (worldContract) => {
-  console.log("calling set");
-  await worldContract.write.set([[420]]);
-  console.log("calling push");
-  const lastTx = await worldContract.write.push([69]);
-
-  return lastTx;
-});
+const logs = await generateLogs(rpc, [
+  { functionName: "set", args: [[69]] },
+  { functionName: "push", args: [[420]] },
+]);
 
 const logsFilename = path.join(path.dirname(fileURLToPath(import.meta.url)), `../../../test-data/world-logs.json`);
 
