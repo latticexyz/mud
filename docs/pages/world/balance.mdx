@@ -230,3 +230,11 @@ These steps assume you already transferred 1 ether to the root namespace.
    ```
 
 </details>
+
+If you need to transfer ETH in a `System` that has access to a namespace (for example, because it is in that namespace), you can use a function similar to this:
+
+```solidity
+function _transfer(address to, uint amount) private {
+  IWorld(_world()).transferBalanceToAddress(WorldResourceIdLib.encodeNamespace("<namespace goes here>"), to, amount);
+}
+```
