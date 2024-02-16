@@ -73,9 +73,6 @@ export async function generateLogs(
     walletClient,
   });
 
-  console.log("calling set");
-  await worldContract.write.set([[420]]);
-  console.log("calling push");
   const lastTx = await transactionHook(worldContract);
 
   console.log("waiting for tx");
