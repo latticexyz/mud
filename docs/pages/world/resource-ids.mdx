@@ -107,26 +107,20 @@ resourceIDtoString(0x746273746f72650000000000000000005461626c6573000000000000000
 
 ### TypeScript
 
+We include a function, [`hexToResource`](https://github.com/latticexyz/mud/blob/main/packages/common/src/hexToResource.ts), that interprets resource IDs for you.
+
 ```ts
-type resourceType = "tb" | "ot" | "ns" | "sy" | "md"
-type resource = {
-  type: resourceType;
-  namespace: string;
-  name?: string;
-}
-type resourceId = BigInt
+import { hexToResource } from "@latticexyz/common";
 
-function num2bytes(id : resourceId) : Array<Number> {
-  if (id < 0x100n)
-    return [Number(id)]
-  else
-    return num2bytes(id / 256n).concat(Number(id % 0x100n));
-}
+let sampleResourceId: Array<String> = [
+  "0x6e7373746f726500000000000000000000000000000000000000000000000000", // namespace
+  "0x746273746f72650000000000000000005461626c657300000000000000000000", // table
+  "0x6f74776f726c6400000000000000000046756e6374696f6e5369676e61747572", // offline table
+  "0x737900000000000000000000000000004163636573734d616e6167656d656e74", // system
+];
 
-function resourceIDtoString(id : resourceId) : resource {
-
-  for(let i=31; i>=0; i--)
-    bytes[31-i] = number(id & (0xFF << (i*8))
-  return {type: "tb", namespace: "hello"}
-}
+sampleResourceId.map((x) => {
+  console.log("----------");
+  console.log(hexToResource(x));
+});
 ```
