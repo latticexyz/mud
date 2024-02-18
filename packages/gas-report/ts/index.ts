@@ -130,7 +130,8 @@ async function runGasReport(options: Options): Promise<GasReport> {
   const lines = logs.split("\n").map(stripAnsi);
   const gasReportPattern = /^\s*GAS REPORT: (\d+) (.*)$/;
   const testFunctionPattern = /^\[(?:PASS|FAIL).*\] (\w+)\(\)/;
-  const testFilePattern = /^Running \d+ tests? for (.*):(.*)$/;
+  // Match both old (before 2024-02-15) and new forge test output format
+  const testFilePattern = /^(?:Running|Ran) \d+ tests? for (.*):(.*)$/;
 
   function nearestLine(pattern: RegExp, startIndex: number = lines.length - 1): number {
     for (let i = startIndex; i >= 0; i--) {
