@@ -8,8 +8,8 @@ export const App = () => {
 
   const counter = mudRead.useStore((state) => state.getValue(mudRead.tables.CounterTable, {}));
 
-  if (import.meta.env.DEV) {
-    useEffect(() => {
+  useEffect(() => {
+    if (import.meta.env.DEV) {
       if (!mudWrite) return;
 
       // TODO: Handle unmount properly by updating the dev-tools implementation.
@@ -40,8 +40,8 @@ export const App = () => {
           unmount();
         }
       };
-    }, [mudWrite?.walletClient.account.address]);
-  }
+    }
+  }, [mudWrite?.walletClient.account.address]);
 
   return (
     <div>
