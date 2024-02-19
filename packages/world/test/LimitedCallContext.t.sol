@@ -29,8 +29,6 @@ contract LimitedCallContextTest is Test {
 
     bool success;
 
-    (success, ) = system.delegatecall(data);
-
     vm.expectRevert(abi.encodeWithSelector(LimitedCallContext.UnauthorizedCallContext.selector));
     (success, ) = system.call(data);
   }
