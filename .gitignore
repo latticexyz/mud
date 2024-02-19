@@ -20,3 +20,4 @@ templates/*/pnpm-lock.yaml
 test-data/world-logs-10.json
 test-data/world-logs-100.json
 test-data/world-logs-1000.json
+test-data/world-logs-skystrife.json

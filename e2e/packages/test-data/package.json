@@ -5,6 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "fetch-bench-data-skystrife": "tsx fetch-bench-data-skystrife.ts",
     "generate-test-data": "tsx generate-test-data.ts",
     "generate-test-data-records": "tsx generate-test-data-records.ts"
   },
