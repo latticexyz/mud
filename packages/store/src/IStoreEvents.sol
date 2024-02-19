@@ -44,6 +44,7 @@ interface IStoreEvents {
   event Store_SpliceDynamicData(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
+    uint8 dynamicFieldIndex,
     uint48 start,
     uint40 deleteCount,
     PackedCounter encodedLengths,

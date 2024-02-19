@@ -100,6 +100,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     emit Store_SpliceDynamicData(
       tableId,
       keyTuple,
+      0,
       uint48(secondDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
       PackedCounterLib.pack(newDataBytes.length, thirdDataBytes.length),
@@ -148,6 +149,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     emit Store_SpliceDynamicData(
       tableId,
       keyTuple,
+      1,
       uint48(secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
       PackedCounterLib.pack(secondDataBytes.length, newDataBytes.length),

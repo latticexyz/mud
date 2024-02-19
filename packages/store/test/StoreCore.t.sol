@@ -539,11 +539,12 @@ contract StoreCoreTest is Test, StoreMock {
       _data.fourthDataBytes = EncodeArray.encode(fourthData);
     }
 
-    // Expect a StoreSpliceRecord event to be emitted
+    // Expect a Store_SpliceDynamicData event to be emitted
     vm.expectEmit(true, true, true, true);
     emit Store_SpliceDynamicData(
       _data.tableId,
       keyTuple,
+      0,
       uint48(0),
       0,
       PackedCounterLib.pack(_data.thirdDataBytes.length, 0),
@@ -579,6 +580,7 @@ contract StoreCoreTest is Test, StoreMock {
     emit Store_SpliceDynamicData(
       _data.tableId,
       keyTuple,
+      1,
       uint48(_data.thirdDataBytes.length),
       0,
       PackedCounterLib.pack(_data.thirdDataBytes.length, _data.fourthDataBytes.length),
@@ -624,6 +626,7 @@ contract StoreCoreTest is Test, StoreMock {
     emit Store_SpliceDynamicData(
       _data.tableId,
       keyTuple,
+      1,
       uint48(_data.thirdDataBytes.length),
       uint40(_data.fourthDataBytes.length),
       PackedCounterLib.pack(_data.thirdDataBytes.length, _data.thirdDataBytes.length),
@@ -805,6 +808,7 @@ contract StoreCoreTest is Test, StoreMock {
     emit Store_SpliceDynamicData(
       data.tableId,
       data.keyTuple,
+      0,
       uint48(data.secondDataBytes.length),
       0,
       PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
@@ -843,11 +847,12 @@ contract StoreCoreTest is Test, StoreMock {
     }
     data.newThirdDataBytes = abi.encodePacked(data.thirdDataBytes, data.thirdDataToPush);
 
-    // Expect a StoreSpliceRecord event to be emitted
+    // Expect a Store_SpliceDynamicData event to be emitted
     vm.expectEmit(true, true, true, true);
     emit Store_SpliceDynamicData(
       data.tableId,
       data.keyTuple,
+      1,
       uint48(data.newSecondDataBytes.length + data.thirdDataBytes.length),
       0,
       PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
@@ -953,11 +958,12 @@ contract StoreCoreTest is Test, StoreMock {
       data.newSecondDataBytes = abi.encodePacked(data.secondData[0], _secondDataForUpdate[0]);
     }
 
-    // Expect a StoreSpliceRecord event to be emitted
+    // Expect a Store_SpliceDynamicData event to be emitted
     vm.expectEmit(true, true, true, true);
     emit Store_SpliceDynamicData(
       data.tableId,
       data.keyTuple,
+      0,
       uint48(4 * 1),
       4 * 1,
       PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
@@ -1005,11 +1011,12 @@ contract StoreCoreTest is Test, StoreMock {
       );
     }
 
-    // Expect a StoreSpliceRecord event to be emitted
+    // Expect a Store_SpliceDynamicData event to be emitted
     vm.expectEmit(true, true, true, true);
     emit Store_SpliceDynamicData(
       data.tableId,
       data.keyTuple,
+      1,
       uint48(data.newSecondDataBytes.length + 8 * 1),
       8 * 4,
       PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
