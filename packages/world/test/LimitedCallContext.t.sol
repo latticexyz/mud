@@ -3,21 +3,20 @@ pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 
-import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { createWorld } from "./createWorld.sol";
 import { SystemCallData, SystemCallFromData } from "../src/modules/init/types.sol";
+import { BalanceTransferSystem } from "../src/modules/init/implementations/BalanceTransferSystem.sol";
 import { BatchCallSystem } from "../src/modules/init/implementations/BatchCallSystem.sol";
-import { WorldResourceIdLib, WorldResourceIdInstance, NAMESPACE_BITS, NAME_BITS, TYPE_BITS } from "../src/WorldResourceId.sol";
+import { WorldResourceIdLib } from "../src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 import { Systems } from "../src/codegen/tables/Systems.sol";
 import { LimitedCallContext } from "../src/modules/init/LimitedCallContext.sol";
 
 contract LimitedCallContextTest is Test {
-  error UnauthorizedCallContext();
-
   IBaseWorld world;
 
   function setUp() public {
@@ -25,41 +24,64 @@ contract LimitedCallContextTest is Test {
     StoreSwitch.setStoreAddress(address(world));
   }
 
-  function testBatchCall() public {
-    ResourceId resourceId = WorldResourceIdLib.encode({
-      typeId: RESOURCE_SYSTEM,
-      namespace: "namespace",
-      name: "name"
-    });
-
+  function callAndDelegatecallSystem(ResourceId resourceId, bytes memory data) internal {
     (address system, ) = Systems.get(resourceId);
 
-    SystemCallData[] memory systemCalls;
     bool success;
 
-    vm.expectRevert(abi.encodeWithSelector(LimitedCallContext.UnauthorizedCallContext.selector));
-    (success, ) = system.call(abi.encodeCall(BatchCallSystem.batchCall, (systemCalls)));
+    (success, ) = system.delegatecall(data);
 
-    (success, ) = system.delegatecall(abi.encodeCall(BatchCallSystem.batchCall, (systemCalls)));
-    assertTrue(success);
+    vm.expectRevert(abi.encodeWithSelector(LimitedCallContext.UnauthorizedCallContext.selector));
+    (success, ) = system.call(data);
+  }
+
+  function testTransferBalanceToNamespace() public {
+    ResourceId resourceId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "",
+      name: "BalanceTransfer"
+    });
+
+    ResourceId fromNamespaceId;
+    ResourceId toNamespaceId;
+    uint256 amount;
+
+    callAndDelegatecallSystem(
+      resourceId,
+      abi.encodeCall(BalanceTransferSystem.transferBalanceToNamespace, (fromNamespaceId, toNamespaceId, amount))
+    );
+  }
+
+  function testTransferBalanceToAddress() public {
+    ResourceId resourceId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "",
+      name: "BalanceTransfer"
+    });
+
+    ResourceId fromNamespaceId;
+    address toAddress;
+    uint256 amount;
+
+    callAndDelegatecallSystem(
+      resourceId,
+      abi.encodeCall(BalanceTransferSystem.transferBalanceToAddress, (fromNamespaceId, toAddress, amount))
+    );
+  }
+
+  function testBatchCall() public {
+    ResourceId resourceId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "BatchCall" });
+
+    SystemCallData[] memory systemCalls;
+
+    callAndDelegatecallSystem(resourceId, abi.encodeCall(BatchCallSystem.batchCall, (systemCalls)));
   }
 
   function testBatchCallFrom() public {
-    ResourceId resourceId = WorldResourceIdLib.encode({
-      typeId: RESOURCE_SYSTEM,
-      namespace: "namespace",
-      name: "name"
-    });
-
-    (address system, ) = Systems.get(resourceId);
+    ResourceId resourceId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "BatchCall" });
 
     SystemCallFromData[] memory systemCalls;
-    bool success;
 
-    vm.expectRevert(abi.encodeWithSelector(LimitedCallContext.UnauthorizedCallContext.selector));
-    (success, ) = system.call(abi.encodeCall(BatchCallSystem.batchCallFrom, (systemCalls)));
-
-    (success, ) = system.delegatecall(abi.encodeCall(BatchCallSystem.batchCallFrom, (systemCalls)));
-    assertTrue(success);
+    callAndDelegatecallSystem(resourceId, abi.encodeCall(BatchCallSystem.batchCallFrom, (systemCalls)));
   }
 }
