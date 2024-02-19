@@ -19,6 +19,9 @@ import { mudConfig } from "@latticexyz/world/register";
 import { resolveTableId } from "@latticexyz/config";
 
 export default mudConfig({
+  enums: {
+    TerrainType: ["None", "TallGrass", "Boulder"],
+  },
   excludeSystems: ["System3", "System2"],
   worldContractName: "CustomWorld",
   namespace: "mud",
@@ -75,6 +78,10 @@ The global configuration keys are all optional.
   - `openAccess` (optional, default `true`): a `bool`: if set to `false`, only the systems in the same namespace and the addresses or systems listed in the the `accessList` array have access.
 
   - `accessList` (required if openAccess is `false`): an array of `string`. Each address in the array will be granted access to this system, allowing them to call it.
+
+- **`enums`**: a record of [enumerations](https://solidity-by-example.org/enum/).
+  The keys are the names of the enumerations.
+  The values are arrays of the strings for the values the enumeration can take.
 
 - **`tables`**: a record of tables. The keys in the record are table names.
   The value is a record of [table properties](https://github.com/latticexyz/mud/blob/main/packages/store/ts/config/storeConfig.ts#L110-L135).
