@@ -24,7 +24,7 @@ contract LimitedCallContextTest is Test {
     StoreSwitch.setStoreAddress(address(world));
   }
 
-  function callAndDelegatecallSystem(ResourceId resourceId, bytes memory data) internal {
+  function callSystem(ResourceId resourceId, bytes memory data) internal {
     (address system, ) = Systems.get(resourceId);
 
     bool success;
@@ -34,17 +34,13 @@ contract LimitedCallContextTest is Test {
   }
 
   function testTransferBalanceToNamespace() public {
-    ResourceId resourceId = WorldResourceIdLib.encode({
-      typeId: RESOURCE_SYSTEM,
-      namespace: "",
-      name: "BalanceTransfer"
-    });
+    ResourceId resourceId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "afasdasd" });
 
     ResourceId fromNamespaceId;
     ResourceId toNamespaceId;
     uint256 amount;
 
-    callAndDelegatecallSystem(
+    callSystem(
       resourceId,
       abi.encodeCall(BalanceTransferSystem.transferBalanceToNamespace, (fromNamespaceId, toNamespaceId, amount))
     );
@@ -61,7 +57,7 @@ contract LimitedCallContextTest is Test {
     address toAddress;
     uint256 amount;
 
-    callAndDelegatecallSystem(
+    callSystem(
       resourceId,
       abi.encodeCall(BalanceTransferSystem.transferBalanceToAddress, (fromNamespaceId, toAddress, amount))
     );
@@ -72,7 +68,7 @@ contract LimitedCallContextTest is Test {
 
     SystemCallData[] memory systemCalls;
 
-    callAndDelegatecallSystem(resourceId, abi.encodeCall(BatchCallSystem.batchCall, (systemCalls)));
+    callSystem(resourceId, abi.encodeCall(BatchCallSystem.batchCall, (systemCalls)));
   }
 
   function testBatchCallFrom() public {
@@ -80,6 +76,6 @@ contract LimitedCallContextTest is Test {
 
     SystemCallFromData[] memory systemCalls;
 
-    callAndDelegatecallSystem(resourceId, abi.encodeCall(BatchCallSystem.batchCallFrom, (systemCalls)));
+    callSystem(resourceId, abi.encodeCall(BatchCallSystem.batchCallFrom, (systemCalls)));
   }
 }
