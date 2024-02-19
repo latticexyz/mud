@@ -4,6 +4,7 @@ import { ExternalWallet } from "./ExternalWallet";
 import { MUDReadProvider } from "./mud/read";
 import { MUDWriteProvider } from "./mud/write";
 import { App } from "./App";
+import { DevTools } from "./DevTools";
 import { setup } from "./mud/setup";
 
 const rootElement = document.getElementById("react-root");
@@ -18,6 +19,7 @@ setup().then(({ mud, wagmiConfig }) => {
       <MUDReadProvider value={mud}>
         <MUDWriteProvider>
           <App />
+          {import.meta.env.DEV && <DevTools />}
         </MUDWriteProvider>
       </MUDReadProvider>
     </WagmiConfig>
