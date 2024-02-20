@@ -2,4 +2,4 @@
 "@latticexyz/gas-report": patch
 ---
 
-fix: gas report fails to find test filename
+Fixed gas report parsing for foundry versions released after 2024-02-15.
