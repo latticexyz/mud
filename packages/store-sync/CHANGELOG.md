@@ -1,5 +1,37 @@
 # @latticexyz/store-sync
 
+## 2.0.0-next.17
+
+### Minor Changes
+
+- 997286ba: `createStoreSync` now [waits for idle](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback) between each chunk of logs in a block to allow for downstream render cycles to trigger. This means that hydrating logs from an indexer will no longer block until hydration completes, but rather allow for `onProgress` callbacks to trigger.
+
+### Patch Changes
+
+- 6c615b60: Bumped the Postgres column size for `int32`, `uint32`, `int64`, and `uint64` types to avoid overflows
+- 4e445a1a: Moved boolean array types to use array column types (instead of JSON columns) for the Postgres decoded indexer
+- 669fa43e: Moved numerical array types to use array column types (instead of JSON columns) for the Postgres decoded indexer
+- Updated dependencies [a35c05ea]
+- Updated dependencies [05b3e888]
+- Updated dependencies [745485cd]
+- Updated dependencies [aabd3076]
+- Updated dependencies [db7798be]
+- Updated dependencies [618dd0e8]
+- Updated dependencies [c162ad5a]
+- Updated dependencies [55a05fd7]
+- Updated dependencies [6470fe1f]
+- Updated dependencies [e2d089c6]
+- Updated dependencies [17f98720]
+- Updated dependencies [5c52bee0]
+- Updated dependencies [745485cd]
+  - @latticexyz/common@2.0.0-next.17
+  - @latticexyz/store@2.0.0-next.17
+  - @latticexyz/world@2.0.0-next.17
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/block-logs-stream@2.0.0-next.17
+  - @latticexyz/protocol-parser@2.0.0-next.17
+  - @latticexyz/recs@2.0.0-next.17
+
 ## 2.0.0-next.16
 
 ### Patch Changes

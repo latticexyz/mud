@@ -23,7 +23,7 @@ The most common type of delegation is when a delegator address allows a specific
 
 ### Creating a user delegation
 
-First, the delegator has to call [`registerDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L234-L263).
+First, the delegator has to call [`registerDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L251-L284).
 This function takes three parameters:
 
 - `delegatee`, the address given the privileges.
@@ -51,14 +51,14 @@ This means that if you need in a `World` to implement multiple delegation algori
 
 ### Removing a user delegation
 
-You can use [`unregisterDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L283-L291) to remove a delegation.
+You can use [`unregisterDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L286-L294) to remove a delegation.
 
 Because of `unregisterDelegation` delegations cannot be used for a delegator to commit to allow something to be done in the future.
 If you need a _commitment_, create a table with a `System` that lets the address that commits write the commitment and have an action that other addresses can call only if the proper commitment is there - without giving the committed address an option to delete the entry.
 
 ## Namespace delegation
 
-The owner of a namespace can use [`registerNamespaceDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L300-L332) to register a delegation that applies to all callers of systems in this namespace.
+The owner of a namespace can use [`registerNamespaceDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L296-L335) to register a delegation that applies to all callers of systems in this namespace.
 This functionality is useful, for example, to implement a trusted forwarder for the namespace.
 This is not a security concern because the namespace owner already has full control over any table or `System` in the namespace.
 
