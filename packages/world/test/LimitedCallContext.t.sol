@@ -29,6 +29,7 @@ contract LimitedCallContextTest is Test {
 
     bool success;
 
+    // On low level calls, the status boolean corresponds to whether expectRevert succeeded or not.
     vm.expectRevert(abi.encodeWithSelector(LimitedCallContext.UnauthorizedCallContext.selector));
     (success, ) = system.call(data);
 
