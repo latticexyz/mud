@@ -24,14 +24,14 @@ contract LimitedCallContextTest is Test {
     StoreSwitch.setStoreAddress(address(world));
   }
 
-  function callSystem(ResourceId resourceId, bytes memory data) internal {
+  function callSystem(ResourceId resourceId, bytes memory callData) internal {
     address system = Systems.getSystem(resourceId);
 
     bool success;
 
     // On low level calls, the status boolean corresponds to whether expectRevert succeeded or not.
     vm.expectRevert(abi.encodeWithSelector(LimitedCallContext.UnauthorizedCallContext.selector));
-    (success, ) = system.call(data);
+    (success, ) = system.call(callData);
 
     assertTrue(success);
   }
