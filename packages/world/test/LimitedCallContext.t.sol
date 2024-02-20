@@ -31,6 +31,8 @@ contract LimitedCallContextTest is Test {
 
     vm.expectRevert(abi.encodeWithSelector(LimitedCallContext.UnauthorizedCallContext.selector));
     (success, ) = system.call(data);
+
+    assertTrue(success);
   }
 
   function testTransferBalanceToNamespace() public {
