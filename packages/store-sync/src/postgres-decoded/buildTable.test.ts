@@ -53,13 +53,13 @@ describe("buildTable", () => {
           "dataType": "custom",
           "name": "x",
           "notNull": true,
-          "sqlName": "integer",
+          "sqlName": "bigint",
         },
         "y": {
           "dataType": "custom",
           "name": "y",
           "notNull": true,
-          "sqlName": "integer",
+          "sqlName": "bigint",
         },
       }
     `);
