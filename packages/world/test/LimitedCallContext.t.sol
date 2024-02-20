@@ -34,7 +34,11 @@ contract LimitedCallContextTest is Test {
   }
 
   function testTransferBalanceToNamespace() public {
-    ResourceId resourceId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "afasdasd" });
+    ResourceId resourceId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "",
+      name: "BalanceTransfer"
+    });
 
     ResourceId fromNamespaceId;
     ResourceId toNamespaceId;
