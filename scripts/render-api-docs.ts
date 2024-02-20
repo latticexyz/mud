@@ -168,7 +168,6 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/system.mdx": {
     inputFiles: [
       { source: "world/src/System.sol" },
-      { source: "world/src/SystemCall.sol" },
       { source: "world/src/SystemHook.sol" },
       { source: "world/src/systemHookTypes.sol" },
     ],
@@ -177,6 +176,15 @@ const PUBLIC_APIS: PublicApis = {
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
       return content.replace("Constants", "systemHookTypes.sol constants");
+    },
+  },
+  "world/reference/internal/systemcall.mdx": {
+    inputFiles: [{ source: "world/src/SystemCall.sol" }],
+    processContent: (content) => {
+      content = formatHeadings(content);
+      content = fixGithubLinks(content, "world");
+      content = fixInheritence(content);
+      return content;
     },
   },
   "world/reference/system-external.mdx": {
@@ -194,21 +202,30 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
-      return content.replace("StoreData", "[StoreData](/store/reference/store-core#storedata)");
+      return content
+        .replace("StoreData", "[StoreData](/store/reference/store-core#storedata)")
+        .replace(/#### _installRootModule((.|\n)*?)#### setRecord/m, "#### setRecord");
     },
   },
   "world/reference/world-external.mdx": {
     inputFiles: [
+      // After IBaseWorld we have all the things it inherits from.
+      // We delete their headings, and leave the functions, errors, etc.
       { source: "world/src/codegen/interfaces/IBaseWorld.sol" },
+      { source: "store/src/StoreData.sol" },
+      { source: "store/src/IStoreRegistration.sol" },
+      { source: "world/src/modules/init/implementations/AccessManagementSystem.sol" },
+      { source: "world/src/modules/init/implementations/BalanceTransferSystem.sol" },
+      { source: "world/src/modules/init/implementations/BatchCallSystem.sol" },
+      { source: "world/src/modules/init/implementations/ModuleInstallationSystem.sol" },
+      { source: "world/src/modules/init/RegistrationSystem.sol" },
+      { source: "world/src/modules/init/implementations/WorldRegistrationSystem.sol" },
+      { source: "store/src/IStoreErrors.sol" },
+
+      // Back to adding contracts and interfaces to the docs.
+      { source: "world/src/IWorldKernel.sol" },
       { source: "world/src/IWorldErrors.sol" },
       { source: "world/src/IWorldFactory.sol" },
-      { source: "world/src/IWorldKernel.sol" },
-      { source: "world/src/codegen/interfaces/IAccessManagementSystem.sol" },
-      { source: "world/src/codegen/interfaces/IBalanceTransferSystem.sol" },
-      { source: "world/src/codegen/interfaces/IBatchCallSystem.sol" },
-      { source: "world/src/codegen/interfaces/IModuleInstallationSystem.sol" },
-      { source: "world/src/codegen/interfaces/IRegistrationSystem.sol" },
-      { source: "world/src/codegen/interfaces/IWorldRegistrationSystem.sol" },
     ],
     processContent: (content) => {
       content = formatHeadings(content);
@@ -220,7 +237,17 @@ const PUBLIC_APIS: PublicApis = {
         .replaceAll(
           "*This interface is automatically generated from the corresponding system contract. Do not edit manually.*",
           ""
-        );
+        )
+        .replace(/## StoreData((.|\n)*?)### Functions/m, "### Functions")
+        .replace(/#### constructor((.|\n)*?)#### storeVersion/m, "#### storeVersion")
+        .replace(/## IStoreRegistration((.|\n)*?)#### registerTable/m, "#### registerTable")
+        .replace(/## AccessManagementSystem((.|\n)*?)### Functions/m, "")
+        .replace(/## BalanceTransferSystem((.|\n)*?)### Functions/m, "")
+        .replace(/## BatchCallSystem((.|\n)*?)### Functions/m, "")
+        .replace(/## ModuleInstallationSystem((.|\n)*?)### Functions/m, "")
+        .replace(/## RegistrationSystem((.|\n)*?)### Functions/m, "")
+        .replace(/## WorldRegistrationSystem((.|\n)*?)### Functions/m, "")
+        .replace(/## IStoreErrors((.|\n)*?)### Errors/m, "### Errors");
     },
   },
   "world/reference/world-context.mdx": {
