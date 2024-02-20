@@ -61,6 +61,8 @@ Emitted when dynamic data in the store is spliced.
 event Store_SpliceDynamicData(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
     uint48 start,
     uint40 deleteCount,
     PackedCounter encodedLengths,
@@ -70,14 +72,16 @@ event Store_SpliceDynamicData(
 
 **Parameters**
 
-| Name             | Type            | Description                                                               |
-| ---------------- | --------------- | ------------------------------------------------------------------------- |
-| `tableId`        | `ResourceId`    | The ID of the table where the data is spliced.                            |
-| `keyTuple`       | `bytes32[]`     | An array representing the composite key for the record.                   |
-| `start`          | `uint48`        | The start position in bytes for the splice operation.                     |
-| `deleteCount`    | `uint40`        | The number of bytes to delete in the splice operation.                    |
-| `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.                    |
-| `data`           | `bytes`         | The data to insert into the dynamic data of the record at the start byte. |
+| Name                | Type            | Description                                                               |
+| ------------------- | --------------- | ------------------------------------------------------------------------- |
+| `tableId`           | `ResourceId`    | The ID of the table where the data is spliced.                            |
+| `keyTuple`          | `bytes32[]`     | An array representing the composite key for the record.                   |
+| `dynamicFieldIndex` | `uint8`         |                                                                           |
+| `startWithinField`  | `uint40`        |                                                                           |
+| `start`             | `uint48`        | The start position in bytes for the splice operation.                     |
+| `deleteCount`       | `uint40`        | The number of bytes to delete in the splice operation.                    |
+| `encodedLengths`    | `PackedCounter` | The encoded lengths of the dynamic data of the record.                    |
+| `data`              | `bytes`         | The data to insert into the dynamic data of the record at the start byte. |
 
 ### Store_DeleteRecord
 
