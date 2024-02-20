@@ -157,8 +157,8 @@ importers:
         specifier: ^0.0.6
         version: 0.0.6
       abitype:
-        specifier: 0.9.8
-        version: 0.9.8(typescript@5.1.6)(zod@3.22.2)
+        specifier: 1.0.0
+        version: 1.0.0(typescript@5.1.6)(zod@3.22.2)
       chalk:
         specifier: ^5.2.0
         version: 5.2.0
@@ -834,21 +834,6 @@ packages:
       diff-sequences: 29.6.3
       loupe: 2.3.6
       pretty-format: 29.7.0
-    dev: true
-
-  /abitype@0.9.8(typescript@5.1.6)(zod@3.22.2):
-    resolution: {integrity: sha512-puLifILdm+8sjyss4S+fsUN09obiT1g2YW6CtcQF+QDzxR0euzgEB29MZujC6zMk2a6SVmtttq1fc6+YFA7WYQ==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-      zod: ^3 >=3.19.1
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-      zod:
-        optional: true
-    dependencies:
-      typescript: 5.1.6
-      zod: 3.22.2
     dev: true
 
   /abitype@1.0.0(typescript@5.1.6)(zod@3.22.2):

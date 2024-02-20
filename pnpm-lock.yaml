@@ -97,8 +97,8 @@ importers:
         specifier: workspace:*
         version: link:../common
       abitype:
-        specifier: 0.9.8
-        version: 0.9.8(typescript@5.1.6)(zod@3.21.4)
+        specifier: 1.0.0
+        version: 1.0.0(typescript@5.1.6)(zod@3.21.4)
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
@@ -594,8 +594,8 @@ importers:
         specifier: workspace:*
         version: link:../schema-type
       abitype:
-        specifier: 0.9.8
-        version: 0.9.8(typescript@5.1.6)(zod@3.21.4)
+        specifier: 1.0.0
+        version: 1.0.0(typescript@5.1.6)(zod@3.21.4)
       viem:
         specifier: 2.7.11
         version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
@@ -696,8 +696,8 @@ importers:
   packages/schema-type:
     dependencies:
       abitype:
-        specifier: 0.9.8
-        version: 0.9.8(typescript@5.1.6)(zod@3.21.4)
+        specifier: 1.0.0
+        version: 1.0.0(typescript@5.1.6)(zod@3.21.4)
       viem:
         specifier: 2.7.11
         version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
@@ -777,8 +777,8 @@ importers:
         specifier: workspace:*
         version: link:../schema-type
       abitype:
-        specifier: 0.9.8
-        version: 0.9.8(typescript@5.1.6)(zod@3.21.4)
+        specifier: 1.0.0
+        version: 1.0.0(typescript@5.1.6)(zod@3.21.4)
       viem:
         specifier: 2.7.11
         version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
@@ -1053,8 +1053,8 @@ importers:
         specifier: workspace:*
         version: link:../store
       abitype:
-        specifier: 0.9.8
-        version: 0.9.8(typescript@5.1.6)(zod@3.21.4)
+        specifier: 1.0.0
+        version: 1.0.0(typescript@5.1.6)(zod@3.21.4)
       viem:
         specifier: 2.7.11
         version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
@@ -3974,21 +3974,6 @@ packages:
   /abind@1.0.5:
     resolution: {integrity: sha512-dbaEZphdPje0ihqSdWg36Sb8S20TuqQomiz2593oIx+enQ9Q4vDZRjIzhnkWltGRKVKqC28kTribkgRLBexWVQ==}
     engines: {node: '>=6', npm: '>=3'}
-    dev: false
-
-  /abitype@0.9.8(typescript@5.1.6)(zod@3.21.4):
-    resolution: {integrity: sha512-puLifILdm+8sjyss4S+fsUN09obiT1g2YW6CtcQF+QDzxR0euzgEB29MZujC6zMk2a6SVmtttq1fc6+YFA7WYQ==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-      zod: ^3 >=3.19.1
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-      zod:
-        optional: true
-    dependencies:
-      typescript: 5.1.6
-      zod: 3.21.4
     dev: false
 
   /abitype@1.0.0(typescript@5.1.6)(zod@3.21.4):

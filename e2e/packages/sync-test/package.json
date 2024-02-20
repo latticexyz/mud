@@ -20,7 +20,7 @@
     "@latticexyz/store-sync": "link:../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../packages/utils",
     "@viem/anvil": "^0.0.6",
-    "abitype": "0.9.8",
+    "abitype": "1.0.0",
     "chalk": "^5.2.0",
     "dotenv": "^16.0.3",
     "drizzle-orm": "^0.28.5",
