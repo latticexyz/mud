@@ -5,7 +5,7 @@ import {
   Client,
   SendTransactionParameters,
   Transport,
-  WriteContractReturnType,
+  SendTransactionReturnType,
 } from "viem";
 import { call, sendTransaction as viem_sendTransaction } from "viem/actions";
 import pRetry from "p-retry";
@@ -20,11 +20,11 @@ const debug = parentDebug.extend("sendTransaction");
 export async function sendTransaction<
   TChain extends Chain | undefined,
   TAccount extends Account | undefined,
-  TChainOverride extends Chain | undefined
+  TChainOverride extends Chain | undefined = undefined
 >(
   client: Client<Transport, TChain, TAccount>,
   request: SendTransactionParameters<TChain, TAccount, TChainOverride>
-): Promise<WriteContractReturnType> {
+): Promise<SendTransactionReturnType> {
   const rawAccount = request.account ?? client.account;
   if (!rawAccount) {
     // TODO: replace with viem AccountNotFoundError once its exported
@@ -68,7 +68,8 @@ export async function sendTransaction<
 
           const nonce = nonceManager.nextNonce();
           debug("sending tx with nonce", nonce, "to", preparedRequest.to);
-          return await viem_sendTransaction(client, { nonce, ...preparedRequest });
+          const parameters: SendTransactionParameters<TChain, TAccount, TChainOverride> = { nonce, ...preparedRequest };
+          return await viem_sendTransaction(client, parameters);
         },
         {
           retries: 3,
