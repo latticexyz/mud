@@ -806,6 +806,19 @@ contract StoreCoreTest is Test, StoreMock {
     }
     data.newSecondDataBytes = abi.encodePacked(data.secondDataBytes, data.secondDataToPush);
 
+    // Expect a Store_SpliceDynamicData event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit Store_SpliceDynamicData(
+      data.tableId,
+      data.keyTuple,
+      0,
+      uint40(data.secondDataBytes.length),
+      uint48(data.secondDataBytes.length),
+      0,
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
+      data.secondDataToPush
+    );
+
     // Push to second field
     IStore(this).pushToDynamicField(data.tableId, data.keyTuple, 0, data.secondDataToPush);
 
@@ -837,6 +850,19 @@ contract StoreCoreTest is Test, StoreMock {
       data.thirdDataToPush = EncodeArray.encode(thirdData);
     }
     data.newThirdDataBytes = abi.encodePacked(data.thirdDataBytes, data.thirdDataToPush);
+
+    // Expect a StoreSpliceRecord event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit Store_SpliceDynamicData(
+      data.tableId,
+      data.keyTuple,
+      1,
+      uint40(data.thirdDataBytes.length),
+      uint48(data.newSecondDataBytes.length + data.thirdDataBytes.length),
+      0,
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
+      data.thirdDataToPush
+    );
 
     // Push to third field
     IStore(this).pushToDynamicField(data.tableId, data.keyTuple, 1, data.thirdDataToPush);
