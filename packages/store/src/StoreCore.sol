@@ -56,6 +56,7 @@ library StoreCore {
    * @param tableId The ID of the table where the data is spliced.
    * @param keyTuple An array representing the composite key for the record.
    * @param dynamicFieldIndex The index of the dynamic field.
+   * @param startWithinField The start byte position within the field for splicing.
    * @param start The start position in bytes for the splice operation.
    * @param deleteCount The number of bytes to delete in the splice operation.
    * @param encodedLengths The encoded lengths of the dynamic data of the record.

@@ -76,8 +76,8 @@ event Store_SpliceDynamicData(
 | ------------------- | --------------- | ------------------------------------------------------------------------- |
 | `tableId`           | `ResourceId`    | The ID of the table where the data is spliced.                            |
 | `keyTuple`          | `bytes32[]`     | An array representing the composite key for the record.                   |
-| `dynamicFieldIndex` | `uint8`         |                                                                           |
-| `startWithinField`  | `uint40`        |                                                                           |
+| `dynamicFieldIndex` | `uint8`         | The index of the dynamic field.                                           |
+| `startWithinField`  | `uint40`        | The start byte position within the field for splicing.                    |
 | `start`             | `uint48`        | The start position in bytes for the splice operation.                     |
 | `deleteCount`       | `uint40`        | The number of bytes to delete in the splice operation.                    |
 | `encodedLengths`    | `PackedCounter` | The encoded lengths of the dynamic data of the record.                    |
