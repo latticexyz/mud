@@ -1,5 +1,35 @@
 # @latticexyz/dev-tools
 
+## 2.0.0-next.17
+
+### Patch Changes
+
+- Updated dependencies [a35c05ea]
+- Updated dependencies [05b3e888]
+- Updated dependencies [745485cd]
+- Updated dependencies [aabd3076]
+- Updated dependencies [6c615b60]
+- Updated dependencies [db7798be]
+- Updated dependencies [618dd0e8]
+- Updated dependencies [4e445a1a]
+- Updated dependencies [669fa43e]
+- Updated dependencies [997286ba]
+- Updated dependencies [c162ad5a]
+- Updated dependencies [55a05fd7]
+- Updated dependencies [6470fe1f]
+- Updated dependencies [e2d089c6]
+- Updated dependencies [17f98720]
+- Updated dependencies [5c52bee0]
+- Updated dependencies [745485cd]
+  - @latticexyz/common@2.0.0-next.17
+  - @latticexyz/store@2.0.0-next.17
+  - @latticexyz/world@2.0.0-next.17
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/store-sync@2.0.0-next.17
+  - @latticexyz/react@2.0.0-next.17
+  - @latticexyz/recs@2.0.0-next.17
+  - @latticexyz/utils@2.0.0-next.17
+
 ## 2.0.0-next.16
 
 ### Patch Changes
