@@ -2,4 +2,4 @@
 "@latticexyz/store-sync": patch
 ---
 
-Added boolean array column types for the Postgres decoded indexer.
+Moved boolean array types to use array column types (instead of JSON columns) for the Postgres decoded indexer
