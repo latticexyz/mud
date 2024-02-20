@@ -133,6 +133,9 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
     case "address":
       return asAddress(name);
 
+    case "bool[]":
+      return asBoolArray(name);
+
     case "uint8[]":
     case "uint16[]":
     case "uint24[]":
@@ -242,8 +245,7 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
     case "bytes30[]":
     case "bytes31[]":
     case "bytes32[]":
-    case "bool[]":
-      return asBoolArray(name);
+      return asJson(name);
 
     // TODO: normalize like address column type
     case "address[]":
