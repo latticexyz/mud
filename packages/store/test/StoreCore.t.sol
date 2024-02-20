@@ -545,7 +545,8 @@ contract StoreCoreTest is Test, StoreMock {
       _data.tableId,
       keyTuple,
       0,
-      uint48(0),
+      0,
+      0,
       0,
       PackedCounterLib.pack(_data.thirdDataBytes.length, 0),
       _data.thirdDataBytes
@@ -581,6 +582,7 @@ contract StoreCoreTest is Test, StoreMock {
       _data.tableId,
       keyTuple,
       1,
+      0,
       uint48(_data.thirdDataBytes.length),
       0,
       PackedCounterLib.pack(_data.thirdDataBytes.length, _data.fourthDataBytes.length),
@@ -627,6 +629,7 @@ contract StoreCoreTest is Test, StoreMock {
       _data.tableId,
       keyTuple,
       1,
+      0,
       uint48(_data.thirdDataBytes.length),
       uint40(_data.fourthDataBytes.length),
       PackedCounterLib.pack(_data.thirdDataBytes.length, _data.thirdDataBytes.length),
@@ -803,18 +806,6 @@ contract StoreCoreTest is Test, StoreMock {
     }
     data.newSecondDataBytes = abi.encodePacked(data.secondDataBytes, data.secondDataToPush);
 
-    // Expect a Store_SpliceDynamicData event to be emitted
-    vm.expectEmit(true, true, true, true);
-    emit Store_SpliceDynamicData(
-      data.tableId,
-      data.keyTuple,
-      0,
-      uint48(data.secondDataBytes.length),
-      0,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
-      data.secondDataToPush
-    );
-
     // Push to second field
     IStore(this).pushToDynamicField(data.tableId, data.keyTuple, 0, data.secondDataToPush);
 
@@ -846,18 +837,6 @@ contract StoreCoreTest is Test, StoreMock {
       data.thirdDataToPush = EncodeArray.encode(thirdData);
     }
     data.newThirdDataBytes = abi.encodePacked(data.thirdDataBytes, data.thirdDataToPush);
-
-    // Expect a Store_SpliceDynamicData event to be emitted
-    vm.expectEmit(true, true, true, true);
-    emit Store_SpliceDynamicData(
-      data.tableId,
-      data.keyTuple,
-      1,
-      uint48(data.newSecondDataBytes.length + data.thirdDataBytes.length),
-      0,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
-      data.thirdDataToPush
-    );
 
     // Push to third field
     IStore(this).pushToDynamicField(data.tableId, data.keyTuple, 1, data.thirdDataToPush);
@@ -964,7 +943,8 @@ contract StoreCoreTest is Test, StoreMock {
       data.tableId,
       data.keyTuple,
       0,
-      uint48(4 * 1),
+      4 * 1,
+      4 * 1,
       4 * 1,
       PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
       data.secondDataForUpdate
@@ -1017,6 +997,7 @@ contract StoreCoreTest is Test, StoreMock {
       data.tableId,
       data.keyTuple,
       1,
+      8 * 1,
       uint48(data.newSecondDataBytes.length + 8 * 1),
       8 * 4,
       PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),

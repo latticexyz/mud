@@ -45,6 +45,7 @@ interface IStoreEvents {
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     uint8 dynamicFieldIndex,
+    uint40 startWithinField,
     uint48 start,
     uint40 deleteCount,
     PackedCounter encodedLengths,

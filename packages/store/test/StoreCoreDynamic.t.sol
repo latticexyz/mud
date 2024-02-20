@@ -95,18 +95,6 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     assertEq(SliceLib.fromBytes(dataBytes).decodeArray_uint32().length, 2);
     assertEq(SliceLib.fromBytes(newDataBytes).decodeArray_uint32().length, 2 - 1);
 
-    // Expect a StoreSpliceRecord event to be emitted
-    vm.expectEmit(true, true, true, true);
-    emit Store_SpliceDynamicData(
-      tableId,
-      keyTuple,
-      0,
-      uint48(secondDataBytes.length - byteLengthToPop),
-      uint40(byteLengthToPop),
-      PackedCounterLib.pack(newDataBytes.length, thirdDataBytes.length),
-      new bytes(0)
-    );
-
     // Pop from second field
     startGasReport("pop from field (cold, 1 slot, 1 uint32 item)");
     StoreCore.popFromDynamicField(tableId, keyTuple, 0, byteLengthToPop);
@@ -144,12 +132,13 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     assertEq(SliceLib.fromBytes(dataBytes).decodeArray_uint32().length, 10);
     assertEq(SliceLib.fromBytes(newDataBytes).decodeArray_uint32().length, 10 - 10);
 
-    // Expect a StoreSpliceRecord event to be emitted after pop
+    // Expect a Store_SpliceDynamicData event to be emitted after pop
     vm.expectEmit(true, true, true, true);
     emit Store_SpliceDynamicData(
       tableId,
       keyTuple,
       1,
+      0,
       uint48(secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
       PackedCounterLib.pack(secondDataBytes.length, newDataBytes.length),
