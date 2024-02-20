@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "abitype": "0.9.8",
-    "viem": "1.14.0"
+    "viem": "2.7.11"
   },
   "devDependencies": {
     "@latticexyz/gas-report": "workspace:*",
