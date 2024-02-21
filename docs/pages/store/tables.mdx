@@ -31,16 +31,6 @@ This makes them suitable for use cases where data doesn't need to be retrieved o
 
 Onchain you can write to offchain tables with the same methods as onchain tables, except for reading data and modifying partial data in a dynamic field.
 
-### Singleton tables
-
-When you just need to store a single value (for example, the world map or the name of an in-game currency), you use a singleton table, a table whose key schema is empty.
-With an empty key schema there is just one record.
-
-```solidity copy
-SchemaType[] memory _keySchema = new SchemaType[](0);
-Schema keySchema SchemaLib.encode(_keySchema);
-```
-
 ## Advanced
 
 <Callout type="info" emoji="ⓘ">

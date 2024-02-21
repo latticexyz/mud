@@ -34,6 +34,18 @@ const Inventory = {
 };
 ```
 
+### Singleton tables
+
+When you just need to store a single value (for example, the world map or the name of an in-game currency), you use a singleton table, a table whose key schema is empty.
+With an empty key schema there is just one record.
+
+```ts
+const Counter = {
+  keySchema: {},
+  valueSchema: "uint32",
+};
+```
+
 ## Usage
 
 ### Importing the library
