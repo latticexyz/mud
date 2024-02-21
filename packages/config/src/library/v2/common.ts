@@ -12,6 +12,10 @@ export interface MudConfigOutput<configInput extends MudConfigInput = MudConfigI
   resolved: MudResolvedConfigOutput<configInput>;
 }
 
-export type resolveConfig = <configInput extends MudConfigInput>(
+export type resolveConfig<configInput extends MudConfigInput> = configInput & MudConfigOutput<configInput>;
+
+export const resolveConfig = <configInput extends MudConfigInput>(
   configInput: configInput
-) => configInput & MudConfigOutput<configInput>;
+): resolveConfig<configInput> => {
+  return {} as resolveConfig<configInput>;
+};
