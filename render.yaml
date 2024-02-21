@@ -40,7 +40,7 @@ services:
     region: ohio
     runtime: docker
     domains:
-      - base-mainnet-indexer.temp.offchain.dev
+      - base-mainnet.indexer.sbg-temp.offchain.dev
     dockerfilePath: ./Dockerfile.render
     dockerContext: ./
     dockerCommand: pnpm tsx bin/postgres-frontend
@@ -57,7 +57,7 @@ services:
     region: ohio
     runtime: docker
     domains:
-      - base-sepolia-indexer.temp.offchain.dev
+      - base-sepolia.indexer.sbg-temp.offchain.dev
     dockerfilePath: ./Dockerfile.render
     dockerContext: ./
     dockerCommand: pnpm tsx bin/postgres-frontend
