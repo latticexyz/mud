@@ -9,7 +9,6 @@ import {
   Transport,
   WalletClient,
   WriteContractParameters,
-  Client,
   getContract as viem_getContract,
 } from "viem";
 import { UnionOmit } from "./type-utils/common";
@@ -32,21 +31,6 @@ export type ContractWrite = {
   request: WriteContractParameters;
   result: Promise<Hex>;
 };
-
-// Copied from https://github.com/wevm/viem/blob/viem%402.7.11/src/actions/getContract.ts#L71-L83
-type KeyedClient<
-  TTransport extends Transport = Transport,
-  TChain extends Chain | undefined = Chain | undefined,
-  TAccount extends Account | undefined = Account | undefined
-> =
-  | {
-      public?: Client<TTransport, TChain>;
-      wallet: Client<TTransport, TChain, TAccount>;
-    }
-  | {
-      public: Client<TTransport, TChain>;
-      wallet?: Client<TTransport, TChain, TAccount>;
-    };
 
 export type GetContractOptions<
   TTransport extends Transport,
@@ -73,8 +57,7 @@ export function getContract<
   TChain extends Chain,
   TAccount extends Account,
   TPublicClient extends PublicClient<TTransport, TChain>,
-  TWalletClient extends WalletClient<TTransport, TChain, TAccount>,
-  TClient extends KeyedClient<TTransport, TChain, TAccount>
+  TWalletClient extends WalletClient<TTransport, TChain, TAccount>
 >({
   abi,
   address,
@@ -90,21 +73,16 @@ export function getContract<
   TPublicClient,
   TWalletClient
 >): GetContractReturnType<TAbi, { public: TPublicClient; wallet: TWalletClient }, TAddress> {
-  const contract = viem_getContract<
-    TTransport,
-    TAddress,
-    TAbi,
-    { public: TPublicClient; wallet: TWalletClient },
-    TChain,
-    TAccount
-  >({
+  const contract = viem_getContract({
     abi,
     address,
     client: {
       public: publicClient,
       wallet: walletClient,
     },
-  }) as unknown as GetContractReturnType<TAbi, TClient, TAddress> & { write: unknown };
+  }) as unknown as GetContractReturnType<TAbi, { public: TPublicClient; wallet: TWalletClient }, TAddress> & {
+    write: unknown;
+  };
 
   if (contract.write) {
     // Replace write calls with our own. Implemented ~the same as viem, but adds better handling of nonces (via queue + retries).

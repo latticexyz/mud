@@ -20,7 +20,7 @@ const debug = parentDebug.extend("sendTransaction");
 export async function sendTransaction<
   TChain extends Chain | undefined,
   TAccount extends Account | undefined,
-  TChainOverride extends Chain | undefined = undefined
+  TChainOverride extends Chain | undefined
 >(
   client: Client<Transport, TChain, TAccount>,
   request: SendTransactionParameters<TChain, TAccount, TChainOverride>
