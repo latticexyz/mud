@@ -1,21 +1,35 @@
-import { MudConfigInput as BaseMudConfigInput, resolveConfig } from "@latticexyz/config";
-
-export interface MudConfigInput extends BaseMudConfigInput {
-  namespaces: StoreNamespacesConfigInput;
+export interface StoreConfigInput {
+  tables: StoreTablesConfigInput;
 }
 
-export interface StoreNamespacesConfigInput {
-  [key: string]: StoreNamespaceConfigInput;
+export interface StoreTablesConfigInput {
+  [key: string]: StoreTableConfigInput;
 }
 
-export interface StoreNamespaceConfigInput {
+export interface StoreTableConfigInput {
   name: string;
 }
 
-export const storeConfig = <configInput extends MudConfigInput>(
-  configInput: configInput
-): resolveConfig<configInput> => {
-  return {} as resolveConfig<configInput>;
+export interface StoreConfigOutput<configInput extends StoreConfigInput> {
+  resolved: StoreResolvedConfigOutput<configInput>;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export type StoreResolvedConfigOutput<configInput extends StoreConfigInput> = {
+  tables: {
+    [key in keyof configInput["tables"]]: `resolved-${configInput["tables"][key]["name"]}`;
+  };
 };
 
-const a = storeConfig({ namespaces: { hello: { name: "hello" } } });
+export type withStoreConfig<configInput extends StoreConfigInput> = configInput & StoreConfigOutput<configInput>;
+
+export const withStoreConfig = <configInput extends StoreConfigInput>(
+  configInput: configInput
+): withStoreConfig<configInput> => {
+  return {} as withStoreConfig<configInput>;
+};
+
+const a = withStoreConfig({ tables: { input: { name: "test" } } } as const);
+
+a.resolved.input;
+//         ^?

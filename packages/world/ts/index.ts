@@ -8,3 +8,5 @@ export * from "./encodeSystemCallFrom";
 export * from "./encodeSystemCalls";
 export * from "./encodeSystemCallsFrom";
 export * from "./worldEvents";
+
+export * from "./config/v2/worldConfig";
