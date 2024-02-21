@@ -7,8 +7,7 @@ export const storeSpliceStaticDataEvent =
   "event Store_SpliceStaticData(bytes32 indexed tableId, bytes32[] keyTuple, uint48 start, bytes data)";
 
 export const storeSpliceDynamicDataEvent =
-  // eslint-disable-next-line max-len
-  "event Store_SpliceDynamicData(bytes32 indexed tableId, bytes32[] keyTuple, uint8 dynamicFieldIndex, uint40 startWithinField, uint48 start, uint40 deleteCount, bytes32 encodedLengths, bytes data)";
+  "event Store_SpliceDynamicData(bytes32 indexed tableId, bytes32[] keyTuple, uint8 dynamicFieldIndex, uint48 start, uint40 deleteCount, bytes32 encodedLengths, bytes data)";
 
 export const storeDeleteRecordEvent = "event Store_DeleteRecord(bytes32 indexed tableId, bytes32[] keyTuple)";
 

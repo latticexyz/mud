@@ -547,7 +547,6 @@ contract StoreCoreTest is Test, StoreMock {
       0,
       0,
       0,
-      0,
       PackedCounterLib.pack(_data.thirdDataBytes.length, 0),
       _data.thirdDataBytes
     );
@@ -582,7 +581,6 @@ contract StoreCoreTest is Test, StoreMock {
       _data.tableId,
       keyTuple,
       1,
-      0,
       uint48(_data.thirdDataBytes.length),
       0,
       PackedCounterLib.pack(_data.thirdDataBytes.length, _data.fourthDataBytes.length),
@@ -629,7 +627,6 @@ contract StoreCoreTest is Test, StoreMock {
       _data.tableId,
       keyTuple,
       1,
-      0,
       uint48(_data.thirdDataBytes.length),
       uint40(_data.fourthDataBytes.length),
       PackedCounterLib.pack(_data.thirdDataBytes.length, _data.thirdDataBytes.length),
@@ -812,7 +809,6 @@ contract StoreCoreTest is Test, StoreMock {
       data.tableId,
       data.keyTuple,
       0,
-      uint40(data.secondDataBytes.length),
       uint48(data.secondDataBytes.length),
       0,
       PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
@@ -857,7 +853,6 @@ contract StoreCoreTest is Test, StoreMock {
       data.tableId,
       data.keyTuple,
       1,
-      uint40(data.thirdDataBytes.length),
       uint48(data.newSecondDataBytes.length + data.thirdDataBytes.length),
       0,
       PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
@@ -971,7 +966,6 @@ contract StoreCoreTest is Test, StoreMock {
       0,
       4 * 1,
       4 * 1,
-      4 * 1,
       PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
       data.secondDataForUpdate
     );
@@ -1023,7 +1017,6 @@ contract StoreCoreTest is Test, StoreMock {
       data.tableId,
       data.keyTuple,
       1,
-      8 * 1,
       uint48(data.newSecondDataBytes.length + 8 * 1),
       8 * 4,
       PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),

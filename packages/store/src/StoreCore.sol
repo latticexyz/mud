@@ -57,7 +57,6 @@ library StoreCore {
    * @param keyTuple An array representing the composite key for the record.
    * @param dynamicFieldIndex The index of the dynamic field to splice data, relative to the start of the dynamic fields.
    * (Dynamic field index = field index - number of static fields)
-   * @param startWithinField The start byte position within the field for splicing.
    * @param start The start position in bytes for the splice operation.
    * @param deleteCount The number of bytes to delete in the splice operation.
    * @param encodedLengths The encoded lengths of the dynamic data of the record.
@@ -67,7 +66,6 @@ library StoreCore {
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     uint8 dynamicFieldIndex,
-    uint40 startWithinField,
     uint48 start,
     uint40 deleteCount,
     PackedCounter encodedLengths,
@@ -1092,7 +1090,6 @@ library StoreCoreInternal {
         tableId: tableId,
         keyTuple: keyTuple,
         dynamicFieldIndex: dynamicFieldIndex,
-        startWithinField: startWithinField,
         start: uint48(start),
         deleteCount: deleteCount,
         encodedLengths: updatedEncodedLengths,
