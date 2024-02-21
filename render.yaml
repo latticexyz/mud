@@ -6,7 +6,7 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile
     dockerContext: ./packages/store-indexer
-    dockerCommand: pnpm tsx bin/postgres
+    dockerCommand: pnpm tsx bin/postgres-indexer
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -23,7 +23,7 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile
     dockerContext: ./packages/store-indexer
-    dockerCommand: pnpm tsx bin/postgres
+    dockerCommand: pnpm tsx bin/postgres-indexer
     envVars:
       - key: DATABASE_URL
         fromDatabase:
