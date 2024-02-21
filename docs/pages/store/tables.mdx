@@ -80,7 +80,7 @@ Schema keySchema = SchemaLib.encode(keySchemaTypes);
 #### Singleton tables
 
 When you just need to store a single value (for example, the world map or the name of an in-game currency), you use a singleton table, a table whose key schema is empty.
-With an empty key schema there is just one row.
+With an empty key schema there is just one record.
 
 ```solidity copy
 SchemaType[] memory _keySchema = new SchemaType[](0);
