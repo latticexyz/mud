@@ -12,6 +12,8 @@ import { salt } from "./common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { Contract } from "./ensureContract";
 
+// TODO: rework to not depend on imported deployer
+
 export const accessManagementSystemDeployedBytecodeSize = size(
   accessManagementSystemBuild.deployedBytecode.object as Hex
 );

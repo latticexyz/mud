@@ -73,6 +73,7 @@ export function resolveConfig<config extends ConfigInput>({
       allowedSystemIds: system.accessListSystems.map((name) =>
         resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name })
       ),
+      // TODO: rework to not depend on deployer
       address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
       bytecode: contractData.bytecode,
       deployedBytecodeSize: contractData.deployedBytecodeSize,
