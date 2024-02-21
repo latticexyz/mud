@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Minor Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+
+### Patch Changes
+
+- a35c05ea: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+
 ## 2.0.0-next.16
 
 ## 2.0.0-next.15

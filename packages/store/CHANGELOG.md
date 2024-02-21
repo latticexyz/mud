@@ -1,5 +1,25 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Major Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+- 5c52bee0: Renamed `StoreCore`'s `registerCoreTables` method to `registerInternalTables`.
+
+### Patch Changes
+
+- a35c05ea: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+- 05b3e888: Fixed a race condition when registering core tables, where we would set a record in the `ResourceIds` table before the table was registered.
+- 55a05fd7: Refactored `StoreCore.registerStoreHook` to use `StoreHooks._push` for gas efficiency.
+- 745485cd: Updated `StoreCore` to check that tables exist before registering store hooks.
+- Updated dependencies [a35c05ea]
+- Updated dependencies [aabd3076]
+- Updated dependencies [c162ad5a]
+  - @latticexyz/common@2.0.0-next.17
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/config@2.0.0-next.17
+
 ## 2.0.0-next.16
 
 ### Minor Changes

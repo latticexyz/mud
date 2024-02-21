@@ -55,6 +55,8 @@ library StoreCore {
    * @notice Emitted when dynamic data in the store is spliced.
    * @param tableId The ID of the table where the data is spliced.
    * @param keyTuple An array representing the composite key for the record.
+   * @param dynamicFieldIndex The index of the dynamic field to splice data, relative to the start of the dynamic fields.
+   * (Dynamic field index = field index - number of static fields)
    * @param start The start position in bytes for the splice operation.
    * @param deleteCount The number of bytes to delete in the splice operation.
    * @param encodedLengths The encoded lengths of the dynamic data of the record.
@@ -63,6 +65,7 @@ library StoreCore {
   event Store_SpliceDynamicData(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
+    uint8 dynamicFieldIndex,
     uint48 start,
     uint40 deleteCount,
     PackedCounter encodedLengths,
@@ -1086,6 +1089,7 @@ library StoreCoreInternal {
       emit StoreCore.Store_SpliceDynamicData({
         tableId: tableId,
         keyTuple: keyTuple,
+        dynamicFieldIndex: dynamicFieldIndex,
         start: uint48(start),
         deleteCount: deleteCount,
         encodedLengths: updatedEncodedLengths,
