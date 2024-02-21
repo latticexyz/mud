@@ -50,9 +50,9 @@ describe("createStorageAdapter", async () => {
     expect(await db.select().from(storageAdapter.tables.configTable)).toMatchInlineSnapshot(`
       [
         {
-          "blockNumber": 20n,
+          "blockNumber": 19n,
           "chainId": 31337,
-          "version": "0.0.6",
+          "version": "0.0.7",
         },
       ]
     `);
@@ -70,26 +70,27 @@ describe("createStorageAdapter", async () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x2964aF56c8aACdE425978a28b018956D21cF50f0",
-          "blockNumber": 20n,
+          "address": "0x6751F28E86e2B467F18CA266cAF49f2401115e41",
+          "blockNumber": 19n,
           "dynamicData": "0x000001a400000045",
           "encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
           "isDeleted": false,
           "key0": null,
           "key1": null,
           "keyBytes": "0x",
-          "logIndex": 1,
+          "logIndex": 2,
           "staticData": null,
           "tableId": "0x746200000000000000000000000000004e756d6265724c697374000000000000",
         },
       ]
     `);
 
-    const tables = (await getTables(db)).filter((table) => table.name === "NumberList");
-    expect(tables).toMatchInlineSnapshot(`
+    {
+      const tables = (await getTables(db)).filter((table) => table.name === "NumberList");
+      expect(tables).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x2964aF56c8aACdE425978a28b018956D21cF50f0",
+          "address": "0x6751F28E86e2B467F18CA266cAF49f2401115e41",
           "keySchema": {},
           "name": "NumberList",
           "namespace": "",
@@ -101,12 +102,12 @@ describe("createStorageAdapter", async () => {
       ]
     `);
 
-    const sqlTable = buildTable(tables[0]);
-    expect(await db.select().from(sqlTable)).toMatchInlineSnapshot(`
+      const sqlTable = buildTable(tables[0]);
+      expect(await db.select().from(sqlTable)).toMatchInlineSnapshot(`
       [
         {
           "__keyBytes": "0x",
-          "__lastUpdatedBlockNumber": 20n,
+          "__lastUpdatedBlockNumber": 19n,
           "value": [
             420,
             69,
@@ -114,6 +115,108 @@ describe("createStorageAdapter", async () => {
         },
       ]
     `);
+    }
+
+    {
+      const tables = (await getTables(db)).filter((table) => table.name === "BytesList");
+      expect(tables).toMatchInlineSnapshot(`
+      [
+        {
+          "address": "0x6751F28E86e2B467F18CA266cAF49f2401115e41",
+          "keySchema": {},
+          "name": "BytesList",
+          "namespace": "",
+          "tableId": "0x7462000000000000000000000000000042797465734c69737400000000000000",
+          "valueSchema": {
+            "value": "bytes32[]",
+          },
+        },
+      ]
+    `);
+
+      const sqlTable = buildTable(tables[0]);
+      expect(await db.select().from(sqlTable)).toMatchInlineSnapshot(`
+      [
+        {
+          "__keyBytes": "0x",
+          "__lastUpdatedBlockNumber": 19n,
+          "value": [
+            {
+              "data": [
+                48,
+                120,
+                55,
+                52,
+                54,
+                53,
+                55,
+                51,
+                55,
+                52,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+                48,
+              ],
+              "type": "Buffer",
+            },
+          ],
+        },
+      ]
+    `);
+    }
 
     await storageAdapter.cleanUp();
   }, 15_000);
