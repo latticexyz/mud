@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Client, Transport, getAddress } from "viem";
+import { Account, Address, Chain, Client, Hex, Transport, getAddress } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
@@ -9,16 +9,18 @@ import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
 import { Table } from "./configToTables";
-import { assertNamespaceOwner } from "./assertNamespaceOwner";
+import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
-import { coreModuleBytecode, worldFactoryBytecode, worldFactoryContracts } from "./ensureWorldFactory";
+import { worldFactoryContracts } from "./ensureWorldFactory";
+import { randomBytes } from "crypto";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
   config: Config<configInput>;
+  salt?: Hex;
   worldAddress?: Address;
 };
 
@@ -31,6 +33,7 @@ type DeployOptions<configInput extends ConfigInput> = {
 export async function deploy<configInput extends ConfigInput>({
   client,
   config,
+  salt,
   worldAddress: existingWorldAddress,
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   const tables = Object.values(config.tables) as Table[];
@@ -58,7 +61,7 @@ export async function deploy<configInput extends ConfigInput>({
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client);
+    : await deployWorld(client, salt ? salt : `0x${randomBytes(32).toString("hex")}`);
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);
@@ -67,11 +70,16 @@ export async function deploy<configInput extends ConfigInput>({
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
 
-  await assertNamespaceOwner({
+  const namespaceTxs = await ensureNamespaceOwner({
     client,
     worldDeploy,
     resourceIds: [...tables.map((table) => table.tableId), ...systems.map((system) => system.systemId)],
   });
+
+  debug("waiting for all namespace registration transactions to confirm");
+  for (const tx of namespaceTxs) {
+    await waitForTransactionReceipt(client, { hash: tx });
+  }
 
   const tableTxs = await ensureTables({
     client,

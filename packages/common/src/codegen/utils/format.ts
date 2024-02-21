@@ -1,6 +1,12 @@
 import prettier from "prettier";
 import prettierPluginSolidity from "prettier-plugin-solidity";
 
+/**
+ * Formats solidity code using prettier
+ * @param content solidity code
+ * @param prettierConfigPath optional path to a prettier config
+ * @returns formatted solidity code
+ */
 export async function formatSolidity(content: string, prettierConfigPath?: string): Promise<string> {
   let config;
   if (prettierConfigPath) {
@@ -31,6 +37,11 @@ export async function formatSolidity(content: string, prettierConfigPath?: strin
   }
 }
 
+/**
+ * Formats typescript code using prettier
+ * @param content typescript code
+ * @returns formatted typescript code
+ */
 export async function formatTypescript(content: string): Promise<string> {
   return prettier.format(content, {
     parser: "typescript",

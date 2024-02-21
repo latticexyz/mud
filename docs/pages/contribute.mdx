@@ -1,11 +1,11 @@
-## Contribute
+# Contribute
 
 We'd love your support in improving MUD! [The MUD monorepo](https://github.com/latticexyz/mud) includes all of MUD's source code, and pull requests are always welcome.
 To discuss new features or changes [join our Discord](https://lattice.xyz/discord).
 
 You can find a list of good first issues (that don't require a lot of context on the full system) at [contribute.mud.dev](https://contribute.mud.dev).
 
-### Local development setup
+## Local development setup
 
 The following steps are only necessary if you want to contribute to MUD. To use MUD in your project, [set up a new project with the MUD CLI](/quick-start).
 
@@ -32,7 +32,18 @@ The following steps are only necessary if you want to contribute to MUD. To use 
    pnpm build
    ```
 
-### Pull requests
+### Using your repository in an application
+
+To check the changes in an application, run these commands at the application's root.
+
+```sh copy
+pnpm mud set-version --link <link to MUD repository>
+pnpm install
+```
+
+While the application's `pnpm dev` is running, any time you `pnpm build` the MUD repository the application gets updated automatically.
+
+## Pull requests
 
 MUD follows the [conventional commit specification](https://www.conventionalcommits.org/en/v1.0.0/) for PR titles.
 Please keep the scope of your PR small (rather open multiple small PRs than one huge PR).

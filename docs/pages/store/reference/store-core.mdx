@@ -21,15 +21,15 @@ StoreSwitch uses internal methods to write data instead of external calls._
 function initialize() internal;
 ```
 
-### registerCoreTables
+### registerInternalTables
 
-Register core tables in the store.
+Register Store protocol's internal tables in the store.
 
 _Consumers must call this function in their constructor before setting
 any table data to allow indexers to decode table events._
 
 ```solidity
-function registerCoreTables() internal;
+function registerInternalTables() internal;
 ```
 
 ### getFieldLayout
@@ -812,6 +812,7 @@ Emitted when dynamic data in the store is spliced.
 event Store_SpliceDynamicData(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
+    uint8 dynamicFieldIndex,
     uint48 start,
     uint40 deleteCount,
     PackedCounter encodedLengths,
@@ -821,14 +822,15 @@ event Store_SpliceDynamicData(
 
 **Parameters**
 
-| Name             | Type            | Description                                                               |
-| ---------------- | --------------- | ------------------------------------------------------------------------- |
-| `tableId`        | `ResourceId`    | The ID of the table where the data is spliced.                            |
-| `keyTuple`       | `bytes32[]`     | An array representing the composite key for the record.                   |
-| `start`          | `uint48`        | The start position in bytes for the splice operation.                     |
-| `deleteCount`    | `uint40`        | The number of bytes to delete in the splice operation.                    |
-| `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.                    |
-| `data`           | `bytes`         | The data to insert into the dynamic data of the record at the start byte. |
+| Name                | Type            | Description                                                                                                                                               |
+| ------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tableId`           | `ResourceId`    | The ID of the table where the data is spliced.                                                                                                            |
+| `keyTuple`          | `bytes32[]`     | An array representing the composite key for the record.                                                                                                   |
+| `dynamicFieldIndex` | `uint8`         | The index of the dynamic field to splice data, relative to the start of the dynamic fields. (Dynamic field index = field index - number of static fields) |
+| `start`             | `uint48`        | The start position in bytes for the splice operation.                                                                                                     |
+| `deleteCount`       | `uint40`        | The number of bytes to delete in the splice operation.                                                                                                    |
+| `encodedLengths`    | `PackedCounter` | The encoded lengths of the dynamic data of the record.                                                                                                    |
+| `data`              | `bytes`         | The data to insert into the dynamic data of the record at the start byte.                                                                                 |
 
 ### Store_DeleteRecord
 

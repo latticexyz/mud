@@ -9,6 +9,13 @@ export type UserType = {
   internalType: SchemaAbiType;
 };
 
+/**
+ * Load the user type files and extract type information from them.
+ * @param userTypes record of user type data mapped by type names
+ * @param outputBaseDirectory base path to the output directory
+ * @param remappings solc remappings
+ * @returns record of the user type information mapped by type names
+ */
 export function loadAndExtractUserTypes(
   userTypes: Record<string, UserType>,
   outputBaseDirectory: string,
@@ -35,7 +42,7 @@ export function loadAndExtractUserTypes(
       }
     }
 
-    extractedUserTypes = Object.assign(extractedUserTypes, userTypesInFile);
+    extractedUserTypes = { ...extractedUserTypes, ...userTypesInFile };
   }
   return extractedUserTypes;
 }

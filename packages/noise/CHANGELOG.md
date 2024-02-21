@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Major Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+
+## 2.0.0-next.16
+
 ## 2.0.0-next.15
 
 ### Patch Changes

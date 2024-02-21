@@ -50,9 +50,9 @@ describe("createStorageAdapter", async () => {
     expect(await db.select().from(storageAdapter.tables.configTable)).toMatchInlineSnapshot(`
       [
         {
-          "blockNumber": 12n,
+          "blockNumber": 28n,
           "chainId": 31337,
-          "version": "0.0.4",
+          "version": "0.0.6",
         },
       ]
     `);
@@ -70,8 +70,8 @@ describe("createStorageAdapter", async () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342",
-          "blockNumber": 12n,
+          "address": "0xd843FB6A5fD209344E5A1b3d5c121330c2B4a36f",
+          "blockNumber": 28n,
           "dynamicData": "0x000001a400000045",
           "encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
           "isDeleted": false,
@@ -89,7 +89,7 @@ describe("createStorageAdapter", async () => {
     expect(tables).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342",
+          "address": "0xd843FB6A5fD209344E5A1b3d5c121330c2B4a36f",
           "keySchema": {},
           "name": "NumberList",
           "namespace": "",
@@ -106,7 +106,7 @@ describe("createStorageAdapter", async () => {
       [
         {
           "__keyBytes": "0x",
-          "__lastUpdatedBlockNumber": 12n,
+          "__lastUpdatedBlockNumber": 28n,
           "value": [
             420,
             69,
@@ -116,5 +116,5 @@ describe("createStorageAdapter", async () => {
     `);
 
     await storageAdapter.cleanUp();
-  });
+  }, 15_000);
 });

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -100,6 +100,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     emit Store_SpliceDynamicData(
       tableId,
       keyTuple,
+      0,
       uint48(secondDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
       PackedCounterLib.pack(newDataBytes.length, thirdDataBytes.length),
@@ -143,11 +144,12 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     assertEq(SliceLib.fromBytes(dataBytes).decodeArray_uint32().length, 10);
     assertEq(SliceLib.fromBytes(newDataBytes).decodeArray_uint32().length, 10 - 10);
 
-    // Expect a StoreSpliceRecord event to be emitted after pop
+    // Expect a Store_SpliceDynamicData event to be emitted after pop
     vm.expectEmit(true, true, true, true);
     emit Store_SpliceDynamicData(
       tableId,
       keyTuple,
+      1,
       uint48(secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
       PackedCounterLib.pack(secondDataBytes.length, newDataBytes.length),

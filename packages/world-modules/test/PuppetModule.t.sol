@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -11,9 +11,9 @@ import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
-import { DELEGATION_CONTROL_INTERFACE_ID } from "@latticexyz/world/src/IDelegationControl.sol";
+import { IDelegationControl } from "@latticexyz/world/src/IDelegationControl.sol";
 
-import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
+import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 
 import { PuppetModule } from "../src/modules/puppet/PuppetModule.sol";
@@ -47,11 +47,26 @@ contract PuppetModuleTest is Test, GasReporter {
   PuppetTestSystem private puppet;
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world = createWorld();
+  }
+
+  function _setupPuppet() internal {
     world.installModule(new PuppetModule(), new bytes(0));
 
+    // Register a new namespace and system
+    world.registerNamespace(systemId.getNamespaceId());
+    PuppetTestSystem system = new PuppetTestSystem();
+    world.registerSystem(systemId, system, true);
+
+    // Connect the puppet
+    puppet = PuppetTestSystem(createPuppet(world, systemId));
+  }
+
+  function _setupRootPuppet() internal {
+    world.installRootModule(new PuppetModule(), new bytes(0));
+
     // Register a new system
+    world.registerNamespace(systemId.getNamespaceId());
     PuppetTestSystem system = new PuppetTestSystem();
     world.registerSystem(systemId, system, true);
 
@@ -60,6 +75,8 @@ contract PuppetModuleTest is Test, GasReporter {
   }
 
   function testEmitOnPuppet() public {
+    _setupPuppet();
+
     vm.expectEmit(true, true, true, true);
     emit Hello("hello world");
     string memory result = puppet.echoAndEmit("hello world");
@@ -67,6 +84,23 @@ contract PuppetModuleTest is Test, GasReporter {
   }
 
   function testMsgSender() public {
+    _setupPuppet();
+
+    assertEq(puppet.msgSender(), address(this));
+  }
+
+  function testEmitOnRootPuppet() public {
+    _setupRootPuppet();
+
+    vm.expectEmit(true, true, true, true);
+    emit Hello("hello world");
+    string memory result = puppet.echoAndEmit("hello world");
+    assertEq(result, "hello world");
+  }
+
+  function testMsgSenderRootPuppet() public {
+    _setupRootPuppet();
+
     assertEq(puppet.msgSender(), address(this));
   }
 }

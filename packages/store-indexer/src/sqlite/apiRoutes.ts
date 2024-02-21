@@ -5,7 +5,7 @@ import { input } from "@latticexyz/store-sync/indexer-client";
 import { storeTables, tablesWithRecordsToLogs } from "@latticexyz/store-sync";
 import { debug } from "../debug";
 import { createBenchmark } from "@latticexyz/common";
-import { compress } from "../compress";
+import { compress } from "../koa-middleware/compress";
 import { getTablesWithRecords } from "./getTablesWithRecords";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 

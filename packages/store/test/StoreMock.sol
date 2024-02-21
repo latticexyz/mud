@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { IStore } from "../src/IStore.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
@@ -18,7 +18,7 @@ import { ResourceId } from "../src/ResourceId.sol";
 contract StoreMock is IStore, StoreData {
   constructor() {
     StoreCore.initialize();
-    StoreCore.registerCoreTables();
+    StoreCore.registerInternalTables();
     StoreSwitch.setStoreAddress(address(this));
   }
 

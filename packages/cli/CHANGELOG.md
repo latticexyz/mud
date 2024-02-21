@@ -1,5 +1,116 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Minor Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+- 618dd0e8: `WorldFactory` now expects a user-provided `salt` when calling `deployWorld(...)` (instead of the previous globally incrementing counter). This enables deterministic world addresses across different chains.
+
+  When using `mud deploy`, you can provide a `bytes32` hex-encoded salt using the `--salt` option, otherwise it defaults to a random hex value.
+
+### Patch Changes
+
+- a35c05ea: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+- 78a83716: Fixed registration of world signatures/selectors for namespaced systems. We changed these signatures in [#2160](https://github.com/latticexyz/mud/pull/2160), but missed updating part of the deploy step.
+- db7798be: Updated deployer with world's new `InitModule` naming.
+- Updated dependencies [a35c05ea]
+- Updated dependencies [05b3e888]
+- Updated dependencies [745485cd]
+- Updated dependencies [aabd3076]
+- Updated dependencies [db7798be]
+- Updated dependencies [618dd0e8]
+- Updated dependencies [c4fc8504]
+- Updated dependencies [c162ad5a]
+- Updated dependencies [55a05fd7]
+- Updated dependencies [6470fe1f]
+- Updated dependencies [e2d089c6]
+- Updated dependencies [17f98720]
+- Updated dependencies [5c52bee0]
+- Updated dependencies [745485cd]
+  - @latticexyz/common@2.0.0-next.17
+  - @latticexyz/store@2.0.0-next.17
+  - @latticexyz/world-modules@2.0.0-next.17
+  - @latticexyz/world@2.0.0-next.17
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/gas-report@2.0.0-next.17
+  - @latticexyz/config@2.0.0-next.17
+  - @latticexyz/protocol-parser@2.0.0-next.17
+  - @latticexyz/abi-ts@2.0.0-next.17
+  - @latticexyz/services@2.0.0-next.17
+  - @latticexyz/utils@2.0.0-next.17
+
+## 2.0.0-next.16
+
+### Major Changes
+
+- 57d8965d: Separated core systems deployment from `CoreModule`, and added the systems as arguments to `CoreModule`
+
+### Patch Changes
+
+- 063daf80: Previously `registerSystem` and `registerTable` had a side effect of registering namespaces if the system or table's namespace didn't exist yet.
+  This caused a possible frontrunning issue, where an attacker could detect a `registerSystem`/`registerTable` transaction in the mempool,
+  insert a `registerNamespace` transaction before it, grant themselves access to the namespace, transfer ownership of the namespace to the victim,
+  so that the `registerSystem`/`registerTable` transactions still went through successfully.
+  To mitigate this issue, the side effect of registering a namespace in `registerSystem` and `registerTable` has been removed.
+  Calls to these functions now expect the respective namespace to exist and the caller to own the namespace, otherwise they revert.
+
+  Changes in consuming projects are only necessary if tables or systems are registered manually.
+  If only the MUD deployer is used to register tables and systems, no changes are necessary, as the MUD deployer has been updated accordingly.
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     world.registerSystem(systemId, system, true);
+  ```
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     MyTable.register();
+  ```
+
+- Updated dependencies [c6c13f2e]
+- Updated dependencies [eaa766ef]
+- Updated dependencies [0f27afdd]
+- Updated dependencies [865253db]
+- Updated dependencies [e6c03a87]
+- Updated dependencies [c207d35e]
+- Updated dependencies [d00c4a9a]
+- Updated dependencies [37c228c6]
+- Updated dependencies [1bf2e908]
+- Updated dependencies [f6f40289]
+- Updated dependencies [08b42217]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [063daf80]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [2bfee921]
+- Updated dependencies [7b28d32e]
+- Updated dependencies [9f8b84e7]
+- Updated dependencies [aee8020a]
+- Updated dependencies [ad4ac445]
+- Updated dependencies [57d8965d]
+- Updated dependencies [e4a6189d]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [3ac68ade]
+- Updated dependencies [c642ff3a]
+- Updated dependencies [37c228c6]
+- Updated dependencies [103f635e]
+  - @latticexyz/store@2.0.0-next.16
+  - @latticexyz/world-modules@2.0.0-next.16
+  - @latticexyz/world@2.0.0-next.16
+  - @latticexyz/abi-ts@2.0.0-next.16
+  - @latticexyz/common@2.0.0-next.16
+  - @latticexyz/config@2.0.0-next.16
+  - @latticexyz/gas-report@2.0.0-next.16
+  - @latticexyz/protocol-parser@2.0.0-next.16
+  - @latticexyz/schema-type@2.0.0-next.16
+  - @latticexyz/services@2.0.0-next.16
+  - @latticexyz/utils@2.0.0-next.16
+
 ## 2.0.0-next.15
 
 ### Minor Changes

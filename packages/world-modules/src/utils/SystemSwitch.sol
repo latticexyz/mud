@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Hook } from "@latticexyz/store/src/Hook.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
@@ -11,6 +11,7 @@ import { AccessControl } from "@latticexyz/world/src/AccessControl.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "@latticexyz/world/src/systemHookTypes.sol";
+import { SystemCall } from "@latticexyz/world/src/SystemCall.sol";
 
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { ISystemHook } from "@latticexyz/world/src/ISystemHook.sol";
@@ -39,17 +40,13 @@ library SystemSwitch {
   function call(ResourceId systemId, bytes memory callData) internal returns (bytes memory returnData) {
     address worldAddress = WorldContextConsumerLib._world();
 
-    // If we're in the World context, call the system directly via delegatecall
+    // If we're in the World context, call via the internal library
     if (address(this) == worldAddress) {
-      (address systemAddress, ) = Systems.get(systemId);
-      // Check if the system exists
-      if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
-
       bool success;
-      (success, returnData) = WorldContextProviderLib.delegatecallWithContext({
-        msgSender: WorldContextConsumerLib._msgSender(),
-        msgValue: WorldContextConsumerLib._msgValue(),
-        target: systemAddress,
+      (success, returnData) = SystemCall.call({
+        caller: WorldContextConsumerLib._msgSender(),
+        value: 0,
+        systemId: systemId,
         callData: callData
       });
 

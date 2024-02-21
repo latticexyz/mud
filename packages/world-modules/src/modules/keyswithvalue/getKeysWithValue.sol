@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";

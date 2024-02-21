@@ -3,7 +3,6 @@ import worldPackageJson from "../../packages/world/package.json" assert { type: 
 export default {
   quickstart: "Quickstart",
   introduction: "Introduction",
-  "protocol-vs-framework": "Protocol vs. Framework",
   protocol: {
     title: "Protocol",
     type: "separator",
@@ -14,13 +13,16 @@ export default {
     title: "Framework",
     type: "separator",
   },
+  config: "Config",
   cli: "CLI",
-  "state-sync": "State Sync",
   "state-query": "State Query",
   services: "Services",
-  plugins: "Plugins",
-  templates: "Templates",
+  "---": {
+    title: "", // no title renders as a line
+    type: "separator",
+  },
   guides: "Guides",
+  templates: "Templates",
   contribute: "Contribute",
   changelog: "Changelog",
   retrospectives: "Retrospectives",
