@@ -22,6 +22,11 @@ describe("resolveTableConfig", () => {
     expectTypeOf<typeof invalid>().toEqualTypeOf<"Error: the config must be passed as const">();
   });
 
+  it("should return an error if a field with non-static ABI type is used as key", () => {
+    const invalid = resolveTableConfig({ schema: { player: "address", name: "string" }, keys: ["name"] } as const);
+    expectTypeOf<typeof invalid>().toEqualTypeOf<"Error: only fields with static ABI type can be used as keys">();
+  });
+
   it("should separate key and value schema", () => {
     const valid = resolveTableConfig({ schema: { player: "address", score: "uint256" }, keys: ["player"] } as const);
     expectTypeOf<typeof valid.keySchema>().toMatchTypeOf({ player: "address" } as const);

@@ -1,4 +1,4 @@
-import { SchemaConfigInput, resolveSchemaConfig } from "./resolveSchemaConfig";
+import { SchemaConfigInput, StaticAbiTypeSchema, resolveSchemaConfig } from "./resolveSchemaConfig";
 
 export interface TableConfigInput<keys extends string = string> {
   schema: SchemaConfigInput<keys>;
@@ -9,12 +9,14 @@ export type resolveTableConfig<tableConfigInput extends TableConfigInput> = tabl
   infer keys
 >
   ? keys extends keyof resolveSchemaConfig<tableConfigInput["schema"], keys>
-    ? {
-        keySchema: Pick<resolveSchemaConfig<tableConfigInput["schema"], keys>, keys>;
-        valueSchema: Omit<resolveSchemaConfig<tableConfigInput["schema"], keys>, keys>;
-        schema: resolveSchemaConfig<tableConfigInput["schema"]>;
-        keys: tableConfigInput["keys"];
-      }
+    ? Pick<resolveSchemaConfig<tableConfigInput["schema"], keys>, keys> extends StaticAbiTypeSchema
+      ? {
+          keySchema: Pick<resolveSchemaConfig<tableConfigInput["schema"], keys>, keys>;
+          valueSchema: Omit<resolveSchemaConfig<tableConfigInput["schema"], keys>, keys>;
+          schema: resolveSchemaConfig<tableConfigInput["schema"]>;
+          keys: tableConfigInput["keys"];
+        }
+      : `Error: only fields with static ABI type can be used as keys`
     : `Error: the config must be passed as const`
   : `Error: keys must be a subset of the keys in the schema`;
 

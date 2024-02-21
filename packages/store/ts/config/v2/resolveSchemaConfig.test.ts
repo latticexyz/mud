@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, it, expectTypeOf } from "vitest";
-import { resolveSchemaConfig } from "./resolveSchemaConfig";
+import { resolveSchemaConfig, isStaticAbiType, isStaticAbiTypeSchema } from "./resolveSchemaConfig";
 import { setup, cleanup } from "@arktype/attest";
 
 // TODO: translate into attest tests
@@ -25,5 +25,21 @@ describe("resolveSchemaConfig", () => {
   it("should accept a shorthand schema as input and expand it", () => {
     const validFull = resolveSchemaConfig("address" as const);
     expectTypeOf<typeof validFull>().toMatchTypeOf({ key: "address" } as const);
+  });
+});
+
+describe("isStaticAbiType", () => {
+  it("should return true if the provided abi type is static, never otherwise", () => {
+    expectTypeOf<isStaticAbiType<"address">>().toMatchTypeOf<true>();
+    expectTypeOf<isStaticAbiType<"bytes">>().toMatchTypeOf<never>();
+  });
+});
+
+describe("isStaticAbiTypeSchema", () => {
+  it("should return true if the schema only has static abi types", () => {
+    expectTypeOf<isStaticAbiTypeSchema<"address">>().toMatchTypeOf<true>();
+    expectTypeOf<isStaticAbiTypeSchema<"bytes">>().toMatchTypeOf<never>();
+    expectTypeOf<isStaticAbiTypeSchema<{ x: "uint256" }>>().toMatchTypeOf<true>();
+    expectTypeOf<isStaticAbiTypeSchema<{ name: "string" }>>().toMatchTypeOf<never>();
   });
 });
