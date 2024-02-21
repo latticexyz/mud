@@ -23,9 +23,17 @@ This feature enables multiple use cases.
 
 The most common type of delegation is when a delegator address allows a specific delegatee address to act on its behalf.
 
-### Deploy delegation
+### Delegation types
 
-The owner of the root namespace (and therefore the `World`) needs to deploy the [`StandardDelegationModule`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol).
+Delegation can either be unlimited or limited by various factors (time, calldata, etc.).
+To create a limited delegation you need a contract that implements the [`DelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world/src/DelegationControl.sol) interface to decide whether or not to approve a specific call.
+The owner of the root namespace (and therefore the `World`) needs to deploy the [`StandardDelegationModule`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol), which includes three delegation control contracts:
+
+- [`CallboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/CallboundDelegationControl.sol)
+- [`SystemboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol)
+- [`TimeboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/TimeboundDelegationControl.sol)
+
+Alternatively, you can write your own `DelegationControl` contract with custom logic.
 
 <CollapseCode>
 
@@ -69,16 +77,15 @@ StandardDelegationsModule standardDelegationsModule =
   new StandardDelegationsModule();
 ```
 
-Deploy a new `StandardDelegationsModule` contract.
-This contract, similar to a `System` contract, is stateless.
-This means that if there is already a `StandardDelegationsModule` contract deployed on the blockchain you can just use it.
+Deploy a new [`StandardDelegationsModule`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol) contract.
+[MUD modules](/world/modules) are onchain installation scripts, which can be used by multiple `World`s.
 
 ```solidity
 world.installRootModule(standardDelegationsModule, new bytes(0));
 ```
 
 Install the module.
-This module can only be installed by the owner of the root namespace.
+`StandardDelegationsModule` can only be installed as a root module (using `installRootModule`, not `installModule`), which can only be done by the owner of the root namespace.
 
 </details>
 
