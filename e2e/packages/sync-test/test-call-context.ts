@@ -1,8 +1,8 @@
 import { createAnvil } from "@viem/anvil";
 import { execa } from "execa";
-import { ClientConfig, createPublicClient, createWalletClient, http, isHex } from "viem";
+import { ClientConfig, createPublicClient, http, isHex, BaseError, ContractFunctionRevertedError } from "viem";
 import { mudFoundry } from "@latticexyz/common/chains";
-import { getContract } from "@latticexyz/common";
+import { hexToResource } from "@latticexyz/common";
 import { privateKeyToAccount } from "viem/accounts";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import mudConfig from "../contracts/mud.config";
@@ -47,10 +47,6 @@ async function testCallContext() {
 
   // anvil default private key
   const account = privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
-  const walletClient = createWalletClient({
-    ...clientOptions,
-    account,
-  });
 
   const { useStore, tables } = await syncToZustand({
     config: mudConfig,
@@ -61,28 +57,48 @@ async function testCallContext() {
   // wait to sync
   await sleep(1000);
 
-  Object.values(useStore.getState().getRecords(tables.Systems)).map((record) => {
-    const worldContract = getContract({
-      address: record.value.system,
-      abi: IBaseWorldAbi,
-      publicClient,
-      walletClient,
-    });
+  const systems = useStore.getState().getRecords(tables.Systems);
 
-    worldContract.write
-      .batchCall([[]])
-      .then((lastTx) => {
-        console.log("waiting for tx", lastTx);
-        // const receipt = await publicClient.waitForTransactionReceipt({ hash: lastTx });
+  const batchCallSystem = Object.values(systems).find(
+    (record) => hexToResource(record.key.systemId).name === "BatchCall"
+  );
 
-        // console.log(receipt);
-      })
-      .catch((e) => console.log("gm,", e));
-  });
+  if (batchCallSystem) {
+    const { system } = batchCallSystem.value;
 
-  // TODO: figure out why anvil doesn't stop immediately
-  // console.log("stopping anvil");
-  // await anvil.stop();
+    const functionNames = ["batchCall", "batchCallFrom"] as const;
+
+    for (let i = 0; i < functionNames.length; i++) {
+      const functionName = functionNames[i];
+
+      try {
+        await publicClient.simulateContract({
+          address: system,
+          abi: [
+            ...IBaseWorldAbi,
+            {
+              type: "error",
+              name: "UnauthorizedCallContext",
+              inputs: [],
+            },
+          ],
+          functionName,
+          account,
+          args: [[]],
+        });
+      } catch (err) {
+        if (err instanceof BaseError) {
+          const revertError = err.walk((err) => err instanceof ContractFunctionRevertedError);
+          if (revertError instanceof ContractFunctionRevertedError) {
+            const errorName = revertError.data?.errorName ?? "";
+            // Error name should be `UnauthorizedCallContext`
+            console.log(errorName);
+          }
+        }
+      }
+    }
+  }
+
   process.exit(0);
 }
 
