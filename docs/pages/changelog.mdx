@@ -1,3 +1,97 @@
+## Version 2.0.0-next.17
+
+Release date: Tue Feb 20 2024
+
+### Major changes
+
+**[chore: upgrade to Solidity 0.8.24 (#2202)](https://github.com/latticexyz/mud/commit/aabd30767cdda7ce0c32663e7cc483db1b66d967)** (@latticexyz/world-modules, @latticexyz/schema-type, @latticexyz/gas-report, @latticexyz/common, @latticexyz/noise, @latticexyz/store, @latticexyz/world, @latticexyz/cli, create-mud)
+
+Bumped Solidity version to 0.8.24.
+
+**[feat(world): rename CoreModule to InitModule (#2227)](https://github.com/latticexyz/mud/commit/db7798be2181c1b9e55380a195a04100aab627fd)** (@latticexyz/world)
+
+Renamed `CoreModule` to `InitModule` and `CoreRegistrationSystem` to `RegistrationSystem`.
+
+**[feat(cli,world): add user defined salt in WorldFactory.deployWorld() (#2219)](https://github.com/latticexyz/mud/commit/618dd0e89232896326c30ce55f183fceb0edabdb)** (@latticexyz/cli, @latticexyz/world)
+
+`WorldFactory` now expects a user-provided `salt` when calling `deployWorld(...)` (instead of the previous globally incrementing counter). This enables deterministic world addresses across different chains.
+
+When using `mud deploy`, you can provide a `bytes32` hex-encoded salt using the `--salt` option, otherwise it defaults to a random hex value.
+
+**[feat(store): rename StoreCore.registerCoreTables to registerInternalTables (#2225)](https://github.com/latticexyz/mud/commit/5c52bee094fe5dad445a2d600cbea83e29302c40)** (@latticexyz/store, @latticexyz/world)
+
+Renamed `StoreCore`'s `registerCoreTables` method to `registerInternalTables`.
+
+### Minor changes
+
+**[fix(world-modules): `SystemSwitch` properly calls systems from root (#2205)](https://github.com/latticexyz/mud/commit/c4fc850416df72f055be9fb1eb36a0edfaa1febc)** (@latticexyz/world-modules)
+
+Fixed `SystemSwitch` to properly call non-root systems from root systems.
+
+**[feat(store-sync): wait for idle after each chunk of logs in a block (#2254)](https://github.com/latticexyz/mud/commit/997286bacafa43bd997c3c752b445acc23726bde)** (@latticexyz/store-sync)
+
+`createStoreSync` now [waits for idle](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback) between each chunk of logs in a block to allow for downstream render cycles to trigger. This means that hydrating logs from an indexer will no longer block until hydration completes, but rather allow for `onProgress` callbacks to trigger.
+
+**[feat(world): deployment salt by msg.sender (#2210)](https://github.com/latticexyz/mud/commit/6470fe1fd1fc73104cfdd01d79793203bffe5d1c)** (@latticexyz/world)
+
+`WorldFactory` now derives a salt based on number of worlds deployed by `msg.sender`, which should help with predictable world deployments across chains.
+
+### Patch changes
+
+**[feat(cli): hardcode table ID with codegen (#2229)](https://github.com/latticexyz/mud/commit/a35c05ea95395e9c7da3e18030fc200c2cde1353)** (@latticexyz/cli, @latticexyz/common, @latticexyz/store, @latticexyz/world-modules, @latticexyz/world, create-mud)
+
+Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+
+**[fix(store): reorder core table registration (#2164)](https://github.com/latticexyz/mud/commit/05b3e8882ef846e26dbf18946f64533f70d3bf41)** (@latticexyz/store)
+
+Fixed a race condition when registering core tables, where we would set a record in the `ResourceIds` table before the table was registered.
+
+**[fix(world): check table exists for register store and system hook [L-09] (#2195)](https://github.com/latticexyz/mud/commit/745485cda0d3a46e3d63d05c0149b2448e578010)** (@latticexyz/world)
+
+Updated `WorldRegistrationSystem` to check that systems exist before registering system hooks.
+
+**[fix(store-sync): fix overflowing column types, bump postgres sync version (#2270)](https://github.com/latticexyz/mud/commit/6c615b608e73d3bdabde3ad03823f1dce87f2ac6)** (@latticexyz/store-sync)
+
+Bumped the Postgres column size for `int32`, `uint32`, `int64`, and `uint64` types to avoid overflows
+
+**[feat(store-sync): bool array column types for decoded indexer (#2283)](https://github.com/latticexyz/mud/commit/4e445a1abb764de970381f5c5570ce135b712c4c)** (@latticexyz/store-sync)
+
+Moved boolean array types to use array column types (instead of JSON columns) for the Postgres decoded indexer
+
+**[docs: add missing changeset (#2282)](https://github.com/latticexyz/mud/commit/669fa43e5adcd2b3e44a298544c62ef9e0df642a)** (@latticexyz/store-sync)
+
+Moved numerical array types to use array column types (instead of JSON columns) for the Postgres decoded indexer
+
+**[docs: changeset for #2187 (#2188)](https://github.com/latticexyz/mud/commit/78a837167e527511d1a03fe67f60eb1d2e80aaa2)** (@latticexyz/cli)
+
+Fixed registration of world signatures/selectors for namespaced systems. We changed these signatures in [#2160](https://github.com/latticexyz/mud/pull/2160), but missed updating part of the deploy step.
+
+**[fix(common): include only errors defined in the contract (#2194)](https://github.com/latticexyz/mud/commit/c162ad5a546a92009aafc6150d9449738234b1ef)** (@latticexyz/common)
+
+Prevented errors not included in the contract (but present in the file) from being included in the interface by `contractToInterface`
+
+**[refactor(store): push to StoreHooks with StoreCore method (#2201)](https://github.com/latticexyz/mud/commit/55a05fd7af2abe68d2a041f55bafdd03f5d68788)** (@latticexyz/store)
+
+Refactored `StoreCore.registerStoreHook` to use `StoreHooks._push` for gas efficiency.
+
+**[refactor(world,world-modules): rename module args to encodedArgs (#2199)](https://github.com/latticexyz/mud/commit/e2d089c6d3970094e0310e84b096db0487967cc9)** (@latticexyz/world-modules, @latticexyz/world)
+
+Renamed the Module `args` parameter to `encodedArgs` to better reflect that it is ABI-encoded arguments.
+
+**[feat(world): rename CoreModule to InitModule (#2227)](https://github.com/latticexyz/mud/commit/db7798be2181c1b9e55380a195a04100aab627fd)** (@latticexyz/cli)
+
+Updated deployer with world's new `InitModule` naming.
+
+**[fix(world): prevent namespace from ending with underscore [M-05] (#2182)](https://github.com/latticexyz/mud/commit/17f98720928444ce8f82639b6d1f1eb01012a1c8)** (@latticexyz/world)
+
+Added a check to prevent namespaces from ending with an underscore (which could cause problems with world function signatures).
+
+**[fix(world): check table exists for register store and system hook [L-09] (#2195)](https://github.com/latticexyz/mud/commit/745485cda0d3a46e3d63d05c0149b2448e578010)** (@latticexyz/store)
+
+Updated `StoreCore` to check that tables exist before registering store hooks.
+
+---
+
 ## Version 2.0.0-next.16
 
 Release date: Tue Jan 23 2024

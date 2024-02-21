@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Patch Changes
+
+- Updated dependencies [aabd3076]
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/utils@2.0.0-next.17
+
 ## 2.0.0-next.16
 
 ### Patch Changes
