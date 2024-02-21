@@ -1,4 +1,3 @@
-import fs from "node:fs";
 import { Account, Chain, Client, Hex, Transport, encodeDeployData } from "viem";
 import { getBalance, getBytecode, sendRawTransaction, sendTransaction, waitForTransactionReceipt } from "viem/actions";
 import deployment from "./create2/deployment.json";
@@ -6,12 +5,9 @@ import { debug } from "./debug";
 
 // TODO: stop exporting this since it's now configurable/runtime dependent
 export const deployer = `0x${deployment.address}` as const;
-// TODO: move this into deployment json?
-export const deployerBytecode = `0x${fs.readFileSync(`${__dirname}/create2/bytecode.txt`, "utf-8")}` as const;
+const deployerBytecode = `0x${deployment.bytecode}` as const;
 
 export async function ensureDeployer(client: Client<Transport, Chain | undefined, Account>): Promise<Hex> {
-  const deployer = `0x${deployment.address}` as const;
-
   const bytecode = await getBytecode(client, { address: deployer });
   if (bytecode) {
     debug("found CREATE2 deployer at", deployer);
@@ -53,7 +49,7 @@ export async function ensureDeployer(client: Client<Transport, Chain | undefined
       if (String(error).includes("only replay-protected (EIP-155) transactions allowed over RPC")) {
         console.warn(
           // eslint-disable-next-line max-len
-          `\n  ⚠️ Your chain or RPC does not allow for pre-EIP-155 transactions, so your deploys will not be determinstic and contract addresses may change between deploys.\n\n  We recommend running your chain's node with \`--rpc.allow-unprotected-txs\` to enable determinstic deployments.\n`
+          `\n  ⚠️ Your chain or RPC does not allow for non EIP-155 signed transactions, so your deploys will not be determinstic and contract addresses may change between deploys.\n\n  We recommend running your chain's node with \`--rpc.allow-unprotected-txs\` to enable determinstic deployments.\n`
         );
         debug("deploying CREATE2 deployer");
         return sendTransaction(client, {
