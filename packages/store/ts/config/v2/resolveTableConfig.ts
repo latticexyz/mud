@@ -1,17 +1,24 @@
-export type SchemaConfigInput<keys extends string> = {
-  [key in keys]: string;
+type AbiType = "uint256" | "address" | "bool";
+
+export type SchemaConfigInput = {
+  [key: string]: AbiType;
 };
 
-export interface TableConfigInput<keys extends string = string> {
-  keys: keys[];
-  schema: SchemaConfigInput<keys>;
+export interface TableConfigInput<schema extends SchemaConfigInput = SchemaConfigInput> {
+  schema: schema;
+  keys: Array<keyof schema>;
 }
 
 export type resolveTableConfig<tableConfigInput extends TableConfigInput> =
   tableConfigInput["keys"][number] extends keyof tableConfigInput["schema"]
     ? {
         keySchema: { [key in tableConfigInput["keys"][number]]: tableConfigInput["schema"][key] };
-        valueSchema: Omit<tableConfigInput["schema"], tableConfigInput["keys"][number]>;
+        valueSchema: {
+          [key in Exclude<
+            keyof tableConfigInput["schema"],
+            tableConfigInput["keys"][number]
+          >]: tableConfigInput["schema"][key];
+        };
       } & tableConfigInput
     : `Error: keys must be a subset of schema`;
 
