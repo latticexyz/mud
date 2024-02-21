@@ -14,7 +14,7 @@ To improve the developer experience of calling `System` functions, the namespace
 This removes the need for the caller to know the system's `ResourceId`, and the need to manually encode the calldata via `abi.encodeCall`.
 Once the namespace owner registers a function selector for a `System` function, anybody can call the `System` via `<World>.<namespace>__<function>(<args>)`.
 
-To register a function selector, you use [`<world>.registerFunctionSelector`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L164-L201).
+To register a function selector, you use [`<world>.registerFunctionSelector`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L180-L218).
 This function takes two parameters:
 
 - The `ResourceID` of the `System`.
@@ -39,7 +39,7 @@ After the function selector is registered, it can be accessed directly on the Wo
 
 ## Root function selectors
 
-The owner of the root namespace can use [`registerRootFunctionSelector`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L203-L232) to register an arbitrary string as a function signature.
+The owner of the root namespace can use [`registerRootFunctionSelector`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L220-L249) to register an arbitrary string as a function signature.
 
 This function has three parameters:
 
