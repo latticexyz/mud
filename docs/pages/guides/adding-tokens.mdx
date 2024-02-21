@@ -10,7 +10,7 @@ With the token as part of a MUD `World` you get automatic synchronization on the
 
 ## The sample program
 
-We modify [the React template](/templates/typescript/react) to pay accounts that complete todo items.
+We modify the React template to pay accounts that complete todo items.
 
 ## Install an ERC20 token
 
@@ -29,7 +29,8 @@ We modify [the React template](/templates/typescript/react) to pay accounts that
    - `PRIVATE_KEY`, the private key corresponding to the `MY_ADDRESS`
    - `WORLD_ADDRESS`, the address of the `World` to modify.
 
-   Assuming the default parameters on `anvil`, you can use this file (although the `World` address might change in different versions of MUD):
+   Assuming the default parameters on `anvil`, you can use this file.
+   Note that the `World` address might change in different versions of MUD.
 
    ```sh copy filename=".env"
    # This .env file is for demonstration purposes only.
@@ -46,7 +47,7 @@ We modify [the React template](/templates/typescript/react) to pay accounts that
    MY_ADDRESS=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 
    # Address of the world we are manipulating
-   WORLD_ADDRESS=0xc44504ab6a2c4df9a9ce82aecfc453fec3c8771c
+   WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
    ```
 
 1. Create a file `packages/contracts/scripts/Deploy-ERC20.s.sol`.
@@ -58,6 +59,8 @@ We modify [the React template](/templates/typescript/react) to pay accounts that
    import { Script } from "forge-std/Script.sol";
    import { console } from "forge-std/console.sol";
    import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+   import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 
    import { IWorld } from "../src/codegen/world/IWorld.sol";
 
@@ -81,6 +84,9 @@ We modify [the React template](/templates/typescript/react) to pay accounts that
        vm.startBroadcast(privateKey);
 
        IWorld world = IWorld(worldAddress);
+
+       ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("DDDD"));
+       world.registerNamespace(namespaceResource);
 
        PuppetModule puppetModule = new PuppetModule();
        world.installModule(puppetModule, new bytes(0));
@@ -147,6 +153,15 @@ We modify [the React template](/templates/typescript/react) to pay accounts that
    Standard in MUD scripts.
 
    ```solidity
+   ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("DDDD"));
+   world.registerNamespace(namespaceResource);
+   ```
+
+   Register the `DDDD` namespace.
+   I chose the namespace `DDDD` because the hexadecimal ascii representation of the letter `D` is 44.
+   This means that it is easy to identify entities in the namespace because the hexadecimal `ResourceId` contains `44444444`.
+
+   ```solidity
        PuppetModule puppetModule = new PuppetModule();
        world.installModule(puppetModule, new bytes(0));
    ```
@@ -162,10 +177,6 @@ We modify [the React template](/templates/typescript/react) to pay accounts that
    ```
 
    Create the token. Note that you can only have one ERC-20 token per namespace.
-   If necessary, `registerERC20` will also register the namespace for you.
-
-   In this case, I chose the namespace `DDDD` because the hexadecimal ascii representation of the letter `D` is 44.
-   This means that it is easy to identify entities in the namespace because the hexadecimal `ResourceId` contains `44444444`.
 
    ```solidity
        test(token, myAddress);
@@ -232,7 +243,7 @@ We modify [the React template](/templates/typescript/react) to pay accounts that
    # This .env file is for demonstration purposes only.
    #
    # This should usually be excluded via .gitignore and the env vars attached to
-   # your deployment environment, but we're including this here for ease of local
+   # your deployment enviromment, but we're including this here for ease of local
    # development. Please do not commit changes to this file!
    #
    #
@@ -243,10 +254,10 @@ We modify [the React template](/templates/typescript/react) to pay accounts that
    MY_ADDRESS=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 
    # Address of the world we are manipulating
-   WORLD_ADDRESS=0xc44504ab6a2c4df9a9ce82aecfc453fec3c8771c
+   WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
 
    # Address of the token
-   TOKEN_ADDRESS=0x249f0909E1Dd4b8811B0d7b19d2778Cef7C58399
+   TOKEN_ADDRESS=0x67671478a98e62381bf90cDd328cFFcDdd26c83A
    ```
 
    </CollapseCode>
@@ -259,7 +270,7 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
 
 1. Go to a separate directory.
 
-1. Create a new MUD project. It does not matter which template you choose, we are only going to use the contracts package anyway.
+1. Create a new MUD project. Select either the **vanilla** template or **react-ecs**.
 
    ```sh copy
    pnpm create mud@next rewards
@@ -294,7 +305,7 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
    });
    ```
 
-   `Systems` are stateless, so singleton tables (tables with a single row) perform the function that normally would be handled by state variables.
+   `Systems` are stateless, so singleton tables (tables with a single row) perform the function that normally would be handled by state variables that aren't arrays or mappings.
    In this case, `RewardSystem` needs to know the address of the reward token and how much reward to provide at task completion.
 
 1. Create `src/systems/RewardSystem.sol`.
@@ -320,13 +331,13 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
 
 1. Copy `.env` from the main project, the one that has the root namespace.
    If you used `anvil` with the defaults, this should be similar to the file below.
-   Note that `WORLD_ADDRESS` might change with different versions of MUD.
+   Note that `WORLD_ADDRESS` and `TOKEN_ADDRESS` might change with different versions of MUD.
 
    ```sh copy filename=".env"
    # This .env file is for demonstration purposes only.
    #
    # This should usually be excluded via .gitignore and the env vars attached to
-   # your deployment environment, but we're including this here for ease of local
+   # your deployment enviromment, but we're including this here for ease of local
    # development. Please do not commit changes to this file!
    #
    #
@@ -337,10 +348,10 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
    MY_ADDRESS=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 
    # Address of the world we are manipulating
-   WORLD_ADDRESS=0xc44504ab6a2c4df9a9ce82aecfc453fec3c8771c
+   WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
 
    # Address of the token
-   TOKEN_ADDRESS=0x249f0909E1Dd4b8811B0d7b19d2778Cef7C58399
+   TOKEN_ADDRESS=0x67671478a98e62381bf90cDd328cFFcDdd26c83A
    ```
 
 1. Create `script/Deploy-RewardSystem.s.sol`.
@@ -378,6 +389,9 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
        // Start broadcasting transactions from the deployer account
        vm.startBroadcast(privateKey);
 
+       ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("DDDD"));
+       world.registerNamespace(namespaceResource);
+
        // Register the singleton tables
        Token.register();
        RewardSize.register();
@@ -401,10 +415,6 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
        // Mint a million tokens for rewardSystem.
        IERC20Mintable token = IERC20Mintable(tokenAddress);
        token.mint(address(rewardSystem), 10 ** 6 * RewardSize.get());
-
-       // This is a workaround for issue
-       // https://github.com/latticexyz/mud/issues/2089
-       token.mint(address(worldAddress), 10 ** 6 * RewardSize.get());
 
        vm.stopBroadcast();
      }
