@@ -13,7 +13,7 @@ describe("resolveTableConfig", () => {
   });
 
   it("should return an error if the provided keys don't match", () => {
-    const invalid = resolveTableConfig({ schema: { player: "address", score: "uint256" }, keys: ["x"] } as const);
+    const invalid = resolveTableConfig({ schema: { player: "address", score: "uint256" }, keys: ["x"] });
     expectTypeOf<typeof invalid>().toEqualTypeOf<"Error: keys must be a subset of schema">();
   });
 
