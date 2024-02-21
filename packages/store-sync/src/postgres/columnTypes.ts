@@ -74,6 +74,20 @@ export const asAddress = (name: string) =>
   })(name);
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const asBoolArray = (name: string) =>
+  customType<{ data: boolean[]; driverData: string[] }>({
+    dataType() {
+      return "bool[]";
+    },
+    toDriver(data: boolean[]): string[] {
+      return data.map((datum) => String(datum));
+    },
+    fromDriver(driverData: string[]): boolean[] {
+      return driverData.map((datum) => Boolean(datum));
+    },
+  })(name);
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const asNumberArray = (name: string, columnType: string) =>
   customType<{ data: number[]; driverData: string[] }>({
     dataType() {
