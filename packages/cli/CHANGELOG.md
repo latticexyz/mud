@@ -1,5 +1,45 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Minor Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+- 618dd0e8: `WorldFactory` now expects a user-provided `salt` when calling `deployWorld(...)` (instead of the previous globally incrementing counter). This enables deterministic world addresses across different chains.
+
+  When using `mud deploy`, you can provide a `bytes32` hex-encoded salt using the `--salt` option, otherwise it defaults to a random hex value.
+
+### Patch Changes
+
+- a35c05ea: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+- 78a83716: Fixed registration of world signatures/selectors for namespaced systems. We changed these signatures in [#2160](https://github.com/latticexyz/mud/pull/2160), but missed updating part of the deploy step.
+- db7798be: Updated deployer with world's new `InitModule` naming.
+- Updated dependencies [a35c05ea]
+- Updated dependencies [05b3e888]
+- Updated dependencies [745485cd]
+- Updated dependencies [aabd3076]
+- Updated dependencies [db7798be]
+- Updated dependencies [618dd0e8]
+- Updated dependencies [c4fc8504]
+- Updated dependencies [c162ad5a]
+- Updated dependencies [55a05fd7]
+- Updated dependencies [6470fe1f]
+- Updated dependencies [e2d089c6]
+- Updated dependencies [17f98720]
+- Updated dependencies [5c52bee0]
+- Updated dependencies [745485cd]
+  - @latticexyz/common@2.0.0-next.17
+  - @latticexyz/store@2.0.0-next.17
+  - @latticexyz/world-modules@2.0.0-next.17
+  - @latticexyz/world@2.0.0-next.17
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/gas-report@2.0.0-next.17
+  - @latticexyz/config@2.0.0-next.17
+  - @latticexyz/protocol-parser@2.0.0-next.17
+  - @latticexyz/abi-ts@2.0.0-next.17
+  - @latticexyz/services@2.0.0-next.17
+  - @latticexyz/utils@2.0.0-next.17
+
 ## 2.0.0-next.16
 
 ### Major Changes
