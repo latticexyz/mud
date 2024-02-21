@@ -1,6 +1,6 @@
 services:
   - type: worker
-    name: skystrife-indexer
+    name: base-mainnet-indexer
     plan: standard
     region: ohio
     runtime: docker
@@ -9,36 +9,68 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: skystrife-indexer-db
+          name: base-mainnet-indexer-db
           property: connectionString
-      - key: RPC_HTTP_URL
-        value: https://rpc.holesky.redstone.xyz
       - key: DEBUG
         value: mud:store-sync:createStoreSync
-      - key: STORE_ADDRESS
-        value: "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377"
-      - key: START_BLOCK
-        value: 895629
+      - key: RPC_HTTP_URL
+        sync: false # prompt for it
+  - type: worker
+    name: redstone-holesky-indexer
+    plan: standard
+    region: ohio
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: redstone-holesky-indexer-db
+          property: connectionString
+      - key: DEBUG
+        value: mud:store-sync:createStoreSync
+      - key: RPC_HTTP_URL
+        sync: false # prompt for it
 
   - type: web
-    name: skystrife-indexer-api
+    name: base-mainnet-indexer-api
     plan: pro
     region: ohio
     runtime: docker
     domains:
-      - indexer.skystrife.xyz
+      - base-mainnet-indexer.temp.offchain.dev
     dockerfilePath: ./Dockerfile
     dockerContext: ./
     dockerCommand: pnpm tsx bin/postgres-frontend
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: skystrife-indexer-db
+          name: base-mainnet-indexer-db
+          property: connectionString
+      - key: DEBUG
+        value: mud:*
+  - type: web
+    name: redstone-holesky-indexer-api
+    plan: pro
+    region: ohio
+    runtime: docker
+    domains:
+      - redstone-holesky-indexer.temp.offchain.dev
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    dockerCommand: pnpm tsx bin/postgres-frontend
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: redstone-holesky-indexer-db
           property: connectionString
       - key: DEBUG
         value: mud:*
 
 databases:
-  - name: skystrife-indexer-db
+  - name: base-mainnet-indexer-db
+    plan: pro
+    region: ohio
+  - name: redstone-holesky-indexer-db
     plan: pro
     region: ohio
