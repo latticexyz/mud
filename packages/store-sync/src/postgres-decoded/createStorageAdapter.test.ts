@@ -89,8 +89,7 @@ describe("createStorageAdapter", async () => {
     expect(tables).toMatchInlineSnapshot(`
       [
         {
-            "address": "0xd843FB6A5fD209344E5A1b3d5c121330c2B4a36f",
-
+          "address": "0xd843FB6A5fD209344E5A1b3d5c121330c2B4a36f",
           "keySchema": {},
           "name": "NumberList",
           "namespace": "",
@@ -107,7 +106,7 @@ describe("createStorageAdapter", async () => {
       [
         {
           "__keyBytes": "0x",
-          "__lastUpdatedBlockNumber": 23n,
+          "__lastUpdatedBlockNumber": 28n,
           "value": [
             420,
             69,

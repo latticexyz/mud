@@ -73,9 +73,8 @@ describe("sqliteStorage", async () => {
     expect(db.select().from(mudStoreTables).where(eq(mudStoreTables.name, "NumberList")).all()).toMatchInlineSnapshot(`
       [
         {
-            "address": "0xd843FB6A5fD209344E5A1b3d5c121330c2B4a36f",
-
-           "id": "0xd843FB6A5fD209344E5A1b3d5c121330c2B4a36f____NumberList",
+          "address": "0xd843FB6A5fD209344E5A1b3d5c121330c2B4a36f",
+          "id": "0xd843FB6A5fD209344E5A1b3d5c121330c2B4a36f____NumberList",
           "keySchema": {},
           "lastError": null,
           "lastUpdatedBlockNumber": 28n,
@@ -94,9 +93,8 @@ describe("sqliteStorage", async () => {
     expect(tables).toMatchInlineSnapshot(`
       [
         {
-            "address": "0xd843FB6A5fD209344E5A1b3d5c121330c2B4a36f",
-
-           "id": "0xd843FB6A5fD209344E5A1b3d5c121330c2B4a36f____NumberList",
+          "address": "0xd843FB6A5fD209344E5A1b3d5c121330c2B4a36f",
+          "id": "0xd843FB6A5fD209344E5A1b3d5c121330c2B4a36f____NumberList",
           "keySchema": {},
           "lastError": null,
           "lastUpdatedBlockNumber": 28n,
@@ -119,7 +117,7 @@ describe("sqliteStorage", async () => {
           "__encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
           "__isDeleted": false,
           "__key": "0x",
-          "__lastUpdatedBlockNumber": 23n,
+          "__lastUpdatedBlockNumber": 28n,
           "__staticData": null,
           "value": [
             420,
