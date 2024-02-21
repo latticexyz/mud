@@ -13,8 +13,13 @@ describe("resolveTableConfig", () => {
   });
 
   it("should return an error if the provided keys don't match", () => {
-    const invalid = resolveTableConfig({ schema: { player: "address", score: "uint256" }, keys: ["x"] });
-    expectTypeOf<typeof invalid>().toEqualTypeOf<"Error: keys must be a subset of schema">();
+    const invalid = resolveTableConfig({ schema: { player: "address", score: "uint256" }, keys: ["x"] } as const);
+    expectTypeOf<typeof invalid>().toEqualTypeOf<"Error: keys must be a subset of the keys in the schema">();
+  });
+
+  it("should return an error if the config is not passed as const", () => {
+    const invalid = resolveTableConfig({ schema: { player: "address", score: "uint256" }, keys: ["player"] });
+    expectTypeOf<typeof invalid>().toEqualTypeOf<"Error: the config must be passed as const">();
   });
 
   it("should separate key and value schema", () => {

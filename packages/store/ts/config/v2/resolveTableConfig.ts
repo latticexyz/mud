@@ -15,8 +15,8 @@ export type resolveTableConfig<tableConfigInput extends TableConfigInput> = tabl
         schema: resolveSchemaConfig<tableConfigInput["schema"]>;
         keys: tableConfigInput["keys"];
       }
-    : `Error: keys must be a subset of schema`
-  : never;
+    : `Error: the config must be passed as const`
+  : `Error: keys must be a subset of the keys in the schema`;
 
 export function resolveTableConfig<tableConfigInput extends TableConfigInput>(
   tableConfigInput: tableConfigInput
