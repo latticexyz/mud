@@ -4,7 +4,7 @@ services:
     plan: standard
     region: ohio
     runtime: docker
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./Dockerfile.render
     dockerContext: ./packages/store-indexer
     dockerCommand: pnpm tsx bin/postgres-indexer
     envVars:
@@ -21,7 +21,7 @@ services:
     plan: standard
     region: ohio
     runtime: docker
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./Dockerfile.render
     dockerContext: ./packages/store-indexer
     dockerCommand: pnpm tsx bin/postgres-indexer
     envVars:
@@ -41,7 +41,7 @@ services:
     runtime: docker
     domains:
       - base-mainnet-indexer.temp.offchain.dev
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./Dockerfile.render
     dockerContext: ./packages/store-indexer
     dockerCommand: pnpm tsx bin/postgres-frontend
     envVars:
@@ -58,7 +58,7 @@ services:
     runtime: docker
     domains:
       - redstone-holesky-indexer.temp.offchain.dev
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./Dockerfile.render
     dockerContext: ./packages/store-indexer
     dockerCommand: pnpm tsx bin/postgres-frontend
     envVars:
