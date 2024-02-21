@@ -153,6 +153,9 @@ importers:
       '@latticexyz/utils':
         specifier: link:../../../packages/utils
         version: link:../../../packages/utils
+      '@latticexyz/world':
+        specifier: link:../../../packages/world
+        version: link:../../../packages/world
       '@viem/anvil':
         specifier: ^0.0.6
         version: 0.0.6
@@ -177,6 +180,9 @@ importers:
       postgres:
         specifier: 3.3.5
         version: 3.3.5
+      tsx:
+        specifier: ^3.12.6
+        version: 3.12.6
       typescript:
         specifier: 5.1.6
         version: 5.1.6
