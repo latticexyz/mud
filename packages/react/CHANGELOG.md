@@ -1,5 +1,18 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Patch Changes
+
+- Updated dependencies [a35c05ea]
+- Updated dependencies [05b3e888]
+- Updated dependencies [aabd3076]
+- Updated dependencies [55a05fd7]
+- Updated dependencies [5c52bee0]
+- Updated dependencies [745485cd]
+  - @latticexyz/store@2.0.0-next.17
+  - @latticexyz/recs@2.0.0-next.17
+
 ## 2.0.0-next.16
 
 ### Patch Changes
