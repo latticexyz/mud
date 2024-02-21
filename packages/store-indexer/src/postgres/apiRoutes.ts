@@ -34,17 +34,6 @@ export function apiRoutes(database: Sql): Middleware {
       const logs = records.map(recordToLog);
       benchmark("map records to logs");
 
-      if (records.length === 0) {
-        ctx.status = 404;
-        ctx.body = "no logs found";
-        error(
-          `no logs found for chainId ${options.chainId}, address ${options.address}, filters ${JSON.stringify(
-            options.filters
-          )}`
-        );
-        return;
-      }
-
       const blockNumber = records[0].chainBlockNumber;
       ctx.status = 200;
 
