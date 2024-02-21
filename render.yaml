@@ -5,7 +5,7 @@ services:
     region: ohio
     runtime: docker
     dockerfilePath: ./Dockerfile.render
-    dockerContext: ./packages/store-indexer
+    dockerContext: ./
     dockerCommand: pnpm tsx bin/postgres-indexer
     envVars:
       - key: DATABASE_URL
@@ -22,7 +22,7 @@ services:
     region: ohio
     runtime: docker
     dockerfilePath: ./Dockerfile.render
-    dockerContext: ./packages/store-indexer
+    dockerContext: ./
     dockerCommand: pnpm tsx bin/postgres-indexer
     envVars:
       - key: DATABASE_URL
@@ -42,7 +42,7 @@ services:
     domains:
       - base-mainnet-indexer.temp.offchain.dev
     dockerfilePath: ./Dockerfile.render
-    dockerContext: ./packages/store-indexer
+    dockerContext: ./
     dockerCommand: pnpm tsx bin/postgres-frontend
     envVars:
       - key: DATABASE_URL
@@ -59,7 +59,7 @@ services:
     domains:
       - redstone-holesky-indexer.temp.offchain.dev
     dockerfilePath: ./Dockerfile.render
-    dockerContext: ./packages/store-indexer
+    dockerContext: ./
     dockerCommand: pnpm tsx bin/postgres-frontend
     envVars:
       - key: DATABASE_URL
