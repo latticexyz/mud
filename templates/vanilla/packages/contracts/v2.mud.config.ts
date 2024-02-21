@@ -1,13 +1,13 @@
 import { withWorldConfig, WorldConfigInput } from "@latticexyz/world";
-import { withStoreConfig } from "@latticexyz/store";
+import { resolveStoreConfig } from "@latticexyz/store";
 
-const defineConfig = <configInput extends WorldConfigInput>(
+const resolveConfig = <configInput extends WorldConfigInput>(
   configInput: configInput
-): withStoreConfig<withWorldConfig<configInput>> => {
-  return withStoreConfig(withWorldConfig(configInput));
+): resolveStoreConfig<withWorldConfig<configInput>> => {
+  return resolveStoreConfig(withWorldConfig(configInput));
 };
 
-const config = defineConfig({
+const config = resolveConfig({
   namespaces: { testNamespace: { name: "testNamespaceName" } },
   tables: { testTable: { name: "testNameTable" } },
 } as const);

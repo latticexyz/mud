@@ -21,15 +21,12 @@ export type StoreResolvedConfigOutput<configInput extends StoreConfigInput> = {
   };
 };
 
-export type withStoreConfig<configInput extends StoreConfigInput> = configInput & StoreConfigOutput<configInput>;
+export type resolveStoreConfig<configInput extends StoreConfigInput> = configInput & StoreConfigOutput<configInput>;
 
-export const withStoreConfig = <configInput extends StoreConfigInput>(
+export const resolveStoreConfig = <configInput extends StoreConfigInput>(
   configInput: configInput
-): withStoreConfig<configInput> => {
-  return {} as withStoreConfig<configInput>;
+): resolveStoreConfig<configInput> => {
+  return {} as resolveStoreConfig<configInput>;
 };
 
-const a = withStoreConfig({ tables: { input: { name: "test" } } } as const);
-
-a.resolved.input;
-//         ^?
+const a = resolveStoreConfig({ tables: { input: { name: "test" } } } as const);

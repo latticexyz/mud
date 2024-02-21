@@ -60,6 +60,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@arktype/attest": "^0.6.2",
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
     "@types/ejs": "^3.1.1",
