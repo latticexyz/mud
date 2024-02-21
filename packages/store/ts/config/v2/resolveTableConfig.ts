@@ -11,16 +11,13 @@ export type resolveTableConfig<tableConfigInput extends TableConfigInput> =
   tableConfigInput["keys"][number] extends keyof tableConfigInput["schema"]
     ? {
         keySchema: { [key in tableConfigInput["keys"][number]]: tableConfigInput["schema"][key] };
-      }
-    : "Error: keys must be a subset of schema";
+        valueSchema: Omit<tableConfigInput["schema"], tableConfigInput["keys"][number]>;
+      } & tableConfigInput
+    : `Error: keys must be a subset of schema`;
 
-function resolveTableConfig<tableConfigInput extends TableConfigInput>(
+export function resolveTableConfig<tableConfigInput extends TableConfigInput>(
   tableConfigInput: tableConfigInput
 ): resolveTableConfig<tableConfigInput> {
-  // TODO
+  // TODO: runtime implementation
   return {} as resolveTableConfig<tableConfigInput>;
 }
-
-const resolved = resolveTableConfig({ schema: { x: "uint256", y: "uint256" }, keys: ["y"] } as const);
-resolved.keySchema;
-//       ^?
