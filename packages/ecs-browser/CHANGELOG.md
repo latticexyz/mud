@@ -1,5 +1,7 @@
 # @latticexyz/ecs-browser
 
+## 2.0.0-next.17
+
 ## 2.0.0-next.16
 
 ## 2.0.0-next.15
