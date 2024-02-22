@@ -10,6 +10,8 @@ import {
   Transport,
   WalletClient,
   WriteContractParameters,
+  type ContractFunctionName,
+  type ContractFunctionArgs,
   getContract as viem_getContract,
 } from "viem";
 import { UnionOmit } from "./type-utils/common";
@@ -108,11 +110,17 @@ export function getContract<
               args,
               ...options,
               onWrite,
-            } as unknown as WriteContractParameters;
+            } as unknown as WriteContractParameters<
+              TAbi,
+              ContractFunctionName<TAbi, "nonpayable" | "payable">,
+              ContractFunctionArgs<TAbi, "nonpayable" | "payable">,
+              TChain,
+              TAccount
+            >;
             const result = writeContract(walletClient, request);
 
             const id = `${walletClient.chain.id}:${walletClient.account.address}:${nextWriteId++}`;
-            onWrite?.({ id, request, result });
+            onWrite?.({ id, request: request as WriteContractParameters, result });
 
             return result;
           };

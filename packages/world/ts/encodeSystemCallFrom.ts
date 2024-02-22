@@ -23,10 +23,10 @@ export function encodeSystemCallFrom<abi extends Abi, functionName extends Contr
   return [
     from,
     systemId,
-    encodeFunctionData({
+    encodeFunctionData<abi, functionName>({
       abi,
       functionName,
       args,
-    } as unknown as EncodeFunctionDataParameters),
+    } as unknown as EncodeFunctionDataParameters<abi, functionName>),
   ];
 }

@@ -20,10 +20,10 @@ export function encodeSystemCall<abi extends Abi, functionName extends ContractF
 > {
   return [
     systemId,
-    encodeFunctionData({
+    encodeFunctionData<abi, functionName>({
       abi,
       functionName,
       args,
-    } as unknown as EncodeFunctionDataParameters),
+    } as unknown as EncodeFunctionDataParameters<abi, functionName>),
   ];
 }
