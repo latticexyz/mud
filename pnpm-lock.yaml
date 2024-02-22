@@ -106,8 +106,8 @@ importers:
         specifier: 7.5.5
         version: 7.5.5
       viem:
-        specifier: 2.7.11
-        version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -212,8 +212,8 @@ importers:
         specifier: 5.1.6
         version: 5.1.6
       viem:
-        specifier: 2.7.11
-        version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
       yargs:
         specifier: ^17.7.1
         version: 17.7.1
@@ -288,8 +288,8 @@ importers:
         specifier: 1.1.3
         version: 1.1.3(prettier@2.8.4)
       viem:
-        specifier: 2.7.11
-        version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -319,8 +319,8 @@ importers:
         specifier: ^6.3.0
         version: 6.3.0
       viem:
-        specifier: 2.7.11
-        version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -390,8 +390,8 @@ importers:
         specifier: ^18.3.2
         version: 18.3.2(react-dom@18.2.0)(react@18.2.0)
       viem:
-        specifier: 2.7.11
-        version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
       zustand:
         specifier: ^4.3.7
         version: 4.3.7(react@18.2.0)
@@ -450,8 +450,8 @@ importers:
         specifier: ^4.21.0
         version: 4.21.0
       viem:
-        specifier: 2.7.11
-        version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -597,8 +597,8 @@ importers:
         specifier: 1.0.0
         version: 1.0.0(typescript@5.1.6)(zod@3.21.4)
       viem:
-        specifier: 2.7.11
-        version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       tsup:
         specifier: ^6.7.0
@@ -699,8 +699,8 @@ importers:
         specifier: 1.0.0
         version: 1.0.0(typescript@5.1.6)(zod@3.21.4)
       viem:
-        specifier: 2.7.11
-        version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@latticexyz/gas-report':
         specifier: workspace:*
@@ -780,8 +780,8 @@ importers:
         specifier: 1.0.0
         version: 1.0.0(typescript@5.1.6)(zod@3.21.4)
       viem:
-        specifier: 2.7.11
-        version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -897,8 +897,8 @@ importers:
         specifier: ^1.1.3
         version: 1.1.3(@trpc/server@10.34.0)(koa@2.14.2)
       viem:
-        specifier: 2.7.11
-        version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -991,8 +991,8 @@ importers:
         specifier: ^1.12.4
         version: 1.12.4
       viem:
-        specifier: 2.7.11
-        version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -1056,8 +1056,8 @@ importers:
         specifier: 1.0.0
         version: 1.0.0(typescript@5.1.6)(zod@3.21.4)
       viem:
-        specifier: 2.7.11
-        version: 2.7.11(typescript@5.1.6)(zod@3.21.4)
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -11901,8 +11901,8 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
-  /viem@2.7.11(typescript@5.1.6)(zod@3.21.4):
-    resolution: {integrity: sha512-qlEPF9YOgPVqjTyom73TVAekAYrIe68megO07u55p7pKWgLt0i9KD6Mrmiw7pd7oHh86vIppcygwQMDNGX1YAw==}
+  /viem@2.7.12(typescript@5.1.6)(zod@3.21.4):
+    resolution: {integrity: sha512-NbV+Bycw0I4X8y6A04mgJ6+Imt7xXwflgnqisR3JXoJRNc77YSaQCscFN/dmwGLESTkgegJvi+j4nZY32GTpwQ==}
     peerDependencies:
       typescript: '>=5.0.4'
     peerDependenciesMeta:
