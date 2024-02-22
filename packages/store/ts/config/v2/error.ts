@@ -1,1 +1,5 @@
-export type Error<reason extends string = string> = { error: true; reason: reason };
+export type Error<reason extends string = string, metadata = null> = {
+  error: true;
+  reason: reason;
+  metadata: metadata;
+};
