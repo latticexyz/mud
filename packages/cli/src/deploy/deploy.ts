@@ -42,13 +42,11 @@ export async function deploy<configInput extends ConfigInput>({
   config,
   salt,
   worldAddress: existingWorldAddress,
-  deployerAddress,
+  deployerAddress: initialDeployerAddress,
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   const tables = Object.values(config.tables) as Table[];
 
-  if (deployerAddress == null) {
-    deployerAddress = await ensureDeployer(client);
-  }
+  const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
   await ensureWorldFactory(client, deployerAddress);
 
