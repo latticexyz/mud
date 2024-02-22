@@ -15,15 +15,23 @@ await anvil.start();
 const rpc = `http://${anvil.host}:${anvil.port}`;
 
 const logs = await generateLogs(rpc, async (worldContract) => {
-  console.log("calling set");
-  await worldContract.write.set([[420]]);
-  console.log("calling push");
-  const lastTx = await worldContract.write.push([69]);
+  for (let i = 0; i < 100; i++) {
+    await worldContract.write.setNumber([i, i]);
+  }
+
+  for (let i = 0; i < 50; i++) {
+    await worldContract.write.setVector([i, i, i]);
+  }
+
+  const lastTx = await worldContract.write.set([[0]]);
 
   return lastTx;
 });
 
-const logsFilename = path.join(path.dirname(fileURLToPath(import.meta.url)), `../../../test-data/world-logs.json`);
+const logsFilename = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  `../../../test-data/world-logs-query.json`
+);
 
 console.log("writing", logs.length, "logs to", logsFilename);
 await fs.writeFile(logsFilename, JSON.stringify(logs, null, 2));
