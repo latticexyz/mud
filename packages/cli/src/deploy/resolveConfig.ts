@@ -72,33 +72,11 @@ export function resolveConfig<config extends ConfigInput>({
       allowedSystemIds: system.accessListSystems.map((name) =>
         resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name })
       ),
-      address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
+      getAddress: (deployer: Address) => getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
       bytecode: contractData.bytecode,
       deployedBytecodeSize: contractData.deployedBytecodeSize,
       abi: contractData.abi,
       functions: systemFunctions,
-    };
-  });
-
-  // resolve allowedSystemIds
-  // TODO: resolve this at deploy time so we can allow for arbitrary system IDs registered in the world as the source-of-truth rather than config
-  const systemsWithAccess = systems.map(({ allowedAddresses, allowedSystemIds, ...system }) => {
-    const allowedSystemAddresses = allowedSystemIds.map((systemId) => {
-      const targetSystem = systems.find((s) => s.systemId === systemId);
-      if (!targetSystem) {
-        throw new Error(
-          `System ${resourceLabel(system)} wanted access to ${resourceLabel(
-            hexToResource(systemId)
-          )}, but it wasn't found in the config.`
-        );
-      }
-      return targetSystem.address;
-    });
-    return {
-      ...system,
-      allowedAddresses: Array.from(
-        new Set([...allowedAddresses, ...allowedSystemAddresses].map((addr) => getAddress(addr)))
-      ),
     };
   });
 
@@ -135,7 +113,7 @@ export function resolveConfig<config extends ConfigInput>({
       name: mod.name,
       installAsRoot: mod.root,
       installData: installArgs.length === 0 ? "0x" : installArgs[0],
-      address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
+      getAddress: (deployer: Address) => getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
       bytecode: contractData.bytecode,
       deployedBytecodeSize: contractData.deployedBytecodeSize,
       abi: contractData.abi,
@@ -144,7 +122,7 @@ export function resolveConfig<config extends ConfigInput>({
 
   return {
     tables,
-    systems: systemsWithAccess,
+    systems,
     modules,
   };
 }

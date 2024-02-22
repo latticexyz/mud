@@ -48,7 +48,7 @@ export type WorldFunction = {
 };
 
 export type DeterministicContract = {
-  readonly address: Address;
+  readonly getAddress: (deployer: Address) => Address;
   readonly bytecode: Hex;
   readonly deployedBytecodeSize: number;
   readonly abi: Abi;
@@ -60,7 +60,15 @@ export type System = DeterministicContract & {
   readonly systemId: Hex;
   readonly allowAll: boolean;
   readonly allowedAddresses: readonly Hex[];
+  readonly allowedSystemIds: readonly Hex[];
   readonly functions: readonly WorldFunction[];
+};
+
+export type DeployedSystem = Omit<
+  System,
+  "getAddress" | "abi" | "bytecode" | "deployedBytecodeSize" | "allowedSystemIds"
+> & {
+  address: Address;
 };
 
 export type Module = DeterministicContract & {

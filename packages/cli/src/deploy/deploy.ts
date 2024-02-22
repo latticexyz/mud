@@ -15,6 +15,7 @@ import { resourceLabel } from "./resourceLabel";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
+import { ensureWorldFactory } from "./ensureWorldFactory";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -46,22 +47,23 @@ export async function deploy<configInput extends ConfigInput>({
   const tables = Object.values(config.tables) as Table[];
   const systems = Object.values(config.systems);
 
-  // TODO: validate that provider deployerAddress has matching bytecode
   if (deployerAddress == null) {
     deployerAddress = await ensureDeployer(client);
   }
+
+  await ensureWorldFactory(client, deployerAddress);
 
   // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
   await ensureContractsDeployed({
     client,
     deployerAddress,
     contracts: [
-      ...uniqueBy(systems, (system) => getAddress(system.address)).map((system) => ({
+      ...uniqueBy(systems, (system) => getAddress(system.getAddress(deployerAddress))).map((system) => ({
         bytecode: system.bytecode,
         deployedBytecodeSize: system.deployedBytecodeSize,
         label: `${resourceLabel(system)} system`,
       })),
-      ...uniqueBy(config.modules, (mod) => getAddress(mod.address)).map((mod) => ({
+      ...uniqueBy(config.modules, (mod) => getAddress(mod.getAddress(deployerAddress))).map((mod) => ({
         bytecode: mod.bytecode,
         deployedBytecodeSize: mod.deployedBytecodeSize,
         label: `${mod.name} module`,

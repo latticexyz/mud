@@ -22,7 +22,7 @@ export async function ensureModules({
   await ensureContractsDeployed({
     client,
     deployerAddress,
-    contracts: uniqueBy(modules, (mod) => getAddress(mod.address)).map((mod) => ({
+    contracts: uniqueBy(modules, (mod) => getAddress(mod.getAddress(deployerAddress))).map((mod) => ({
       bytecode: mod.bytecode,
       deployedBytecodeSize: mod.deployedBytecodeSize,
       label: `${mod.name} module`,
@@ -43,7 +43,7 @@ export async function ensureModules({
                     abi: worldAbi,
                     // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
                     functionName: "installRootModule",
-                    args: [mod.address, mod.installData],
+                    args: [mod.getAddress(deployerAddress), mod.installData],
                   })
                 : await writeContract(client, {
                     chain: client.chain ?? null,
@@ -51,7 +51,7 @@ export async function ensureModules({
                     abi: worldAbi,
                     // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
                     functionName: "installModule",
-                    args: [mod.address, mod.installData],
+                    args: [mod.getAddress(deployerAddress), mod.installData],
                   });
             } catch (error) {
               if (error instanceof BaseError && error.message.includes("Module_AlreadyInstalled")) {

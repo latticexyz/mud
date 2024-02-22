@@ -1,5 +1,5 @@
-import { System, WorldDeploy, worldTables } from "./common";
-import { Client } from "viem";
+import { DeployedSystem, System, WorldDeploy, worldTables } from "./common";
+import { Address, Client } from "viem";
 import { getResourceIds } from "./getResourceIds";
 import { hexToResource } from "@latticexyz/common";
 import { getTableValue } from "./getTableValue";
@@ -14,7 +14,7 @@ export async function getSystems({
 }: {
   readonly client: Client;
   readonly worldDeploy: WorldDeploy;
-}): Promise<readonly Omit<System, "abi" | "bytecode" | "deployedBytecodeSize">[]> {
+}): Promise<readonly DeployedSystem[]> {
   const [resourceIds, functions, resourceAccess] = await Promise.all([
     getResourceIds({ client, worldDeploy }),
     getFunctions({ client, worldDeploy }),
