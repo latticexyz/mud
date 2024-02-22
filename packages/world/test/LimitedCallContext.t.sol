@@ -28,9 +28,13 @@ contract LimitedCallContextTest is Test {
   function callSystem(ResourceId resourceId, string memory functionSignature) internal {
     address system = Systems.getSystem(resourceId);
 
-    // Generate dummy calldata - any additional bytes are ignored
-    // https://ethereum.stackexchange.com/questions/66070/calldata-with-too-many-parameters
-    bytes memory callData = abi.encodeWithSignature(functionSignature, new bytes(1000));
+    // Generate empty calldata of sufficient length (any additional bytes are ignored)
+    bytes memory callData = new bytes(1000);
+    // Copy the selector into the calldata
+    bytes memory selector = abi.encodeWithSignature(functionSignature);
+    for (uint256 i = 0; i < selector.length; i++) {
+      callData[i] = selector[i];
+    }
 
     // On low level calls, the status boolean corresponds to whether expectRevert succeeded or not.
     vm.expectRevert(abi.encodeWithSelector(LimitedCallContext.UnauthorizedCallContext.selector));
