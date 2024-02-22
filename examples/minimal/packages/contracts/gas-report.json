@@ -1,0 +1,8 @@
+[
+  {
+    "file": "test/MoveSystem.t.sol",
+    "test": "testMove",
+    "name": "moving",
+    "gasUsed": 135943
+  }
+]
