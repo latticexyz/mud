@@ -65,8 +65,7 @@ const walletClient = createWalletClient({
 const worldContract = getContract({
   address: worldAddress,
   abi: IWorldAbi,
-  publicClient,
-  walletClient,
+  client: { public: publicClient, wallet: walletClient },
 });
 
 console.log("calling set");

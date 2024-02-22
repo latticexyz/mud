@@ -51,8 +51,7 @@ export async function generateLogs(numRecords: number, rpc: string) {
   const worldContract = getContract({
     address: worldAddress,
     abi: IWorldAbi,
-    publicClient,
-    walletClient,
+    client: { public: publicClient, wallet: walletClient },
   });
 
   console.log("calling setNumber");

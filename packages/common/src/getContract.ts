@@ -3,6 +3,7 @@ import {
   Account,
   Address,
   Chain,
+  GetContractParameters,
   GetContractReturnType,
   Hex,
   PublicClient,
@@ -40,11 +41,14 @@ export type GetContractOptions<
   TAccount extends Account,
   TPublicClient extends PublicClient<TTransport, TChain>,
   TWalletClient extends WalletClient<TTransport, TChain, TAccount>
-> = {
-  abi: TAbi;
-  address: TAddress;
-  publicClient: TPublicClient;
-  walletClient: TWalletClient;
+> = GetContractParameters<
+  TTransport,
+  TChain,
+  TAccount,
+  TAbi,
+  { public: TPublicClient; wallet: TWalletClient },
+  TAddress
+> & {
   onWrite?: (write: ContractWrite) => void;
 };
 
@@ -61,8 +65,7 @@ export function getContract<
 >({
   abi,
   address,
-  publicClient,
-  walletClient,
+  client: { public: publicClient, wallet: walletClient },
   onWrite,
 }: GetContractOptions<
   TTransport,
