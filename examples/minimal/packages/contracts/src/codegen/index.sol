@@ -6,3 +6,4 @@ pragma solidity >=0.8.24;
 import { CounterTable, CounterTableTableId } from "./tables/CounterTable.sol";
 import { MessageTable, MessageTableTableId } from "./tables/MessageTable.sol";
 import { Inventory, InventoryTableId } from "./tables/Inventory.sol";
+import { Position, PositionData, PositionTableId } from "./tables/Position.sol";

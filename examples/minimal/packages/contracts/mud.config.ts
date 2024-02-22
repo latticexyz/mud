@@ -36,12 +36,18 @@ export default mudConfig({
       },
       valueSchema: { amount: "uint32" },
     },
+    Position: {
+      keySchema: {
+        player: "address",
+      },
+      valueSchema: { x: "int32", y: "int32" },
+    },
   },
   modules: [
     {
       name: "KeysWithValueModule",
       root: true,
-      args: [resolveTableId("Inventory")],
+      args: [resolveTableId("Position")],
     },
   ],
 });
