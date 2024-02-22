@@ -1,13 +1,12 @@
-import { Account, Chain, Client, Hex, Transport, encodeDeployData } from "viem";
+import { Account, Address, Chain, Client, Transport, encodeDeployData } from "viem";
 import { getBalance, getBytecode, sendRawTransaction, sendTransaction, waitForTransactionReceipt } from "viem/actions";
 import deployment from "./create2/deployment.json";
 import { debug } from "./debug";
 
-// TODO: stop exporting this since it's now configurable/runtime dependent
-export const deployer = `0x${deployment.address}` as const;
+const deployer = `0x${deployment.address}` as const;
 const deployerBytecode = `0x${deployment.bytecode}` as const;
 
-export async function ensureDeployer(client: Client<Transport, Chain | undefined, Account>): Promise<Hex> {
+export async function ensureDeployer(client: Client<Transport, Chain | undefined, Account>): Promise<Address> {
   const bytecode = await getBytecode(client, { address: deployer });
   if (bytecode) {
     debug("found CREATE2 deployer at", deployer);
@@ -62,11 +61,15 @@ export async function ensureDeployer(client: Client<Transport, Chain | undefined
   );
 
   const deployReceipt = await waitForTransactionReceipt(client, { hash: deployTx });
+  if (!deployReceipt.contractAddress) {
+    throw new Error("Deploy receipt did not have contract address, was the deployer not deployed?");
+  }
+
   if (deployReceipt.contractAddress !== deployer) {
     console.warn(
       `\n  ⚠️ CREATE2 deployer created at ${deployReceipt.contractAddress} does not match the CREATE2 determinstic deployer we expected (${deployer})`
     );
   }
 
-  return deployer;
+  return deployReceipt.contractAddress;
 }

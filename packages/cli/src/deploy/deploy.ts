@@ -14,7 +14,6 @@ import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
-import { worldFactoryContracts } from "./ensureWorldFactory";
 import { randomBytes } from "crypto";
 
 type DeployOptions<configInput extends ConfigInput> = {
@@ -57,7 +56,6 @@ export async function deploy<configInput extends ConfigInput>({
     client,
     deployerAddress,
     contracts: [
-      ...worldFactoryContracts,
       ...uniqueBy(systems, (system) => getAddress(system.address)).map((system) => ({
         bytecode: system.bytecode,
         deployedBytecodeSize: system.deployedBytecodeSize,

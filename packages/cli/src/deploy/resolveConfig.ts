@@ -10,15 +10,14 @@ import {
   getCreate2Address,
   getAddress,
   hexToBytes,
-  Abi,
   bytesToHex,
   getFunctionSignature,
+  Address,
 } from "viem";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { defaultModuleContracts } from "../utils/modules/constants";
 import { getContractData } from "../utils/utils/getContractData";
 import { configToTables } from "./configToTables";
-import { deployer } from "./ensureDeployer";
 import { resourceLabel } from "./resourceLabel";
 
 // TODO: this should be replaced by https://github.com/latticexyz/mud/issues/1668
@@ -73,7 +72,6 @@ export function resolveConfig<config extends ConfigInput>({
       allowedSystemIds: system.accessListSystems.map((name) =>
         resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name })
       ),
-      // TODO: rework to not depend on deployer
       address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
       bytecode: contractData.bytecode,
       deployedBytecodeSize: contractData.deployedBytecodeSize,
