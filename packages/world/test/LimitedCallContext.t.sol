@@ -25,8 +25,12 @@ contract LimitedCallContextTest is Test {
     StoreSwitch.setStoreAddress(address(createWorld()));
   }
 
-  function callSystem(ResourceId resourceId, bytes memory callData) internal {
+  function callSystem(ResourceId resourceId, string memory functionSignature) internal {
     address system = Systems.getSystem(resourceId);
+
+    // Generate dummy calldata - any additional bytes are ignored
+    // https://ethereum.stackexchange.com/questions/66070/calldata-with-too-many-parameters
+    bytes memory callData = abi.encodeWithSignature(functionSignature, new bytes(1000));
 
     // On low level calls, the status boolean corresponds to whether expectRevert succeeded or not.
     vm.expectRevert(abi.encodeWithSelector(LimitedCallContext.UnauthorizedCallContext.selector));
@@ -35,37 +39,67 @@ contract LimitedCallContextTest is Test {
     assertTrue(success);
   }
 
-  function testTransferBalanceToNamespace() public {
-    ResourceId fromNamespaceId;
-    ResourceId toNamespaceId;
-    uint256 amount;
+  function testAccessManagementSystem() public {
+    string[4] memory functionSignaturesAccessManagement = [
+      // --- AccessManagementSystem ---
+      "grantAccess(bytes32,address)",
+      "revokeAccess(bytes32,address)",
+      "transferOwnership(bytes32,address)",
+      "renounceOwnership(bytes32)"
+    ];
 
-    callSystem(
-      BALANCE_TRANSFER_SYSTEM_ID,
-      abi.encodeCall(BalanceTransferSystem.transferBalanceToNamespace, (fromNamespaceId, toNamespaceId, amount))
-    );
+    for (uint256 i; i < functionSignaturesAccessManagement.length; i++) {
+      callSystem(ACCESS_MANAGEMENT_SYSTEM_ID, functionSignaturesAccessManagement[i]);
+    }
   }
 
-  function testTransferBalanceToAddress() public {
-    ResourceId fromNamespaceId;
-    address toAddress;
-    uint256 amount;
+  function testBalanceTransferSystem() public {
+    string[2] memory functionSignaturesBalanceTransfer = [
+      // --- BalanceTransferSystem ---
+      "transferBalanceToNamespace(bytes32,bytes32,uint256)",
+      "transferBalanceToAddress(bytes32,address,uint256)"
+    ];
 
-    callSystem(
-      BALANCE_TRANSFER_SYSTEM_ID,
-      abi.encodeCall(BalanceTransferSystem.transferBalanceToAddress, (fromNamespaceId, toAddress, amount))
-    );
+    for (uint256 i; i < functionSignaturesBalanceTransfer.length; i++) {
+      callSystem(BALANCE_TRANSFER_SYSTEM_ID, functionSignaturesBalanceTransfer[i]);
+    }
   }
 
-  function testBatchCall() public {
-    SystemCallData[] memory systemCalls;
+  function testBatchCallSystem() public {
+    string[2] memory functionSignaturesBatchCall = [
+      // --- BatchCallSystem ---
+      "batchCall((bytes32,bytes)[])",
+      "batchCallFrom((address,bytes32,bytes)[])"
+    ];
 
-    callSystem(BATCH_CALL_SYSTEM_ID, abi.encodeCall(BatchCallSystem.batchCall, (systemCalls)));
+    for (uint256 i; i < functionSignaturesBatchCall.length; i++) {
+      callSystem(BATCH_CALL_SYSTEM_ID, functionSignaturesBatchCall[i]);
+    }
   }
 
-  function testBatchCallFrom() public {
-    SystemCallFromData[] memory systemCalls;
+  function testRegistrationSystem() public {
+    string[14] memory functionSignaturesRegistration = [
+      // --- ModuleInstallationSystem ---
+      "installModule(address,bytes)",
+      // --- StoreRegistrationSystem ---
+      "registerTable(bytes32,bytes32,bytes32,bytes32,string[],string[])",
+      "registerStoreHook(bytes32,address,uint8)",
+      "unregisterStoreHook(bytes32,address)",
+      // --- WorldRegistrationSystem ---
+      "registerNamespace(bytes32)",
+      "registerSystemHook(bytes32,address,uint8)",
+      "unregisterSystemHook(bytes32,address)",
+      "registerSystem(bytes32,address,bool)",
+      "registerFunctionSelector(bytes32,string)",
+      "registerRootFunctionSelector(bytes32,string,bytes4)",
+      "registerDelegation(address,bytes32,bytes)",
+      "unregisterDelegation(address)",
+      "registerNamespaceDelegation(bytes32,bytes32,bytes)",
+      "unregisterNamespaceDelegation(bytes32)"
+    ];
 
-    callSystem(BATCH_CALL_SYSTEM_ID, abi.encodeCall(BatchCallSystem.batchCallFrom, (systemCalls)));
+    for (uint256 i; i < functionSignaturesRegistration.length; i++) {
+      callSystem(REGISTRATION_SYSTEM_ID, functionSignaturesRegistration[i]);
+    }
   }
 }
