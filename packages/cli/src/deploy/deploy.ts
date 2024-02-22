@@ -45,7 +45,6 @@ export async function deploy<configInput extends ConfigInput>({
   deployerAddress,
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   const tables = Object.values(config.tables) as Table[];
-  const systems = Object.values(config.systems);
 
   if (deployerAddress == null) {
     deployerAddress = await ensureDeployer(client);
@@ -58,7 +57,7 @@ export async function deploy<configInput extends ConfigInput>({
     client,
     deployerAddress,
     contracts: [
-      ...uniqueBy(systems, (system) => getAddress(system.getAddress(deployerAddress))).map((system) => ({
+      ...uniqueBy(config.systems, (system) => getAddress(system.getAddress(deployerAddress))).map((system) => ({
         bytecode: system.bytecode,
         deployedBytecodeSize: system.deployedBytecodeSize,
         label: `${resourceLabel(system)} system`,
@@ -85,7 +84,7 @@ export async function deploy<configInput extends ConfigInput>({
   const namespaceTxs = await ensureNamespaceOwner({
     client,
     worldDeploy,
-    resourceIds: [...tables.map((table) => table.tableId), ...systems.map((system) => system.systemId)],
+    resourceIds: [...tables.map((table) => table.tableId), ...config.systems.map((system) => system.systemId)],
   });
 
   debug("waiting for all namespace registration transactions to confirm");
@@ -102,12 +101,12 @@ export async function deploy<configInput extends ConfigInput>({
     client,
     deployerAddress,
     worldDeploy,
-    systems,
+    systems: config.systems,
   });
   const functionTxs = await ensureFunctions({
     client,
     worldDeploy,
-    functions: systems.flatMap((system) => system.functions),
+    functions: config.systems.flatMap((system) => system.functions),
   });
   const moduleTxs = await ensureModules({
     client,
