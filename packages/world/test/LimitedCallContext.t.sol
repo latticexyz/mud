@@ -10,6 +10,7 @@ import { createWorld } from "./createWorld.sol";
 
 import { SystemCallData, SystemCallFromData } from "../src/modules/init/types.sol";
 import { LimitedCallContext } from "../src/modules/init/LimitedCallContext.sol";
+import { getFunctionSignaturesAccessManagement, getFunctionSignaturesBalanceTransfer, getFunctionSignaturesBatchCall, getFunctionSignaturesRegistration } from "../src/modules/init/functionSignatures.sol";
 
 import { AccessManagementSystem } from "../src/modules/init/implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "../src/modules/init/implementations/BalanceTransferSystem.sol";
@@ -44,13 +45,7 @@ contract LimitedCallContextTest is Test {
   }
 
   function testAccessManagementSystem() public {
-    string[4] memory functionSignaturesAccessManagement = [
-      // --- AccessManagementSystem ---
-      "grantAccess(bytes32,address)",
-      "revokeAccess(bytes32,address)",
-      "transferOwnership(bytes32,address)",
-      "renounceOwnership(bytes32)"
-    ];
+    string[4] memory functionSignaturesAccessManagement = getFunctionSignaturesAccessManagement();
 
     for (uint256 i; i < functionSignaturesAccessManagement.length; i++) {
       callSystem(ACCESS_MANAGEMENT_SYSTEM_ID, functionSignaturesAccessManagement[i]);
@@ -58,11 +53,7 @@ contract LimitedCallContextTest is Test {
   }
 
   function testBalanceTransferSystem() public {
-    string[2] memory functionSignaturesBalanceTransfer = [
-      // --- BalanceTransferSystem ---
-      "transferBalanceToNamespace(bytes32,bytes32,uint256)",
-      "transferBalanceToAddress(bytes32,address,uint256)"
-    ];
+    string[2] memory functionSignaturesBalanceTransfer = getFunctionSignaturesBalanceTransfer();
 
     for (uint256 i; i < functionSignaturesBalanceTransfer.length; i++) {
       callSystem(BALANCE_TRANSFER_SYSTEM_ID, functionSignaturesBalanceTransfer[i]);
@@ -70,11 +61,7 @@ contract LimitedCallContextTest is Test {
   }
 
   function testBatchCallSystem() public {
-    string[2] memory functionSignaturesBatchCall = [
-      // --- BatchCallSystem ---
-      "batchCall((bytes32,bytes)[])",
-      "batchCallFrom((address,bytes32,bytes)[])"
-    ];
+    string[2] memory functionSignaturesBatchCall = getFunctionSignaturesBatchCall();
 
     for (uint256 i; i < functionSignaturesBatchCall.length; i++) {
       callSystem(BATCH_CALL_SYSTEM_ID, functionSignaturesBatchCall[i]);
@@ -82,25 +69,7 @@ contract LimitedCallContextTest is Test {
   }
 
   function testRegistrationSystem() public {
-    string[14] memory functionSignaturesRegistration = [
-      // --- ModuleInstallationSystem ---
-      "installModule(address,bytes)",
-      // --- StoreRegistrationSystem ---
-      "registerTable(bytes32,bytes32,bytes32,bytes32,string[],string[])",
-      "registerStoreHook(bytes32,address,uint8)",
-      "unregisterStoreHook(bytes32,address)",
-      // --- WorldRegistrationSystem ---
-      "registerNamespace(bytes32)",
-      "registerSystemHook(bytes32,address,uint8)",
-      "unregisterSystemHook(bytes32,address)",
-      "registerSystem(bytes32,address,bool)",
-      "registerFunctionSelector(bytes32,string)",
-      "registerRootFunctionSelector(bytes32,string,bytes4)",
-      "registerDelegation(address,bytes32,bytes)",
-      "unregisterDelegation(address)",
-      "registerNamespaceDelegation(bytes32,bytes32,bytes)",
-      "unregisterNamespaceDelegation(bytes32)"
-    ];
+    string[14] memory functionSignaturesRegistration = getFunctionSignaturesRegistration();
 
     for (uint256 i; i < functionSignaturesRegistration.length; i++) {
       callSystem(REGISTRATION_SYSTEM_ID, functionSignaturesRegistration[i]);
