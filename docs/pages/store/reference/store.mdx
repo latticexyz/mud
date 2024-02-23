@@ -5,7 +5,7 @@
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol)
 
 **Inherits:**
-[IStoreData](#istoredata), [IStoreRegistration](#istoreregistration), [IStoreErrors](#istoreerrors)
+[IStoreData](/store/reference/store#istoredata), [IStoreRegistration](/store/reference/store#istoreregistration), [IStoreErrors](/store/reference/store#istoreerrors)
 
 ## IStoreEvents
 
@@ -13,7 +13,7 @@
 
 ### Events
 
-### Store_SetRecord
+#### Store_SetRecord
 
 Emitted when a new record is set in the store.
 
@@ -33,7 +33,7 @@ event Store_SetRecord(
 | `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.  |
 | `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
 
-### Store_SpliceStaticData
+#### Store_SpliceStaticData
 
 Emitted when static data in the store is spliced.
 
@@ -53,7 +53,7 @@ event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uin
 | `start`    | `uint48`     | The start position in bytes for the splice operation.                 |
 | `data`     | `bytes`      | The data to write to the static data of the record at the start byte. |
 
-### Store_SpliceDynamicData
+#### Store_SpliceDynamicData
 
 Emitted when dynamic data in the store is spliced.
 
@@ -81,7 +81,7 @@ event Store_SpliceDynamicData(
 | `encodedLengths`    | `PackedCounter` | The encoded lengths of the dynamic data of the record.                                                                                                    |
 | `data`              | `bytes`         | The data to insert into the dynamic data of the record at the start byte.                                                                                 |
 
-### Store_DeleteRecord
+#### Store_DeleteRecord
 
 Emitted when a record is deleted from the store.
 
@@ -102,73 +102,73 @@ event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
 ### Errors
 
-### Store_TableAlreadyExists
+#### Store_TableAlreadyExists
 
 ```solidity
 error Store_TableAlreadyExists(ResourceId tableId, string tableIdString);
 ```
 
-### Store_TableNotFound
+#### Store_TableNotFound
 
 ```solidity
 error Store_TableNotFound(ResourceId tableId, string tableIdString);
 ```
 
-### Store_InvalidResourceType
+#### Store_InvalidResourceType
 
 ```solidity
 error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
 ```
 
-### Store_InvalidStaticDataLength
+#### Store_InvalidStaticDataLength
 
 ```solidity
 error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
 ```
 
-### Store_InvalidBounds
+#### Store_InvalidBounds
 
 ```solidity
 error Store_InvalidBounds(uint256 start, uint256 end);
 ```
 
-### Store_IndexOutOfBounds
+#### Store_IndexOutOfBounds
 
 ```solidity
 error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
 ```
 
-### Store_InvalidKeyNamesLength
+#### Store_InvalidKeyNamesLength
 
 ```solidity
 error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
 ```
 
-### Store_InvalidFieldNamesLength
+#### Store_InvalidFieldNamesLength
 
 ```solidity
 error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
 ```
 
-### Store_InvalidValueSchemaLength
+#### Store_InvalidValueSchemaLength
 
 ```solidity
 error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
 ```
 
-### Store_InvalidValueSchemaStaticLength
+#### Store_InvalidValueSchemaStaticLength
 
 ```solidity
 error Store_InvalidValueSchemaStaticLength(uint256 expected, uint256 received);
 ```
 
-### Store_InvalidValueSchemaDynamicLength
+#### Store_InvalidValueSchemaDynamicLength
 
 ```solidity
 error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
 ```
 
-### Store_InvalidSplice
+#### Store_InvalidSplice
 
 ```solidity
 error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
@@ -179,7 +179,7 @@ error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fi
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreData.sol)
 
 **Inherits:**
-[IStoreRead](#istoreread), [IStoreWrite](#istorewrite)
+[IStoreRead](/store/reference/store#istoreread), [IStoreWrite](/store/reference/store#istorewrite)
 
 The IStoreData interface includes methods for reading and writing table values.
 
@@ -187,7 +187,7 @@ _These methods are frequently invoked during runtime, so it is essential to prio
 
 ### Functions
 
-### storeVersion
+#### storeVersion
 
 Returns the version of the Store contract.
 
@@ -203,7 +203,7 @@ function storeVersion() external view returns (bytes32 version);
 
 ### Events
 
-### HelloStore
+#### HelloStore
 
 Emitted when the store is initialized.
 
@@ -223,25 +223,25 @@ event HelloStore(bytes32 indexed storeVersion);
 
 ### Functions
 
-### getFieldLayout
+#### getFieldLayout
 
 ```solidity
 function getFieldLayout(ResourceId tableId) external view returns (FieldLayout fieldLayout);
 ```
 
-### getValueSchema
+#### getValueSchema
 
 ```solidity
 function getValueSchema(ResourceId tableId) external view returns (Schema valueSchema);
 ```
 
-### getKeySchema
+#### getKeySchema
 
 ```solidity
 function getKeySchema(ResourceId tableId) external view returns (Schema keySchema);
 ```
 
-### getRecord
+#### getRecord
 
 Get full record (all fields, static and dynamic data) for the given tableId and key tuple, loading the field layout from storage
 
@@ -252,7 +252,7 @@ function getRecord(
 ) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 ```
 
-### getRecord
+#### getRecord
 
 Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given field layout
 
@@ -264,7 +264,7 @@ function getRecord(
 ) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 ```
 
-### getField
+#### getField
 
 Get a single field from the given tableId and key tuple, loading the field layout from storage
 
@@ -276,7 +276,7 @@ function getField(
 ) external view returns (bytes memory data);
 ```
 
-### getField
+#### getField
 
 Get a single field from the given tableId and key tuple, with the given field layout
 
@@ -289,7 +289,7 @@ function getField(
 ) external view returns (bytes memory data);
 ```
 
-### getStaticField
+#### getStaticField
 
 Get a single static field from the given tableId and key tuple, with the given value field layout.
 Note: the field value is left-aligned in the returned bytes32, the rest of the word is not zeroed out.
@@ -304,7 +304,7 @@ function getStaticField(
 ) external view returns (bytes32);
 ```
 
-### getDynamicField
+#### getDynamicField
 
 Get a single dynamic field from the given tableId and key tuple at the given dynamic field index.
 (Dynamic field index = field index - number of static fields)
@@ -317,7 +317,7 @@ function getDynamicField(
 ) external view returns (bytes memory);
 ```
 
-### getFieldLength
+#### getFieldLength
 
 Get the byte length of a single field from the given tableId and key tuple, loading the field layout from storage
 
@@ -329,7 +329,7 @@ function getFieldLength(
 ) external view returns (uint256);
 ```
 
-### getFieldLength
+#### getFieldLength
 
 Get the byte length of a single field from the given tableId and key tuple, with the given value field layout
 
@@ -342,7 +342,7 @@ function getFieldLength(
 ) external view returns (uint256);
 ```
 
-### getDynamicFieldLength
+#### getDynamicFieldLength
 
 Get the byte length of a single dynamic field from the given tableId and key tuple
 
@@ -354,7 +354,7 @@ function getDynamicFieldLength(
 ) external view returns (uint256);
 ```
 
-### getDynamicFieldSlice
+#### getDynamicFieldSlice
 
 Get a byte slice (including start, excluding end) of a single dynamic field from the given tableId and key tuple, with the given value field layout.
 The slice is unchecked and will return invalid data if `start`:`end` overflow.
@@ -374,11 +374,11 @@ function getDynamicFieldSlice(
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreWrite.sol)
 
 **Inherits:**
-[IStoreEvents](#istoreevents)
+[IStoreEvents](/store/reference/store#istoreevents)
 
 ### Functions
 
-### setRecord
+#### setRecord
 
 ```solidity
 function setRecord(
@@ -390,13 +390,13 @@ function setRecord(
 ) external;
 ```
 
-### spliceStaticData
+#### spliceStaticData
 
 ```solidity
 function spliceStaticData(ResourceId tableId, bytes32[] calldata keyTuple, uint48 start, bytes calldata data) external;
 ```
 
-### spliceDynamicData
+#### spliceDynamicData
 
 ```solidity
 function spliceDynamicData(
@@ -409,13 +409,13 @@ function spliceDynamicData(
 ) external;
 ```
 
-### setField
+#### setField
 
 ```solidity
 function setField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex, bytes calldata data) external;
 ```
 
-### setField
+#### setField
 
 ```solidity
 function setField(
@@ -427,7 +427,7 @@ function setField(
 ) external;
 ```
 
-### setStaticField
+#### setStaticField
 
 ```solidity
 function setStaticField(
@@ -439,7 +439,7 @@ function setStaticField(
 ) external;
 ```
 
-### setDynamicField
+#### setDynamicField
 
 ```solidity
 function setDynamicField(
@@ -450,7 +450,7 @@ function setDynamicField(
 ) external;
 ```
 
-### pushToDynamicField
+#### pushToDynamicField
 
 ```solidity
 function pushToDynamicField(
@@ -461,7 +461,7 @@ function pushToDynamicField(
 ) external;
 ```
 
-### popFromDynamicField
+#### popFromDynamicField
 
 ```solidity
 function popFromDynamicField(
@@ -472,7 +472,7 @@ function popFromDynamicField(
 ) external;
 ```
 
-### deleteRecord
+#### deleteRecord
 
 ```solidity
 function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) external;
@@ -488,7 +488,7 @@ making them less performance critical than the methods.
 
 ### Functions
 
-### registerTable
+#### registerTable
 
 ```solidity
 function registerTable(
@@ -501,13 +501,13 @@ function registerTable(
 ) external;
 ```
 
-### registerStoreHook
+#### registerStoreHook
 
 ```solidity
 function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) external;
 ```
 
-### unregisterStoreHook
+#### unregisterStoreHook
 
 ```solidity
 function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) external;
