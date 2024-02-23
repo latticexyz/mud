@@ -6,5 +6,5 @@ export default {
   "erc165-external": "ERC165 (interface)", 
   "init-module": "Init Module", 
   "init-module-implementation": "Init Module Implementation",
-  "system": "SystemCall",
+  "systemcall": "SystemCall",
 };
