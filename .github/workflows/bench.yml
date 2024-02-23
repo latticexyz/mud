@@ -31,7 +31,7 @@ jobs:
 
       - name: Generate test data
         working-directory: ./e2e
-        run: pnpm run generate-test-data-records
+        run: pnpm run generate-bench-data-bulk
 
       - name: Run benchmarks
         run: pnpm run bench
