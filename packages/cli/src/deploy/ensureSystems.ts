@@ -25,23 +25,23 @@ export async function ensureSystems({
   const systemIds = systems.map((system) => system.systemId);
   const currentAccess = worldAccess.filter(({ resourceId }) => systemIds.includes(resourceId));
   const desiredAccess = systems.flatMap((system) =>
-    system.allowedAddresses.map((address) => ({ resourceId: system.systemId, address }))
+    system.allowedAddresses.map((address) => ({ resourceId: system.systemId, address })),
   );
 
   const accessToAdd = desiredAccess.filter(
     (access) =>
       !currentAccess.some(
         ({ resourceId, address }) =>
-          resourceId === access.resourceId && getAddress(address) === getAddress(access.address)
-      )
+          resourceId === access.resourceId && getAddress(address) === getAddress(access.address),
+      ),
   );
 
   const accessToRemove = currentAccess.filter(
     (access) =>
       !desiredAccess.some(
         ({ resourceId, address }) =>
-          resourceId === access.resourceId && getAddress(address) === getAddress(access.address)
-      )
+          resourceId === access.resourceId && getAddress(address) === getAddress(access.address),
+      ),
   );
 
   // TODO: move each system access+registration to batch call to be atomic
@@ -71,8 +71,8 @@ export async function ensureSystems({
             debug(`failed to revoke access, retrying in ${delay}ms...`);
             await wait(delay);
           },
-        }
-      )
+        },
+      ),
     ),
     ...accessToAdd.map((access) =>
       pRetry(
@@ -91,16 +91,16 @@ export async function ensureSystems({
             debug(`failed to grant access, retrying in ${delay}ms...`);
             await wait(delay);
           },
-        }
-      )
+        },
+      ),
     ),
   ];
 
   const existingSystems = systems.filter((system) =>
     worldSystems.some(
       (worldSystem) =>
-        worldSystem.systemId === system.systemId && getAddress(worldSystem.address) === getAddress(system.address)
-    )
+        worldSystem.systemId === system.systemId && getAddress(worldSystem.address) === getAddress(system.address),
+    ),
   );
   if (existingSystems.length) {
     debug("existing systems", existingSystems.map(resourceLabel).join(", "));
@@ -113,15 +113,15 @@ export async function ensureSystems({
   const systemsToUpgrade = missingSystems.filter((system) =>
     worldSystems.some(
       (worldSystem) =>
-        worldSystem.systemId === system.systemId && getAddress(worldSystem.address) !== getAddress(system.address)
-    )
+        worldSystem.systemId === system.systemId && getAddress(worldSystem.address) !== getAddress(system.address),
+    ),
   );
   if (systemsToUpgrade.length) {
     debug("upgrading systems", systemsToUpgrade.map(resourceLabel).join(", "));
   }
 
   const systemsToAdd = missingSystems.filter(
-    (system) => !worldSystems.some((worldSystem) => worldSystem.systemId === system.systemId)
+    (system) => !worldSystems.some((worldSystem) => worldSystem.systemId === system.systemId),
   );
   if (systemsToAdd.length) {
     debug("registering new systems", systemsToAdd.map(resourceLabel).join(", "));
@@ -154,8 +154,8 @@ export async function ensureSystems({
           debug(`failed to register system ${resourceLabel(system)}, retrying in ${delay}ms...`);
           await wait(delay);
         },
-      }
-    )
+      },
+    ),
   );
 
   return await Promise.all([...accessTxs, ...registerTxs]);

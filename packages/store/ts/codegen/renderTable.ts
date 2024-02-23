@@ -137,7 +137,7 @@ export function renderTable(options: RenderTableOptions) {
           function ${_methodNamePrefix}register(${renderArguments([_typedStore, _typedTableId])}) internal {
             ${_store}.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
           }
-        `
+        `,
       )}
 
       ${renderFieldMethods(options)}
@@ -159,7 +159,7 @@ export function renderTable(options: RenderTableOptions) {
        * @return The dynamic (variable length) data, encoded into a sequence of bytes.
        */
       function encode(${renderArguments(
-        options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+        options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`),
       )}) internal pure returns (bytes memory, PackedCounter, bytes memory) {
         ${renderRecordData(options)}
 
@@ -194,7 +194,7 @@ function renderEncodeStatic(staticFields: RenderStaticField[]) {
      * @return The static data, encoded into a sequence of bytes.
      */
     function encodeStatic(${renderArguments(
-      staticFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+      staticFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`),
     )}) internal pure returns (bytes memory) {
       return abi.encodePacked(${renderArguments(staticFields.map(({ name }) => name))});
     }
@@ -216,7 +216,7 @@ function renderEncodeLengths(dynamicFields: RenderDynamicField[]) {
      * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
      */
     function encodeLengths(${renderArguments(
-      dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+      dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`),
     )}) internal pure returns (PackedCounter _encodedLengths) {
       // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
       unchecked {
@@ -228,7 +228,7 @@ function renderEncodeLengths(dynamicFields: RenderDynamicField[]) {
               } else {
                 return `bytes(${name}).length`;
               }
-            })
+            }),
           )}
         );
       }
@@ -251,7 +251,7 @@ function renderEncodeDynamic(dynamicFields: RenderDynamicField[]) {
      * @return The dynamic data, encoded into a sequence of bytes.
      */
     function encodeDynamic(${renderArguments(
-      dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+      dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`),
     )}) internal pure returns (bytes memory) {
       return abi.encodePacked(${renderArguments(dynamicFields.map((field) => renderEncodeFieldSingle(field)))});
     }

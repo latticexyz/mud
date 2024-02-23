@@ -136,7 +136,7 @@ export function createStorageAdapter<tables extends Tables>({
               },
             ];
           })
-          .filter(isDefined)
+          .filter(isDefined),
       ),
     };
 

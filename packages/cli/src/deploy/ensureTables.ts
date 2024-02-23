@@ -55,9 +55,9 @@ export async function ensureTables({
               debug(`failed to register table ${resourceLabel(table)}, retrying in ${delay}ms...`);
               await wait(delay);
             },
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
   }
 

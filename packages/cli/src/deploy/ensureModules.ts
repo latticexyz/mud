@@ -65,9 +65,9 @@ export async function ensureModules({
               debug(`failed to install module ${mod.name}, retrying in ${delay}ms...`);
               await wait(delay);
             },
-          }
-        )
-      )
+          },
+        ),
+      ),
     )
   ).filter(isDefined);
 }

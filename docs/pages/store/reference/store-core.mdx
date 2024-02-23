@@ -113,12 +113,12 @@ Register a new table with the given configuration.
 
 ```solidity
 function registerTable(
-    ResourceId tableId,
-    FieldLayout fieldLayout,
-    Schema keySchema,
-    Schema valueSchema,
-    string[] memory keyNames,
-    string[] memory fieldNames
+  ResourceId tableId,
+  FieldLayout fieldLayout,
+  Schema keySchema,
+  Schema valueSchema,
+  string[] memory keyNames,
+  string[] memory fieldNames
 ) internal;
 ```
 
@@ -179,11 +179,11 @@ If the field layout is available to the caller, it is recommended to use the oth
 
 ```solidity
 function setRecord(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    bytes memory staticData,
-    PackedCounter encodedLengths,
-    bytes memory dynamicData
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  bytes memory staticData,
+  PackedCounter encodedLengths,
+  bytes memory dynamicData
 ) internal;
 ```
 
@@ -208,12 +208,12 @@ event without calling hooks or modifying the state._
 
 ```solidity
 function setRecord(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    bytes memory staticData,
-    PackedCounter encodedLengths,
-    bytes memory dynamicData,
-    FieldLayout fieldLayout
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  bytes memory staticData,
+  PackedCounter encodedLengths,
+  bytes memory dynamicData,
+  FieldLayout fieldLayout
 ) internal;
 ```
 
@@ -259,12 +259,12 @@ For offchain tables, it returns early after emitting the event._
 
 ```solidity
 function spliceDynamicData(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint40 startWithinField,
-    uint40 deleteCount,
-    bytes memory data
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  uint40 startWithinField,
+  uint40 deleteCount,
+  bytes memory data
 ) internal;
 ```
 
@@ -313,11 +313,11 @@ For offchain tables, it returns early after emitting the event._
 
 ```solidity
 function setField(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  bytes memory data,
+  FieldLayout fieldLayout
 ) internal;
 ```
 
@@ -341,11 +341,11 @@ For offchain tables, it returns early after emitting the event._
 
 ```solidity
 function setStaticField(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  bytes memory data,
+  FieldLayout fieldLayout
 ) internal;
 ```
 
@@ -368,8 +368,12 @@ _This method emits a `Store_SpliceDynamicData` event, updates the data in storag
 For offchain tables, it returns early after emitting the event._
 
 ```solidity
-function setDynamicField(ResourceId tableId, bytes32[] memory keyTuple, uint8 dynamicFieldIndex, bytes memory data)
-    internal;
+function setDynamicField(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  bytes memory data
+) internal;
 ```
 
 **Parameters**
@@ -433,10 +437,10 @@ For offchain tables, it returns early after emitting the event._
 
 ```solidity
 function pushToDynamicField(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    bytes memory dataToPush
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  bytes memory dataToPush
 ) internal;
 ```
 
@@ -459,10 +463,10 @@ For offchain tables, it returns early after emitting the event._
 
 ```solidity
 function popFromDynamicField(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint256 byteLengthToPop
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  uint256 byteLengthToPop
 ) internal;
 ```
 
@@ -483,10 +487,10 @@ _This function internally calls another overload of `getRecord`, loading the fie
 If the field layout is available to the caller, it is recommended to use the other overload to avoid an additional storage read._
 
 ```solidity
-function getRecord(ResourceId tableId, bytes32[] memory keyTuple)
-    internal
-    view
-    returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+function getRecord(
+  ResourceId tableId,
+  bytes32[] memory keyTuple
+) internal view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 ```
 
 **Parameters**
@@ -509,10 +513,11 @@ function getRecord(ResourceId tableId, bytes32[] memory keyTuple)
 Get the full record (all fields, static and dynamic data) for the given table ID and key tuple, with the given field layout.
 
 ```solidity
-function getRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout)
-    internal
-    view
-    returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+function getRecord(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  FieldLayout fieldLayout
+) internal view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 ```
 
 **Parameters**
@@ -538,10 +543,7 @@ Get a single field from the given table ID and key tuple.
 _This function internally calls another overload of `getField`, loading the field layout from storage._
 
 ```solidity
-function getField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex)
-    internal
-    view
-    returns (bytes memory);
+function getField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex) internal view returns (bytes memory);
 ```
 
 **Parameters**
@@ -563,10 +565,12 @@ function getField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldInde
 Get a single field from the given table ID and key tuple, with the given field layout.
 
 ```solidity
-function getField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    internal
-    view
-    returns (bytes memory);
+function getField(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) internal view returns (bytes memory);
 ```
 
 **Parameters**
@@ -592,10 +596,12 @@ _The field value is left-aligned in the returned bytes32, the rest of the word i
 Consumers are expected to truncate the returned value as needed._
 
 ```solidity
-function getStaticField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    internal
-    view
-    returns (bytes32);
+function getStaticField(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) internal view returns (bytes32);
 ```
 
 **Parameters**
@@ -618,10 +624,11 @@ function getStaticField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fie
 Get a single dynamic field from the given table ID and key tuple.
 
 ```solidity
-function getDynamicField(ResourceId tableId, bytes32[] memory keyTuple, uint8 dynamicFieldIndex)
-    internal
-    view
-    returns (bytes memory);
+function getDynamicField(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex
+) internal view returns (bytes memory);
 ```
 
 **Parameters**
@@ -646,10 +653,11 @@ _This function internally calls another overload of `getFieldLength`, loading th
 If the field layout is available to the caller, it is recommended to use the other overload to avoid an additional storage read._
 
 ```solidity
-function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex)
-    internal
-    view
-    returns (uint256);
+function getFieldLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex
+) internal view returns (uint256);
 ```
 
 **Parameters**
@@ -671,10 +679,12 @@ function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fie
 Get the byte length of a single field from the given table ID and key tuple.
 
 ```solidity
-function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    internal
-    view
-    returns (uint256);
+function getFieldLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) internal view returns (uint256);
 ```
 
 **Parameters**
@@ -697,10 +707,11 @@ function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fie
 Get the byte length of a single dynamic field from the given table ID and key tuple.
 
 ```solidity
-function getDynamicFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 dynamicFieldIndex)
-    internal
-    view
-    returns (uint256);
+function getDynamicFieldLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex
+) internal view returns (uint256);
 ```
 
 **Parameters**
@@ -723,11 +734,11 @@ Get a byte slice (including start, excluding end) of a single dynamic field from
 
 ```solidity
 function getDynamicFieldSlice(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint256 start,
-    uint256 end
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  uint256 start,
+  uint256 end
 ) internal view returns (bytes memory);
 ```
 
@@ -755,7 +766,11 @@ Emitted when a new record is set in the store.
 
 ```solidity
 event Store_SetRecord(
-    ResourceId indexed tableId, bytes32[] keyTuple, bytes staticData, PackedCounter encodedLengths, bytes dynamicData
+  ResourceId indexed tableId,
+  bytes32[] keyTuple,
+  bytes staticData,
+  PackedCounter encodedLengths,
+  bytes dynamicData
 );
 ```
 
@@ -795,13 +810,13 @@ Emitted when dynamic data in the store is spliced.
 
 ```solidity
 event Store_SpliceDynamicData(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    uint8 dynamicFieldIndex,
-    uint48 start,
-    uint40 deleteCount,
-    PackedCounter encodedLengths,
-    bytes data
+  ResourceId indexed tableId,
+  bytes32[] keyTuple,
+  uint8 dynamicFieldIndex,
+  uint48 start,
+  uint40 deleteCount,
+  PackedCounter encodedLengths,
+  bytes data
 );
 ```
 
@@ -875,13 +890,13 @@ It reverts with `Store_IndexOutOfBounds` if the start index is larger than the p
 
 ```solidity
 function _spliceDynamicData(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint40 startWithinField,
-    uint40 deleteCount,
-    bytes memory data,
-    PackedCounter previousEncodedLengths
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  uint40 startWithinField,
+  uint40 deleteCount,
+  bytes memory data,
+  PackedCounter previousEncodedLengths
 ) internal;
 ```
 
@@ -902,10 +917,11 @@ function _spliceDynamicData(
 Get full static data for the given table ID and key tuple, with the given length in bytes.
 
 ```solidity
-function _getStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint256 length)
-    internal
-    view
-    returns (bytes memory);
+function _getStaticData(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint256 length
+) internal view returns (bytes memory);
 ```
 
 **Parameters**
@@ -927,10 +943,12 @@ function _getStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint256 l
 Get a single static field from the given table ID and key tuple, with the given value field layout.
 
 ```solidity
-function _getStaticFieldBytes(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    internal
-    view
-    returns (bytes memory);
+function _getStaticFieldBytes(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) internal view returns (bytes memory);
 ```
 
 **Parameters**
@@ -1016,10 +1034,11 @@ function _getStaticDataOffset(FieldLayout fieldLayout, uint8 fieldIndex) interna
 Compute the storage location based on table ID, key tuple, and dynamic field index.
 
 ```solidity
-function _getDynamicDataLocation(ResourceId tableId, bytes32[] memory keyTuple, uint8 dynamicFieldIndex)
-    internal
-    pure
-    returns (uint256);
+function _getDynamicDataLocation(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex
+) internal pure returns (uint256);
 ```
 
 **Parameters**
@@ -1062,10 +1081,10 @@ function _getDynamicDataLengthLocation(ResourceId tableId, bytes32[] memory keyT
 Load the encoded dynamic data length from storage for the given table ID and key tuple.
 
 ```solidity
-function _loadEncodedDynamicDataLength(ResourceId tableId, bytes32[] memory keyTuple)
-    internal
-    view
-    returns (PackedCounter);
+function _loadEncodedDynamicDataLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple
+) internal view returns (PackedCounter);
 ```
 
 **Parameters**
@@ -1195,11 +1214,10 @@ function getKeySchema(ResourceId tableId) public view virtual returns (Schema ke
 Fetches a record from a specified table using a provided key tuple.
 
 ```solidity
-function getRecord(ResourceId tableId, bytes32[] calldata keyTuple)
-    public
-    view
-    virtual
-    returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+function getRecord(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple
+) public view virtual returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 ```
 
 **Parameters**
@@ -1222,11 +1240,11 @@ function getRecord(ResourceId tableId, bytes32[] calldata keyTuple)
 Fetches a record from a specified table using a provided key tuple and field layout.
 
 ```solidity
-function getRecord(ResourceId tableId, bytes32[] calldata keyTuple, FieldLayout fieldLayout)
-    public
-    view
-    virtual
-    returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+function getRecord(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  FieldLayout fieldLayout
+) public view virtual returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 ```
 
 **Parameters**
@@ -1253,11 +1271,11 @@ _This overload loads the FieldLayout from storage. If the table's FieldLayout is
 to the caller, it should be passed in to the other overload to avoid the storage read._
 
 ```solidity
-function getField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex)
-    public
-    view
-    virtual
-    returns (bytes memory data);
+function getField(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 fieldIndex
+) public view virtual returns (bytes memory data);
 ```
 
 **Parameters**
@@ -1279,11 +1297,12 @@ function getField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIn
 Retrieves data for a specified field in a record.
 
 ```solidity
-function getField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    public
-    view
-    virtual
-    returns (bytes memory data);
+function getField(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) public view virtual returns (bytes memory data);
 ```
 
 **Parameters**
@@ -1306,11 +1325,12 @@ function getField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIn
 Retrieves data for a specific static (fixed length) field in a record.
 
 ```solidity
-function getStaticField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    public
-    view
-    virtual
-    returns (bytes32 data);
+function getStaticField(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) public view virtual returns (bytes32 data);
 ```
 
 **Parameters**
@@ -1333,11 +1353,11 @@ function getStaticField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 f
 Retrieves data for a specific dynamic (variable length) field in a record.
 
 ```solidity
-function getDynamicField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 dynamicFieldIndex)
-    public
-    view
-    virtual
-    returns (bytes memory data);
+function getDynamicField(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 dynamicFieldIndex
+) public view virtual returns (bytes memory data);
 ```
 
 **Parameters**
@@ -1362,11 +1382,11 @@ _This overload loads the FieldLayout from storage. If the table's FieldLayout is
 to the caller, it should be passed in to the other overload to avoid the storage read._
 
 ```solidity
-function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex)
-    public
-    view
-    virtual
-    returns (uint256);
+function getFieldLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex
+) public view virtual returns (uint256);
 ```
 
 **Parameters**
@@ -1388,11 +1408,12 @@ function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fie
 Calculates the length of a specified field in a record.
 
 ```solidity
-function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    public
-    view
-    virtual
-    returns (uint256);
+function getFieldLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) public view virtual returns (uint256);
 ```
 
 **Parameters**
@@ -1415,11 +1436,11 @@ function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fie
 Calculates the length of a specified dynamic (variable length) field in a record.
 
 ```solidity
-function getDynamicFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 dynamicFieldIndex)
-    public
-    view
-    virtual
-    returns (uint256);
+function getDynamicFieldLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex
+) public view virtual returns (uint256);
 ```
 
 **Parameters**
@@ -1442,11 +1463,11 @@ Retrieves a slice of a dynamic (variable length) field.
 
 ```solidity
 function getDynamicFieldSlice(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint256 start,
-    uint256 end
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  uint256 start,
+  uint256 end
 ) public view virtual returns (bytes memory);
 ```
 
@@ -1632,12 +1653,12 @@ _Registers a table with specified configurations._
 
 ```solidity
 function registerTable(
-    ResourceId tableId,
-    FieldLayout fieldLayout,
-    Schema keySchema,
-    Schema valueSchema,
-    string[] memory keyNames,
-    string[] memory fieldNames
+  ResourceId tableId,
+  FieldLayout fieldLayout,
+  Schema keySchema,
+  Schema valueSchema,
+  string[] memory keyNames,
+  string[] memory fieldNames
 ) internal;
 ```
 
@@ -1658,11 +1679,11 @@ _Sets a record in the store._
 
 ```solidity
 function setRecord(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    bytes memory staticData,
-    PackedCounter encodedLengths,
-    bytes memory dynamicData
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  bytes memory staticData,
+  PackedCounter encodedLengths,
+  bytes memory dynamicData
 ) internal;
 ```
 
@@ -1699,12 +1720,12 @@ _Splices the dynamic data for a given table ID, key tuple, and dynamic field ind
 
 ```solidity
 function spliceDynamicData(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint40 startWithinField,
-    uint40 deleteCount,
-    bytes memory data
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  uint40 startWithinField,
+  uint40 deleteCount,
+  bytes memory data
 ) internal;
 ```
 
@@ -1742,11 +1763,11 @@ _Sets the data for a specific field in a record, considering a specific field la
 
 ```solidity
 function setField(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  bytes memory data,
+  FieldLayout fieldLayout
 ) internal;
 ```
 
@@ -1766,11 +1787,11 @@ _Sets the data for a specific static (fixed length) field in a record, consideri
 
 ```solidity
 function setStaticField(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  bytes memory data,
+  FieldLayout fieldLayout
 ) internal;
 ```
 
@@ -1789,8 +1810,12 @@ function setStaticField(
 _Sets the value of a specific dynamic (variable-length) field in a record._
 
 ```solidity
-function setDynamicField(ResourceId tableId, bytes32[] memory keyTuple, uint8 dynamicFieldIndex, bytes memory data)
-    internal;
+function setDynamicField(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  bytes memory data
+) internal;
 ```
 
 **Parameters**
@@ -1808,10 +1833,10 @@ _Appends data to a specific dynamic (variable length) field of a record._
 
 ```solidity
 function pushToDynamicField(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    bytes memory dataToPush
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  bytes memory dataToPush
 ) internal;
 ```
 
@@ -1830,10 +1855,10 @@ _Removes data from the end of a specific dynamic (variable length) field of a re
 
 ```solidity
 function popFromDynamicField(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint256 byteLengthToPop
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  uint256 byteLengthToPop
 ) internal;
 ```
 
@@ -1866,10 +1891,10 @@ function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) internal;
 _Retrieves a record from a table._
 
 ```solidity
-function getRecord(ResourceId tableId, bytes32[] memory keyTuple)
-    internal
-    view
-    returns (bytes memory, PackedCounter, bytes memory);
+function getRecord(
+  ResourceId tableId,
+  bytes32[] memory keyTuple
+) internal view returns (bytes memory, PackedCounter, bytes memory);
 ```
 
 **Parameters**
@@ -1892,10 +1917,11 @@ function getRecord(ResourceId tableId, bytes32[] memory keyTuple)
 _Retrieves a record from a table with a specific layout._
 
 ```solidity
-function getRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout)
-    internal
-    view
-    returns (bytes memory, PackedCounter, bytes memory);
+function getRecord(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  FieldLayout fieldLayout
+) internal view returns (bytes memory, PackedCounter, bytes memory);
 ```
 
 **Parameters**
@@ -1919,10 +1945,7 @@ function getRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fi
 _Retrieves a specific field from a record._
 
 ```solidity
-function getField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex)
-    internal
-    view
-    returns (bytes memory);
+function getField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex) internal view returns (bytes memory);
 ```
 
 **Parameters**
@@ -1944,10 +1967,12 @@ function getField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldInde
 _Retrieves a specific field from a record with a given layout._
 
 ```solidity
-function getField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    internal
-    view
-    returns (bytes memory);
+function getField(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) internal view returns (bytes memory);
 ```
 
 **Parameters**
@@ -1970,10 +1995,12 @@ function getField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldInde
 _Retrieves a specific static (fixed length) field from a record with a given layout._
 
 ```solidity
-function getStaticField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    internal
-    view
-    returns (bytes32);
+function getStaticField(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) internal view returns (bytes32);
 ```
 
 **Parameters**
@@ -1996,10 +2023,11 @@ function getStaticField(ResourceId tableId, bytes32[] memory keyTuple, uint8 fie
 _Retrieves a specific dynamic (variable length) field from a record._
 
 ```solidity
-function getDynamicField(ResourceId tableId, bytes32[] memory keyTuple, uint8 dynamicFieldIndex)
-    internal
-    view
-    returns (bytes memory);
+function getDynamicField(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex
+) internal view returns (bytes memory);
 ```
 
 **Parameters**
@@ -2021,10 +2049,11 @@ function getDynamicField(ResourceId tableId, bytes32[] memory keyTuple, uint8 dy
 _Retrieves the length of a specific field in a record._
 
 ```solidity
-function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex)
-    internal
-    view
-    returns (uint256);
+function getFieldLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex
+) internal view returns (uint256);
 ```
 
 **Parameters**
@@ -2046,10 +2075,12 @@ function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fie
 _Retrieves the length of a specific field in a record with a given layout._
 
 ```solidity
-function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    internal
-    view
-    returns (uint256);
+function getFieldLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) internal view returns (uint256);
 ```
 
 **Parameters**
@@ -2072,10 +2103,11 @@ function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fie
 _Retrieves the length of a specific dynamic (variable length) field in a record._
 
 ```solidity
-function getDynamicFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 dynamicFieldIndex)
-    internal
-    view
-    returns (uint256);
+function getDynamicFieldLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex
+) internal view returns (uint256);
 ```
 
 **Parameters**
@@ -2098,11 +2130,11 @@ _Retrieves a slice of a dynamic (variable length) field from a record._
 
 ```solidity
 function getDynamicFieldSlice(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint256 start,
-    uint256 end
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  uint256 start,
+  uint256 end
 ) internal view returns (bytes memory);
 ```
 
@@ -2130,6 +2162,6 @@ _Represents the layout of the storage slot (currently just the address)_
 
 ```solidity
 struct StorageSlotLayout {
-    address storeAddress;
+  address storeAddress;
 }
 ```

@@ -642,8 +642,11 @@ Filter a hook from the hook list by its address.
 _This function writes the updated hook list to the table in place._
 
 ```solidity
-function filterListByAddress(ResourceId hookTableId, ResourceId resourceWithHooks, address hookAddressToRemove)
-    internal;
+function filterListByAddress(
+  ResourceId hookTableId,
+  ResourceId resourceWithHooks,
+  address hookAddressToRemove
+) internal;
 ```
 
 **Parameters**
@@ -1551,8 +1554,14 @@ uint8 constant AFTER_DELETE_RECORD = 1 << 7;
 _Bitmap to enable all hooks._
 
 ```solidity
-uint8 constant ALL = BEFORE_SET_RECORD | AFTER_SET_RECORD | BEFORE_SPLICE_STATIC_DATA | AFTER_SPLICE_STATIC_DATA
-    | BEFORE_SPLICE_DYNAMIC_DATA | AFTER_SPLICE_DYNAMIC_DATA | BEFORE_DELETE_RECORD | AFTER_DELETE_RECORD;
+uint8 constant ALL = BEFORE_SET_RECORD |
+  AFTER_SET_RECORD |
+  BEFORE_SPLICE_STATIC_DATA |
+  AFTER_SPLICE_STATIC_DATA |
+  BEFORE_SPLICE_DYNAMIC_DATA |
+  AFTER_SPLICE_DYNAMIC_DATA |
+  BEFORE_DELETE_RECORD |
+  AFTER_DELETE_RECORD;
 ```
 
 #### BEFORE_ALL
@@ -1560,8 +1569,10 @@ uint8 constant ALL = BEFORE_SET_RECORD | AFTER_SET_RECORD | BEFORE_SPLICE_STATIC
 _Bitmap to enable all "before" hooks._
 
 ```solidity
-uint8 constant BEFORE_ALL =
-    BEFORE_SET_RECORD | BEFORE_SPLICE_STATIC_DATA | BEFORE_SPLICE_DYNAMIC_DATA | BEFORE_DELETE_RECORD;
+uint8 constant BEFORE_ALL = BEFORE_SET_RECORD |
+  BEFORE_SPLICE_STATIC_DATA |
+  BEFORE_SPLICE_DYNAMIC_DATA |
+  BEFORE_DELETE_RECORD;
 ```
 
 #### AFTER_ALL
@@ -1569,7 +1580,10 @@ uint8 constant BEFORE_ALL =
 _Bitmap to enable all "after" hooks._
 
 ```solidity
-uint8 constant AFTER_ALL = AFTER_SET_RECORD | AFTER_SPLICE_STATIC_DATA | AFTER_SPLICE_DYNAMIC_DATA | AFTER_DELETE_RECORD;
+uint8 constant AFTER_ALL = AFTER_SET_RECORD |
+  AFTER_SPLICE_STATIC_DATA |
+  AFTER_SPLICE_DYNAMIC_DATA |
+  AFTER_DELETE_RECORD;
 ```
 
 ## storeResourceTypes.sol constants

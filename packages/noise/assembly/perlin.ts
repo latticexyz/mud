@@ -35,13 +35,13 @@ export function perlin(_x: i32, _y: i32, _z: i32, denom: i32): f64 {
     lerp(
       v,
       lerp(u, grad(p[AA], x, y, z), grad(p[BA], x - 1, y, z)),
-      lerp(u, grad(p[AB], x, y - 1, z), grad(p[BB], x - 1, y - 1, z))
+      lerp(u, grad(p[AB], x, y - 1, z), grad(p[BB], x - 1, y - 1, z)),
     ),
     lerp(
       v,
       lerp(u, grad(p[AA + 1], x, y, z - 1), grad(p[BA + 1], x - 1, y, z - 1)),
-      lerp(u, grad(p[AB + 1], x, y - 1, z - 1), grad(p[BB + 1], x - 1, y - 1, z - 1))
-    )
+      lerp(u, grad(p[AB + 1], x, y - 1, z - 1), grad(p[BB + 1], x - 1, y - 1, z - 1)),
+    ),
   );
 
   // Shift to range from 0 to 1

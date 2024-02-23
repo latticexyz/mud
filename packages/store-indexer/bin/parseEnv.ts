@@ -22,7 +22,7 @@ export const indexerEnvSchema = z.intersection(
       RPC_HTTP_URL: z.string().optional(),
       RPC_WS_URL: z.string(),
     }),
-  ])
+  ]),
 );
 
 export function parseEnv<TSchema extends ZodTypeAny>(envSchema: TSchema): z.infer<TSchema> {

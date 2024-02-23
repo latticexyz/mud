@@ -31,11 +31,11 @@ export async function ensureContract({
 
   if (deployedBytecodeSize > contractSizeLimit) {
     console.warn(
-      `\nBytecode for ${label} (${deployedBytecodeSize} bytes) is over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`
+      `\nBytecode for ${label} (${deployedBytecodeSize} bytes) is over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
     );
   } else if (deployedBytecodeSize > contractSizeLimit * 0.95) {
     console.warn(
-      `\nBytecode for ${label} (${deployedBytecodeSize} bytes) is almost over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`
+      `\nBytecode for ${label} (${deployedBytecodeSize} bytes) is almost over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
     );
   }
 
@@ -55,7 +55,7 @@ export async function ensureContract({
           debug(`failed to deploy ${label}, retrying in ${delay}ms...`);
           await wait(delay);
         },
-      }
+      },
     ),
   ];
 }

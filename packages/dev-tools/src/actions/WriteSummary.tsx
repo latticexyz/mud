@@ -80,7 +80,7 @@ export function WriteSummary({ write }: Props) {
       <summary
         className={twMerge(
           "px-2 py-1 rounded flex items-center gap-2 border-2 border-transparent border-dashed cursor-pointer",
-          isPending ? "border-white/20 cursor-default" : isRevert ? "bg-red-800" : "bg-slate-700"
+          isPending ? "border-white/20 cursor-default" : isRevert ? "bg-red-800" : "bg-slate-700",
         )}
       >
         <div className="flex-1 font-mono text-white whitespace-nowrap overflow-hidden text-ellipsis">
@@ -97,7 +97,7 @@ export function WriteSummary({ write }: Props) {
             target="_blank"
             className={twMerge(
               "flex-none font-mono text-xs text-white/40",
-              blockExplorer ? "hover:text-white/60 hover:underline" : null
+              blockExplorer ? "hover:text-white/60 hover:underline" : null,
             )}
             title={transactionReceipt.value.blockNumber.toString()}
           >
@@ -110,7 +110,7 @@ export function WriteSummary({ write }: Props) {
             target="_blank"
             className={twMerge(
               "flex-none font-mono text-xs text-white/40",
-              blockExplorer ? "hover:text-white/60 hover:underline" : null
+              blockExplorer ? "hover:text-white/60 hover:underline" : null,
             )}
             title={hash.value}
           >

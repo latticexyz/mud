@@ -26,7 +26,7 @@ describe("keccak256", () => {
       { t: "uint32", v: x },
       { t: "uint32", v: y },
       { t: "uint32", v: scale },
-      { t: "uint32", v: seed }
+      { t: "uint32", v: seed },
     )!;
     const encodedString = encodePackedU32([x, y, scale, seed]);
     const testHash = "0x" + keccak256(encodedString, true);

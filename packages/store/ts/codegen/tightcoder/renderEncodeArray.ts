@@ -22,7 +22,7 @@ export function renderEncodeArray() {
           renderTightCoderEncode({
             internalTypeId: staticAbiType,
             staticByteLength: staticAbiTypeToByteLength[staticAbiType],
-          })
+          }),
         )
         .join("\n")}
       }

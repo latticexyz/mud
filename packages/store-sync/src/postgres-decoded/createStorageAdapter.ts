@@ -44,7 +44,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
     // TODO: cache these inside `getTables`?
     const tables = await getTables(
       database,
-      logs.map((log) => ({ address: log.address, tableId: log.args.tableId }))
+      logs.map((log) => ({ address: log.address, tableId: log.args.tableId })),
     );
 
     // TODO: check if DB schema/table was created?
@@ -56,7 +56,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
     await database.transaction(async (tx) => {
       for (const log of logs) {
         const table = tables.find(
-          (table) => getAddress(table.address) === getAddress(log.address) && table.tableId === log.args.tableId
+          (table) => getAddress(table.address) === getAddress(log.address) && table.tableId === log.args.tableId,
         );
         if (!table) {
           const { namespace, name } = hexToResource(log.args.tableId);
@@ -80,8 +80,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               and(
                 eq(internalTables.recordsTable.address, log.address),
                 eq(internalTables.recordsTable.tableId, log.args.tableId),
-                eq(internalTables.recordsTable.keyBytes, keyBytes)
-              )
+                eq(internalTables.recordsTable.keyBytes, keyBytes),
+              ),
             )
             .limit(1)
             // Get the first record in a way that returns a possible `undefined`

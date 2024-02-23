@@ -26,16 +26,16 @@ export function queryLogs(sql: Sql, opts: z.infer<typeof input>): PendingQuery<R
             sql`table_id = ${hexToBytes(filter.tableId)}`,
             filter.key0 != null ? sql`key0 = ${hexToBytes(filter.key0)}` : null,
             filter.key1 != null ? sql`key1 = ${hexToBytes(filter.key1)}` : null,
-          ].filter(isNotNull)
-        )
+          ].filter(isNotNull),
+        ),
       )
     : opts.address != null
-    ? [sql`address = ${hexToBytes(opts.address)}`]
-    : [];
+      ? [sql`address = ${hexToBytes(opts.address)}`]
+      : [];
 
   const where = sql`WHERE ${and(
     sql,
-    [sql`is_deleted != true`, conditions.length ? or(sql, conditions) : null].filter(isNotNull)
+    [sql`is_deleted != true`, conditions.length ? or(sql, conditions) : null].filter(isNotNull),
   )}`;
 
   // TODO: implement bytea <> hex columns via custom types: https://github.com/porsager/postgres#custom-types

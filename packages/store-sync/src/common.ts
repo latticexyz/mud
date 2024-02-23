@@ -13,7 +13,7 @@ export const storeTables = resolveConfig(storeConfig).tables;
 export const worldTables = resolveConfig(worldConfig).tables;
 
 export const internalTableIds = [...Object.values(storeTables), ...Object.values(worldTables)].map(
-  (table) => table.tableId
+  (table) => table.tableId,
 );
 
 export type ChainId = number;

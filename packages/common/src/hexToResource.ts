@@ -5,7 +5,7 @@ import { resourceTypeIds } from "./resourceToHex";
 import { ReverseMap } from "./type-utils/common";
 
 const resourceTypeIdToType = Object.fromEntries(
-  Object.entries(resourceTypeIds).map(([key, value]) => [value, key])
+  Object.entries(resourceTypeIds).map(([key, value]) => [value, key]),
 ) as ReverseMap<typeof resourceTypeIds>;
 
 function getResourceType(resourceTypeId: string): ResourceType | undefined {
