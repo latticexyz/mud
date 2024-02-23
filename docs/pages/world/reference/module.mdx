@@ -26,9 +26,12 @@ Checks if the given interfaceId is supported by this contract.
 _Overrides the functionality from IERC165 and WorldContextConsumer to check for supported interfaces._
 
 ```solidity
-function supportsInterface(
-  bytes4 interfaceId
-) public pure virtual override(IERC165, WorldContextConsumer) returns (bool);
+function supportsInterface(bytes4 interfaceId)
+    public
+    pure
+    virtual
+    override(IERC165, WorldContextConsumer)
+    returns (bool);
 ```
 
 **Parameters**

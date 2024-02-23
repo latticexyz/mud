@@ -43,10 +43,10 @@ address internal immutable registrationSystem;
 
 ```solidity
 constructor(
-  AccessManagementSystem _accessManagementSystem,
-  BalanceTransferSystem _balanceTransferSystem,
-  BatchCallSystem _batchCallSystem,
-  RegistrationSystem _registrationSystem
+    AccessManagementSystem _accessManagementSystem,
+    BalanceTransferSystem _balanceTransferSystem,
+    BatchCallSystem _batchCallSystem,
+    RegistrationSystem _registrationSystem
 );
 ```
 
@@ -129,9 +129,8 @@ _Resource ID for access management system._
 _This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name._
 
 ```solidity
-ResourceId constant ACCESS_MANAGEMENT_SYSTEM_ID = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("AccessManagement")))
-);
+ResourceId constant ACCESS_MANAGEMENT_SYSTEM_ID =
+    ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("AccessManagement"))));
 ```
 
 #### BALANCE_TRANSFER_SYSTEM_ID
@@ -141,9 +140,8 @@ _Resource ID for balance transfer system._
 _This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name._
 
 ```solidity
-ResourceId constant BALANCE_TRANSFER_SYSTEM_ID = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("BalanceTransfer")))
-);
+ResourceId constant BALANCE_TRANSFER_SYSTEM_ID =
+    ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("BalanceTransfer"))));
 ```
 
 #### BATCH_CALL_SYSTEM_ID
@@ -153,9 +151,8 @@ _Resource ID for batch call system._
 _This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name._
 
 ```solidity
-ResourceId constant BATCH_CALL_SYSTEM_ID = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("BatchCall")))
-);
+ResourceId constant BATCH_CALL_SYSTEM_ID =
+    ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("BatchCall"))));
 ```
 
 #### REGISTRATION_SYSTEM_ID
@@ -165,9 +162,8 @@ _Resource ID for core registration system._
 _This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name._
 
 ```solidity
-ResourceId constant REGISTRATION_SYSTEM_ID = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("Registration")))
-);
+ResourceId constant REGISTRATION_SYSTEM_ID =
+    ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("Registration"))));
 ```
 
 ## RegistrationSystem
@@ -237,8 +233,8 @@ _Used to represent a call to a specific system identified by a ResourceId._
 
 ```solidity
 struct SystemCallData {
-  ResourceId systemId;
-  bytes callData;
+    ResourceId systemId;
+    bytes callData;
 }
 ```
 
@@ -252,8 +248,8 @@ _Used to represent a call from a specific address to a specific system._
 
 ```solidity
 struct SystemCallFromData {
-  address from;
-  ResourceId systemId;
-  bytes callData;
+    address from;
+    ResourceId systemId;
+    bytes callData;
 }
 ```

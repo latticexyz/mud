@@ -150,7 +150,10 @@ appending the context values (like msg.sender and msg.value) to the calldata for
 Appends context values to the given calldata.
 
 ```solidity
-function appendContext(bytes memory callData, address msgSender, uint256 msgValue) internal pure returns (bytes memory);
+function appendContext(bytes memory callData, address msgSender, uint256 msgValue)
+    internal
+    pure
+    returns (bytes memory);
 ```
 
 **Parameters**
@@ -172,12 +175,9 @@ function appendContext(bytes memory callData, address msgSender, uint256 msgValu
 Makes a call to the target contract with context values appended to the calldata.
 
 ```solidity
-function callWithContext(
-  address msgSender,
-  uint256 msgValue,
-  address target,
-  bytes memory callData
-) internal returns (bool success, bytes memory data);
+function callWithContext(address msgSender, uint256 msgValue, address target, bytes memory callData)
+    internal
+    returns (bool success, bytes memory data);
 ```
 
 **Parameters**
@@ -201,12 +201,9 @@ function callWithContext(
 Makes a delegatecall to the target contract with context values appended to the calldata.
 
 ```solidity
-function delegatecallWithContext(
-  address msgSender,
-  uint256 msgValue,
-  address target,
-  bytes memory callData
-) internal returns (bool success, bytes memory data);
+function delegatecallWithContext(address msgSender, uint256 msgValue, address target, bytes memory callData)
+    internal
+    returns (bool success, bytes memory data);
 ```
 
 **Parameters**
@@ -232,12 +229,9 @@ Makes a call to the target contract with context values appended to the calldata
 _Revert in the case of failure._
 
 ```solidity
-function callWithContextOrRevert(
-  address msgSender,
-  uint256 msgValue,
-  address target,
-  bytes memory callData
-) internal returns (bytes memory data);
+function callWithContextOrRevert(address msgSender, uint256 msgValue, address target, bytes memory callData)
+    internal
+    returns (bytes memory data);
 ```
 
 **Parameters**
@@ -262,12 +256,9 @@ Makes a delegatecall to the target contract with context values appended to the 
 _Revert in the case of failure._
 
 ```solidity
-function delegatecallWithContextOrRevert(
-  address msgSender,
-  uint256 msgValue,
-  address target,
-  bytes memory callData
-) internal returns (bytes memory data);
+function delegatecallWithContextOrRevert(address msgSender, uint256 msgValue, address target, bytes memory callData)
+    internal
+    returns (bytes memory data);
 ```
 
 **Parameters**
