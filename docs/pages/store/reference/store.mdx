@@ -246,10 +246,10 @@ function getKeySchema(ResourceId tableId) external view returns (Schema keySchem
 Get full record (all fields, static and dynamic data) for the given tableId and key tuple, loading the field layout from storage
 
 ```solidity
-function getRecord(
-  ResourceId tableId,
-  bytes32[] calldata keyTuple
-) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+function getRecord(ResourceId tableId, bytes32[] calldata keyTuple)
+    external
+    view
+    returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 ```
 
 #### getRecord
@@ -257,11 +257,10 @@ function getRecord(
 Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given field layout
 
 ```solidity
-function getRecord(
-  ResourceId tableId,
-  bytes32[] calldata keyTuple,
-  FieldLayout fieldLayout
-) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+function getRecord(ResourceId tableId, bytes32[] calldata keyTuple, FieldLayout fieldLayout)
+    external
+    view
+    returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 ```
 
 #### getField
@@ -269,11 +268,10 @@ function getRecord(
 Get a single field from the given tableId and key tuple, loading the field layout from storage
 
 ```solidity
-function getField(
-  ResourceId tableId,
-  bytes32[] calldata keyTuple,
-  uint8 fieldIndex
-) external view returns (bytes memory data);
+function getField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex)
+    external
+    view
+    returns (bytes memory data);
 ```
 
 #### getField
@@ -281,12 +279,10 @@ function getField(
 Get a single field from the given tableId and key tuple, with the given field layout
 
 ```solidity
-function getField(
-  ResourceId tableId,
-  bytes32[] calldata keyTuple,
-  uint8 fieldIndex,
-  FieldLayout fieldLayout
-) external view returns (bytes memory data);
+function getField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
+    external
+    view
+    returns (bytes memory data);
 ```
 
 #### getStaticField
@@ -296,12 +292,10 @@ Note: the field value is left-aligned in the returned bytes32, the rest of the w
 Consumers are expected to truncate the returned value as needed.
 
 ```solidity
-function getStaticField(
-  ResourceId tableId,
-  bytes32[] calldata keyTuple,
-  uint8 fieldIndex,
-  FieldLayout fieldLayout
-) external view returns (bytes32);
+function getStaticField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
+    external
+    view
+    returns (bytes32);
 ```
 
 #### getDynamicField
@@ -310,11 +304,10 @@ Get a single dynamic field from the given tableId and key tuple at the given dyn
 (Dynamic field index = field index - number of static fields)
 
 ```solidity
-function getDynamicField(
-  ResourceId tableId,
-  bytes32[] memory keyTuple,
-  uint8 dynamicFieldIndex
-) external view returns (bytes memory);
+function getDynamicField(ResourceId tableId, bytes32[] memory keyTuple, uint8 dynamicFieldIndex)
+    external
+    view
+    returns (bytes memory);
 ```
 
 #### getFieldLength
@@ -322,11 +315,10 @@ function getDynamicField(
 Get the byte length of a single field from the given tableId and key tuple, loading the field layout from storage
 
 ```solidity
-function getFieldLength(
-  ResourceId tableId,
-  bytes32[] memory keyTuple,
-  uint8 fieldIndex
-) external view returns (uint256);
+function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex)
+    external
+    view
+    returns (uint256);
 ```
 
 #### getFieldLength
@@ -334,12 +326,10 @@ function getFieldLength(
 Get the byte length of a single field from the given tableId and key tuple, with the given value field layout
 
 ```solidity
-function getFieldLength(
-  ResourceId tableId,
-  bytes32[] memory keyTuple,
-  uint8 fieldIndex,
-  FieldLayout fieldLayout
-) external view returns (uint256);
+function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
+    external
+    view
+    returns (uint256);
 ```
 
 #### getDynamicFieldLength
@@ -347,11 +337,10 @@ function getFieldLength(
 Get the byte length of a single dynamic field from the given tableId and key tuple
 
 ```solidity
-function getDynamicFieldLength(
-  ResourceId tableId,
-  bytes32[] memory keyTuple,
-  uint8 dynamicFieldIndex
-) external view returns (uint256);
+function getDynamicFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 dynamicFieldIndex)
+    external
+    view
+    returns (uint256);
 ```
 
 #### getDynamicFieldSlice
@@ -361,11 +350,11 @@ The slice is unchecked and will return invalid data if `start`:`end` overflow.
 
 ```solidity
 function getDynamicFieldSlice(
-  ResourceId tableId,
-  bytes32[] memory keyTuple,
-  uint8 dynamicFieldIndex,
-  uint256 start,
-  uint256 end
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint256 start,
+    uint256 end
 ) external view returns (bytes memory data);
 ```
 
@@ -382,30 +371,31 @@ function getDynamicFieldSlice(
 
 ```solidity
 function setRecord(
-  ResourceId tableId,
-  bytes32[] calldata keyTuple,
-  bytes calldata staticData,
-  PackedCounter encodedLengths,
-  bytes calldata dynamicData
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    bytes calldata staticData,
+    PackedCounter encodedLengths,
+    bytes calldata dynamicData
 ) external;
 ```
 
 #### spliceStaticData
 
 ```solidity
-function spliceStaticData(ResourceId tableId, bytes32[] calldata keyTuple, uint48 start, bytes calldata data) external;
+function spliceStaticData(ResourceId tableId, bytes32[] calldata keyTuple, uint48 start, bytes calldata data)
+    external;
 ```
 
 #### spliceDynamicData
 
 ```solidity
 function spliceDynamicData(
-  ResourceId tableId,
-  bytes32[] calldata keyTuple,
-  uint8 dynamicFieldIndex,
-  uint40 startWithinField,
-  uint40 deleteCount,
-  bytes calldata data
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes calldata data
 ) external;
 ```
 
@@ -419,11 +409,11 @@ function setField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIn
 
 ```solidity
 function setField(
-  ResourceId tableId,
-  bytes32[] calldata keyTuple,
-  uint8 fieldIndex,
-  bytes calldata data,
-  FieldLayout fieldLayout
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
+    bytes calldata data,
+    FieldLayout fieldLayout
 ) external;
 ```
 
@@ -431,33 +421,29 @@ function setField(
 
 ```solidity
 function setStaticField(
-  ResourceId tableId,
-  bytes32[] calldata keyTuple,
-  uint8 fieldIndex,
-  bytes calldata data,
-  FieldLayout fieldLayout
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
+    bytes calldata data,
+    FieldLayout fieldLayout
 ) external;
 ```
 
 #### setDynamicField
 
 ```solidity
-function setDynamicField(
-  ResourceId tableId,
-  bytes32[] calldata keyTuple,
-  uint8 dynamicFieldIndex,
-  bytes calldata data
-) external;
+function setDynamicField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 dynamicFieldIndex, bytes calldata data)
+    external;
 ```
 
 #### pushToDynamicField
 
 ```solidity
 function pushToDynamicField(
-  ResourceId tableId,
-  bytes32[] calldata keyTuple,
-  uint8 dynamicFieldIndex,
-  bytes calldata dataToPush
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    bytes calldata dataToPush
 ) external;
 ```
 
@@ -465,10 +451,10 @@ function pushToDynamicField(
 
 ```solidity
 function popFromDynamicField(
-  ResourceId tableId,
-  bytes32[] calldata keyTuple,
-  uint8 dynamicFieldIndex,
-  uint256 byteLengthToPop
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    uint256 byteLengthToPop
 ) external;
 ```
 
@@ -492,12 +478,12 @@ making them less performance critical than the methods.
 
 ```solidity
 function registerTable(
-  ResourceId tableId,
-  FieldLayout fieldLayout,
-  Schema keySchema,
-  Schema valueSchema,
-  string[] calldata keyNames,
-  string[] calldata fieldNames
+    ResourceId tableId,
+    FieldLayout fieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
+    string[] calldata keyNames,
+    string[] calldata fieldNames
 ) external;
 ```
 

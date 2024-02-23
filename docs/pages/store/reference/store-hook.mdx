@@ -15,12 +15,12 @@ Called before setting a record in the store.
 
 ```solidity
 function onBeforeSetRecord(
-  ResourceId tableId,
-  bytes32[] memory keyTuple,
-  bytes memory staticData,
-  PackedCounter encodedLengths,
-  bytes memory dynamicData,
-  FieldLayout fieldLayout
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
+    FieldLayout fieldLayout
 ) external;
 ```
 
@@ -41,12 +41,12 @@ Called after setting a record in the store.
 
 ```solidity
 function onAfterSetRecord(
-  ResourceId tableId,
-  bytes32[] memory keyTuple,
-  bytes memory staticData,
-  PackedCounter encodedLengths,
-  bytes memory dynamicData,
-  FieldLayout fieldLayout
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
+    FieldLayout fieldLayout
 ) external;
 ```
 
@@ -69,12 +69,8 @@ _Splice operations in static data always overwrite data starting at the start po
 so the total length of the data remains the same and no data is shifted._
 
 ```solidity
-function onBeforeSpliceStaticData(
-  ResourceId tableId,
-  bytes32[] memory keyTuple,
-  uint48 start,
-  bytes memory data
-) external;
+function onBeforeSpliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 start, bytes memory data)
+    external;
 ```
 
 **Parameters**
@@ -94,12 +90,8 @@ _Splice operations in static data always overwrite data starting at the start po
 so the total length of the data remains the same and no data is shifted._
 
 ```solidity
-function onAfterSpliceStaticData(
-  ResourceId tableId,
-  bytes32[] memory keyTuple,
-  uint48 start,
-  bytes memory data
-) external;
+function onAfterSpliceStaticData(ResourceId tableId, bytes32[] memory keyTuple, uint48 start, bytes memory data)
+    external;
 ```
 
 **Parameters**
@@ -120,13 +112,13 @@ to avoid shifting data after the inserted or deleted data._
 
 ```solidity
 function onBeforeSpliceDynamicData(
-  ResourceId tableId,
-  bytes32[] memory keyTuple,
-  uint8 dynamicFieldIndex,
-  uint40 startWithinField,
-  uint40 deleteCount,
-  PackedCounter encodedLengths,
-  bytes memory data
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    PackedCounter encodedLengths,
+    bytes memory data
 ) external;
 ```
 
@@ -151,13 +143,13 @@ to avoid shifting data after the inserted or deleted data._
 
 ```solidity
 function onAfterSpliceDynamicData(
-  ResourceId tableId,
-  bytes32[] memory keyTuple,
-  uint8 dynamicFieldIndex,
-  uint40 startWithinField,
-  uint40 deleteCount,
-  PackedCounter encodedLengths,
-  bytes memory data
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    PackedCounter encodedLengths,
+    bytes memory data
 ) external;
 ```
 

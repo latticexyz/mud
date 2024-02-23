@@ -76,11 +76,11 @@ _Verifying the delegation might have side effects in the delegation control cont
 
 ```solidity
 function verify(
-  ResourceId delegationControlId,
-  address delegator,
-  address delegatee,
-  ResourceId systemId,
-  bytes memory callData
+    ResourceId delegationControlId,
+    address delegator,
+    address delegatee,
+    ResourceId systemId,
+    bytes memory callData
 ) internal returns (bool);
 ```
 
@@ -119,9 +119,12 @@ Check if the given interfaceId is supported by this contract.
 _Overrides the functionality from IERC165 and WorldContextConsumer to check for supported interfaces._
 
 ```solidity
-function supportsInterface(
-  bytes4 interfaceId
-) public pure virtual override(IERC165, WorldContextConsumer) returns (bool);
+function supportsInterface(bytes4 interfaceId)
+    public
+    pure
+    virtual
+    override(IERC165, WorldContextConsumer)
+    returns (bool);
 ```
 
 **Parameters**
