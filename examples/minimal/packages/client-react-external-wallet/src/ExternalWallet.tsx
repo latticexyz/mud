@@ -1,5 +1,5 @@
-import { BaseError } from "viem";
-import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
+import { type BaseError } from "viem";
+import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchChain, useSwitchNetwork } from "wagmi";
 
 export const ExternalWallet = () => {
   const { isConnected } = useAccount();
@@ -14,26 +14,24 @@ export const ExternalWallet = () => {
 
 // Based on https://github.com/wevm/create-wagmi/blob/create-wagmi%401.0.5/templates/vite-react/default/src/components/Connect.tsx
 function Connect() {
-  const { connector, isConnected } = useAccount();
-  const { connect, connectors, error, isLoading, pendingConnector } = useConnect();
+  const account = useAccount();
+  const { connect, connectors, status, error } = useConnect();
   const { disconnect } = useDisconnect();
 
   return (
     <div>
       <div>
-        {isConnected && <button onClick={() => disconnect()}>Disconnect from {connector?.name}</button>}
+        {account.status === "connected" && <button onClick={() => disconnect()}>Disconnect</button>}
 
-        {connectors
-          .filter((x) => x.ready && x.id !== connector?.id)
-          .map((x) => (
-            <button key={x.id} onClick={() => connect({ connector: x })}>
-              Connect {x.name}
-              {isLoading && x.id === pendingConnector?.id && " (connecting)"}
-            </button>
-          ))}
+        {connectors.map((x) => (
+          <button key={x.uid} onClick={() => connect({ connector: x })}>
+            Connect {x.name}
+          </button>
+        ))}
       </div>
 
-      {error && <div>{(error as BaseError).shortMessage}</div>}
+      <div>{status}</div>
+      {error && <div>{error.message}</div>}
     </div>
   );
 }
@@ -41,7 +39,7 @@ function Connect() {
 // Based on https://github.com/wevm/create-wagmi/blob/create-wagmi%401.0.5/templates/vite-react/default/src/components/NetworkSwitcher.tsx
 function Network() {
   const { chain } = useNetwork();
-  const { chains, error, isLoading, pendingChainId, switchNetwork } = useSwitchNetwork();
+  const { chains, error, status, switchChain } = useSwitchChain();
   const { address } = useAccount();
 
   const otherChains = chains.filter((x) => x.id !== chain?.id);
