@@ -31,7 +31,7 @@ contract LimitedCallContextTest is Test {
       callData[i] = selector[i];
     }
 
-    // On low level calls, the status boolean corresponds to whether we reverted with `UnauthorizedCallContext`
+    // In this low level call, the status boolean corresponds to whether we reverted with `UnauthorizedCallContext`
     vm.expectRevert(abi.encodeWithSelector(LimitedCallContext.UnauthorizedCallContext.selector));
     (bool success, ) = system.call(callData);
 
