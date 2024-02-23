@@ -1,5 +1,26 @@
 # @latticexyz/store-indexer
 
+## 2.0.0-next.17
+
+### Patch Changes
+
+- Updated dependencies [a35c05ea]
+- Updated dependencies [05b3e888]
+- Updated dependencies [aabd3076]
+- Updated dependencies [6c615b60]
+- Updated dependencies [4e445a1a]
+- Updated dependencies [669fa43e]
+- Updated dependencies [997286ba]
+- Updated dependencies [c162ad5a]
+- Updated dependencies [55a05fd7]
+- Updated dependencies [5c52bee0]
+- Updated dependencies [745485cd]
+  - @latticexyz/common@2.0.0-next.17
+  - @latticexyz/store@2.0.0-next.17
+  - @latticexyz/store-sync@2.0.0-next.17
+  - @latticexyz/block-logs-stream@2.0.0-next.17
+  - @latticexyz/protocol-parser@2.0.0-next.17
+
 ## 2.0.0-next.16
 
 ### Patch Changes
