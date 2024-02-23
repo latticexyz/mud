@@ -69,8 +69,7 @@ export async function generateLogs(
   const worldContract = getContract({
     address: worldAddress,
     abi: IWorldAbi,
-    publicClient,
-    walletClient,
+    client: { public: publicClient, wallet: walletClient },
   });
 
   const lastTx = await transactionHook(worldContract);
