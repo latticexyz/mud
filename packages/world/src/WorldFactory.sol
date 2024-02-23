@@ -39,6 +39,6 @@ contract WorldFactory is IWorldFactory {
     world.initialize(initModule);
     world.transferOwnership(ROOT_NAMESPACE_ID, msg.sender);
 
-    emit WorldDeployed(worldAddress);
+    emit WorldDeployed(worldAddress, _salt);
   }
 }

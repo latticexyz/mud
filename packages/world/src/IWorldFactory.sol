@@ -11,7 +11,7 @@ interface IWorldFactory {
    * @dev Emitted when a new World contract is deployed.
    * @param newContract The address of the newly deployed World contract.
    */
-  event WorldDeployed(address indexed newContract);
+  event WorldDeployed(address indexed newContract, uint256 salt);
 
   /**
    * @notice Deploys a new World contract.
