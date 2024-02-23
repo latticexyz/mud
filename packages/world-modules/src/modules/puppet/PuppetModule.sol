@@ -2,6 +2,7 @@
 pragma solidity >=0.8.24;
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
+import { InstalledModules } from "@latticexyz/world/src/codegen/index.sol";
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
@@ -24,6 +25,11 @@ contract PuppetModule is Module {
   PuppetFactorySystem private immutable puppetFactorySystem = new PuppetFactorySystem();
 
   function installRoot(bytes memory) public {
+    // Naive check to ensure this is only installed once
+    if (InstalledModules.getModuleAddress(getName(), keccak256(new bytes(0))) != address(0)) {
+      revert Module_AlreadyInstalled();
+    }
+
     IBaseWorld world = IBaseWorld(_world());
 
     // Register namespace
@@ -49,6 +55,11 @@ contract PuppetModule is Module {
   }
 
   function install(bytes memory) public {
+    // Naive check to ensure this is only installed once
+    if (InstalledModules.getModuleAddress(getName(), keccak256(new bytes(0))) != address(0)) {
+      revert Module_AlreadyInstalled();
+    }
+
     IBaseWorld world = IBaseWorld(_world());
 
     // Register namespace
