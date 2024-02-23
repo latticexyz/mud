@@ -2,15 +2,15 @@ import { CollapseCode } from "../../components/CollapseCode";
 
 # Onchain Indices
 
-This guide walks through how you can create onchain indices.
+This guide walks through why you might need onchain indices, and how you can create and manage them.
 
 ## What are indices?
 
-In MUD, we can answer simple queries on-chain like _“what is Alice’s position?”_ with `Position.get(alice)`.
+In MUD, we can answer simple queries onchain like _“what is Alice’s position?”_ with `Position.get(alice)`.
 
-However, more complex applications require transformations of on-chain data that would be infeasible to compute on-chain. For example, _“which players are at this position?”_, or _“how many gold mines does Bob own?_.
+However, more complex applications require transformations of onchain data that would be infeasible to compute onchain. For example, _“which players are at this position?”_, or _“how many gold mines does Bob own?_.
 
-For this reason, we create on-chain “indices” that maintain the result of these transformations.
+For this reason, we create onchain “indices” that maintain the result of these transformations.
 
 ## Indices in MUD - an example
 
@@ -56,7 +56,7 @@ Now, we would like to prevent players from moving to positions that are already 
 
    <CollapseCode>
 
-```solidity filename="MoveSystem.sol" copy showLineNumbers {9-14}
+```solidity filename="MoveSystem.sol" copy showLineNumbers {11-14}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
@@ -77,7 +77,7 @@ contract MoveSystem is System {
 
    </CollapseCode>
 
-However, we only know on-chain the position of a given player, not which players are at each position; there is no reverse mapping. It’s time to add an index!
+However, we only know onchain the position of a given player, not which players are at each position; there is no reverse mapping. It’s time to add an index!
 
 There are two main ways to implement this - **maintaining your own indices**, or **using a module**.
 
