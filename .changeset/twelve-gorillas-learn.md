@@ -4,6 +4,13 @@
 "@latticexyz/common": minor
 "@latticexyz/config": minor
 "@latticexyz/dev-tools": minor
+"@latticexyz/faucet": minor
+"@latticexyz/protocol-parser": minor
+"@latticexyz/schema-type": minor
+"@latticexyz/store-indexer": minor
+"@latticexyz/store-sync": minor
+"@latticexyz/store": minor
+"@latticexyz/world": minor
 "create-mud": minor
 ---
 
