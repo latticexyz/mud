@@ -25,6 +25,84 @@ To call a `System`, you call the `World` in one of these ways:
 - You can use [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L333-L345).
 - If you have [the proper delegation](/world/account-delegation) you can use [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L347-L388).
 
+### Using `call`
+
+To use `call` you create the calldata to send the called `System` and use that as a parameter.
+
+<CollapseCode>
+
+```solidity filename="Call.s.sol" copy showLineNumbers {11-12,24-32}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { Tasks, TasksData } from "../src/codegen/index.sol";
+
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+contract Call is Script {
+  function run() external {
+    address worldAddress = 0x256e6eAf6a6683aB771C576f2f5C8A774BdAC8e3;
+
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    // Start broadcasting transactions from the deployer account
+    vm.startBroadcast(deployerPrivateKey);
+
+    ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "TasksSystem" });
+
+    bytes memory returnData = IWorld(worldAddress).call(
+      systemId,
+      abi.encodeWithSignature("addTask(string)", "Test task")
+    );
+
+    console.log("The return value is:");
+    console.logBytes(returnData);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+.
+.
+.
+ResourceId systemId = WorldResourceIdLib.encode({
+  typeId: RESOURCE_SYSTEM,
+  namespace: "",
+  name: "TasksSystem"
+});
+```
+
+Create a `ResourceId` for the `System`.
+
+```solidity
+bytes memory returnData =
+  IWorld(worldAddress).
+    call(systemId, abi.encodeWithSignature("addTask(string)", "Test task"));
+```
+
+Call the `System`. The calldata is created using [`abi.encodeWithSignature`](https://docs.soliditylang.org/en/latest/cheatsheet.html#index-1).
+
+The return data is of type [`bytes memory`](https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html#bytes-and-string).
+
+</details>
+
 ## Writing systems
 
 A `System` should _not_ have any internal state, but store all of it in tables in the `World`.

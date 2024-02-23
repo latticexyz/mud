@@ -1,5 +1,38 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Major Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+- db7798be: Renamed `CoreModule` to `InitModule` and `CoreRegistrationSystem` to `RegistrationSystem`.
+- 618dd0e8: `WorldFactory` now expects a user-provided `salt` when calling `deployWorld(...)` (instead of the previous globally incrementing counter). This enables deterministic world addresses across different chains.
+
+  When using `mud deploy`, you can provide a `bytes32` hex-encoded salt using the `--salt` option, otherwise it defaults to a random hex value.
+
+### Minor Changes
+
+- 6470fe1f: `WorldFactory` now derives a salt based on number of worlds deployed by `msg.sender`, which should help with predictable world deployments across chains.
+
+### Patch Changes
+
+- a35c05ea: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+- 745485cd: Updated `WorldRegistrationSystem` to check that systems exist before registering system hooks.
+- e2d089c6: Renamed the Module `args` parameter to `encodedArgs` to better reflect that it is ABI-encoded arguments.
+- 17f98720: Added a check to prevent namespaces from ending with an underscore (which could cause problems with world function signatures).
+- 5c52bee0: Renamed `StoreCore`'s `registerCoreTables` method to `registerInternalTables`.
+- Updated dependencies [a35c05ea]
+- Updated dependencies [05b3e888]
+- Updated dependencies [aabd3076]
+- Updated dependencies [c162ad5a]
+- Updated dependencies [55a05fd7]
+- Updated dependencies [5c52bee0]
+- Updated dependencies [745485cd]
+  - @latticexyz/common@2.0.0-next.17
+  - @latticexyz/store@2.0.0-next.17
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/config@2.0.0-next.17
+
 ## 2.0.0-next.16
 
 ### Major Changes
