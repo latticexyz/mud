@@ -142,23 +142,23 @@ function filter(address[] memory arr, address element) pure returns (address[] m
 }
 
 function setPosition(address player, int32 x, int32 y) {
-	// Get the player's previous position
+  // Get the player's previous position
   PositionData memory previousPosition = Position.get(player);
 
- 	// Remove the player from the index for the previous position
+  // Remove the player from the index for the previous position
   PlayersAtPosition.set(
-		previousPosition.x,
-		previousPosition.y,
-		filter(
-	    PlayersAtPosition.get(previousPosition.x, previousPosition.y),
-	    player
-	  );
-	);
+    previousPosition.x,
+    previousPosition.y,
+    filter(
+      PlayersAtPosition.get(previousPosition.x, previousPosition.y),
+      player
+    );
+  );
 
-	// Push the player to the index for the new position
+  // Push the player to the index for the new position
   PlayersAtPosition.push(position.x, position.y, player);
 
-	// Set the players position
+  // Set the players position
   Position.set(player, position);
 }
 ```
