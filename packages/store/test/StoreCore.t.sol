@@ -26,6 +26,7 @@ import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
 import { RevertSubscriber } from "./RevertSubscriber.sol";
 import { EchoSubscriber } from "./EchoSubscriber.sol";
 import { setDynamicDataLengthAtIndex } from "./setDynamicDataLengthAtIndex.sol";
+import { Store_SetRecord, Store_SpliceStaticData, Store_SpliceDynamicData, Store_DeleteRecord } from "../src/StoreEvents.sol";
 
 struct TestStruct {
   uint128 firstData;

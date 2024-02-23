@@ -5,6 +5,7 @@ import { STORE_VERSION } from "./version.sol";
 import { IStoreData } from "./IStoreData.sol";
 import { StoreRead } from "./StoreRead.sol";
 import { StoreCore } from "./StoreCore.sol";
+import { HelloStore } from "./HelloStore.sol";
 
 /**
  * @title Store Data Contract

@@ -16,6 +16,7 @@ import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
+import { Store_SpliceDynamicData } from "../src/StoreEvents.sol";
 
 contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);

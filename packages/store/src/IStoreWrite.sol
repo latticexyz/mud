@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { IStoreEvents } from "./IStoreEvents.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { ResourceId } from "./ResourceId.sol";
 
-interface IStoreWrite is IStoreEvents {
+interface IStoreWrite {
   // Set full record (including full dynamic data)
   function setRecord(
     ResourceId tableId,

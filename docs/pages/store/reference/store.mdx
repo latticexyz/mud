@@ -7,19 +7,36 @@
 **Inherits:**
 [IStoreData](/store/reference/store#istoredata), [IStoreRegistration](/store/reference/store#istoreregistration), [IStoreErrors](/store/reference/store#istoreerrors)
 
-## IStoreEvents
+## Store_DeleteRecord
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreEvents.sol)
 
-### Events
+Emitted when a record is deleted from the store.
 
-#### Store_SetRecord
+```solidity
+event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
+```
+
+**Parameters**
+
+| Name       | Type         | Description                                             |
+| ---------- | ------------ | ------------------------------------------------------- |
+| `tableId`  | `ResourceId` | The ID of the table where the record is deleted.        |
+| `keyTuple` | `bytes32[]`  | An array representing the composite key for the record. |
+
+## Store_SetRecord
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreEvents.sol)
 
 Emitted when a new record is set in the store.
 
 ```solidity
 event Store_SetRecord(
-    ResourceId indexed tableId, bytes32[] keyTuple, bytes staticData, PackedCounter encodedLengths, bytes dynamicData
+  ResourceId indexed tableId,
+  bytes32[] keyTuple,
+  bytes staticData,
+  PackedCounter encodedLengths,
+  bytes dynamicData
 );
 ```
 
@@ -33,7 +50,39 @@ event Store_SetRecord(
 | `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.  |
 | `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
 
-#### Store_SpliceStaticData
+## Store_SpliceDynamicData
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreEvents.sol)
+
+Emitted when dynamic data in the store is spliced.
+
+```solidity
+event Store_SpliceDynamicData(
+  ResourceId indexed tableId,
+  bytes32[] keyTuple,
+  uint8 dynamicFieldIndex,
+  uint48 start,
+  uint40 deleteCount,
+  PackedCounter encodedLengths,
+  bytes data
+);
+```
+
+**Parameters**
+
+| Name                | Type            | Description                                                                                                                                               |
+| ------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tableId`           | `ResourceId`    | The ID of the table where the data is spliced.                                                                                                            |
+| `keyTuple`          | `bytes32[]`     | An array representing the composite key for the record.                                                                                                   |
+| `dynamicFieldIndex` | `uint8`         | The index of the dynamic field to splice data, relative to the start of the dynamic fields. (Dynamic field index = field index - number of static fields) |
+| `start`             | `uint48`        | The start position in bytes for the splice operation.                                                                                                     |
+| `deleteCount`       | `uint40`        | The number of bytes to delete in the splice operation.                                                                                                    |
+| `encodedLengths`    | `PackedCounter` | The encoded lengths of the dynamic data of the record.                                                                                                    |
+| `data`              | `bytes`         | The data to insert into the dynamic data of the record at the start byte.                                                                                 |
+
+## Store_SpliceStaticData
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreEvents.sol)
 
 Emitted when static data in the store is spliced.
 
@@ -52,49 +101,6 @@ event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uin
 | `keyTuple` | `bytes32[]`  | An array representing the key for the record.                         |
 | `start`    | `uint48`     | The start position in bytes for the splice operation.                 |
 | `data`     | `bytes`      | The data to write to the static data of the record at the start byte. |
-
-#### Store_SpliceDynamicData
-
-Emitted when dynamic data in the store is spliced.
-
-```solidity
-event Store_SpliceDynamicData(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    uint8 dynamicFieldIndex,
-    uint48 start,
-    uint40 deleteCount,
-    PackedCounter encodedLengths,
-    bytes data
-);
-```
-
-**Parameters**
-
-| Name                | Type            | Description                                                                                                                                               |
-| ------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tableId`           | `ResourceId`    | The ID of the table where the data is spliced.                                                                                                            |
-| `keyTuple`          | `bytes32[]`     | An array representing the composite key for the record.                                                                                                   |
-| `dynamicFieldIndex` | `uint8`         | The index of the dynamic field to splice data, relative to the start of the dynamic fields. (Dynamic field index = field index - number of static fields) |
-| `start`             | `uint48`        | The start position in bytes for the splice operation.                                                                                                     |
-| `deleteCount`       | `uint40`        | The number of bytes to delete in the splice operation.                                                                                                    |
-| `encodedLengths`    | `PackedCounter` | The encoded lengths of the dynamic data of the record.                                                                                                    |
-| `data`              | `bytes`         | The data to insert into the dynamic data of the record at the start byte.                                                                                 |
-
-#### Store_DeleteRecord
-
-Emitted when a record is deleted from the store.
-
-```solidity
-event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
-```
-
-**Parameters**
-
-| Name       | Type         | Description                                             |
-| ---------- | ------------ | ------------------------------------------------------- |
-| `tableId`  | `ResourceId` | The ID of the table where the record is deleted.        |
-| `keyTuple` | `bytes32[]`  | An array representing the composite key for the record. |
 
 ## IStoreErrors
 
@@ -174,6 +180,22 @@ error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
 error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
 ```
 
+## HelloStore
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/HelloStore.sol)
+
+Emitted when the store is initialized.
+
+```solidity
+event HelloStore(bytes32 indexed storeVersion);
+```
+
+**Parameters**
+
+| Name           | Type      | Description                        |
+| -------------- | --------- | ---------------------------------- |
+| `storeVersion` | `bytes32` | The version of the Store contract. |
+
 ## IStoreData
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreData.sol)
@@ -200,22 +222,6 @@ function storeVersion() external view returns (bytes32 version);
 | Name      | Type      | Description                        |
 | --------- | --------- | ---------------------------------- |
 | `version` | `bytes32` | The version of the Store contract. |
-
-### Events
-
-#### HelloStore
-
-Emitted when the store is initialized.
-
-```solidity
-event HelloStore(bytes32 indexed storeVersion);
-```
-
-**Parameters**
-
-| Name           | Type      | Description                        |
-| -------------- | --------- | ---------------------------------- |
-| `storeVersion` | `bytes32` | The version of the Store contract. |
 
 ## IStoreRead
 
@@ -372,9 +378,6 @@ function getDynamicFieldSlice(
 ## IStoreWrite
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreWrite.sol)
-
-**Inherits:**
-[IStoreEvents](/store/reference/store#istoreevents)
 
 ### Functions
 

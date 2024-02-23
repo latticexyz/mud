@@ -29,8 +29,9 @@ const PUBLIC_APIS: PublicApis = {
   "store/reference/store.mdx": {
     inputFiles: [
       { source: "store/src/IStore.sol" },
-      { source: "store/src/IStoreEvents.sol" },
+      { source: "store/src/StoreEvents.sol" },
       { source: "store/src/IStoreErrors.sol" },
+      { source: "store/src/HelloStore.sol" },
       { source: "store/src/IStoreData.sol" },
       { source: "store/src/IStoreRead.sol" },
       { source: "store/src/IStoreWrite.sol" },
@@ -359,7 +360,6 @@ const inheritence = [
   { contract: "IStoreRead", link: "/store/reference/store#istoreread" },
   { contract: "IStoreWrite", link: "/store/reference/store#istorewrite" },
   { contract: "IStoreErrors", link: "/store/reference/store#istoreerrors" },
-  { contract: "IStoreEvents", link: "/store/reference/store#istoreevents" },
   { contract: "IStoreRegistration", link: "/store/reference/store#istoreregistration" },
   { contract: "Module", link: "/world/reference/module#module" },
   { contract: "System", link: "/world/reference/system#system" },

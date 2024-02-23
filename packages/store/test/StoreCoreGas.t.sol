@@ -23,6 +23,7 @@ import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber } from "./MirrorSubscriber.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD, BEFORE_ALL } from "../src/storeHookTypes.sol";
 import { setDynamicDataLengthAtIndex } from "./setDynamicDataLengthAtIndex.sol";
+import { Store_SetRecord, Store_DeleteRecord } from "../src/StoreEvents.sol";
 
 struct TestStruct {
   uint128 firstData;
