@@ -917,11 +917,12 @@ function deployWorld(bytes memory salt) external returns (address worldAddress);
 _Emitted when a new World contract is deployed._
 
 ```solidity
-event WorldDeployed(address indexed newContract);
+event WorldDeployed(address indexed newContract, uint256 salt);
 ```
 
 **Parameters**
 
-| Name          | Type      | Description                                       |
-| ------------- | --------- | ------------------------------------------------- |
-| `newContract` | `address` | The address of the newly deployed World contract. |
+| Name          | Type      | Description                                                       |
+| ------------- | --------- | ----------------------------------------------------------------- |
+| `newContract` | `address` | The address of the newly deployed World contract.                 |
+| `salt`        | `uint256` | User defined salt for deterministic world addresses across chains |
