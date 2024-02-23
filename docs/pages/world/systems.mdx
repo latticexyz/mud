@@ -274,7 +274,7 @@ This upgrade process removes the old `System` contract's access to the namespace
 Any access granted _manually_ to the old `System` is not revoked, nor granted to the upgraded `System`.
 
 **Note:** You _should_ make sure to remove any such manually granted access.
-`System` access is based on the contract address, so somebody else could register a namespace they'd own, register the old `System` contract as a system in their namespace, and then abuse those permissions (if the `System` has code that can be used for that, of course).
+MUD access is based on the contract address, so somebody else could register a namespace they'd own, register the old `System` contract as a system in their namespace, and then abuse those permissions (if the `System` has code that can be used for that, of course).
 
 ## Access control
 
