@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IComputedValue, IObservableValue, reaction } from "mobx";
 import DeepProxy from "proxy-deep";
 import { deferred } from "./deferred";
 import { isFunction, isObject } from "./guards";
 import { Cached } from "./types";
+import { BehaviorSubject } from "rxjs";
 
 function deepAccess(target: Record<string, unknown>, path: string[]): any {
   if (path.length === 0) return target;
@@ -16,12 +16,10 @@ function deepAccess(target: Record<string, unknown>, path: string[]): any {
 
 /**
  * Caches any function calls to the target until the target is ready.
- * @param target T extends Cachable
+ * @param target$ T extends Cachable
  * @returns Cached<T>
  */
-export function cacheUntilReady<T extends Record<string, any>>(
-  target: IObservableValue<T | undefined> | IComputedValue<T | undefined>
-): Cached<T> {
+export function cacheUntilReady<T extends Record<string, any> | undefined>(target$: BehaviorSubject<T>): Cached<T> {
   // The call queue contains the path and arguments of calls to the
   // proxiedTarget while the target was not available yet.
   // It also contains resolve and reject methods to fulfil the promise
@@ -41,7 +39,7 @@ export function cacheUntilReady<T extends Record<string, any>>(
     {},
     {
       get(_t, prop) {
-        const targetReady = target.get();
+        const targetReady = target$.getValue();
         if (targetReady) {
           // If the target is ready, relay all calls directly to the target
           // (Except for the "proxied" key, which indicates whether the object is currently proxied)
@@ -57,7 +55,7 @@ export function cacheUntilReady<T extends Record<string, any>>(
         }
       },
       apply(_, thisArg, args) {
-        const targetReady = target.get();
+        const targetReady = target$.getValue();
         if (targetReady) {
           // If the target is ready, relay all calls directly to the target
           const targetFunc = deepAccess(targetReady, this.path);
@@ -74,28 +72,25 @@ export function cacheUntilReady<T extends Record<string, any>>(
     }
   );
 
-  reaction(
-    () => target.get(),
-    (targetReady) => {
-      if (!targetReady) return;
-      // Move all entries from callQueue to queuedCalls
-      const queuedCalls = callQueue.splice(0);
-      for (const { path, args, resolve, reject } of queuedCalls) {
-        const target = deepAccess(targetReady, path);
-        if (args && isFunction(target)) {
-          (async () => {
-            try {
-              resolve(await target(...args));
-            } catch (e: any) {
-              reject(e);
-            }
-          })();
-        } else {
-          resolve(target);
-        }
+  target$.subscribe((targetReady) => {
+    if (!targetReady) return;
+    // Move all entries from callQueue to queuedCalls
+    const queuedCalls = callQueue.splice(0);
+    for (const { path, args, resolve, reject } of queuedCalls) {
+      const target = deepAccess(targetReady, path);
+      if (args && isFunction(target)) {
+        (async () => {
+          try {
+            resolve(await target(...args));
+          } catch (e: any) {
+            reject(e);
+          }
+        })();
+      } else {
+        resolve(target);
       }
     }
-  );
+  });
 
   return proxiedTarget as Cached<T>;
 }

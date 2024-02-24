@@ -1,6 +1,18 @@
 import { filterNullish } from "@latticexyz/utils";
-import { observable, ObservableSet } from "mobx";
-import { concat, concatMap, filter, from, map, merge, Observable, of, share, Subject } from "rxjs";
+import {
+  BehaviorSubject,
+  concat,
+  concatMap,
+  filter,
+  from,
+  map,
+  merge,
+  mergeMap,
+  Observable,
+  of,
+  share,
+  Subject,
+} from "rxjs";
 import {
   componentValueEquals,
   getComponentEntities,
@@ -419,13 +431,13 @@ export function defineQuery(
   options?: { runOnInit?: boolean; initialSet?: Set<Entity> }
 ): {
   update$: Observable<ComponentUpdate & { type: UpdateType }>;
-  matching: ObservableSet<Entity>;
+  matching: Set<Entity>;
 } {
   const initialSet =
     options?.runOnInit || options?.initialSet ? runQuery(fragments, options.initialSet) : new Set<Entity>();
 
-  const matching = observable(initialSet);
-  const initial$ = from(matching).pipe(toUpdateStream(fragments[0].component));
+  const matching = new BehaviorSubject(initialSet);
+  const matchingValue = matching.value;
 
   const containsProxy =
     fragments.findIndex((v) => [QueryFragmentType.ProxyExpand, QueryFragmentType.ProxyRead].includes(v.type)) !== -1;
@@ -441,10 +453,11 @@ export function defineQuery(
             const newMatchingSet = runQuery(fragments, options?.initialSet);
             const updates: (ComponentUpdate & { type: UpdateType })[] = [];
 
-            for (const previouslyMatchingEntity of matching) {
-              // Entity matched before but doesn't match now
+            const currentMatching = matching.value;
+
+            for (const previouslyMatchingEntity of currentMatching) {
               if (!newMatchingSet.has(previouslyMatchingEntity)) {
-                matching.delete(previouslyMatchingEntity);
+                currentMatching.delete(previouslyMatchingEntity);
                 updates.push({
                   entity: previouslyMatchingEntity,
                   type: UpdateType.Exit,
@@ -452,10 +465,11 @@ export function defineQuery(
                   value: [undefined, undefined],
                 });
               }
+              matching.next(currentMatching);
             }
 
             for (const matchingEntity of newMatchingSet) {
-              if (matching.has(matchingEntity)) {
+              if (currentMatching.has(matchingEntity)) {
                 // Entity matched before and still matches
                 updates.push({
                   entity: matchingEntity,
@@ -465,7 +479,7 @@ export function defineQuery(
                 });
               } else {
                 // Entity didn't match before but matches now
-                matching.add(matchingEntity);
+                currentMatching.add(matchingEntity);
                 updates.push({
                   entity: matchingEntity,
                   type: UpdateType.Enter,
@@ -473,13 +487,16 @@ export function defineQuery(
                   value: [getComponentValue(update.component, matchingEntity), undefined],
                 });
               }
+              matching.next(currentMatching);
             }
 
             return of(...updates);
           })
         : // Query does not contain proxies
           map((update) => {
-            if (matching.has(update.entity)) {
+            const currentMatching = matching.value;
+
+            if (currentMatching.has(update.entity)) {
               // If this entity matched the query before, check if it still matches it
               // Find fragments accessign this component (linear search is fine since the number fragments is likely small)
               const relevantFragments = fragments.filter((f) => f.component.id === update.component.id);
@@ -490,7 +507,8 @@ export function defineQuery(
                 return { ...update, type: UpdateType.Update };
               } else {
                 // Entity passed before but not anymore, forward update and exit
-                matching.delete(update.entity);
+                currentMatching.delete(update.entity);
+                matching.next(currentMatching);
                 return { ...update, type: UpdateType.Exit };
               }
             }
@@ -499,7 +517,8 @@ export function defineQuery(
             const pass = fragments.every((f) => passesQueryFragment(update.entity, f as EntityQueryFragment)); // We early return if the query contains proxies
             if (pass) {
               // Entity didn't pass before but passes now, forward update end enter
-              matching.add(update.entity);
+              currentMatching.add(update.entity);
+              matching.next(currentMatching);
               return { ...update, type: UpdateType.Enter };
             }
           }),
@@ -507,8 +526,8 @@ export function defineQuery(
     );
 
   return {
-    matching,
-    update$: concat(initial$, internal$).pipe(share()),
+    matching: matchingValue,
+    update$: internal$.pipe(share()),
   };
 }
 
