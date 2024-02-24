@@ -1,4 +1,4 @@
-import { Client, Transport, Chain, Account, Hex } from "viem";
+import { Client, Transport, Chain, Account, Hex, encodeFunctionData } from "viem";
 import { Table } from "./configToTables";
 import { writeContract } from "@latticexyz/common";
 import { WorldDeploy, worldAbi } from "./common";
@@ -8,6 +8,7 @@ import { resourceLabel } from "./resourceLabel";
 import { getTables } from "./getTables";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
+import { getBatchCallData } from "../utils/getBatchCallData";
 
 export async function ensureTables({
   client,
@@ -27,32 +28,48 @@ export async function ensureTables({
   }
 
   const missingTables = tables.filter((table) => !worldTableIds.includes(table.tableId));
+  const encodedFunctionDataList = missingTables.map((table) => {
+    const encodedFunctionData = encodeFunctionData({
+      abi: worldAbi,
+      functionName: "registerTable",
+      args: [
+        table.tableId,
+        valueSchemaToFieldLayoutHex(table.valueSchema),
+        keySchemaToHex(table.keySchema),
+        valueSchemaToHex(table.valueSchema),
+        Object.keys(table.keySchema),
+        Object.keys(table.valueSchema),
+      ],
+    });
+    return encodedFunctionData;
+  });
+
+  // Slice register calls to avoid hitting the block gas limit
+  // TODO: the batchSize can be configurable
+  const batchSize = 10;
+  const iterations = Math.ceil(encodedFunctionDataList.length / batchSize);
+  const slicedFunctionDataList = Array.from({ length: iterations }, (_, i) => {
+    return encodedFunctionDataList.slice(i * batchSize, (i + 1) * batchSize);
+  });
+
   if (missingTables.length) {
-    debug("registering tables", missingTables.map(resourceLabel).join(", "));
+    debug("Batch registering tables", missingTables.map(resourceLabel).join(", "));
     return await Promise.all(
-      missingTables.map((table) =>
+      slicedFunctionDataList.map((encodedFunctionDataList) =>
         pRetry(
           () =>
             writeContract(client, {
               chain: client.chain ?? null,
               address: worldDeploy.address,
               abi: worldAbi,
-              // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-              functionName: "registerTable",
-              args: [
-                table.tableId,
-                valueSchemaToFieldLayoutHex(table.valueSchema),
-                keySchemaToHex(table.keySchema),
-                valueSchemaToHex(table.valueSchema),
-                Object.keys(table.keySchema),
-                Object.keys(table.valueSchema),
-              ],
+              functionName: "batchCall",
+              args: [getBatchCallData(encodedFunctionDataList)],
             }),
           {
             retries: 3,
             onFailedAttempt: async (error) => {
               const delay = error.attemptNumber * 500;
-              debug(`failed to register table ${resourceLabel(table)}, retrying in ${delay}ms...`);
+              debug(`failed to register tables, retrying in ${delay}ms...`);
               await wait(delay);
             },
           }
