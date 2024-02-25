@@ -1,29 +1,12 @@
-import type { WriteContractParameters, Chain, Account, WalletActions } from "viem";
+import type { WriteContractParameters, Transport, Chain, Account, WalletActions, WalletClient } from "viem";
 import { sendTransaction, writeContract } from "viem/actions";
-import { useAccount, useWalletClient, type UseWalletClientReturnType } from "wagmi";
 import pRetry from "p-retry";
-import { getNonceManager } from "@latticexyz/common";
-import { useMUDNetwork, type MUDNetwork } from "./NetworkContext";
-
-export const useMUD = () => {
-  const network = useMUDNetwork();
-  const { data: connectorWalletClient } = useWalletClient();
-  const { chainId } = useAccount();
-
-  let walletClient;
-  if (network.publicClient.chain.id === chainId && connectorWalletClient?.chain.id === chainId) {
-    // TODO: Should this be memoized?
-    // `walletClient = connectorWalletClient.extend(burnerActions);` is unnecessary for an external wallet
-    walletClient = connectorWalletClient.extend(setupObserverActions(network.onWrite));
-  }
-
-  return { network, walletClient };
-};
-
-export type WalletClient = NonNullable<UseWalletClientReturnType["data"]>;
+import { getNonceManager, type ContractWrite } from "@latticexyz/common";
 
 // See @latticexyz/common/src/sendTransaction.ts
-const burnerActions = (client: WalletClient): Pick<WalletActions<Chain, Account>, "sendTransaction"> => {
+export const burnerActions = <transport extends Transport, chain extends Chain, account extends Account>(
+  client: WalletClient<transport, chain, account>
+): Pick<WalletActions<chain, account>, "sendTransaction"> => {
   // TODO: Use the `debug` library once this function has been moved to the `common` library.
   const debug = console.log;
 
@@ -68,8 +51,10 @@ const burnerActions = (client: WalletClient): Pick<WalletActions<Chain, Account>
 };
 
 // See @latticexyz/common/src/getContract.ts
-const setupObserverActions = (onWrite: MUDNetwork["onWrite"]) => {
-  return (client: WalletClient): Pick<WalletActions<Chain, Account>, "writeContract"> => ({
+export const setupObserverActions = (onWrite: (write: ContractWrite) => void) => {
+  return <transport extends Transport, chain extends Chain, account extends Account>(
+    client: WalletClient<transport, chain, account>
+  ): Pick<WalletActions<chain, account>, "writeContract"> => ({
     writeContract: async (args) => {
       const result = writeContract(client, args);
 

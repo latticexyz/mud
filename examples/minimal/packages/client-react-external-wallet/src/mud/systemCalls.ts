@@ -1,15 +1,53 @@
-import { type WalletClient } from "viem";
-import { type MUDNetwork } from "./NetworkContext";
+import { parseEther, type Hex } from "viem";
+import { resourceToHex } from "@latticexyz/common";
+import { encodeSystemCallFrom } from "@latticexyz/world";
+import { type MUDNetwork, type ExternalWalletClient } from "./NetworkContext";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 
-export const increment = async (client: WalletClient, network: MUDNetwork) => {
+// Executes the `increment` system call on behalf of the external wallet using the burner wallet.
+// This is solely for demonstrating burner wallet delegation, as the `increment` call can actually be made by any sender.
+export const increment = async (externalWalletClient: ExternalWalletClient, network: MUDNetwork) => {
   const { request } = await network.publicClient.simulateContract({
+    account: network.burnerWalletClient.account,
+    blockTag: "pending", // burner uses this tag
     address: network.worldAddress,
     abi: IWorldAbi,
-    functionName: "increment",
-    args: [],
-    account: client.account,
+    functionName: "callFrom",
+    args: encodeSystemCallFrom({
+      from: externalWalletClient.account.address,
+      abi: IWorldAbi,
+      functionName: "increment",
+      args: [],
+      systemId: resourceToHex({ type: "system", namespace: "", name: "increment" }),
+    }),
   });
-  const tx = await client.writeContract(request);
+
+  const tx = await network.burnerWalletClient.writeContract(request);
+
   network.waitForTransaction(tx);
+};
+
+// TODO: Should use `std-delegations` to limit authority
+const UNLIMITED_DELEGATION = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
+
+export const isDelegated = (delegationControlId: Hex) => delegationControlId === UNLIMITED_DELEGATION;
+
+export const delegateToBurner = async (externalWalletClient: ExternalWalletClient, network: MUDNetwork) => {
+  const { request } = await network.publicClient.simulateContract({
+    account: externalWalletClient.account,
+    address: network.worldAddress,
+    abi: IWorldAbi,
+    functionName: "registerDelegation",
+    args: [network.burnerWalletClient.account.address, UNLIMITED_DELEGATION, "0x0"],
+  });
+
+  const tx1 = await externalWalletClient.writeContract(request);
+  await network.waitForTransaction(tx1);
+
+  // for transaction fees
+  const tx2 = await externalWalletClient.sendTransaction({
+    to: network.burnerWalletClient.account.address,
+    value: parseEther("0.001"),
+  });
+  network.waitForTransaction(tx2);
 };

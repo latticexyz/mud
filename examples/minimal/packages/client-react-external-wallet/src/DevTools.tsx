@@ -1,14 +1,13 @@
 import { useEffect } from "react";
-import { useMUD } from "./mud/customWalletClient";
+import { useMUD } from "./mud/NetworkContext";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import mudConfig from "contracts/mud.config";
 
+// Displays dev-tools for the burner wallet
 export const DevTools = () => {
-  const { network, walletClient } = useMUD();
+  const { network } = useMUD();
 
   useEffect(() => {
-    if (!walletClient) return;
-
     // TODO: Handle unmount properly by updating the dev-tools implementation.
     let unmount: (() => void) | null = null;
 
@@ -17,7 +16,7 @@ export const DevTools = () => {
         mount({
           config: mudConfig,
           publicClient: network.publicClient,
-          walletClient: walletClient,
+          walletClient: network.burnerWalletClient,
           latestBlock$: network.latestBlock$,
           storedBlockLogs$: network.storedBlockLogs$,
           worldAddress: network.worldAddress,
@@ -37,7 +36,7 @@ export const DevTools = () => {
         unmount();
       }
     };
-  }, [walletClient?.account.address]);
+  }, [network]);
 
   return null;
 };

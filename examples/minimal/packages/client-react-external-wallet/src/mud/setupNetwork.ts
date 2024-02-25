@@ -1,9 +1,11 @@
-import { createPublicClient, fallback, webSocket, http, type ClientConfig } from "viem";
+import { createPublicClient, fallback, webSocket, http, type ClientConfig, createWalletClient } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import { Subject, share } from "rxjs";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
-import { transportObserver, type ContractWrite } from "@latticexyz/common";
+import { transportObserver, type ContractWrite, getBurnerPrivateKey } from "@latticexyz/common";
 import mudConfig from "contracts/mud.config";
+import { burnerActions, setupObserverActions } from "./customWalletClient";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -30,6 +32,13 @@ export async function setupNetwork() {
   const onWrite = (write: ContractWrite) =>
     write$.next({ id: `${write.id}:${nextWriteId++}`, request: write.request, result: write.result });
 
+  const burnerWalletClient = createWalletClient({
+    ...clientOptions,
+    account: privateKeyToAccount(getBurnerPrivateKey("mud:example:burnerWallet")),
+  })
+    .extend(burnerActions)
+    .extend(setupObserverActions(onWrite));
+
   return {
     worldAddress: networkConfig.worldAddress,
     tables,
@@ -40,5 +49,6 @@ export async function setupNetwork() {
     waitForTransaction,
     onWrite,
     write$: write$.asObservable().pipe(share()),
+    burnerWalletClient,
   };
 }
