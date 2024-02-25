@@ -27,7 +27,8 @@ export async function setupNetwork() {
 
   const write$ = new Subject<ContractWrite>();
   let nextWriteId = 0;
-  const onWrite = (write: ContractWrite) => write$.next({ id: `${write.id}:${nextWriteId++}`, request: write.request, result: write.result });
+  const onWrite = (write: ContractWrite) =>
+    write$.next({ id: `${write.id}:${nextWriteId++}`, request: write.request, result: write.result });
 
   return {
     worldAddress: networkConfig.worldAddress,

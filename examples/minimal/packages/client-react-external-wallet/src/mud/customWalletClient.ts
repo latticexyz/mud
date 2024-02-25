@@ -24,7 +24,8 @@ export type WalletClient = NonNullable<UseWalletClientReturnType["data"]>;
 
 // See @latticexyz/common/src/sendTransaction.ts
 const burnerActions = (client: WalletClient): Pick<WalletActions<Chain, Account>, "sendTransaction"> => {
-  const debug: typeof console.log = () => {}; // or `debug = console.log`
+  // TODO: Use the `debug` library once this function has been moved to the `common` library.
+  const debug = console.log;
 
   return {
     sendTransaction: async (args) => {
