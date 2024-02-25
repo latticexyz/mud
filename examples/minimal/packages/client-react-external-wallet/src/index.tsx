@@ -2,8 +2,7 @@ import ReactDOM from "react-dom/client";
 import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ExternalWallet } from "./ExternalWallet";
-import { MUDReadProvider } from "./mud/read";
-import { MUDWriteProvider } from "./mud/write";
+import { MUDNetworkProvider } from "./mud/NetworkContext";
 import { App } from "./App";
 import { DevTools } from "./DevTools";
 import { setup } from "./mud/setup";
@@ -15,17 +14,15 @@ const root = ReactDOM.createRoot(rootElement);
 const queryClient = new QueryClient();
 
 // TODO: figure out if we actually want this to be async or if we should render something else in the meantime
-setup().then(({ mud, wagmiConfig }) => {
+setup().then(({ network, wagmiConfig }) => {
   root.render(
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <ExternalWallet />
-        <MUDReadProvider value={mud}>
-          <MUDWriteProvider>
-            <App />
-            {import.meta.env.DEV && <DevTools />}
-          </MUDWriteProvider>
-        </MUDReadProvider>
+        <MUDNetworkProvider value={network}>
+          <App />
+          {import.meta.env.DEV && <DevTools />}
+        </MUDNetworkProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

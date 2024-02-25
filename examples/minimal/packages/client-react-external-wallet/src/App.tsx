@@ -1,18 +1,17 @@
-import { useMUDRead } from "./mud/read";
-import { useMUDWrite } from "./mud/write";
+import { useMUD } from "./mud/customWalletClient";
+import { increment } from "./mud/systemCalls";
 
 export const App = () => {
-  const { useStore, tables } = useMUDRead();
-  const mudWrite = useMUDWrite();
+  const { network, walletClient } = useMUD();
 
-  const counter = useStore((state) => state.getValue(tables.CounterTable, {}));
+  const counter = network.useStore((state) => state.getValue(network.tables.CounterTable, {}));
 
   return (
     <div>
       <div>Counter: {counter?.value ?? "unset"}</div>
       <div>
-        {mudWrite && (
-          <button type="button" onClick={() => mudWrite.systemCalls.increment()}>
+        {walletClient && (
+          <button type="button" onClick={() => increment(walletClient, network)}>
             Increment
           </button>
         )}

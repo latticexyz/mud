@@ -2,15 +2,15 @@ import { createConfig } from "wagmi";
 import { setupNetwork } from "./setupNetwork";
 
 export async function setup() {
-  const mud = await setupNetwork();
+  const network = await setupNetwork();
 
   const wagmiConfig = createConfig({
-    chains: [mud.publicClient.chain],
-    client: () => mud.publicClient,
+    chains: [network.publicClient.chain],
+    client: () => network.publicClient,
   });
 
   return {
-    mud,
+    network,
     wagmiConfig,
   };
 }
