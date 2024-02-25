@@ -1,8 +1,17 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import type { Hex } from "viem";
+import {
+  getContract,
+  type Hex,
+  type WriteContractParameters,
+  type Chain,
+  type Account,
+  type WalletActions,
+} from "viem";
+import { sendTransaction, writeContract } from "viem/actions";
 import { useWalletClient, useAccount, type UseWalletClientReturnType } from "wagmi";
 import { Subject, share } from "rxjs";
-import { getContract, type ContractWrite } from "@latticexyz/common";
+import pRetry from "p-retry";
+import { getNonceManager, type ContractWrite } from "@latticexyz/common";
 import { type MUDRead, useMUDRead } from "./read";
 import { createSystemCalls } from "./createSystemCalls";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
@@ -43,19 +52,83 @@ export const useMUDWrite = () => {
   };
 };
 
-const getMudWrite = (
-  address: Hex,
-  publicClient: MUDRead["publicClient"],
-  walletClient: NonNullable<UseWalletClientReturnType["data"]>
-) => {
-  const write$ = new Subject<ContractWrite>();
+type WalletClient = NonNullable<UseWalletClientReturnType["data"]>;
+
+const getMudWrite = (address: Hex, publicClient: MUDRead["publicClient"], walletClient: WalletClient) => {
+  // `walletClient.extend(burnerActions)` is unnecessary for an external wallet
+  const { client, write$ } = setupWriteContractObserver(walletClient);
 
   const worldContract = getContract({
     address,
     abi: IWorldAbi,
-    client: { public: publicClient, wallet: walletClient },
-    onWrite: (write) => write$.next(write),
+    client: { public: publicClient, wallet: client },
   });
 
-  return { worldContract, write$: write$.asObservable().pipe(share()), walletClient };
+  return { worldContract, write$, walletClient: client };
+};
+
+// See @latticexyz/common/src/sendTransaction.ts
+function burnerActions<TChain extends Chain, TAccount extends Account>(
+  walletClient: WalletClient
+): Pick<WalletActions<TChain, TAccount>, "sendTransaction"> {
+  const debug: typeof console.log = () => {}; // or `debug = console.log`
+
+  return {
+    sendTransaction: async (args) => {
+      const nonceManager = await getNonceManager({
+        client: walletClient,
+        address: walletClient.account.address,
+        blockTag: "pending",
+      });
+
+      return nonceManager.mempoolQueue.add(
+        () =>
+          pRetry(
+            async () => {
+              if (!nonceManager.hasNonce()) {
+                await nonceManager.resetNonce();
+              }
+
+              const nonce = nonceManager.nextNonce();
+              debug("sending tx with nonce", nonce, "to", args.to);
+              return sendTransaction(walletClient, { ...args, nonce } as typeof args);
+            },
+            {
+              retries: 3,
+              onFailedAttempt: async (error) => {
+                // On nonce errors, reset the nonce and retry
+                if (nonceManager.shouldResetNonce(error)) {
+                  debug("got nonce error, retrying", error.message);
+                  await nonceManager.resetNonce();
+                  return;
+                }
+                // TODO: prepare again if there are gas errors?
+                throw error;
+              },
+            }
+          ),
+        { throwOnTimeout: true }
+      );
+    },
+  };
+}
+
+// See @latticexyz/common/src/getContract.ts
+const setupWriteContractObserver = (walletClient: WalletClient) => {
+  const write$ = new Subject<ContractWrite>();
+  const onWrite = (write: ContractWrite) => write$.next(write);
+  let nextWriteId = 0;
+
+  const extended = walletClient.extend((client) => ({
+    writeContract: async (args) => {
+      const result = writeContract(client, args);
+
+      const id = `${walletClient.chain.id}:${walletClient.account.address}:${nextWriteId++}`;
+      onWrite({ id, request: args as WriteContractParameters, result });
+
+      return result;
+    },
+  }));
+
+  return { client: extended, write$: write$.asObservable().pipe(share()) };
 };

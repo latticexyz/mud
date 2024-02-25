@@ -16,6 +16,7 @@
     "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@tanstack/react-query": "5.22.2",
     "contracts": "workspace:*",
+    "p-retry": "^5.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rxjs": "7.5.5",
