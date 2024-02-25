@@ -20,10 +20,10 @@ export const useMUD = () => {
   return { network, walletClient };
 };
 
+export type WalletClient = NonNullable<UseWalletClientReturnType["data"]>;
+
 // See @latticexyz/common/src/sendTransaction.ts
-const burnerActions = (
-  client: NonNullable<UseWalletClientReturnType["data"]>
-): Pick<WalletActions<Chain, Account>, "sendTransaction"> => {
+const burnerActions = (client: WalletClient): Pick<WalletActions<Chain, Account>, "sendTransaction"> => {
   const debug: typeof console.log = () => {}; // or `debug = console.log`
 
   return {
@@ -68,9 +68,7 @@ const burnerActions = (
 
 // See @latticexyz/common/src/getContract.ts
 const setupObserverActions = (onWrite: MUDNetwork["onWrite"]) => {
-  return (
-    client: NonNullable<UseWalletClientReturnType["data"]>
-  ): Pick<WalletActions<Chain, Account>, "writeContract"> => ({
+  return (client: WalletClient): Pick<WalletActions<Chain, Account>, "writeContract"> => ({
     writeContract: async (args) => {
       const result = writeContract(client, args);
 
