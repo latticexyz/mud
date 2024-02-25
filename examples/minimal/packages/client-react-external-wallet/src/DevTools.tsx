@@ -1,13 +1,13 @@
 import { useEffect } from "react";
-import { useMUDRead } from "./mud/read";
-import { useMUDWrite } from "./mud/write";
+import { useMUD } from "./mud/customWalletClient";
+import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
+import mudConfig from "contracts/mud.config";
 
 export const DevTools = () => {
-  const mudRead = useMUDRead();
-  const mudWrite = useMUDWrite();
+  const { network, walletClient } = useMUD();
 
   useEffect(() => {
-    if (!mudWrite) return;
+    if (!walletClient) return;
 
     // TODO: Handle unmount properly by updating the dev-tools implementation.
     let unmount: (() => void) | null = null;
@@ -15,15 +15,15 @@ export const DevTools = () => {
     import("@latticexyz/dev-tools")
       .then(({ mount }) =>
         mount({
-          config: mudRead.mudConfig,
-          publicClient: mudRead.publicClient,
-          walletClient: mudWrite.walletClient,
-          latestBlock$: mudRead.latestBlock$,
-          storedBlockLogs$: mudRead.storedBlockLogs$,
-          worldAddress: mudRead.worldAddress,
-          worldAbi: mudWrite.worldContract.abi,
-          write$: mudWrite.write$,
-          useStore: mudRead.useStore,
+          config: mudConfig,
+          publicClient: network.publicClient,
+          walletClient: walletClient,
+          latestBlock$: network.latestBlock$,
+          storedBlockLogs$: network.storedBlockLogs$,
+          worldAddress: network.worldAddress,
+          worldAbi: IWorldAbi,
+          write$: network.write$,
+          useStore: network.useStore,
         })
       )
       .then((result) => {
@@ -37,7 +37,7 @@ export const DevTools = () => {
         unmount();
       }
     };
-  }, [mudWrite?.walletClient.account.address]);
+  }, [walletClient?.account.address]);
 
   return null;
 };
