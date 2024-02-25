@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { type Hex } from "viem";
-import { useWalletClient, type WalletClient, type PublicClient, useNetwork } from "wagmi";
+import type { Hex } from "viem";
+import { useWalletClient, useAccount, type UseWalletClientReturnType } from "wagmi";
 import { Subject, share } from "rxjs";
 import { getContract, type ContractWrite } from "@latticexyz/common";
-import { useMUDRead } from "./read";
+import { type MUDRead, useMUDRead } from "./read";
 import { createSystemCalls } from "./createSystemCalls";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 
@@ -31,9 +31,9 @@ export const MUDWriteProvider = (props: { children: ReactNode }) => {
 export const useMUDWrite = () => {
   const mudWrite = useContext(MUDWriteContext);
   const mudRead = useMUDRead();
-  const { chain } = useNetwork();
+  const { chainId } = useAccount();
 
-  if (!(mudWrite && mudRead.publicClient.chain.id === chain?.id)) return null;
+  if (!(mudWrite && mudRead.publicClient.chain.id === chainId)) return null;
 
   return {
     worldContract: mudWrite.worldContract,
@@ -43,14 +43,17 @@ export const useMUDWrite = () => {
   };
 };
 
-const getMudWrite = (address: Hex, publicClient: PublicClient, walletClient: WalletClient) => {
+const getMudWrite = (
+  address: Hex,
+  publicClient: MUDRead["publicClient"],
+  walletClient: NonNullable<UseWalletClientReturnType["data"]>
+) => {
   const write$ = new Subject<ContractWrite>();
 
   const worldContract = getContract({
     address,
     abi: IWorldAbi,
-    publicClient,
-    walletClient,
+    client: { public: publicClient, wallet: walletClient },
     onWrite: (write) => write$.next(write),
   });
 

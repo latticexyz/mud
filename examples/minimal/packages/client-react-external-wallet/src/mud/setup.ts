@@ -1,5 +1,4 @@
 import { createConfig } from "wagmi";
-import { injected } from "wagmi/connectors";
 import { setupNetwork } from "./setupNetwork";
 
 export async function setup() {
@@ -7,7 +6,6 @@ export async function setup() {
 
   const wagmiConfig = createConfig({
     chains: [mud.publicClient.chain],
-    connectors: [injected()],
     client: () => mud.publicClient,
   });
 
