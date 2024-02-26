@@ -153,10 +153,7 @@ function setPosition(address player, int32 x, int32 y) {
   PlayersAtPosition.set(
     previousPosition.x,
     previousPosition.y,
-    filter(
-      PlayersAtPosition.get(previousPosition.x, previousPosition.y),
-      player
-    );
+    filter(PlayersAtPosition.get(previousPosition.x, previousPosition.y), player)
   );
 
   // Push the player to the index for the new position
@@ -257,7 +254,7 @@ To maintain this index when players move, we flag the previous position as empty
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { Position, PlayersAtPosition } from "../codegen/index.sol";
+import { Position, PositionData, PositionIsOccupied } from "../codegen/index.sol";
 
 function setPosition(address player, int32 x, int32 y) {
   // Cache the player's previous position
@@ -285,7 +282,7 @@ contract MoveSystem is System {
   function move(int32 x, int32 y) public {
     address player = _msgSender();
 
-    bool positionIsEmpty = PositionIsOccupied.get(x, y);
+    bool positionIsEmpty = !PositionIsOccupied.get(x, y);
 
     require(positionIsEmpty, "another player is at this position");
 
@@ -337,6 +334,7 @@ After the module is installed, we can use a helper to get all addresses at a giv
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { getKeysWithValue } from "@latticexyz/world-modules/src/modules/keyswithvalue/getKeysWithValue.sol";
 import { Position, PositionTableId } from "../codegen/index.sol";
@@ -345,7 +343,12 @@ contract MoveSystem is System {
   function move(int32 x, int32 y) public {
     address player = _msgSender();
 
-    bool positionIsEmpty = getKeysWithValue(PositionTableId, Position.encodeStatic(x, y), "", "").length == 0;
+    bool positionIsEmpty = getKeysWithValue(
+      PositionTableId,
+      Position.encodeStatic(x, y),
+      PackedCounter.wrap(bytes32(0)),
+      ""
+    ).length == 0;
     require(positionIsEmpty, "another player is at this position");
 
     Position.set(player, x, y);
@@ -354,3 +357,55 @@ contract MoveSystem is System {
 ```
 
 ### Gas comparison
+
+With MUD's [`GasReporter`](https://github.com/latticexyz/mud/tree/main/packages/gas-report), we can determine the gas use of `MoveSystem.move`:
+
+```solidity filename="MoveSystem.t.sol" copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+contract MoveSystemTest is MudTest, GasReporter {
+  function testMove() public {
+    startGasReport("moving");
+    IWorld(worldAddress).move(1, 1);
+    endGasReport();
+  }
+}
+```
+
+Comparing the three approaches, we find that managing our own indices is generally more gas-efficient, with the "position is occupied" index being the cheapest by far.
+
+#### `PlayersAtPosition`
+
+```
+┌───────────────────────┬──────────┬───────────────────┬──────────┐
+│ File                  │ Test     │ Name              │ Gas used │
+├───────────────────────┼──────────┼───────────────────┼──────────┤
+│ test/MoveSystem.t.sol │ testMove │ moving one player │ 135922   │
+└───────────────────────┴──────────┴───────────────────┴──────────┘
+```
+
+#### `PositionIsOccupied`
+
+```
+┌───────────────────────┬──────────┬───────────────────┬──────────┐
+│ File                  │ Test     │ Name              │ Gas used │
+├───────────────────────┼──────────┼───────────────────┼──────────┤
+│ test/MoveSystem.t.sol │ testMove │ moving one player │ 64637    │
+└───────────────────────┴──────────┴───────────────────┴──────────┘
+```
+
+#### `KeysWithValue`
+
+```
+┌───────────────────────┬──────────┬───────────────────┬──────────┐
+│ File                  │ Test     │ Name              │ Gas used │
+├───────────────────────┼──────────┼───────────────────┼──────────┤
+│ test/MoveSystem.t.sol │ testMove │ moving one player │ 165000   │
+└───────────────────────┴──────────┴───────────────────┴──────────┘
+```
