@@ -8,13 +8,13 @@ This guide walks through why you might need onchain indices, and how you can cre
 
 In MUD, we can answer simple queries onchain like _“what is Alice’s position?”_ with `Position.get(alice)`.
 
-However, more complex applications require transformations of onchain data that would be infeasible to compute onchain. For example, _“which players are at this position?”_, or _“how many gold mines does Bob own?_.
+However, we often require complex transformations of onchain data that is infeasible to compute onchain. For example, _“which players are at this position?”_, or _“how many gold mines does Bob own?_.
 
 For this reason, we create onchain “indices” that maintain the result of these transformations.
 
-## Indices in MUD - an example
+## Indices in MUD
 
-Take this simple game where each account has an (x, y) position.
+In these examples, we will make indices for a simple game where each account has an (x, y) position.
 
 ```ts filename="mud.config.ts" copy showLineNumbers
 import { mudConfig } from "@latticexyz/world/register";
@@ -52,7 +52,7 @@ contract MoveSystem is System {
 }
 ```
 
-Now, we would like to prevent players from moving to positions that are already occupied:
+To make the game more interesting, we would like to prevent players from moving to positions that are already occupied. However, it's not clear how to tell which players are at a given position onchain.
 
    <CollapseCode>
 
@@ -77,15 +77,17 @@ contract MoveSystem is System {
 
    </CollapseCode>
 
-However, we only know onchain the position of a given player, not which players are at each position; there is no reverse mapping. It’s time to add an index!
+In other words, there is no reverse mapping - we can read the position of a given player, but not which players are at each position. It's time to add an index!
 
-There are two main ways to implement this - **maintaining your own indices**, or **using a module**.
+There are two main ways to implement this - you can **create and manage your own indices**, or **use a module**.
 
-### Maintaining your own index
+### Creating your own indices
 
-We can implement this by maintaining an index of which players are at a given position. Then, we know the position is empty if the list is empty.
+#### `PlayersAtPosition`
 
-First, we declare this `PlayersAtPostion` index in our MUD config. Note the schema is essentially the reverse of `Position`; the key is an (x, y) coordinate and the value is an array of addresses currently at that position:
+One way to know if a position is occupied is to have a list of which players are there, and check if that list is empty.
+
+First, we declare an `PlayersAtPosition` table in our MUD config. The schema is essentially the reverse of `Position`; the key is an (x, y) coordinate and the value is an array of addresses currently at that position:
 
    <CollapseCode>
 ```ts filename="mud.config.ts" copy showLineNumbers {14-17}
@@ -112,9 +114,11 @@ export default mudConfig({
 
   </CollapseCode>
 
-With our own indices, we need to be careful that they are maintained whenever the relevant tables are updated. If they are not kept up to date, they will not reflect current store data.
+With our own indices, we need to be careful that they are maintained whenever the relevant tables are updated. Otherwise, they will not reflect current store data (for example, players in a `PlayersInPosition` list that don't actually have that `Position` value).
 
-In this case, we need to add or remove addresses from `PlayersAtPosition` whenever a position changes. Let's add a `setPosition` helper function that sets both `Position` and the index:
+In this case, we need to add or remove addresses from `PlayersAtPosition` whenever a position is set. A good practice for this is to write a helper that atomically sets the table and index.
+
+We can use a `setPosition` helper function to set both `Position` and the index.
 
 ```solidity filename="setPosition.sol" copy showLineNumbers
 // SPDX-License-Identifier: MIT
@@ -156,14 +160,14 @@ function setPosition(address player, int32 x, int32 y) {
   );
 
   // Push the player to the index for the new position
-  PlayersAtPosition.push(position.x, position.y, player);
+  PlayersAtPosition.push(x, y, player);
 
   // Set the players position
-  Position.set(player, position);
+  Position.set(player, x, y);
 }
 ```
 
-Then, whenever we set a position, we use `setPosition` instead of `Position.set`:
+Then, we use `setPosition` instead of `Position.set` any time that we change a `Position`:
 
    <CollapseCode>
 
@@ -185,7 +189,7 @@ contract MoveSystem is System {
 
    </CollapseCode>
 
-Finally, we can check whether `PlayersAtPosition` is empty for a given position, meaning there are no players there:
+Finally, before moving, we can check whether `PlayersAtPosition` is empty for the given position.
 
    <CollapseCode>
 
@@ -211,11 +215,94 @@ contract MoveSystem is System {
 
    </CollapseCode>
 
-### Using modules - `KeysWithValue`
+#### `PositionIsOccupied`
 
-We can also use a MUD [Module](https://mud.dev/world/modules) to encapsulate the complexity of an index. The `KeysWithValue` module can be installed on tables, and maintains an array of keys with each value.
+Having a list of players at each position is useful, but ultimately we only want to know if _some_ player is at the position, not their specific addresses. Therefore, we can take advantage of managing this in our own contracts and write a simpler index.
 
-In our case, we install it for the `Position` table, in the `modules` property of our MUD config:
+This time, we declare a table called `PositionIsOccupied`:
+
+   <CollapseCode>
+```ts filename="mud.config.ts" copy showLineNumbers {14-22}
+import { mudConfig } from "@latticexyz/world/register";
+
+export default mudConfig({
+  tables: {
+    Position: {
+      keySchema: {
+        player: "address",
+      },
+      valueSchema: { 
+        x: "int32", 
+        y: "int32" 
+      },
+    },
+    PositionIsOccupied: {
+      keySchema: { 
+        x: "int32", 
+        y: "int32"
+      },
+      valueSchema: { 
+        isOccupied: "bool" 
+      },
+    }
+  }
+});
+```
+
+  </CollapseCode>
+
+To maintain this index when players move, we flag the previous position as empty and the new one as occupied.
+
+```solidity filename="setPosition.sol" copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Position, PlayersAtPosition } from "../codegen/index.sol";
+
+function setPosition(address player, int32 x, int32 y) {
+  // Cache the player's previous position
+  PositionData memory previousPosition = Position.get(player);
+
+  Position.set(player, x, y);
+
+  PositionIsOccupied.set(previousPosition.x, previousPosition.y, false);
+  PositionIsOccupied.set(x, y, true);
+}
+```
+
+Finally, to check whether the position is occupied, we simply read the index.
+
+   <CollapseCode>
+
+```solidity filename="MoveSystem.sol" copy showLineNumbers {5,11}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { System } from "@latticexyz/world/src/System.sol";
+import { Position, PositionIsOccupied } from "../codegen/index.sol";
+
+contract MoveSystem is System {
+  function move(int32 x, int32 y) public {
+    address player = _msgSender();
+
+    bool positionIsEmpty = PositionIsOccupied.get(x, y);
+
+    require(positionIsEmpty, "another player is at this position");
+
+    Position.set(player, x, y);
+  }
+}
+```
+
+   </CollapseCode>
+
+### Using modules
+
+#### `KeysWithValue`
+
+We can also use a [Module](/world/modules) to install and manage an index for us. The [`KeysWithValue`](/world/modules/keyswithvalue) module can be installed on tables and maintains an array of keys with each value.
+
+In this case, we install it for the `Position` table, in the `modules` property of the MUD config:
 
    <CollapseCode>
 ```ts filename="mud.config.ts" copy showLineNumbers {12-18}
@@ -242,24 +329,21 @@ export default mudConfig({
 
   </CollapseCode>
 
-With this module, the index is automatically maintained when a position is set. Under the hood, this uses [Store Hooks](https://mud.dev/store/store-hooks).
+Internally, this module uses [Store Hooks](https://mud.dev/store/store-hooks) to automatically update the index whenever a `Position` record is set.
 
-Finally, we can get all keys with a given `Position` value:
+After the module is installed, we can use a helper to get all addresses at a given position:
 
-```solidity filename="MoveSystem.sol" copy showLineNumbers {4,7,15-16}
+```solidity filename="MoveSystem.sol" copy showLineNumbers {5,6,12-13}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { getKeysWithValue } from "@latticexyz/world-modules/src/modules/keyswithvalue/getKeysWithValue.sol";
-
 import { System } from "@latticexyz/world/src/System.sol";
+import { getKeysWithValue } from "@latticexyz/world-modules/src/modules/keyswithvalue/getKeysWithValue.sol";
 import { Position, PositionTableId } from "../codegen/index.sol";
 
 contract MoveSystem is System {
   function move(int32 x, int32 y) public {
     address player = _msgSender();
-
-    (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) = Position.encode(x, y);
 
     bool positionIsEmpty = getKeysWithValue(PositionTableId, Position.encodeStatic(x, y), "", "").length == 0;
     require(positionIsEmpty, "another player is at this position");
@@ -268,3 +352,5 @@ contract MoveSystem is System {
   }
 }
 ```
+
+### Gas comparison
