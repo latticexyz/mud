@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, it, expectTypeOf } from "vitest";
-import { ErrorInvalidKeys, resolveTableConfig } from "./resolveTableConfig";
+import { ErrorInvalidKeys, NonStaticKeyFieldError, resolveTableConfig, resolveTableShorthandConfig } from "./table";
 import { setup, cleanup } from "@arktype/attest";
 
 // TODO: translate into attest tests
@@ -52,5 +52,31 @@ describe("resolveTableConfig", () => {
     expectTypeOf<typeof valid.valueSchema>().toMatchTypeOf({ score: "uint256" } as const);
     expectTypeOf<typeof valid.schema>().toMatchTypeOf({ score: "uint256", player: "address" } as const);
     expectTypeOf<typeof valid.keys>().toMatchTypeOf(["player"] as const);
+  });
+});
+
+describe("resolveTableShorthandConfig", () => {
+  it("should expand a single ABI type into a key/value schema", () => {
+    const config = resolveTableShorthandConfig("address");
+    expectTypeOf<typeof config.schema>().toEqualTypeOf<{ key: "bytes32"; value: "address" }>();
+    expectTypeOf<typeof config.keys>().toEqualTypeOf<["key"]>();
+  });
+
+  it("given a schema with a key field with static ABI type, it should use `key` as single key", () => {
+    const config = resolveTableShorthandConfig({ key: "address", name: "string", age: "uint256" });
+    expectTypeOf<typeof config.schema>().toEqualTypeOf<{ key: "address"; name: "string"; age: "uint256" }>();
+    expectTypeOf<typeof config.keys>().toEqualTypeOf<["key"]>();
+  });
+
+  it("given a schema with a no key field, it should add a default `bytes32` key field", () => {
+    const config = resolveTableShorthandConfig({ name: "string", age: "uint256" });
+    expectTypeOf<typeof config.schema>().toMatchTypeOf<{ key: "bytes32"; name: "string"; age: "uint256" }>();
+    expectTypeOf<{ key: "bytes32"; name: "string"; age: "uint256" }>().toMatchTypeOf<typeof config.schema>();
+    expectTypeOf<typeof config.keys>().toEqualTypeOf<["key"]>();
+  });
+
+  it("given a schema with a non-static key field, resolve to an error", () => {
+    const config = resolveTableShorthandConfig({ key: "string", name: "string", age: "uint256" });
+    expectTypeOf<typeof config>().toEqualTypeOf<NonStaticKeyFieldError>();
   });
 });

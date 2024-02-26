@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, it, expectTypeOf } from "vitest";
-import { isStaticAbiType, getStaticAbiTypeKeys } from "./schema";
+import { isStaticAbiType, getStaticAbiTypeKeys, getDynamicAbiTypeKeys } from "./schema";
 import { setup, cleanup } from "@arktype/attest";
 
 // TODO: translate into attest tests
@@ -21,9 +21,17 @@ describe("isStaticAbiType", () => {
 });
 
 describe("getStaticAbiTypeKeys", () => {
-  it("should return the keys of the schema that have static ABI types", () => {
+  it("should return the keys of the schema that have static length ABI types", () => {
     expectTypeOf<getStaticAbiTypeKeys<{ player: "address"; name: "string"; age: "uint256" }>>().toMatchTypeOf<
       "player" | "age"
     >();
+  });
+});
+
+describe("getDynamicAbiTypeKeys", () => {
+  it("should return the keys of the schema that have dynamic (variable length) ABI types", () => {
+    expectTypeOf<
+      getDynamicAbiTypeKeys<{ player: "address"; name: "string"; age: "uint256" }>
+    >().toMatchTypeOf<"name">();
   });
 });
