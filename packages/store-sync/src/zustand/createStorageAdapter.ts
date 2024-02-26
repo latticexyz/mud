@@ -2,7 +2,7 @@ import { Tables } from "@latticexyz/store";
 import { StorageAdapter } from "../common";
 import { RawRecord } from "./common";
 import { ZustandStore } from "./createStore";
-import { hexToResource, spliceHex } from "@latticexyz/common";
+import { hexToResource, resourceLabel, spliceHex } from "@latticexyz/common";
 import { debug } from "./debug";
 import { getId } from "./getId";
 import { size } from "viem";
@@ -29,7 +29,11 @@ export function createStorageAdapter<tables extends Tables>({
       const table = store.getState().tables[log.args.tableId];
       if (!table) {
         const { namespace, name } = hexToResource(log.args.tableId);
-        debug(`skipping update for unknown table: ${namespace}:${name} (${log.args.tableId}) at ${log.address}`);
+        debug(
+          `skipping update for unknown table: ${resourceLabel({ namespace, name })} (${log.args.tableId}) at ${
+            log.address
+          }`
+        );
         continue;
       }
 

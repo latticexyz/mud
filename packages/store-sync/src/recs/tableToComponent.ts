@@ -4,6 +4,7 @@ import { SchemaAbiTypeToRecsType, schemaAbiTypeToRecsType } from "./schemaAbiTyp
 import { SchemaAbiType } from "@latticexyz/schema-type";
 import { Table } from "@latticexyz/store";
 import { mapObject } from "@latticexyz/common/utils";
+import { resourceLabel } from "@latticexyz/common";
 
 export type TableToComponent<table extends Table> = Component<
   {
@@ -40,7 +41,7 @@ export function tableToComponent<table extends Table>(world: World, table: table
       id: table.tableId,
       metadata: {
         componentName: table.name,
-        tableName: `${table.namespace}:${table.name}`,
+        tableName: resourceLabel(table),
         keySchema: mapObject(table.keySchema, ({ type }) => type),
         valueSchema: mapObject(table.valueSchema, ({ type }) => type),
       },
