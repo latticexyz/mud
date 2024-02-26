@@ -29,8 +29,7 @@ export async function setupNetwork() {
   const worldContract = getContract({
     address: networkConfig.worldAddress as Hex,
     abi: IWorldAbi,
-    publicClient,
-    walletClient: burnerWalletClient,
+    client: { public: publicClient, wallet: burnerWalletClient },
   });
 
   const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
