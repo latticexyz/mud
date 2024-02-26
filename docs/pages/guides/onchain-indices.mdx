@@ -283,7 +283,6 @@ contract MoveSystem is System {
     address player = _msgSender();
 
     bool positionIsEmpty = !PositionIsOccupied.get(x, y);
-
     require(positionIsEmpty, "another player is at this position");
 
     Position.set(player, x, y);
@@ -330,7 +329,7 @@ Internally, this module uses [Store Hooks](https://mud.dev/store/store-hooks) to
 
 After the module is installed, we can use a helper to get all addresses at a given position:
 
-```solidity filename="MoveSystem.sol" copy showLineNumbers {5,6,12-13}
+```solidity filename="MoveSystem.sol" copy showLineNumbers {4,6-7,13-18}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
