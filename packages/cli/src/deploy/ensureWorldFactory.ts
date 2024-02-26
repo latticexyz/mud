@@ -13,7 +13,7 @@ import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { Contract } from "./ensureContract";
 
 export const accessManagementSystemDeployedBytecodeSize = size(
-  accessManagementSystemBuild.deployedBytecode.object as Hex,
+  accessManagementSystemBuild.deployedBytecode.object as Hex
 );
 export const accessManagementSystemBytecode = encodeDeployData({
   bytecode: accessManagementSystemBuild.bytecode.object as Hex,
@@ -26,7 +26,7 @@ export const accessManagementSystem = getCreate2Address({
 });
 
 export const balanceTransferSystemDeployedBytecodeSize = size(
-  balanceTransferSystemBuild.deployedBytecode.object as Hex,
+  balanceTransferSystemBuild.deployedBytecode.object as Hex
 );
 export const balanceTransferSystemBytecode = encodeDeployData({
   bytecode: balanceTransferSystemBuild.bytecode.object as Hex,
@@ -108,7 +108,7 @@ export const worldFactoryContracts: readonly Contract[] = [
 ];
 
 export async function ensureWorldFactory(
-  client: Client<Transport, Chain | undefined, Account>,
+  client: Client<Transport, Chain | undefined, Account>
 ): Promise<readonly Hex[]> {
   // WorldFactory constructor doesn't call InitModule, only sets its address, so we can do these in parallel since the address is deterministic
   return await ensureContractsDeployed({

@@ -26,10 +26,10 @@ export async function writeContract<
   abi extends Abi | readonly unknown[],
   functionName extends ContractFunctionName<abi, "nonpayable" | "payable">,
   args extends ContractFunctionArgs<abi, "nonpayable" | "payable", functionName>,
-  chainOverride extends Chain | undefined,
+  chainOverride extends Chain | undefined
 >(
   client: Client<Transport, chain, account>,
-  request: WriteContractParameters<abi, functionName, args, chain, account, chainOverride>,
+  request: WriteContractParameters<abi, functionName, args, chain, account, chainOverride>
 ): Promise<WriteContractReturnType> {
   const rawAccount = request.account ?? client.account;
   if (!rawAccount) {
@@ -88,8 +88,8 @@ export async function writeContract<
             // TODO: prepareWrite again if there are gas errors?
             throw error;
           },
-        },
+        }
       ),
-    { throwOnTimeout: true },
+    { throwOnTimeout: true }
   );
 }

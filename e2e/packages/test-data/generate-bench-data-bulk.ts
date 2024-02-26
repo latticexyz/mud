@@ -34,7 +34,7 @@ for (let i = 0; i < NUM_RECORDS.length; i++) {
 
   const logsFilename = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
-    `../../../test-data/world-logs-bulk-${numRecords}.json`,
+    `../../../test-data/world-logs-bulk-${numRecords}.json`
   );
 
   console.log("writing", logs.length, "logs to", logsFilename);
