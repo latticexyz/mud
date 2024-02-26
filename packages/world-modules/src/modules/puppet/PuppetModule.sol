@@ -2,7 +2,6 @@
 pragma solidity >=0.8.24;
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
-import { InstalledModules } from "@latticexyz/world/src/codegen/index.sol";
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
