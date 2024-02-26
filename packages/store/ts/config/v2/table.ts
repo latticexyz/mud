@@ -9,7 +9,7 @@ import { AbiType, Schema, getDynamicAbiTypeKeys, getStaticAbiTypeKeys } from "./
  * - How can we create an error if the config doesn't match?
  */
 
-export type NonStaticKeyFieldError = Error<"`key` field must be static if no keys override is provided">;
+export type NoStaticKeyFieldError = Error<"Provide a static `key` field or explicit key override">;
 
 export type TableConfigInput<schema extends Schema = Schema> = TableFullConfigInput<schema> | TableShorthandConfigInput;
 
@@ -33,14 +33,11 @@ export type resolveTableShorthandConfig<input extends TableShorthandConfigInput>
   ? "key" extends getStaticAbiTypeKeys<input>
     ? // If the shorthand includes a static field called `key`, use it as key
       TableFullConfigInput<input, ["key"]>
-    : // If the shorthand includes a non-static field called `key`, return an error
-    "key" extends keyof input
-    ? NonStaticKeyFieldError
-    : // If `key` is not part of the shorthand fields, add a default `bytes32` key
-      // TODO @David: why does this line not work
-      // TableFullConfigInput<input & { key: "bytes32" }, ["key"]>
-      resolveTableShorthandConfig<input & { key: "bytes32" }>
-  : never;
+    : NoStaticKeyFieldError
+  : // If `key` is not part of the shorthand fields, add a default `bytes32` key
+    // TODO @David: why does this line not work
+    // TableFullConfigInput<input & { key: "bytes32" }, ["key"]>
+    never;
 
 export function resolveTableShorthandConfig<input extends TableShorthandConfigInput>(
   input: input
@@ -49,36 +46,11 @@ export function resolveTableShorthandConfig<input extends TableShorthandConfigIn
   return input as resolveTableShorthandConfig<input>;
 }
 
-export type resolveTableConfig<tableConfigInput extends TableConfigInput> = tableConfigInput extends SchemaConfigInput
-  ? // If the table config input is a schema shorthand...
-    resolveTableConfig<TableFullConfigInput<tableConfigInput>>
-  : tableConfigInput extends TableFullConfigInput<infer schema>
-  ? // If the table config input is a full table config
-    tableConfigInput["keys"][number] extends extractStaticAbiKeys<schema>
-    ? // If the keys are a subset of fields with static ABI
-      {
-        keySchema: Pick<schema, tableConfigInput["keys"][number]>;
-        valueSchema: Omit<resolveSchemaConfig<schema>, tableConfigInput["keys"][number]>;
-        schema: resolveSchemaConfig<schema>;
-        keys: tableConfigInput["keys"];
-      }
-    : // Otherwise
-      ErrorInvalidKeys<{
-        expected: extractStaticAbiKeys<schema>;
-        received: tableConfigInput["keys"][number];
-      }>
-  : tableConfigInput extends TableFullConfigInput
-  ? ErrorInvalidKeys<{ expected: keyof tableConfigInput["schema"]; received: tableConfigInput["keys"][number] }>
+export type resolveTableConfig<input extends TableConfigInput> = input extends TableShorthandConfigInput
+  ? resolveTableConfig<resolveTableShorthandConfig<input>>
   : never;
 
-export function resolveTableConfig<tableConfigInput extends TableConfigInput>(
-  tableConfigInput: tableConfigInput
-): resolveTableConfig<tableConfigInput> {
+export function resolveTableConfig<input extends TableConfigInput>(input: input): resolveTableConfig<input> {
   // TODO: runtime implementation
-  return {} as resolveTableConfig<tableConfigInput>;
+  return {} as resolveTableConfig<input>;
 }
-
-export type ErrorInvalidKeys<metadata = null> = Error<
-  "keys must be a subset of the fields with static ABI types in the schema",
-  metadata
->;
