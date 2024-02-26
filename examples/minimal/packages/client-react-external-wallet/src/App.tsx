@@ -27,7 +27,7 @@ const Incrementer = ({
   const delegation = network.useStore((state) =>
     state.getValue(network.tables.UserDelegationControl, {
       delegator: externalWalletClient.account.address,
-      delegatee: network.burnerWalletClient.account.address,
+      delegatee: network.burnerClient.account.address,
     })
   );
 
@@ -38,7 +38,7 @@ const Incrementer = ({
   if (delegation && isDelegated(delegation.delegationControlId)) {
     return (
       <div>
-        <div>Burner wallet account: {network.burnerWalletClient.account.address}</div>
+        <div>Burner wallet account: {network.burnerClient.account.address}</div>
         <button type="button" onClick={() => increment(externalWalletClient, network)}>
           Increment
         </button>

@@ -16,7 +16,7 @@ export const DevTools = () => {
         mount({
           config: mudConfig,
           publicClient: network.publicClient,
-          walletClient: network.burnerWalletClient,
+          walletClient: network.burnerClient,
           latestBlock$: network.latestBlock$,
           storedBlockLogs$: network.storedBlockLogs$,
           worldAddress: network.worldAddress,

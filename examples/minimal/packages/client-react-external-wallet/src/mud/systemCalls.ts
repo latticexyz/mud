@@ -7,9 +7,8 @@ import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 // Executes the `increment` system call on behalf of the external wallet using the burner wallet.
 // This is solely for demonstrating burner wallet delegation, as the `increment` call can actually be made by any sender.
 export const increment = async (externalWalletClient: ExternalWalletClient, network: MUDNetwork) => {
-  const { request } = await network.publicClient.simulateContract({
-    account: network.burnerWalletClient.account,
-    blockTag: "pending", // burner uses this tag
+  const { request } = await network.burnerClient.simulateContract({
+    account: network.burnerClient.account,
     address: network.worldAddress,
     abi: IWorldAbi,
     functionName: "callFrom",
@@ -22,7 +21,7 @@ export const increment = async (externalWalletClient: ExternalWalletClient, netw
     }),
   });
 
-  const tx = await network.burnerWalletClient.writeContract(request);
+  const tx = await network.burnerClient.writeContract(request);
 
   network.waitForTransaction(tx);
 };
@@ -38,7 +37,7 @@ export const delegateToBurner = async (externalWalletClient: ExternalWalletClien
     address: network.worldAddress,
     abi: IWorldAbi,
     functionName: "registerDelegation",
-    args: [network.burnerWalletClient.account.address, UNLIMITED_DELEGATION, "0x0"],
+    args: [network.burnerClient.account.address, UNLIMITED_DELEGATION, "0x0"],
   });
 
   const tx1 = await externalWalletClient.writeContract(request);
@@ -46,7 +45,7 @@ export const delegateToBurner = async (externalWalletClient: ExternalWalletClien
 
   // for transaction fees
   const tx2 = await externalWalletClient.sendTransaction({
-    to: network.burnerWalletClient.account.address,
+    to: network.burnerClient.account.address,
     value: parseEther("0.001"),
   });
   network.waitForTransaction(tx2);

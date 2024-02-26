@@ -1,21 +1,44 @@
-import type { WriteContractParameters, Transport, Chain, Account, WalletActions, WalletClient } from "viem";
-import { sendTransaction, writeContract } from "viem/actions";
+import type {
+  WriteContractParameters,
+  Transport,
+  Chain,
+  Account,
+  Client,
+  WalletRpcSchema,
+  WalletActions,
+  PublicRpcSchema,
+  PublicActions,
+  WalletClient,
+} from "viem";
+import { sendTransaction, writeContract, simulateContract } from "viem/actions";
 import pRetry from "p-retry";
 import { getNonceManager, type ContractWrite } from "@latticexyz/common";
 
+const burnerBlockTag = "pending";
+
 // See @latticexyz/common/src/sendTransaction.ts
 export const burnerActions = <transport extends Transport, chain extends Chain, account extends Account>(
-  client: WalletClient<transport, chain, account>
-): Pick<WalletActions<chain, account>, "sendTransaction"> => {
+  // The client must be extended with wallet and public actions.
+  // https://viem.sh/docs/accounts/local#optional-extend-with-public-actions
+  client: Client<
+    transport,
+    chain,
+    account,
+    WalletRpcSchema & PublicRpcSchema,
+    WalletActions<chain, account> & PublicActions<transport, chain>
+  >
+): Pick<WalletActions<chain, account>, "sendTransaction"> &
+  Pick<PublicActions<transport, chain>, "simulateContract"> => {
   // TODO: Use the `debug` library once this function has been moved to the `common` library.
   const debug = console.log;
 
   return {
+    // Applies to: `client.(sendTransaction|writeContract)`, `getContract(client, ...).write`
     sendTransaction: async (args) => {
       const nonceManager = await getNonceManager({
         client,
         address: client.account.address,
-        blockTag: "pending",
+        blockTag: burnerBlockTag,
       });
 
       return nonceManager.mempoolQueue.add(
@@ -47,6 +70,8 @@ export const burnerActions = <transport extends Transport, chain extends Chain, 
         { throwOnTimeout: true }
       );
     },
+    // Applies to: `client.simulateContract`, `getContract(client, ...).simulate`
+    simulateContract: (args) => simulateContract(client, { ...args, blockTag: burnerBlockTag } as typeof args),
   };
 };
 
@@ -55,6 +80,7 @@ export const setupObserverActions = (onWrite: (write: ContractWrite) => void) =>
   return <transport extends Transport, chain extends Chain, account extends Account>(
     client: WalletClient<transport, chain, account>
   ): Pick<WalletActions<chain, account>, "writeContract"> => ({
+    // Applies to: `client.writeContract`, `getContract(client, ...).write`
     writeContract: async (args) => {
       const result = writeContract(client, args);
 
