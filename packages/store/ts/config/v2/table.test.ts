@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, it, expectTypeOf } from "vitest";
-import { resolveTableConfig, resolveTableShorthandConfig } from "./table";
+import { resolveTableConfig, resolveTableShorthandConfig, NoStaticKeyFieldError } from "./table";
 import { setup, cleanup } from "@arktype/attest";
 
 // TODO: translate into attest tests
@@ -71,11 +71,11 @@ describe("resolveTableShorthandConfig", () => {
 
   it("throw an error if the shorthand doesn't include a key field", () => {
     const config = resolveTableShorthandConfig({ name: "string", age: "uint256" });
-    expectTypeOf<typeof config>().toEqualTypeOf<NonStaticKeyFieldError>();
+    expectTypeOf<typeof config>().toEqualTypeOf<NoStaticKeyFieldError>();
   });
 
   it("throw an error if the shorthand config includes a non-static key field", () => {
     const config = resolveTableShorthandConfig({ key: "string", name: "string", age: "uint256" });
-    expectTypeOf<typeof config>().toEqualTypeOf<NonStaticKeyFieldError>();
+    expectTypeOf<typeof config>().toEqualTypeOf<NoStaticKeyFieldError>();
   });
 });
