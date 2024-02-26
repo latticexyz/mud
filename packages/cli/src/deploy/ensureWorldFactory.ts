@@ -6,7 +6,7 @@ import initModuleBuild from "@latticexyz/world/out/InitModule.sol/InitModule.jso
 import initModuleAbi from "@latticexyz/world/out/InitModule.sol/InitModule.abi.json" assert { type: "json" };
 import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json" assert { type: "json" };
 import worldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
-import { Client, Transport, Chain, Account, Hex, getCreate2Address, encodeDeployData, size } from "viem";
+import { Client, Transport, Chain, Account, Hex, getCreate2Address, encodeDeployData, size, Abi } from "viem";
 import { deployer } from "./ensureDeployer";
 import { salt } from "./common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
@@ -17,7 +17,7 @@ export const accessManagementSystemDeployedBytecodeSize = size(
 );
 export const accessManagementSystemBytecode = encodeDeployData({
   bytecode: accessManagementSystemBuild.bytecode.object as Hex,
-  abi: [],
+  abi: [] as Abi,
 });
 export const accessManagementSystem = getCreate2Address({
   from: deployer,
@@ -30,7 +30,7 @@ export const balanceTransferSystemDeployedBytecodeSize = size(
 );
 export const balanceTransferSystemBytecode = encodeDeployData({
   bytecode: balanceTransferSystemBuild.bytecode.object as Hex,
-  abi: [],
+  abi: [] as Abi,
 });
 export const balanceTransferSystem = getCreate2Address({
   from: deployer,
@@ -41,14 +41,14 @@ export const balanceTransferSystem = getCreate2Address({
 export const batchCallSystemDeployedBytecodeSize = size(batchCallSystemBuild.deployedBytecode.object as Hex);
 export const batchCallSystemBytecode = encodeDeployData({
   bytecode: batchCallSystemBuild.bytecode.object as Hex,
-  abi: [],
+  abi: [] as Abi,
 });
 export const batchCallSystem = getCreate2Address({ from: deployer, bytecode: batchCallSystemBytecode, salt });
 
 export const registrationDeployedBytecodeSize = size(registrationSystemBuild.deployedBytecode.object as Hex);
 export const registrationBytecode = encodeDeployData({
   bytecode: registrationSystemBuild.bytecode.object as Hex,
-  abi: [],
+  abi: [] as Abi,
 });
 export const registration = getCreate2Address({
   from: deployer,

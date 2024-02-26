@@ -386,7 +386,7 @@ If the client does not need all the information stored in the `World`, you can [
 
    ```sh copy
    INDEXER_URL=http://localhost:3001/trpc
-   WORLD_ADDRESS=0x6e9474e9c83676b9a71133ff96db43e7aa0a4342
+   WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
    TABLE_ID=0x746200000000000000000000000000005461736b730000000000000000000000
    CHAIN_ID=31337
    JSON='{"0":{"json":{"chainId": '$CHAIN_ID', "address": "'$WORLD_ADDRESS'", "filters": [{"tableId": "'$TABLE_ID'"}]}}}'
@@ -426,7 +426,7 @@ If the client does not need all the information stored in the `World`, you can [
 
    ```sh copy
    INDEXER_URL=http://localhost:3001/trpc
-   WORLD_ADDRESS=0x7203e7adfdf38519e1ff4f8da7dcdc969371f377
+   WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
    CHAIN_ID=17001
    JSON='{"0":{"json":{"chainId":'$CHAIN_ID', "address":"'$WORLD_ADDRESS'"}}}'
    ENCODED_JSON=`echo "console.log(encodeURI('$JSON'))" | node`
