@@ -4,7 +4,7 @@ import { SchemaAbiTypeToRecsType, schemaAbiTypeToRecsType } from "./schemaAbiTyp
 import { SchemaAbiType } from "@latticexyz/schema-type";
 import { Table } from "@latticexyz/store";
 import { mapObject } from "@latticexyz/common/utils";
-import { resourceLabel } from "@latticexyz/common";
+import { ResourceLabel, resourceLabel } from "@latticexyz/common";
 
 export type TableToComponent<table extends Table> = Component<
   {
@@ -17,7 +17,7 @@ export type TableToComponent<table extends Table> = Component<
   },
   StoreComponentMetadata & {
     componentName: table["name"];
-    tableName: `${table["namespace"]}:${table["name"]}`;
+    tableName: ResourceLabel;
     keySchema: { [name in keyof table["keySchema"] & string]: table["keySchema"][name]["type"] };
     valueSchema: { [name in keyof table["valueSchema"] & string]: table["valueSchema"][name]["type"] };
   }
