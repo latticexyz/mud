@@ -4,7 +4,7 @@ pragma solidity >=0.8.24;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
-import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
+import { TableNotFound } from "@latticexyz/store/src/StoreErrors.sol";
 import { ResourceIds, ResourceIdsTableId } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
@@ -221,7 +221,7 @@ contract SystemSwitchTest is Test, GasReporter {
     // Call reverts because the non-root system storage does not have table schemas
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.Store_TableNotFound.selector,
+        Store_TableNotFound.selector,
         ResourceIdsTableId,
         string(abi.encodePacked(ResourceIdsTableId))
       )
@@ -268,7 +268,7 @@ contract SystemSwitchTest is Test, GasReporter {
     // Call reverts because the non-root system storage does not have table schemas
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.Store_TableNotFound.selector,
+        Store_TableNotFound.selector,
         ResourceIdsTableId,
         string(abi.encodePacked(ResourceIdsTableId))
       )
