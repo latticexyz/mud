@@ -51,6 +51,9 @@ contract World is StoreData, IWorldKernel {
 
   /**
    * @dev Prevents the World contract from calling itself.
+   * The world is not able to call itself; all operations to internal tables happen as internal library calls, and all calls to root system happen as a delegatecall to the system.
+   * However, since this is an important invariant, we make it explicit by reverting if `msg.sender` is `address(this)` in all `World` methods.
+   * If it was possible to make the `World` call itself, it would be possible to access internal tables that only the `World` should have access to.
    */
   modifier prohibitDirectCallback() {
     if (msg.sender == address(this)) {
