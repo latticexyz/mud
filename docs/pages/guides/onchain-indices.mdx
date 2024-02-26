@@ -8,7 +8,7 @@ This guide walks through why you might need onchain indices, and how you can cre
 
 In MUD, we can answer simple queries onchain like _“what is Alice’s position?”_ with `Position.get(alice)`.
 
-However, we often require complex transformations of onchain data that is infeasible to compute onchain. For example, _“which players are at this position?”_, or _“how many gold mines does Bob own?_.
+However, we often have use for more complex transformations of onchain data that are infeasible to compute onchain. For example, _“which players are at this position?”_, or _“how many gold mines does Bob own?_.
 
 For this reason, we create onchain “indices” that maintain the result of these transformations.
 
@@ -34,7 +34,7 @@ export default mudConfig({
 });
 ```
 
-Players update their position by calling `MoveSystem.move` with their desired coordinates.
+In this game, players update their position by calling `MoveSystem.move` with their desired coordinates.
 
 ```solidity filename="MoveSystem.sol" copy showLineNumbers
 // SPDX-License-Identifier: MIT
@@ -85,7 +85,7 @@ There are two main ways to implement this - you can **create and manage your own
 
 #### `PlayersAtPosition`
 
-One way to know if a position is occupied is to have a list of which players are there, and check if that list is empty.
+One way to know whether a position is occupied is to have a list of which players are there, and check if that list is empty.
 
 First, we declare an `PlayersAtPosition` table in our MUD config. The schema is essentially the reverse of `Position`; the key is an (x, y) coordinate and the value is an array of addresses currently at that position:
 
