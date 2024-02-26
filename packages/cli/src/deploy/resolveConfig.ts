@@ -1,6 +1,6 @@
 import { resolveWorldConfig } from "@latticexyz/world";
 import { Config, ConfigInput, WorldFunction, salt } from "./common";
-import { resourceToHex, hexToResource } from "@latticexyz/common";
+import { resourceLabel, resourceToHex, hexToResource } from "@latticexyz/common";
 import { resolveWithContext } from "@latticexyz/config";
 import { encodeField } from "@latticexyz/protocol-parser";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
@@ -10,7 +10,6 @@ import {
   getCreate2Address,
   getAddress,
   hexToBytes,
-  Abi,
   bytesToHex,
   getFunctionSignature,
 } from "viem";
@@ -19,7 +18,6 @@ import { defaultModuleContracts } from "../utils/modules/constants";
 import { getContractData } from "../utils/utils/getContractData";
 import { configToTables } from "./configToTables";
 import { deployer } from "./ensureDeployer";
-import { resourceLabel } from "./resourceLabel";
 
 // TODO: this should be replaced by https://github.com/latticexyz/mud/issues/1668
 

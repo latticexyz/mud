@@ -1,10 +1,9 @@
 import { System, WorldDeploy, worldTables } from "./common";
 import { Client } from "viem";
 import { getResourceIds } from "./getResourceIds";
-import { hexToResource } from "@latticexyz/common";
+import { hexToResource, resourceLabel } from "@latticexyz/common";
 import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
-import { resourceLabel } from "./resourceLabel";
 import { getFunctions } from "./getFunctions";
 import { getResourceAccess } from "./getResourceAccess";
 

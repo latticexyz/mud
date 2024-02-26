@@ -1,8 +1,7 @@
 import { Client, Transport, Chain, Account, Hex, getAddress } from "viem";
-import { writeContract } from "@latticexyz/common";
+import { resourceLabel, writeContract } from "@latticexyz/common";
 import { System, WorldDeploy, worldAbi } from "./common";
 import { debug } from "./debug";
-import { resourceLabel } from "./resourceLabel";
 import { getSystems } from "./getSystems";
 import { getResourceAccess } from "./getResourceAccess";
 import { uniqueBy, wait } from "@latticexyz/common/utils";

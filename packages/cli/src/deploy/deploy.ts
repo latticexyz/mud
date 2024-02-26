@@ -11,7 +11,7 @@ import { ensureModules } from "./ensureModules";
 import { Table } from "./configToTables";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
-import { resourceLabel } from "./resourceLabel";
+import { resourceLabel } from "@latticexyz/common";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { worldFactoryContracts } from "./ensureWorldFactory";
