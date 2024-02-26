@@ -30,6 +30,8 @@ function storeVersion() public pure returns (bytes32);
 
 #### registerTable
 
+[Usage Sample](/store/tables#manually-register-a-table)
+
 ```solidity
 function registerTable(
   ResourceId tableId,
@@ -55,6 +57,8 @@ function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) externa
 
 #### grantAccess
 
+[Usage Sample](/world/namespaces-access-control#modifying-access-control)
+
 Grant access to the resource at the given resource ID.
 
 _Requires the caller to own the namespace._
@@ -71,6 +75,8 @@ function grantAccess(ResourceId resourceId, address grantee) public virtual only
 | `grantee`    | `address`    | The address to which access should be granted. |
 
 #### revokeAccess
+
+[Usage Sample](/world/namespaces-access-control#modifying-access-control)
 
 Revoke access from the resource at the given resource ID.
 
@@ -143,6 +149,8 @@ function transferBalanceToNamespace(
 | `amount`          | `uint256`    | The amount to transfer.                                       |
 
 #### transferBalanceToAddress
+
+[Usage Sample](/world/balance)
 
 Transfer balance out of the World to a specific address.
 
@@ -230,6 +238,8 @@ function installModule(IModule module, bytes memory encodedArgs) public onlyDele
 
 #### registerNamespace
 
+[Usage Sample](/world/systems#registering-systems)
+
 Registers a new namespace
 
 _Creates a new namespace resource with the given ID_
@@ -285,6 +295,8 @@ function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) publ
 
 #### registerSystem
 
+[Usage Sample](/world/systems#registering-systems)
+
 Registers a system
 
 _Registers or upgrades a system at the given ID
@@ -334,6 +346,8 @@ function registerFunctionSelector(
 | `worldFunctionSelector` | `bytes4` | The selector of the World function |
 
 #### registerRootFunctionSelector
+
+[Usage Sample](/world/function-selectors#root-function-selectors)
 
 Registers a root World function selector
 
@@ -520,6 +534,8 @@ _This interface defines the contract for executing calls on the World's systems.
 ### Functions
 
 #### call
+
+[Usage Sample](/world/systems#using-call)
 
 Call the system at the given system ID.
 
@@ -917,11 +933,12 @@ function deployWorld(bytes memory salt) external returns (address worldAddress);
 _Emitted when a new World contract is deployed._
 
 ```solidity
-event WorldDeployed(address indexed newContract);
+event WorldDeployed(address indexed newContract, uint256 salt);
 ```
 
 **Parameters**
 
-| Name          | Type      | Description                                       |
-| ------------- | --------- | ------------------------------------------------- |
-| `newContract` | `address` | The address of the newly deployed World contract. |
+| Name          | Type      | Description                                                        |
+| ------------- | --------- | ------------------------------------------------------------------ |
+| `newContract` | `address` | The address of the newly deployed World contract.                  |
+| `salt`        | `uint256` | User defined salt for deterministic world addresses across chains. |

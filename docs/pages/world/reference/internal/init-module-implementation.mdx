@@ -142,6 +142,8 @@ function transferBalanceToNamespace(
 
 #### transferBalanceToAddress
 
+[Usage Sample](/world/balance)
+
 Transfer balance out of the World to a specific address.
 
 _Requires the caller to have access to the source namespace and ensures sufficient balance before transfer._
@@ -312,6 +314,8 @@ _This contract provides functions related to registering resources other than ta
 
 #### registerNamespace
 
+[Usage Sample](/world/systems#registering-systems)
+
 Registers a new namespace
 
 _Creates a new namespace resource with the given ID_
@@ -367,6 +371,8 @@ function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) publ
 
 #### registerSystem
 
+[Usage Sample](/world/systems#registering-systems)
+
 Registers a system
 
 _Registers or upgrades a system at the given ID
@@ -390,6 +396,8 @@ function registerSystem(ResourceId systemId, System system, bool publicAccess) p
 | `publicAccess` | `bool`       | Flag indicating if access control check is bypassed |
 
 #### registerFunctionSelector
+
+[Usage Sample](/world/function-selectors)
 
 Registers a new World function selector
 
@@ -416,6 +424,8 @@ function registerFunctionSelector(
 | `worldFunctionSelector` | `bytes4` | The selector of the World function |
 
 #### registerRootFunctionSelector
+
+[Usage Sample](/world/function-selectors#root-function-selectors)
 
 Registers a root World function selector
 
