@@ -4,7 +4,7 @@ pragma solidity >=0.8.24;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
-import { TableNotFound } from "@latticexyz/store/src/StoreErrors.sol";
+import { Store_TableNotFound } from "@latticexyz/store/src/StoreErrors.sol";
 import { ResourceIds, ResourceIdsTableId } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
