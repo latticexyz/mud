@@ -25,10 +25,8 @@ contract PuppetModule is Module {
   PuppetFactorySystem private immutable puppetFactorySystem = new PuppetFactorySystem();
 
   function installRoot(bytes memory) public {
-    // Naive check to ensure this is only installed once
-    if (InstalledModules.getModuleAddress(getName(), keccak256(new bytes(0))) != address(0)) {
-      revert Module_AlreadyInstalled();
-    }
+    // Require the module to not be installed
+    requireNotInstalled(__self, new bytes(0));
 
     IBaseWorld world = IBaseWorld(_world());
 
@@ -55,10 +53,8 @@ contract PuppetModule is Module {
   }
 
   function install(bytes memory) public {
-    // Naive check to ensure this is only installed once
-    if (InstalledModules.getModuleAddress(getName(), keccak256(new bytes(0))) != address(0)) {
-      revert Module_AlreadyInstalled();
-    }
+    // Require the module to not be installed
+    requireNotInstalled(__self, new bytes(0));
 
     IBaseWorld world = IBaseWorld(_world());
 
