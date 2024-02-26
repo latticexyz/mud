@@ -371,7 +371,7 @@ import { IWorld } from "../src/codegen/world/IWorld.sol";
 
 contract MoveSystemTest is MudTest, GasReporter {
   function testMove() public {
-    startGasReport("moving");
+    startGasReport("moving one player");
     IWorld(worldAddress).move(1, 1);
     endGasReport();
   }
