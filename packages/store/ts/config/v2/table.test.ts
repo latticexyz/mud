@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, it, expectTypeOf } from "vitest";
-import { resolveTableConfig, resolveTableShorthandConfig, NoStaticKeyFieldError } from "./table";
+import { resolveTableConfig, resolveTableShorthandConfig, NoStaticKeyFieldError, getSchema } from "./table";
 import { setup, cleanup } from "@arktype/attest";
 
 // TODO: translate into attest tests
@@ -77,5 +77,37 @@ describe("resolveTableShorthandConfig", () => {
   it("throw an error if the shorthand config includes a non-static key field", () => {
     const config = resolveTableShorthandConfig({ key: "string", name: "string", age: "uint256" });
     expectTypeOf<typeof config>().toEqualTypeOf<NoStaticKeyFieldError>();
+  });
+
+  describe("resolveTableConfig", () => {
+    it("should expand a single ABI type into a key/value schema", () => {
+      const config = resolveTableConfig("address");
+      expectTypeOf<typeof config.schema>().toEqualTypeOf<{ key: "bytes32"; value: "address" }>();
+      expectTypeOf<typeof config.keys>().toEqualTypeOf<["key"]>();
+    });
+
+    it("given a schema with a key field with static ABI type, it should use `key` as single key", () => {
+      const config = resolveTableConfig({ key: "address", name: "string", age: "uint256" });
+      expectTypeOf<typeof config.schema>().toEqualTypeOf<{ key: "address"; name: "string"; age: "uint256" }>();
+      expectTypeOf<typeof config.keys>().toEqualTypeOf<["key"]>();
+    });
+
+    it("given a full config, it should return the full config", () => {
+      const config = resolveTableConfig({ schema: { key: "address", name: "string", age: "uint256" }, keys: ["age"] });
+      expectTypeOf<typeof config.schema>().toEqualTypeOf<{ key: "address"; name: "string"; age: "uint256" }>();
+      expectTypeOf<typeof config.keys>().toEqualTypeOf<["age"]>();
+
+      const asdf = {} as getSchema<{ schema: { key: "address"; name: "string"; age: "uint256" }; keys: ["age"] }>;
+    });
+
+    it("throw an error if the shorthand doesn't include a key field", () => {
+      const config = resolveTableConfig({ name: "string", age: "uint256" });
+      expectTypeOf<typeof config>().toEqualTypeOf<NoStaticKeyFieldError>();
+    });
+
+    it("throw an error if the shorthand config includes a non-static key field", () => {
+      const config = resolveTableConfig({ key: "string", name: "string", age: "uint256" });
+      expectTypeOf<typeof config>().toEqualTypeOf<NoStaticKeyFieldError>();
+    });
   });
 });

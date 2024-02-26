@@ -42,15 +42,15 @@ export type resolveTableShorthandConfig<input extends TableShorthandConfigInput>
 export function resolveTableShorthandConfig<input extends TableShorthandConfigInput>(
   input: input
 ): resolveTableShorthandConfig<input> {
-  // TODO: runtime
+  // TODO: runtime implementatio
   return input as unknown as resolveTableShorthandConfig<input>;
 }
 
 export type resolveTableConfig<input extends TableConfigInput> = input extends TableShorthandConfigInput
-  ? resolveTableConfig<resolveTableShorthandConfig<input>>
-  : never;
+  ? resolveTableShorthandConfig<input>
+  : input;
 
 export function resolveTableConfig<input extends TableConfigInput>(input: input): resolveTableConfig<input> {
   // TODO: runtime implementation
-  return {} as resolveTableConfig<input>;
+  return input as resolveTableConfig<input>;
 }
