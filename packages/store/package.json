@@ -54,8 +54,8 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "abitype": "0.9.8",
-    "viem": "1.14.0",
+    "abitype": "1.0.0",
+    "viem": "2.7.12",
     "zod": "^3.21.4"
   },
   "devDependencies": {
