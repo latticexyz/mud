@@ -1,1 +1,1 @@
-export type Error<reason extends string = string> = { error: true; reason: `!Error: ${reason}` };
+export type error<reason extends string = string> = `!${reason}`;

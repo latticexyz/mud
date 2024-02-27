@@ -11,8 +11,14 @@ export type StaticSchema = {
 
 export type isStaticAbiType<abiType extends AbiType> = abiType extends StaticAbiType ? true : never;
 
-export type getStaticAbiTypeKeys<schema extends Schema> = {
-  [key in keyof schema]: schema[key] extends StaticAbiType ? key : never;
-}[keyof schema];
+export type getStaticAbiTypeKeys<schema extends Schema> = Schema extends schema
+  ? // If `schema` is the default Schema type, return a broad string type
+    string
+  : {
+      [key in keyof schema]: schema[key] extends StaticAbiType ? key : never;
+    }[keyof schema];
 
-export type getDynamicAbiTypeKeys<schema extends Schema> = Exclude<keyof schema, getStaticAbiTypeKeys<schema>>;
+export type getDynamicAbiTypeKeys<schema extends Schema> = Schema extends schema
+  ? // If `schema` is the default Schema type, return a broad string type
+    string
+  : Exclude<keyof schema, getStaticAbiTypeKeys<schema>>;
