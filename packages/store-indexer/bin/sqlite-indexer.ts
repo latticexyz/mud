@@ -75,6 +75,7 @@ try {
 const { latestBlockNumber$, storedBlockLogs$ } = await syncToSqlite({
   database,
   publicClient,
+  followBlockTag: "finalized",
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
   address: env.STORE_ADDRESS,
