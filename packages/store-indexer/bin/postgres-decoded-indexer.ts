@@ -69,7 +69,7 @@ try {
 const { latestBlockNumber$, storedBlockLogs$ } = await createStoreSync({
   storageAdapter,
   publicClient,
-  followBlockTag: "safe",
+  followBlockTag: env.FOLLOW_BLOCK_TAG,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
   address: env.STORE_ADDRESS,
