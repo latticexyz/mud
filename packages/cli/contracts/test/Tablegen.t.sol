@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import "forge-std/Test.sol";
 import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
-import { Store_IndexOutOfBounds } from "@latticexyz/store/src/StoreErrors.sol";
+import { Store_IndexOutOfBounds } from "@latticexyz/store/src/errors.sol";
 
 import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Offchain, UserTyped, UserTypedData } from "../src/codegen/index.sol";
 import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "../src/types.sol";

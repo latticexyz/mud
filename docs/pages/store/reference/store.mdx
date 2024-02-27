@@ -98,7 +98,7 @@ event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
 ## Store_IndexOutOfBounds
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreErrors.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
 
 ```solidity
 error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
@@ -106,7 +106,7 @@ error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
 
 ## Store_InvalidBounds
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreErrors.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
 
 ```solidity
 error Store_InvalidBounds(uint256 start, uint256 end);
@@ -114,7 +114,7 @@ error Store_InvalidBounds(uint256 start, uint256 end);
 
 ## Store_InvalidFieldNamesLength
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreErrors.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
 
 ```solidity
 error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
@@ -122,7 +122,7 @@ error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
 
 ## Store_InvalidKeyNamesLength
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreErrors.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
 
 ```solidity
 error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
@@ -130,7 +130,7 @@ error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
 
 ## Store_InvalidResourceType
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreErrors.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
 
 ```solidity
 error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
@@ -138,7 +138,7 @@ error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string r
 
 ## Store_InvalidSplice
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreErrors.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
 
 ```solidity
 error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
@@ -146,7 +146,7 @@ error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fi
 
 ## Store_InvalidStaticDataLength
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreErrors.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
 
 ```solidity
 error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
@@ -154,7 +154,7 @@ error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
 
 ## Store_InvalidValueSchemaDynamicLength
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreErrors.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
 
 ```solidity
 error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
@@ -162,7 +162,7 @@ error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
 
 ## Store_InvalidValueSchemaLength
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreErrors.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
 
 ```solidity
 error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
@@ -170,7 +170,7 @@ error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
 
 ## Store_InvalidValueSchemaStaticLength
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreErrors.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
 
 ```solidity
 error Store_InvalidValueSchemaStaticLength(uint256 expected, uint256 received);
@@ -178,7 +178,7 @@ error Store_InvalidValueSchemaStaticLength(uint256 expected, uint256 received);
 
 ## Store_TableAlreadyExists
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreErrors.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
 
 ```solidity
 error Store_TableAlreadyExists(ResourceId tableId, string tableIdString);
@@ -186,7 +186,7 @@ error Store_TableAlreadyExists(ResourceId tableId, string tableIdString);
 
 ## Store_TableNotFound
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreErrors.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
 
 ```solidity
 error Store_TableNotFound(ResourceId tableId, string tableIdString);

@@ -12,7 +12,7 @@ import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreMock } from "../test/StoreMock.sol";
-import { Store_IndexOutOfBounds } from "../src/StoreErrors.sol";
+import { Store_IndexOutOfBounds } from "../src/errors.sol";
 import { IStore } from "../src/IStore.sol";
 import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
 import { ResourceIds } from "../src/codegen/tables/ResourceIds.sol";

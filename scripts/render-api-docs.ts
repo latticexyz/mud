@@ -35,7 +35,7 @@ const PUBLIC_APIS: PublicApis = {
     inputFiles: [
       { source: "store/src/IStore.sol" },
       { source: "store/src/IStoreEvents.sol" },
-      { source: "store/src/StoreErrors.sol" },
+      { source: "store/src/errors.sol" },
       { source: "store/src/IStoreData.sol" },
       { source: "store/src/IStoreRead.sol" },
       { source: "store/src/IStoreWrite.sol" },

@@ -8,7 +8,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
-import { Store_TableAlreadyExists, Store_InvalidResourceType } from "@latticexyz/store/src/StoreErrors.sol";
+import { Store_TableAlreadyExists, Store_InvalidResourceType } from "@latticexyz/store/src/errors.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";

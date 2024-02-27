@@ -11,7 +11,7 @@ import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
 import { Tables, TablesTableId, ResourceIds, ResourceIdsTableId, StoreHooks, StoreHooksTableId } from "./codegen/index.sol";
 import { _fieldLayout as TablesTableFieldLayout } from "./codegen/tables/Tables.sol";
-import { Store_TableAlreadyExists, Store_InvalidSplice, Store_IndexOutOfBounds, Store_InvalidBounds, Store_TableNotFound, Store_InvalidStaticDataLength, Store_InvalidValueSchemaStaticLength, Store_InvalidResourceType, Store_InvalidValueSchemaDynamicLength, Store_InvalidFieldNamesLength, Store_InvalidKeyNamesLength, Store_InvalidValueSchemaLength } from "./StoreErrors.sol";
+import { Store_TableAlreadyExists, Store_InvalidSplice, Store_IndexOutOfBounds, Store_InvalidBounds, Store_TableNotFound, Store_InvalidStaticDataLength, Store_InvalidValueSchemaStaticLength, Store_InvalidResourceType, Store_InvalidValueSchemaDynamicLength, Store_InvalidFieldNamesLength, Store_InvalidKeyNamesLength, Store_InvalidValueSchemaLength } from "./errors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";

@@ -12,7 +12,7 @@ import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
 import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
-import { Store_IndexOutOfBounds } from "../src/StoreErrors.sol";
+import { Store_IndexOutOfBounds } from "../src/errors.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
