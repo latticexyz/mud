@@ -339,40 +339,23 @@ If you need a _commitment_, create a table with a `System` that lets the address
 
 <CollapseCode>
 
-```solidity copy showLineNumbers {32}
+```solidity copy showLineNumbers {16}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
-
-import { SystemboundDelegationControl } from "@latticexyz/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol";
-import { SYSTEMBOUND_DELEGATION } from "@latticexyz/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol";
-import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
-import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
-
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
 contract RemoveDelegation is Script {
-  using WorldResourceIdInstance for ResourceId;
-
   function run() external {
     // Load the configuration
     uint256 userPrivateKey = vm.envUint("PRIVATE_KEY");
     address worldAddress = vm.envAddress("WORLD_ADDRESS");
 
     IWorld world = IWorld(worldAddress);
-    ResourceId systemId = WorldResourceIdLib.encode({
-      typeId: RESOURCE_SYSTEM,
-      namespace: "LastCall",
-      name: "LastCallSystem"
-    });
-
-    // Run as the first address
     vm.startBroadcast(userPrivateKey);
-
     world.unregisterDelegation(address(0x60A7));
-
     vm.stopBroadcast();
   }
 }
