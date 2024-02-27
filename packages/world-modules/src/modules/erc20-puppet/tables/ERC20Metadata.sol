@@ -43,9 +43,7 @@ library ERC20Metadata {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](0);
-
-    return SchemaLib.encode(_keySchema);
+    return Schema.wrap(0x0000000000000000000000000000000000000000000000000000000000000000);
   }
 
   /**
@@ -53,12 +51,7 @@ library ERC20Metadata {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](3);
-    _valueSchema[0] = SchemaType.UINT8;
-    _valueSchema[1] = SchemaType.STRING;
-    _valueSchema[2] = SchemaType.STRING;
-
-    return SchemaLib.encode(_valueSchema);
+    return Schema.wrap(0x0001010200c5c500000000000000000000000000000000000000000000000000);
   }
 
   /**

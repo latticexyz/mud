@@ -41,9 +41,7 @@ library Singleton {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](0);
-
-    return SchemaLib.encode(_keySchema);
+    return Schema.wrap(0x0000000000000000000000000000000000000000000000000000000000000000);
   }
 
   /**
@@ -51,13 +49,7 @@ library Singleton {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](4);
-    _valueSchema[0] = SchemaType.INT256;
-    _valueSchema[1] = SchemaType.UINT32_ARRAY;
-    _valueSchema[2] = SchemaType.UINT32_ARRAY;
-    _valueSchema[3] = SchemaType.UINT32_ARRAY;
-
-    return SchemaLib.encode(_valueSchema);
+    return Schema.wrap(0x002001033f656565000000000000000000000000000000000000000000000000);
   }
 
   /**

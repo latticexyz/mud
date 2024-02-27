@@ -54,10 +54,7 @@ library Tables {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](1);
-    _keySchema[0] = SchemaType.BYTES32;
-
-    return SchemaLib.encode(_keySchema);
+    return Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
   }
 
   /**
@@ -65,14 +62,7 @@ library Tables {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](5);
-    _valueSchema[0] = SchemaType.BYTES32;
-    _valueSchema[1] = SchemaType.BYTES32;
-    _valueSchema[2] = SchemaType.BYTES32;
-    _valueSchema[3] = SchemaType.BYTES;
-    _valueSchema[4] = SchemaType.BYTES;
-
-    return SchemaLib.encode(_valueSchema);
+    return Schema.wrap(0x006003025f5f5fc4c40000000000000000000000000000000000000000000000);
   }
 
   /**

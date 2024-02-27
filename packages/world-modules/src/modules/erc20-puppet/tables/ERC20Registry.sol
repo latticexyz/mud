@@ -40,10 +40,7 @@ library ERC20Registry {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](1);
-    _keySchema[0] = SchemaType.BYTES32;
-
-    return SchemaLib.encode(_keySchema);
+    return Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
   }
 
   /**
@@ -51,10 +48,7 @@ library ERC20Registry {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](1);
-    _valueSchema[0] = SchemaType.ADDRESS;
-
-    return SchemaLib.encode(_valueSchema);
+    return Schema.wrap(0x0014010061000000000000000000000000000000000000000000000000000000);
   }
 
   /**

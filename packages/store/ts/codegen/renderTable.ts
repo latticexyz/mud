@@ -14,6 +14,7 @@ import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
 import { renderDeleteRecordMethods, renderRecordData, renderRecordMethods } from "./record";
 import { renderFieldLayout } from "./renderFieldLayout";
 import { RenderTableOptions } from "./types";
+import { KeySchema, ValueSchema, keySchemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser";
 
 /**
  * Renders Solidity code for a MUD table library, using the specified options
@@ -93,10 +94,9 @@ export function renderTable(options: RenderTableOptions) {
        * @return _keySchema The key schema for the table.
        */
       function getKeySchema() internal pure returns (Schema) {
-        SchemaType[] memory _keySchema = new SchemaType[](${keyTuple.length});
-        ${renderList(keyTuple, ({ enumName }, index) => `_keySchema[${index}] = SchemaType.${enumName};`)}
-
-        return SchemaLib.encode(_keySchema);
+        return Schema.wrap(${keySchemaToHex(
+          Object.fromEntries(keyTuple.map((key) => [key.name, key.internalTypeId])) as KeySchema
+        )});
       }
 
       /**
@@ -104,10 +104,9 @@ export function renderTable(options: RenderTableOptions) {
        * @return _valueSchema The value schema for the table.
        */
       function getValueSchema() internal pure returns (Schema) {
-        SchemaType[] memory _valueSchema = new SchemaType[](${fields.length});
-        ${renderList(fields, ({ enumName }, index) => `_valueSchema[${index}] = SchemaType.${enumName};`)}
-
-        return SchemaLib.encode(_valueSchema);
+        return Schema.wrap(${valueSchemaToHex(
+          Object.fromEntries(fields.map((field) => [field.name, field.internalTypeId])) as ValueSchema
+        )});
       }
 
       /**

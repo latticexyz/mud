@@ -46,13 +46,7 @@ library Multi {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](4);
-    _keySchema[0] = SchemaType.UINT32;
-    _keySchema[1] = SchemaType.BOOL;
-    _keySchema[2] = SchemaType.UINT256;
-    _keySchema[3] = SchemaType.INT120;
-
-    return SchemaLib.encode(_keySchema);
+    return Schema.wrap(0x0034040003601f2e000000000000000000000000000000000000000000000000);
   }
 
   /**
@@ -60,11 +54,7 @@ library Multi {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](2);
-    _valueSchema[0] = SchemaType.INT256;
-    _valueSchema[1] = SchemaType.BOOL;
-
-    return SchemaLib.encode(_valueSchema);
+    return Schema.wrap(0x002102003f600000000000000000000000000000000000000000000000000000);
   }
 
   /**

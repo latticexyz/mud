@@ -44,15 +44,7 @@ library KeyEncoding {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](6);
-    _keySchema[0] = SchemaType.UINT256;
-    _keySchema[1] = SchemaType.INT32;
-    _keySchema[2] = SchemaType.BYTES16;
-    _keySchema[3] = SchemaType.ADDRESS;
-    _keySchema[4] = SchemaType.BOOL;
-    _keySchema[5] = SchemaType.UINT8;
-
-    return SchemaLib.encode(_keySchema);
+    return Schema.wrap(0x004a06001f234f61600000000000000000000000000000000000000000000000);
   }
 
   /**
@@ -60,10 +52,7 @@ library KeyEncoding {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](1);
-    _valueSchema[0] = SchemaType.BOOL;
-
-    return SchemaLib.encode(_valueSchema);
+    return Schema.wrap(0x0001010060000000000000000000000000000000000000000000000000000000);
   }
 
   /**

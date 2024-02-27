@@ -47,10 +47,7 @@ library Dynamics2 {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](1);
-    _keySchema[0] = SchemaType.BYTES32;
-
-    return SchemaLib.encode(_keySchema);
+    return Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
   }
 
   /**
@@ -58,12 +55,7 @@ library Dynamics2 {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](3);
-    _valueSchema[0] = SchemaType.UINT64_ARRAY;
-    _valueSchema[1] = SchemaType.STRING;
-    _valueSchema[2] = SchemaType.BYTES;
-
-    return SchemaLib.encode(_valueSchema);
+    return Schema.wrap(0x0000000369c5c400000000000000000000000000000000000000000000000000);
   }
 
   /**

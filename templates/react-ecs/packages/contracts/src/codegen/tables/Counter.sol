@@ -41,9 +41,7 @@ library Counter {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](0);
-
-    return SchemaLib.encode(_keySchema);
+    return Schema.wrap(0x0000000000000000000000000000000000000000000000000000000000000000);
   }
 
   /**
@@ -51,10 +49,7 @@ library Counter {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](1);
-    _valueSchema[0] = SchemaType.UINT32;
-
-    return SchemaLib.encode(_valueSchema);
+    return Schema.wrap(0x0004010003000000000000000000000000000000000000000000000000000000);
   }
 
   /**

@@ -47,10 +47,7 @@ library Tasks {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](1);
-    _keySchema[0] = SchemaType.BYTES32;
-
-    return SchemaLib.encode(_keySchema);
+    return Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
   }
 
   /**
@@ -58,12 +55,7 @@ library Tasks {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](3);
-    _valueSchema[0] = SchemaType.UINT256;
-    _valueSchema[1] = SchemaType.UINT256;
-    _valueSchema[2] = SchemaType.STRING;
-
-    return SchemaLib.encode(_valueSchema);
+    return Schema.wrap(0x004002011f1fc500000000000000000000000000000000000000000000000000);
   }
 
   /**

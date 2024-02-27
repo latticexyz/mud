@@ -41,11 +41,7 @@ library TimeboundDelegations {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](2);
-    _keySchema[0] = SchemaType.ADDRESS;
-    _keySchema[1] = SchemaType.ADDRESS;
-
-    return SchemaLib.encode(_keySchema);
+    return Schema.wrap(0x0028020061610000000000000000000000000000000000000000000000000000);
   }
 
   /**
@@ -53,10 +49,7 @@ library TimeboundDelegations {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](1);
-    _valueSchema[0] = SchemaType.UINT256;
-
-    return SchemaLib.encode(_valueSchema);
+    return Schema.wrap(0x002001001f000000000000000000000000000000000000000000000000000000);
   }
 
   /**

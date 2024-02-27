@@ -42,9 +42,7 @@ library TwoFields {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](0);
-
-    return SchemaLib.encode(_keySchema);
+    return Schema.wrap(0x0000000000000000000000000000000000000000000000000000000000000000);
   }
 
   /**
@@ -52,11 +50,7 @@ library TwoFields {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](2);
-    _valueSchema[0] = SchemaType.BOOL;
-    _valueSchema[1] = SchemaType.BOOL;
-
-    return SchemaLib.encode(_valueSchema);
+    return Schema.wrap(0x0002020060600000000000000000000000000000000000000000000000000000);
   }
 
   /**

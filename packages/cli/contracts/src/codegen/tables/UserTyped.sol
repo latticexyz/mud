@@ -53,14 +53,7 @@ library UserTyped {
    * @return _keySchema The key schema for the table.
    */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _keySchema = new SchemaType[](5);
-    _keySchema[0] = SchemaType.ADDRESS;
-    _keySchema[1] = SchemaType.INT64;
-    _keySchema[2] = SchemaType.BOOL;
-    _keySchema[3] = SchemaType.UINT128;
-    _keySchema[4] = SchemaType.BYTES32;
-
-    return SchemaLib.encode(_keySchema);
+    return Schema.wrap(0x004d05006127600f5f0000000000000000000000000000000000000000000000);
   }
 
   /**
@@ -68,14 +61,7 @@ library UserTyped {
    * @return _valueSchema The value schema for the table.
    */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _valueSchema = new SchemaType[](5);
-    _valueSchema[0] = SchemaType.ADDRESS;
-    _valueSchema[1] = SchemaType.INT64;
-    _valueSchema[2] = SchemaType.BOOL;
-    _valueSchema[3] = SchemaType.UINT128;
-    _valueSchema[4] = SchemaType.BYTES32;
-
-    return SchemaLib.encode(_valueSchema);
+    return Schema.wrap(0x004d05006127600f5f0000000000000000000000000000000000000000000000);
   }
 
   /**
