@@ -19,10 +19,6 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0001010201000000000000000000000000000000000000000000000000000000
-);
-
 struct ERC20MetadataData {
   uint8 decimals;
   string name;
@@ -30,6 +26,9 @@ struct ERC20MetadataData {
 }
 
 library ERC20Metadata {
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0001010201000000000000000000000000000000000000000000000000000000);
+
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

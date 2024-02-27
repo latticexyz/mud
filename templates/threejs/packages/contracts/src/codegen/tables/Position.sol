@@ -19,14 +19,6 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Position", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x74620000000000000000000000000000506f736974696f6e0000000000000000);
-ResourceId constant PositionTableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x000c030004040400000000000000000000000000000000000000000000000000
-);
-
 struct PositionData {
   int32 x;
   int32 y;
@@ -34,6 +26,12 @@ struct PositionData {
 }
 
 library Position {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Position", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x74620000000000000000000000000000506f736974696f6e0000000000000000);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x000c030004040400000000000000000000000000000000000000000000000000);
+
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

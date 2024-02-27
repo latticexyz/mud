@@ -15,7 +15,7 @@ import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncod
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
-import { Tables, ResourceIds, TablesTableId } from "@latticexyz/store/src/codegen/index.sol";
+import { Tables, ResourceIds } from "@latticexyz/store/src/codegen/index.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { ALL, BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { RevertSubscriber } from "@latticexyz/store/test/RevertSubscriber.sol";
@@ -32,7 +32,7 @@ import { SystemHook } from "../src/SystemHook.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
 import { Module, IModule } from "../src/Module.sol";
 
-import { NamespaceOwner, NamespaceOwnerTableId } from "../src/codegen/tables/NamespaceOwner.sol";
+import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
 
 import { AccessManagementSystem } from "../src/modules/init/implementations/AccessManagementSystem.sol";
@@ -259,17 +259,17 @@ contract WorldTest is Test, GasReporter {
     }
 
     // Should have registered the table data table (fka schema table)
-    assertEq(FieldLayout.unwrap(Tables.getFieldLayout(TablesTableId)), FieldLayout.unwrap(Tables.getFieldLayout()));
-    assertEq(Tables.getAbiEncodedKeyNames(TablesTableId), abi.encode(Tables.getKeyNames()));
-    assertEq(Tables.getAbiEncodedFieldNames(TablesTableId), abi.encode(Tables.getFieldNames()));
+    assertEq(FieldLayout.unwrap(Tables.getFieldLayout(Tables._tableId)), FieldLayout.unwrap(Tables.getFieldLayout()));
+    assertEq(Tables.getAbiEncodedKeyNames(Tables._tableId), abi.encode(Tables.getKeyNames()));
+    assertEq(Tables.getAbiEncodedFieldNames(Tables._tableId), abi.encode(Tables.getFieldNames()));
 
     // Should have registered the namespace owner table
     assertEq(
-      FieldLayout.unwrap(Tables.getFieldLayout(NamespaceOwnerTableId)),
+      FieldLayout.unwrap(Tables.getFieldLayout(NamespaceOwner._tableId)),
       FieldLayout.unwrap(NamespaceOwner.getFieldLayout())
     );
-    assertEq(Tables.getAbiEncodedKeyNames(NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));
-    assertEq(Tables.getAbiEncodedFieldNames(NamespaceOwnerTableId), abi.encode(NamespaceOwner.getFieldNames()));
+    assertEq(Tables.getAbiEncodedKeyNames(NamespaceOwner._tableId), abi.encode(NamespaceOwner.getKeyNames()));
+    assertEq(Tables.getAbiEncodedFieldNames(NamespaceOwner._tableId), abi.encode(NamespaceOwner.getFieldNames()));
 
     // Expect it to not be possible to initialize the World again
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AlreadyInitialized.selector));

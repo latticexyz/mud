@@ -22,14 +22,6 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 // Import user types
 import { Enum2, Enum1 } from "./../common.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Statics", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000053746174696373000000000000000000);
-ResourceId constant StaticsTableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x004a060020041014010100000000000000000000000000000000000000000000
-);
-
 struct StaticsData {
   uint256 v1;
   int32 v2;
@@ -40,6 +32,12 @@ struct StaticsData {
 }
 
 library Statics {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Statics", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000053746174696373000000000000000000);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x004a060020041014010100000000000000000000000000000000000000000000);
+
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

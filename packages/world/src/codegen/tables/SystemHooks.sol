@@ -22,15 +22,13 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 // Import user types
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "SystemHooks", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c6400000000000000000053797374656d486f6f6b730000000000);
-ResourceId constant SystemHooksTableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0000000100000000000000000000000000000000000000000000000000000000
-);
-
 library SystemHooks {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "SystemHooks", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c6400000000000000000053797374656d486f6f6b730000000000);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0000000100000000000000000000000000000000000000000000000000000000);
+
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

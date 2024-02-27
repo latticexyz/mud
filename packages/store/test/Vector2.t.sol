@@ -8,7 +8,7 @@ import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 
-import { Vector2, Vector2Data, Vector2TableId } from "./codegen/index.sol";
+import { Vector2, Vector2Data } from "./codegen/index.sol";
 
 contract Vector2Test is Test, GasReporter, StoreMock {
   function testRegisterAndGetFieldLayout() public {
@@ -16,7 +16,7 @@ contract Vector2Test is Test, GasReporter, StoreMock {
     Vector2.register();
     endGasReport();
 
-    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(Vector2TableId);
+    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(Vector2._tableId);
     FieldLayout declaredFieldLayout = Vector2.getFieldLayout();
 
     assertEq(FieldLayout.unwrap(registeredFieldLayout), FieldLayout.unwrap(declaredFieldLayout));
@@ -25,7 +25,7 @@ contract Vector2Test is Test, GasReporter, StoreMock {
   function testRegisterAndGetSchema() public {
     Vector2.register();
 
-    Schema registeredSchema = StoreCore.getValueSchema(Vector2TableId);
+    Schema registeredSchema = StoreCore.getValueSchema(Vector2._tableId);
     Schema declaredSchema = Vector2.getValueSchema();
 
     assertEq(Schema.unwrap(registeredSchema), Schema.unwrap(declaredSchema));

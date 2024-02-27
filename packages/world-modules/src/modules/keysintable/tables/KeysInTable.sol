@@ -22,14 +22,6 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 // Import user types
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "KeysInTable", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000004b657973496e5461626c650000000000);
-ResourceId constant KeysInTableTableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0000000500000000000000000000000000000000000000000000000000000000
-);
-
 struct KeysInTableData {
   bytes32[] keys0;
   bytes32[] keys1;
@@ -39,6 +31,12 @@ struct KeysInTableData {
 }
 
 library KeysInTable {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "KeysInTable", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000004b657973496e5461626c650000000000);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0000000500000000000000000000000000000000000000000000000000000000);
+
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

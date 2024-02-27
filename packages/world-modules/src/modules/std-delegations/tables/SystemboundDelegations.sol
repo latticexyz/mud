@@ -22,15 +22,13 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 // Import user types
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "SystemboundDeleg", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000053797374656d626f756e6444656c6567);
-ResourceId constant SystemboundDelegationsTableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0020010020000000000000000000000000000000000000000000000000000000
-);
-
 library SystemboundDelegations {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "SystemboundDeleg", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000053797374656d626f756e6444656c6567);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0020010020000000000000000000000000000000000000000000000000000000);
+
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

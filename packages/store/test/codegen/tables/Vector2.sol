@@ -19,20 +19,18 @@ import { Schema, SchemaLib } from "../../../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../../src/PackedCounter.sol";
 import { ResourceId } from "../../../src/ResourceId.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "Vector2", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x746273746f7265000000000000000000566563746f7232000000000000000000);
-ResourceId constant Vector2TableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0008020004040000000000000000000000000000000000000000000000000000
-);
-
 struct Vector2Data {
   uint32 x;
   uint32 y;
 }
 
 library Vector2 {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "Vector2", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x746273746f7265000000000000000000566563746f7232000000000000000000);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0008020004040000000000000000000000000000000000000000000000000000);
+
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

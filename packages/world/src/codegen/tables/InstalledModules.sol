@@ -19,15 +19,13 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "InstalledModules", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c64000000000000000000496e7374616c6c65644d6f64756c6573);
-ResourceId constant InstalledModulesTableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0001010001000000000000000000000000000000000000000000000000000000
-);
-
 library InstalledModules {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "InstalledModules", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c64000000000000000000496e7374616c6c65644d6f64756c6573);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0001010001000000000000000000000000000000000000000000000000000000);
+
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

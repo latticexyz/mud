@@ -8,7 +8,7 @@ import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 
 import { StoreMock } from "./StoreMock.sol";
-import { KeyEncoding, KeyEncodingTableId } from "./codegen/index.sol";
+import { KeyEncoding } from "./codegen/index.sol";
 import { ExampleEnum } from "./codegen/common.sol";
 
 contract KeyEncodingTest is Test, GasReporter, StoreMock {
@@ -17,7 +17,7 @@ contract KeyEncodingTest is Test, GasReporter, StoreMock {
     KeyEncoding.register();
     endGasReport();
 
-    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(KeyEncodingTableId);
+    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(KeyEncoding._tableId);
     FieldLayout declaredFieldLayout = KeyEncoding.getFieldLayout();
 
     assertEq(keccak256(abi.encode(registeredFieldLayout)), keccak256(abi.encode(declaredFieldLayout)));
@@ -26,7 +26,7 @@ contract KeyEncodingTest is Test, GasReporter, StoreMock {
   function testRegisterAndGetSchema() public {
     KeyEncoding.register();
 
-    Schema registeredSchema = StoreCore.getValueSchema(KeyEncodingTableId);
+    Schema registeredSchema = StoreCore.getValueSchema(KeyEncoding._tableId);
     Schema declaredSchema = KeyEncoding.getValueSchema();
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));

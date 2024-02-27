@@ -24,14 +24,6 @@ import { ResourceId } from "./../../ResourceId.sol";
 import { FieldLayout } from "./../../FieldLayout.sol";
 import { Schema } from "./../../Schema.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "Tables", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x746273746f72650000000000000000005461626c657300000000000000000000);
-ResourceId constant TablesTableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0060030220202000000000000000000000000000000000000000000000000000
-);
-
 struct TablesData {
   FieldLayout fieldLayout;
   Schema keySchema;
@@ -41,6 +33,12 @@ struct TablesData {
 }
 
 library Tables {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "Tables", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x746273746f72650000000000000000005461626c657300000000000000000000);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0060030220202000000000000000000000000000000000000000000000000000);
+
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

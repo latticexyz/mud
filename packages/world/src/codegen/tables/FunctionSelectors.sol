@@ -22,15 +22,13 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 // Import user types
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "FunctionSelector", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c6400000000000000000046756e6374696f6e53656c6563746f72);
-ResourceId constant FunctionSelectorsTableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0024020020040000000000000000000000000000000000000000000000000000
-);
-
 library FunctionSelectors {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "FunctionSelector", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c6400000000000000000046756e6374696f6e53656c6563746f72);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0024020020040000000000000000000000000000000000000000000000000000);
+
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

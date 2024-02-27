@@ -22,11 +22,10 @@ import { ResourceId } from "../../ResourceId.sol";
 // Import user types
 import { ResourceId } from "./../../ResourceId.sol";
 
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0000000100000000000000000000000000000000000000000000000000000000
-);
-
 library Hooks {
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0000000100000000000000000000000000000000000000000000000000000000);
+
   /**
    * @notice Get the table values' field layout.
    * @return _fieldLayout The field layout for the table.

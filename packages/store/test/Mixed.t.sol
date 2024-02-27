@@ -9,7 +9,7 @@ import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
 
-import { Mixed, MixedData, MixedTableId } from "./codegen/index.sol";
+import { Mixed, MixedData } from "./codegen/index.sol";
 
 contract MixedTest is Test, GasReporter, StoreMock {
   MixedData private testMixed;
@@ -26,14 +26,14 @@ contract MixedTest is Test, GasReporter, StoreMock {
   }
 
   function testRegisterAndGetFieldLayout() public {
-    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(MixedTableId);
+    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(Mixed._tableId);
     FieldLayout declaredFieldLayout = Mixed.getFieldLayout();
 
     assertEq(keccak256(abi.encode(registeredFieldLayout)), keccak256(abi.encode(declaredFieldLayout)));
   }
 
   function testRegisterAndGetSchema() public {
-    Schema registeredSchema = StoreCore.getValueSchema(MixedTableId);
+    Schema registeredSchema = StoreCore.getValueSchema(Mixed._tableId);
     Schema declaredSchema = Mixed.getValueSchema();
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
