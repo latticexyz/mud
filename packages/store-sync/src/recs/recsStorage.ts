@@ -3,7 +3,7 @@ import { debug } from "./debug";
 import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, setComponent } from "@latticexyz/recs";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
-import { hexToResource, resourceLabel, spliceHex } from "@latticexyz/common";
+import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { decodeValueArgs } from "@latticexyz/protocol-parser";
 import { Hex, size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
@@ -72,14 +72,14 @@ export function recsStorage<tables extends Record<string, Table>>({
         getTableEntity({ address: log.address, namespace, name })
       )?.table;
       if (!table) {
-        debug(`skipping update for unknown table: ${resourceLabel({ namespace, name })} at ${log.address}`);
+        debug(`skipping update for unknown table: ${resourceToLabel({ namespace, name })} at ${log.address}`);
         continue;
       }
 
       const component = world.components.find((c) => c.id === table.tableId);
       if (!component) {
         debug(
-          `skipping update for unknown component: ${table.tableId} (${resourceLabel({
+          `skipping update for unknown component: ${table.tableId} (${resourceToLabel({
             namespace,
             name,
           })}). Available components: ${Object.keys(components)}`

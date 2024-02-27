@@ -12,7 +12,7 @@ import { tables as internalTables } from "../postgres/tables";
 import { createStorageAdapter as createBytesStorageAdapter } from "../postgres/createStorageAdapter";
 import { setupTables } from "../postgres/setupTables";
 import { getTables } from "./getTables";
-import { hexToResource, resourceLabel } from "@latticexyz/common";
+import { hexToResource, resourceToLabel } from "@latticexyz/common";
 
 // Currently assumes one DB per chain ID
 
@@ -60,7 +60,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
         );
         if (!table) {
           const { namespace, name } = hexToResource(log.args.tableId);
-          debug(`table registration record for ${resourceLabel({ namespace, name })} not found, skipping log`, log);
+          debug(`table registration record for ${resourceToLabel({ namespace, name })} not found, skipping log`, log);
           continue;
         }
 
@@ -90,7 +90,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           if (!record) {
             const { namespace, name } = hexToResource(log.args.tableId);
             debug(
-              `no record found for ${log.args.keyTuple} in table ${resourceLabel({ namespace, name })}, skipping log`,
+              `no record found for ${log.args.keyTuple} in table ${resourceToLabel({ namespace, name })}, skipping log`,
               log
             );
             continue;

@@ -1,6 +1,6 @@
 import { resolveWorldConfig } from "@latticexyz/world";
 import { Config, ConfigInput, WorldFunction, salt } from "./common";
-import { resourceLabel, resourceToHex, hexToResource } from "@latticexyz/common";
+import { resourceToLabel, resourceToHex, hexToResource } from "@latticexyz/common";
 import { resolveWithContext } from "@latticexyz/config";
 import { encodeField } from "@latticexyz/protocol-parser";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
@@ -86,7 +86,7 @@ export function resolveConfig<config extends ConfigInput>({
       const targetSystem = systems.find((s) => s.systemId === systemId);
       if (!targetSystem) {
         throw new Error(
-          `System ${resourceLabel(system)} wanted access to ${resourceLabel(
+          `System ${resourceToLabel(system)} wanted access to ${resourceToLabel(
             hexToResource(systemId)
           )}, but it wasn't found in the config.`
         );

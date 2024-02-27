@@ -1,5 +1,5 @@
 import { Client, Transport, Chain, Account, Hex, getAddress } from "viem";
-import { resourceLabel, writeContract } from "@latticexyz/common";
+import { resourceToLabel, writeContract } from "@latticexyz/common";
 import { System, WorldDeploy, worldAbi } from "./common";
 import { debug } from "./debug";
 import { getSystems } from "./getSystems";
@@ -102,7 +102,7 @@ export async function ensureSystems({
     )
   );
   if (existingSystems.length) {
-    debug("existing systems", existingSystems.map(resourceLabel).join(", "));
+    debug("existing systems", existingSystems.map(resourceToLabel).join(", "));
   }
   const existingSystemIds = existingSystems.map((system) => system.systemId);
 
@@ -116,14 +116,14 @@ export async function ensureSystems({
     )
   );
   if (systemsToUpgrade.length) {
-    debug("upgrading systems", systemsToUpgrade.map(resourceLabel).join(", "));
+    debug("upgrading systems", systemsToUpgrade.map(resourceToLabel).join(", "));
   }
 
   const systemsToAdd = missingSystems.filter(
     (system) => !worldSystems.some((worldSystem) => worldSystem.systemId === system.systemId)
   );
   if (systemsToAdd.length) {
-    debug("registering new systems", systemsToAdd.map(resourceLabel).join(", "));
+    debug("registering new systems", systemsToAdd.map(resourceToLabel).join(", "));
   }
 
   await ensureContractsDeployed({
@@ -131,7 +131,7 @@ export async function ensureSystems({
     contracts: uniqueBy(missingSystems, (system) => getAddress(system.address)).map((system) => ({
       bytecode: system.bytecode,
       deployedBytecodeSize: system.deployedBytecodeSize,
-      label: `${resourceLabel(system)} system`,
+      label: `${resourceToLabel(system)} system`,
     })),
   });
 
@@ -150,7 +150,7 @@ export async function ensureSystems({
         retries: 3,
         onFailedAttempt: async (error) => {
           const delay = error.attemptNumber * 500;
-          debug(`failed to register system ${resourceLabel(system)}, retrying in ${delay}ms...`);
+          debug(`failed to register system ${resourceToLabel(system)}, retrying in ${delay}ms...`);
           await wait(delay);
         },
       }

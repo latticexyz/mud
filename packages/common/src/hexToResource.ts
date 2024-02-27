@@ -3,7 +3,7 @@ import { Resource } from "./common";
 import { ResourceType, resourceTypes } from "./resourceTypes";
 import { resourceTypeIds } from "./resourceToHex";
 import { ReverseMap } from "./type-utils/common";
-import { resourceLabel } from "./resourceLabel";
+import { resourceToLabel } from "./resourceLabel";
 
 const resourceTypeIdToType = Object.fromEntries(
   Object.entries(resourceTypeIds).map(([key, value]) => [value, key])
@@ -25,7 +25,7 @@ export function hexToResource(hex: Hex): Resource {
 
   if (!type) {
     throw new Error(
-      `Unknown type (${resourceTypeId}) for resource (${resourceTypeId}:${resourceLabel({ namespace, name })})`
+      `Unknown type (${resourceTypeId}) for resource (${resourceTypeId}:${resourceToLabel({ namespace, name })})`
     );
   }
 
