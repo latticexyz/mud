@@ -113,7 +113,7 @@ library StoreCore {
     }
     Tables._set(
       Tables._tableId,
-      Tables.getFieldLayout(),
+      Tables._fieldLayout,
       Tables.getKeySchema(),
       Tables.getValueSchema(),
       abi.encode(Tables.getKeyNames()),
@@ -121,7 +121,7 @@ library StoreCore {
     );
     Tables._set(
       ResourceIds._tableId,
-      ResourceIds.getFieldLayout(),
+      ResourceIds._fieldLayout,
       ResourceIds.getKeySchema(),
       ResourceIds.getValueSchema(),
       abi.encode(ResourceIds.getKeyNames()),

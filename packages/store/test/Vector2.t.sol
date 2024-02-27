@@ -17,7 +17,7 @@ contract Vector2Test is Test, GasReporter, StoreMock {
     endGasReport();
 
     FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(Vector2._tableId);
-    FieldLayout declaredFieldLayout = Vector2.getFieldLayout();
+    FieldLayout declaredFieldLayout = Vector2._fieldLayout;
 
     assertEq(FieldLayout.unwrap(registeredFieldLayout), FieldLayout.unwrap(declaredFieldLayout));
   }

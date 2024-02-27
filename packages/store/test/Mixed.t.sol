@@ -27,7 +27,7 @@ contract MixedTest is Test, GasReporter, StoreMock {
 
   function testRegisterAndGetFieldLayout() public {
     FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(Mixed._tableId);
-    FieldLayout declaredFieldLayout = Mixed.getFieldLayout();
+    FieldLayout declaredFieldLayout = Mixed._fieldLayout;
 
     assertEq(keccak256(abi.encode(registeredFieldLayout)), keccak256(abi.encode(declaredFieldLayout)));
   }

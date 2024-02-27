@@ -54,7 +54,7 @@ contract KeysInTableModule is Module {
           world.registerTable,
           (
             KeysInTable._tableId,
-            KeysInTable.getFieldLayout(),
+            KeysInTable._fieldLayout,
             KeysInTable.getKeySchema(),
             KeysInTable.getValueSchema(),
             KeysInTable.getKeyNames(),
@@ -69,7 +69,7 @@ contract KeysInTableModule is Module {
           world.registerTable,
           (
             UsedKeysIndex._tableId,
-            UsedKeysIndex.getFieldLayout(),
+            UsedKeysIndex._fieldLayout,
             UsedKeysIndex.getKeySchema(),
             UsedKeysIndex.getValueSchema(),
             UsedKeysIndex.getKeyNames(),

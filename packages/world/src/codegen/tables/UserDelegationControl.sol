@@ -30,14 +30,6 @@ library UserDelegationControl {
     FieldLayout.wrap(0x0020010020000000000000000000000000000000000000000000000000000000);
 
   /**
-   * @notice Get the table values' field layout.
-   * @return _fieldLayout The field layout for the table.
-   */
-  function getFieldLayout() internal pure returns (FieldLayout) {
-    return _fieldLayout;
-  }
-
-  /**
    * @notice Get the table's key schema.
    * @return _keySchema The key schema for the table.
    */
