@@ -1,10 +1,9 @@
 import { DeployedSystem, System, WorldDeploy, worldTables } from "./common";
 import { Address, Client } from "viem";
 import { getResourceIds } from "./getResourceIds";
-import { hexToResource } from "@latticexyz/common";
+import { hexToResource, resourceToLabel } from "@latticexyz/common";
 import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
-import { resourceLabel } from "./resourceLabel";
 import { getFunctions } from "./getFunctions";
 import { getResourceAccess } from "./getResourceAccess";
 
@@ -22,7 +21,7 @@ export async function getSystems({
   ]);
   const systems = resourceIds.map(hexToResource).filter((resource) => resource.type === "system");
 
-  debug("looking up systems", systems.map(resourceLabel).join(", "));
+  debug("looking up systems", systems.map(resourceToLabel).join(", "));
   return await Promise.all(
     systems.map(async (system) => {
       const { system: address, publicAccess } = await getTableValue({

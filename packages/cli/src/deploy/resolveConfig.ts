@@ -1,24 +1,14 @@
 import { resolveWorldConfig } from "@latticexyz/world";
 import { Config, ConfigInput, WorldFunction, salt } from "./common";
-import { resourceToHex, hexToResource } from "@latticexyz/common";
+import { resourceToHex } from "@latticexyz/common";
 import { resolveWithContext } from "@latticexyz/config";
 import { encodeField } from "@latticexyz/protocol-parser";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
-import {
-  getFunctionSelector,
-  Hex,
-  getCreate2Address,
-  getAddress,
-  hexToBytes,
-  bytesToHex,
-  getFunctionSignature,
-  Address,
-} from "viem";
+import { Hex, getCreate2Address, hexToBytes, bytesToHex, Address, toFunctionSelector, toFunctionSignature } from "viem";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { defaultModuleContracts } from "../utils/modules/constants";
 import { getContractData } from "../utils/utils/getContractData";
 import { configToTables } from "./configToTables";
-import { resourceLabel } from "./resourceLabel";
 
 // TODO: this should be replaced by https://github.com/latticexyz/mud/issues/1668
 
@@ -39,7 +29,7 @@ export function resolveConfig<config extends ConfigInput>({
   const baseSystemContractData = getContractData("System", forgeOutDir);
   const baseSystemFunctions = baseSystemContractData.abi
     .filter((item): item is typeof item & { type: "function" } => item.type === "function")
-    .map(getFunctionSignature);
+    .map(toFunctionSignature);
 
   const systems = Object.entries(resolvedConfig.systems).map(([systemName, system]) => {
     const namespace = config.namespace;
@@ -49,17 +39,17 @@ export function resolveConfig<config extends ConfigInput>({
 
     const systemFunctions = contractData.abi
       .filter((item): item is typeof item & { type: "function" } => item.type === "function")
-      .map(getFunctionSignature)
+      .map(toFunctionSignature)
       .filter((sig) => !baseSystemFunctions.includes(sig))
       .map((sig): WorldFunction => {
         // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
         const worldSignature = namespace === "" ? sig : `${namespace}__${sig}`;
         return {
           signature: worldSignature,
-          selector: getFunctionSelector(worldSignature),
+          selector: toFunctionSelector(worldSignature),
           systemId,
           systemFunctionSignature: sig,
-          systemFunctionSelector: getFunctionSelector(sig),
+          systemFunctionSelector: toFunctionSelector(sig),
         };
       });
 
