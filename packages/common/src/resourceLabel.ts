@@ -1,11 +1,11 @@
-export type ResourceLabel = `${string}__${string}`;
+export type ResourceLabel<namespace extends string = string, name extends string = string> = `${namespace}__${name}`;
 
-export function resourceLabel({
+export function resourceLabel<namespace extends string, name extends string>({
   namespace,
   name,
 }: {
-  readonly namespace: string;
-  readonly name: string;
-}): ResourceLabel {
+  readonly namespace: namespace;
+  readonly name: name;
+}): ResourceLabel<namespace, name> {
   return `${namespace}__${name}`;
 }
