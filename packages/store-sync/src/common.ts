@@ -78,7 +78,7 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
    * */
   tableIds?: Hex[];
   /**
-   * Optional block tag to follow for the latest block number. Defaults to `latest`. It's recommended to use `finalized` for indexers.
+   * Optional block tag to follow for the latest block number. Defaults to `latest`. It's recommended to use `safe` for indexers.
    */
   followBlockTag?: "latest" | "safe" | "finalized";
   /**
