@@ -65,9 +65,22 @@ type validateTableFullConfig<input extends TableFullConfigInput> = input extends
     : InvalidKeys
   : InvalidInput;
 
+type resolveTableFullConfig<input extends TableFullConfigInput> = {
+  keys: input["keys"];
+  schema: input["schema"];
+  keySchema: {
+    [key in input["keys"][number]]: input["schema"][key];
+  };
+  valueSchema: {
+    [key in Exclude<keyof input["schema"], input["keys"][number]>]: input["schema"][key];
+  };
+};
+
 export type resolveTableConfig<input extends TableConfigInput> = input extends TableShorthandConfigInput
-  ? resolveTableShorthandConfig<input>
-  : input;
+  ? resolveTableConfig<resolveTableShorthandConfig<input>>
+  : input extends TableFullConfigInput
+  ? resolveTableFullConfig<input>
+  : never;
 
 /**
  * If a shorthand table config is passed (just a schema or even just a single ABI type) we expand it with sane defaults:

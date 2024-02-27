@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, it, expectTypeOf } from "vitest";
-import { resolveTableConfig, resolveTableShorthandConfig, NoStaticKeyFieldError } from "./table";
+import { resolveTableConfig, resolveTableShorthandConfig } from "./table";
 import { setup, cleanup } from "@arktype/attest";
 
 // TODO: translate into attest tests
@@ -41,12 +41,16 @@ describe("resolveTableShorthandConfig", () => {
       const config = resolveTableConfig("address");
       expectTypeOf<typeof config.schema>().toEqualTypeOf<{ key: "bytes32"; value: "address" }>();
       expectTypeOf<typeof config.keys>().toEqualTypeOf<["key"]>();
+      expectTypeOf<typeof config.keySchema>().toEqualTypeOf<{ key: "bytes32" }>();
+      expectTypeOf<typeof config.valueSchema>().toEqualTypeOf<{ value: "address" }>();
     });
 
     it("given a schema with a key field with static ABI type, it should use `key` as single key", () => {
       const config = resolveTableConfig({ key: "address", name: "string", age: "uint256" });
       expectTypeOf<typeof config.schema>().toEqualTypeOf<{ key: "address"; name: "string"; age: "uint256" }>();
       expectTypeOf<typeof config.keys>().toEqualTypeOf<["key"]>();
+      expectTypeOf<typeof config.keySchema>().toEqualTypeOf<{ key: "address" }>();
+      expectTypeOf<typeof config.valueSchema>().toEqualTypeOf<{ name: "string"; age: "uint256" }>();
     });
 
     it("it should return the full config given a full config", () => {
@@ -61,6 +65,8 @@ describe("resolveTableShorthandConfig", () => {
         age: "uint256";
       }>();
       expectTypeOf<typeof configWithOneKey.keys>().toEqualTypeOf<["age"]>();
+      expectTypeOf<typeof configWithOneKey.keySchema>().toEqualTypeOf<{ age: "uint256" }>();
+      expectTypeOf<typeof configWithOneKey.valueSchema>().toEqualTypeOf<{ key: "address"; name: "string" }>();
 
       const configWithTwoKeys = resolveTableConfig({
         schema: { key: "address", name: "string", age: "uint256" },
@@ -73,6 +79,8 @@ describe("resolveTableShorthandConfig", () => {
         age: "uint256";
       }>();
       expectTypeOf<typeof configWithTwoKeys.keys>().toEqualTypeOf<["age", "key"]>();
+      expectTypeOf<typeof configWithTwoKeys.keySchema>().toEqualTypeOf<{ age: "uint256"; key: "address" }>();
+      expectTypeOf<typeof configWithTwoKeys.valueSchema>().toEqualTypeOf<{ name: "string" }>();
     });
 
     it("should throw an error if the provided key is not a static field", () => {
