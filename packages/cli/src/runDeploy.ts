@@ -22,6 +22,10 @@ export const deployOptions = {
   profile: { type: "string", desc: "The foundry profile to use" },
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
   rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
+  rpcBatchSize: {
+    type: "number",
+    desc: "Number of JSON-RPC HTTP requests processed in batch per second",
+  },
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   skipBuild: { type: "boolean", desc: "Skip rebuilding the contracts before deploying" },
@@ -81,7 +85,12 @@ in your contracts directory to use the default anvil private key.`
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
   const client = createWalletClient({
-    transport: http(rpc),
+    transport: http(rpc, {
+      batch: opts.rpcBatchSize != 0 && {
+        batchSize: opts.rpcBatchSize,
+        wait: 1000,
+      },
+    }),
     account: privateKeyToAccount(privateKey),
   });
   console.log("Deploying from", client.account.address);
