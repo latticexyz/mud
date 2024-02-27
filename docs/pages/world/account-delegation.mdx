@@ -337,6 +337,49 @@ You can use [`unregisterDelegation`](https://github.com/latticexyz/mud/blob/main
 Because of `unregisterDelegation` delegations cannot be used for a delegator to commit to allow something to be done in the future.
 If you need a _commitment_, create a table with a `System` that lets the address that commits write the commitment and have an action that other addresses can call only if the proper commitment is there - without giving the committed address an option to delete the entry.
 
+<CollapseCode>
+
+```solidity copy showLineNumbers {32}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+
+import { SystemboundDelegationControl } from "@latticexyz/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol";
+import { SYSTEMBOUND_DELEGATION } from "@latticexyz/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+contract RemoveDelegation is Script {
+  using WorldResourceIdInstance for ResourceId;
+
+  function run() external {
+    // Load the configuration
+    uint256 userPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+    IWorld world = IWorld(worldAddress);
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "LastCall",
+      name: "LastCallSystem"
+    });
+
+    // Run as the first address
+    vm.startBroadcast(userPrivateKey);
+
+    world.unregisterDelegation(address(0x60A7));
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
 ## Namespace delegation
 
 The owner of a namespace can use [`registerNamespaceDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L296-L335) to register a delegation that applies to all callers of systems in this namespace.
