@@ -1,4 +1,4 @@
-FROM ghcr.io/latticexyz/mud:sha-8193136
+FROM ghcr.io/latticexyz/mud:sha-df118eb
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
 RUN pnpm run -r build
