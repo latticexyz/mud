@@ -70,6 +70,24 @@ export function resolveConfig<config extends ConfigInput>({
     };
   });
 
+  systems.forEach((item, index) => {
+    let duplicateName = "";
+    if (
+      systems.some((elem, idx) => {
+        const found = elem.systemId === item.systemId && idx !== index;
+        if (found) {
+          duplicateName = elem.name;
+        }
+        return found;
+      })
+    ) {
+      throw new Error(`Found two systems with the same system ID: ${item.name} ${duplicateName}. 
+      
+      System IDs are generated from the first 14 bytes of the name, so you may need to rename one of these systems to avoid the overlap.
+      `);
+    }
+  });
+
   // ugh (https://github.com/latticexyz/mud/issues/1668)
   const resolveContext = {
     tableIds: Object.fromEntries(
