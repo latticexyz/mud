@@ -6,7 +6,7 @@ import initModuleBuild from "@latticexyz/world/out/InitModule.sol/InitModule.jso
 import initModuleAbi from "@latticexyz/world/out/InitModule.sol/InitModule.abi.json" assert { type: "json" };
 import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json" assert { type: "json" };
 import worldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
-import { Client, Transport, Chain, Account, Hex, getCreate2Address, encodeDeployData, size, Address, Abi } from "viem";
+import { Client, Transport, Chain, Account, Hex, getCreate2Address, encodeDeployData, size, Address } from "viem";
 import { salt } from "./common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { Contract } from "./ensureContract";
@@ -16,10 +16,7 @@ export async function ensureWorldFactory(
   deployerAddress: Hex
 ): Promise<Address> {
   const accessManagementSystemDeployedBytecodeSize = size(accessManagementSystemBuild.deployedBytecode.object as Hex);
-  const accessManagementSystemBytecode = encodeDeployData({
-    bytecode: accessManagementSystemBuild.bytecode.object as Hex,
-    abi: [] as Abi,
-  });
+  const accessManagementSystemBytecode = accessManagementSystemBuild.bytecode.object as Hex;
   const accessManagementSystem = getCreate2Address({
     from: deployerAddress,
     bytecode: accessManagementSystemBytecode,
@@ -27,10 +24,7 @@ export async function ensureWorldFactory(
   });
 
   const balanceTransferSystemDeployedBytecodeSize = size(balanceTransferSystemBuild.deployedBytecode.object as Hex);
-  const balanceTransferSystemBytecode = encodeDeployData({
-    bytecode: balanceTransferSystemBuild.bytecode.object as Hex,
-    abi: [] as Abi,
-  });
+  const balanceTransferSystemBytecode = balanceTransferSystemBuild.bytecode.object as Hex;
   const balanceTransferSystem = getCreate2Address({
     from: deployerAddress,
     bytecode: balanceTransferSystemBytecode,
@@ -38,17 +32,11 @@ export async function ensureWorldFactory(
   });
 
   const batchCallSystemDeployedBytecodeSize = size(batchCallSystemBuild.deployedBytecode.object as Hex);
-  const batchCallSystemBytecode = encodeDeployData({
-    bytecode: batchCallSystemBuild.bytecode.object as Hex,
-    abi: [] as Abi,
-  });
+  const batchCallSystemBytecode = batchCallSystemBuild.bytecode.object as Hex;
   const batchCallSystem = getCreate2Address({ from: deployerAddress, bytecode: batchCallSystemBytecode, salt });
 
   const registrationDeployedBytecodeSize = size(registrationSystemBuild.deployedBytecode.object as Hex);
-  const registrationBytecode = encodeDeployData({
-    bytecode: registrationSystemBuild.bytecode.object as Hex,
-    abi: [] as Abi,
-  });
+  const registrationBytecode = registrationSystemBuild.bytecode.object as Hex;
   const registration = getCreate2Address({
     from: deployerAddress,
     bytecode: registrationBytecode,

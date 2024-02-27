@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Client, Transport, encodeDeployData } from "viem";
+import { Account, Address, Chain, Client, Transport } from "viem";
 import { getBalance, getBytecode, sendRawTransaction, sendTransaction, waitForTransactionReceipt } from "viem/actions";
 import deployment from "./create2/deployment.json";
 import { debug } from "./debug";
@@ -53,7 +53,7 @@ export async function ensureDeployer(client: Client<Transport, Chain | undefined
         debug("deploying CREATE2 deployer");
         return sendTransaction(client, {
           chain: client.chain ?? null,
-          data: encodeDeployData({ bytecode: deployerBytecode, abi: [], args: [] }),
+          data: deployerBytecode,
         });
       }
       throw error;
