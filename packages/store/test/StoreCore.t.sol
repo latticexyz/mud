@@ -11,7 +11,7 @@ import { FieldLayout, FieldLayoutLib } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreMock } from "../test/StoreMock.sol";
-import { Store_TableAlreadyExists, Store_InvalidSplice, Store_IndexOutOfBounds, Store_InvalidBounds, Store_TableNotFound, Store_InvalidStaticDataLength, Store_InvalidValueSchemaStaticLength, Store_InvalidResourceType, Store_InvalidValueSchemaDynamicLength, Store_InvalidFieldNamesLength, Store_InvalidKeyNamesLength, Store_InvalidValueSchemaLength } from "../src/errors.sol";
+import "../src/errors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
