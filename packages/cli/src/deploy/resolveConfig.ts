@@ -70,17 +70,17 @@ export function resolveConfig<config extends ConfigInput>({
     };
   });
 
-  systems.forEach((item, index) => {
+  systems.forEach((item) => {
     let duplicateName = "";
-    if (
-      systems.some((elem, idx) => {
-        const found = elem.systemId === item.systemId && idx !== index;
-        if (found) {
-          duplicateName = elem.name;
-        }
-        return found;
-      })
-    ) {
+    const overlappingSystem = systems.some((elem) => {
+      const found = elem.systemId === item.systemId && elem !== item;
+      if (found) {
+        duplicateName = elem.name;
+      }
+      return found;
+    });
+
+    if (overlappingSystem) {
       throw new Error(`Found two systems with the same system ID: ${item.name} ${duplicateName}. 
       
       System IDs are generated from the first 14 bytes of the name, so you may need to rename one of these systems to avoid the overlap.
