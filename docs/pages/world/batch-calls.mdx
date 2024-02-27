@@ -1,3 +1,5 @@
+import { CollapseCode } from "../../components/CollapseCode";
+
 # Batch calls
 
 Batch calls allow a single call to the `World` to perform multiple `System` calls.
@@ -9,3 +11,94 @@ If any of the calls revert, so does `batchCall` / `batchCallFrom`, so all the st
 
 The advantage of using `batchCall` rather than [the standard multicall](https://github.com/mds1/multicall) is that `batchCall` is a native MUD function that lives in the `World` contract, so it does not change `msg.sender`.
 As a result, when you use `batchCall` MUD can apply [access control](./namespaces-access-control), and `System`s can rely on the value of [`_msgSender()`](./systems#writing-systems).
+
+<CollapseCode>
+
+```solidity filename="BatchCall.s.sol" copy showLineNumbers {15,38-44}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { Tasks, TasksData } from "../src/codegen/index.sol";
+
+// We need to create the ResourceID for the System we are calling
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+import { SystemCallData } from "@latticexyz/world/src/modules/init/types.sol";
+
+contract BatchCall is Script {
+  function run() external {
+    address worldAddress = 0x256e6eAf6a6683aB771C576f2f5C8A774BdAC8e3;
+
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    // Start broadcasting transactions from the deployer account
+    vm.startBroadcast(deployerPrivateKey);
+
+    ResourceId taskSystemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "",
+      name: "TasksSystem"
+    });
+
+    string[5] memory taskDescription = ["First task", "Second task", "Third task", "Fourth task", "Fifth task"];
+
+    SystemCallData[] memory calls = new SystemCallData[](taskDescription.length);
+    for (uint i = 0; i < taskDescription.length; i++) {
+      calls[i].systemId = taskSystemId;
+      calls[i].callData = abi.encodeWithSignature("addTask(string)", taskDescription[i]);
+    }
+
+    bytes[] memory returnData = IWorld(worldAddress).batchCall(calls);
+
+    console.log("The return value is:");
+    console.logBytes(returnData[0]);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+import { SystemCallData } from "@latticexyz/world/src/modules/init/types.sol";
+```
+
+This structure holds the data for each call.
+
+```solidity
+.
+.
+.
+    SystemCallData[] memory calls = new SystemCallData[](taskDescription.length);
+    for (uint i=0; i<taskDescription.length; i++) {
+      calls[i].systemId = taskSystemId;
+      calls[i].callData = abi.encodeWithSignature("addTask(string)", taskDescription[i]);
+    }
+```
+
+Create an array of `SystemCallData`, one for each call.
+Every item in this array has two fields:
+
+- `systemId`: The resource ID for the `System` to be called.
+- `callData`: The calldata to send this `System`, the [function selector](https://docs.soliditylang.org/en/v0.8.24/abi-spec.html#function-selector) followed by the [function arguments](https://docs.soliditylang.org/en/v0.8.24/abi-spec.html#argument-encoding).
+
+```solidity
+    bytes[] memory returnData = IWorld(worldAddress).batchCall(calls);
+```
+
+Call [`batchCall`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/BatchCallSystem.sol#L15-L35).
+The results are returned as an array by `bytes`, one for each call.
+
+</details>
