@@ -53,7 +53,7 @@ type inferSchema<input extends TableConfigInput> = input extends TableFullConfig
   ? resolveTableShorthandConfig<input>["schema"]
   : never;
 
-type validateTableConfig<input> = input extends TableShorthandConfigInput
+export type validateTableConfig<input> = input extends TableShorthandConfigInput
   ? validateTableShorthandConfig<input>
   : input extends TableFullConfigInput
   ? validateTableFullConfig<input>
