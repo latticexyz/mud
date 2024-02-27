@@ -11,7 +11,7 @@ import { ensureModules } from "./ensureModules";
 import { Table } from "./configToTables";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
-import { resourceLabel } from "./resourceLabel";
+import { resourceToLabel } from "@latticexyz/common";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { worldFactoryContracts } from "./ensureWorldFactory";
@@ -49,7 +49,7 @@ export async function deploy<configInput extends ConfigInput>({
       ...uniqueBy(systems, (system) => getAddress(system.address)).map((system) => ({
         bytecode: system.bytecode,
         deployedBytecodeSize: system.deployedBytecodeSize,
-        label: `${resourceLabel(system)} system`,
+        label: `${resourceToLabel(system)} system`,
       })),
       ...uniqueBy(config.modules, (mod) => getAddress(mod.address)).map((mod) => ({
         bytecode: mod.bytecode,
