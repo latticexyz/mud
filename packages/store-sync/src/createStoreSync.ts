@@ -55,6 +55,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   address,
   filters: initialFilters = [],
   tableIds = [],
+  followBlockTag = "latest",
   startBlock: initialStartBlock = 0n,
   maxBlockRange,
   initialState,
@@ -171,11 +172,11 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     tap((startBlock) => debug("starting sync from block", startBlock))
   );
 
-  const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" }).pipe(shareReplay(1));
+  const latestBlock$ = createBlockStream({ publicClient, blockTag: followBlockTag }).pipe(shareReplay(1));
   const latestBlockNumber$ = latestBlock$.pipe(
     map((block) => block.number),
     tap((blockNumber) => {
-      debug("latest block number", blockNumber);
+      debug("on block number", blockNumber, "for", followBlockTag, "block tag");
     }),
     shareReplay(1)
   );
