@@ -13,9 +13,10 @@ import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { transportObserver, type ContractWrite, getBurnerPrivateKey } from "@latticexyz/common";
 import mudConfig from "contracts/mud.config";
-import { burnerActions, setupObserverActions } from "./customClient";
+import { burnerActions, setupObserverActions, setupStoreSyncActions } from "./customClient";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
+export type PublicClient = SetupNetworkResult["publicClient"];
 export type BurnerClient = SetupNetworkResult["burnerClient"];
 
 export async function setupNetwork() {
@@ -29,7 +30,7 @@ export async function setupNetwork() {
 
   const publicClient = createPublicClient(clientOptions);
 
-  const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
+  const syncResult = await syncToZustand({
     config: mudConfig,
     address: networkConfig.worldAddress,
     publicClient,
@@ -51,13 +52,8 @@ export async function setupNetwork() {
 
   return {
     worldAddress: networkConfig.worldAddress,
-    tables,
-    useStore,
-    publicClient,
-    latestBlock$,
-    storedBlockLogs$,
-    waitForTransaction,
-    onWrite,
+    publicClient: publicClient.extend(setupStoreSyncActions(syncResult)),
+    ...syncResult,
     write$: write$.asObservable().pipe(share()),
     burnerClient,
   };

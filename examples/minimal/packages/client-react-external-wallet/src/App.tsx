@@ -3,31 +3,35 @@ import { useMUD, type MUDNetwork, type ExternalWalletClient } from "./mud/Networ
 import { increment, isDelegated, delegateToBurner } from "./mud/systemCalls";
 
 export const App = () => {
-  const { network, externalWalletClient } = useMUD();
+  const {
+    network: { useStore, tables },
+    externalWalletClient,
+  } = useMUD();
 
-  const counter = network.useStore((state) => state.getValue(network.tables.CounterTable, {}));
+  const counter = useStore((state) => state.getValue(tables.CounterTable, {}));
 
   return (
     <div>
       <div>Counter: {counter?.value ?? "unset"}</div>
-      {externalWalletClient && <Incrementer network={network} externalWalletClient={externalWalletClient} />}
+      {externalWalletClient && <Incrementer />}
     </div>
   );
 };
 
-const Incrementer = ({
-  network,
-  externalWalletClient,
-}: {
-  network: MUDNetwork;
-  externalWalletClient: ExternalWalletClient;
-}) => {
-  const syncProgress = network.useStore((state) => state.syncProgress);
+const Incrementer = () => {
+  const {
+    network: { useStore, tables, worldAddress, publicClient, burnerClient },
+    externalWalletClient,
+  } = useMUD();
 
-  const delegation = network.useStore((state) =>
-    state.getValue(network.tables.UserDelegationControl, {
+  if (!externalWalletClient) throw new Error("Must be used after an external wallet connection");
+
+  const syncProgress = useStore((state) => state.syncProgress);
+
+  const delegation = useStore((state) =>
+    state.getValue(tables.UserDelegationControl, {
       delegator: externalWalletClient.account.address,
-      delegatee: network.burnerClient.account.address,
+      delegatee: burnerClient.account.address,
     })
   );
 
@@ -38,8 +42,8 @@ const Incrementer = ({
   if (delegation && isDelegated(delegation.delegationControlId)) {
     return (
       <div>
-        <div>Burner wallet account: {network.burnerClient.account.address}</div>
-        <button type="button" onClick={() => increment(externalWalletClient, network)}>
+        <div>Burner wallet account: {burnerClient.account.address}</div>
+        <button type="button" onClick={() => increment(worldAddress, publicClient, externalWalletClient, burnerClient)}>
           Increment
         </button>
       </div>
@@ -48,7 +52,10 @@ const Incrementer = ({
 
   return (
     <div>
-      <button type="button" onClick={() => delegateToBurner(externalWalletClient, network)}>
+      <button
+        type="button"
+        onClick={() => delegateToBurner(worldAddress, publicClient, externalWalletClient, burnerClient)}
+      >
         Set up burner wallet account
       </button>
     </div>

@@ -13,6 +13,7 @@ import type {
 import { sendTransaction, writeContract, simulateContract } from "viem/actions";
 import pRetry from "p-retry";
 import { getNonceManager, type ContractWrite } from "@latticexyz/common";
+import { type SyncResult } from "@latticexyz/store-sync";
 
 const burnerBlockTag = "pending";
 
@@ -89,5 +90,11 @@ export const setupObserverActions = (onWrite: (write: ContractWrite) => void) =>
 
       return result;
     },
+  });
+};
+
+export const setupStoreSyncActions = (syncResult: SyncResult) => {
+  return () => ({
+    waitForStoreSync: syncResult.waitForTransaction,
   });
 };
