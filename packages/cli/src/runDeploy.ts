@@ -25,6 +25,10 @@ export const deployOptions = {
   rpcBatchSize: {
     type: "number",
     desc: "Number of JSON-RPC HTTP requests processed in batch per second",
+  ),
+  deployerAddress: {
+    type: "string",
+    desc: "Deploy using an existing deterministic deployer (https://github.com/Arachnid/deterministic-deployment-proxy)",
   },
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
@@ -97,6 +101,7 @@ in your contracts directory to use the default anvil private key.`
 
   const startTime = Date.now();
   const worldDeploy = await deploy({
+    deployerAddress: opts.deployerAddress as Hex | undefined,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
