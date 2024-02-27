@@ -22,6 +22,10 @@ export const deployOptions = {
   profile: { type: "string", desc: "The foundry profile to use" },
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
   rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
+  deployerAddress: {
+    type: "string",
+    desc: "Deploy using an existing deterministic deployer (https://github.com/Arachnid/deterministic-deployment-proxy)",
+  },
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   skipBuild: { type: "boolean", desc: "Skip rebuilding the contracts before deploying" },
@@ -88,6 +92,7 @@ in your contracts directory to use the default anvil private key.`
 
   const startTime = Date.now();
   const worldDeploy = await deploy({
+    deployerAddress: opts.deployerAddress as Hex | undefined,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
