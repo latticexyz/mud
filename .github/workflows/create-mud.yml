@@ -5,8 +5,8 @@ on:
   pull_request:
 
 jobs:
-  benchmarks:
-    name: Run benchmarks
+  createmud:
+    name: Create MUD
     runs-on: ubuntu-latest-16-cores
     steps:
       - name: Checkout
