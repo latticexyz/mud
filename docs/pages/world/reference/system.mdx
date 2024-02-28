@@ -7,9 +7,6 @@
 **Inherits:**
 [WorldContextConsumer](/world/reference/world-context#worldcontextconsumer)
 
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
-
 _The System contract currently acts as an alias for `WorldContextConsumer`.
 This structure is chosen for potential extensions in the future, where default functionality might be added to the System._
 
@@ -19,9 +16,6 @@ This structure is chosen for potential extensions in the future, where default f
 
 **Inherits:**
 [ISystemHook](/world/reference/system-external#isystemhook)
-
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _The abstract SystemHook contract implements the ERC-165 supportsInterface function for ISystemHook.
 System hooks are used for executing additional logic before or after certain system actions._
@@ -55,9 +49,6 @@ function supportsInterface(bytes4 interfaceId) public view virtual returns (bool
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/systemHookTypes.sol)
 
 #### BEFORE_CALL_SYSTEM
-
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _This file provides constants for defining the different types of system hooks.
 System hooks can be used to execute additional logic before or after system actions._

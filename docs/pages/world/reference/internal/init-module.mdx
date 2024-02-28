@@ -7,9 +7,6 @@
 **Inherits:**
 [Module](/world/reference/module#module)
 
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
-
 Registers internal World tables, systems, and their function selectors.
 
 _This module only supports `installRoot` because it installs root tables, systems and function selectors._
@@ -180,9 +177,6 @@ ResourceId constant REGISTRATION_SYSTEM_ID = ResourceId.wrap(
 **Inherits:**
 [IWorldErrors](/world/reference/world-external#iworlderrors), [ModuleInstallationSystem](/world/reference/internal/init-module-implementation#moduleinstallationsystem), [StoreRegistrationSystem](/world/reference/internal/init-module-implementation#storeregistrationsystem), [WorldRegistrationSystem](/world/reference/internal/init-module-implementation#worldregistrationsystem)
 
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
-
 This system aggregates World registration and installation functionalities externalized from the World contract, aiming to keep the World contract's bytecode lean.
 
 _Aggregates multiple system implementations for the World._
@@ -190,9 +184,6 @@ _Aggregates multiple system implementations for the World._
 ## LimitedCallContext
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/LimitedCallContext.sol)
-
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _Systems are expected to be always called via the central World contract.
 Depending on whether it is a root or non-root system, the call is performed via `delegatecall` or `call`.
@@ -240,9 +231,6 @@ error UnauthorizedCallContext();
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/types.sol)
 
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
-
 Holds data for making system calls.
 
 _Used to represent a call to a specific system identified by a ResourceId._
@@ -257,9 +245,6 @@ struct SystemCallData {
 ## SystemCallFromData
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/types.sol)
-
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 Holds data for making system calls with a specific sender.
 

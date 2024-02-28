@@ -7,9 +7,6 @@
 **Inherits:**
 [System](/world/reference/system#system), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
 
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
-
 _This contract manages the granting and revoking of access from/to resources._
 
 ### Functions
@@ -88,9 +85,6 @@ function renounceOwnership(ResourceId namespaceId) public virtual onlyDelegateca
 **Inherits:**
 [System](/world/reference/system#system), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
 
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
-
 _A system contract to handle the installation of (non-root) modules in the World._
 
 ### Functions
@@ -119,9 +113,6 @@ function installModule(IModule module, bytes memory encodedArgs) public onlyDele
 
 **Inherits:**
 [System](/world/reference/system#system), [IWorldErrors](/world/reference/world-external#iworlderrors), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
-
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _A system contract that facilitates balance transfers in the World and outside of the World._
 
@@ -179,9 +170,6 @@ function transferBalanceToAddress(
 
 **Inherits:**
 [System](/world/reference/system#system), [IWorldErrors](/world/reference/world-external#iworlderrors), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
-
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _This contract provides functionality for the registration of store-related resources within the World framework._
 
@@ -263,9 +251,6 @@ function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) public 
 **Inherits:**
 [System](/world/reference/system#system), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
 
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
-
 _A system contract that facilitates batching of calls to various systems in a single transaction._
 
 ### Functions
@@ -322,9 +307,6 @@ function batchCallFrom(
 
 **Inherits:**
 [System](/world/reference/system#system), [IWorldErrors](/world/reference/world-external#iworlderrors), [LimitedCallContext](/world/reference/internal/init-module#limitedcallcontext)
-
-**Author:**
-MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _This contract provides functions related to registering resources other than tables in the World._
 
