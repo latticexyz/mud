@@ -115,16 +115,16 @@ library StoreCore {
     Tables._set(
       Tables._tableId,
       Tables._fieldLayout,
-      Tables.getKeySchema(),
-      Tables.getValueSchema(),
+      Tables._keySchema,
+      Tables._valueSchema,
       abi.encode(Tables.getKeyNames()),
       abi.encode(Tables.getFieldNames())
     );
     Tables._set(
       ResourceIds._tableId,
       ResourceIds._fieldLayout,
-      ResourceIds.getKeySchema(),
-      ResourceIds.getValueSchema(),
+      ResourceIds._keySchema,
+      ResourceIds._valueSchema,
       abi.encode(ResourceIds.getKeyNames()),
       abi.encode(ResourceIds.getFieldNames())
     );

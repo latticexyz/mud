@@ -55,8 +55,8 @@ contract KeysInTableModule is Module {
           (
             KeysInTable._tableId,
             KeysInTable._fieldLayout,
-            KeysInTable.getKeySchema(),
-            KeysInTable.getValueSchema(),
+            KeysInTable._keySchema,
+            KeysInTable._valueSchema,
             KeysInTable.getKeyNames(),
             KeysInTable.getFieldNames()
           )
@@ -70,8 +70,8 @@ contract KeysInTableModule is Module {
           (
             UsedKeysIndex._tableId,
             UsedKeysIndex._fieldLayout,
-            UsedKeysIndex.getKeySchema(),
-            UsedKeysIndex.getValueSchema(),
+            UsedKeysIndex._keySchema,
+            UsedKeysIndex._valueSchema,
             UsedKeysIndex.getKeyNames(),
             UsedKeysIndex.getFieldNames()
           )

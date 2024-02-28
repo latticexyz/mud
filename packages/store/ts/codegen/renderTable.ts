@@ -14,6 +14,7 @@ import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
 import { renderDeleteRecordMethods, renderRecordData, renderRecordMethods } from "./record";
 import { renderFieldLayout } from "./renderFieldLayout";
 import { RenderTableOptions } from "./types";
+import { KeySchema, ValueSchema, keySchemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser";
 
 /**
  * Renders Solidity code for a MUD table library, using the specified options
@@ -40,9 +41,6 @@ export function renderTable(options: RenderTableOptions) {
   return `
     ${renderedSolidityHeader}
 
-    // Import schema type
-    import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
-
     // Import store internals
     import { IStore } from "${storeImportPath}IStore.sol";
     import { StoreSwitch } from "${storeImportPath}StoreSwitch.sol";
@@ -51,8 +49,8 @@ export function renderTable(options: RenderTableOptions) {
     import { Memory } from "${storeImportPath}Memory.sol";
     import { SliceLib } from "${storeImportPath}Slice.sol";
     import { EncodeArray } from "${storeImportPath}tightcoder/EncodeArray.sol";
-    import { FieldLayout, FieldLayoutLib } from "${storeImportPath}FieldLayout.sol";
-    import { Schema, SchemaLib } from "${storeImportPath}Schema.sol";
+    import { FieldLayout } from "${storeImportPath}FieldLayout.sol";
+    import { Schema } from "${storeImportPath}Schema.sol";
     import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter.sol";
     import { ResourceId } from "${storeImportPath}ResourceId.sol";
 
@@ -80,27 +78,14 @@ export function renderTable(options: RenderTableOptions) {
   
       ${renderFieldLayout(fields)}
 
-      /** 
-       * @notice Get the table's key schema.
-       * @return _keySchema The key schema for the table.
-       */
-      function getKeySchema() internal pure returns (Schema) {
-        SchemaType[] memory _keySchema = new SchemaType[](${keyTuple.length});
-        ${renderList(keyTuple, ({ enumName }, index) => `_keySchema[${index}] = SchemaType.${enumName};`)}
-
-        return SchemaLib.encode(_keySchema);
-      }
-
-      /**
-       * @notice Get the table's value schema.
-       * @return _valueSchema The value schema for the table.
-       */
-      function getValueSchema() internal pure returns (Schema) {
-        SchemaType[] memory _valueSchema = new SchemaType[](${fields.length});
-        ${renderList(fields, ({ enumName }, index) => `_valueSchema[${index}] = SchemaType.${enumName};`)}
-
-        return SchemaLib.encode(_valueSchema);
-      }
+      // Hex-encoded key schema of (${keyTuple.map((field) => field.internalTypeId).join(", ")})
+      Schema constant _keySchema = Schema.wrap(${keySchemaToHex(
+        Object.fromEntries(keyTuple.map((field) => [field.name, field.internalTypeId])) as KeySchema
+      )});
+      // Hex-encoded value schema of (${fields.map((field) => field.internalTypeId).join(", ")})
+      Schema constant _valueSchema = Schema.wrap(${valueSchemaToHex(
+        Object.fromEntries(fields.map((field) => [field.name, field.internalTypeId])) as ValueSchema
+      )});
 
       /**
        * @notice Get the table's key field names.
@@ -127,7 +112,7 @@ export function renderTable(options: RenderTableOptions) {
            * @notice Register the table with its config${_commentSuffix}.
            */
           function ${_methodNamePrefix}register(${renderArguments([_typedStore, _typedTableId])}) internal {
-            ${_store}.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+            ${_store}.registerTable(_tableId, _fieldLayout, _keySchema, _valueSchema, getKeyNames(), getFieldNames());
           }
         `
       )}
