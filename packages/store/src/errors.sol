@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import { ResourceId } from "./ResourceId.sol";
 
-// Errors include a human readable resource/table ID for better logging and debugging
+// Errors include a human-readable resource/table ID string for better logging and debugging
 error Store_TableAlreadyExists(ResourceId tableId, string tableIdString);
 error Store_TableNotFound(ResourceId tableId, string tableIdString);
 error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
