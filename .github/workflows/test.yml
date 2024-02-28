@@ -11,7 +11,7 @@ jobs:
     name: Run tests
     strategy:
       matrix:
-        os: [ubuntu-latest-16-cores, windows-latest-16-cores]
+        os: [ubuntu-latest-16-cores, windows-latest]
     runs-on: ${{ matrix.os }}
     services:
       postgres:
