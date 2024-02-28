@@ -18,9 +18,9 @@ export const sessionActions = <TChain extends Chain, TAccount extends Account>(
 ): Pick<WalletActions<TChain, TAccount>, "writeContract" | "sendTransaction"> => {
   return {
     // Applies to: `client.writeContract`, `getContract(client, ...).write`
-    writeContract: async (args) => mud_writeContract(client, args),
+    writeContract: (args) => mud_writeContract(client, args),
     // Applies to: `client.sendTransaction`
-    sendTransaction: async (args) => mud_sendTransaction(client, args),
+    sendTransaction: (args) => mud_sendTransaction(client, args),
   };
 };
 
@@ -31,7 +31,7 @@ export const setupObserverActions = <TChain extends Chain, TAccount extends Acco
 
   return (client) => ({
     // Applies to: `client.writeContract`, `getContract(client, ...).write`
-    writeContract: async (args): Promise<WriteContractReturnType> => {
+    writeContract: (args): Promise<WriteContractReturnType> => {
       const result = getAction(client, writeContract, "writeContract")(args);
 
       const id = `${client.chain.id}:${client.account.address}:${nextWriteId++}`;
