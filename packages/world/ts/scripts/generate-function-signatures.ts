@@ -35,8 +35,6 @@ ${contracts
     const data = readFileSync(contract.path, "utf8");
     const { functions } = contractToInterface(data, contract.basename);
 
-    console.log(contract.path, contract.basename, functions);
-
     return `
   /**
    * @dev Function signatures for ${contract.basename}
