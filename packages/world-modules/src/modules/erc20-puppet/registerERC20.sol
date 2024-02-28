@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
@@ -26,6 +28,13 @@ function registerERC20(
   if (address(erc20Module) == address(0)) {
     erc20Module = new ERC20Module();
   }
+
+  // Register the namespace if it doesn't exist yet
+  ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+  if (!ResourceIds.getExists(namespaceId)) {
+    world.registerNamespace(namespaceId);
+  }
+  world.transferOwnership(namespaceId, address(erc20Module));
 
   // Install the ERC20 module with the provided args
   world.installModule(erc20Module, abi.encode(namespace, metadata));
