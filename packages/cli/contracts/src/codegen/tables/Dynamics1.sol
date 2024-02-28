@@ -19,14 +19,6 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Dynamics1", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000044796e616d6963733100000000000000);
-ResourceId constant Dynamics1TableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0000000500000000000000000000000000000000000000000000000000000000
-);
-
 struct Dynamics1Data {
   bytes32[1] staticB32;
   int32[2] staticI32;
@@ -36,13 +28,11 @@ struct Dynamics1Data {
 }
 
 library Dynamics1 {
-  /**
-   * @notice Get the table values' field layout.
-   * @return _fieldLayout The field layout for the table.
-   */
-  function getFieldLayout() internal pure returns (FieldLayout) {
-    return _fieldLayout;
-  }
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Dynamics1", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000044796e616d6963733100000000000000);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0000000500000000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key schema.
