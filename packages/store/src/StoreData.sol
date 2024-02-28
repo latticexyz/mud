@@ -8,6 +8,7 @@ import { StoreCore } from "./StoreCore.sol";
 
 /**
  * @title Store Data Contract
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This contract integrates the core storage functionalities and provides an interface for data storage.
  * @dev This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
  * but not write methods.

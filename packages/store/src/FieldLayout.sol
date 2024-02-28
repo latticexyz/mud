@@ -5,6 +5,7 @@ import { WORD_SIZE, WORD_LAST_INDEX, BYTE_TO_BITS, MAX_TOTAL_FIELDS, MAX_DYNAMIC
 
 /**
  * @title FieldLayout
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Represents a field layout encoded into a single bytes32.
  * From left to right, the bytes are laid out as follows:
  * - 2 bytes for total length of all static fields
@@ -20,6 +21,7 @@ using FieldLayoutInstance for FieldLayout global;
 
 /**
  * @title FieldLayoutLib
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev A library for handling field layout encoding into a single bytes32.
  * It provides a function to encode static and dynamic fields and ensure
  * various constraints regarding the length and size of the fields.
@@ -82,6 +84,7 @@ library FieldLayoutLib {
 
 /**
  * @title FieldLayoutInstance
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Provides instance functions for obtaining information from an encoded FieldLayout.
  */
 library FieldLayoutInstance {
