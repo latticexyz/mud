@@ -29,7 +29,9 @@ library UserDelegationControl {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0020010020000000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (address, address)
   Schema constant _keySchema = Schema.wrap(0x0028020061610000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (bytes32)
   Schema constant _valueSchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
 
   /**

@@ -29,7 +29,9 @@ library SystemboundDelegations {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0020010020000000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (address, address, bytes32)
   Schema constant _keySchema = Schema.wrap(0x0048030061615f00000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint256)
   Schema constant _valueSchema = Schema.wrap(0x002001001f000000000000000000000000000000000000000000000000000000);
 
   /**

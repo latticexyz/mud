@@ -32,7 +32,9 @@ library Tasks {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0040020120200000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (bytes32)
   Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint256, uint256, string)
   Schema constant _valueSchema = Schema.wrap(0x004002011f1fc500000000000000000000000000000000000000000000000000);
 
   /**

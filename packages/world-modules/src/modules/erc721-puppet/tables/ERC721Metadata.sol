@@ -29,7 +29,9 @@ library ERC721Metadata {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0000000300000000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of ()
   Schema constant _keySchema = Schema.wrap(0x0000000000000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (string, string, string)
   Schema constant _valueSchema = Schema.wrap(0x00000003c5c5c500000000000000000000000000000000000000000000000000);
 
   /**

@@ -23,7 +23,9 @@ library OperatorApproval {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0001010001000000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (address, address)
   Schema constant _keySchema = Schema.wrap(0x0028020061610000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (bool)
   Schema constant _valueSchema = Schema.wrap(0x0001010060000000000000000000000000000000000000000000000000000000);
 
   /**

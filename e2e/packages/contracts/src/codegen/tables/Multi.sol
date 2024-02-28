@@ -31,7 +31,9 @@ library Multi {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0021020020010000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (uint32, bool, uint256, int120)
   Schema constant _keySchema = Schema.wrap(0x0034040003601f2e000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (int256, bool)
   Schema constant _valueSchema = Schema.wrap(0x002102003f600000000000000000000000000000000000000000000000000000);
 
   /**

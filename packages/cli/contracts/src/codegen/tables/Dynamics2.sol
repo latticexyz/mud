@@ -32,7 +32,9 @@ library Dynamics2 {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0000000300000000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (bytes32)
   Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint64[], string, bytes)
   Schema constant _valueSchema = Schema.wrap(0x0000000369c5c400000000000000000000000000000000000000000000000000);
 
   /**

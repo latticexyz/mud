@@ -31,7 +31,9 @@ library Vector {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0008020004040000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (uint32)
   Schema constant _keySchema = Schema.wrap(0x0004010003000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (int32, int32)
   Schema constant _valueSchema = Schema.wrap(0x0008020023230000000000000000000000000000000000000000000000000000);
 
   /**

@@ -26,7 +26,9 @@ library Inventory {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0004010004000000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (address, uint32, uint32)
   Schema constant _keySchema = Schema.wrap(0x001c030061030300000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint32)
   Schema constant _valueSchema = Schema.wrap(0x0004010003000000000000000000000000000000000000000000000000000000);
 
   /**

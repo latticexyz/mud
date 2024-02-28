@@ -37,7 +37,9 @@ library KeysInTable {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0000000500000000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (bytes32)
   Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (bytes32[], bytes32[], bytes32[], bytes32[], bytes32[])
   Schema constant _valueSchema = Schema.wrap(0x00000005c1c1c1c1c10000000000000000000000000000000000000000000000);
 
   /**

@@ -29,7 +29,9 @@ library CallboundDelegations {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0020010020000000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (address, address, bytes32, bytes32)
   Schema constant _keySchema = Schema.wrap(0x0068040061615f5f000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint256)
   Schema constant _valueSchema = Schema.wrap(0x002001001f000000000000000000000000000000000000000000000000000000);
 
   /**

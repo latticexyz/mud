@@ -23,7 +23,9 @@ library TokenURI {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0000000100000000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (uint256)
   Schema constant _keySchema = Schema.wrap(0x002001001f000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (string)
   Schema constant _valueSchema = Schema.wrap(0x00000001c5000000000000000000000000000000000000000000000000000000);
 
   /**

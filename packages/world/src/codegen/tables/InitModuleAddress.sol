@@ -26,7 +26,9 @@ library InitModuleAddress {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0014010014000000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of ()
   Schema constant _keySchema = Schema.wrap(0x0000000000000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (address)
   Schema constant _valueSchema = Schema.wrap(0x0014010061000000000000000000000000000000000000000000000000000000);
 
   /**

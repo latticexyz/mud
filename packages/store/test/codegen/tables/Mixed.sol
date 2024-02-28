@@ -33,7 +33,9 @@ library Mixed {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0014020204100000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (bytes32)
   Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint32, uint128, uint32[], string)
   Schema constant _valueSchema = Schema.wrap(0x00140202030f65c5000000000000000000000000000000000000000000000000);
 
   /**

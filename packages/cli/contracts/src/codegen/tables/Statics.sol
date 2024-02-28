@@ -38,7 +38,9 @@ library Statics {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x004a060020041014010100000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (uint256, int32, bytes16, address, bool, uint8)
   Schema constant _keySchema = Schema.wrap(0x004a06001f234f61600000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint256, int32, bytes16, address, bool, uint8)
   Schema constant _valueSchema = Schema.wrap(0x004a06001f234f61600000000000000000000000000000000000000000000000);
 
   /**

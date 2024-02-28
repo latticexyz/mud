@@ -31,7 +31,9 @@ library LastCall {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0034020020140000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (address)
   Schema constant _keySchema = Schema.wrap(0x0014010061000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint256, address)
   Schema constant _valueSchema = Schema.wrap(0x003402001f610000000000000000000000000000000000000000000000000000);
 
   /**

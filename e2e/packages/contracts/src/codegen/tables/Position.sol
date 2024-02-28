@@ -26,7 +26,9 @@ library Position {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0014010014000000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (bytes32, int32, int32)
   Schema constant _keySchema = Schema.wrap(0x002803005f232300000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (address)
   Schema constant _valueSchema = Schema.wrap(0x0014010061000000000000000000000000000000000000000000000000000000);
 
   /**

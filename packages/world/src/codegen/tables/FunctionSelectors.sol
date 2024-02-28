@@ -29,7 +29,9 @@ library FunctionSelectors {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0024020020040000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (bytes4)
   Schema constant _keySchema = Schema.wrap(0x0004010043000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (bytes32, bytes4)
   Schema constant _valueSchema = Schema.wrap(0x002402005f430000000000000000000000000000000000000000000000000000);
 
   /**

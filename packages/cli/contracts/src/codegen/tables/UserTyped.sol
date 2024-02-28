@@ -38,7 +38,9 @@ library UserTyped {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x004d050014080110200000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (address, int64, bool, uint128, bytes32)
   Schema constant _keySchema = Schema.wrap(0x004d05006127600f5f0000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (address, int64, bool, uint128, bytes32)
   Schema constant _valueSchema = Schema.wrap(0x004d05006127600f5f0000000000000000000000000000000000000000000000);
 
   /**

@@ -29,7 +29,9 @@ library UsedKeysIndex {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0006020001050000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of (bytes32, bytes32)
   Schema constant _keySchema = Schema.wrap(0x004002005f5f0000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (bool, uint40)
   Schema constant _valueSchema = Schema.wrap(0x0006020060040000000000000000000000000000000000000000000000000000);
 
   /**

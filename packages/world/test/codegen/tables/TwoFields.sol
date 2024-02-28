@@ -28,7 +28,9 @@ library TwoFields {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0002020001010000000000000000000000000000000000000000000000000000);
 
+  // Hex-encoded key schema of ()
   Schema constant _keySchema = Schema.wrap(0x0000000000000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (bool, bool)
   Schema constant _valueSchema = Schema.wrap(0x0002020060600000000000000000000000000000000000000000000000000000);
 
   /**

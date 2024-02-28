@@ -81,9 +81,11 @@ export function renderTable(options: RenderTableOptions) {
   
       ${renderFieldLayout(fields)}
 
+      // Hex-encoded key schema of (${keyTuple.map((field) => field.internalTypeId).join(", ")})
       Schema constant _keySchema = Schema.wrap(${keySchemaToHex(
-        Object.fromEntries(keyTuple.map((key) => [key.name, key.internalTypeId])) as KeySchema
+        Object.fromEntries(keyTuple.map((field) => [field.name, field.internalTypeId])) as KeySchema
       )});
+      // Hex-encoded value schema of (${fields.map((field) => field.internalTypeId).join(", ")})
       Schema constant _valueSchema = Schema.wrap(${valueSchemaToHex(
         Object.fromEntries(fields.map((field) => [field.name, field.internalTypeId])) as ValueSchema
       )});
