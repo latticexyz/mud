@@ -13,8 +13,8 @@ import { ResourceId, WorldResourceIdInstance } from "@latticexyz/world/src/World
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { KeysInTableHook } from "./KeysInTableHook.sol";
-import { KeysInTable, KeysInTableTableId } from "./tables/KeysInTable.sol";
-import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol";
+import { KeysInTable } from "./tables/KeysInTable.sol";
+import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
 
 /**
  * This module deploys a hook that is called when a value is set in the `sourceTableId`
@@ -47,14 +47,14 @@ contract KeysInTableModule is Module {
     bool success;
     bytes memory returnData;
 
-    if (!ResourceIds._getExists(KeysInTableTableId)) {
+    if (!ResourceIds._getExists(KeysInTable._tableId)) {
       // Register the tables
       (success, returnData) = address(world).delegatecall(
         abi.encodeCall(
           world.registerTable,
           (
-            KeysInTableTableId,
-            KeysInTable.getFieldLayout(),
+            KeysInTable._tableId,
+            KeysInTable._fieldLayout,
             KeysInTable.getKeySchema(),
             KeysInTable.getValueSchema(),
             KeysInTable.getKeyNames(),
@@ -68,8 +68,8 @@ contract KeysInTableModule is Module {
         abi.encodeCall(
           world.registerTable,
           (
-            UsedKeysIndexTableId,
-            UsedKeysIndex.getFieldLayout(),
+            UsedKeysIndex._tableId,
+            UsedKeysIndex._fieldLayout,
             UsedKeysIndex.getKeySchema(),
             UsedKeysIndex.getValueSchema(),
             UsedKeysIndex.getKeyNames(),
@@ -81,12 +81,12 @@ contract KeysInTableModule is Module {
 
       // Grant the hook access to the tables
       (success, returnData) = address(world).delegatecall(
-        abi.encodeCall(world.grantAccess, (KeysInTableTableId, address(hook)))
+        abi.encodeCall(world.grantAccess, (KeysInTable._tableId, address(hook)))
       );
       if (!success) revertWithBytes(returnData);
 
       (success, returnData) = address(world).delegatecall(
-        abi.encodeCall(world.grantAccess, (UsedKeysIndexTableId, address(hook)))
+        abi.encodeCall(world.grantAccess, (UsedKeysIndex._tableId, address(hook)))
       );
       if (!success) revertWithBytes(returnData);
     }

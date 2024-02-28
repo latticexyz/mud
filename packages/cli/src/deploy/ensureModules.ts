@@ -8,10 +8,12 @@ import { ensureContractsDeployed } from "./ensureContractsDeployed";
 
 export async function ensureModules({
   client,
+  deployerAddress,
   worldDeploy,
   modules,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
+  readonly deployerAddress: Hex; // TODO: move this into WorldDeploy to reuse a world's deployer?
   readonly worldDeploy: WorldDeploy;
   readonly modules: readonly Module[];
 }): Promise<readonly Hex[]> {
@@ -19,7 +21,8 @@ export async function ensureModules({
 
   await ensureContractsDeployed({
     client,
-    contracts: uniqueBy(modules, (mod) => getAddress(mod.address)).map((mod) => ({
+    deployerAddress,
+    contracts: uniqueBy(modules, (mod) => getAddress(mod.getAddress(deployerAddress))).map((mod) => ({
       bytecode: mod.bytecode,
       deployedBytecodeSize: mod.deployedBytecodeSize,
       label: `${mod.name} module`,
@@ -40,7 +43,7 @@ export async function ensureModules({
                     abi: worldAbi,
                     // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
                     functionName: "installRootModule",
-                    args: [mod.address, mod.installData],
+                    args: [mod.getAddress(deployerAddress), mod.installData],
                   })
                 : await writeContract(client, {
                     chain: client.chain ?? null,
@@ -48,7 +51,7 @@ export async function ensureModules({
                     abi: worldAbi,
                     // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
                     functionName: "installModule",
-                    args: [mod.address, mod.installData],
+                    args: [mod.getAddress(deployerAddress), mod.installData],
                   });
             } catch (error) {
               if (error instanceof BaseError && error.message.includes("Module_AlreadyInstalled")) {

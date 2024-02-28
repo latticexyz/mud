@@ -19,22 +19,12 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Singleton", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000053696e676c65746f6e00000000000000);
-ResourceId constant SingletonTableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0020010320000000000000000000000000000000000000000000000000000000
-);
-
 library Singleton {
-  /**
-   * @notice Get the table values' field layout.
-   * @return _fieldLayout The field layout for the table.
-   */
-  function getFieldLayout() internal pure returns (FieldLayout) {
-    return _fieldLayout;
-  }
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Singleton", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000053696e676c65746f6e00000000000000);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0020010320000000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key schema.

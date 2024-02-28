@@ -61,7 +61,7 @@
     "p-retry": "^5.1.2",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "1.1.3",
-    "viem": "1.14.0"
+    "viem": "2.7.12"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

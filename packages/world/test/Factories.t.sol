@@ -19,7 +19,7 @@ import { createInitModule } from "./createInitModule.sol";
 
 contract FactoriesTest is Test, GasReporter {
   event ContractDeployed(address addr, uint256 salt);
-  event WorldDeployed(address indexed newContract);
+  event WorldDeployed(address indexed newContract, uint256 salt);
   event HelloWorld(bytes32 indexed version);
 
   function calculateAddress(
@@ -75,7 +75,7 @@ contract FactoriesTest is Test, GasReporter {
 
     // Check for WorldDeployed event from Factory
     vm.expectEmit(true, false, false, false);
-    emit WorldDeployed(calculatedAddress);
+    emit WorldDeployed(calculatedAddress, salt1);
     startGasReport("deploy world via WorldFactory");
     worldFactory.deployWorld(_salt1);
     endGasReport();
@@ -108,7 +108,7 @@ contract FactoriesTest is Test, GasReporter {
 
     // Check for WorldDeployed event from Factory
     vm.expectEmit(true, false, false, false);
-    emit WorldDeployed(calculatedAddress);
+    emit WorldDeployed(calculatedAddress, salt2);
     worldFactory.deployWorld(_salt2);
 
     // Set the store address manually

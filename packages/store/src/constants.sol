@@ -2,11 +2,10 @@
 pragma solidity >=0.8.24;
 
 /**
- * @title Shared Constants for EVM and Schema Handling
+ * @title Shared constants for EVM and schema handling
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This file provides constants for better handling of EVM and Schema related functionalities.
  */
-
-/* Shared constants */
 
 /// @dev Represents the total byte length of an EVM word.
 uint256 constant WORD_SIZE = 32;
@@ -28,6 +27,7 @@ uint256 constant MAX_DYNAMIC_FIELDS = 5;
 
 /**
  * @title LayoutOffsets Library
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This library provides constant offsets for FieldLayout and Schema metadata.
  * @dev FieldLayout and Schema utilize the same offset values for metadata.
  */

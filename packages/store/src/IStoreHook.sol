@@ -6,6 +6,10 @@ import { IERC165 } from "./IERC165.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { ResourceId } from "./ResourceId.sol";
 
+/**
+ * @title IStoreHook
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ */
 interface IStoreHook is IERC165 {
   /// @notice Error emitted when a function is not implemented.
   error StoreHook_NotImplemented();
