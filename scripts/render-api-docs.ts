@@ -35,7 +35,7 @@ const PUBLIC_APIS: PublicApis = {
     inputFiles: [
       { source: "store/src/IStore.sol" },
       { source: "store/src/IStoreEvents.sol" },
-      { source: "store/src/errors.sol" },
+      { source: "store/src/IStoreErrors.sol" },
       { source: "store/src/IStoreData.sol" },
       { source: "store/src/IStoreRead.sol" },
       { source: "store/src/IStoreWrite.sol" },
@@ -240,6 +240,7 @@ const PUBLIC_APIS: PublicApis = {
       { source: "world/src/modules/init/implementations/ModuleInstallationSystem.sol" },
       { source: "world/src/modules/init/RegistrationSystem.sol" },
       { source: "world/src/modules/init/implementations/WorldRegistrationSystem.sol" },
+      { source: "store/src/IStoreErrors.sol" },
 
       // Back to adding contracts and interfaces to the docs.
       { source: "world/src/IWorldKernel.sol" },
@@ -286,7 +287,8 @@ const PUBLIC_APIS: PublicApis = {
         .replace(/## BatchCallSystem((.|\n)*?)### Functions/m, "")
         .replace(/## ModuleInstallationSystem((.|\n)*?)### Functions/m, "")
         .replace(/## RegistrationSystem((.|\n)*?)### Functions/m, "")
-        .replace(/## WorldRegistrationSystem((.|\n)*?)### Functions/m, "");
+        .replace(/## WorldRegistrationSystem((.|\n)*?)### Functions/m, "")
+        .replace(/## IStoreErrors((.|\n)*?)### Errors/m, "### Errors");
     },
   },
   "world/reference/world-context.mdx": {
@@ -409,6 +411,7 @@ const inheritence = [
   { contract: "IStoreData", link: "/store/reference/store#istoredata" },
   { contract: "IStoreRead", link: "/store/reference/store#istoreread" },
   { contract: "IStoreWrite", link: "/store/reference/store#istorewrite" },
+  { contract: "IStoreErrors", link: "/store/reference/store#istoreerrors" },
   { contract: "IStoreEvents", link: "/store/reference/store#istoreevents" },
   { contract: "IStoreRegistration", link: "/store/reference/store#istoreregistration" },
   { contract: "Module", link: "/world/reference/module#module" },
