@@ -34,7 +34,7 @@ contract MixedTest is Test, GasReporter, StoreMock {
 
   function testRegisterAndGetSchema() public {
     Schema registeredSchema = StoreCore.getValueSchema(Mixed._tableId);
-    Schema declaredSchema = Mixed.getValueSchema();
+    Schema declaredSchema = Mixed._valueSchema;
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
   }

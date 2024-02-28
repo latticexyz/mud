@@ -14,8 +14,8 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
-import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
-import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
@@ -29,21 +29,8 @@ library Systems {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0015020014010000000000000000000000000000000000000000000000000000);
 
-  /**
-   * @notice Get the table's key schema.
-   * @return _keySchema The key schema for the table.
-   */
-  function getKeySchema() internal pure returns (Schema) {
-    return Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
-  }
-
-  /**
-   * @notice Get the table's value schema.
-   * @return _valueSchema The value schema for the table.
-   */
-  function getValueSchema() internal pure returns (Schema) {
-    return Schema.wrap(0x0015020061600000000000000000000000000000000000000000000000000000);
-  }
+  Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
+  Schema constant _valueSchema = Schema.wrap(0x0015020061600000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -68,14 +55,14 @@ library Systems {
    * @notice Register the table with its config.
    */
   function register() internal {
-    StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    StoreSwitch.registerTable(_tableId, _fieldLayout, _keySchema, _valueSchema, getKeyNames(), getFieldNames());
   }
 
   /**
    * @notice Register the table with its config.
    */
   function _register() internal {
-    StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    StoreCore.registerTable(_tableId, _fieldLayout, _keySchema, _valueSchema, getKeyNames(), getFieldNames());
   }
 
   /**

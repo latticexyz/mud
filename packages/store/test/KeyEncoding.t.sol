@@ -27,7 +27,7 @@ contract KeyEncodingTest is Test, GasReporter, StoreMock {
     KeyEncoding.register();
 
     Schema registeredSchema = StoreCore.getValueSchema(KeyEncoding._tableId);
-    Schema declaredSchema = KeyEncoding.getValueSchema();
+    Schema declaredSchema = KeyEncoding._valueSchema;
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
   }

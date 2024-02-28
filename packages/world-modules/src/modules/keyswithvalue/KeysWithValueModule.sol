@@ -61,8 +61,8 @@ contract KeysWithValueModule is Module {
         (
           targetTableId,
           KeysWithValue._fieldLayout,
-          KeysWithValue.getKeySchema(),
-          KeysWithValue.getValueSchema(),
+          KeysWithValue._keySchema,
+          KeysWithValue._valueSchema,
           KeysWithValue.getKeyNames(),
           KeysWithValue.getFieldNames()
         )

@@ -26,7 +26,7 @@ contract Vector2Test is Test, GasReporter, StoreMock {
     Vector2.register();
 
     Schema registeredSchema = StoreCore.getValueSchema(Vector2._tableId);
-    Schema declaredSchema = Vector2.getValueSchema();
+    Schema declaredSchema = Vector2._valueSchema;
 
     assertEq(Schema.unwrap(registeredSchema), Schema.unwrap(declaredSchema));
   }

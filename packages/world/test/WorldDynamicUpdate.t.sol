@@ -54,7 +54,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
     keyTuple[0] = key;
     singletonKey = new bytes32[](0);
     FieldLayout fieldLayout = AddressArray._fieldLayout;
-    Schema valueSchema = AddressArray.getValueSchema();
+    Schema valueSchema = AddressArray._valueSchema;
 
     // Initialize the data in setUp so that slots aren't warm in tests (to test cold update)
 

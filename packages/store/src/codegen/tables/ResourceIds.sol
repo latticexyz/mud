@@ -14,8 +14,8 @@ import { Bytes } from "../../Bytes.sol";
 import { Memory } from "../../Memory.sol";
 import { SliceLib } from "../../Slice.sol";
 import { EncodeArray } from "../../tightcoder/EncodeArray.sol";
-import { FieldLayout, FieldLayoutLib } from "../../FieldLayout.sol";
-import { Schema, SchemaLib } from "../../Schema.sol";
+import { FieldLayout } from "../../FieldLayout.sol";
+import { Schema } from "../../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 import { ResourceId } from "../../ResourceId.sol";
 
@@ -29,21 +29,8 @@ library ResourceIds {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0001010001000000000000000000000000000000000000000000000000000000);
 
-  /**
-   * @notice Get the table's key schema.
-   * @return _keySchema The key schema for the table.
-   */
-  function getKeySchema() internal pure returns (Schema) {
-    return Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
-  }
-
-  /**
-   * @notice Get the table's value schema.
-   * @return _valueSchema The value schema for the table.
-   */
-  function getValueSchema() internal pure returns (Schema) {
-    return Schema.wrap(0x0001010060000000000000000000000000000000000000000000000000000000);
-  }
+  Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
+  Schema constant _valueSchema = Schema.wrap(0x0001010060000000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -67,14 +54,14 @@ library ResourceIds {
    * @notice Register the table with its config.
    */
   function register() internal {
-    StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    StoreSwitch.registerTable(_tableId, _fieldLayout, _keySchema, _valueSchema, getKeyNames(), getFieldNames());
   }
 
   /**
    * @notice Register the table with its config.
    */
   function _register() internal {
-    StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    StoreCore.registerTable(_tableId, _fieldLayout, _keySchema, _valueSchema, getKeyNames(), getFieldNames());
   }
 
   /**

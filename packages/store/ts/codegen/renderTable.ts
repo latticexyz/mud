@@ -52,8 +52,8 @@ export function renderTable(options: RenderTableOptions) {
     import { Memory } from "${storeImportPath}Memory.sol";
     import { SliceLib } from "${storeImportPath}Slice.sol";
     import { EncodeArray } from "${storeImportPath}tightcoder/EncodeArray.sol";
-    import { FieldLayout, FieldLayoutLib } from "${storeImportPath}FieldLayout.sol";
-    import { Schema, SchemaLib } from "${storeImportPath}Schema.sol";
+    import { FieldLayout } from "${storeImportPath}FieldLayout.sol";
+    import { Schema } from "${storeImportPath}Schema.sol";
     import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter.sol";
     import { ResourceId } from "${storeImportPath}ResourceId.sol";
 
@@ -81,25 +81,12 @@ export function renderTable(options: RenderTableOptions) {
   
       ${renderFieldLayout(fields)}
 
-      /** 
-       * @notice Get the table's key schema.
-       * @return _keySchema The key schema for the table.
-       */
-      function getKeySchema() internal pure returns (Schema) {
-        return Schema.wrap(${keySchemaToHex(
-          Object.fromEntries(keyTuple.map((key) => [key.name, key.internalTypeId])) as KeySchema
-        )});
-      }
-
-      /**
-       * @notice Get the table's value schema.
-       * @return _valueSchema The value schema for the table.
-       */
-      function getValueSchema() internal pure returns (Schema) {
-        return Schema.wrap(${valueSchemaToHex(
-          Object.fromEntries(fields.map((field) => [field.name, field.internalTypeId])) as ValueSchema
-        )});
-      }
+      Schema constant _keySchema = Schema.wrap(${keySchemaToHex(
+        Object.fromEntries(keyTuple.map((key) => [key.name, key.internalTypeId])) as KeySchema
+      )});
+      Schema constant _valueSchema = Schema.wrap(${valueSchemaToHex(
+        Object.fromEntries(fields.map((field) => [field.name, field.internalTypeId])) as ValueSchema
+      )});
 
       /**
        * @notice Get the table's key field names.
@@ -126,7 +113,7 @@ export function renderTable(options: RenderTableOptions) {
            * @notice Register the table with its config${_commentSuffix}.
            */
           function ${_methodNamePrefix}register(${renderArguments([_typedStore, _typedTableId])}) internal {
-            ${_store}.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+            ${_store}.registerTable(_tableId, _fieldLayout, _keySchema, _valueSchema, getKeyNames(), getFieldNames());
           }
         `
       )}
