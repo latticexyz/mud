@@ -300,6 +300,32 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     assertEq(token.balanceOf(from), 0);
   }
 
+  function testSafeTransferFromToERC721Recipient() public {
+    uint256 id = 2116498058;
+    address from = 0x03A6a84cD762D9707A21605b548aaaB891562aAb;
+    address operator = 0x0000000000000000000000000000000000001421;
+
+    ERC721Recipient recipient = new ERC721Recipient();
+
+    token.mint(from, id);
+
+    vm.prank(from);
+    token.setApprovalForAll(operator, true);
+
+    vm.prank(operator);
+    token.safeTransferFrom(from, address(recipient), id);
+
+    assertEq(token.getApproved(id), address(0));
+    assertEq(token.ownerOf(id), address(recipient));
+    assertEq(token.balanceOf(address(recipient)), 1);
+    assertEq(token.balanceOf(from), 0);
+
+    assertEq(recipient.operator(), operator);
+    assertEq(recipient.from(), from);
+    assertEq(recipient.id(), id);
+    assertEq(recipient.data(), "");
+  }
+
   function testSafeTransferFromToERC721Recipient(uint256 id, address from, address operator) public {
     _assumeDifferentNonZero(from, operator);
 
