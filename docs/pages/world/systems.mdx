@@ -276,6 +276,119 @@ Any access granted _manually_ to the old `System` is not revoked, nor granted to
 **Note:** You _should_ make sure to remove any such manually granted access.
 MUD access is based on the contract address, so somebody else could register a namespace they'd own, register the old `System` contract as a system in their namespace, and then abuse those permissions (if the `System` has code that can be used for that, of course).
 
+<details>
+
+<summary>Sample code</summary>
+
+<CollapseCode>
+
+```solidity copy showLineNumbers {11-12, 14-21, 33-42}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { System } from "@latticexyz/world/src/System.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { Counter } from "../src/codegen/index.sol";
+
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+contract IncrementSystem2 is System {
+  function increment() public returns (uint32) {
+    uint32 counter = Counter.get();
+    uint32 newValue = counter + 2;
+    Counter.set(newValue);
+    return newValue;
+  }
+}
+
+contract UpdateASystem is Script {
+  function run() external {
+    address worldAddress = 0x256e6eAf6a6683aB771C576f2f5C8A774BdAC8e3;
+
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    // Start broadcasting transactions from the deployer account
+    vm.startBroadcast(deployerPrivateKey);
+
+    // Deploy IncrementSystem2
+    IncrementSystem2 incrementSystem2 = new IncrementSystem2();
+
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "",
+      name: "IncrementSystem"
+    });
+
+    IWorld(worldAddress).registerSystem(systemId, incrementSystem2, true);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+```
+
+To upgrade a `System` we need the resource ID for it.
+
+```solidity
+contract IncrementSystem2 is System {
+  function increment() public returns (uint32) {
+    uint32 counter = Counter.get();
+    uint32 newValue = counter + 2;
+    Counter.set(newValue);
+    return newValue;
+  }
+}
+```
+
+The new `System`.
+It needs to implement the same `public` functions as the `System` being replaced.
+
+```solidity
+.
+.
+.
+    // Deploy IncrementSystem2
+    IncrementSystem2 incrementSystem2 = new IncrementSystem2();
+```
+
+Deploy the new `System`.
+
+```solidity
+    ResourceId systemId = WorldResourceIdLib.encode(
+      { typeId: RESOURCE_SYSTEM,
+        namespace: "",
+        name: "IncrementSystem"
+      });
+```
+
+Get the `ResourceId` for the `System`.
+
+```solidity
+    IWorld(worldAddress).registerSystem(systemId, incrementSystem2, true);
+```
+
+Register the new `System`.
+This removes the existing `System` and the access automatically granted to it.
+
+</details>
+
+</details>
+
 ## Access control
 
 When you register a `System`, you can specify whether it is going to be private or public.
