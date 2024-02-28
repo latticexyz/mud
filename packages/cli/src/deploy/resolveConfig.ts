@@ -9,6 +9,7 @@ import { getExistingContracts } from "../utils/getExistingContracts";
 import { defaultModuleContracts } from "../utils/modules/constants";
 import { getContractData } from "../utils/utils/getContractData";
 import { configToTables } from "./configToTables";
+import { groupBy } from "@latticexyz/common/utils";
 
 // TODO: this should be replaced by https://github.com/latticexyz/mud/issues/1668
 
@@ -69,6 +70,21 @@ export function resolveConfig<config extends ConfigInput>({
       functions: systemFunctions,
     };
   });
+
+  // Check for overlapping system IDs (since names get truncated when turning into IDs)
+  // TODO: move this into the world config resolve step once it resolves system IDs
+  const systemsById = groupBy(systems, (system) => system.systemId);
+  const overlappingSystems = Array.from(systemsById.values())
+    .filter((matches) => matches.length > 1)
+    .flat();
+  if (overlappingSystems.length) {
+    const names = overlappingSystems.map((system) => system.name);
+    throw new Error(
+      `Found systems with overlapping system ID: ${names.join(
+        ", "
+      )}.\n\nSystem IDs are generated from the first 16 bytes of the name, so you may need to rename them to avoid the overlap.`
+    );
+  }
 
   // ugh (https://github.com/latticexyz/mud/issues/1668)
   const resolveContext = {
