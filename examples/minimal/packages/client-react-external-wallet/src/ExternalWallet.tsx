@@ -32,7 +32,7 @@ function Account() {
 
   return (
     <div>
-      <div>{address}</div>
+      <div>External wallet account: {address}</div>
       <div>
         Connected to {chain?.name ?? chainId}
         {chainId && !chains.map((x) => x.id).includes(chainId) ? " (unsupported)" : ""}

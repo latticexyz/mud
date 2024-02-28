@@ -244,6 +244,9 @@ importers:
       '@latticexyz/store-sync':
         specifier: link:../../../../packages/store-sync
         version: link:../../../../packages/store-sync
+      '@latticexyz/world':
+        specifier: link:../../../../packages/world
+        version: link:../../../../packages/world
       '@tanstack/react-query':
         specifier: 5.22.2
         version: 5.22.2(react@18.2.0)

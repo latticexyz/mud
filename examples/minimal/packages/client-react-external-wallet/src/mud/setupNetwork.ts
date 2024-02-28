@@ -1,11 +1,23 @@
-import { createPublicClient, fallback, webSocket, http, type ClientConfig } from "viem";
+import {
+  createPublicClient,
+  fallback,
+  webSocket,
+  http,
+  type ClientConfig,
+  createWalletClient,
+  publicActions,
+} from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import { Subject, share } from "rxjs";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
-import { transportObserver, type ContractWrite } from "@latticexyz/common";
+import { transportObserver, type ContractWrite, getBurnerPrivateKey } from "@latticexyz/common";
 import mudConfig from "contracts/mud.config";
+import { burnerActions, setupObserverActions, setupStoreSyncActions } from "./customClient";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
+export type PublicClient = SetupNetworkResult["publicClient"];
+export type BurnerClient = SetupNetworkResult["burnerClient"];
 
 export async function setupNetwork() {
   const networkConfig = getNetworkConfig();
@@ -18,7 +30,7 @@ export async function setupNetwork() {
 
   const publicClient = createPublicClient(clientOptions);
 
-  const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
+  const syncResult = await syncToZustand({
     config: mudConfig,
     address: networkConfig.worldAddress,
     publicClient,
@@ -26,19 +38,20 @@ export async function setupNetwork() {
   });
 
   const write$ = new Subject<ContractWrite>();
-  let nextWriteId = 0;
-  const onWrite = (write: ContractWrite) =>
-    write$.next({ id: `${write.id}:${nextWriteId++}`, request: write.request, result: write.result });
+
+  const burnerClient = createWalletClient({
+    ...clientOptions,
+    account: privateKeyToAccount(getBurnerPrivateKey("mud:example:burnerWallet")),
+  })
+    .extend(publicActions)
+    .extend(burnerActions)
+    .extend(setupObserverActions(write$));
 
   return {
     worldAddress: networkConfig.worldAddress,
-    tables,
-    useStore,
-    publicClient,
-    latestBlock$,
-    storedBlockLogs$,
-    waitForTransaction,
-    onWrite,
+    publicClient: publicClient.extend(setupStoreSyncActions(syncResult)),
+    ...syncResult,
     write$: write$.asObservable().pipe(share()),
+    burnerClient,
   };
 }
