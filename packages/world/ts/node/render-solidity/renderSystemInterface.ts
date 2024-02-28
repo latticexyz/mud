@@ -11,7 +11,7 @@ export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
 
     /**
      * @title ${name} 
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+     * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
      * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
      */
     interface ${name} {
