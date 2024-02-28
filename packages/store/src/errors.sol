@@ -17,3 +17,6 @@ error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
 error Store_InvalidValueSchemaStaticLength(uint256 expected, uint256 received);
 error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
 error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
+
+/// @notice Error emitted when a function is not implemented.
+error StoreHook_NotImplemented();

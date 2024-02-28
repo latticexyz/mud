@@ -6,6 +6,7 @@ import { IERC165 } from "./IERC165.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { ResourceId } from "./ResourceId.sol";
+import { StoreHook_NotImplemented } from "./errors.sol";
 
 /**
  * @title Store Hook Contract
