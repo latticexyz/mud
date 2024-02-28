@@ -7,9 +7,6 @@ import { PackedCounter } from "./PackedCounter.sol";
 import { ResourceId } from "./ResourceId.sol";
 
 interface IStoreHook is IERC165 {
-  /// @notice Error emitted when a function is not implemented.
-  error StoreHook_NotImplemented();
-
   /**
    * @notice Called before setting a record in the store.
    * @param tableId The ID of the table where the record is to be set.
