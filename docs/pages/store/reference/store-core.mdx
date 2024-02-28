@@ -4,6 +4,9 @@
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreCore.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 This library includes implementations for all IStore methods and events related to the store actions.
 
 ### Functions
@@ -851,6 +854,9 @@ event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreCore.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 _This library contains internal functions used by StoreCore.
 They are not intended to be used directly by consumers of StoreCore._
 
@@ -1107,6 +1113,9 @@ function _loadEncodedDynamicDataLength(
 **Inherits:**
 [IStoreData](/store/reference/store#istoredata), [StoreRead](/store/reference/store-core#storeread)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 This contract integrates the core storage functionalities and provides an interface for data storage.
 
 _This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
@@ -1144,6 +1153,9 @@ function storeVersion() public pure returns (bytes32);
 
 **Inherits:**
 [IStoreRead](/store/reference/store#istoreread)
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _A contract that provides read operations for storage tables using `StoreCore`._
 
@@ -1491,6 +1503,9 @@ function getDynamicFieldSlice(
 
 | [Usage Sample](/store/table-libraries#storeswitch) | [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol) |
 | -------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 This library serves as an interface switch to interact with the store,
 either by directing calls to itself or to a designated external store.

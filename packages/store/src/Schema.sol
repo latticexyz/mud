@@ -7,7 +7,7 @@ import { WORD_LAST_INDEX, BYTE_TO_BITS, MAX_TOTAL_FIELDS, MAX_DYNAMIC_FIELDS, La
 
 /**
  * @title Schema handling in Lattice
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Defines and handles the encoding/decoding of Schemas which describe the layout of data structures.
  * 2 bytes length of all the static (in size) fields in the schema
  * 1 byte for number of static size fields

@@ -22,7 +22,7 @@ import { WorldRegistrationSystem } from "./WorldRegistrationSystem.sol";
 
 /**
  * @title Store Registration System
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This contract provides functionality for the registration of store-related resources within the World framework.
  */
 contract StoreRegistrationSystem is System, IWorldErrors, LimitedCallContext {

@@ -7,6 +7,9 @@
 **Inherits:**
 [IStore](/store/reference/store#istore), [IWorldKernel](/world/reference/world-external#iworldkernel), [IAccessManagementSystem](/world/reference/world-external#iaccessmanagementsystem), [IBalanceTransferSystem](/world/reference/world-external#ibalancetransfersystem), [IBatchCallSystem](/world/reference/world-external#ibatchcallsystem), [IModuleInstallationSystem](/world/reference/world-external#imoduleinstallationsystem), [IWorldRegistrationSystem](/world/reference/world-external#iworldregistrationsystem), [IRegistrationSystem](/world/reference/world-external#iregistrationsystem)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 This interface integrates all systems and associated function selectors
 that are dynamically registered in the World during deployment.
 
@@ -455,6 +458,9 @@ function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelega
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldKernel.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 _This interface defines the contract for executing calls on the World's systems._
 
 ### Functions
@@ -518,6 +524,9 @@ function callFrom(
 
 **Inherits:**
 [IWorldModuleInstallation](/world/reference/world-external#iworldmoduleinstallation), [IWorldCall](/world/reference/world-external#iworldcall), [IWorldErrors](/world/reference/world-external#iworlderrors)
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 The IWorldKernel interface includes all methods that are part of the World contract's
 internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
@@ -589,6 +598,9 @@ event HelloWorld(bytes32 indexed worldVersion);
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldKernel.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 _This interface defines the contract responsible for managing root modules installation._
 
 ### Functions
@@ -613,6 +625,9 @@ function installRootModule(IModule module, bytes memory encodedArgs) external;
 ## IWorldErrors
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldErrors.sol)
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _This interface contains custom error types for the World contract. These errors provide
 more informative messages for certain operations within the World contract._
@@ -830,6 +845,9 @@ error World_CallbackNotAllowed(bytes4 functionSelector);
 ## IWorldFactory
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldFactory.sol)
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _This interface defines the contract responsible for deploying and keeping track
 of World contract instances._

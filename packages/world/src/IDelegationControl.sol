@@ -6,7 +6,7 @@ import { ResourceId } from "./WorldResourceId.sol";
 
 /**
  * @title IDelegationControl
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Interface for managing and verifying delegations within the context of a world.
  * Inherits functionalities from IWorldContextConsumer.
  */

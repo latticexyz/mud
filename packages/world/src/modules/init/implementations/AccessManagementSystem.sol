@@ -12,7 +12,7 @@ import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
  * @title Access Management System
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This contract manages the granting and revoking of access from/to resources.
  */
 contract AccessManagementSystem is System, LimitedCallContext {

@@ -11,7 +11,7 @@ import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
  * @title Module Installation System
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev A system contract to handle the installation of (non-root) modules in the World.
  */
 contract ModuleInstallationSystem is System, LimitedCallContext {

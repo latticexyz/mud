@@ -7,7 +7,7 @@ import { BytesStruct, StringStruct } from "./../../systems/structs.sol";
 
 /**
  * @title IStructSystem
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IStructSystem {

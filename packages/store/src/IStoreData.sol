@@ -6,7 +6,7 @@ import { IStoreWrite } from "./IStoreWrite.sol";
 
 /**
  * @title IStoreData
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice The IStoreData interface includes methods for reading and writing table values.
  * @dev These methods are frequently invoked during runtime, so it is essential to prioritize optimizing their gas cost.
  */

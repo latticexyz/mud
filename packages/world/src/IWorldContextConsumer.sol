@@ -12,7 +12,7 @@ import { IERC165 } from "./IERC165.sol";
 
 /**
  * @title WorldContextConsumer - Extracting trusted context values from appended calldata.
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This contract is designed to extract trusted context values (like msg.sender and msg.value)
  * from the appended calldata. It provides mechanisms similar to EIP-2771 (https://eips.ethereum.org/EIPS/eip-2771),
  * but allowing any contract to be the trusted forwarder.

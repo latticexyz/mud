@@ -9,7 +9,7 @@ import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 
 /**
  * @title Module
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Abstract contract that implements the ERC-165 supportsInterface function for IModule.
  */
 abstract contract Module is IModule, WorldContextConsumer {

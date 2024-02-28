@@ -15,7 +15,7 @@ using DecodeSlice for Slice global;
 
 /**
  * @title Static functions for Slice
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  */
 library SliceLib {
   error Slice_OutOfBounds(bytes data, uint256 start, uint256 end);
@@ -74,7 +74,7 @@ library SliceLib {
 
 /**
  * @title Instance functions for Slice
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  */
 library SliceInstance {
   /**

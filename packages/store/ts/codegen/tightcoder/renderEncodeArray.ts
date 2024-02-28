@@ -14,7 +14,7 @@ export function renderEncodeArray() {
 
     /**
      * @title EncodeArray 
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
      * @dev This library provides utilities for encoding arrays into tightly packed bytes representations.
      */
     library EncodeArray {

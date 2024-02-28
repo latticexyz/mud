@@ -9,7 +9,7 @@ import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
  * @title Batch Call System
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev A system contract that facilitates batching of calls to various systems in a single transaction.
  */
 contract BatchCallSystem is System, LimitedCallContext {

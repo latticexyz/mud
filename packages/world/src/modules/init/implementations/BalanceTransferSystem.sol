@@ -17,7 +17,7 @@ import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
  * @title Balance Transfer System
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev A system contract that facilitates balance transfers in the World and outside of the World.
  */
 contract BalanceTransferSystem is System, IWorldErrors, LimitedCallContext {

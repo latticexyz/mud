@@ -4,6 +4,9 @@
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Bytes.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 Utility functions for bytes.
 
 ### Functions
@@ -273,6 +276,9 @@ function slice32(bytes memory data, uint256 start) internal pure returns (bytes3
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/FieldLayout.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 _Provides instance functions for obtaining information from an encoded FieldLayout._
 
 ### Functions
@@ -438,6 +444,9 @@ function unwrap(FieldLayout fieldLayout) internal pure returns (bytes32);
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/FieldLayout.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 _A library for handling field layout encoding into a single bytes32.
 It provides a function to encode static and dynamic fields and ensure
 various constraints regarding the length and size of the fields._
@@ -518,6 +527,9 @@ error FieldLayoutLib_StaticLengthDoesNotFitInAWord(uint256 index);
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/FieldLayout.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 \*Represents a field layout encoded into a single bytes32.
 From left to right, the bytes are laid out as follows:
 
@@ -534,6 +546,9 @@ type FieldLayout is bytes32;
 ## HookInstance
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Hook.sol)
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _Library for interacting with Hook instances._
 
@@ -610,6 +625,9 @@ function getBitmap(Hook self) internal pure returns (uint8);
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Hook.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 _Library for encoding hooks and filtering hooks from a list by address._
 
 ### Functions
@@ -670,6 +688,9 @@ type Hook is bytes21;
 ## Memory
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Memory.sol)
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 A library for performing low-level memory operations.
 
@@ -735,6 +756,9 @@ uint256 constant TYPE_BITS = 2 * 8;
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/ResourceId.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 _Provides functions to extract data from a ResourceId._
 
 ### Functions
@@ -762,6 +786,9 @@ function getType(ResourceId resourceId) internal pure returns (bytes2);
 ## ResourceIdLib
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/ResourceId.sol)
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _Provides functions to encode data into the ResourceId_
 
@@ -791,6 +818,9 @@ function encode(bytes2 typeId, bytes30 name) internal pure returns (ResourceId);
 ## ResourceId
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/ResourceId.sol)
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _A ResourceId is a bytes32 data structure that consists of a
 type and a name_
@@ -1013,6 +1043,9 @@ error SchemaLib_StaticTypeAfterDynamicType();
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Schema.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 _Defines and handles the encoding/decoding of Schemas which describe the layout of data structures.
 2 bytes length of all the static (in size) fields in the schema
 1 byte for number of static size fields
@@ -1026,6 +1059,9 @@ type Schema is bytes32;
 ## SliceInstance
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Slice.sol)
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 ### Functions
 
@@ -1116,6 +1152,9 @@ function toBytes32(Slice self) internal pure returns (bytes32 result);
 ## SliceLib
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Slice.sol)
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 ### State Variables
 
@@ -1211,6 +1250,9 @@ type Slice is uint256;
 ## Storage
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Storage.sol)
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 _Provides functions for low-level storage manipulation, including storing and retrieving bytes._
 
@@ -1369,6 +1411,9 @@ function loadField(uint256 storagePointer, uint256 length, uint256 offset) inter
 
 #### WORD_SIZE
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 _This file provides constants for better handling of EVM and Schema related functionalities._
 
 _Represents the total byte length of an EVM word._
@@ -1421,6 +1466,9 @@ uint256 constant MAX_DYNAMIC_FIELDS = 5;
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/constants.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 This library provides constant offsets for FieldLayout and Schema metadata.
 
 _FieldLayout and Schema utilize the same offset values for metadata._
@@ -1455,6 +1503,9 @@ uint256 internal constant NUM_DYNAMIC_FIELDS = (WORD_SIZE - 2 - 1 - 1) * BYTE_TO
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/rightMask.sol)
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 Utility functions to manage bytes in memory.
 
 Computes a right-aligned byte mask based on the provided byte length.
@@ -1484,6 +1535,9 @@ function rightMask(uint256 byteLength) pure returns (uint256 mask);
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeHookTypes.sol)
 
 #### BEFORE_SET_RECORD
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 Constants for enabling store hooks.
 
@@ -1594,6 +1648,9 @@ uint8 constant AFTER_ALL = AFTER_SET_RECORD |
 
 #### RESOURCE_TABLE
 
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+
 Constants representing unique identifiers for different resource types.
 
 _These identifiers can be used to distinguish between various resource types._
@@ -1617,6 +1674,9 @@ bytes2 constant RESOURCE_OFFCHAIN_TABLE = "ot";
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/version.sol)
 
 #### STORE_VERSION
+
+**Author:**
+MUD (https://mud.dev) by Lattice (https://lattice.xyz)
 
 Contains a constant representing the version of the store.
 

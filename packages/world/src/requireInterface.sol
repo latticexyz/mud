@@ -7,7 +7,7 @@ import { IWorldErrors } from "./IWorldErrors.sol";
 
 /**
  * @title Interface Validator
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice Utility function to validate interface support on a given contract using ERC-165.
  * @dev This function uses the ERC-165 standard's `supportsInterface` to check if a given contract supports a specific interface.
  */

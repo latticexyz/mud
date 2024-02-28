@@ -6,7 +6,7 @@ import { IERC165 } from "./IERC165.sol";
 
 /**
  * @title SystemHook
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev The abstract SystemHook contract implements the ERC-165 supportsInterface function for ISystemHook.
  * System hooks are used for executing additional logic before or after certain system actions.
  */

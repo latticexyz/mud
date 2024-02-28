@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 /**
  * @title Bytes
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice Utility functions for bytes.
  */
 library Bytes {

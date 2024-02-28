@@ -19,7 +19,7 @@ import { Balances } from "./codegen/tables/Balances.sol";
 
 /**
  * @title SystemCall
- * @author MUD
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev The SystemCall library provides functions for interacting with systems using their unique Resource IDs.
  * It ensures the necessary access control checks, handles system hooks, and performs system calls.
  */
