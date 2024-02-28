@@ -9,6 +9,6 @@ import { IStoreRegistration } from "./IStoreRegistration.sol";
  * @title IStore
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  */
-interface IStore is IStoreData, IStoreRegistration {
+interface IStore is IStoreData, IStoreRegistration, IStoreErrors {
 
 }
