@@ -8,14 +8,14 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
-import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
+import { Store_TableAlreadyExists, Store_InvalidResourceType } from "@latticexyz/store/src/errors.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
-import { Tables, ResourceIds, TablesTableId } from "@latticexyz/store/src/codegen/index.sol";
+import { Tables, ResourceIds } from "@latticexyz/store/src/codegen/index.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { ALL, BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { RevertSubscriber } from "@latticexyz/store/test/RevertSubscriber.sol";
@@ -32,7 +32,7 @@ import { SystemHook } from "../src/SystemHook.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
 import { Module, IModule } from "../src/Module.sol";
 
-import { NamespaceOwner, NamespaceOwnerTableId } from "../src/codegen/tables/NamespaceOwner.sol";
+import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
 
 import { AccessManagementSystem } from "../src/modules/init/implementations/AccessManagementSystem.sol";
@@ -259,17 +259,17 @@ contract WorldTest is Test, GasReporter {
     }
 
     // Should have registered the table data table (fka schema table)
-    assertEq(FieldLayout.unwrap(Tables.getFieldLayout(TablesTableId)), FieldLayout.unwrap(Tables.getFieldLayout()));
-    assertEq(Tables.getAbiEncodedKeyNames(TablesTableId), abi.encode(Tables.getKeyNames()));
-    assertEq(Tables.getAbiEncodedFieldNames(TablesTableId), abi.encode(Tables.getFieldNames()));
+    assertEq(FieldLayout.unwrap(Tables.getFieldLayout(Tables._tableId)), FieldLayout.unwrap(Tables._fieldLayout));
+    assertEq(Tables.getAbiEncodedKeyNames(Tables._tableId), abi.encode(Tables.getKeyNames()));
+    assertEq(Tables.getAbiEncodedFieldNames(Tables._tableId), abi.encode(Tables.getFieldNames()));
 
     // Should have registered the namespace owner table
     assertEq(
-      FieldLayout.unwrap(Tables.getFieldLayout(NamespaceOwnerTableId)),
-      FieldLayout.unwrap(NamespaceOwner.getFieldLayout())
+      FieldLayout.unwrap(Tables.getFieldLayout(NamespaceOwner._tableId)),
+      FieldLayout.unwrap(NamespaceOwner._fieldLayout)
     );
-    assertEq(Tables.getAbiEncodedKeyNames(NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));
-    assertEq(Tables.getAbiEncodedFieldNames(NamespaceOwnerTableId), abi.encode(NamespaceOwner.getFieldNames()));
+    assertEq(Tables.getAbiEncodedKeyNames(NamespaceOwner._tableId), abi.encode(NamespaceOwner.getKeyNames()));
+    assertEq(Tables.getAbiEncodedFieldNames(NamespaceOwner._tableId), abi.encode(NamespaceOwner.getFieldNames()));
 
     // Expect it to not be possible to initialize the World again
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AlreadyInitialized.selector));
@@ -508,7 +508,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when registering an existing table
     vm.expectRevert(
-      abi.encodeWithSelector(IStoreErrors.Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
+      abi.encodeWithSelector(Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
     );
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
@@ -595,7 +595,7 @@ contract WorldTest is Test, GasReporter {
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "testTable" });
     world.registerTable(
       tableId,
-      Bool.getFieldLayout(),
+      Bool._fieldLayout,
       defaultKeySchema,
       Bool.getValueSchema(),
       new string[](1),
@@ -704,7 +704,7 @@ contract WorldTest is Test, GasReporter {
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "namespace", name: "name" });
     world.registerTable(
       tableId,
-      Bool.getFieldLayout(),
+      Bool._fieldLayout,
       defaultKeySchema,
       Bool.getValueSchema(),
       new string[](1),
@@ -732,7 +732,7 @@ contract WorldTest is Test, GasReporter {
     // Expect an error when trying to register a table at the same ID
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.Store_InvalidResourceType.selector,
+        Store_InvalidResourceType.selector,
         RESOURCE_TABLE,
         systemId,
         string(abi.encodePacked(systemId))
@@ -740,7 +740,7 @@ contract WorldTest is Test, GasReporter {
     );
     world.registerTable(
       systemId,
-      Bool.getFieldLayout(),
+      Bool._fieldLayout,
       defaultKeySchema,
       Bool.getValueSchema(),
       new string[](1),
@@ -749,11 +749,11 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to register a new table at an existing table ID
     vm.expectRevert(
-      abi.encodeWithSelector(IStoreErrors.Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
+      abi.encodeWithSelector(Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
     );
     world.registerTable(
       tableId,
-      Bool.getFieldLayout(),
+      Bool._fieldLayout,
       defaultKeySchema,
       Bool.getValueSchema(),
       new string[](1),
@@ -779,7 +779,7 @@ contract WorldTest is Test, GasReporter {
     // Register a new table
     world.registerTable(
       tableId,
-      TwoFields.getFieldLayout(),
+      TwoFields._fieldLayout,
       TwoFields.getKeySchema(),
       TwoFields.getValueSchema(),
       new string[](0),
@@ -809,7 +809,7 @@ contract WorldTest is Test, GasReporter {
     bytes14 namespace = "testSetField";
     bytes16 name = "testTable";
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
-    FieldLayout fieldLayout = Bool.getFieldLayout();
+    FieldLayout fieldLayout = Bool._fieldLayout;
     Schema valueSchema = Bool.getValueSchema();
     world.registerNamespace(tableId.getNamespaceId());
 
@@ -839,7 +839,7 @@ contract WorldTest is Test, GasReporter {
     bytes14 namespace = "testPushField";
     bytes16 name = "testTable";
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
-    FieldLayout fieldLayout = AddressArray.getFieldLayout();
+    FieldLayout fieldLayout = AddressArray._fieldLayout;
     Schema valueSchema = AddressArray.getValueSchema();
 
     // Register a new table
@@ -885,7 +885,7 @@ contract WorldTest is Test, GasReporter {
     bytes14 namespace = "testDeleteReco";
     bytes16 name = "testTable";
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
-    FieldLayout fieldLayout = Bool.getFieldLayout();
+    FieldLayout fieldLayout = Bool._fieldLayout;
     Schema valueSchema = Bool.getValueSchema();
 
     // Register a new table
@@ -1268,7 +1268,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterStoreHook() public {
-    FieldLayout fieldLayout = Bool.getFieldLayout();
+    FieldLayout fieldLayout = Bool._fieldLayout;
     Schema valueSchema = Bool.getValueSchema();
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "testTable" });
 
@@ -1335,7 +1335,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testUnregisterStoreHook() public {
-    FieldLayout fieldLayout = Bool.getFieldLayout();
+    FieldLayout fieldLayout = Bool._fieldLayout;
     Schema valueSchema = Bool.getValueSchema();
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "testTable" });
 
@@ -1522,7 +1522,7 @@ contract WorldTest is Test, GasReporter {
     world.registerNamespace(tableId.getNamespaceId());
     world.registerTable(
       tableId,
-      Bool.getFieldLayout(),
+      Bool._fieldLayout,
       defaultKeySchema,
       Bool.getValueSchema(),
       new string[](1),
@@ -1551,7 +1551,7 @@ contract WorldTest is Test, GasReporter {
     world.registerNamespace(tableId.getNamespaceId());
     world.registerTable(
       tableId,
-      Bool.getFieldLayout(),
+      Bool._fieldLayout,
       defaultKeySchema,
       Bool.getValueSchema(),
       new string[](1),

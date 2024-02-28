@@ -23,6 +23,11 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
       content = fixInheritence(content);
+      content = addSampleCodeFunction(content, "registerTable", "/store/tables#manually-register-a-table");
+      content = addSampleCodeFunction(content, "registerStoreHook", "/store/store-hooks");
+      content = addSampleCodeFunction(content, "setStoreAddress", "/store/table-libraries#storeswitch");
+      content = addSampleCodeContract(content, "StoreSwitch", "/store/table-libraries#storeswitch");
+
       return content.replaceAll("SET DATA\n", "").replaceAll("GET DATA\n", "").replaceAll("HELPER FUNCTIONS\n", "");
     },
   },
@@ -30,8 +35,8 @@ const PUBLIC_APIS: PublicApis = {
     inputFiles: [
       { source: "store/src/IStore.sol" },
       { source: "store/src/StoreEvents.sol" },
-      { source: "store/src/IStoreErrors.sol" },
       { source: "store/src/HelloStore.sol" },
+      { source: "store/src/errors.sol" },
       { source: "store/src/IStoreData.sol" },
       { source: "store/src/IStoreRead.sol" },
       { source: "store/src/IStoreWrite.sol" },
@@ -41,6 +46,9 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
       content = fixInheritence(content);
+      content = addSampleCodeFunction(content, "registerTable", "/store/tables#manually-register-a-table");
+      content = addSampleCodeFunction(content, "registerStoreHook", "/store/store-hooks");
+
       return content;
     },
   },
@@ -54,6 +62,8 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
       content = fixInheritence(content);
+      content = addSampleCodeContract(content, "IStoreHook", "/store/store-hooks#store-hook-contract");
+
       return content;
     },
   },
@@ -80,6 +90,8 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
       content = fixInheritence(content);
+      content = addSampleCodeFunction(content, "encode", "/world/namespaces-access-control#modifying-access-control");
+
       return content
         .replace("## Constants", "## ResourceId.sol constants")
         .replace("## Constants", "## constants.sol")
@@ -98,6 +110,7 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
+
       return content;
     },
   },
@@ -125,6 +138,8 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
+      content = addSampleCodeContract(content, "IDelegationControl", "/world/account-delegation");
+
       return content;
     },
   },
@@ -154,6 +169,7 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
+
       return content;
     },
   },
@@ -185,6 +201,8 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
+      content = addSampleCodeFunction(content, "call", "/world/systems#using-call");
+
       return content;
     },
   },
@@ -203,6 +221,8 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
+      content = addSampleCodeFunction(content, "call", "/world/systems#using-call");
+
       return content
         .replace("StoreData", "[StoreData](/store/reference/store-core#storedata)")
         .replace(/#### _installRootModule((.|\n)*?)#### setRecord/m, "#### setRecord");
@@ -221,7 +241,6 @@ const PUBLIC_APIS: PublicApis = {
       { source: "world/src/modules/init/implementations/ModuleInstallationSystem.sol" },
       { source: "world/src/modules/init/RegistrationSystem.sol" },
       { source: "world/src/modules/init/implementations/WorldRegistrationSystem.sol" },
-      { source: "store/src/IStoreErrors.sol" },
 
       // Back to adding contracts and interfaces to the docs.
       { source: "world/src/IWorldKernel.sol" },
@@ -232,6 +251,27 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
+      content = addSampleCodeFunction(
+        content,
+        "grantAccess",
+        "/world/namespaces-access-control#modifying-access-control"
+      );
+      content = addSampleCodeFunction(
+        content,
+        "revokeAccess",
+        "/world/namespaces-access-control#modifying-access-control"
+      );
+      content = addSampleCodeFunction(content, "registerTable", "/store/tables#manually-register-a-table");
+      content = addSampleCodeFunction(content, "call", "/world/systems#using-call");
+      content = addSampleCodeFunction(content, "registerNamespace", "/world/systems#registering-systems");
+      content = addSampleCodeFunction(content, "registerSystem", "/world/systems#registering-systems");
+      content = addSampleCodeFunction(
+        content,
+        "registerRootFunctionSelector",
+        "/world/function-selectors#root-function-selectors"
+      );
+      content = addSampleCodeFunction(content, "transferBalanceToAddress", "/world/balance");
+
       return content
         .replace("IStore", "[IStore](/store/reference/store#istore)")
         .replaceAll("This is an autogenerated file; do not edit manually", "")
@@ -247,8 +287,7 @@ const PUBLIC_APIS: PublicApis = {
         .replace(/## BatchCallSystem((.|\n)*?)### Functions/m, "")
         .replace(/## ModuleInstallationSystem((.|\n)*?)### Functions/m, "")
         .replace(/## RegistrationSystem((.|\n)*?)### Functions/m, "")
-        .replace(/## WorldRegistrationSystem((.|\n)*?)### Functions/m, "")
-        .replace(/## IStoreErrors((.|\n)*?)### Errors/m, "### Errors");
+        .replace(/## WorldRegistrationSystem((.|\n)*?)### Functions/m, "");
     },
   },
   "world/reference/world-context.mdx": {
@@ -275,6 +314,8 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
+      content = addSampleCodeFunction(content, "encodeNamespace", "/world/systems#registering-systems");
+
       return content
         .replace("Constants", "WorldResourceId.sol constants")
         .replace("Constants", "worldResourceTypes.sol constants");
@@ -322,6 +363,16 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
+      content = addSampleCodeFunction(content, "registerNamespace", "/world/systems#registering-systems");
+      content = addSampleCodeFunction(content, "registerSystem", "/world/systems#registering-systems");
+      content = addSampleCodeFunction(content, "registerFunctionSelector", "/world/function-selectors");
+      content = addSampleCodeFunction(
+        content,
+        "registerRootFunctionSelector",
+        "/world/function-selectors#root-function-selectors"
+      );
+      content = addSampleCodeFunction(content, "transferBalanceToAddress", "/world/balance");
+
       return content.replace("Constants", "constants.sol");
     },
   },
@@ -359,7 +410,6 @@ const inheritence = [
   { contract: "IStoreData", link: "/store/reference/store#istoredata" },
   { contract: "IStoreRead", link: "/store/reference/store#istoreread" },
   { contract: "IStoreWrite", link: "/store/reference/store#istorewrite" },
-  { contract: "IStoreErrors", link: "/store/reference/store#istoreerrors" },
   { contract: "IStoreRegistration", link: "/store/reference/store#istoreregistration" },
   { contract: "Module", link: "/world/reference/module#module" },
   { contract: "System", link: "/world/reference/system#system" },
@@ -396,6 +446,31 @@ const inheritence = [
   { contract: "LimitedCallContext", link: "/world/reference/internal/init-module#limitedcallcontext" },
   { contract: "IERC165-supportsInterface", link: "/world/reference/internal/erc165-external#supportsinterface" },
 ];
+
+function addSampleCodeContract(content: string, contract: string, url: string): string {
+  const regexp = RegExp(`#+ ${contract}[\n ]+\\[Git Source\\]\\(.*\\)`);
+  return content.replace(regexp, (str) =>
+    str
+      .replace(
+        ")",
+        `) |
+                     | - | - |`
+      )
+      .replace("[Git Source](", `| [Usage Sample](${url}) | [Git Source](`)
+  );
+}
+
+function addSampleCodeFunction(content: string, heading: string, url: string): string {
+  const regexp = RegExp(`#+ ${heading}\n`);
+  return content.replace(regexp, (str) =>
+    str.replace(
+      "\n",
+      `
+   [Usage Sample](${url})
+   `
+    )
+  );
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 // SHOULDN'T HAVE TO TOUCH CODE BELOW THIS

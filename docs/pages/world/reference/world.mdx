@@ -44,7 +44,10 @@ constructor();
 
 #### prohibitDirectCallback
 
-_Prevents the World contract from calling itself._
+_Prevents the World contract from calling itself.
+If the World is able to call itself via `delegatecall` from a system, the system would have root access to context like internal tables, causing a potential vulnerability.
+Ideally this should not happen because all operations to internal tables happen as internal library calls, and all calls to root systems happen as a `delegatecall` to the system.
+However, since this is an important invariant, we make it explicit by reverting if `msg.sender` is `address(this)` in all `World` methods._
 
 ```solidity
 modifier prohibitDirectCallback();
@@ -93,11 +96,11 @@ _Requires the caller to have access to the table's namespace or name (encoded in
 
 ```solidity
 function setRecord(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    bytes calldata staticData,
-    PackedCounter encodedLengths,
-    bytes calldata dynamicData
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  bytes calldata staticData,
+  PackedCounter encodedLengths,
+  bytes calldata dynamicData
 ) public virtual prohibitDirectCallback;
 ```
 
@@ -116,10 +119,12 @@ function setRecord(
 Modifies static (fixed length) data in a record at the specified position.
 
 ```solidity
-function spliceStaticData(ResourceId tableId, bytes32[] calldata keyTuple, uint48 start, bytes calldata data)
-    public
-    virtual
-    prohibitDirectCallback;
+function spliceStaticData(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint48 start,
+  bytes calldata data
+) public virtual prohibitDirectCallback;
 ```
 
 **Parameters**
@@ -137,12 +142,12 @@ Modifies dynamic (variable length) data in a record for a specified field.
 
 ```solidity
 function spliceDynamicData(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 dynamicFieldIndex,
-    uint40 startWithinField,
-    uint40 deleteCount,
-    bytes calldata data
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 dynamicFieldIndex,
+  uint40 startWithinField,
+  uint40 deleteCount,
+  bytes calldata data
 ) public virtual prohibitDirectCallback;
 ```
 
@@ -162,10 +167,12 @@ function spliceDynamicData(
 Writes data into a specified field in the table identified by `tableId`.
 
 ```solidity
-function setField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex, bytes calldata data)
-    public
-    virtual
-    prohibitDirectCallback;
+function setField(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 fieldIndex,
+  bytes calldata data
+) public virtual prohibitDirectCallback;
 ```
 
 **Parameters**
@@ -183,11 +190,11 @@ Writes data into a specified field in the table, adhering to a specific layout.
 
 ```solidity
 function setField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    bytes calldata data,
-    FieldLayout fieldLayout
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 fieldIndex,
+  bytes calldata data,
+  FieldLayout fieldLayout
 ) public virtual prohibitDirectCallback;
 ```
 
@@ -209,11 +216,11 @@ _Requires the caller to have access to the table's namespace or name (encoded in
 
 ```solidity
 function setStaticField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    bytes calldata data,
-    FieldLayout fieldLayout
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 fieldIndex,
+  bytes calldata data,
+  FieldLayout fieldLayout
 ) public virtual prohibitDirectCallback;
 ```
 
@@ -232,10 +239,12 @@ function setStaticField(
 Writes data into a dynamic (varible length) field in the table identified by `tableId`.
 
 ```solidity
-function setDynamicField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 dynamicFieldIndex, bytes calldata data)
-    public
-    virtual
-    prohibitDirectCallback;
+function setDynamicField(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 dynamicFieldIndex,
+  bytes calldata data
+) public virtual prohibitDirectCallback;
 ```
 
 **Parameters**
@@ -253,10 +262,10 @@ Appends data to the end of a dynamic (variable length) field in the table identi
 
 ```solidity
 function pushToDynamicField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 dynamicFieldIndex,
-    bytes calldata dataToPush
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 dynamicFieldIndex,
+  bytes calldata dataToPush
 ) public virtual prohibitDirectCallback;
 ```
 
@@ -275,10 +284,10 @@ Removes a specified amount of data from the end of a dynamic (variable length) f
 
 ```solidity
 function popFromDynamicField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 dynamicFieldIndex,
-    uint256 byteLengthToPop
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 dynamicFieldIndex,
+  uint256 byteLengthToPop
 ) public virtual prohibitDirectCallback;
 ```
 
@@ -310,6 +319,8 @@ function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple) public vi
 
 #### call
 
+[Usage Sample](/world/systems#using-call)
+
 SYSTEM CALLS
 
 Calls a system with a given system ID.
@@ -317,12 +328,10 @@ Calls a system with a given system ID.
 _If system is private, caller must have appropriate access._
 
 ```solidity
-function call(ResourceId systemId, bytes memory callData)
-    external
-    payable
-    virtual
-    prohibitDirectCallback
-    returns (bytes memory);
+function call(
+  ResourceId systemId,
+  bytes memory callData
+) external payable virtual prohibitDirectCallback returns (bytes memory);
 ```
 
 **Parameters**
@@ -345,12 +354,11 @@ Calls a system with a given system ID on behalf of the given delegator.
 _If system is private, caller must have appropriate access._
 
 ```solidity
-function callFrom(address delegator, ResourceId systemId, bytes memory callData)
-    external
-    payable
-    virtual
-    prohibitDirectCallback
-    returns (bytes memory);
+function callFrom(
+  address delegator,
+  ResourceId systemId,
+  bytes memory callData
+) external payable virtual prohibitDirectCallback returns (bytes memory);
 ```
 
 **Parameters**

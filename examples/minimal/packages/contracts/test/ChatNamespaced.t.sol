@@ -7,7 +7,7 @@ import { getKeysWithValue } from "@latticexyz/world-modules/src/modules/keyswith
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { MessageTable, MessageTableTableId } from "../src/codegen/index.sol";
+import { MessageTable } from "../src/codegen/index.sol";
 import { IChatNamespacedSystem } from "../src/interfaces/IChatNamespacedSystem.sol";
 
 contract ChatNamespacedTest is MudTest {
@@ -16,7 +16,7 @@ contract ChatNamespacedTest is MudTest {
     string memory value = "test";
     vm.expectEmit(true, true, true, true);
     emit StoreCore.Store_SetRecord(
-      MessageTableTableId,
+      MessageTable._tableId,
       keyTuple,
       new bytes(0),
       MessageTable.encodeLengths(value),

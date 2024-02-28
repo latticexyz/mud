@@ -10,8 +10,9 @@ interface IWorldFactory {
   /**
    * @dev Emitted when a new World contract is deployed.
    * @param newContract The address of the newly deployed World contract.
+   * @param salt User defined salt for deterministic world addresses across chains.
    */
-  event WorldDeployed(address indexed newContract);
+  event WorldDeployed(address indexed newContract, uint256 salt);
 
   /**
    * @notice Deploys a new World contract.

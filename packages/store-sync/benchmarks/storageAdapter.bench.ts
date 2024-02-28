@@ -14,7 +14,6 @@ describe.each([
 
   bench("recs: `storageAdapter`", async () => {
     const { storageAdapter } = createRecsStorage();
-
     for (const block of blocks) {
       await storageAdapter(block);
     }
@@ -22,7 +21,6 @@ describe.each([
 
   bench("zustand: `storageAdapter`", async () => {
     const { storageAdapter } = createZustandStorage();
-
     for (const block of blocks) {
       await storageAdapter(block);
     }
@@ -30,7 +28,6 @@ describe.each([
 
   bench("sqlite: `storageAdapter`", async () => {
     const { storageAdapter } = await createSqliteStorage();
-
     for (const block of blocks) {
       await storageAdapter(block);
     }

@@ -1,4 +1,4 @@
-import { Client, getFunctionSelector, parseAbiItem } from "viem";
+import { Client, toFunctionSelector, parseAbiItem } from "viem";
 import { WorldDeploy, WorldFunction, worldTables } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
@@ -34,7 +34,7 @@ export async function getFunctions({
   // TODO: parallelize with a bulk getRecords
   const functions = await Promise.all(
     signatures.map(async (signature) => {
-      const selector = getFunctionSelector(signature);
+      const selector = toFunctionSelector(signature);
       const { systemId, systemFunctionSelector } = await getTableValue({
         client,
         worldDeploy,

@@ -4,8 +4,8 @@ pragma solidity >=0.8.24;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
-import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
-import { ResourceIds, ResourceIdsTableId } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+import { Store_TableNotFound } from "@latticexyz/store/src/errors.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 
@@ -28,7 +28,7 @@ contract EchoSystem is System {
   }
 
   function readTable() public view returns (Schema) {
-    return StoreCore.getKeySchema(ResourceIdsTableId);
+    return StoreCore.getKeySchema(ResourceIds._tableId);
   }
 
   function echo(string memory message) public pure returns (string memory) {
@@ -221,9 +221,9 @@ contract SystemSwitchTest is Test, GasReporter {
     // Call reverts because the non-root system storage does not have table schemas
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.Store_TableNotFound.selector,
-        ResourceIdsTableId,
-        string(abi.encodePacked(ResourceIdsTableId))
+        Store_TableNotFound.selector,
+        ResourceIds._tableId,
+        string(abi.encodePacked(ResourceIds._tableId))
       )
     );
     world.call(systemAId, abi.encodeCall(EchoSystem.call, (systemBId, abi.encodeCall(EchoSystem.readTable, ()))));
@@ -268,9 +268,9 @@ contract SystemSwitchTest is Test, GasReporter {
     // Call reverts because the non-root system storage does not have table schemas
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.Store_TableNotFound.selector,
-        ResourceIdsTableId,
-        string(abi.encodePacked(ResourceIdsTableId))
+        Store_TableNotFound.selector,
+        ResourceIds._tableId,
+        string(abi.encodePacked(ResourceIds._tableId))
       )
     );
     world.call(systemAId, abi.encodeCall(EchoSystem.call, (systemBId, abi.encodeCall(EchoSystem.readTable, ()))));

@@ -125,10 +125,11 @@ Transfer balance to another namespace in the World.
 _Requires the caller to have access to the source namespace and ensures the destination namespace type is valid._
 
 ```solidity
-function transferBalanceToNamespace(ResourceId fromNamespaceId, ResourceId toNamespaceId, uint256 amount)
-    public
-    virtual
-    onlyDelegatecall;
+function transferBalanceToNamespace(
+  ResourceId fromNamespaceId,
+  ResourceId toNamespaceId,
+  uint256 amount
+) public virtual onlyDelegatecall;
 ```
 
 **Parameters**
@@ -141,15 +142,18 @@ function transferBalanceToNamespace(ResourceId fromNamespaceId, ResourceId toNam
 
 #### transferBalanceToAddress
 
+[Usage Sample](/world/balance)
+
 Transfer balance out of the World to a specific address.
 
 _Requires the caller to have access to the source namespace and ensures sufficient balance before transfer._
 
 ```solidity
-function transferBalanceToAddress(ResourceId fromNamespaceId, address toAddress, uint256 amount)
-    public
-    virtual
-    onlyDelegatecall;
+function transferBalanceToAddress(
+  ResourceId fromNamespaceId,
+  address toAddress,
+  uint256 amount
+) public virtual onlyDelegatecall;
 ```
 
 **Parameters**
@@ -180,12 +184,12 @@ Existing namespaces require the caller to be the owner for table registration._
 
 ```solidity
 function registerTable(
-    ResourceId tableId,
-    FieldLayout fieldLayout,
-    Schema keySchema,
-    Schema valueSchema,
-    string[] calldata keyNames,
-    string[] calldata fieldNames
+  ResourceId tableId,
+  FieldLayout fieldLayout,
+  Schema keySchema,
+  Schema valueSchema,
+  string[] calldata keyNames,
+  string[] calldata fieldNames
 ) public virtual onlyDelegatecall;
 ```
 
@@ -208,10 +212,11 @@ _The caller must be the owner of the namespace to which the table belongs.
 The hook must conform to the IStoreHook interface._
 
 ```solidity
-function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap)
-    public
-    virtual
-    onlyDelegatecall;
+function registerStoreHook(
+  ResourceId tableId,
+  IStoreHook hookAddress,
+  uint8 enabledHooksBitmap
+) public virtual onlyDelegatecall;
 ```
 
 **Parameters**
@@ -257,10 +262,7 @@ Make batch calls to multiple systems into a single transaction.
 _Iterates through an array of system calls, executes them, and returns an array of return data._
 
 ```solidity
-function batchCall(SystemCallData[] calldata systemCalls)
-    public
-    onlyDelegatecall
-    returns (bytes[] memory returnDatas);
+function batchCall(SystemCallData[] calldata systemCalls) public onlyDelegatecall returns (bytes[] memory returnDatas);
 ```
 
 **Parameters**
@@ -282,10 +284,9 @@ Make batch calls from specific addresses to multiple systems in a single transac
 _Iterates through an array of system calls with specified 'from' addresses, executes them, and returns an array of return data._
 
 ```solidity
-function batchCallFrom(SystemCallFromData[] calldata systemCalls)
-    public
-    onlyDelegatecall
-    returns (bytes[] memory returnDatas);
+function batchCallFrom(
+  SystemCallFromData[] calldata systemCalls
+) public onlyDelegatecall returns (bytes[] memory returnDatas);
 ```
 
 **Parameters**
@@ -313,6 +314,8 @@ _This contract provides functions related to registering resources other than ta
 
 #### registerNamespace
 
+[Usage Sample](/world/systems#registering-systems)
+
 Registers a new namespace
 
 _Creates a new namespace resource with the given ID_
@@ -334,10 +337,11 @@ Registers a new system hook
 _Adds a new hook for the system at the provided system ID_
 
 ```solidity
-function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap)
-    public
-    virtual
-    onlyDelegatecall;
+function registerSystemHook(
+  ResourceId systemId,
+  ISystemHook hookAddress,
+  uint8 enabledHooksBitmap
+) public virtual onlyDelegatecall;
 ```
 
 **Parameters**
@@ -367,6 +371,8 @@ function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) publ
 
 #### registerSystem
 
+[Usage Sample](/world/systems#registering-systems)
+
 Registers a system
 
 _Registers or upgrades a system at the given ID
@@ -391,15 +397,17 @@ function registerSystem(ResourceId systemId, System system, bool publicAccess) p
 
 #### registerFunctionSelector
 
+[Usage Sample](/world/function-selectors)
+
 Registers a new World function selector
 
 _Creates a mapping between a World function and its associated system function_
 
 ```solidity
-function registerFunctionSelector(ResourceId systemId, string memory systemFunctionSignature)
-    public
-    onlyDelegatecall
-    returns (bytes4 worldFunctionSelector);
+function registerFunctionSelector(
+  ResourceId systemId,
+  string memory systemFunctionSignature
+) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
 ```
 
 **Parameters**
@@ -417,15 +425,17 @@ function registerFunctionSelector(ResourceId systemId, string memory systemFunct
 
 #### registerRootFunctionSelector
 
+[Usage Sample](/world/function-selectors#root-function-selectors)
+
 Registers a root World function selector
 
 _Creates a mapping for a root World function without namespace or name prefix_
 
 ```solidity
 function registerRootFunctionSelector(
-    ResourceId systemId,
-    string memory worldFunctionSignature,
-    bytes4 systemFunctionSelector
+  ResourceId systemId,
+  string memory worldFunctionSignature,
+  bytes4 systemFunctionSelector
 ) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
 ```
 
@@ -450,9 +460,11 @@ Registers a delegation for the caller
 _Creates a new delegation from the caller to the specified delegatee_
 
 ```solidity
-function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData)
-    public
-    onlyDelegatecall;
+function registerDelegation(
+  address delegatee,
+  ResourceId delegationControlId,
+  bytes memory initCallData
+) public onlyDelegatecall;
 ```
 
 **Parameters**
@@ -486,9 +498,11 @@ Registers a delegation for a namespace
 _Sets up a new delegation control for a specific namespace_
 
 ```solidity
-function registerNamespaceDelegation(ResourceId namespaceId, ResourceId delegationControlId, bytes memory initCallData)
-    public
-    onlyDelegatecall;
+function registerNamespaceDelegation(
+  ResourceId namespaceId,
+  ResourceId delegationControlId,
+  bytes memory initCallData
+) public onlyDelegatecall;
 ```
 
 **Parameters**

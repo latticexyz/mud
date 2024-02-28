@@ -24,9 +24,9 @@ import { TokenURI } from "./tables/TokenURI.sol";
 import { ERC721Registry } from "./tables/ERC721Registry.sol";
 import { ERC721Metadata, ERC721MetadataData } from "./tables/ERC721Metadata.sol";
 
-contract ERC721Module is Module {
-  error ERC721Module_InvalidNamespace(bytes14 namespace);
+error ERC721Module_InvalidNamespace(bytes14 namespace);
 
+contract ERC721Module is Module {
   address immutable registrationLibrary = address(new ERC721ModuleRegistrationLibrary());
 
   function install(bytes memory encodedArgs) public {

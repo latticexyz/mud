@@ -9,7 +9,7 @@ import { getTransaction } from "./getTransaction";
 import { getTransactionReceipt } from "./getTransactionReceipt";
 import { getTransactionResult } from "./getTransactionResult";
 import { ErrorTrace } from "../ErrorTrace";
-import { ContractWrite, hexToResource } from "@latticexyz/common";
+import { ContractWrite, hexToResource, resourceToLabel } from "@latticexyz/common";
 import { useDevToolsContext } from "../DevToolsContext";
 import { hexKeyTupleToEntity } from "@latticexyz/store-sync/recs";
 
@@ -149,9 +149,7 @@ export function WriteSummary({ write }: Props) {
                 // TODO: dedupe this with logs table so we can get both rendering the same
                 return (
                   <tr key={i}>
-                    <td className="whitespace-nowrap overflow-hidden text-ellipsis">
-                      {table.namespace}:{table.name}
-                    </td>
+                    <td className="whitespace-nowrap overflow-hidden text-ellipsis">{resourceToLabel(table)}</td>
                     <td className="whitespace-nowrap">
                       {eventName === "Store_SetRecord" ? <span className="text-green-500 font-bold">=</span> : null}
                       {eventName === "Store_SpliceStaticData" || eventName === "Store_SpliceDynamicData" ? (

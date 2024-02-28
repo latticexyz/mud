@@ -65,10 +65,6 @@ export function renderTable(options: RenderTableOptions) {
         : ""
     }
 
-    ${staticResourceData ? renderTableId(staticResourceData) : ""}
-
-    ${renderFieldLayout(fields)}
-
     ${
       !structName
         ? ""
@@ -80,13 +76,9 @@ export function renderTable(options: RenderTableOptions) {
     }
 
     library ${libraryName} {
-      /**
-       * @notice Get the table values' field layout.
-       * @return _fieldLayout The field layout for the table.
-       */
-      function getFieldLayout() internal pure returns (FieldLayout) {
-        return _fieldLayout;
-      }
+      ${staticResourceData ? renderTableId(staticResourceData) : ""}
+  
+      ${renderFieldLayout(fields)}
 
       /** 
        * @notice Get the table's key schema.

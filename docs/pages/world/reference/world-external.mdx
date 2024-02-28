@@ -30,14 +30,16 @@ function storeVersion() public pure returns (bytes32);
 
 #### registerTable
 
+[Usage Sample](/store/tables#manually-register-a-table)
+
 ```solidity
 function registerTable(
-    ResourceId tableId,
-    FieldLayout fieldLayout,
-    Schema keySchema,
-    Schema valueSchema,
-    string[] calldata keyNames,
-    string[] calldata fieldNames
+  ResourceId tableId,
+  FieldLayout fieldLayout,
+  Schema keySchema,
+  Schema valueSchema,
+  string[] calldata keyNames,
+  string[] calldata fieldNames
 ) external;
 ```
 
@@ -55,6 +57,8 @@ function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) externa
 
 #### grantAccess
 
+[Usage Sample](/world/namespaces-access-control#modifying-access-control)
+
 Grant access to the resource at the given resource ID.
 
 _Requires the caller to own the namespace._
@@ -71,6 +75,8 @@ function grantAccess(ResourceId resourceId, address grantee) public virtual only
 | `grantee`    | `address`    | The address to which access should be granted. |
 
 #### revokeAccess
+
+[Usage Sample](/world/namespaces-access-control#modifying-access-control)
 
 Revoke access from the resource at the given resource ID.
 
@@ -127,10 +133,11 @@ Transfer balance to another namespace in the World.
 _Requires the caller to have access to the source namespace and ensures the destination namespace type is valid._
 
 ```solidity
-function transferBalanceToNamespace(ResourceId fromNamespaceId, ResourceId toNamespaceId, uint256 amount)
-    public
-    virtual
-    onlyDelegatecall;
+function transferBalanceToNamespace(
+  ResourceId fromNamespaceId,
+  ResourceId toNamespaceId,
+  uint256 amount
+) public virtual onlyDelegatecall;
 ```
 
 **Parameters**
@@ -143,15 +150,18 @@ function transferBalanceToNamespace(ResourceId fromNamespaceId, ResourceId toNam
 
 #### transferBalanceToAddress
 
+[Usage Sample](/world/balance)
+
 Transfer balance out of the World to a specific address.
 
 _Requires the caller to have access to the source namespace and ensures sufficient balance before transfer._
 
 ```solidity
-function transferBalanceToAddress(ResourceId fromNamespaceId, address toAddress, uint256 amount)
-    public
-    virtual
-    onlyDelegatecall;
+function transferBalanceToAddress(
+  ResourceId fromNamespaceId,
+  address toAddress,
+  uint256 amount
+) public virtual onlyDelegatecall;
 ```
 
 **Parameters**
@@ -169,10 +179,7 @@ Make batch calls to multiple systems into a single transaction.
 _Iterates through an array of system calls, executes them, and returns an array of return data._
 
 ```solidity
-function batchCall(SystemCallData[] calldata systemCalls)
-    public
-    onlyDelegatecall
-    returns (bytes[] memory returnDatas);
+function batchCall(SystemCallData[] calldata systemCalls) public onlyDelegatecall returns (bytes[] memory returnDatas);
 ```
 
 **Parameters**
@@ -194,10 +201,9 @@ Make batch calls from specific addresses to multiple systems in a single transac
 _Iterates through an array of system calls with specified 'from' addresses, executes them, and returns an array of return data._
 
 ```solidity
-function batchCallFrom(SystemCallFromData[] calldata systemCalls)
-    public
-    onlyDelegatecall
-    returns (bytes[] memory returnDatas);
+function batchCallFrom(
+  SystemCallFromData[] calldata systemCalls
+) public onlyDelegatecall returns (bytes[] memory returnDatas);
 ```
 
 **Parameters**
@@ -232,6 +238,8 @@ function installModule(IModule module, bytes memory encodedArgs) public onlyDele
 
 #### registerNamespace
 
+[Usage Sample](/world/systems#registering-systems)
+
 Registers a new namespace
 
 _Creates a new namespace resource with the given ID_
@@ -253,10 +261,11 @@ Registers a new system hook
 _Adds a new hook for the system at the provided system ID_
 
 ```solidity
-function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap)
-    public
-    virtual
-    onlyDelegatecall;
+function registerSystemHook(
+  ResourceId systemId,
+  ISystemHook hookAddress,
+  uint8 enabledHooksBitmap
+) public virtual onlyDelegatecall;
 ```
 
 **Parameters**
@@ -285,6 +294,8 @@ function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) publ
 | `hookAddress` | `ISystemHook` | The address of the hook being unregistered |
 
 #### registerSystem
+
+[Usage Sample](/world/systems#registering-systems)
 
 Registers a system
 
@@ -315,10 +326,10 @@ Registers a new World function selector
 _Creates a mapping between a World function and its associated system function_
 
 ```solidity
-function registerFunctionSelector(ResourceId systemId, string memory systemFunctionSignature)
-    public
-    onlyDelegatecall
-    returns (bytes4 worldFunctionSelector);
+function registerFunctionSelector(
+  ResourceId systemId,
+  string memory systemFunctionSignature
+) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
 ```
 
 **Parameters**
@@ -336,15 +347,17 @@ function registerFunctionSelector(ResourceId systemId, string memory systemFunct
 
 #### registerRootFunctionSelector
 
+[Usage Sample](/world/function-selectors#root-function-selectors)
+
 Registers a root World function selector
 
 _Creates a mapping for a root World function without namespace or name prefix_
 
 ```solidity
 function registerRootFunctionSelector(
-    ResourceId systemId,
-    string memory worldFunctionSignature,
-    bytes4 systemFunctionSelector
+  ResourceId systemId,
+  string memory worldFunctionSignature,
+  bytes4 systemFunctionSelector
 ) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
 ```
 
@@ -369,9 +382,11 @@ Registers a delegation for the caller
 _Creates a new delegation from the caller to the specified delegatee_
 
 ```solidity
-function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData)
-    public
-    onlyDelegatecall;
+function registerDelegation(
+  address delegatee,
+  ResourceId delegationControlId,
+  bytes memory initCallData
+) public onlyDelegatecall;
 ```
 
 **Parameters**
@@ -405,9 +420,11 @@ Registers a delegation for a namespace
 _Sets up a new delegation control for a specific namespace_
 
 ```solidity
-function registerNamespaceDelegation(ResourceId namespaceId, ResourceId delegationControlId, bytes memory initCallData)
-    public
-    onlyDelegatecall;
+function registerNamespaceDelegation(
+  ResourceId namespaceId,
+  ResourceId delegationControlId,
+  bytes memory initCallData
+) public onlyDelegatecall;
 ```
 
 **Parameters**
@@ -434,80 +451,6 @@ function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelega
 | ------------- | ------------ | ----------------------- |
 | `namespaceId` | `ResourceId` | The ID of the namespace |
 
-### Errors
-
-#### Store_TableAlreadyExists
-
-```solidity
-error Store_TableAlreadyExists(ResourceId tableId, string tableIdString);
-```
-
-#### Store_TableNotFound
-
-```solidity
-error Store_TableNotFound(ResourceId tableId, string tableIdString);
-```
-
-#### Store_InvalidResourceType
-
-```solidity
-error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
-```
-
-#### Store_InvalidStaticDataLength
-
-```solidity
-error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
-```
-
-#### Store_InvalidBounds
-
-```solidity
-error Store_InvalidBounds(uint256 start, uint256 end);
-```
-
-#### Store_IndexOutOfBounds
-
-```solidity
-error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
-```
-
-#### Store_InvalidKeyNamesLength
-
-```solidity
-error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
-```
-
-#### Store_InvalidFieldNamesLength
-
-```solidity
-error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
-```
-
-#### Store_InvalidValueSchemaLength
-
-```solidity
-error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
-```
-
-#### Store_InvalidValueSchemaStaticLength
-
-```solidity
-error Store_InvalidValueSchemaStaticLength(uint256 expected, uint256 received);
-```
-
-#### Store_InvalidValueSchemaDynamicLength
-
-```solidity
-error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
-```
-
-#### Store_InvalidSplice
-
-```solidity
-error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
-```
-
 ## IWorldCall
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldKernel.sol)
@@ -517,6 +460,8 @@ _This interface defines the contract for executing calls on the World's systems.
 ### Functions
 
 #### call
+
+[Usage Sample](/world/systems#using-call)
 
 Call the system at the given system ID.
 
@@ -546,10 +491,11 @@ Call the system at the given system ID on behalf of the given delegator.
 _If the system is not public, the delegator must have access to the namespace or name (encoded in the system ID)._
 
 ```solidity
-function callFrom(address delegator, ResourceId systemId, bytes memory callData)
-    external
-    payable
-    returns (bytes memory);
+function callFrom(
+  address delegator,
+  ResourceId systemId,
+  bytes memory callData
+) external payable returns (bytes memory);
 ```
 
 **Parameters**
@@ -913,11 +859,12 @@ function deployWorld(bytes memory salt) external returns (address worldAddress);
 _Emitted when a new World contract is deployed._
 
 ```solidity
-event WorldDeployed(address indexed newContract);
+event WorldDeployed(address indexed newContract, uint256 salt);
 ```
 
 **Parameters**
 
-| Name          | Type      | Description                                       |
-| ------------- | --------- | ------------------------------------------------- |
-| `newContract` | `address` | The address of the newly deployed World contract. |
+| Name          | Type      | Description                                                        |
+| ------------- | --------- | ------------------------------------------------------------------ |
+| `newContract` | `address` | The address of the newly deployed World contract.                  |
+| `salt`        | `uint256` | User defined salt for deterministic world addresses across chains. |

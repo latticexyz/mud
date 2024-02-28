@@ -5,7 +5,7 @@
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol)
 
 **Inherits:**
-[IStoreData](/store/reference/store#istoredata), [IStoreRegistration](/store/reference/store#istoreregistration), [IStoreErrors](/store/reference/store#istoreerrors)
+[IStoreData](/store/reference/store#istoredata), [IStoreRegistration](/store/reference/store#istoreregistration)
 
 ## Store_DeleteRecord
 
@@ -32,7 +32,11 @@ Emitted when a new record is set in the store.
 
 ```solidity
 event Store_SetRecord(
-    ResourceId indexed tableId, bytes32[] keyTuple, bytes staticData, PackedCounter encodedLengths, bytes dynamicData
+  ResourceId indexed tableId,
+  bytes32[] keyTuple,
+  bytes staticData,
+  PackedCounter encodedLengths,
+  bytes dynamicData
 );
 ```
 
@@ -54,13 +58,13 @@ Emitted when dynamic data in the store is spliced.
 
 ```solidity
 event Store_SpliceDynamicData(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    uint8 dynamicFieldIndex,
-    uint48 start,
-    uint40 deleteCount,
-    PackedCounter encodedLengths,
-    bytes data
+  ResourceId indexed tableId,
+  bytes32[] keyTuple,
+  uint8 dynamicFieldIndex,
+  uint48 start,
+  uint40 deleteCount,
+  PackedCounter encodedLengths,
+  bytes data
 );
 ```
 
@@ -98,84 +102,6 @@ event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uin
 | `start`    | `uint48`     | The start position in bytes for the splice operation.                 |
 | `data`     | `bytes`      | The data to write to the static data of the record at the start byte. |
 
-## IStoreErrors
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreErrors.sol)
-
-### Errors
-
-#### Store_TableAlreadyExists
-
-```solidity
-error Store_TableAlreadyExists(ResourceId tableId, string tableIdString);
-```
-
-#### Store_TableNotFound
-
-```solidity
-error Store_TableNotFound(ResourceId tableId, string tableIdString);
-```
-
-#### Store_InvalidResourceType
-
-```solidity
-error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
-```
-
-#### Store_InvalidStaticDataLength
-
-```solidity
-error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
-```
-
-#### Store_InvalidBounds
-
-```solidity
-error Store_InvalidBounds(uint256 start, uint256 end);
-```
-
-#### Store_IndexOutOfBounds
-
-```solidity
-error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
-```
-
-#### Store_InvalidKeyNamesLength
-
-```solidity
-error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
-```
-
-#### Store_InvalidFieldNamesLength
-
-```solidity
-error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
-```
-
-#### Store_InvalidValueSchemaLength
-
-```solidity
-error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
-```
-
-#### Store_InvalidValueSchemaStaticLength
-
-```solidity
-error Store_InvalidValueSchemaStaticLength(uint256 expected, uint256 received);
-```
-
-#### Store_InvalidValueSchemaDynamicLength
-
-```solidity
-error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
-```
-
-#### Store_InvalidSplice
-
-```solidity
-error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
-```
-
 ## HelloStore
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/HelloStore.sol)
@@ -191,6 +117,112 @@ event HelloStore(bytes32 indexed storeVersion);
 | Name           | Type      | Description                        |
 | -------------- | --------- | ---------------------------------- |
 | `storeVersion` | `bytes32` | The version of the Store contract. |
+
+## StoreHook_NotImplemented
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+Error emitted when a function is not implemented.
+
+```solidity
+error StoreHook_NotImplemented();
+```
+
+## Store_IndexOutOfBounds
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+```solidity
+error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
+```
+
+## Store_InvalidBounds
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+```solidity
+error Store_InvalidBounds(uint256 start, uint256 end);
+```
+
+## Store_InvalidFieldNamesLength
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+```solidity
+error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
+```
+
+## Store_InvalidKeyNamesLength
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+```solidity
+error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
+```
+
+## Store_InvalidResourceType
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+```solidity
+error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
+```
+
+## Store_InvalidSplice
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+```solidity
+error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
+```
+
+## Store_InvalidStaticDataLength
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+```solidity
+error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
+```
+
+## Store_InvalidValueSchemaDynamicLength
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+```solidity
+error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
+```
+
+## Store_InvalidValueSchemaLength
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+```solidity
+error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
+```
+
+## Store_InvalidValueSchemaStaticLength
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+```solidity
+error Store_InvalidValueSchemaStaticLength(uint256 expected, uint256 received);
+```
+
+## Store_TableAlreadyExists
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+```solidity
+error Store_TableAlreadyExists(ResourceId tableId, string tableIdString);
+```
+
+## Store_TableNotFound
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+```solidity
+error Store_TableNotFound(ResourceId tableId, string tableIdString);
+```
 
 ## IStoreData
 
@@ -248,10 +280,10 @@ function getKeySchema(ResourceId tableId) external view returns (Schema keySchem
 Get full record (all fields, static and dynamic data) for the given tableId and key tuple, loading the field layout from storage
 
 ```solidity
-function getRecord(ResourceId tableId, bytes32[] calldata keyTuple)
-    external
-    view
-    returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+function getRecord(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple
+) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 ```
 
 #### getRecord
@@ -259,10 +291,11 @@ function getRecord(ResourceId tableId, bytes32[] calldata keyTuple)
 Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given field layout
 
 ```solidity
-function getRecord(ResourceId tableId, bytes32[] calldata keyTuple, FieldLayout fieldLayout)
-    external
-    view
-    returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+function getRecord(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  FieldLayout fieldLayout
+) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 ```
 
 #### getField
@@ -270,10 +303,11 @@ function getRecord(ResourceId tableId, bytes32[] calldata keyTuple, FieldLayout 
 Get a single field from the given tableId and key tuple, loading the field layout from storage
 
 ```solidity
-function getField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex)
-    external
-    view
-    returns (bytes memory data);
+function getField(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 fieldIndex
+) external view returns (bytes memory data);
 ```
 
 #### getField
@@ -281,10 +315,12 @@ function getField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIn
 Get a single field from the given tableId and key tuple, with the given field layout
 
 ```solidity
-function getField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    external
-    view
-    returns (bytes memory data);
+function getField(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) external view returns (bytes memory data);
 ```
 
 #### getStaticField
@@ -294,10 +330,12 @@ Note: the field value is left-aligned in the returned bytes32, the rest of the w
 Consumers are expected to truncate the returned value as needed.
 
 ```solidity
-function getStaticField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    external
-    view
-    returns (bytes32);
+function getStaticField(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) external view returns (bytes32);
 ```
 
 #### getDynamicField
@@ -306,10 +344,11 @@ Get a single dynamic field from the given tableId and key tuple at the given dyn
 (Dynamic field index = field index - number of static fields)
 
 ```solidity
-function getDynamicField(ResourceId tableId, bytes32[] memory keyTuple, uint8 dynamicFieldIndex)
-    external
-    view
-    returns (bytes memory);
+function getDynamicField(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex
+) external view returns (bytes memory);
 ```
 
 #### getFieldLength
@@ -317,10 +356,11 @@ function getDynamicField(ResourceId tableId, bytes32[] memory keyTuple, uint8 dy
 Get the byte length of a single field from the given tableId and key tuple, loading the field layout from storage
 
 ```solidity
-function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex)
-    external
-    view
-    returns (uint256);
+function getFieldLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex
+) external view returns (uint256);
 ```
 
 #### getFieldLength
@@ -328,10 +368,12 @@ function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fie
 Get the byte length of a single field from the given tableId and key tuple, with the given value field layout
 
 ```solidity
-function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fieldIndex, FieldLayout fieldLayout)
-    external
-    view
-    returns (uint256);
+function getFieldLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 fieldIndex,
+  FieldLayout fieldLayout
+) external view returns (uint256);
 ```
 
 #### getDynamicFieldLength
@@ -339,10 +381,11 @@ function getFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 fie
 Get the byte length of a single dynamic field from the given tableId and key tuple
 
 ```solidity
-function getDynamicFieldLength(ResourceId tableId, bytes32[] memory keyTuple, uint8 dynamicFieldIndex)
-    external
-    view
-    returns (uint256);
+function getDynamicFieldLength(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex
+) external view returns (uint256);
 ```
 
 #### getDynamicFieldSlice
@@ -352,11 +395,11 @@ The slice is unchecked and will return invalid data if `start`:`end` overflow.
 
 ```solidity
 function getDynamicFieldSlice(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint256 start,
-    uint256 end
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  uint8 dynamicFieldIndex,
+  uint256 start,
+  uint256 end
 ) external view returns (bytes memory data);
 ```
 
@@ -370,31 +413,30 @@ function getDynamicFieldSlice(
 
 ```solidity
 function setRecord(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    bytes calldata staticData,
-    PackedCounter encodedLengths,
-    bytes calldata dynamicData
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  bytes calldata staticData,
+  PackedCounter encodedLengths,
+  bytes calldata dynamicData
 ) external;
 ```
 
 #### spliceStaticData
 
 ```solidity
-function spliceStaticData(ResourceId tableId, bytes32[] calldata keyTuple, uint48 start, bytes calldata data)
-    external;
+function spliceStaticData(ResourceId tableId, bytes32[] calldata keyTuple, uint48 start, bytes calldata data) external;
 ```
 
 #### spliceDynamicData
 
 ```solidity
 function spliceDynamicData(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 dynamicFieldIndex,
-    uint40 startWithinField,
-    uint40 deleteCount,
-    bytes calldata data
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 dynamicFieldIndex,
+  uint40 startWithinField,
+  uint40 deleteCount,
+  bytes calldata data
 ) external;
 ```
 
@@ -408,11 +450,11 @@ function setField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIn
 
 ```solidity
 function setField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    bytes calldata data,
-    FieldLayout fieldLayout
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 fieldIndex,
+  bytes calldata data,
+  FieldLayout fieldLayout
 ) external;
 ```
 
@@ -420,29 +462,33 @@ function setField(
 
 ```solidity
 function setStaticField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    bytes calldata data,
-    FieldLayout fieldLayout
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 fieldIndex,
+  bytes calldata data,
+  FieldLayout fieldLayout
 ) external;
 ```
 
 #### setDynamicField
 
 ```solidity
-function setDynamicField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 dynamicFieldIndex, bytes calldata data)
-    external;
+function setDynamicField(
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 dynamicFieldIndex,
+  bytes calldata data
+) external;
 ```
 
 #### pushToDynamicField
 
 ```solidity
 function pushToDynamicField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 dynamicFieldIndex,
-    bytes calldata dataToPush
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 dynamicFieldIndex,
+  bytes calldata dataToPush
 ) external;
 ```
 
@@ -450,10 +496,10 @@ function pushToDynamicField(
 
 ```solidity
 function popFromDynamicField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 dynamicFieldIndex,
-    uint256 byteLengthToPop
+  ResourceId tableId,
+  bytes32[] calldata keyTuple,
+  uint8 dynamicFieldIndex,
+  uint256 byteLengthToPop
 ) external;
 ```
 
@@ -475,18 +521,22 @@ making them less performance critical than the methods.
 
 #### registerTable
 
+[Usage Sample](/store/tables#manually-register-a-table)
+
 ```solidity
 function registerTable(
-    ResourceId tableId,
-    FieldLayout fieldLayout,
-    Schema keySchema,
-    Schema valueSchema,
-    string[] calldata keyNames,
-    string[] calldata fieldNames
+  ResourceId tableId,
+  FieldLayout fieldLayout,
+  Schema keySchema,
+  Schema valueSchema,
+  string[] calldata keyNames,
+  string[] calldata fieldNames
 ) external;
 ```
 
 #### registerStoreHook
+
+[Usage Sample](/store/store-hooks)
 
 ```solidity
 function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) external;
