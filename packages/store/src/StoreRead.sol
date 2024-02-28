@@ -10,6 +10,7 @@ import { ResourceId } from "./ResourceId.sol";
 
 /**
  * @title StoreRead
+ * @author MUD
  * @dev A contract that provides read operations for storage tables using `StoreCore`.
  */
 contract StoreRead is IStoreRead {

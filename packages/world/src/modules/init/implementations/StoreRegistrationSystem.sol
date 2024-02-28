@@ -22,6 +22,7 @@ import { WorldRegistrationSystem } from "./WorldRegistrationSystem.sol";
 
 /**
  * @title Store Registration System
+ * @author MUD
  * @dev This contract provides functionality for the registration of store-related resources within the World framework.
  */
 contract StoreRegistrationSystem is System, IWorldErrors, LimitedCallContext {

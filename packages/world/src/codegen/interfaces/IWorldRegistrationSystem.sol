@@ -9,6 +9,7 @@ import { System } from "./../../System.sol";
 
 /**
  * @title IWorldRegistrationSystem
+ * @author MUD
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IWorldRegistrationSystem {

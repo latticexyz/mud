@@ -9,6 +9,7 @@ import { IERC165 } from "./IERC165.sol";
 
 /**
  * @title DelegationControl
+ * @author MUD
  * @dev Abstract contract to manage delegations and check interface support.
  *      Inherits functionalities from WorldContextConsumer and IDelegationControl.
  */

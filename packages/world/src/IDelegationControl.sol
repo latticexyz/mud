@@ -6,6 +6,7 @@ import { ResourceId } from "./WorldResourceId.sol";
 
 /**
  * @title IDelegationControl
+ * @author MUD
  * @dev Interface for managing and verifying delegations within the context of a world.
  * Inherits functionalities from IWorldContextConsumer.
  */

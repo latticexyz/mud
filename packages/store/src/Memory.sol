@@ -5,6 +5,7 @@ import { rightMask } from "./rightMask.sol";
 
 /**
  * @title Memory Operations
+ * @author MUD
  * @notice A library for performing low-level memory operations.
  * @dev This library provides low-level memory operations with safety checks.
  */

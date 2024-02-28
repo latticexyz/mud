@@ -15,6 +15,7 @@ bytes32 constant NAMESPACE_MASK = bytes32(~bytes14("")) >> (TYPE_BITS);
 
 /**
  * @title WorldResourceIdLib
+ * @author MUD
  * @notice A library for handling World Resource ID encoding and decoding.
  */
 library WorldResourceIdLib {
@@ -56,6 +57,7 @@ library WorldResourceIdLib {
 
 /**
  * @title WorldResourceIdInstance
+ * @author MUD
  * @notice A library for handling instances of World Resource IDs.
  */
 library WorldResourceIdInstance {

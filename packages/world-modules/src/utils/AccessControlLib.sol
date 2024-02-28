@@ -8,6 +8,7 @@ import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOw
 
 /**
  * @title AccessControlLib
+ * @author MUD
  * @dev Provides access control functions for checking permissions and ownership within a namespace.
  * This library is functionally equivalent with the AccessControl library from world,
  * but uses StoreSwitch instead of always reading from own storage.

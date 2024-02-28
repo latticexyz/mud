@@ -9,6 +9,7 @@ import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSyst
 
 /**
  * @title Registration System for World
+ * @author MUD
  * @notice This system aggregates World registration and installation functionalities externalized from the World contract, aiming to keep the World contract's bytecode lean.
  * @dev Aggregates multiple system implementations for the World.
  */

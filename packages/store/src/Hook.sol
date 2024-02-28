@@ -11,6 +11,7 @@ using HookInstance for Hook global;
 
 /**
  * @title HookLib
+ * @author MUD
  * @dev Library for encoding hooks and filtering hooks from a list by address.
  */
 library HookLib {
@@ -67,6 +68,7 @@ library HookLib {
 
 /**
  * @title HookInstance
+ * @author MUD
  * @dev Library for interacting with Hook instances.
  **/
 library HookInstance {

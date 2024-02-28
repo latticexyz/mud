@@ -21,6 +21,7 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.so
 
 /**
  * @title StoreCore Library
+ * @author MUD
  * @notice This library includes implementations for all IStore methods and events related to the store actions.
  */
 library StoreCore {
@@ -985,6 +986,7 @@ library StoreCore {
 
 /**
  * @title StoreCoreInternal
+ * @author MUD
  * @dev This library contains internal functions used by StoreCore.
  * They are not intended to be used directly by consumers of StoreCore.
  */

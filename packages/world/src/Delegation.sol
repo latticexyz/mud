@@ -8,6 +8,7 @@ import { SystemCall } from "./SystemCall.sol";
 
 /**
  * @title Delegation
+ * @author MUD
  * @dev Library for managing and verifying delegations.
  */
 library Delegation {

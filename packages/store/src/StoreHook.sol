@@ -9,6 +9,7 @@ import { ResourceId } from "./ResourceId.sol";
 
 /**
  * @title Store Hook Contract
+ * @author MUD
  * @notice This abstract contract provides hooks for the storage operations.
  * @dev Implementers should override the hook functions to provide custom logic.
  * If any hooks are activated without overriding these functions, they revert.

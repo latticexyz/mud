@@ -7,6 +7,7 @@ import { BYTE_TO_BITS } from "./constants.sol";
 
 /**
  * @title Storage Library
+ * @author MUD
  * @dev Provides functions for low-level storage manipulation, including storing and retrieving bytes.
  */
 library Storage {

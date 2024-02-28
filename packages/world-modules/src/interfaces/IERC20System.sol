@@ -5,6 +5,7 @@ pragma solidity >=0.8.24;
 
 /**
  * @title IERC20System
+ * @author MUD
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IERC20System {

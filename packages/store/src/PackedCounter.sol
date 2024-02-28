@@ -5,6 +5,7 @@ import { BYTE_TO_BITS } from "./constants.sol";
 
 /**
  * @title PackedCounter Type Definition
+ * @author MUD
  * @dev Describes how the packed counter is structured.
  * - 0x00-0x06 The least significant 7 bytes (uint56) represent the total byte length of dynamic (variable length) data.
  * - 0x07-0xB The next five bytes (uint40) represent the length of the first dynamic field.
@@ -28,6 +29,7 @@ uint256 constant MAX_VAL = type(uint40).max;
 
 /**
  * @title PackedCounter Library
+ * @author MUD
  * @notice Static functions for handling PackedCounter type.
  * @dev Provides utility functions to pack values into a PackedCounter.
  * The caller must ensure that the value arguments are <= MAX_VAL.
@@ -132,6 +134,7 @@ library PackedCounterLib {
 
 /**
  * @title PackedCounter Instance Library
+ * @author MUD
  * @notice Instance functions for handling a PackedCounter.
  * @dev Offers decoding, extracting, and setting functionalities for a PackedCounter.
  */

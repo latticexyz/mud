@@ -34,6 +34,7 @@ import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
  * @title WorldRegistrationSystem
+ * @author MUD
  * @dev This contract provides functions related to registering resources other than tables in the World.
  */
 contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {

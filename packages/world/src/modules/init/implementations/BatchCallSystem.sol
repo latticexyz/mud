@@ -9,6 +9,7 @@ import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
  * @title Batch Call System
+ * @author MUD
  * @dev A system contract that facilitates batching of calls to various systems in a single transaction.
  */
 contract BatchCallSystem is System, LimitedCallContext {

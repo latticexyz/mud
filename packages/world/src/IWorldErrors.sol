@@ -5,6 +5,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 /**
  * @title World Errors Interface
+ * @author MUD
  * @dev This interface contains custom error types for the World contract. These errors provide
  * more informative messages for certain operations within the World contract.
  */

@@ -5,6 +5,7 @@ import { BYTE_TO_BITS } from "./constants.sol";
 
 /**
  * @title Byte Mask Utility
+ * @author MUD
  * @notice Utility functions to manage bytes in memory.
  * @dev Adapted from https://github.com/dk1a/solidity-stringutils/blob/main/src/utils/mem.sol#L149-L167
  */

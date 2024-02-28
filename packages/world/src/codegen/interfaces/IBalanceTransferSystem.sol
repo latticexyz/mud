@@ -7,6 +7,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 /**
  * @title IBalanceTransferSystem
+ * @author MUD
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IBalanceTransferSystem {

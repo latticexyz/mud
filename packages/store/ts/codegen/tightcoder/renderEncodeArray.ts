@@ -13,7 +13,8 @@ export function renderEncodeArray() {
     import { TightCoder } from "./TightCoder.sol";
 
     /**
-     * @title EncodeArray
+     * @title EncodeArray 
+ * @author MUD
      * @dev This library provides utilities for encoding arrays into tightly packed bytes representations.
      */
     library EncodeArray {

@@ -6,6 +6,7 @@ import { IStoreWrite } from "./IStoreWrite.sol";
 
 /**
  * @title IStoreData
+ * @author MUD
  * @notice The IStoreData interface includes methods for reading and writing table values.
  * @dev These methods are frequently invoked during runtime, so it is essential to prioritize optimizing their gas cost.
  */

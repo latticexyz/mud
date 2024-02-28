@@ -3,6 +3,7 @@ pragma solidity >=0.8.24;
 
 /**
  * @title Resource Identifiers
+ * @author MUD
  * @notice Constants representing unique identifiers for different resource types.
  * @dev These identifiers can be used to distinguish between various resource types.
  */

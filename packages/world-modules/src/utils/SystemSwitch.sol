@@ -23,6 +23,7 @@ import { Balances } from "@latticexyz/world/src/codegen/tables/Balances.sol";
 
 /**
  * @title SystemSwitch
+ * @author MUD
  * @dev The SystemSwitch library provides functions for interacting with systems from other systems.
  */
 library SystemSwitch {

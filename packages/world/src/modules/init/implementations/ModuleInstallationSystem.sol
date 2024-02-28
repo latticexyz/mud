@@ -11,6 +11,7 @@ import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
  * @title Module Installation System
+ * @author MUD
  * @dev A system contract to handle the installation of (non-root) modules in the World.
  */
 contract ModuleInstallationSystem is System, LimitedCallContext {

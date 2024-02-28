@@ -5,6 +5,7 @@ import { Slice } from "../Slice.sol";
 
 /**
  * @title TightCoder
+ * @author MUD
  * @dev Provides low-level generic implementations of tight encoding and decoding for arrays.
  * This is consistent with Solidity's internal tight encoding for array data in storage.
  */

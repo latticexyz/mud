@@ -3,6 +3,7 @@ pragma solidity >=0.8.24;
 
 /**
  * @title World Factory Interface
+ * @author MUD
  * @dev This interface defines the contract responsible for deploying and keeping track
  * of World contract instances.
  */

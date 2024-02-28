@@ -3,6 +3,7 @@ pragma solidity >=0.8.24;
 
 /**
  * @title Store Versioning
+ * @author MUD
  * @notice Contains a constant representing the version of the store.
  */
 

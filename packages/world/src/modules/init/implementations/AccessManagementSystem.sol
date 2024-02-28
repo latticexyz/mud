@@ -12,6 +12,7 @@ import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
  * @title Access Management System
+ * @author MUD
  * @dev This contract manages the granting and revoking of access from/to resources.
  */
 contract AccessManagementSystem is System, LimitedCallContext {

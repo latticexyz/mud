@@ -10,6 +10,7 @@ import { ROOT_NAMESPACE_ID } from "./constants.sol";
 
 /**
  * @title WorldFactory
+ * @author MUD
  * @notice A factory contract to deploy new World instances.
  * @dev This contract allows users to deploy a new World, install the InitModule, and transfer the ownership.
  */

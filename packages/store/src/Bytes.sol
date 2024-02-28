@@ -3,6 +3,7 @@ pragma solidity >=0.8.24;
 
 /**
  * @title Bytes
+ * @author MUD
  * @notice Utility functions for bytes.
  */
 library Bytes {

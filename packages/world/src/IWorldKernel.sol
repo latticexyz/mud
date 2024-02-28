@@ -7,6 +7,7 @@ import { ResourceId } from "./WorldResourceId.sol";
 
 /**
  * @title World Module Installation Interface
+ * @author MUD
  * @dev This interface defines the contract responsible for managing root modules installation.
  */
 interface IWorldModuleInstallation {
@@ -21,6 +22,7 @@ interface IWorldModuleInstallation {
 
 /**
  * @title World Call Interface
+ * @author MUD
  * @dev This interface defines the contract for executing calls on the World's systems.
  */
 interface IWorldCall {
@@ -52,6 +54,7 @@ interface IWorldCall {
 
 /**
  * @title World Kernel Interface
+ * @author MUD
  * @notice The IWorldKernel interface includes all methods that are part of the World contract's
  * internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
  * registered functions selectors from the `InitModule`.

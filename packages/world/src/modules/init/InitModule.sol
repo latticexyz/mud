@@ -36,6 +36,7 @@ import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSyst
 
 /**
  * @title Init Module
+ * @author MUD
  * @notice Registers internal World tables, systems, and their function selectors.
  * @dev This module only supports `installRoot` because it installs root tables, systems and function selectors.
  */

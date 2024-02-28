@@ -4,6 +4,7 @@ pragma solidity >=0.8.24;
 
 /**
  * @title ERC721 token receiver interface
+ * @author MUD
  * @dev Interface for any contract that wants to support safeTransfers
  * from ERC721 asset contracts.
  */
