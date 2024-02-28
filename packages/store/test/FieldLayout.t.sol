@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import "../src/FieldLayout.sol";
+import { FieldLayout, FieldLayoutLib } from "../src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { MAX_TOTAL_FIELDS, MAX_DYNAMIC_FIELDS } from "../src/constants.sol";
 
@@ -36,12 +36,12 @@ contract FieldLayoutTest is Test, GasReporter {
   }
 
   function testInvalidFieldLayoutStaticTypeIsZero() public {
-    vm.expectRevert(abi.encodeWithSelector(FieldLayout_StaticLengthIsZero.selector, 1));
+    vm.expectRevert(abi.encodeWithSelector(FieldLayoutLib.FieldLayoutLib_StaticLengthIsZero.selector, 1));
     FieldLayoutEncodeHelper.encode(1, 0, 1);
   }
 
   function testInvalidFieldLayoutStaticTypeDoesNotFitInAWord() public {
-    vm.expectRevert(abi.encodeWithSelector(FieldLayout_StaticLengthDoesNotFitInAWord.selector, 1));
+    vm.expectRevert(abi.encodeWithSelector(FieldLayoutLib.FieldLayoutLib_StaticLengthDoesNotFitInAWord.selector, 1));
     FieldLayoutEncodeHelper.encode(1, 33, 1);
   }
 
@@ -96,7 +96,11 @@ contract FieldLayoutTest is Test, GasReporter {
     fieldLayout[15] = 32;
     fieldLayout[16] = 32;
     vm.expectRevert(
-      abi.encodeWithSelector(FieldLayout_TooManyFields.selector, fieldLayout.length + dynamicFields, MAX_TOTAL_FIELDS)
+      abi.encodeWithSelector(
+        FieldLayoutLib.FieldLayoutLib_TooManyFields.selector,
+        fieldLayout.length + dynamicFields,
+        MAX_TOTAL_FIELDS
+      )
     );
     FieldLayoutLib.encode(fieldLayout, dynamicFields);
   }
@@ -113,7 +117,7 @@ contract FieldLayoutTest is Test, GasReporter {
     uint256 dynamicFields = 6;
     vm.expectRevert(
       abi.encodeWithSelector(
-        FieldLayout_TooManyDynamicFields.selector,
+        FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields.selector,
         fieldLayout.length + dynamicFields,
         MAX_DYNAMIC_FIELDS
       )
@@ -198,7 +202,7 @@ contract FieldLayoutTest is Test, GasReporter {
 
     vm.expectRevert(
       abi.encodeWithSelector(
-        FieldLayout_TooManyDynamicFields.selector,
+        FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields.selector,
         encodedFieldLayout.numDynamicFields(),
         MAX_DYNAMIC_FIELDS
       )

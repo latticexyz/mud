@@ -20,6 +20,7 @@ const PUBLIC_APIS: PublicApis = {
       { source: "store/src/StoreSwitch.sol" },
     ],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
       content = fixInheritence(content);
@@ -35,13 +36,14 @@ const PUBLIC_APIS: PublicApis = {
     inputFiles: [
       { source: "store/src/IStore.sol" },
       { source: "store/src/IStoreEvents.sol" },
-      { source: "store/src/errors.sol" },
+      { source: "store/src/IStoreErrors.sol" },
       { source: "store/src/IStoreData.sol" },
       { source: "store/src/IStoreRead.sol" },
       { source: "store/src/IStoreWrite.sol" },
       { source: "store/src/IStoreRegistration.sol" },
     ],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
       content = fixInheritence(content);
@@ -58,6 +60,7 @@ const PUBLIC_APIS: PublicApis = {
       },
     ],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
       content = fixInheritence(content);
@@ -86,6 +89,7 @@ const PUBLIC_APIS: PublicApis = {
       { source: "store/src/version.sol" },
     ],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "store");
       content = fixInheritence(content);
@@ -106,6 +110,7 @@ const PUBLIC_APIS: PublicApis = {
       },
     ],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -116,6 +121,7 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/internal/create.mdx": {
     inputFiles: [{ source: "world/src/Create2.sol" }, { source: "world/src/Create2Factory.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -125,6 +131,7 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/internal/delegation.mdx": {
     inputFiles: [{ source: "world/src/Delegation.sol" }, { source: "world/src/DelegationControl.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -134,6 +141,7 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/delegation-external.mdx": {
     inputFiles: [{ source: "world/src/IDelegationControl.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -145,6 +153,7 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/internal/erc165.mdx": {
     inputFiles: [{ source: "world/src/ERC165Checker.sol" }, { source: "world/src/requireInterface.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -156,6 +165,7 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/internal/erc165-external.mdx": {
     inputFiles: [{ source: "world/src/IERC165.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -165,6 +175,7 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/module.mdx": {
     inputFiles: [{ source: "world/src/Module.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -175,6 +186,7 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/module-external.mdx": {
     inputFiles: [{ source: "world/src/IModule.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -188,6 +200,7 @@ const PUBLIC_APIS: PublicApis = {
       { source: "world/src/systemHookTypes.sol" },
     ],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -197,6 +210,7 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/internal/systemcall.mdx": {
     inputFiles: [{ source: "world/src/SystemCall.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -208,6 +222,7 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/system-external.mdx": {
     inputFiles: [{ source: "world/src/ISystemHook.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -217,6 +232,7 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/world.mdx": {
     inputFiles: [{ source: "world/src/World.sol" }, { source: "world/src/WorldFactory.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -240,6 +256,7 @@ const PUBLIC_APIS: PublicApis = {
       { source: "world/src/modules/init/implementations/ModuleInstallationSystem.sol" },
       { source: "world/src/modules/init/RegistrationSystem.sol" },
       { source: "world/src/modules/init/implementations/WorldRegistrationSystem.sol" },
+      { source: "store/src/IStoreErrors.sol" },
 
       // Back to adding contracts and interfaces to the docs.
       { source: "world/src/IWorldKernel.sol" },
@@ -247,6 +264,7 @@ const PUBLIC_APIS: PublicApis = {
       { source: "world/src/IWorldFactory.sol" },
     ],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -286,12 +304,14 @@ const PUBLIC_APIS: PublicApis = {
         .replace(/## BatchCallSystem((.|\n)*?)### Functions/m, "")
         .replace(/## ModuleInstallationSystem((.|\n)*?)### Functions/m, "")
         .replace(/## RegistrationSystem((.|\n)*?)### Functions/m, "")
-        .replace(/## WorldRegistrationSystem((.|\n)*?)### Functions/m, "");
+        .replace(/## WorldRegistrationSystem((.|\n)*?)### Functions/m, "")
+        .replace(/## IStoreErrors((.|\n)*?)### Errors/m, "### Errors");
     },
   },
   "world/reference/world-context.mdx": {
     inputFiles: [{ source: "world/src/WorldContext.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -301,6 +321,7 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/world-context-external.mdx": {
     inputFiles: [{ source: "world/src/IWorldContextConsumer.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -310,6 +331,7 @@ const PUBLIC_APIS: PublicApis = {
   "world/reference/resource-ids.mdx": {
     inputFiles: [{ source: "world/src/WorldResourceId.sol" }, { source: "world/src/worldResourceTypes.sol" }],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -328,6 +350,7 @@ const PUBLIC_APIS: PublicApis = {
       { source: "world/src/version.sol" },
     ],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -343,6 +366,7 @@ const PUBLIC_APIS: PublicApis = {
       { source: "world/src/modules/init/types.sol" },
     ],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -359,6 +383,7 @@ const PUBLIC_APIS: PublicApis = {
       { source: "world/src/modules/init/implementations/WorldRegistrationSystem.sol" },
     ],
     processContent: (content) => {
+      content = removeAuthor(content);
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
@@ -402,6 +427,10 @@ function fixInheritence(content: string) {
   return newContent;
 }
 
+function removeAuthor(content: string) {
+  return content.replace(/\*\*Author:\*\*\n[^\n]+\n/g, "");
+}
+
 // The inheritence links that need to be fixed
 const inheritence = [
   { contract: "StoreRead", link: "/store/reference/store-core#storeread" },
@@ -409,6 +438,7 @@ const inheritence = [
   { contract: "IStoreData", link: "/store/reference/store#istoredata" },
   { contract: "IStoreRead", link: "/store/reference/store#istoreread" },
   { contract: "IStoreWrite", link: "/store/reference/store#istorewrite" },
+  { contract: "IStoreErrors", link: "/store/reference/store#istoreerrors" },
   { contract: "IStoreEvents", link: "/store/reference/store#istoreevents" },
   { contract: "IStoreRegistration", link: "/store/reference/store#istoreregistration" },
   { contract: "Module", link: "/world/reference/module#module" },

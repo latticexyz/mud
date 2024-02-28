@@ -6,9 +6,9 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 
-error Puppet_AccessDenied(address caller);
-
 contract Puppet {
+  error Puppet_AccessDenied(address caller);
+
   IBaseWorld public immutable world;
   ResourceId public immutable systemId;
 

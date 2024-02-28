@@ -6,10 +6,10 @@ import { IERC165 } from "./IERC165.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { ResourceId } from "./ResourceId.sol";
-import { StoreHook_NotImplemented } from "./errors.sol";
 
 /**
  * @title Store Hook Contract
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This abstract contract provides hooks for the storage operations.
  * @dev Implementers should override the hook functions to provide custom logic.
  * If any hooks are activated without overriding these functions, they revert.

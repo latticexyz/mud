@@ -12,7 +12,7 @@ import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
 import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
-import { Store_IndexOutOfBounds } from "../src/errors.sol";
+import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
@@ -232,11 +232,11 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
 
     // Expect a revert if the end index is out of bounds
     uint256 length = secondDataBytes.length;
-    vm.expectRevert(abi.encodeWithSelector(Store_IndexOutOfBounds.selector, length, length));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, length, length));
     StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, 0, length + 1);
 
     // Expect a revert if the start index is out of bounds
-    vm.expectRevert(abi.encodeWithSelector(Store_IndexOutOfBounds.selector, length, length));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, length, length));
     StoreCore.getDynamicFieldSlice(tableId, keyTuple, 0, length, length);
   }
 }

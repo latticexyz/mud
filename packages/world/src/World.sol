@@ -29,6 +29,7 @@ import { Balances } from "./codegen/tables/Balances.sol";
 
 /**
  * @title World Contract
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This contract is the core "World" contract containing various methods for
  * data manipulation, system calls, and dynamic function selector handling.
  */
