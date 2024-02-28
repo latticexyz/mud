@@ -6,7 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
-import { Schema } from "../src/Schema.sol";
+import { Schema, SchemaLib, SchemaType } from "../src/Schema.sol";
 
 import { Vector2, Vector2Data } from "./codegen/index.sol";
 
@@ -45,5 +45,20 @@ contract Vector2Test is Test, GasReporter, StoreMock {
 
     assertEq(vector.x, 1);
     assertEq(vector.y, 2);
+  }
+
+  function testKeySchemaEncoding() public {
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.BYTES32;
+
+    assertEq(Schema.unwrap(SchemaLib.encode(_keySchema)), Schema.unwrap(Vector2._keySchema));
+  }
+
+  function testValueSchemaEncoding() public {
+    SchemaType[] memory _valueSchema = new SchemaType[](2);
+    _valueSchema[0] = SchemaType.UINT32;
+    _valueSchema[1] = SchemaType.UINT32;
+
+    assertEq(Schema.unwrap(SchemaLib.encode(_valueSchema)), Schema.unwrap(Vector2._valueSchema));
   }
 }

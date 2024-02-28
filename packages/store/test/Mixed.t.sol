@@ -6,7 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
-import { Schema } from "../src/Schema.sol";
+import { Schema, SchemaLib, SchemaType } from "../src/Schema.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
 
 import { Mixed, MixedData } from "./codegen/index.sol";
@@ -129,5 +129,22 @@ contract MixedTest is Test, GasReporter, StoreMock {
     assertEq(staticData, hex"0000000100000000000000000000000000000002");
     assertEq(encodedLengths.unwrap(), hex"000000000000000000000000000000000000000b000000000800000000000013");
     assertEq(dynamicData, hex"0000000300000004736f6d6520737472696e67");
+  }
+
+  function testKeySchemaEncoding() public {
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.BYTES32;
+
+    assertEq(Schema.unwrap(SchemaLib.encode(_keySchema)), Schema.unwrap(Mixed._keySchema));
+  }
+
+  function testValueSchemaEncoding() public {
+    SchemaType[] memory _valueSchema = new SchemaType[](4);
+    _valueSchema[0] = SchemaType.UINT32;
+    _valueSchema[1] = SchemaType.UINT128;
+    _valueSchema[2] = SchemaType.UINT32_ARRAY;
+    _valueSchema[3] = SchemaType.STRING;
+
+    assertEq(Schema.unwrap(SchemaLib.encode(_valueSchema)), Schema.unwrap(Mixed._valueSchema));
   }
 }
