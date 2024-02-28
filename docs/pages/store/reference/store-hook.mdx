@@ -205,3 +205,13 @@ function onAfterDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, Fiel
 | `tableId`     | `ResourceId`  | The ID of the table where the record was deleted.       |
 | `keyTuple`    | `bytes32[]`   | An array representing the composite key for the record. |
 | `fieldLayout` | `FieldLayout` | The layout of the field, see FieldLayout.sol.           |
+
+### Errors
+
+#### StoreHook_NotImplemented
+
+Error emitted when a function is not implemented.
+
+```solidity
+error StoreHook_NotImplemented();
+```

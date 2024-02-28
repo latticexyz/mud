@@ -11,6 +11,9 @@ import { ResourceId } from "./ResourceId.sol";
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  */
 interface IStoreHook is IERC165 {
+  /// @notice Error emitted when a function is not implemented.
+  error StoreHook_NotImplemented();
+
   /**
    * @notice Called before setting a record in the store.
    * @param tableId The ID of the table where the record is to be set.

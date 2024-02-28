@@ -27,8 +27,6 @@ uint256 constant VAL_BITS = 5 * BYTE_TO_BITS;
 // Maximum value of a 5-byte section
 uint256 constant MAX_VAL = type(uint40).max;
 
-error PackedCounter_InvalidLength(uint256 length);
-
 /**
  * @title PackedCounter Library
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
@@ -141,6 +139,8 @@ library PackedCounterLib {
  * @dev Offers decoding, extracting, and setting functionalities for a PackedCounter.
  */
 library PackedCounterInstance {
+  error PackedCounter_InvalidLength(uint256 length);
+
   /**
    * @notice Decode the accumulated counter from a PackedCounter.
    * @dev Extracts the right-most 7 bytes of a PackedCounter.

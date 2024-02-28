@@ -4,7 +4,7 @@ pragma solidity >=0.8.24;
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
-import "../src/Schema.sol";
+import { Schema, SchemaLib } from "../src/Schema.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { WORD_LAST_INDEX, BYTE_TO_BITS, LayoutOffsets } from "../src/constants.sol";
 
@@ -89,7 +89,7 @@ contract SchemaTest is Test, GasReporter {
   }
 
   function testInvalidSchemaStaticAfterDynamic() public {
-    vm.expectRevert(abi.encodeWithSelector(Schema_StaticTypeAfterDynamicType.selector));
+    vm.expectRevert(abi.encodeWithSelector(SchemaLib.SchemaLib_StaticTypeAfterDynamicType.selector));
     SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT32_ARRAY, SchemaType.UINT16);
   }
 
@@ -159,7 +159,7 @@ contract SchemaTest is Test, GasReporter {
     schema[26] = SchemaType.UINT32_ARRAY;
     schema[27] = SchemaType.UINT32_ARRAY;
     schema[28] = SchemaType.UINT32_ARRAY;
-    vm.expectRevert(abi.encodeWithSelector(Schema_InvalidLength.selector, schema.length));
+    vm.expectRevert(abi.encodeWithSelector(SchemaLib.SchemaLib_InvalidLength.selector, schema.length));
     SchemaLib.encode(schema);
   }
 
@@ -183,7 +183,7 @@ contract SchemaTest is Test, GasReporter {
     schema[3] = SchemaType.UINT32_ARRAY;
     schema[4] = SchemaType.UINT32_ARRAY;
     schema[5] = SchemaType.UINT32_ARRAY;
-    vm.expectRevert(abi.encodeWithSelector(Schema_InvalidLength.selector, schema.length));
+    vm.expectRevert(abi.encodeWithSelector(SchemaLib.SchemaLib_InvalidLength.selector, schema.length));
     SchemaLib.encode(schema);
   }
 
@@ -295,7 +295,9 @@ contract SchemaTest is Test, GasReporter {
   function testValidateInvalidLength() public {
     Schema encodedSchema = Schema.wrap(keccak256("some invalid schema"));
 
-    vm.expectRevert(abi.encodeWithSelector(Schema_InvalidLength.selector, encodedSchema.numDynamicFields()));
+    vm.expectRevert(
+      abi.encodeWithSelector(SchemaLib.SchemaLib_InvalidLength.selector, encodedSchema.numDynamicFields())
+    );
 
     encodedSchema.validate({ allowEmpty: false });
   }
@@ -332,7 +334,7 @@ contract SchemaTest is Test, GasReporter {
     schema[27] = SchemaType.UINT32_ARRAY;
     Schema encodedSchema = encodeUnsafe(schema);
 
-    vm.expectRevert(Schema_StaticTypeAfterDynamicType.selector);
+    vm.expectRevert(SchemaLib.SchemaLib_StaticTypeAfterDynamicType.selector);
 
     encodedSchema.validate({ allowEmpty: false });
   }

@@ -8,7 +8,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
-import { Store_TableAlreadyExists, Store_InvalidResourceType } from "@latticexyz/store/src/errors.sol";
+import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
@@ -508,7 +508,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when registering an existing table
     vm.expectRevert(
-      abi.encodeWithSelector(Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
+      abi.encodeWithSelector(IStoreErrors.Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
     );
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
@@ -732,7 +732,7 @@ contract WorldTest is Test, GasReporter {
     // Expect an error when trying to register a table at the same ID
     vm.expectRevert(
       abi.encodeWithSelector(
-        Store_InvalidResourceType.selector,
+        IStoreErrors.Store_InvalidResourceType.selector,
         RESOURCE_TABLE,
         systemId,
         string(abi.encodePacked(systemId))
@@ -749,7 +749,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to register a new table at an existing table ID
     vm.expectRevert(
-      abi.encodeWithSelector(Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
+      abi.encodeWithSelector(IStoreErrors.Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
     );
     world.registerTable(
       tableId,

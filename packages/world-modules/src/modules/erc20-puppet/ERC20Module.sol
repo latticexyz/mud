@@ -20,9 +20,9 @@ import { ERC20Registry } from "./tables/ERC20Registry.sol";
 import { Allowances } from "./tables/Allowances.sol";
 import { ERC20Metadata, ERC20MetadataData } from "./tables/ERC20Metadata.sol";
 
-error ERC20Module_InvalidNamespace(bytes14 namespace);
-
 contract ERC20Module is Module {
+  error ERC20Module_InvalidNamespace(bytes14 namespace);
+
   address immutable registrationLibrary = address(new ERC20ModuleRegistrationLibrary());
 
   function install(bytes memory encodedArgs) public {
