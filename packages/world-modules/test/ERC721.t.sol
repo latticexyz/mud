@@ -307,6 +307,9 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
 
     ERC721Recipient recipient = new ERC721Recipient();
 
+    // These should not be equal!!!
+    assertEq(from, address(recipient));
+
     token.mint(from, id);
 
     vm.prank(from);
