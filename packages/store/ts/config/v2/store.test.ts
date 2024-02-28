@@ -58,7 +58,7 @@ describe("resolveStoreConfig", () => {
     expectTypeOf<typeof table.valueSchema>().toEqualTypeOf<{ key: "address"; name: "string" }>();
   });
 
-  it("it should return the full config given a full config with one key", () => {
+  it("it should return the full config given a full config with two keys", () => {
     const config = resolveStoreConfig({
       tables: {
         Example: {
@@ -79,14 +79,47 @@ describe("resolveStoreConfig", () => {
     expectTypeOf<typeof table.valueSchema>().toEqualTypeOf<{ name: "string" }>();
   });
 
+  it("it should work for two tables in the config with different schemas", () => {
+    const config = resolveStoreConfig({
+      tables: {
+        First: {
+          schema: { firstKey: "address", firstName: "string", firstAge: "uint256" },
+          keys: ["firstKey", "firstAge"],
+        },
+        Second: {
+          schema: { secondKey: "address", secondName: "string", secondAge: "uint256" },
+          keys: ["secondKey", "secondAge"],
+        },
+      },
+    });
+    const firstTable = config.tables.First;
+    const secondTable = config.tables.Second;
+
+    expectTypeOf<typeof firstTable.schema>().toEqualTypeOf<{
+      firstKey: "address";
+      firstName: "string";
+      firstAge: "uint256";
+    }>();
+    expectTypeOf<typeof firstTable.keys>().toEqualTypeOf<["firstAge", "firstKey"]>();
+    expectTypeOf<typeof firstTable.keySchema>().toEqualTypeOf<{ firstAge: "uint256"; firstKey: "address" }>();
+    expectTypeOf<typeof firstTable.valueSchema>().toEqualTypeOf<{ firstName: "string" }>();
+
+    expectTypeOf<typeof secondTable.schema>().toEqualTypeOf<{
+      secondKey: "address";
+      secondName: "string";
+      secondAge: "uint256";
+    }>();
+    expectTypeOf<typeof secondTable.keys>().toEqualTypeOf<["secondAge", "secondKey"]>();
+    expectTypeOf<typeof secondTable.keySchema>().toEqualTypeOf<{ secondAge: "uint256"; secondKey: "address" }>();
+    expectTypeOf<typeof secondTable.valueSchema>().toEqualTypeOf<{ secondName: "string" }>();
+  });
+
   it("should throw an error if the provided key is not a static field", () => {
     resolveStoreConfig({
       tables: {
-        // @ts-expect-error Keys must have static ABI types.
         Example: {
           schema: { key: "address", name: "string", age: "uint256" },
-          // TODO: Ideally we would show a type error on this field, not just on the top level
-          // TODO: We also don't have auto complete for valid keys yet.
+          // @ts-expect-error Keys must have static ABI types.
           keys: ["name"],
         },
       },
