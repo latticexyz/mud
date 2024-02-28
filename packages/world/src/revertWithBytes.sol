@@ -2,10 +2,7 @@
 pragma solidity >=0.8.24;
 
 /**
- * @title Raw Bytes Reverter
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- * @notice Utility function to revert transactions with raw bytes.
- * @dev This can be especially useful when reverting with a message obtained from a low-level call or a pre-encoded error.
  */
 
 /**

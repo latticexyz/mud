@@ -55,6 +55,11 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
   }
 }
 
+/**
+ * @title WorldContextConsumerLib
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ * @notice Helpers for working with data in the context of calling a World
+ */
 library WorldContextConsumerLib {
   /**
    * @notice Extract the `msg.sender` from the context appended to the calldata.

@@ -40,7 +40,6 @@ import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSyst
  * @notice Registers internal World tables, systems, and their function selectors.
  * @dev This module only supports `installRoot` because it installs root tables, systems and function selectors.
  */
-
 contract InitModule is Module {
   address internal immutable accessManagementSystem;
   address internal immutable balanceTransferSystem;

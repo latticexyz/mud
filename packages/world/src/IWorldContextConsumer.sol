@@ -4,13 +4,6 @@ pragma solidity >=0.8.24;
 import { IERC165 } from "./IERC165.sol";
 
 /**
- * @dev World Context Consumer Interface
- * This interface defines the functions a contract needs to consume the world context.
- * It includes helper functions to retrieve the message sender, value, and world address.
- * Additionally, it integrates with the ERC-165 standard for interface detection.
- */
-
-/**
  * @title WorldContextConsumer - Extracting trusted context values from appended calldata.
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This contract is designed to extract trusted context values (like msg.sender and msg.value)

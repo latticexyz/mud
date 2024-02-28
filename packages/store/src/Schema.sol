@@ -25,6 +25,8 @@ error Schema_InvalidLength(uint256 length);
 error Schema_StaticTypeAfterDynamicType();
 
 /**
+ * @title SchemaLib
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Static utility functions for handling Schemas.
  */
 library SchemaLib {
@@ -87,6 +89,8 @@ library SchemaLib {
 }
 
 /**
+ * @title SchemaInstance
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Instance utility functions for handling a Schema instance.
  */
 library SchemaInstance {
