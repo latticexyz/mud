@@ -1,5 +1,5 @@
 import { SyncStep } from "@latticexyz/store-sync";
-import { useMUD, type MUDNetwork, type ExternalWalletClient } from "./mud/NetworkContext";
+import { useMUD } from "./mud/NetworkContext";
 import { increment, isDelegated, delegateToBurner } from "./mud/systemCalls";
 
 export const App = () => {
