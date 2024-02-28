@@ -39,7 +39,6 @@
     "@types/node": "^18.15.11",
     "@typescript-eslint/eslint-plugin": "5.46.1",
     "@typescript-eslint/parser": "5.46.1",
-    "bun": "^1.0.11",
     "chalk": "^5.2.0",
     "eslint": "8.29.0",
     "execa": "^7.0.0",
