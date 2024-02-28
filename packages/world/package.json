@@ -41,6 +41,7 @@
     "clean:mud": "rimraf src/codegen && rimraf test/codegen",
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
+    "generate-function-signatures": "tsx ./ts/scripts/generate-function-signatures.ts",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "test": "tsc --noEmit && vitest --run --passWithNoTests && forge test",
     "test:ci": "pnpm run test"
