@@ -13,13 +13,13 @@ type Slice is uint256;
 using SliceInstance for Slice global;
 using DecodeSlice for Slice global;
 
+error Slice_OutOfBounds(bytes data, uint256 start, uint256 end);
+
 /**
  * @title Static functions for Slice
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  */
 library SliceLib {
-  error Slice_OutOfBounds(bytes data, uint256 start, uint256 end);
-
   uint256 constant MASK_LEN = uint256(type(uint128).max);
 
   /**

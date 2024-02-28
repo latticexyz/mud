@@ -9,9 +9,8 @@ import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { Tables, TablesTableId, ResourceIds, ResourceIdsTableId, StoreHooks, StoreHooksTableId } from "./codegen/index.sol";
-import { _fieldLayout as TablesTableFieldLayout } from "./codegen/tables/Tables.sol";
-import { Store_TableAlreadyExists, Store_TableNotFound, Store_InvalidResourceType, Store_InvalidStaticDataLength, Store_InvalidKeyNamesLength, Store_InvalidSplice, Store_IndexOutOfBounds, Store_InvalidBounds, Store_InvalidValueSchemaStaticLength, Store_InvalidValueSchemaDynamicLength, Store_InvalidFieldNamesLength, Store_InvalidValueSchemaLength } from "./errors.sol";
+import { Tables, ResourceIds, StoreHooks } from "./codegen/index.sol";
+import "./errors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
@@ -104,30 +103,30 @@ library StoreCore {
     // Instead, we'll register them manually, writing everything to the `Tables` table first,
     // then the `ResourceIds` table. The logic here ought to be kept in sync with the internals
     // of the `registerTable` function below.
-    if (ResourceIds._getExists(TablesTableId)) {
-      revert Store_TableAlreadyExists(TablesTableId, string(abi.encodePacked(TablesTableId)));
+    if (ResourceIds._getExists(Tables._tableId)) {
+      revert Store_TableAlreadyExists(Tables._tableId, string(abi.encodePacked(Tables._tableId)));
     }
-    if (ResourceIds._getExists(ResourceIdsTableId)) {
-      revert Store_TableAlreadyExists(ResourceIdsTableId, string(abi.encodePacked(ResourceIdsTableId)));
+    if (ResourceIds._getExists(ResourceIds._tableId)) {
+      revert Store_TableAlreadyExists(ResourceIds._tableId, string(abi.encodePacked(ResourceIds._tableId)));
     }
     Tables._set(
-      TablesTableId,
-      Tables.getFieldLayout(),
+      Tables._tableId,
+      Tables._fieldLayout,
       Tables.getKeySchema(),
       Tables.getValueSchema(),
       abi.encode(Tables.getKeyNames()),
       abi.encode(Tables.getFieldNames())
     );
     Tables._set(
-      ResourceIdsTableId,
-      ResourceIds.getFieldLayout(),
+      ResourceIds._tableId,
+      ResourceIds._fieldLayout,
       ResourceIds.getKeySchema(),
       ResourceIds.getValueSchema(),
       abi.encode(ResourceIds.getKeyNames()),
       abi.encode(ResourceIds.getFieldNames())
     );
-    ResourceIds._setExists(TablesTableId, true);
-    ResourceIds._setExists(ResourceIdsTableId, true);
+    ResourceIds._setExists(Tables._tableId, true);
+    ResourceIds._setExists(ResourceIds._tableId, true);
 
     // Now we can register the rest of the core tables as regular tables.
     StoreHooks.register();
@@ -148,13 +147,13 @@ library StoreCore {
     // Explicit check for the Tables table to solve the bootstraping issue
     // of the Tables table not having a field layout before it is registered
     // since the field layout is stored in the Tables table.
-    if (ResourceId.unwrap(tableId) == ResourceId.unwrap(TablesTableId)) {
-      return TablesTableFieldLayout;
+    if (ResourceId.unwrap(tableId) == ResourceId.unwrap(Tables._tableId)) {
+      return Tables._fieldLayout;
     }
     return
       FieldLayout.wrap(
         Storage.loadField({
-          storagePointer: StoreCoreInternal._getStaticDataLocation(TablesTableId, ResourceId.unwrap(tableId)),
+          storagePointer: StoreCoreInternal._getStaticDataLocation(Tables._tableId, ResourceId.unwrap(tableId)),
           length: 32,
           offset: 0
         })
@@ -298,7 +297,7 @@ library StoreCore {
    * @param hookAddress The address of the hook to unregister.
    */
   function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) internal {
-    HookLib.filterListByAddress(StoreHooksTableId, tableId, address(hookAddress));
+    HookLib.filterListByAddress(StoreHooks._tableId, tableId, address(hookAddress));
   }
 
   /************************************************************************

@@ -22,22 +22,12 @@ import { ResourceId } from "../../ResourceId.sol";
 // Import user types
 import { ResourceId } from "./../../ResourceId.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "StoreHooks", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x746273746f726500000000000000000053746f7265486f6f6b73000000000000);
-ResourceId constant StoreHooksTableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0000000100000000000000000000000000000000000000000000000000000000
-);
-
 library StoreHooks {
-  /**
-   * @notice Get the table values' field layout.
-   * @return _fieldLayout The field layout for the table.
-   */
-  function getFieldLayout() internal pure returns (FieldLayout) {
-    return _fieldLayout;
-  }
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "StoreHooks", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x746273746f726500000000000000000053746f7265486f6f6b73000000000000);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0000000100000000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key schema.

@@ -23,14 +23,6 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "./../../types.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "UserTyped", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000055736572547970656400000000000000);
-ResourceId constant UserTypedTableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x004d050014080110200000000000000000000000000000000000000000000000
-);
-
 struct UserTypedData {
   TestTypeAddress v1;
   TestTypeInt64 v2;
@@ -40,13 +32,11 @@ struct UserTypedData {
 }
 
 library UserTyped {
-  /**
-   * @notice Get the table values' field layout.
-   * @return _fieldLayout The field layout for the table.
-   */
-  function getFieldLayout() internal pure returns (FieldLayout) {
-    return _fieldLayout;
-  }
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "UserTyped", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000055736572547970656400000000000000);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x004d050014080110200000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key schema.

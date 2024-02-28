@@ -7,7 +7,7 @@ import { StoreCore, StoreCoreInternal } from "../src/StoreCore.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
-import { FieldLayout, FieldLayoutLib } from "../src/FieldLayout.sol";
+import { FieldLayout, FieldLayoutLib, FieldLayout_TooManyDynamicFields } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreMock } from "../test/StoreMock.sol";
@@ -15,7 +15,7 @@ import "../src/errors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
-import { Tables, ResourceIds, TablesTableId } from "../src/codegen/index.sol";
+import { Tables, ResourceIds } from "../src/codegen/index.sol";
 import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../src/storeResourceTypes.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
@@ -82,7 +82,7 @@ contract StoreCoreTest is Test, StoreMock {
     keyTuple[0] = ResourceId.unwrap(tableId);
     vm.expectEmit(true, true, true, true);
     emit Store_SetRecord(
-      TablesTableId,
+      Tables._tableId,
       keyTuple,
       Tables.encodeStatic(fieldLayout, keySchema, valueSchema),
       Tables.encodeLengths(abi.encode(keyNames), abi.encode(fieldNames)),
@@ -129,11 +129,7 @@ contract StoreCoreTest is Test, StoreMock {
     FieldLayout invalidFieldLayout = FieldLayout.wrap(keccak256("random bytes as value field layout"));
 
     vm.expectRevert(
-      abi.encodeWithSelector(
-        FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields.selector,
-        invalidFieldLayout.numDynamicFields(),
-        5
-      )
+      abi.encodeWithSelector(FieldLayout_TooManyDynamicFields.selector, invalidFieldLayout.numDynamicFields(), 5)
     );
     IStore(this).registerTable(
       tableId,

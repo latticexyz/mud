@@ -84,7 +84,6 @@ export function getTableOptions(
     const staticResourceData = tableData.tableIdArgument
       ? undefined
       : {
-          tableIdName: tableName + "TableId",
           namespace: config.namespace,
           name: tableData.name,
           offchainOnly: tableData.offchainOnly,

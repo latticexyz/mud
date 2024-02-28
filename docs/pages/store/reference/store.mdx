@@ -96,6 +96,16 @@ event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 | `tableId`  | `ResourceId` | The ID of the table where the record is deleted.        |
 | `keyTuple` | `bytes32[]`  | An array representing the composite key for the record. |
 
+## StoreHook_NotImplemented
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
+
+Error emitted when a function is not implemented.
+
+```solidity
+error StoreHook_NotImplemented();
+```
+
 ## Store_IndexOutOfBounds
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/errors.sol)
