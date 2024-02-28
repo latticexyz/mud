@@ -204,15 +204,14 @@ export function renderWithFieldSuffix(
 }
 
 /**
- * Renders `_tableId` variable definition and initialization, and its alias which uses the provided `tableIdName`.
- * @param param0 static resource data needed to construct the table id
+ * Renders `_tableId` definition of the given table.
+ * @param param0 static resource data needed to construct the table ID
  */
 export function renderTableId({
   namespace,
   name,
   offchainOnly,
-  tableIdName,
-}: Pick<StaticResourceData, "namespace" | "name" | "offchainOnly" | "tableIdName">): string {
+}: Pick<StaticResourceData, "namespace" | "name" | "offchainOnly">): string {
   return `
     // Hex below is the result of \`WorldResourceIdLib.encode({ namespace: ${JSON.stringify(
       namespace
@@ -222,7 +221,6 @@ export function renderTableId({
       namespace,
       name,
     })});
-    ResourceId constant ${tableIdName} = _tableId;
   `;
 }
 

@@ -7,9 +7,9 @@ import { PuppetRegistry } from "./tables/PuppetRegistry.sol";
 import { PUPPET_TABLE_ID } from "./constants.sol";
 import { Puppet } from "./Puppet.sol";
 
-contract PuppetMaster {
-  error PuppetMaster_NoPuppet(address systemAddress, ResourceId systemId);
+error PuppetMaster_NoPuppet(address systemAddress, ResourceId systemId);
 
+contract PuppetMaster {
   function puppet() internal view returns (Puppet) {
     ResourceId systemId = SystemRegistry.getSystemId(address(this));
     address puppetAddress = PuppetRegistry.get(PUPPET_TABLE_ID, systemId);

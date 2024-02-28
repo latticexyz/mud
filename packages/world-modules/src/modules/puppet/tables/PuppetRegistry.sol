@@ -22,18 +22,9 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 // Import user types
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0014010014000000000000000000000000000000000000000000000000000000
-);
-
 library PuppetRegistry {
-  /**
-   * @notice Get the table values' field layout.
-   * @return _fieldLayout The field layout for the table.
-   */
-  function getFieldLayout() internal pure returns (FieldLayout) {
-    return _fieldLayout;
-  }
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0014010014000000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key schema.

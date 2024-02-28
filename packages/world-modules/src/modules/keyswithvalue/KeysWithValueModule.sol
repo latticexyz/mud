@@ -60,7 +60,7 @@ contract KeysWithValueModule is Module {
         world.registerTable,
         (
           targetTableId,
-          KeysWithValue.getFieldLayout(),
+          KeysWithValue._fieldLayout,
           KeysWithValue.getKeySchema(),
           KeysWithValue.getValueSchema(),
           KeysWithValue.getKeyNames(),

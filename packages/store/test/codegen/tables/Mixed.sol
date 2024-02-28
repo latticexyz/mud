@@ -19,14 +19,6 @@ import { Schema, SchemaLib } from "../../../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../../src/PackedCounter.sol";
 import { ResourceId } from "../../../src/ResourceId.sol";
 
-// Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "Mixed", typeId: RESOURCE_TABLE });`
-ResourceId constant _tableId = ResourceId.wrap(0x746273746f72650000000000000000004d697865640000000000000000000000);
-ResourceId constant MixedTableId = _tableId;
-
-FieldLayout constant _fieldLayout = FieldLayout.wrap(
-  0x0014020204100000000000000000000000000000000000000000000000000000
-);
-
 struct MixedData {
   uint32 u32;
   uint128 u128;
@@ -35,13 +27,11 @@ struct MixedData {
 }
 
 library Mixed {
-  /**
-   * @notice Get the table values' field layout.
-   * @return _fieldLayout The field layout for the table.
-   */
-  function getFieldLayout() internal pure returns (FieldLayout) {
-    return _fieldLayout;
-  }
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "Mixed", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x746273746f72650000000000000000004d697865640000000000000000000000);
+
+  FieldLayout constant _fieldLayout =
+    FieldLayout.wrap(0x0014020204100000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key schema.
