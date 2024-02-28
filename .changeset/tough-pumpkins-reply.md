@@ -1,10 +1,8 @@
 ---
 "create-mud": patch
-"@latticexyz/cli": major
-"@latticexyz/common": major
-"@latticexyz/store": patch
-"@latticexyz/world": patch
-"@latticexyz/world-modules": patch
+"@latticexyz/store": minor
+"@latticexyz/world": minor
+"@latticexyz/world-modules": minor
 ---
 
 Moved key schema and value schema methods to constants in code-generated table libraries for less bytecode and less gas in register/install methods.
