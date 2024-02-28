@@ -11,7 +11,7 @@ import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
 import { Tables, TablesTableId, ResourceIds, ResourceIdsTableId, StoreHooks, StoreHooksTableId } from "./codegen/index.sol";
 import { _fieldLayout as TablesTableFieldLayout } from "./codegen/tables/Tables.sol";
-import { IStoreErrors } from "./IStoreErrors.sol";
+import { Store_TableAlreadyExists, Store_TableNotFound, Store_InvalidResourceType, Store_InvalidStaticDataLength, Store_InvalidKeyNamesLength, Store_InvalidSplice, Store_IndexOutOfBounds, Store_InvalidBounds, Store_InvalidValueSchemaStaticLength, Store_InvalidValueSchemaDynamicLength, Store_InvalidFieldNamesLength, Store_InvalidValueSchemaLength } from "./errors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
@@ -104,10 +104,10 @@ library StoreCore {
     // then the `ResourceIds` table. The logic here ought to be kept in sync with the internals
     // of the `registerTable` function below.
     if (ResourceIds._getExists(TablesTableId)) {
-      revert IStoreErrors.Store_TableAlreadyExists(TablesTableId, string(abi.encodePacked(TablesTableId)));
+      revert Store_TableAlreadyExists(TablesTableId, string(abi.encodePacked(TablesTableId)));
     }
     if (ResourceIds._getExists(ResourceIdsTableId)) {
-      revert IStoreErrors.Store_TableAlreadyExists(ResourceIdsTableId, string(abi.encodePacked(ResourceIdsTableId)));
+      revert Store_TableAlreadyExists(ResourceIdsTableId, string(abi.encodePacked(ResourceIdsTableId)));
     }
     Tables._set(
       TablesTableId,
@@ -170,7 +170,7 @@ library StoreCore {
     keySchema = Tables._getKeySchema(tableId);
     // key schemas can be empty for singleton tables, so we can't depend on key schema for table check
     if (!ResourceIds._getExists(tableId)) {
-      revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
+      revert Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
   }
 
@@ -183,7 +183,7 @@ library StoreCore {
   function getValueSchema(ResourceId tableId) internal view returns (Schema valueSchema) {
     valueSchema = Tables._getValueSchema(tableId);
     if (valueSchema.isEmpty()) {
-      revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
+      revert Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
   }
 
@@ -213,7 +213,7 @@ library StoreCore {
   ) internal {
     // Verify the table ID is of type RESOURCE_TABLE
     if (tableId.getType() != RESOURCE_TABLE && tableId.getType() != RESOURCE_OFFCHAIN_TABLE) {
-      revert IStoreErrors.Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
+      revert Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
     }
 
     // Verify the field layout is valid
@@ -225,44 +225,35 @@ library StoreCore {
 
     // Verify the number of key names matches the number of key schema types
     if (keyNames.length != keySchema.numFields()) {
-      revert IStoreErrors.Store_InvalidKeyNamesLength(keySchema.numFields(), keyNames.length);
+      revert Store_InvalidKeyNamesLength(keySchema.numFields(), keyNames.length);
     }
 
     // Verify the number of value names
     if (fieldNames.length != fieldLayout.numFields()) {
-      revert IStoreErrors.Store_InvalidFieldNamesLength(fieldLayout.numFields(), fieldNames.length);
+      revert Store_InvalidFieldNamesLength(fieldLayout.numFields(), fieldNames.length);
     }
 
     // Verify the number of value schema types
     if (valueSchema.numFields() != fieldLayout.numFields()) {
-      revert IStoreErrors.Store_InvalidValueSchemaLength(fieldLayout.numFields(), valueSchema.numFields());
+      revert Store_InvalidValueSchemaLength(fieldLayout.numFields(), valueSchema.numFields());
     }
     if (valueSchema.numStaticFields() != fieldLayout.numStaticFields()) {
-      revert IStoreErrors.Store_InvalidValueSchemaStaticLength(
-        fieldLayout.numStaticFields(),
-        valueSchema.numStaticFields()
-      );
+      revert Store_InvalidValueSchemaStaticLength(fieldLayout.numStaticFields(), valueSchema.numStaticFields());
     }
     if (valueSchema.numDynamicFields() != fieldLayout.numDynamicFields()) {
-      revert IStoreErrors.Store_InvalidValueSchemaDynamicLength(
-        fieldLayout.numDynamicFields(),
-        valueSchema.numDynamicFields()
-      );
+      revert Store_InvalidValueSchemaDynamicLength(fieldLayout.numDynamicFields(), valueSchema.numDynamicFields());
     }
 
     // Verify that static field lengths are consistent between Schema and FieldLayout
     for (uint256 i; i < fieldLayout.numStaticFields(); i++) {
       if (fieldLayout.atIndex(i) != valueSchema.atIndex(i).getStaticByteLength()) {
-        revert IStoreErrors.Store_InvalidStaticDataLength(
-          fieldLayout.atIndex(i),
-          valueSchema.atIndex(i).getStaticByteLength()
-        );
+        revert Store_InvalidStaticDataLength(fieldLayout.atIndex(i), valueSchema.atIndex(i).getStaticByteLength());
       }
     }
 
     // Verify there is no resource with this ID yet
     if (ResourceIds._getExists(tableId)) {
-      revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
+      revert Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
     }
 
     // Register the table metadata
@@ -289,12 +280,12 @@ library StoreCore {
   function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
     // Hooks are only supported for tables, not for offchain tables
     if (tableId.getType() != RESOURCE_TABLE) {
-      revert IStoreErrors.Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
+      revert Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
     }
 
     // Require the table to exist
     if (!ResourceIds._getExists(tableId)) {
-      revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
+      revert Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
 
     StoreHooks._push(tableId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
@@ -972,7 +963,7 @@ library StoreCore {
   ) internal view returns (bytes memory) {
     // Verify the slice bounds are valid
     if (start > end) {
-      revert IStoreErrors.Store_InvalidBounds(start, end);
+      revert Store_InvalidBounds(start, end);
     }
     // Verify the accessed data is within the bounds of the dynamic field.
     // This is necessary because we don't delete the dynamic data when a record is deleted,
@@ -980,7 +971,7 @@ library StoreCore {
     PackedCounter encodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     uint256 fieldLength = encodedLengths.atIndex(dynamicFieldIndex);
     if (start >= fieldLength || end > fieldLength) {
-      revert IStoreErrors.Store_IndexOutOfBounds(fieldLength, start >= fieldLength ? start : end - 1);
+      revert Store_IndexOutOfBounds(fieldLength, start >= fieldLength ? start : end - 1);
     }
 
     // Get the length and storage location of the dynamic field
@@ -1038,7 +1029,7 @@ library StoreCoreInternal {
     // Splicing dynamic data is not supported for offchain tables, because it
     // requires reading the previous encoded lengths from storage
     if (tableId.getType() != RESOURCE_TABLE) {
-      revert IStoreErrors.Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
+      revert Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
     }
 
     uint256 previousFieldLength = previousEncodedLengths.atIndex(dynamicFieldIndex);
@@ -1047,12 +1038,12 @@ library StoreCoreInternal {
     // If the total length of the field is changed, the data has to be appended/removed at the end of the field.
     // Otherwise offchain indexers would shift the data after inserted data, while onchain the data is truncated at the end.
     if (previousFieldLength != updatedFieldLength && startWithinField + deleteCount != previousFieldLength) {
-      revert IStoreErrors.Store_InvalidSplice(startWithinField, deleteCount, uint40(previousFieldLength));
+      revert Store_InvalidSplice(startWithinField, deleteCount, uint40(previousFieldLength));
     }
 
     // The start index can't be larger than the previous length of the field
     if (startWithinField > previousFieldLength) {
-      revert IStoreErrors.Store_IndexOutOfBounds(previousFieldLength, startWithinField);
+      revert Store_IndexOutOfBounds(previousFieldLength, startWithinField);
     }
 
     // Update the encoded length
