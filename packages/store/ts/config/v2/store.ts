@@ -30,3 +30,29 @@ export function resolveStoreConfig<input extends StoreConfigInput>(
 ): resolveStoreConfig<input> {
   return {} as never;
 }
+
+type input = {
+  First: {
+    schema: {
+      firstKey: "address";
+      firstName: "string";
+      firstAge: "uint256";
+    };
+    keys: ["firstKey", "firstAge"];
+  };
+  Second: {
+    schema: {
+      secondKey: "address";
+      secondName: "string";
+      secondAge: "uint256";
+    };
+    keys: ["firstKey", "firstAge"];
+  };
+};
+
+type schema = inferSchema<input[keyof input]>;
+
+// TODO: How can I constrain StoreConfigInput in a way where each table
+// has a different schema and the keys of each table match the corresponding schema,
+// without requiring a global union
+type validKeys = ValidKeys<schema>;
