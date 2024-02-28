@@ -41,9 +41,6 @@ export function renderTable(options: RenderTableOptions) {
   return `
     ${renderedSolidityHeader}
 
-    // Import schema type
-    import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
-
     // Import store internals
     import { IStore } from "${storeImportPath}IStore.sol";
     import { StoreSwitch } from "${storeImportPath}StoreSwitch.sol";
