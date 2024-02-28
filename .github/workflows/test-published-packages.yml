@@ -11,6 +11,7 @@ on:
       tag-or-version:
         required: true
         type: string
+  pull_request:
 
 jobs:
   test-create-mud-project:
