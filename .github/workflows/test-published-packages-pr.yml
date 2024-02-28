@@ -1,0 +1,27 @@
+name: Test published packages on PR
+
+on:
+  pull_request:
+
+jobs:
+  test-create-mud-project:
+    name: Test create-mud project on PR
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        template: [vanilla]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          sparse-checkout: .github
+
+      - name: Setup
+        uses: ./.github/actions/setup-prerequisites
+
+      - name: Test
+        run: |
+          pnpm create mud@next project --template ${{ matrix.template }}
+          pnpm --dir project run test
