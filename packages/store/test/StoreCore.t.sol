@@ -7,7 +7,7 @@ import { StoreCore, StoreCoreInternal } from "../src/StoreCore.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
-import { FieldLayout, FieldLayoutLib, FieldLayout_TooManyDynamicFields } from "../src/FieldLayout.sol";
+import { FieldLayout, FieldLayoutLib } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreMock } from "../test/StoreMock.sol";
@@ -129,7 +129,11 @@ contract StoreCoreTest is Test, StoreMock {
     FieldLayout invalidFieldLayout = FieldLayout.wrap(keccak256("random bytes as value field layout"));
 
     vm.expectRevert(
-      abi.encodeWithSelector(FieldLayout_TooManyDynamicFields.selector, invalidFieldLayout.numDynamicFields(), 5)
+      abi.encodeWithSelector(
+        FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields.selector,
+        invalidFieldLayout.numDynamicFields(),
+        5
+      )
     );
     IStore(this).registerTable(
       tableId,
