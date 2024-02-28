@@ -9,8 +9,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
-        template: [vanilla]
+        os: [ubuntu-latest-16-cores, windows-latest]
+        template: [vanilla, react, react-ecs, phaser, threejs]
 
     runs-on: ${{ matrix.os }}
     steps:
