@@ -47,7 +47,7 @@ export function resolveTableShorthandConfig<input extends TableShorthandConfigIn
   return input as never;
 }
 
-type inferSchema<input extends TableConfigInput> = input extends TableFullConfigInput
+export type inferSchema<input extends TableConfigInput> = input extends TableFullConfigInput
   ? input["schema"]
   : input extends TableShorthandConfigInput
   ? resolveTableShorthandConfig<input>["schema"]

@@ -1,15 +1,24 @@
-import { conform } from "./generics";
-import { TableConfigInput, resolveTableConfig, validateTableConfig } from "./table";
+import { narrow } from "./generics";
+import { Schema } from "./schema";
+import { TableConfigInput, ValidKeys, inferSchema, resolveTableConfig, validateTableConfig } from "./table";
 
-export interface StoreConfigInput {
-  tables: StoreTablesConfigInput;
+export interface StoreConfigInput<
+  schema extends Schema = Schema,
+  keys extends ValidKeys<schema> = ValidKeys<schema>,
+  table extends TableConfigInput<schema, keys> = TableConfigInput<schema, keys>
+> {
+  tables: StoreTablesConfigInput<schema, keys, table>;
 }
 
-export interface StoreTablesConfigInput {
-  [key: string]: TableConfigInput;
+export interface StoreTablesConfigInput<
+  schema extends Schema,
+  keys extends ValidKeys<schema>,
+  table extends TableConfigInput<schema, keys> = TableConfigInput<schema, keys>
+> {
+  [key: string]: table;
 }
 
-type validateStoreConfig<input extends StoreConfigInput> = {
+export type validateStoreConfig<input extends StoreConfigInput> = {
   tables: {
     [key in keyof input["tables"]]: validateTableConfig<input["tables"][key]>;
   };
@@ -20,7 +29,7 @@ export type resolveStoreConfig<input extends StoreConfigInput> = {
 };
 
 export function resolveStoreConfig<input extends StoreConfigInput>(
-  input: conform<input, StoreConfigInput> & validateStoreConfig<input>
+  input: narrow<input, StoreConfigInput<inferSchema<input["tables"][string]>>> & validateStoreConfig<input>
 ): resolveStoreConfig<input> {
   return {} as never;
 }

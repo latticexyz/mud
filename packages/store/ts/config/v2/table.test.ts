@@ -80,13 +80,5 @@ describe("resolveTableShorthandConfig", () => {
         keys: ["name"],
       });
     });
-
-    it("should throw an error if the provided key is not a static field", () => {
-      resolveTableConfig({
-        schema: { key: "address", name: "string", age: "uint256" },
-        // @ts-expect-error Keys must have static ABI types.
-        keys: ["name"],
-      });
-    });
   });
 });

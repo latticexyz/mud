@@ -82,21 +82,11 @@ describe("resolveStoreConfig", () => {
   it("should throw an error if the provided key is not a static field", () => {
     resolveStoreConfig({
       tables: {
+        // @ts-expect-error Keys must have static ABI types.
         Example: {
           schema: { key: "address", name: "string", age: "uint256" },
-          // @ts-expect-error Keys must have static ABI types.
-          keys: ["name"],
-        },
-      },
-    });
-  });
-
-  it("should throw an error if the provided key is not a static field", () => {
-    resolveStoreConfig({
-      tables: {
-        Example: {
-          schema: { key: "address", name: "string", age: "uint256" },
-          // @ts-expect-error Keys must have static ABI types.
+          // TODO: Ideally we would show a type error on this field, not just on the top level
+          // TODO: We also don't have auto complete for valid keys yet.
           keys: ["name"],
         },
       },
