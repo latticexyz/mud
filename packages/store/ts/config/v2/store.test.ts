@@ -79,7 +79,7 @@ describe("resolveStoreConfig", () => {
     expectTypeOf<typeof table.valueSchema>().toEqualTypeOf<{ name: "string" }>();
   });
 
-  it("it should work for two tables in the config with different schemas", () => {
+  it("should work for two tables in the config with different schemas", () => {
     const config = resolveStoreConfig({
       tables: {
         First: {
@@ -112,6 +112,22 @@ describe("resolveStoreConfig", () => {
     expectTypeOf<typeof secondTable.keys>().toEqualTypeOf<["secondKey", "secondAge"]>();
     expectTypeOf<typeof secondTable.keySchema>().toEqualTypeOf<{ secondAge: "uint256"; secondKey: "address" }>();
     expectTypeOf<typeof secondTable.valueSchema>().toEqualTypeOf<{ secondName: "string" }>();
+  });
+
+  it("should throw if referring to fields of different tables", () => {
+    resolveStoreConfig({
+      tables: {
+        First: {
+          schema: { firstKey: "address", firstName: "string", firstAge: "uint256" },
+          keys: ["firstKey", "firstAge"],
+        },
+        Second: {
+          schema: { secondKey: "address", secondName: "string", secondAge: "uint256" },
+          // @ts-expect-error Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'
+          keys: ["firstKey", "secondAge"],
+        },
+      },
+    });
   });
 
   it("should throw an error if the provided key is not a static field", () => {

@@ -19,7 +19,7 @@ export interface StoreTablesConfigInput {
 
 export type validateStoreTablesConfig<input extends StoreTablesConfigInput> = conform<
   input,
-  { [key in keyof input]: TableFullConfigInput<inferSchema<input[key]>> }
+  { [key in keyof input]: validateTableConfig<input[key], inferSchema<input[key]>> }
 >;
 
 export type validateStoreConfig<input extends StoreConfigInput> = conform<
@@ -36,24 +36,3 @@ export function resolveStoreConfig<input extends StoreConfigInput>(
 ): resolveStoreConfig<input> {
   return {} as never;
 }
-
-type input = {
-  First: {
-    schema: {
-      firstKey: "address";
-      firstName: "string";
-      firstAge: "uint256";
-    };
-    keys: ["firstKey", "firstAge"];
-  };
-  Second: {
-    schema: {
-      secondKey: "address";
-      secondName: "string";
-      secondAge: "uint256";
-    };
-    keys: ["firstKey", "firstAge"];
-  };
-};
-
-type test = { [key in keyof input]: TableFullConfigInput<input[key]["schema"]> };
