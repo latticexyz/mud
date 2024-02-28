@@ -1,13 +1,5 @@
-import { conform, narrow } from "./generics";
-import { Schema } from "./schema";
-import {
-  TableConfigInput,
-  TableFullConfigInput,
-  ValidKeys,
-  inferSchema,
-  resolveTableConfig,
-  validateTableConfig,
-} from "./table";
+import { conform } from "./generics";
+import { TableConfigInput, inferSchema, resolveTableConfig, validateTableConfig } from "./table";
 
 export interface StoreConfigInput {
   tables: StoreTablesConfigInput;
