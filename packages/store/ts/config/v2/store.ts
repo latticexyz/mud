@@ -1,24 +1,30 @@
 import { conform, narrow } from "./generics";
 import { Schema } from "./schema";
-import { TableConfigInput, ValidKeys, inferSchema, resolveTableConfig, validateTableConfig } from "./table";
+import {
+  TableConfigInput,
+  TableFullConfigInput,
+  ValidKeys,
+  inferSchema,
+  resolveTableConfig,
+  validateTableConfig,
+} from "./table";
 
-export interface StoreConfigInput<schema extends Schema = Schema> {
-  tables: StoreTablesConfigInput<schema>;
+export interface StoreConfigInput {
+  tables: StoreTablesConfigInput;
 }
 
-export interface StoreTablesConfigInput<schema extends Schema = Schema> {
-  [key: string]: TableConfigInput<schema>;
+export interface StoreTablesConfigInput {
+  [key: string]: TableConfigInput;
 }
 
-export type validateStoreConfig2<input extends StoreConfigInput> = {
-  tables: {
-    [key in keyof input["tables"]]: validateTableConfig<input["tables"][key], inferSchema<input["tables"][key]>>;
-  };
-};
-
-export type validateStoreConfig<input extends StoreConfigInput, schema extends Schema> = conform<
+export type validateStoreTablesConfig<input extends StoreTablesConfigInput> = conform<
   input,
-  StoreConfigInput<schema>
+  { [key in keyof input]: TableFullConfigInput<inferSchema<input[key]>> }
+>;
+
+export type validateStoreConfig<input extends StoreConfigInput> = conform<
+  input,
+  { tables: validateStoreTablesConfig<input["tables"]> }
 >;
 
 export type resolveStoreConfig<input extends StoreConfigInput> = {
@@ -26,7 +32,7 @@ export type resolveStoreConfig<input extends StoreConfigInput> = {
 };
 
 export function resolveStoreConfig<input extends StoreConfigInput>(
-  input: validateStoreConfig<input, inferSchema<input["tables"][keyof input["tables"]]>>
+  input: validateStoreConfig<input>
 ): resolveStoreConfig<input> {
   return {} as never;
 }
@@ -50,9 +56,4 @@ type input = {
   };
 };
 
-type schema = inferSchema<input[keyof input]>;
-
-// TODO: How can I constrain StoreConfigInput in a way where each table
-// has a different schema and the keys of each table match the corresponding schema,
-// without requiring a global union
-type validKeys = ValidKeys<schema>;
+type test = { [key in keyof input]: TableFullConfigInput<input[key]["schema"]> };

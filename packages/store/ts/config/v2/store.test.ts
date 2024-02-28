@@ -100,7 +100,7 @@ describe("resolveStoreConfig", () => {
       firstName: "string";
       firstAge: "uint256";
     }>();
-    expectTypeOf<typeof firstTable.keys>().toEqualTypeOf<["firstAge", "firstKey"]>();
+    expectTypeOf<typeof firstTable.keys>().toEqualTypeOf<["firstKey", "firstAge"]>();
     expectTypeOf<typeof firstTable.keySchema>().toEqualTypeOf<{ firstAge: "uint256"; firstKey: "address" }>();
     expectTypeOf<typeof firstTable.valueSchema>().toEqualTypeOf<{ firstName: "string" }>();
 
@@ -109,7 +109,7 @@ describe("resolveStoreConfig", () => {
       secondName: "string";
       secondAge: "uint256";
     }>();
-    expectTypeOf<typeof secondTable.keys>().toEqualTypeOf<["secondAge", "secondKey"]>();
+    expectTypeOf<typeof secondTable.keys>().toEqualTypeOf<["secondKey", "secondAge"]>();
     expectTypeOf<typeof secondTable.keySchema>().toEqualTypeOf<{ secondAge: "uint256"; secondKey: "address" }>();
     expectTypeOf<typeof secondTable.valueSchema>().toEqualTypeOf<{ secondName: "string" }>();
   });
