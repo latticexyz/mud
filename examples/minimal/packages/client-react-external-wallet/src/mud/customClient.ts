@@ -12,6 +12,7 @@ import type {
 } from "viem";
 import { sendTransaction, writeContract, simulateContract } from "viem/actions";
 import pRetry from "p-retry";
+import { type Subject } from "rxjs";
 import { getNonceManager, type ContractWrite } from "@latticexyz/common";
 import { type SyncResult } from "@latticexyz/store-sync";
 
@@ -77,7 +78,9 @@ export const burnerActions = <transport extends Transport, chain extends Chain, 
 };
 
 // See @latticexyz/common/src/getContract.ts
-export const setupObserverActions = (onWrite: (write: ContractWrite) => void) => {
+export const setupObserverActions = (write$: Subject<ContractWrite>) => {
+  let nextWriteId = 0;
+
   return <transport extends Transport, chain extends Chain, account extends Account>(
     client: WalletClient<transport, chain, account>
   ): Pick<WalletActions<chain, account>, "writeContract"> => ({
@@ -85,8 +88,8 @@ export const setupObserverActions = (onWrite: (write: ContractWrite) => void) =>
     writeContract: async (args) => {
       const result = writeContract(client, args);
 
-      const id = `${client.chain.id}:${client.account.address}`;
-      onWrite({ id, request: args as WriteContractParameters, result });
+      const id = `${client.chain.id}:${client.account.address}:${nextWriteId++}`;
+      write$.next({ id, request: args as WriteContractParameters, result });
 
       return result;
     },

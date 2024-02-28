@@ -38,9 +38,6 @@ export async function setupNetwork() {
   });
 
   const write$ = new Subject<ContractWrite>();
-  let nextWriteId = 0;
-  const onWrite = (write: ContractWrite) =>
-    write$.next({ id: `${write.id}:${nextWriteId++}`, request: write.request, result: write.result });
 
   const burnerClient = createWalletClient({
     ...clientOptions,
@@ -48,7 +45,7 @@ export async function setupNetwork() {
   })
     .extend(publicActions)
     .extend(burnerActions)
-    .extend(setupObserverActions(onWrite));
+    .extend(setupObserverActions(write$));
 
   return {
     worldAddress: networkConfig.worldAddress,
