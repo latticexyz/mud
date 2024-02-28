@@ -11,7 +11,7 @@ import { FieldLayout, FieldLayoutLib } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreMock } from "../test/StoreMock.sol";
-import "../src/errors.sol";
+import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
@@ -116,7 +116,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a revert when registering a table that already exists
     vm.expectRevert(
-      abi.encodeWithSelector(Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
+      abi.encodeWithSelector(IStoreErrors.Store_TableAlreadyExists.selector, tableId, string(abi.encodePacked(tableId)))
     );
     IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }
@@ -151,7 +151,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     vm.expectRevert(
       abi.encodeWithSelector(
-        Store_InvalidResourceType.selector,
+        IStoreErrors.Store_InvalidResourceType.selector,
         RESOURCE_TABLE,
         invalidTableId,
         string(abi.encodePacked(invalidTableId))
@@ -191,10 +191,14 @@ contract StoreCoreTest is Test, StoreMock {
 
     assertTrue(IStore(this).getFieldLayout(tableId2).isEmpty());
 
-    vm.expectRevert(abi.encodeWithSelector(Store_TableNotFound.selector, tableId2, string(abi.encodePacked(tableId2))));
+    vm.expectRevert(
+      abi.encodeWithSelector(IStoreErrors.Store_TableNotFound.selector, tableId2, string(abi.encodePacked(tableId2)))
+    );
     IStore(this).getValueSchema(tableId2);
 
-    vm.expectRevert(abi.encodeWithSelector(Store_TableNotFound.selector, tableId2, string(abi.encodePacked(tableId2))));
+    vm.expectRevert(
+      abi.encodeWithSelector(IStoreErrors.Store_TableNotFound.selector, tableId2, string(abi.encodePacked(tableId2)))
+    );
     IStore(this).getKeySchema(tableId2);
   }
 
@@ -213,11 +217,11 @@ contract StoreCoreTest is Test, StoreMock {
     string[] memory oneName = new string[](1);
 
     // Register table with invalid key names
-    vm.expectRevert(abi.encodeWithSelector(Store_InvalidKeyNamesLength.selector, 4, 1));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_InvalidKeyNamesLength.selector, 4, 1));
     IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, oneName, oneName);
 
     // Register table with invalid value names
-    vm.expectRevert(abi.encodeWithSelector(Store_InvalidFieldNamesLength.selector, 1, 4));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_InvalidFieldNamesLength.selector, 1, 4));
     IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, fourNames, fourNames);
   }
 
@@ -1043,7 +1047,11 @@ contract StoreCoreTest is Test, StoreMock {
 
     // startByteIndex must not overflow
     vm.expectRevert(
-      abi.encodeWithSelector(Store_IndexOutOfBounds.selector, data.newThirdDataBytes.length, uint40(type(uint56).max))
+      abi.encodeWithSelector(
+        IStoreErrors.Store_IndexOutOfBounds.selector,
+        data.newThirdDataBytes.length,
+        uint40(type(uint56).max)
+      )
     );
     IStore(this).spliceDynamicData(
       data.tableId,
@@ -1079,7 +1087,7 @@ contract StoreCoreTest is Test, StoreMock {
     uint256 data3Length = IStore(this).getFieldLength(tableId, keyTuple, 1, fieldLayout);
     assertEq(data3Length, 0);
 
-    vm.expectRevert(abi.encodeWithSelector(Store_IndexOutOfBounds.selector, 0, 0));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 0));
     bytes memory data3Slice = IStore(this).getDynamicFieldSlice(tableId, keyTuple, 0, 0, 0);
     assertEq(data3Slice.length, 0);
   }
@@ -1150,7 +1158,9 @@ contract StoreCoreTest is Test, StoreMock {
       new string[](1)
     );
 
-    vm.expectRevert(abi.encodeWithSelector(Store_TableNotFound.selector, tableId, string(abi.encodePacked(tableId))));
+    vm.expectRevert(
+      abi.encodeWithSelector(IStoreErrors.Store_TableNotFound.selector, tableId, string(abi.encodePacked(tableId)))
+    );
     IStore(this).registerStoreHook(tableId, subscriber, BEFORE_ALL);
   }
 
