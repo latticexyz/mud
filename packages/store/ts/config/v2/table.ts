@@ -21,6 +21,7 @@ export type TableFullConfigInput<schema extends Schema = Schema, keys extends Va
   keys: keys;
 };
 
+// We don't use `conform` here because the restrictions we're imposing here are not native to typescript
 type validateTableShorthandConfig<input extends TableShorthandConfigInput> = input extends AbiType
   ? input
   : input extends Schema
@@ -43,13 +44,13 @@ export type resolveTableShorthandConfig<input extends TableShorthandConfigInput>
 export function resolveTableShorthandConfig<input extends TableShorthandConfigInput>(
   input: validateTableShorthandConfig<input>
 ): resolveTableShorthandConfig<input> {
-  // TODO: runtime implementatio
+  // TODO: runtime implementation
   return input as never;
 }
 
 export type inferSchema<input extends TableConfigInput> = input extends TableFullConfigInput
   ? input["schema"]
-  : input extends TableShorthandConfigInput
+  : input extends Schema
   ? resolveTableShorthandConfig<input>["schema"]
   : never;
 
@@ -64,6 +65,7 @@ export type validateTableConfig<
 
 type validateTableFullConfig<input extends TableFullConfigInput, schema extends Schema> = conform<
   input,
+  // TODO: why does typescript not infer the `keys` anymore if i change this to `input["schema"]`?
   TableFullConfigInput<schema>
 >;
 

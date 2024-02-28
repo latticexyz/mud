@@ -1,17 +1,5 @@
-import { afterAll, beforeAll, describe, it, expectTypeOf } from "vitest";
+import { describe, it, expectTypeOf } from "vitest";
 import { isStaticAbiType, getStaticAbiTypeKeys, getDynamicAbiTypeKeys } from "./schema";
-import { setup, cleanup } from "@arktype/attest";
-
-// TODO: translate into attest tests
-describe("schema", () => {
-  beforeAll(() => {
-    setup();
-  });
-
-  afterAll(() => {
-    cleanup();
-  });
-});
 
 describe("isStaticAbiType", () => {
   it("should return true if the provided abi type is static, never otherwise", () => {

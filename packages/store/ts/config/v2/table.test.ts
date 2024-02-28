@@ -80,5 +80,15 @@ describe("resolveTableShorthandConfig", () => {
         keys: ["name"],
       });
     });
+
+    it("throw an error if the shorthand doesn't include a key field", () => {
+      // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+      resolveTableConfig({ name: "string", age: "uint256" });
+    });
+
+    it("throw an error if the shorthand config includes a non-static key field", () => {
+      // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+      resolveTableConfig({ key: "string", name: "string", age: "uint256" });
+    });
   });
 });
