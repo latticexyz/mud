@@ -53,17 +53,19 @@ export type inferSchema<input extends TableConfigInput> = input extends TableFul
   ? resolveTableShorthandConfig<input>["schema"]
   : never;
 
-export type validateTableConfig<input> = input extends TableShorthandConfigInput
+export type validateTableConfig<
+  input extends TableConfigInput,
+  schema extends Schema
+> = input extends TableShorthandConfigInput
   ? validateTableShorthandConfig<input>
   : input extends TableFullConfigInput
-  ? validateTableFullConfig<input>
+  ? validateTableFullConfig<input, schema>
   : never;
 
-type validateTableFullConfig<input extends TableFullConfigInput> = input extends TableFullConfigInput
-  ? input["keys"][number] extends getStaticAbiTypeKeys<input["schema"]>
-    ? input
-    : InvalidKeys
-  : InvalidInput;
+type validateTableFullConfig<input extends TableFullConfigInput, schema extends Schema> = conform<
+  input,
+  TableFullConfigInput<schema>
+>;
 
 type resolveTableFullConfig<input extends TableFullConfigInput> = {
   keys: input["keys"];
@@ -89,9 +91,7 @@ export type resolveTableConfig<input extends TableConfigInput> = input extends T
  * - A schema without a `key` field is invalid.
  */
 export function resolveTableConfig<input extends TableConfigInput>(
-  // TODO: is combining conform and validate the right pattern here?
-  //       Somehow without `conform` `keys` is inferred as `[string]`
-  input: conform<input, TableConfigInput<inferSchema<input>>> & validateTableConfig<input>
+  input: validateTableConfig<input, inferSchema<input>>
 ): resolveTableConfig<input> {
   // TODO: runtime implementation
   return input as never;

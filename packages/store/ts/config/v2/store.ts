@@ -20,7 +20,7 @@ export interface StoreTablesConfigInput<
 
 export type validateStoreConfig<input extends StoreConfigInput> = {
   tables: {
-    [key in keyof input["tables"]]: validateTableConfig<input["tables"][key]>;
+    [key in keyof input["tables"]]: validateTableConfig<input["tables"][key], inferSchema<input["tables"][key]>>;
   };
 };
 
