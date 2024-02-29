@@ -146,7 +146,7 @@ contract InitModule is Module {
       _registerRootFunctionSelector(BALANCE_TRANSFER_SYSTEM_ID, functionSignaturesBalanceTransfer[i]);
     }
 
-    string[2] memory functionSignaturesBatchCall = getFunctionSignaturesBatchCall();
+    string[1] memory functionSignaturesBatchCall = getFunctionSignaturesBatchCall();
     for (uint256 i = 0; i < functionSignaturesBatchCall.length; i++) {
       _registerRootFunctionSelector(BATCH_CALL_SYSTEM_ID, functionSignaturesBatchCall[i]);
     }

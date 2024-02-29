@@ -55,7 +55,7 @@ contract LimitedCallContextTest is Test {
   }
 
   function testBatchCallSystem() public {
-    string[2] memory functionSignaturesBatchCall = getFunctionSignaturesBatchCall();
+    string[1] memory functionSignaturesBatchCall = getFunctionSignaturesBatchCall();
 
     for (uint256 i; i < functionSignaturesBatchCall.length; i++) {
       callSystem(BATCH_CALL_SYSTEM_ID, functionSignaturesBatchCall[i]);

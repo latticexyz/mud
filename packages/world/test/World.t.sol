@@ -223,7 +223,7 @@ contract WorldTest is Test, GasReporter {
 
     // Should have registered the core system function selectors
     RegistrationSystem registrationSystem = RegistrationSystem(Systems.getSystem(REGISTRATION_SYSTEM_ID));
-    bytes4[22] memory funcSelectors = [
+    bytes4[21] memory funcSelectors = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
@@ -233,7 +233,6 @@ contract WorldTest is Test, GasReporter {
       BalanceTransferSystem.transferBalanceToNamespace.selector,
       BalanceTransferSystem.transferBalanceToAddress.selector,
       // --- BatchCallSystem ---
-      BatchCallSystem.batchCall.selector,
       BatchCallSystem.batchCallFrom.selector,
       // --- ModuleInstallationSystem ---
       registrationSystem.installModule.selector,

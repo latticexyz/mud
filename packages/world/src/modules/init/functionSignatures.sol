@@ -28,10 +28,9 @@ function getFunctionSignaturesBalanceTransfer() pure returns (string[2] memory) 
 /**
  * @dev Function signatures for batch call system
  */
-function getFunctionSignaturesBatchCall() pure returns (string[2] memory) {
+function getFunctionSignaturesBatchCall() pure returns (string[1] memory) {
   return [
     // --- BatchCallSystem ---
-    "batchCall((bytes32,bytes)[])",
     "batchCallFrom((address,bytes32,bytes)[])"
   ];
 }

@@ -4,6 +4,7 @@ pragma solidity >=0.8.24;
 import { IWorldErrors } from "./IWorldErrors.sol";
 import { IModule } from "./IModule.sol";
 import { ResourceId } from "./WorldResourceId.sol";
+import { SystemCallData } from "./modules/init/types.sol";
 
 /**
  * @title World Module Installation Interface
@@ -35,6 +36,14 @@ interface IWorldCall {
    * @return The abi encoded return data from the called system.
    */
   function call(ResourceId systemId, bytes memory callData) external payable returns (bytes memory);
+
+  /**
+   * @notice Make batch calls to multiple systems into a single transaction.
+   * @dev Iterates through an array of system calls, executes them, and returns an array of return data.
+   * @param systemCalls An array of SystemCallData that contains systemId and callData for each call.
+   * @return returnDatas An array of bytes containing the return data for each system call.
+   */
+  function batchCall(SystemCallData[] calldata systemCalls) external payable returns (bytes[] memory returnDatas);
 
   /**
    * @notice Call the system at the given system ID on behalf of the given delegator.

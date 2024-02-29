@@ -14,28 +14,6 @@ import { LimitedCallContext } from "../LimitedCallContext.sol";
  */
 contract BatchCallSystem is System, LimitedCallContext {
   /**
-   * @notice Make batch calls to multiple systems into a single transaction.
-   * @dev Iterates through an array of system calls, executes them, and returns an array of return data.
-   * @param systemCalls An array of SystemCallData that contains systemId and callData for each call.
-   * @return returnDatas An array of bytes containing the return data for each system call.
-   */
-  function batchCall(
-    SystemCallData[] calldata systemCalls
-  ) public onlyDelegatecall returns (bytes[] memory returnDatas) {
-    IBaseWorld world = IBaseWorld(_world());
-    returnDatas = new bytes[](systemCalls.length);
-
-    for (uint256 i; i < systemCalls.length; i++) {
-      (bool success, bytes memory returnData) = address(world).delegatecall(
-        abi.encodeCall(world.call, (systemCalls[i].systemId, systemCalls[i].callData))
-      );
-      if (!success) revertWithBytes(returnData);
-
-      returnDatas[i] = abi.decode(returnData, (bytes));
-    }
-  }
-
-  /**
    * @notice Make batch calls from specific addresses to multiple systems in a single transaction.
    * @dev Iterates through an array of system calls with specified 'from' addresses, executes them, and returns an array of return data.
    * @param systemCalls An array of SystemCallFromData that contains from, systemId, and callData for each call.

@@ -26,6 +26,7 @@ import { IWorldKernel } from "./IWorldKernel.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
+import { SystemCallData } from "./modules/init/types.sol";
 
 /**
  * @title World Contract
@@ -346,6 +347,27 @@ contract World is StoreData, IWorldKernel {
     bytes memory callData
   ) external payable virtual prohibitDirectCallback returns (bytes memory) {
     return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
+  }
+
+  /**
+   * @notice Make batch calls to multiple systems into a single transaction.
+   * @dev Iterates through an array of system calls, executes them, and returns an array of return data.
+   * @param systemCalls An array of SystemCallData that contains systemId and callData for each call.
+   * @return returnDatas An array of bytes containing the return data for each system call.
+   */
+  function batchCall(
+    SystemCallData[] calldata systemCalls
+  ) external payable virtual prohibitDirectCallback returns (bytes[] memory returnDatas) {
+    returnDatas = new bytes[](systemCalls.length);
+
+    for (uint256 i; i < systemCalls.length; i++) {
+      returnDatas[i] = SystemCall.callWithHooksOrRevert(
+        msg.sender,
+        systemCalls[i].systemId,
+        systemCalls[i].callData,
+        0
+      );
+    }
   }
 
   /**
