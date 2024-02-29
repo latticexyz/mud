@@ -12,6 +12,7 @@ import { ISliceErrors } from "./ISliceErrors.sol";
 /**
  * @title IStore
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ * @notice IStore implements the error interfaces for each library that it uses.
  */
 interface IStore is
   IStoreData,
