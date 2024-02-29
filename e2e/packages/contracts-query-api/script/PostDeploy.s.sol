@@ -16,6 +16,7 @@ contract PostDeploy is Script {
     address bob = makeAddr("bob");
     address alice = makeAddr("alice");
     address mary = makeAddr("mary");
+    address joe = makeAddr("joe");
 
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     vm.startBroadcast(deployerPrivateKey);
@@ -28,6 +29,8 @@ contract PostDeploy is Script {
 
     Position.set({ player: mary, x: 3, y: 5 });
     Health.set({ player: mary, health: 0 });
+
+    Position.set({ player: joe, x: 100, y: 100 });
 
     Terrain.set({ x: 3, y: 5, terrainType: TerrainType.Grassland });
 

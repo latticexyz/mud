@@ -4,7 +4,7 @@ import { AllTables, Query } from "./common";
 import { StoreConfig, Tables } from "@latticexyz/store";
 import { groupBy } from "@latticexyz/common/utils";
 import { encodeAbiParameters } from "viem";
-import { matchesCondition } from "./conditions";
+import { matchesCondition } from "./matchesCondition";
 
 type QueryResult<query extends Query> = {
   // TODO: resolve the actual types via config look up of query subjects
@@ -20,6 +20,7 @@ type QueryResult<query extends Query> = {
 //       - underlying subject field types match
 //       - only keys as subjects for now?
 //       - subjects and conditions all have valid fields
+//       - can only compare like types?
 
 // TODO: make query smarter/config aware for shorthand
 

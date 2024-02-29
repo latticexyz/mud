@@ -24,7 +24,7 @@ export type TableSubject = {
   readonly subject: readonly string[];
 };
 
-export type ConditionLiteral = string | number | boolean;
+export type ConditionLiteral = boolean | number | bigint | string;
 
 export type ComparisonCondition = {
   readonly left: TableField;
