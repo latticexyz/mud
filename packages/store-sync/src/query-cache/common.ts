@@ -1,7 +1,18 @@
+import { StoreConfig, Tables, ResolvedStoreConfig } from "@latticexyz/store";
 import { Hex } from "viem";
+import { storeTables, worldTables } from "../common";
 
 // TODO: move to some common utils file/module/package
 export type satisfy<base, t extends base> = t;
+
+// TODO: make this better with new config resolver
+export type AllTables<
+  config extends StoreConfig,
+  extraTables extends Tables | undefined
+> = ResolvedStoreConfig<config>["tables"] &
+  (extraTables extends Tables ? extraTables : Record<never, never>) &
+  typeof storeTables &
+  typeof worldTables;
 
 export type TableField = {
   readonly tableId: Hex;
@@ -29,6 +40,7 @@ export type InCondition = {
 
 export type QueryCondition = satisfy<{ readonly op: string }, ComparisonCondition | InCondition>;
 
+// TODO: move this into some "wire" type and then make this more client specific (uses config to validate)
 export type Query = {
   readonly from: readonly TableSubject[];
   readonly except?: readonly TableSubject[];

@@ -1,18 +1,11 @@
-import { ResolvedStoreConfig, StoreConfig, Tables, resolveConfig } from "@latticexyz/store";
+import { StoreConfig, Tables, resolveConfig } from "@latticexyz/store";
 import { SyncOptions, SyncResult, storeTables, worldTables } from "../common";
 import { createStoreSync } from "../createStoreSync";
 import { createStore } from "../zustand/createStore";
 import { createStorageAdapter } from "../zustand/createStorageAdapter";
 import { Address } from "viem";
 import { SyncStep } from "../SyncStep";
-
-type AllTables<
-  config extends StoreConfig,
-  extraTables extends Tables | undefined
-> = ResolvedStoreConfig<config>["tables"] &
-  (extraTables extends Tables ? extraTables : Record<never, never>) &
-  typeof storeTables &
-  typeof worldTables;
+import { AllTables } from "./common";
 
 type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables | undefined> = SyncOptions & {
   // require address for now to keep the data model + retrieval simpler
