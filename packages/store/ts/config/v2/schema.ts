@@ -1,5 +1,3 @@
-import { conform } from "./generics";
-
 export type StaticAbiType = "uint256" | "address" | "bool" | "bytes32";
 export type AbiType = StaticAbiType | "bytes" | "string" | "bool[]";
 

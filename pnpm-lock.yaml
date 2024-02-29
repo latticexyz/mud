@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@arktype/attest':
+        specifier: 0.6.2
+        version: 0.6.2(typescript@5.1.6)
       '@changesets/cli':
         specifier: ^2.26.1
         version: 2.26.1
@@ -723,6 +726,9 @@ importers:
 
   packages/store:
     dependencies:
+      '@arktype/util':
+        specifier: 0.0.23
+        version: 0.0.23
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -739,8 +745,8 @@ importers:
         specifier: 1.0.0
         version: 1.0.0(typescript@5.1.6)(zod@3.21.4)
       arktype:
-        specifier: 2.0.0-dev.4
-        version: 2.0.0-dev.4
+        specifier: 1.0.29-alpha
+        version: 1.0.29-alpha
       viem:
         specifier: 2.7.12
         version: 2.7.12(typescript@5.1.6)(zod@3.21.4)
@@ -1211,12 +1217,6 @@ packages:
   /@arktype/fs@0.0.11:
     resolution: {integrity: sha512-f3p8apUMOTl6KlFNTrOX6twQJDeSdSmtYPVca7SaQjUUTAxfUlaROY1/i1C3y2llYDrrQBEbsggk8k2Oxxgrvw==}
     dev: true
-
-  /@arktype/schema@0.0.6:
-    resolution: {integrity: sha512-Z+Y3Sy+xyRCNM2sbQtWvVZoJgdoaR/MUypWJHoc8wl47lxU0GH0J7QrkgYi5dVhRS97nfPIaDLWyoJXEOTiHzA==}
-    dependencies:
-      '@arktype/util': 0.0.23
-    dev: false
 
   /@arktype/util@0.0.20:
     resolution: {integrity: sha512-Wv7lx8lFTPHXLnNi8v4LPEUyml9M2yqeWhRk/Vmejci/XZvR49bD9qEAw7xtIyWDlx8yE84XkXMhHFY2/3fYEQ==}
@@ -4089,14 +4089,6 @@ packages:
 
   /arktype@1.0.29-alpha:
     resolution: {integrity: sha512-glMLgVhIQRSkR3tymiS+POAcWVJH09sfrgic0jHnyFL8BlhHAJZX2BzdImU9zYr1y9NBqy+U93ZNrRTHXsKRDw==}
-    dev: true
-
-  /arktype@2.0.0-dev.4:
-    resolution: {integrity: sha512-1AgVN3A2ngzp3cRuNF8WXZr85B38jrc7lnOkplB4iHbGxUNvI9IyuhzAJtqCjDAo05pXpY2CxLaeSHtANIpF7Q==}
-    dependencies:
-      '@arktype/schema': 0.0.6
-      '@arktype/util': 0.0.23
-    dev: false
 
   /array-includes@3.1.6:
     resolution: {integrity: sha512-sgTbLvL6cNnw24FnbaDyjmvddQ2ML8arZsgaJhoABMoplz/4QRhtrYS+alr1BUM1Bwp6dhx8vVCBSLG+StwOFw==}

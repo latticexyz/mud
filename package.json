@@ -27,7 +27,9 @@
     "release:version": "changeset version && pnpm install --lockfile-only && bun scripts/changelog.ts",
     "sort-package-json": "npx sort-package-json package.json 'packages/*/package.json' 'templates/*/package.json' 'templates/*/packages/*/package.json' 'examples/*/package.json' 'examples/*/packages/*/package.json' 'e2e/*/package.json' 'e2e/*/packages/*/package.json' 'docs/package.json'",
     "test": "pnpm run --recursive --filter=!@latticexyz/services test",
-    "test:ci": "pnpm run --recursive --parallel --filter=!@latticexyz/services test:ci"
+    "test:ci": "pnpm run --recursive --parallel --filter=!@latticexyz/services test:ci",
+    "type-stats": "attest stats",
+    "type-trace": "attest trace"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix",
@@ -35,6 +37,7 @@
     "package.json": "pnpm sort-package-json"
   },
   "devDependencies": {
+    "@arktype/attest": "0.6.2",
     "@changesets/cli": "^2.26.1",
     "@types/node": "^18.15.11",
     "@typescript-eslint/eslint-plugin": "5.46.1",

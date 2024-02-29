@@ -1,12 +1,14 @@
 import { error } from "./error";
 import { AbiType, SchemaInput, getStaticAbiTypeKeys } from "./schema";
-import { conform } from "./generics";
+import { stringifyUnion } from "@arktype/util";
 
 export type NoStaticKeyFieldError =
   error<"Provide a `key` field with static ABI type or a full config with explicit keys override.">;
 export type InvalidInput = error<"Provide a valid shorthand or full table config.">;
-// TODO: any way to have more details in the error here, ie `which keys would be valid keys`?
-export type InvalidKeys = `Keys must have static ABI types.`;
+// @alvrs I added @arktype/util (already transitive of arktype anyways) which has a bunch of type-level utilities like
+// this one for string unions which are otherwise quite messy to do from scratch
+export type InvalidKeys<validKey extends string> =
+  `Keys must have static ABI types (${stringifyUnion<validKey>} are allowed)`;
 
 export type TableConfigInput<
   schema extends SchemaInput = SchemaInput,
@@ -15,7 +17,12 @@ export type TableConfigInput<
 
 export type TableShorthandConfigInput = AbiType | SchemaInput;
 
-export type ValidKeys<schema extends SchemaInput> = [getStaticAbiTypeKeys<schema>, ...getStaticAbiTypeKeys<schema>[]];
+// @alvrs Make sure if you are ever wanting to compare against an array like
+// this you add `readonly` to it
+export type ValidKeys<schema extends SchemaInput> = readonly [
+  getStaticAbiTypeKeys<schema>,
+  ...getStaticAbiTypeKeys<schema>[]
+];
 
 export type TableFullConfigInput<
   schema extends SchemaInput = SchemaInput,
@@ -58,20 +65,19 @@ export type inferSchema<input extends TableConfigInput> = input extends TableFul
   ? resolveTableShorthandConfig<input>["schema"]
   : never;
 
-export type validateTableConfig<
-  input extends TableConfigInput,
-  schema extends SchemaInput
-> = input extends TableShorthandConfigInput
+export type validateTableConfig<input> = input extends TableShorthandConfigInput
   ? validateTableShorthandConfig<input>
   : input extends TableFullConfigInput
-  ? validateTableFullConfig<input, schema>
-  : never;
+  ? validateTableFullConfig<input>
+  : TableFullConfigInput | TableShorthandConfigInput;
 
-type validateTableFullConfig<input extends TableFullConfigInput, schema extends SchemaInput> = conform<
-  input,
-  // TODO: why does typescript not infer the `keys` anymore if i change this to `input["schema"]`?
-  TableFullConfigInput<schema>
->;
+type validateTableFullConfig<input extends TableFullConfigInput> = {
+  [k in keyof input]: k extends "keys" ? validateKeys<input[k], getStaticAbiTypeKeys<input["schema"]>> : input[k];
+};
+
+type validateKeys<keys, validKey extends PropertyKey> = {
+  [i in keyof keys]: keys[i] extends validKey ? keys[i] : validKey;
+};
 
 type resolveTableFullConfig<input extends TableFullConfigInput> = {
   keys: input["keys"];
@@ -84,7 +90,7 @@ type resolveTableFullConfig<input extends TableFullConfigInput> = {
   };
 };
 
-export type resolveTableConfig<input extends TableConfigInput> = input extends TableShorthandConfigInput
+export type resolveTableConfig<input> = input extends TableShorthandConfigInput
   ? resolveTableConfig<resolveTableShorthandConfig<input>>
   : input extends TableFullConfigInput
   ? resolveTableFullConfig<input>
@@ -96,9 +102,7 @@ export type resolveTableConfig<input extends TableConfigInput> = input extends T
  * - A schema with a `key` field with static ABI type is turned into { schema: INPUT, key: ["key"] }.
  * - A schema without a `key` field is invalid.
  */
-export function resolveTableConfig<input extends TableConfigInput>(
-  input: validateTableConfig<input, inferSchema<input>>
-): resolveTableConfig<input> {
+export function resolveTableConfig<input>(input: validateTableConfig<input>): resolveTableConfig<input> {
   // TODO: runtime implementation
   return input as never;
 }
