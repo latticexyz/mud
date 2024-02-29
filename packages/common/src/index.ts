@@ -15,7 +15,7 @@ export * from "./result";
 export * from "./sendTransaction";
 export * from "./spliceHex";
 export * from "./transportObserver";
-export * from "./viemCustomActions";
+export * from "./viemActions";
 export * from "./writeContract";
 
 /** @deprecated use `getContract` instead */
