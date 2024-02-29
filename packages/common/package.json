@@ -11,6 +11,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
+    "./actions": "./dist/actions.js",
     "./chains": "./dist/chains.js",
     "./codegen": "./dist/codegen.js",
     "./errors": "./dist/errors.js",
@@ -22,6 +23,9 @@
     "*": {
       "index": [
         "./src/index.ts"
+      ],
+      "actions": [
+        "./src/actions/index.ts"
       ],
       "chains": [
         "./src/chains/index.ts"
