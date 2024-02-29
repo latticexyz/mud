@@ -15,7 +15,7 @@ import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
-import { Tables, ResourceIds, TablesTableId } from "../src/codegen/index.sol";
+import { Tables, ResourceIds } from "../src/codegen/index.sol";
 import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../src/storeResourceTypes.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
@@ -82,7 +82,7 @@ contract StoreCoreTest is Test, StoreMock {
     keyTuple[0] = ResourceId.unwrap(tableId);
     vm.expectEmit(true, true, true, true);
     emit Store_SetRecord(
-      TablesTableId,
+      Tables._tableId,
       keyTuple,
       Tables.encodeStatic(fieldLayout, keySchema, valueSchema),
       Tables.encodeLengths(abi.encode(keyNames), abi.encode(fieldNames)),

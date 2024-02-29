@@ -4,7 +4,7 @@ import { encodeValueArgs } from "./encodeValueArgs";
 
 export function encodeValue<TSchema extends ValueSchema>(
   valueSchema: TSchema,
-  value: SchemaToPrimitives<TSchema>,
+  value: SchemaToPrimitives<TSchema>
 ): Hex {
   const { staticData, encodedLengths, dynamicData } = encodeValueArgs(valueSchema, value);
   return concatHex([staticData, encodedLengths, dynamicData]);

@@ -24,7 +24,7 @@ export interface SolidityUserDefinedType {
 export function extractUserTypes(
   data: string,
   userTypeNames: string[],
-  fromPath: string,
+  fromPath: string
 ): Record<string, SolidityUserDefinedType> {
   const ast = parse(data);
 

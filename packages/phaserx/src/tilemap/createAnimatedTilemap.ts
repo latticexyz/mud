@@ -7,7 +7,7 @@ import { createVirtualTilemap } from "./createVirtualTilemap";
 import { TileAnimation } from "./types";
 
 export function createAnimatedTilemap<TileKeys extends number, LayerKeys extends string, AnimationKeys extends string>(
-  config: Omit<ChunkedTilemapConfig<TileKeys, string>, "tiles"> & { animationInterval: number },
+  config: Omit<ChunkedTilemapConfig<TileKeys, string>, "tiles"> & { animationInterval: number }
 ): AnimatedTilemap<TileKeys, LayerKeys, AnimationKeys> {
   const {
     layerConfig: { layers, defaultLayer },

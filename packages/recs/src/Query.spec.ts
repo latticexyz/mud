@@ -98,27 +98,27 @@ describe("Query", () => {
       expect(runQuery([HasValue(OwnedByEntity, { value: Player })])).toEqual(new Set([Depth1]));
 
       expect(runQuery([ProxyExpand(OwnedByEntity, 0), HasValue(OwnedByEntity, { value: Player })])).toEqual(
-        new Set([Depth1]),
+        new Set([Depth1])
       );
 
       expect(runQuery([ProxyExpand(OwnedByEntity, 1), HasValue(OwnedByEntity, { value: Player })])).toEqual(
-        new Set([Depth1, Depth2]),
+        new Set([Depth1, Depth2])
       );
 
       expect(runQuery([ProxyExpand(OwnedByEntity, 2), HasValue(OwnedByEntity, { value: Player })])).toEqual(
-        new Set([Depth1, Depth2, Depth3]),
+        new Set([Depth1, Depth2, Depth3])
       );
 
       expect(runQuery([ProxyExpand(OwnedByEntity, 3), HasValue(OwnedByEntity, { value: Player })])).toEqual(
-        new Set([Depth1, Depth2, Depth3, Depth4]),
+        new Set([Depth1, Depth2, Depth3, Depth4])
       );
 
       expect(runQuery([ProxyExpand(OwnedByEntity, 4), HasValue(OwnedByEntity, { value: Player })])).toEqual(
-        new Set([Depth1, Depth2, Depth3, Depth4, Depth5]),
+        new Set([Depth1, Depth2, Depth3, Depth4, Depth5])
       );
 
       expect(
-        runQuery([ProxyExpand(OwnedByEntity, Number.MAX_SAFE_INTEGER), HasValue(OwnedByEntity, { value: Player })]),
+        runQuery([ProxyExpand(OwnedByEntity, Number.MAX_SAFE_INTEGER), HasValue(OwnedByEntity, { value: Player })])
       ).toEqual(new Set([Depth1, Depth2, Depth3, Depth4, Depth5]));
     });
 
@@ -132,8 +132,8 @@ describe("Query", () => {
       expect(
         runQuery(
           [ProxyRead(OwnedByEntity, 1), HasValue(Name, { name: "Alice" })],
-          new Set([Depth1, Depth2, Depth3]), // Provide an initial set of entities
-        ),
+          new Set([Depth1, Depth2, Depth3]) // Provide an initial set of entities
+        )
       ).toEqual(new Set([Depth1]));
 
       expect(
@@ -142,7 +142,7 @@ describe("Query", () => {
           HasValue(Name, { name: "Alice" }), // Get all entities with name Alice or owned by Alice
           ProxyExpand(OwnedByEntity, 0), // Turn off proxy expand
           NotValue(Name, { name: "Alice" }), // Filter Alice, only keep entities owned by Alice
-        ]),
+        ])
       ).toEqual(new Set([Depth1]));
 
       expect(
@@ -151,15 +151,15 @@ describe("Query", () => {
           HasValue(Name, { name: "Alice" }), // Get all child entities of Alice (including alice)
           ProxyExpand(OwnedByEntity, 0), // Turn off proxy expand
           NotValue(Name, { name: "Alice" }), // Filter Alice, only keep entities owned by Alice
-        ]),
+        ])
       ).toEqual(new Set([Depth1, Depth2, Depth3, Depth4]));
 
       // Get all entities from the initial set [Depth3] that have an indirect owner called Alice
       expect(
         runQuery(
           [ProxyRead(OwnedByEntity, Number.MAX_SAFE_INTEGER), HasValue(Name, { name: "Alice" })],
-          new Set([Depth3]), // Provide an initial set of entities
-        ),
+          new Set([Depth3]) // Provide an initial set of entities
+        )
       ).toEqual(new Set([Depth3]));
 
       // Get all entities that have an indirect owner called Alice
@@ -171,8 +171,8 @@ describe("Query", () => {
             ProxyRead(OwnedByEntity, 0),
             NotValue(Name, { name: "Alice" }),
           ],
-          new Set([Player, Depth1, Depth2, Depth3, Depth4]), // Provide an initial set of entities
-        ),
+          new Set([Player, Depth1, Depth2, Depth3, Depth4]) // Provide an initial set of entities
+        )
       ).toEqual(new Set([Depth1, Depth2, Depth3, Depth4]));
 
       // Get all entities from the initial set [Depth3] that have an indirect owner called Alice and their direct child
@@ -183,8 +183,8 @@ describe("Query", () => {
             ProxyExpand(OwnedByEntity, 1),
             HasValue(Name, { name: "Alice" }),
           ],
-          new Set([Depth2]), // Provide an initial set of entities
-        ),
+          new Set([Depth2]) // Provide an initial set of entities
+        )
       ).toEqual(new Set([Depth2, Depth3]));
     });
 
@@ -204,15 +204,15 @@ describe("Query", () => {
       createEntity(world, [withValue(Position, { x: 1, y: 1 })]);
 
       expect(runQuery([ProxyExpand(FromPrototype, 1), Has(CanMove), Not(Prototype)])).toEqual(
-        new Set([instance1, instance2]),
+        new Set([instance1, instance2])
       );
 
       expect(runQuery([Has(Position), ProxyRead(FromPrototype, 1), Has(CanMove)])).toEqual(
-        new Set([instance1, instance2]),
+        new Set([instance1, instance2])
       );
 
       expect(runQuery([ProxyRead(FromPrototype, 1), Has(Position), Has(CanMove)])).toEqual(
-        new Set([instance1, instance2]),
+        new Set([instance1, instance2])
       );
     });
 
@@ -287,7 +287,7 @@ describe("Query", () => {
           Has(CanMove), // ...have the CanMove component...
           ProxyRead(OwnedByEntity, Number.MAX_SAFE_INTEGER), // ...and for whose owner holds...
           NotValue(Name, { name: "Alice" }), // ...their name is not Alice
-        ]),
+        ])
       ).toEqual(new Set([Instance3, Entity8]));
     });
 
@@ -343,14 +343,14 @@ describe("Query", () => {
           entity: entities[0],
           component: CanMove,
           value: [{ value: true }, undefined],
-        }),
+        })
       );
       expect(mock).toHaveBeenCalledWith(
         expect.objectContaining({
           entity: entities[1],
           component: CanMove,
           value: [{ value: true }, undefined],
-        }),
+        })
       );
       expect(mock).toBeCalledTimes(2);
 
@@ -360,7 +360,7 @@ describe("Query", () => {
           entity: entities[2],
           component: CanMove,
           value: [{ value: true }, undefined],
-        }),
+        })
       );
       expect(mock).toHaveBeenCalledTimes(3);
     });
@@ -388,7 +388,7 @@ describe("Query", () => {
           entity: entity1,
           component: CanMove,
           value: [undefined, { value: true }],
-        }),
+        })
       );
 
       removeComponent(CanMove, entity2);
@@ -398,7 +398,7 @@ describe("Query", () => {
           entity: entity2,
           component: CanMove,
           value: [undefined, { value: true }],
-        }),
+        })
       );
     });
   });
@@ -617,7 +617,7 @@ describe("Query", () => {
 
       const query1 = defineQuery(
         [ProxyRead(OwnedByEntity, 1), HasValue(Name, { name: "Alice" })],
-        { initialSet: new Set([Depth1, Depth2, Depth3]) }, // Provide an initial set of entities
+        { initialSet: new Set([Depth1, Depth2, Depth3]) } // Provide an initial set of entities
       );
       query1.update$.subscribe();
 
@@ -639,7 +639,7 @@ describe("Query", () => {
 
       const query4 = defineQuery(
         [ProxyRead(OwnedByEntity, Number.MAX_SAFE_INTEGER), HasValue(Name, { name: "Alice" })],
-        { initialSet: new Set([Depth3]) }, // Provide an initial set of entities
+        { initialSet: new Set([Depth3]) } // Provide an initial set of entities
       );
       query4.update$.subscribe();
 
@@ -650,7 +650,7 @@ describe("Query", () => {
           ProxyRead(OwnedByEntity, 0),
           NotValue(Name, { name: "Alice" }),
         ],
-        { initialSet: new Set([Player, Depth1, Depth2, Depth3, Depth4]) }, // Provide an initial set of entities
+        { initialSet: new Set([Player, Depth1, Depth2, Depth3, Depth4]) } // Provide an initial set of entities
       );
       query5.update$.subscribe();
 
@@ -660,7 +660,7 @@ describe("Query", () => {
           ProxyExpand(OwnedByEntity, 1),
           HasValue(Name, { name: "Alice" }),
         ],
-        { initialSet: new Set([Depth2]) }, // Provide an initial set of entities
+        { initialSet: new Set([Depth2]) } // Provide an initial set of entities
       );
       query6.update$.subscribe();
 

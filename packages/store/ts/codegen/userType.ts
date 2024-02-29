@@ -14,7 +14,7 @@ import { StoreConfig } from "../config";
 export function resolveAbiOrUserType(
   abiOrUserType: string,
   config: StoreConfig,
-  solidityUserTypes: Record<string, SolidityUserDefinedType>,
+  solidityUserTypes: Record<string, SolidityUserDefinedType>
 ): {
   schemaType: SchemaType;
   renderType: RenderType;
@@ -47,7 +47,7 @@ export function importForAbiOrUserType(
   abiOrUserType: string,
   usedInDirectory: string,
   config: StoreConfig,
-  solidityUserTypes: Record<string, SolidityUserDefinedType>,
+  solidityUserTypes: Record<string, SolidityUserDefinedType>
 ): ImportDatum | undefined {
   // abi types which directly mirror a SchemaType
   if (abiOrUserType in AbiTypeToSchemaType) {
@@ -103,7 +103,7 @@ export function getSchemaTypeInfo(schemaType: SchemaType): RenderType {
 export function getUserTypeInfo(
   userType: string,
   config: StoreConfig,
-  solidityUserTypes: Record<string, SolidityUserDefinedType>,
+  solidityUserTypes: Record<string, SolidityUserDefinedType>
 ): {
   schemaType: SchemaType;
   renderType: RenderType;

@@ -55,7 +55,7 @@ function getComponentName(component: Component<any, any, any>) {
 export function defineComponent<S extends Schema, M extends Metadata, T = unknown>(
   world: World,
   schema: S,
-  options?: { id?: string; metadata?: M; indexed?: boolean },
+  options?: { id?: string; metadata?: M; indexed?: boolean }
 ) {
   if (Object.keys(schema).length === 0) throw new Error("Component schema must have at least one key");
   const id = options?.id ?? uuid();
@@ -86,7 +86,7 @@ export function setComponent<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
   entity: Entity,
   value: ComponentValue<S, T>,
-  options: ComponentMutationOptions = {},
+  options: ComponentMutationOptions = {}
 ) {
   const entitySymbol = getEntitySymbol(entity);
   const prevValue = getComponentValue(component, entity);
@@ -110,7 +110,7 @@ export function setComponent<S extends Schema, T = unknown>(
           "for entity",
           entity,
           ". Existing keys: ",
-          Object.keys(component.values),
+          Object.keys(component.values)
         );
       }
     }
@@ -141,7 +141,7 @@ export function updateComponent<S extends Schema, T = unknown>(
   entity: Entity,
   value: Partial<ComponentValue<S, T>>,
   initialValue?: ComponentValue<S, T>,
-  options: ComponentMutationOptions = {},
+  options: ComponentMutationOptions = {}
 ) {
   const currentValue = getComponentValue(component, entity);
   if (currentValue === undefined) {
@@ -163,7 +163,7 @@ export function updateComponent<S extends Schema, T = unknown>(
 export function removeComponent<S extends Schema, M extends Metadata, T = unknown>(
   component: Component<S, M, T>,
   entity: Entity,
-  options: ComponentMutationOptions = {},
+  options: ComponentMutationOptions = {}
 ) {
   const entitySymbol = getEntitySymbol(entity);
   const prevValue = getComponentValue(component, entity);
@@ -184,7 +184,7 @@ export function removeComponent<S extends Schema, M extends Metadata, T = unknow
  */
 export function hasComponent<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
-  entity: Entity,
+  entity: Entity
 ): boolean {
   const entitySymbol = getEntitySymbol(entity);
   const map = Object.values(component.values)[0];
@@ -201,7 +201,7 @@ export function hasComponent<S extends Schema, T = unknown>(
  */
 export function getComponentValue<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
-  entity: Entity,
+  entity: Entity
 ): ComponentValue<S, T> | undefined {
   const value: Record<string, unknown> = {};
   const entitySymbol = getEntitySymbol(entity);
@@ -230,7 +230,7 @@ export function getComponentValue<S extends Schema, T = unknown>(
  */
 export function getComponentValueStrict<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
-  entity: Entity,
+  entity: Entity
 ): ComponentValue<S, T> {
   const value = getComponentValue(component, entity);
   if (!value) throw new Error(`No value for component ${getComponentName(component)} on entity ${entity}`);
@@ -253,7 +253,7 @@ export function getComponentValueStrict<S extends Schema, T = unknown>(
  */
 export function componentValueEquals<S extends Schema, T = unknown>(
   a?: Partial<ComponentValue<S, T>>,
-  b?: ComponentValue<S, T>,
+  b?: ComponentValue<S, T>
 ): boolean {
   if (!a && !b) return true;
   if (!a || !b) return false;
@@ -276,7 +276,7 @@ export function componentValueEquals<S extends Schema, T = unknown>(
  */
 export function withValue<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
-  value: ComponentValue<S, T>,
+  value: ComponentValue<S, T>
 ): [Component<S, Metadata, T>, ComponentValue<S, T>] {
   return [component, value];
 }
@@ -290,7 +290,7 @@ export function withValue<S extends Schema, T = unknown>(
  */
 export function getEntitiesWithValue<S extends Schema>(
   component: Component<S> | Indexer<S>,
-  value: Partial<ComponentValue<S>>,
+  value: Partial<ComponentValue<S>>
 ): Set<Entity> {
   // Shortcut for indexers
   if (isIndexer(component) && isFullComponentValue(component, value)) {
@@ -315,7 +315,7 @@ export function getEntitiesWithValue<S extends Schema>(
  * @returns Set of all entities in the given component.
  */
 export function getComponentEntities<S extends Schema, T = unknown>(
-  component: Component<S, Metadata, T>,
+  component: Component<S, Metadata, T>
 ): IterableIterator<Entity> {
   return component.entities();
 }
@@ -335,7 +335,7 @@ export function getComponentEntities<S extends Schema, T = unknown>(
  * @returns overridable component
  */
 export function overridableComponent<S extends Schema, M extends Metadata, T = unknown>(
-  component: Component<S, M, T>,
+  component: Component<S, M, T>
 ): OverridableComponent<S, M, T> {
   let nonce = 0;
 
@@ -457,7 +457,7 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
   component.update$
     .pipe(
       filter((e) => !overriddenEntityValues.get(getEntitySymbol(e.entity))),
-      map((update) => ({ ...update, component: overriddenComponent })),
+      map((update) => ({ ...update, component: overriddenComponent }))
     )
     .subscribe(update$);
 
@@ -475,7 +475,7 @@ export function clearLocalCache(component: Component, uniqueWorldIdentifier?: st
 // Note: Only proof of concept for now - use this only for component that do not update frequently
 export function createLocalCache<S extends Schema, M extends Metadata, T = unknown>(
   component: Component<S, M, T>,
-  uniqueWorldIdentifier?: string,
+  uniqueWorldIdentifier?: string
 ): Component<S, M, T> {
   const { world, update$, values } = component;
   const cacheId = getLocalCacheId(component as Component, uniqueWorldIdentifier);
@@ -509,7 +509,7 @@ export function createLocalCache<S extends Schema, M extends Metadata, T = unkno
   const updateSub = update$.subscribe(() => {
     numUpdates++;
     const encoded = JSON.stringify(
-      Object.entries(mapObject(values, (m) => [...m.entries()].map((e) => [getEntityString(e[0]), e[1]]))),
+      Object.entries(mapObject(values, (m) => [...m.entries()].map((e) => [getEntityString(e[0]), e[1]])))
     );
     localStorage.setItem(cacheId, encoded);
     if (numUpdates > 200) {
@@ -520,7 +520,7 @@ export function createLocalCache<S extends Schema, M extends Metadata, T = unkno
         numUpdates,
         "times since",
         new Date(creation).toLocaleTimeString(),
-        "- the local cache is in an alpha state and should not be used with components that update frequently yet",
+        "- the local cache is in an alpha state and should not be used with components that update frequently yet"
       );
     }
   });

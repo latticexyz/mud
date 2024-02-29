@@ -20,7 +20,7 @@ describe("Store events", () => {
     for (const storeEvent of storeEvents) {
       const parsedStoreEvent = parseAbiItem(storeEvent);
       const abiItem = IStoreAbi.find(
-        (item) => item.type === parsedStoreEvent.type && item.name === parsedStoreEvent.name,
+        (item) => item.type === parsedStoreEvent.type && item.name === parsedStoreEvent.name
       );
       expect(abiItem).not.toBeUndefined();
       expect(normalizeAbiEvent(parsedStoreEvent)).toMatchObject(normalizeAbiEvent(abiItem as AbiEvent));

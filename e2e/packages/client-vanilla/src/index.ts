@@ -17,7 +17,7 @@ _window.getEntities = (componentName: keyof typeof components) => Array.from(com
 
 _window.getKeys = (componentName: keyof typeof components) =>
   Array.from(components[componentName].entities()).map((entity) =>
-    decodeEntity(components[componentName].metadata.keySchema, entity),
+    decodeEntity(components[componentName].metadata.keySchema, entity)
   );
 
 // Update block number in the UI

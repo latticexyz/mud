@@ -17,7 +17,7 @@ import { Component, ComponentValue, Entity, EntitySymbol, World } from "./types"
 export function createEntity(
   world: World,
   components?: [Component, ComponentValue][],
-  options?: { id?: string } | { idSuffix?: string },
+  options?: { id?: string } | { idSuffix?: string }
 ): Entity {
   const entity = world.registerEntity(options ?? {});
 

@@ -7,7 +7,7 @@ export function defineInternalComponents(world: World) {
     RegisteredTables: defineComponent<{ table: Type.T }, Metadata, Table>(
       world,
       { table: Type.T },
-      { metadata: { componentName: "RegisteredTables" } },
+      { metadata: { componentName: "RegisteredTables" } }
     ),
     SyncProgress: defineComponent(
       world,
@@ -18,7 +18,7 @@ export function defineInternalComponents(world: World) {
         latestBlockNumber: Type.BigInt,
         lastBlockNumberProcessed: Type.BigInt,
       },
-      { metadata: { componentName: "SyncProgress" } },
+      { metadata: { componentName: "SyncProgress" } }
     ),
   } as const satisfies Record<string, Component<Schema, Metadata>>;
 }

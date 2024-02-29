@@ -36,11 +36,11 @@ export type ZustandState<tables extends Tables> = {
   readonly getRecords: <table extends Table>(table: table) => TableRecords<table>;
   readonly getRecord: <table extends Table>(
     table: table,
-    key: SchemaToPrimitives<table["keySchema"]>,
+    key: SchemaToPrimitives<table["keySchema"]>
   ) => TableRecord<table> | undefined;
   readonly getValue: <table extends Table>(
     table: table,
-    key: SchemaToPrimitives<table["keySchema"]>,
+    key: SchemaToPrimitives<table["keySchema"]>
   ) => TableRecord<table>["value"] | undefined;
 };
 
@@ -65,12 +65,12 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
     getRecords: <table extends Table>(table: table): TableRecords<table> => {
       const records = get().records;
       return Object.fromEntries(
-        Object.entries(records).filter(([id, record]) => record.table.tableId === table.tableId),
+        Object.entries(records).filter(([id, record]) => record.table.tableId === table.tableId)
       ) as unknown as TableRecords<table>;
     },
     getRecord: <table extends Table>(
       table: table,
-      key: SchemaToPrimitives<table["keySchema"]>,
+      key: SchemaToPrimitives<table["keySchema"]>
     ): TableRecord<table> | undefined => {
       const keyTuple = encodeKey(flattenSchema(table.keySchema), key);
       const id = getId({ tableId: table.tableId, keyTuple });
@@ -78,7 +78,7 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
     },
     getValue: <table extends Table>(
       table: table,
-      key: SchemaToPrimitives<table["keySchema"]>,
+      key: SchemaToPrimitives<table["keySchema"]>
     ): TableRecord<table>["value"] | undefined => {
       return get().getRecord(table, key)?.value;
     },

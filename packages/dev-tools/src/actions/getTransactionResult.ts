@@ -13,7 +13,7 @@ const cache: Record<string, Promise<SimulateContractReturnType>> = {};
 export function getTransactionResult(
   publicClient: PublicClient<Transport, Chain>,
   worldAbi: Abi,
-  write: ContractWrite,
+  write: ContractWrite
 ): Promise<SimulateContractReturnType> {
   if (!cache[write.id]) {
     const transaction = getTransaction(publicClient, write);

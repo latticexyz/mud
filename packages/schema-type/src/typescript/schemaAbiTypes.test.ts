@@ -9,7 +9,7 @@ describe("schemaAbiTypes", () => {
     const soliditySchemaTypes = matches?.[1].replace(/\s/g, "").split(",") ?? [];
 
     const soliditySchemaTypesAsAbiTypes = soliditySchemaTypes.map((soliditySchemaType) =>
-      soliditySchemaType.replace(/_ARRAY$/, "[]").toLowerCase(),
+      soliditySchemaType.replace(/_ARRAY$/, "[]").toLowerCase()
     );
 
     expect(soliditySchemaTypesAsAbiTypes).toStrictEqual(schemaAbiTypes);

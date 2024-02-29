@@ -63,7 +63,7 @@ const commandModule: CommandModule<Options, Options> = {
 
     const resolvedConfig = resolveWorldConfig(
       mudConfig,
-      existingContracts.map(({ basename }) => basename),
+      existingContracts.map(({ basename }) => basename)
     );
 
     // Get worldAddress either from args or from worldsFile

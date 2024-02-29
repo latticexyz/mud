@@ -22,7 +22,7 @@ const latestBlock$ = await createBlockStream({ publicClient, blockTag: "latest" 
 
 const latestBlockNumber$ = latestBlock$.pipe(
   filter(isNonPendingBlock),
-  map((block) => block.number),
+  map((block) => block.number)
 );
 
 latestBlockNumber$
@@ -38,7 +38,7 @@ latestBlockNumber$
         "event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data)",
       ]),
     }),
-    mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs))),
+    mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs)))
   )
   .subscribe((block) => {
     console.log("got events for block", block);

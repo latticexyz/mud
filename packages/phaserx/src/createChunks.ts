@@ -19,9 +19,9 @@ export function createChunks(worldView$: Observable<Area>, chunkSize: number, pa
           width: width + 2 * padding,
           height: height + 2 * padding,
         },
-        chunkSize,
-      ),
-    ),
+        chunkSize
+      )
+    )
   );
 
   visibleChunkStream.subscribe((newVisibleChunks) => {

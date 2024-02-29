@@ -26,7 +26,7 @@ export type GameObjectTypes = typeof GameObjectClasses;
 export type GameObject<Type extends keyof GameObjectTypes> = InstanceType<GameObjectTypes[Type]>;
 
 export type GameObjectFunction<Type extends keyof GameObjectTypes> = (
-  gameObject: GameObject<Type>,
+  gameObject: GameObject<Type>
 ) => Promise<void> | void;
 
 export type GameScene = ReturnType<typeof defineScene>;
@@ -135,7 +135,7 @@ export type SceneConfig<
   S extends { [key: string]: Sprite<Assets> },
   T extends TilesetConfig<A>,
   M extends MapsConfig<A, T>,
-  Ans extends Animation<A>[],
+  Ans extends Animation<A>[]
 > = {
   preload?: (scene: Phaser.Scene) => void;
   create?: (scene: Phaser.Scene) => void;

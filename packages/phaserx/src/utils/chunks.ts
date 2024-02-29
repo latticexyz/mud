@@ -21,7 +21,7 @@ export function getChunksInArea(area: Area, chunkSize: number) {
           x: topLeftChunk.x + x,
           y: topLeftChunk.y + y,
         },
-        true,
+        true
       );
     }
   }

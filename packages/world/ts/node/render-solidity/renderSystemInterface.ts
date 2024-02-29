@@ -10,7 +10,8 @@ export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
     ${renderImports(imports)}
 
     /**
-     * @title ${name}
+     * @title ${name} 
+     * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
      * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
      */
     interface ${name} {
@@ -22,7 +23,7 @@ export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
           function ${functionPrefix}${name}(
             ${renderArguments(parameters)}
           ) external ${stateMutability} ${renderReturnParameters(returnParameters)};
-        `,
+        `
       )}
     }
   `;

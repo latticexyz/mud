@@ -12,7 +12,7 @@ import { schemaVersion } from "./schemaVersion";
 import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { hexToResource, spliceHex } from "@latticexyz/common";
+import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
@@ -36,7 +36,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
     await database.transaction(async (tx) => {
       for (const table of newTables) {
-        debug(`creating table ${table.namespace}:${table.name} for world ${chainId}:${table.address}`);
+        debug(`creating table ${resourceToLabel(table)} for world ${chainId}:${table.address}`);
 
         const sqliteTable = buildTable(table);
 
@@ -62,10 +62,10 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
             JSON.stringify({
               address: getAddress(log.address),
               ...hexToResource(log.args.tableId),
-            }),
-          ),
-        ),
-      ).map((json) => JSON.parse(json)),
+            })
+          )
+        )
+      ).map((json) => JSON.parse(json))
     );
 
     await database.transaction(async (tx) => {
@@ -76,19 +76,22 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
             and(
               eq(mudStoreTables.address, address),
               eq(mudStoreTables.namespace, namespace),
-              eq(mudStoreTables.name, name),
-            ),
+              eq(mudStoreTables.name, name)
+            )
           )
           .run();
       }
 
       for (const log of logs) {
         const table = tables.find(
-          (table) => table.address === getAddress(log.address) && table.tableId === log.args.tableId,
+          (table) => table.address === getAddress(log.address) && table.tableId === log.args.tableId
         );
         if (!table) {
           const tableId = hexToResource(log.args.tableId);
-          debug(`table ${tableId.namespace}:${tableId.name} not found, skipping log`, log);
+          debug(
+            `table ${resourceToLabel({ namespace: tableId.namespace, name: tableId.name })} not found, skipping log`,
+            log
+          );
           continue;
         }
 

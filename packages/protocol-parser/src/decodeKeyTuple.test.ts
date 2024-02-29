@@ -6,12 +6,12 @@ describe("decodeKeyTuple", () => {
     expect(
       decodeKeyTuple({ staticFields: ["bool"], dynamicFields: [] }, [
         "0x0000000000000000000000000000000000000000000000000000000000000000",
-      ]),
+      ])
     ).toStrictEqual([false]);
     expect(
       decodeKeyTuple({ staticFields: ["bool"], dynamicFields: [] }, [
         "0x0000000000000000000000000000000000000000000000000000000000000001",
-      ]),
+      ])
     ).toStrictEqual([true]);
   });
 
@@ -24,7 +24,7 @@ describe("decodeKeyTuple", () => {
         "0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff",
         "0x0000000000000000000000000000000000000000000000000000000000000001",
         "0x0000000000000000000000000000000000000000000000000000000000000003",
-      ]),
+      ])
     ).toStrictEqual([
       42n,
       -42,

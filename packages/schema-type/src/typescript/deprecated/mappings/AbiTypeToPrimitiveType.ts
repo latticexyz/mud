@@ -8,5 +8,5 @@ export type AbiTypeToPrimitiveType<T extends string> = T extends `${infer Static
     ? StaticAbiTypeToPrimitiveType<StaticAbiType>[]
     : never
   : T extends AbiType
-    ? StaticAbiTypeToPrimitiveType<T>
-    : never;
+  ? StaticAbiTypeToPrimitiveType<T>
+  : never;

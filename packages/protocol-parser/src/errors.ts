@@ -29,7 +29,7 @@ export class InvalidHexLengthForStaticFieldError extends MUDError {
     super(
       `Hex value "${value}" has length of ${value.length - 2}, but expected length of ${
         staticAbiTypeToByteLength[abiType] * 2
-      } for ${abiType} type.`,
+      } for ${abiType} type.`
     );
   }
 }
@@ -40,7 +40,7 @@ export class InvalidHexLengthForArrayFieldError extends MUDError {
     super(
       `Hex value "${value}" has length of ${value.length - 2}, but expected a multiple of ${
         staticAbiTypeToByteLength[abiType] * 2
-      } for ${abiType}[] type.`,
+      } for ${abiType}[] type.`
     );
   }
 }
@@ -50,7 +50,7 @@ export class SchemaStaticLengthMismatchError extends MUDError {
   constructor(schemaData: Hex, definedLength: number, summedLength: number) {
     super(
       `Schema "${schemaData}" static data length (${definedLength}) did not match the summed length of all static fields (${summedLength}). ` +
-        `Is \`staticAbiTypeToByteLength\` up to date with Solidity schema types?`,
+        `Is \`staticAbiTypeToByteLength\` up to date with Solidity schema types?`
     );
   }
 }
@@ -59,7 +59,7 @@ export class PackedCounterLengthMismatchError extends MUDError {
   override name = "PackedCounterLengthMismatchError";
   constructor(packedCounterData: Hex, definedLength: bigint, summedLength: bigint) {
     super(
-      `PackedCounter "${packedCounterData}" total bytes length (${definedLength}) did not match the summed length of all field byte lengths (${summedLength}).`,
+      `PackedCounter "${packedCounterData}" total bytes length (${definedLength}) did not match the summed length of all field byte lengths (${summedLength}).`
     );
   }
 }

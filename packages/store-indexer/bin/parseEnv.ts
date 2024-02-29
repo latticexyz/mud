@@ -8,6 +8,7 @@ export const frontendEnvSchema = z.object({
 
 export const indexerEnvSchema = z.intersection(
   z.object({
+    FOLLOW_BLOCK_TAG: z.enum(["latest", "safe", "finalized"]).default("safe"),
     START_BLOCK: z.coerce.bigint().nonnegative().default(0n),
     MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
     POLLING_INTERVAL: z.coerce.number().positive().default(1000),
@@ -22,7 +23,7 @@ export const indexerEnvSchema = z.intersection(
       RPC_HTTP_URL: z.string().optional(),
       RPC_WS_URL: z.string(),
     }),
-  ]),
+  ])
 );
 
 export function parseEnv<TSchema extends ZodTypeAny>(envSchema: TSchema): z.infer<TSchema> {

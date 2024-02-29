@@ -53,8 +53,8 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
     keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     singletonKey = new bytes32[](0);
-    FieldLayout fieldLayout = AddressArray.getFieldLayout();
-    Schema valueSchema = AddressArray.getValueSchema();
+    FieldLayout fieldLayout = AddressArray._fieldLayout;
+    Schema valueSchema = AddressArray._valueSchema;
 
     // Initialize the data in setUp so that slots aren't warm in tests (to test cold update)
 
@@ -83,7 +83,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
   }
 
   function testPopFromDynamicField() public {
-    FieldLayout fieldLayout = AddressArray.getFieldLayout();
+    FieldLayout fieldLayout = AddressArray._fieldLayout;
 
     // Expect the data to be written
     assertEq(AddressArray.get(tableId, key), initData);

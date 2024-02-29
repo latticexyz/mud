@@ -7,7 +7,7 @@ export async function postDeploy(
   postDeployScript: string,
   worldAddress: string,
   rpc: string,
-  profile: string | undefined,
+  profile: string | undefined
 ): Promise<void> {
   // Execute postDeploy forge script
   const postDeployPath = path.join(await getScriptDirectory(), postDeployScript + ".s.sol");
@@ -17,7 +17,7 @@ export async function postDeploy(
       ["script", postDeployScript, "--sig", "run(address)", worldAddress, "--broadcast", "--rpc-url", rpc, "-vvv"],
       {
         profile: profile,
-      },
+      }
     );
   } else {
     console.log(`No script at ${postDeployPath}, skipping post deploy hook`);

@@ -33,7 +33,7 @@ interface SymbolImport {
  */
 export function contractToInterface(
   data: string,
-  contractName: string,
+  contractName: string
 ): {
   functions: ContractInterfaceFunction[];
   errors: ContractInterfaceError[];

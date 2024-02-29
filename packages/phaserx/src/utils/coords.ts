@@ -64,7 +64,7 @@ export function tileCoordToChunkCoord(
   tileCoord: WorldCoord,
   tileWidth: number,
   tileHeight: number,
-  chunkSize: number,
+  chunkSize: number
 ): ChunkCoord {
   const pixelCoord = tileCoordToPixelCoord(tileCoord, tileWidth, tileHeight);
   return pixelToChunkCoord(pixelCoord, chunkSize);
@@ -74,7 +74,7 @@ export function chunkCoordToTileCoord(
   chunkCoord: ChunkCoord,
   tileWidth: number,
   tileHeight: number,
-  chunkSize: number,
+  chunkSize: number
 ): WorldCoord {
   const pixelCoord = chunkToPixelCoord(chunkCoord, chunkSize);
   return pixelCoordToTileCoord(pixelCoord, tileWidth, tileHeight);

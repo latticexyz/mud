@@ -9,7 +9,7 @@ import { deserialize, serialize } from "./utils";
 export async function callPageFunction(
   page: Page,
   functionName: string,
-  args: unknown[],
+  args: unknown[]
 ): Promise<Record<string, unknown> | undefined> {
   const context = [functionName, args, serialize.toString(), deserialize.toString()] as const;
   const serializedValue = await page.evaluate(async ([functionName, args, serializeString, deserializeString]) => {

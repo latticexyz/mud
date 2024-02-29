@@ -36,7 +36,7 @@ describe("useEntityQuery", () => {
 
     const { result } = renderHook(() => useEntityQuery([Has(Position)], { updateOnValueChange: false }));
     const { result: resultOnValueChange } = renderHook(() =>
-      useEntityQuery([Has(Position)], { updateOnValueChange: true }),
+      useEntityQuery([Has(Position)], { updateOnValueChange: true })
     );
 
     expect(result.current.length).toBe(2);
@@ -80,7 +80,7 @@ describe("useEntityQuery", () => {
 
     const { result } = renderHook(() => useEntityQuery([Has(Position)], { updateOnValueChange: false }));
     const { result: resultOnValueChange } = renderHook(() =>
-      useEntityQuery([Has(Position)], { updateOnValueChange: true }),
+      useEntityQuery([Has(Position)], { updateOnValueChange: true })
     );
 
     expect(result.all).toHaveLength(2);

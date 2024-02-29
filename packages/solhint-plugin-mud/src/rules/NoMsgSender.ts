@@ -29,7 +29,7 @@ export class NoMsgSender implements SolhintRule {
       this.reporter.error(
         node,
         this.ruleId,
-        `Systems and their libraries should use "_msgSender()" or "_world()" instead of "msg.sender".`,
+        `Systems and their libraries should use "_msgSender()" or "_world()" instead of "msg.sender".`
       );
     }
   }

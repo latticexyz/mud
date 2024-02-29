@@ -16,7 +16,7 @@ error.log = console.error.bind(console);
 
 export async function setupTables(
   db: PgDatabase<any>,
-  tables: PgTableWithColumns<any>[],
+  tables: PgTableWithColumns<any>[]
 ): Promise<() => Promise<void>> {
   const schemaNames = unique(tables.map((table) => getTableConfig(table).schema).filter(isDefined));
 
@@ -49,7 +49,7 @@ export async function setupTables(
       if (primaryKeyColumns.length) {
         query = query.addPrimaryKeyConstraint(
           `${tableConfig.name}_${primaryKeyColumns.join("_")}_pk`,
-          primaryKeyColumns as any,
+          primaryKeyColumns as any
         );
       }
 

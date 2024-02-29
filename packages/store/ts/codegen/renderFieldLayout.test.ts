@@ -35,23 +35,23 @@ describe("renderFieldLayout", () => {
     ];
 
     expect(renderFieldLayout(fields)).toMatchInlineSnapshot(
-      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x013418040102030405060708090a0b0c0d0e0f10111213141516172000000000);"',
+      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x013418040102030405060708090a0b0c0d0e0f10111213141516172000000000);"'
     );
 
     expect(renderFieldLayout([{ isDynamic: false, staticByteLength: 2 }])).toMatchInlineSnapshot(
-      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x0002010002000000000000000000000000000000000000000000000000000000);"',
+      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x0002010002000000000000000000000000000000000000000000000000000000);"'
     );
 
     expect(renderFieldLayout([{ isDynamic: false, staticByteLength: 8 }])).toMatchInlineSnapshot(
-      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x0008010008000000000000000000000000000000000000000000000000000000);"',
+      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x0008010008000000000000000000000000000000000000000000000000000000);"'
     );
 
     expect(renderFieldLayout([{ isDynamic: false, staticByteLength: 16 }])).toMatchInlineSnapshot(
-      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x0010010010000000000000000000000000000000000000000000000000000000);"',
+      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x0010010010000000000000000000000000000000000000000000000000000000);"'
     );
 
     expect(renderFieldLayout([{ isDynamic: true, staticByteLength: 0 }])).toMatchInlineSnapshot(
-      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x0000000100000000000000000000000000000000000000000000000000000000);"',
+      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x0000000100000000000000000000000000000000000000000000000000000000);"'
     );
   });
 

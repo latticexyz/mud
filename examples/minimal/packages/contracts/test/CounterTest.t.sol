@@ -6,7 +6,7 @@ import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 import { getKeysWithValue } from "@latticexyz/world-modules/src/modules/keyswithvalue/getKeysWithValue.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { CounterTable, CounterTableTableId } from "../src/codegen/index.sol";
+import { CounterTable } from "../src/codegen/index.sol";
 
 contract CounterTest is MudTest {
   function testWorldExists() public {
@@ -32,7 +32,7 @@ contract CounterTest is MudTest {
   // TODO: re-enable the KeysWithValueModule in mud.config.ts once it supports singleton keys
   // function testKeysWithValue() public {
   //   uint32 counter = CounterTable.get();
-  //   bytes32[] memory keysWithValue = getKeysWithValue(CounterTableTableId, CounterTable.encode(counter));
+  //   bytes32[] memory keysWithValue = getKeysWithValue(CounterTable._tableId, CounterTable.encode(counter));
   //   assertEq(keysWithValue.length, 1);
   // }
 }

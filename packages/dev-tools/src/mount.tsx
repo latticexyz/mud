@@ -5,7 +5,7 @@ const containerId = "mud-dev-tools";
 
 // TODO: rework to always return a unmount function (not a promise or possibly undefined)
 export async function mount<TConfig extends StoreConfig>(
-  opts: DevToolsOptions<TConfig>,
+  opts: DevToolsOptions<TConfig>
 ): Promise<(() => void) | undefined> {
   if (typeof window === "undefined") {
     console.warn("MUD dev-tools should only be used in browser bundles");
@@ -39,7 +39,7 @@ export async function mount<TConfig extends StoreConfig>(
         <DevToolsProvider value={opts as DevToolsOptions}>
           <App />
         </DevToolsProvider>
-      </React.StrictMode>,
+      </React.StrictMode>
     );
 
     document.body.appendChild(rootElement);

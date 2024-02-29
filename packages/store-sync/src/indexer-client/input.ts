@@ -10,7 +10,7 @@ export const input = z.object({
         tableId: z.string().refine(isHex),
         key0: z.string().refine(isHex).optional(),
         key1: z.string().refine(isHex).optional(),
-      }),
+      })
     )
     .default([]),
 });

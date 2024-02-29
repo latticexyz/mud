@@ -22,7 +22,7 @@ describe("buildTable", () => {
         dataType: column.dataType,
         sqlName: column.sqlName,
         notNull: column.notNull,
-      })),
+      }))
     ).toMatchInlineSnapshot(`
       {
         "__keyBytes": {
@@ -81,7 +81,7 @@ describe("buildTable", () => {
         name: column.name,
         dataType: column.dataType,
         sqlName: column.sqlName,
-      })),
+      }))
     ).toMatchInlineSnapshot(`
       {
         "__keyBytes": {

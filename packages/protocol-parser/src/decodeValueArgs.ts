@@ -7,7 +7,7 @@ import { readHex } from "@latticexyz/common";
 
 export function decodeValueArgs<TSchema extends ValueSchema>(
   valueSchema: TSchema,
-  { staticData, encodedLengths, dynamicData }: ValueArgs,
+  { staticData, encodedLengths, dynamicData }: ValueArgs
 ): SchemaToPrimitives<TSchema> {
   return decodeValue(
     valueSchema,
@@ -15,6 +15,6 @@ export function decodeValueArgs<TSchema extends ValueSchema>(
       readHex(staticData, 0, staticDataLength(Object.values(valueSchema).filter(isStaticAbiType))),
       encodedLengths,
       dynamicData,
-    ]),
+    ])
   );
 }

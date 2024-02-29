@@ -13,7 +13,7 @@ export const storeTables = resolveConfig(storeConfig).tables;
 export const worldTables = resolveConfig(worldConfig).tables;
 
 export const internalTableIds = [...Object.values(storeTables), ...Object.values(worldTables)].map(
-  (table) => table.tableId,
+  (table) => table.tableId
 );
 
 export type ChainId = number;
@@ -77,6 +77,10 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
    * @deprecated Use `filters` option instead.
    * */
   tableIds?: Hex[];
+  /**
+   * Optional block tag to follow for the latest block number. Defaults to `latest`. It's recommended to use `safe` for indexers.
+   */
+  followBlockTag?: "latest" | "safe" | "finalized";
   /**
    * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.
    */

@@ -42,25 +42,25 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     map(() => {
       return { pointer: inputPlugin.manager?.activePointer };
     }),
-    filterNullish(),
+    filterNullish()
   );
 
   const pointerdown$: Observable<{ pointer: Phaser.Input.Pointer; event: MouseEvent }> = fromEvent(
     document,
-    "mousedown",
+    "mousedown"
   ).pipe(
     filter(() => enabled.current),
     map((event) => ({ pointer: inputPlugin.manager?.activePointer, event: event as MouseEvent })),
-    filterNullish(),
+    filterNullish()
   );
 
   const pointerup$: Observable<{ pointer: Phaser.Input.Pointer; event: MouseEvent }> = fromEvent(
     document,
-    "mouseup",
+    "mouseup"
   ).pipe(
     filter(() => enabled.current),
     map((event) => ({ pointer: inputPlugin.manager?.activePointer, event: event as MouseEvent })),
-    filterNullish(),
+    filterNullish()
   );
 
   // Click stream
@@ -73,7 +73,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     bufferCount(2, 1), // Store the last two timestamps
     filter(([prev, now]) => prev[0] && !now[0] && now[1] - prev[1] < 250), // Only care if button was pressed before and is not anymore and it happened within 500ms
     map(() => inputPlugin.manager?.activePointer), // Return the current pointer
-    filterNullish(),
+    filterNullish()
   );
 
   // Double click stream
@@ -84,14 +84,14 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     filter(([prev, now]) => now - prev < 500), // Filter clicks with more than 500ms distance
     throttleTime(500), // A third click within 500ms is not counted as another double click
     map(() => inputPlugin.manager?.activePointer), // Return the current pointer
-    filterNullish(),
+    filterNullish()
   );
 
   // Right click stream
   const rightClick$ = merge(pointerdown$, pointerup$).pipe(
     filter(({ pointer }) => enabled.current && pointer.rightButtonDown()),
     map(() => inputPlugin.manager?.activePointer), // Return the current pointer
-    filterNullish(),
+    filterNullish()
   );
 
   // Drag stream
@@ -106,14 +106,14 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
               ? { ...acc, width: curr.worldX - acc.x, height: curr.worldY - acc.y } // Update the width/height
               : { x: curr.worldX, y: curr.worldY, width: 0, height: 0 } // Else start the drag
             : undefined,
-        undefined,
+        undefined
       ),
       filterNullish(),
-      filter((area) => Math.abs(area.width) > 10 && Math.abs(area.height) > 10), // Prevent clicking to be mistaken as a drag
-    ),
+      filter((area) => Math.abs(area.width) > 10 && Math.abs(area.height) > 10) // Prevent clicking to be mistaken as a drag
+    )
   ).pipe(
     filter(() => enabled.current),
-    distinctUntilChanged(), // Prevent same value to be emitted in a row
+    distinctUntilChanged() // Prevent same value to be emitted in a row
   );
 
   const pressedKeys = observable(new Set<Key>());
@@ -170,7 +170,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
       (passes) => {
         if (passes) callback();
       },
-      { fireImmediately: true },
+      { fireImmediately: true }
     );
     disposers.add(disposer);
   }

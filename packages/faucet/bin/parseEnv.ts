@@ -13,7 +13,7 @@ const commonSchema = z.object({
 });
 
 export function parseEnv<TSchema extends ZodTypeAny | undefined = undefined>(
-  schema?: TSchema,
+  schema?: TSchema
 ): z.infer<TSchema extends ZodTypeAny ? ZodIntersection<typeof commonSchema, TSchema> : typeof commonSchema> {
   const envSchema = schema !== undefined ? z.intersection(commonSchema, schema) : commonSchema;
   try {

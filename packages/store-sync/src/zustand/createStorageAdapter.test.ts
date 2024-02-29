@@ -20,7 +20,7 @@ const blocks = groupLogsByBlockNumber(
       strict: true,
     });
     return formatLog(log as unknown as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
-  }),
+  })
 );
 
 describe("createStorageAdapter", () => {

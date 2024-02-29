@@ -11,7 +11,7 @@ export function isArrayAbiType<T extends `${StaticAbiType}[]`>(abiType: string):
 }
 
 export function arrayAbiTypeToStaticAbiType<T extends `${StaticAbiType}[]`>(
-  abiType: T,
+  abiType: T
 ): ArrayAbiTypeToStaticAbiType<T> {
   return abiType.replace(arrayAbiTypePattern, "") as ArrayAbiTypeToStaticAbiType<T>;
 }

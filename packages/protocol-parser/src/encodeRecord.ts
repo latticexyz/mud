@@ -6,7 +6,7 @@ import { Schema } from "./common";
 /** @deprecated use `encodeValue` instead */
 export function encodeRecord(
   valueSchema: Schema,
-  values: readonly (StaticPrimitiveType | DynamicPrimitiveType)[],
+  values: readonly (StaticPrimitiveType | DynamicPrimitiveType)[]
 ): Hex {
   const staticValues = values.slice(0, valueSchema.staticFields.length) as readonly StaticPrimitiveType[];
   const dynamicValues = values.slice(valueSchema.staticFields.length) as readonly DynamicPrimitiveType[];
@@ -18,7 +18,7 @@ export function encodeRecord(
   if (valueSchema.dynamicFields.length === 0) return `0x${staticData}`;
 
   const dynamicDataItems = dynamicValues.map((value, i) =>
-    encodeField(valueSchema.dynamicFields[i], value).replace(/^0x/, ""),
+    encodeField(valueSchema.dynamicFields[i], value).replace(/^0x/, "")
   );
 
   const dynamicFieldByteLengths = dynamicDataItems.map((value) => value.length / 2).reverse();

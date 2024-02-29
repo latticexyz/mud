@@ -12,7 +12,7 @@ import { tables as internalTables } from "../postgres/tables";
 import { createStorageAdapter as createBytesStorageAdapter } from "../postgres/createStorageAdapter";
 import { setupTables } from "../postgres/setupTables";
 import { getTables } from "./getTables";
-import { hexToResource } from "@latticexyz/common";
+import { hexToResource, resourceToLabel } from "@latticexyz/common";
 
 // Currently assumes one DB per chain ID
 
@@ -44,7 +44,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
     // TODO: cache these inside `getTables`?
     const tables = await getTables(
       database,
-      logs.map((log) => ({ address: log.address, tableId: log.args.tableId })),
+      logs.map((log) => ({ address: log.address, tableId: log.args.tableId }))
     );
 
     // TODO: check if DB schema/table was created?
@@ -56,11 +56,11 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
     await database.transaction(async (tx) => {
       for (const log of logs) {
         const table = tables.find(
-          (table) => getAddress(table.address) === getAddress(log.address) && table.tableId === log.args.tableId,
+          (table) => getAddress(table.address) === getAddress(log.address) && table.tableId === log.args.tableId
         );
         if (!table) {
           const { namespace, name } = hexToResource(log.args.tableId);
-          debug(`table registration record for ${namespace}:${name} not found, skipping log`, log);
+          debug(`table registration record for ${resourceToLabel({ namespace, name })} not found, skipping log`, log);
           continue;
         }
 
@@ -80,8 +80,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               and(
                 eq(internalTables.recordsTable.address, log.address),
                 eq(internalTables.recordsTable.tableId, log.args.tableId),
-                eq(internalTables.recordsTable.keyBytes, keyBytes),
-              ),
+                eq(internalTables.recordsTable.keyBytes, keyBytes)
+              )
             )
             .limit(1)
             // Get the first record in a way that returns a possible `undefined`
@@ -89,7 +89,10 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
             .then((rows) => rows.find(() => true));
           if (!record) {
             const { namespace, name } = hexToResource(log.args.tableId);
-            debug(`no record found for ${log.args.keyTuple} in table ${namespace}:${name}, skipping log`, log);
+            debug(
+              `no record found for ${log.args.keyTuple} in table ${resourceToLabel({ namespace, name })}, skipping log`,
+              log
+            );
             continue;
           }
 

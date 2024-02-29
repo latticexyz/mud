@@ -20,7 +20,7 @@ export type ChunkedTilemapConfig<TileKeys extends number, LayerKeys extends stri
 };
 
 export function createChunkedTilemap<TileKeys extends number, LayerKeys extends string>(
-  params: ChunkedTilemapConfig<TileKeys, LayerKeys>,
+  params: ChunkedTilemapConfig<TileKeys, LayerKeys>
 ): ChunkedTilemap<TileKeys, LayerKeys> {
   const { scene, tilesets, layerConfig, chunks, backgroundTile, tiles, tileWidth, tileHeight } = params;
   const relevantTilesets = Object.keys(layerConfig.layers)
@@ -68,7 +68,7 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
     x: number,
     y: number,
     width: number,
-    height: number,
+    height: number
   ): {
     layers: Phaser.Tilemaps.TilemapLayer[];
     defaultLayer: Phaser.Tilemaps.TilemapLayer;
@@ -83,7 +83,7 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
         x,
         y,
         width,
-        height,
+        height
       );
       if (!tilemapLayer) {
         console.error(`Adding tilemap layer ${key} failed.`);
@@ -169,7 +169,7 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
         undefined,
         undefined,
         undefined,
-        layer,
+        layer
       );
   }
 

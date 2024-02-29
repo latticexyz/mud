@@ -23,6 +23,6 @@ export function callWorld<TMethod extends WriteMethodName>(page: Page, method: T
           throw new Error([`Error executing ${_method} with args:`, JSON.stringify(_args), error].join("\n\n"));
         });
     },
-    [method, args],
+    [method, args]
   );
 }

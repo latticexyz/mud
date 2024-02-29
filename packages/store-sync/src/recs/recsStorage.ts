@@ -3,7 +3,7 @@ import { debug } from "./debug";
 import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, setComponent } from "@latticexyz/recs";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
-import { hexToResource, spliceHex } from "@latticexyz/common";
+import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { decodeValueArgs } from "@latticexyz/protocol-parser";
 import { Hex, size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
@@ -60,7 +60,7 @@ export function recsStorage<tables extends Record<string, Table>>({
           components.RegisteredTables,
           tableEntity,
           { table: newTable },
-          { skipUpdateStream: shouldSkipUpdateStream?.() },
+          { skipUpdateStream: shouldSkipUpdateStream?.() }
         );
       }
     }
@@ -69,19 +69,20 @@ export function recsStorage<tables extends Record<string, Table>>({
       const { namespace, name } = hexToResource(log.args.tableId);
       const table = getComponentValue(
         components.RegisteredTables,
-        getTableEntity({ address: log.address, namespace, name }),
+        getTableEntity({ address: log.address, namespace, name })
       )?.table;
       if (!table) {
-        debug(`skipping update for unknown table: ${namespace}:${name} at ${log.address}`);
+        debug(`skipping update for unknown table: ${resourceToLabel({ namespace, name })} at ${log.address}`);
         continue;
       }
 
       const component = world.components.find((c) => c.id === table.tableId);
       if (!component) {
         debug(
-          `skipping update for unknown component: ${table.tableId} (${table.namespace}:${
-            table.name
-          }). Available components: ${Object.keys(components)}`,
+          `skipping update for unknown component: ${table.tableId} (${resourceToLabel({
+            namespace,
+            name,
+          })}). Available components: ${Object.keys(components)}`
         );
         continue;
       }
@@ -105,7 +106,7 @@ export function recsStorage<tables extends Record<string, Table>>({
             __encodedLengths: log.args.encodedLengths,
             __dynamicData: log.args.dynamicData,
           },
-          { skipUpdateStream: shouldSkipUpdateStream?.() },
+          { skipUpdateStream: shouldSkipUpdateStream?.() }
         );
       } else if (log.eventName === "Store_SpliceStaticData") {
         // TODO: add tests that this works when no record had been set before
@@ -133,7 +134,7 @@ export function recsStorage<tables extends Record<string, Table>>({
             ...newValue,
             __staticData: newStaticData,
           },
-          { skipUpdateStream: shouldSkipUpdateStream?.() },
+          { skipUpdateStream: shouldSkipUpdateStream?.() }
         );
       } else if (log.eventName === "Store_SpliceDynamicData") {
         // TODO: add tests that this works when no record had been set before
@@ -163,7 +164,7 @@ export function recsStorage<tables extends Record<string, Table>>({
             __encodedLengths: log.args.encodedLengths,
             __dynamicData: newDynamicData,
           },
-          { skipUpdateStream: shouldSkipUpdateStream?.() },
+          { skipUpdateStream: shouldSkipUpdateStream?.() }
         );
       } else if (log.eventName === "Store_DeleteRecord") {
         debug("deleting component", {

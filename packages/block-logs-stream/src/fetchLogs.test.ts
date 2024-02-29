@@ -150,7 +150,7 @@ describe("fetchLogs", () => {
               code: -32005,
               message: "block range exceeded",
             },
-          }),
+          })
         );
       }
 
@@ -374,7 +374,7 @@ describe("fetchLogs", () => {
               code: -32005,
               message: "rate limit exceeded",
             },
-          }),
+          })
         );
       }
 
