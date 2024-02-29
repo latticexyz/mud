@@ -1,5 +1,5 @@
 import { error } from "./error";
-import { AbiType, SchemaInput, getStaticAbiTypeKeys } from "./schema";
+import { AbiType, SchemaInput, UserTypes, getStaticAbiTypeKeys, resolveSchema } from "./schema";
 import { stringifyUnion } from "@arktype/util";
 
 export type NoStaticKeyFieldError =
@@ -79,21 +79,27 @@ type validateKeys<keys, validKey extends PropertyKey> = {
   [i in keyof keys]: keys[i] extends validKey ? keys[i] : validKey;
 };
 
-type resolveTableFullConfig<input extends TableFullConfigInput> = {
+type resolveTableFullConfig<input extends TableFullConfigInput, userTypes extends UserTypes> = {
   keys: input["keys"];
-  schema: input["schema"];
-  keySchema: {
-    [key in input["keys"][number]]: input["schema"][key];
-  };
-  valueSchema: {
-    [key in Exclude<keyof input["schema"], input["keys"][number]>]: input["schema"][key];
-  };
+  schema: resolveSchema<input["schema"], userTypes>;
+  keySchema: resolveSchema<
+    {
+      [key in input["keys"][number]]: input["schema"][key];
+    },
+    userTypes
+  >;
+  valueSchema: resolveSchema<
+    {
+      [key in Exclude<keyof input["schema"], input["keys"][number]>]: input["schema"][key];
+    },
+    userTypes
+  >;
 };
 
-export type resolveTableConfig<input> = input extends TableShorthandConfigInput
-  ? resolveTableConfig<resolveTableShorthandConfig<input>>
+export type resolveTableConfig<input, userTypes extends UserTypes> = input extends TableShorthandConfigInput
+  ? resolveTableConfig<resolveTableShorthandConfig<input>, userTypes>
   : input extends TableFullConfigInput
-  ? resolveTableFullConfig<input>
+  ? resolveTableFullConfig<input, userTypes>
   : never;
 
 /**
@@ -102,7 +108,10 @@ export type resolveTableConfig<input> = input extends TableShorthandConfigInput
  * - A schema with a `key` field with static ABI type is turned into { schema: INPUT, key: ["key"] }.
  * - A schema without a `key` field is invalid.
  */
-export function resolveTableConfig<input>(input: validateTableConfig<input>): resolveTableConfig<input> {
+export function resolveTableConfig<input, userTypes extends UserTypes = UserTypes>(
+  input: validateTableConfig<input>,
+  userTypes?: userTypes
+): resolveTableConfig<input, userTypes> {
   // TODO: runtime implementation
-  return input as never;
+  return {} as never;
 }
