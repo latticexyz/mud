@@ -22,8 +22,8 @@ import {
   createBurnerAccount,
   transportObserver,
   ContractWrite,
-  sessionActions,
-  setupObserverActions,
+  transactionQueueActions,
+  setupWriteObserverActions,
 } from "@latticexyz/common";
 import { Subject, share } from "rxjs";
 
@@ -69,8 +69,8 @@ export async function setupNetwork() {
     ...clientOptions,
     account: burnerAccount,
   })
-    .extend(sessionActions)
-    .extend(setupObserverActions((write) => write$.next(write)));
+    .extend(transactionQueueActions)
+    .extend(setupWriteObserverActions((write) => write$.next(write)));
 
   /*
    * Create an object for communicating with the deployed World.
