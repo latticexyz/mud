@@ -20,9 +20,6 @@ importers:
       '@typescript-eslint/parser':
         specifier: 5.46.1
         version: 5.46.1(eslint@8.29.0)(typescript@5.1.6)
-      bun:
-        specifier: ^1.0.11
-        version: 1.0.11
       chalk:
         specifier: ^5.2.0
         version: 5.2.0
@@ -38,6 +35,9 @@ importers:
       lint-staged:
         specifier: '>=10'
         version: 10.0.0
+      mkdirp:
+        specifier: 3.0.1
+        version: 3.0.1
       prettier:
         specifier: ^2.8.4
         version: 2.8.4
@@ -2876,54 +2876,6 @@ packages:
       rimraf: 3.0.2
     dev: false
 
-  /@oven/bun-darwin-aarch64@1.0.11:
-    resolution: {integrity: sha512-6wCO37lyGNcqefEDQ7IJp4LW7ElKMH50/hlvW5agIBN/XbTwwtv3788dJ9NczEV7RQSlkOI6J3dUoQJ6Pgav6w==}
-    cpu: [arm64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@oven/bun-darwin-x64-baseline@1.0.11:
-    resolution: {integrity: sha512-is9liFB10GUN/UsSZVkO5tfMIJcBkiDqRvVzNkDHix/i5aXyaBb0vX+uOdJTlHDZyNGi+vHhbRMq3c3ezjJKPA==}
-    cpu: [x64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@oven/bun-darwin-x64@1.0.11:
-    resolution: {integrity: sha512-5eCtrlOfMuhg7es/6p/rZw5+4khBao/hhGKCPHl9LBok1Mrf5QQjGbXj9OoA2RC2Lxm9av4nrAZG/5nMM01B2g==}
-    cpu: [x64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@oven/bun-linux-aarch64@1.0.11:
-    resolution: {integrity: sha512-P8hI+vQ+8ffsMLRi2TNzkxsHukrNQD8G2luWo/ndJ55+1uuAMScWZooxm9rgWL6baoB/TL9/Hvi/6INGoE8UlQ==}
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@oven/bun-linux-x64-baseline@1.0.11:
-    resolution: {integrity: sha512-Asx4pEMDXfmu9Sa0jX4PE1Wijtg1oCfUx8o4FeQEvnVz2+cGG+VoqZXuITmoQC6A4IzAZuJ1tcWOZ8jQCDtvJA==}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@oven/bun-linux-x64@1.0.11:
-    resolution: {integrity: sha512-F9ZcgVHsPQk6ooHXIeydiLcVcMwhGRjSlOVeHBuHEJ+bI24e/dCY73UKEEz8/hLNA32ocDMmkAGE79qv0ccEIA==}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
   /@protobufjs/aspromise@1.1.2:
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
 
@@ -4295,21 +4247,6 @@ packages:
       base64-js: 1.5.1
       ieee754: 1.2.1
     dev: false
-
-  /bun@1.0.11:
-    resolution: {integrity: sha512-cKyQAQOfWNIP511UpQjkABUp7z/5+1ci2kXfhjL9PozHoCaCtnYFtVjeqU1LovpqEP1agAsMiDpGNKbJP89RIw==}
-    cpu: [arm64, x64]
-    os: [darwin, linux]
-    hasBin: true
-    requiresBuild: true
-    optionalDependencies:
-      '@oven/bun-darwin-aarch64': 1.0.11
-      '@oven/bun-darwin-x64': 1.0.11
-      '@oven/bun-darwin-x64-baseline': 1.0.11
-      '@oven/bun-linux-aarch64': 1.0.11
-      '@oven/bun-linux-x64': 1.0.11
-      '@oven/bun-linux-x64-baseline': 1.0.11
-    dev: true
 
   /bundle-require@4.0.1(esbuild@0.17.17):
     resolution: {integrity: sha512-9NQkRHlNdNpDBGmLpngF3EFDcwodhMUuLz9PaWYciVcQF9SE4LFjM2DB/xV1Li5JiuDMv7ZUWuC3rGbqR0MAXQ==}
@@ -8123,6 +8060,12 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
     dev: false
+
+  /mkdirp@3.0.1:
+    resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dev: true
 
   /mlly@1.5.0:
     resolution: {integrity: sha512-NPVQvAY1xr1QoVeG0cy8yUYC7FQcOx6evl/RjT1wL5FvzPnzOysoqB/jmx/DhssT2dYa8nxECLAaFI/+gVLhDQ==}
