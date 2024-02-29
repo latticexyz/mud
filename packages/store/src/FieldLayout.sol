@@ -41,17 +41,17 @@ library FieldLayoutLib {
     uint256 totalLength;
     uint256 totalFields = _staticFieldLengths.length + numDynamicFields;
     if (totalFields > MAX_TOTAL_FIELDS)
-      revert IFieldLayoutErrors.FieldLayoutLib_TooManyFields(totalFields, MAX_TOTAL_FIELDS);
+      revert IFieldLayoutErrors.FieldLayout_TooManyFields(totalFields, MAX_TOTAL_FIELDS);
     if (numDynamicFields > MAX_DYNAMIC_FIELDS)
-      revert IFieldLayoutErrors.FieldLayoutLib_TooManyDynamicFields(numDynamicFields, MAX_DYNAMIC_FIELDS);
+      revert IFieldLayoutErrors.FieldLayout_TooManyDynamicFields(numDynamicFields, MAX_DYNAMIC_FIELDS);
 
     // Compute the total static length and store the field lengths in the encoded fieldLayout
     for (uint256 i; i < _staticFieldLengths.length; ) {
       uint256 staticByteLength = _staticFieldLengths[i];
       if (staticByteLength == 0) {
-        revert IFieldLayoutErrors.FieldLayoutLib_StaticLengthIsZero(i);
+        revert IFieldLayoutErrors.FieldLayout_StaticLengthIsZero(i);
       } else if (staticByteLength > WORD_SIZE) {
-        revert IFieldLayoutErrors.FieldLayoutLib_StaticLengthDoesNotFitInAWord(i);
+        revert IFieldLayoutErrors.FieldLayout_StaticLengthDoesNotFitInAWord(i);
       }
 
       unchecked {
@@ -150,18 +150,18 @@ library FieldLayoutInstance {
    */
   function validate(FieldLayout fieldLayout) internal pure {
     if (fieldLayout.isEmpty()) {
-      revert IFieldLayoutErrors.FieldLayoutLib_Empty();
+      revert IFieldLayoutErrors.FieldLayout_Empty();
     }
 
     uint256 _numDynamicFields = fieldLayout.numDynamicFields();
     if (_numDynamicFields > MAX_DYNAMIC_FIELDS) {
-      revert IFieldLayoutErrors.FieldLayoutLib_TooManyDynamicFields(_numDynamicFields, MAX_DYNAMIC_FIELDS);
+      revert IFieldLayoutErrors.FieldLayout_TooManyDynamicFields(_numDynamicFields, MAX_DYNAMIC_FIELDS);
     }
 
     uint256 _numStaticFields = fieldLayout.numStaticFields();
     uint256 _numTotalFields = _numStaticFields + _numDynamicFields;
     if (_numTotalFields > MAX_TOTAL_FIELDS) {
-      revert IFieldLayoutErrors.FieldLayoutLib_TooManyFields(_numTotalFields, MAX_TOTAL_FIELDS);
+      revert IFieldLayoutErrors.FieldLayout_TooManyFields(_numTotalFields, MAX_TOTAL_FIELDS);
     }
 
     // Static lengths must be valid
@@ -169,9 +169,9 @@ library FieldLayoutInstance {
     for (uint256 i; i < _numStaticFields; ) {
       uint256 staticByteLength = fieldLayout.atIndex(i);
       if (staticByteLength == 0) {
-        revert IFieldLayoutErrors.FieldLayoutLib_StaticLengthIsZero(i);
+        revert IFieldLayoutErrors.FieldLayout_StaticLengthIsZero(i);
       } else if (staticByteLength > WORD_SIZE) {
-        revert IFieldLayoutErrors.FieldLayoutLib_StaticLengthDoesNotFitInAWord(i);
+        revert IFieldLayoutErrors.FieldLayout_StaticLengthDoesNotFitInAWord(i);
       }
       _staticDataLength += staticByteLength;
       unchecked {
@@ -180,16 +180,13 @@ library FieldLayoutInstance {
     }
     // Static length sums must match
     if (_staticDataLength != fieldLayout.staticDataLength()) {
-      revert IFieldLayoutErrors.FieldLayoutLib_InvalidStaticDataLength(
-        fieldLayout.staticDataLength(),
-        _staticDataLength
-      );
+      revert IFieldLayoutErrors.FieldLayout_InvalidStaticDataLength(fieldLayout.staticDataLength(), _staticDataLength);
     }
     // Unused fields must be zero
     for (uint256 i = _numStaticFields; i < MAX_TOTAL_FIELDS; i++) {
       uint256 staticByteLength = fieldLayout.atIndex(i);
       if (staticByteLength != 0) {
-        revert IFieldLayoutErrors.FieldLayoutLib_StaticLengthIsNotZero(i);
+        revert IFieldLayoutErrors.FieldLayout_StaticLengthIsNotZero(i);
       }
     }
   }
