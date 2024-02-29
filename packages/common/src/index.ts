@@ -12,10 +12,11 @@ export * from "./resourceLabel";
 export * from "./resourceToHex";
 export * from "./resourceTypes";
 export * from "./result";
+export * from "./setupWriteObserverActions";
 export * from "./sendTransaction";
 export * from "./spliceHex";
 export * from "./transportObserver";
-export * from "./viemActions";
+export * from "./transactionQueueActions";
 export * from "./writeContract";
 
 /** @deprecated use `getContract` instead */

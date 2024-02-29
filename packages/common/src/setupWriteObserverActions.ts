@@ -9,22 +9,9 @@ import type {
 } from "viem";
 import { getAction } from "viem/utils";
 import { writeContract } from "viem/actions";
-import { writeContract as mud_writeContract } from "./writeContract";
-import { sendTransaction as mud_sendTransaction } from "./sendTransaction";
 import { type ContractWrite } from "./getContract";
 
-export const sessionActions = <TChain extends Chain, TAccount extends Account>(
-  client: WalletClient<Transport, TChain, TAccount>
-): Pick<WalletActions<TChain, TAccount>, "writeContract" | "sendTransaction"> => {
-  return {
-    // Applies to: `client.writeContract`, `getContract(client, ...).write`
-    writeContract: (args) => mud_writeContract(client, args),
-    // Applies to: `client.sendTransaction`
-    sendTransaction: (args) => mud_sendTransaction(client, args),
-  };
-};
-
-export const setupObserverActions = <TChain extends Chain, TAccount extends Account>(
+export const setupWriteObserverActions = <TChain extends Chain, TAccount extends Account>(
   onWrite: (write: ContractWrite) => void
 ): ((client: WalletClient<Transport, TChain, TAccount>) => Pick<WalletActions<TChain, TAccount>, "writeContract">) => {
   let nextWriteId = 0;
