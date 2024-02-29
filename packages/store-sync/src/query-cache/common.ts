@@ -29,7 +29,8 @@ export type ConditionLiteral = string | number | boolean;
 export type ComparisonCondition = {
   readonly left: TableField;
   readonly op: "<" | "<=" | "=" | ">" | ">=" | "!=";
-  readonly right: TableField | ConditionLiteral;
+  // TODO: add support for TableField
+  readonly right: ConditionLiteral;
 };
 
 export type InCondition = {

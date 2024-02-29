@@ -1,5 +1,5 @@
-import mudConfig from "../../../../../e2e/packages/contracts/mud.config";
-import worldRpcLogs from "../../../../../test-data/world-logs.json";
+import mudConfig from "../../../../../e2e/packages/contracts-query-api/mud.config";
+import worldRpcLogs from "../../../../../test-data/world-logs-query-api.json";
 import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import { StoreEventsLog, storeTables, worldTables } from "../../common";
 import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
