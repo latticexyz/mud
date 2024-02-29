@@ -29,17 +29,36 @@ export type StaticUserTypes = {
 
 export type isStaticAbiType<abiType extends AbiType> = abiType extends StaticAbiType ? true : never;
 
-export type getStaticAbiTypeKeys<schema extends SchemaInput> = SchemaInput extends schema
+export type getStaticAbiTypeKeys<
+  schema extends SchemaInput<userTypes>,
+  userTypes extends UserTypes = UserTypes
+> = SchemaInput extends schema
   ? // If `schema` is the default Schema type, return a broad string type
     string
   : {
-      [key in keyof schema]: schema[key] extends StaticAbiType ? key : never;
+      [key in keyof schema]: UserTypes extends userTypes
+        ? // If no narrow userTypes is passed in, ignore userTypes
+          schema[key] extends StaticAbiType
+          ? key
+          : never
+        : schema[key] extends keyof userTypes
+        ? // If the type is user type, check if the corresponding user type is static
+          userTypes[schema[key]] extends StaticAbiType
+          ? key
+          : never
+        : // Otherwise check if the ABI type is static
+        schema[key] extends StaticAbiType
+        ? key
+        : never;
     }[keyof schema];
 
-export type getDynamicAbiTypeKeys<schema extends SchemaInput> = SchemaInput extends schema
+export type getDynamicAbiTypeKeys<
+  schema extends SchemaInput<userTypes>,
+  userTypes extends UserTypes = UserTypes
+> = SchemaInput extends schema
   ? // If `schema` is the default Schema type, return a broad string type
     string
-  : Exclude<keyof schema, getStaticAbiTypeKeys<schema>>;
+  : Exclude<keyof schema, getStaticAbiTypeKeys<schema, userTypes>>;
 
 export type resolveSchema<schema extends SchemaInput<userTypes>, userTypes extends UserTypes> = {
   [key in keyof schema]: {

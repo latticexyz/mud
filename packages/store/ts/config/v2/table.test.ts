@@ -8,6 +8,12 @@ describe("resolveTableShorthandConfig", () => {
     expectTypeOf<typeof table.keys>().toEqualTypeOf<["key"]>();
   });
 
+  it("should expand a single custom into a key/value schema", () => {
+    const table = resolveTableShorthandConfig("CustomType");
+    expectTypeOf<typeof table.schema>().toEqualTypeOf<{ key: "bytes32"; value: "CustomType" }>();
+    expectTypeOf<typeof table.keys>().toEqualTypeOf<["key"]>();
+  });
+
   it("should use `key` as single key if it has a static ABI type", () => {
     const table = resolveTableShorthandConfig({ key: "address", name: "string", age: "uint256" });
     expectTypeOf<typeof table.schema>().toEqualTypeOf<{ key: "address"; name: "string"; age: "uint256" }>();
@@ -26,12 +32,6 @@ describe("resolveTableShorthandConfig", () => {
 
   it("should throw an error if an invalid type is passed in", () => {
     resolveTableShorthandConfig({ key: "uint256", name: "NotACustomType" });
-  });
-
-  it("should expand a single custom into a key/value schema", () => {
-    const table = resolveTableShorthandConfig("CustomType");
-    expectTypeOf<typeof table.schema>().toEqualTypeOf<{ key: "bytes32"; value: "CustomType" }>();
-    expectTypeOf<typeof table.keys>().toEqualTypeOf<["key"]>();
   });
 
   it("should use `key` as single key if it has a static custom type", () => {

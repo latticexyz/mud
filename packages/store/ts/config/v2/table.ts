@@ -33,16 +33,22 @@ export type TableFullConfigInput<
 };
 
 // We don't use `conform` here because the restrictions we're imposing here are not native to typescript
-type validateTableShorthandConfig<input extends TableShorthandConfigInput> = input extends AbiType
+type validateTableShorthandConfig<
+  input extends TableShorthandConfigInput,
+  userTypes extends UserTypes
+> = input extends AbiType
   ? input
   : input extends SchemaInput
   ? // If a shorthand schema is provided, require it to have a static key field
-    "key" extends getStaticAbiTypeKeys<input>
+    "key" extends getStaticAbiTypeKeys<input, userTypes>
     ? input
     : NoStaticKeyFieldError
   : InvalidInput;
 
-export type resolveTableShorthandConfig<input extends TableShorthandConfigInput> = input extends AbiType
+export type resolveTableShorthandConfig<
+  input extends TableShorthandConfigInput,
+  userTypes extends UserTypes
+> = input extends AbiType
   ? // If a single ABI type is provided as shorthand, expand it with a default `bytes32` key
     TableFullConfigInput<{ key: "bytes32"; value: input }, ["key"]>
   : input extends SchemaInput
@@ -52,9 +58,9 @@ export type resolveTableShorthandConfig<input extends TableShorthandConfigInput>
     : never
   : never;
 
-export function resolveTableShorthandConfig<input extends TableShorthandConfigInput>(
-  input: validateTableShorthandConfig<input>
-): resolveTableShorthandConfig<input> {
+export function resolveTableShorthandConfig<input extends TableShorthandConfigInput, userTypes extends UserTypes>(
+  input: validateTableShorthandConfig<input, userTypes>
+): resolveTableShorthandConfig<input, userTypes> {
   // TODO: runtime implementation
   return input as never;
 }

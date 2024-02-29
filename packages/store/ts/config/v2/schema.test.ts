@@ -14,12 +14,30 @@ describe("getStaticAbiTypeKeys", () => {
       "player" | "age"
     >();
   });
+
+  it("should return the keys of the schema that have static types (including user types)", () => {
+    expectTypeOf<
+      getStaticAbiTypeKeys<
+        { player: "address"; name: "CustomDynamicType"; age: "CustomStaticType" },
+        { CustomStaticType: "uint256"; CustomDynamicType: "string" }
+      >
+    >().toEqualTypeOf<"player" | "age">();
+  });
 });
 
 describe("getDynamicAbiTypeKeys", () => {
   it("should return the keys of the schema that have dynamic (variable length) ABI types", () => {
     expectTypeOf<
       getDynamicAbiTypeKeys<{ player: "address"; name: "string"; age: "uint256" }>
+    >().toEqualTypeOf<"name">();
+  });
+
+  it("should return the keys of the schema that have dynamic types (including user types)", () => {
+    expectTypeOf<
+      getDynamicAbiTypeKeys<
+        { player: "address"; name: "CustomDynamicType"; age: "CustomStaticType" },
+        { CustomStaticType: "uint256"; CustomDynamicType: "string" }
+      >
     >().toEqualTypeOf<"name">();
   });
 });
@@ -31,7 +49,7 @@ describe("resolveSchema", () => {
     expectTypeOf<typeof resolvedSchema.user>().toEqualTypeOf<{ type: "bytes32"; internalType: "CustomType" }>();
   });
 
-  it("should throw an error if a type is not part of the user types nor abi types", () => {
+  it("should throw if a type is not part of the user types nor abi types", () => {
     resolveSchema(
       {
         regular: "uint256",
