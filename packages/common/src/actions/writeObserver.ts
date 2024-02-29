@@ -9,11 +9,15 @@ import type {
 } from "viem";
 import { getAction } from "viem/utils";
 import { writeContract } from "viem/actions";
-import { type ContractWrite } from "./getContract";
+import { type ContractWrite } from "../getContract";
 
-export const setupWriteObserverActions = <TChain extends Chain, TAccount extends Account>(
-  onWrite: (write: ContractWrite) => void
-): ((client: WalletClient<Transport, TChain, TAccount>) => Pick<WalletActions<TChain, TAccount>, "writeContract">) => {
+type WriteObserverParameters = { onWrite: (write: ContractWrite) => void };
+
+export const writeObserver = <TChain extends Chain, TAccount extends Account>({
+  onWrite,
+}: WriteObserverParameters): ((
+  client: WalletClient<Transport, TChain, TAccount>
+) => Pick<WalletActions<TChain, TAccount>, "writeContract">) => {
   let nextWriteId = 0;
 
   return (client) => ({

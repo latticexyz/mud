@@ -1,3 +1,5 @@
+export * from "./actions/transactionQueue";
+export * from "./actions/writeObserver";
 export * from "./common";
 export * from "./createBenchmark";
 export * from "./createBurnerAccount";
@@ -12,11 +14,9 @@ export * from "./resourceLabel";
 export * from "./resourceToHex";
 export * from "./resourceTypes";
 export * from "./result";
-export * from "./setupWriteObserverActions";
 export * from "./sendTransaction";
 export * from "./spliceHex";
 export * from "./transportObserver";
-export * from "./transactionQueueActions";
 export * from "./writeContract";
 
 /** @deprecated use `getContract` instead */
