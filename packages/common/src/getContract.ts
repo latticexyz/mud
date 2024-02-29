@@ -56,6 +56,7 @@ export type GetContractOptions<
 
 // TODO: migrate away from this approach once we can hook into viem: https://github.com/wagmi-dev/viem/discussions/1230
 
+/** @deprecated Use `walletClient.extend(transactionQueue()).extend(writeObserver({ onWrite }))` and viem's `getContract` instead. */
 export function getContract<
   TTransport extends Transport,
   TAddress extends Address,
