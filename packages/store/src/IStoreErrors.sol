@@ -3,6 +3,11 @@ pragma solidity >=0.8.24;
 
 import { ResourceId } from "./ResourceId.sol";
 
+/**
+ * @title IStoreErrors
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ * @notice This interface includes errors for Store.
+ */
 interface IStoreErrors {
   // Errors include a stringified version of the tableId for easier debugging if cleartext tableIds are used
   error Store_TableAlreadyExists(ResourceId tableId, string tableIdString);
