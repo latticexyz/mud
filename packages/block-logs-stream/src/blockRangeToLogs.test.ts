@@ -41,7 +41,7 @@ describe("blockRangeToLogs", () => {
         publicClient,
         address: "0x",
         events: [],
-      })
+      }),
     );
 
     (async (): Promise<void> => {

@@ -445,7 +445,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { MapConfig, Obstruction, Player, Position }: ClientComponents
+  { MapConfig, Obstruction, Player, Position }: ClientComponents,
 ) {
   const isObstructed = (x: number, y: number) => {
     return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;

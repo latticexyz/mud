@@ -19,7 +19,7 @@ export type UserType = {
 export function loadAndExtractUserTypes(
   userTypes: Record<string, UserType>,
   outputBaseDirectory: string,
-  remappings: [string, string][]
+  remappings: [string, string][],
 ): Record<string, SolidityUserDefinedType> {
   const userTypesPerFile: Record<string, string[]> = {};
   for (const [userTypeName, { filePath: unresolvedFilePath }] of Object.entries(userTypes)) {
@@ -37,7 +37,7 @@ export function loadAndExtractUserTypes(
     for (const [userTypeName, userType] of Object.entries(userTypesInFile)) {
       if (userType.internalTypeId !== userTypes[userTypeName].internalType) {
         throw new MUDError(
-          `User type "${userTypeName}" has internal type "${userType.internalTypeId}" but config specifies "${userTypes[userTypeName].internalType}"`
+          `User type "${userTypeName}" has internal type "${userType.internalTypeId}" but config specifies "${userTypes[userTypeName].internalType}"`,
         );
       }
     }
@@ -50,7 +50,7 @@ export function loadAndExtractUserTypes(
 function loadUserTypesFile(
   outputBaseDirectory: string,
   unresolvedFilePath: string,
-  remappings: [string, string][]
+  remappings: [string, string][],
 ): {
   filePath: string;
   data: string;

@@ -30,7 +30,7 @@ const logs = await generateLogs(rpc, async (worldContract) => {
 
 const logsFilename = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
-  `../../../test-data/world-logs-query.json`
+  `../../../test-data/world-logs-query.json`,
 );
 
 console.log("writing", logs.length, "logs to", logsFilename);

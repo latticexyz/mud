@@ -37,7 +37,7 @@ module.exports = plugin(
         "fade-in": (value) => ({ "--tw-enter-opacity": value }),
         "fade-out": (value) => ({ "--tw-exit-opacity": value }),
       },
-      { values: theme("animationOpacity") }
+      { values: theme("animationOpacity") },
     );
 
     matchUtilities(
@@ -45,7 +45,7 @@ module.exports = plugin(
         "zoom-in": (value) => ({ "--tw-enter-scale": value }),
         "zoom-out": (value) => ({ "--tw-exit-scale": value }),
       },
-      { values: theme("animationScale") }
+      { values: theme("animationScale") },
     );
 
     matchUtilities(
@@ -53,7 +53,7 @@ module.exports = plugin(
         "spin-in": (value) => ({ "--tw-enter-rotate": value }),
         "spin-out": (value) => ({ "--tw-exit-rotate": value }),
       },
-      { values: theme("animationRotate") }
+      { values: theme("animationRotate") },
     );
 
     matchUtilities(
@@ -83,19 +83,19 @@ module.exports = plugin(
           "--tw-exit-translate-x": value,
         }),
       },
-      { values: theme("animationTranslate") }
+      { values: theme("animationTranslate") },
     );
 
     matchUtilities(
       { "animate-duration": (value: string) => ({ animationDuration: value }) },
-      { values: filterDefault(theme("animationDuration")) }
+      { values: filterDefault(theme("animationDuration")) },
     );
 
     matchUtilities({ delay: (value) => ({ animationDelay: value }) }, { values: theme("animationDelay") });
 
     matchUtilities(
       { ease: (value: string) => ({ animationTimingFunction: value }) },
-      { values: filterDefault(theme("animationTimingFunction")) }
+      { values: filterDefault(theme("animationTimingFunction")) },
     );
 
     addUtilities({
@@ -175,5 +175,5 @@ module.exports = plugin(
         },
       },
     },
-  }
+  },
 );
