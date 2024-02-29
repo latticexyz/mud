@@ -7,6 +7,6 @@ export function encodeLengths(values: Hex[]): Hex {
 
   return padHex(
     concatHex([...byteLengths.map((length) => encodeField("uint40", length)), encodeField("uint56", totalByteLength)]),
-    { size: 32, dir: "left" }
+    { size: 32, dir: "left" },
   );
 }

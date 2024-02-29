@@ -60,7 +60,7 @@ export function recsStorage<tables extends Record<string, Table>>({
           components.RegisteredTables,
           tableEntity,
           { table: newTable },
-          { skipUpdateStream: shouldSkipUpdateStream?.() }
+          { skipUpdateStream: shouldSkipUpdateStream?.() },
         );
       }
     }
@@ -69,7 +69,7 @@ export function recsStorage<tables extends Record<string, Table>>({
       const { namespace, name } = hexToResource(log.args.tableId);
       const table = getComponentValue(
         components.RegisteredTables,
-        getTableEntity({ address: log.address, namespace, name })
+        getTableEntity({ address: log.address, namespace, name }),
       )?.table;
       if (!table) {
         debug(`skipping update for unknown table: ${resourceToLabel({ namespace, name })} at ${log.address}`);
@@ -82,7 +82,7 @@ export function recsStorage<tables extends Record<string, Table>>({
           `skipping update for unknown component: ${table.tableId} (${resourceToLabel({
             namespace,
             name,
-          })}). Available components: ${Object.keys(components)}`
+          })}). Available components: ${Object.keys(components)}`,
         );
         continue;
       }
@@ -106,7 +106,7 @@ export function recsStorage<tables extends Record<string, Table>>({
             __encodedLengths: log.args.encodedLengths,
             __dynamicData: log.args.dynamicData,
           },
-          { skipUpdateStream: shouldSkipUpdateStream?.() }
+          { skipUpdateStream: shouldSkipUpdateStream?.() },
         );
       } else if (log.eventName === "Store_SpliceStaticData") {
         // TODO: add tests that this works when no record had been set before
@@ -134,7 +134,7 @@ export function recsStorage<tables extends Record<string, Table>>({
             ...newValue,
             __staticData: newStaticData,
           },
-          { skipUpdateStream: shouldSkipUpdateStream?.() }
+          { skipUpdateStream: shouldSkipUpdateStream?.() },
         );
       } else if (log.eventName === "Store_SpliceDynamicData") {
         // TODO: add tests that this works when no record had been set before
@@ -164,7 +164,7 @@ export function recsStorage<tables extends Record<string, Table>>({
             __encodedLengths: log.args.encodedLengths,
             __dynamicData: newDynamicData,
           },
-          { skipUpdateStream: shouldSkipUpdateStream?.() }
+          { skipUpdateStream: shouldSkipUpdateStream?.() },
         );
       } else if (log.eventName === "Store_DeleteRecord") {
         debug("deleting component", {

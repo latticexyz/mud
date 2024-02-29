@@ -37,7 +37,7 @@ export function logsToWorldDeploy(logs: readonly Log<bigint, number, false>[]): 
         ? { storeVersion: hexToString(trim(log.args.storeVersion, { dir: "right" })) }
         : null),
     }),
-    {}
+    {},
   );
 
   if (address == null) throw new Error("could not find world address");

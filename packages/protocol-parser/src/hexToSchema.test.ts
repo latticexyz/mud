@@ -55,14 +55,14 @@ describe("hexToSchema", () => {
 
   it("throws if schema hex data is not bytes32", () => {
     expect(() => hexToSchema("0x002502045f2381c3c4c5")).toThrow(
-      'Hex value "0x002502045f2381c3c4c5" has length of 20, but expected length of 64 for a schema.'
+      'Hex value "0x002502045f2381c3c4c5" has length of 20, but expected length of 64 for a schema.',
     );
   });
 
   it("throws if schema static field lengths do not match", () => {
     expect(() => hexToSchema("0x002502045f2381c3c4c500000000000000000000000000000000000000000000")).toThrow(
       // eslint-disable-next-line max-len
-      'Schema "0x002502045f2381c3c4c500000000000000000000000000000000000000000000" static data length (37) did not match the summed length of all static fields (36). Is `staticAbiTypeToByteLength` up to date with Solidity schema types?'
+      'Schema "0x002502045f2381c3c4c500000000000000000000000000000000000000000000" static data length (37) did not match the summed length of all static fields (36). Is `staticAbiTypeToByteLength` up to date with Solidity schema types?',
     );
   });
 });

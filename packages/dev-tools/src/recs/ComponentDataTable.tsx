@@ -38,8 +38,8 @@ export function ComponentDataTable({ component }: Props) {
                     {component.schema[name] === Type.T
                       ? serialize(fieldValue)
                       : Array.isArray(fieldValue)
-                      ? fieldValue.map(String).join(", ")
-                      : String(fieldValue)}
+                        ? fieldValue.map(String).join(", ")
+                        : String(fieldValue)}
                   </td>
                 );
               })}

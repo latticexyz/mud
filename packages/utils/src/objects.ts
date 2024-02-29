@@ -6,7 +6,7 @@
  */
 export function mapObject<S extends { [key: string]: unknown }, T extends { [key in keyof S]: unknown }>(
   source: S,
-  valueMap: (value: S[keyof S], key: keyof S) => T[keyof S]
+  valueMap: (value: S[keyof S], key: keyof S) => T[keyof S],
 ): T {
   const target: Partial<{ [key in keyof typeof source]: T[keyof S] }> = {};
   for (const key in source) {
