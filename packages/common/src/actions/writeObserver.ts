@@ -13,11 +13,11 @@ import { type ContractWrite } from "../getContract";
 
 type WriteObserverParameters = { onWrite: (write: ContractWrite) => void };
 
-export const writeObserver = <TChain extends Chain, TAccount extends Account>({
+export function writeObserver(<TChain extends Chain, TAccount extends Account>({
   onWrite,
 }: WriteObserverParameters): ((
   client: WalletClient<Transport, TChain, TAccount>
-) => Pick<WalletActions<TChain, TAccount>, "writeContract">) => {
+) => Pick<WalletActions<TChain, TAccount>, "writeContract">) {
   let nextWriteId = 0;
 
   return (client) => ({
@@ -31,4 +31,4 @@ export const writeObserver = <TChain extends Chain, TAccount extends Account>({
       return result;
     },
   });
-};
+}
