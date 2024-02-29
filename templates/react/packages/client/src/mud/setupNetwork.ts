@@ -18,13 +18,8 @@ import { createFaucetService } from "@latticexyz/services/faucet";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
-import {
-  createBurnerAccount,
-  transportObserver,
-  ContractWrite,
-  transactionQueueActions,
-  setupWriteObserverActions,
-} from "@latticexyz/common";
+import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
+import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
 import { Subject, share } from "rxjs";
 
 /*
@@ -69,8 +64,8 @@ export async function setupNetwork() {
     ...clientOptions,
     account: burnerAccount,
   })
-    .extend(transactionQueueActions)
-    .extend(setupWriteObserverActions((write) => write$.next(write)));
+    .extend(transactionQueue())
+    .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
 
   /*
    * Create an object for communicating with the deployed World.
