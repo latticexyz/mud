@@ -3,7 +3,7 @@ import { writeContract as mud_writeContract } from "../writeContract";
 import { sendTransaction as mud_sendTransaction } from "../sendTransaction";
 
 export function transactionQueue<TChain extends Chain, TAccount extends Account>(): (
-  client: WalletClient<Transport, TChain, TAccount>
+  client: WalletClient<Transport, TChain, TAccount>,
 ) => Pick<WalletActions<TChain, TAccount>, "writeContract" | "sendTransaction"> {
   return (client) => ({
     // Applies to: `client.writeContract`, `getContract(client, ...).write`
