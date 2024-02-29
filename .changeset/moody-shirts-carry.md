@@ -1,6 +1,6 @@
 ---
 "@latticexyz/common": minor
-"create-mud": "minor"
+"create-mud": minor
 ---
 
 Added viem custom client actions that work the same as MUD's now-deprecated `getContract`, `writeContract`, and `sendTransaction` wrappers. Templates have been updated to reflect the new patterns.
