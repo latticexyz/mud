@@ -1,5 +1,5 @@
 import { error } from "./error";
-import { AbiType, Schema, getStaticAbiTypeKeys } from "./schema";
+import { AbiType, SchemaInput, getStaticAbiTypeKeys } from "./schema";
 import { conform } from "./generics";
 
 export type NoStaticKeyFieldError =
@@ -8,15 +8,19 @@ export type InvalidInput = error<"Provide a valid shorthand or full table config
 // TODO: any way to have more details in the error here, ie `which keys would be valid keys`?
 export type InvalidKeys = `Keys must have static ABI types.`;
 
-export type TableConfigInput<schema extends Schema = Schema, keys extends ValidKeys<schema> = ValidKeys<schema>> =
-  | TableFullConfigInput<schema, keys>
-  | TableShorthandConfigInput;
+export type TableConfigInput<
+  schema extends SchemaInput = SchemaInput,
+  keys extends ValidKeys<schema> = ValidKeys<schema>
+> = TableFullConfigInput<schema, keys> | TableShorthandConfigInput;
 
-export type TableShorthandConfigInput = AbiType | Schema;
+export type TableShorthandConfigInput = AbiType | SchemaInput;
 
-export type ValidKeys<schema extends Schema> = [getStaticAbiTypeKeys<schema>, ...getStaticAbiTypeKeys<schema>[]];
+export type ValidKeys<schema extends SchemaInput> = [getStaticAbiTypeKeys<schema>, ...getStaticAbiTypeKeys<schema>[]];
 
-export type TableFullConfigInput<schema extends Schema = Schema, keys extends ValidKeys<schema> = ValidKeys<schema>> = {
+export type TableFullConfigInput<
+  schema extends SchemaInput = SchemaInput,
+  keys extends ValidKeys<schema> = ValidKeys<schema>
+> = {
   schema: schema;
   keys: keys;
 };
@@ -24,7 +28,7 @@ export type TableFullConfigInput<schema extends Schema = Schema, keys extends Va
 // We don't use `conform` here because the restrictions we're imposing here are not native to typescript
 type validateTableShorthandConfig<input extends TableShorthandConfigInput> = input extends AbiType
   ? input
-  : input extends Schema
+  : input extends SchemaInput
   ? // If a shorthand schema is provided, require it to have a static key field
     "key" extends getStaticAbiTypeKeys<input>
     ? input
@@ -34,7 +38,7 @@ type validateTableShorthandConfig<input extends TableShorthandConfigInput> = inp
 export type resolveTableShorthandConfig<input extends TableShorthandConfigInput> = input extends AbiType
   ? // If a single ABI type is provided as shorthand, expand it with a default `bytes32` key
     TableFullConfigInput<{ key: "bytes32"; value: input }, ["key"]>
-  : input extends Schema
+  : input extends SchemaInput
   ? "key" extends getStaticAbiTypeKeys<input>
     ? // If the shorthand includes a static field called `key`, use it as key
       TableFullConfigInput<input, ["key"]>
@@ -50,20 +54,20 @@ export function resolveTableShorthandConfig<input extends TableShorthandConfigIn
 
 export type inferSchema<input extends TableConfigInput> = input extends TableFullConfigInput
   ? input["schema"]
-  : input extends Schema
+  : input extends SchemaInput
   ? resolveTableShorthandConfig<input>["schema"]
   : never;
 
 export type validateTableConfig<
   input extends TableConfigInput,
-  schema extends Schema
+  schema extends SchemaInput
 > = input extends TableShorthandConfigInput
   ? validateTableShorthandConfig<input>
   : input extends TableFullConfigInput
   ? validateTableFullConfig<input, schema>
   : never;
 
-type validateTableFullConfig<input extends TableFullConfigInput, schema extends Schema> = conform<
+type validateTableFullConfig<input extends TableFullConfigInput, schema extends SchemaInput> = conform<
   input,
   // TODO: why does typescript not infer the `keys` anymore if i change this to `input["schema"]`?
   TableFullConfigInput<schema>
