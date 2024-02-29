@@ -19,7 +19,11 @@ Emitted when a new record is set in the store.
 
 ```solidity
 event Store_SetRecord(
-    ResourceId indexed tableId, bytes32[] keyTuple, bytes staticData, PackedCounter encodedLengths, bytes dynamicData
+  ResourceId indexed tableId,
+  bytes32[] keyTuple,
+  bytes staticData,
+  PackedCounter encodedLengths,
+  bytes dynamicData
 );
 ```
 
@@ -59,13 +63,13 @@ Emitted when dynamic data in the store is spliced.
 
 ```solidity
 event Store_SpliceDynamicData(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    uint8 dynamicFieldIndex,
-    uint48 start,
-    uint40 deleteCount,
-    PackedCounter encodedLengths,
-    bytes data
+  ResourceId indexed tableId,
+  bytes32[] keyTuple,
+  uint8 dynamicFieldIndex,
+  uint48 start,
+  uint40 deleteCount,
+  PackedCounter encodedLengths,
+  bytes data
 );
 ```
 

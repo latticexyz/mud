@@ -32,7 +32,7 @@ export function createStorageAdapter<tables extends Tables>({
         debug(
           `skipping update for unknown table: ${resourceToLabel({ namespace, name })} (${log.args.tableId}) at ${
             log.address
-          }`
+          }`,
         );
         continue;
       }
@@ -140,7 +140,7 @@ export function createStorageAdapter<tables extends Tables>({
               },
             ];
           })
-          .filter(isDefined)
+          .filter(isDefined),
       ),
     };
 

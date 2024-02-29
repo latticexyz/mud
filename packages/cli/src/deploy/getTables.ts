@@ -45,7 +45,7 @@ export async function getTables({
     const valueAbiTypes = [...valueSchemaFields.staticFields, ...valueSchemaFields.dynamicFields];
 
     const keySchema = Object.fromEntries(
-      keySchemaFields.staticFields.map((abiType, i) => [keyNames[i], abiType])
+      keySchemaFields.staticFields.map((abiType, i) => [keyNames[i], abiType]),
     ) as KeySchema;
     const valueSchema = Object.fromEntries(valueAbiTypes.map((abiType, i) => [fieldNames[i], abiType])) as ValueSchema;
 

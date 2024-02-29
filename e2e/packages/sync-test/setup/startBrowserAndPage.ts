@@ -2,7 +2,7 @@ import { Browser, Page, chromium } from "@playwright/test";
 import chalk from "chalk";
 
 export async function startBrowserAndPage(
-  reportError: (error: string) => void
+  reportError: (error: string) => void,
 ): Promise<{ browser: Browser; page: Page }> {
   // open browser page
   const browser = await chromium.launch();

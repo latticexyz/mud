@@ -23,7 +23,7 @@ export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
           function ${functionPrefix}${name}(
             ${renderArguments(parameters)}
           ) external ${stateMutability} ${renderReturnParameters(returnParameters)};
-        `
+        `,
       )}
     }
   `;

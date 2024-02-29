@@ -15,7 +15,7 @@ export async function tablegen(config: StoreConfig, outputBaseDirectory: string,
   await Promise.all(
     uniqueTableDirectories.map(async (tableDir) => {
       await rm(path.join(outputBaseDirectory, tableDir), { recursive: true, force: true });
-    })
+    }),
   );
 
   // write tables to files
@@ -24,7 +24,7 @@ export async function tablegen(config: StoreConfig, outputBaseDirectory: string,
       const fullOutputPath = path.join(outputBaseDirectory, outputPath);
       const output = renderTable(renderOptions);
       await formatAndWriteSolidity(output, fullOutputPath, "Generated table");
-    })
+    }),
   );
 
   // write table index

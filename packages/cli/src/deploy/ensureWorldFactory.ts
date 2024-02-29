@@ -13,7 +13,7 @@ import { Contract } from "./ensureContract";
 
 export async function ensureWorldFactory(
   client: Client<Transport, Chain | undefined, Account>,
-  deployerAddress: Hex
+  deployerAddress: Hex,
 ): Promise<Address> {
   const accessManagementSystemDeployedBytecodeSize = size(accessManagementSystemBuild.deployedBytecode.object as Hex);
   const accessManagementSystemBytecode = accessManagementSystemBuild.bytecode.object as Hex;

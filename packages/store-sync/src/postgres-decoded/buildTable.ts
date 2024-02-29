@@ -56,10 +56,10 @@ export function buildTable<TKeySchema extends KeySchema, TValueSchema extends Va
   // Column names, however, are safe to snake case because they're scoped to tables, defined once per table, and there's a limited number of fields in total.
 
   const keyColumns = Object.fromEntries(
-    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()])
+    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()]),
   );
   const valueColumns = Object.fromEntries(
-    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()])
+    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()]),
   );
 
   // TODO: make sure there are no meta columns that overlap with key/value columns

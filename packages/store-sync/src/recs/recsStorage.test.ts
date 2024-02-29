@@ -21,7 +21,7 @@ const blocks = groupLogsByBlockNumber(
       strict: true,
     });
     return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
-  })
+  }),
 );
 
 describe("recsStorage", () => {
@@ -29,7 +29,7 @@ describe("recsStorage", () => {
     const world = createWorld();
     const { components } = recsStorage({ world, tables });
     expect(components.NumberList.id).toMatchInlineSnapshot(
-      '"0x746200000000000000000000000000004e756d6265724c697374000000000000"'
+      '"0x746200000000000000000000000000004e756d6265724c697374000000000000"',
     );
   });
 
@@ -60,7 +60,9 @@ describe("recsStorage", () => {
     `);
 
     expect(
-      [...getComponentEntities(components.NumberList)].map((entity) => getComponentValue(components.NumberList, entity))
+      [...getComponentEntities(components.NumberList)].map((entity) =>
+        getComponentValue(components.NumberList, entity),
+      ),
     ).toMatchInlineSnapshot(`
     [
       {

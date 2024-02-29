@@ -9,7 +9,7 @@ import { Abi, Hex, size } from "viem";
  */
 export function getContractData(
   contractName: string,
-  forgeOutDirectory: string
+  forgeOutDirectory: string,
 ): { bytecode: Hex; abi: Abi; deployedBytecodeSize: number } {
   let data: any;
   const contractDataPath = path.join(forgeOutDirectory, contractName + ".sol", contractName + ".json");
