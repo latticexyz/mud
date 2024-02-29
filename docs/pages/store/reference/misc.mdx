@@ -269,62 +269,6 @@ function slice32(bytes memory data, uint256 start) internal pure returns (bytes3
 | -------- | --------- | -------------------------------------------------------------------------- |
 | `output` | `bytes32` | The extracted bytes32 value from the specified position in the bytes blob. |
 
-## FieldLayout_Empty
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/FieldLayout.sol)
-
-```solidity
-error FieldLayout_Empty();
-```
-
-## FieldLayout_InvalidStaticDataLength
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/FieldLayout.sol)
-
-```solidity
-error FieldLayout_InvalidStaticDataLength(uint256 staticDataLength, uint256 computedStaticDataLength);
-```
-
-## FieldLayout_StaticLengthDoesNotFitInAWord
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/FieldLayout.sol)
-
-```solidity
-error FieldLayout_StaticLengthDoesNotFitInAWord(uint256 index);
-```
-
-## FieldLayout_StaticLengthIsNotZero
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/FieldLayout.sol)
-
-```solidity
-error FieldLayout_StaticLengthIsNotZero(uint256 index);
-```
-
-## FieldLayout_StaticLengthIsZero
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/FieldLayout.sol)
-
-```solidity
-error FieldLayout_StaticLengthIsZero(uint256 index);
-```
-
-## FieldLayout_TooManyDynamicFields
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/FieldLayout.sol)
-
-```solidity
-error FieldLayout_TooManyDynamicFields(uint256 numFields, uint256 maxFields);
-```
-
-## FieldLayout_TooManyFields
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/FieldLayout.sol)
-
-```solidity
-error FieldLayout_TooManyFields(uint256 numFields, uint256 maxFields);
-```
-
 ## FieldLayoutInstance
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/FieldLayout.sol)
@@ -811,26 +755,6 @@ type and a name_
 type ResourceId is bytes32;
 ```
 
-## Schema_InvalidLength
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Schema.sol)
-
-_Error raised when the provided schema has an invalid length._
-
-```solidity
-error Schema_InvalidLength(uint256 length);
-```
-
-## Schema_StaticTypeAfterDynamicType
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Schema.sol)
-
-_Error raised when a static type is placed after a dynamic type in a schema._
-
-```solidity
-error Schema_StaticTypeAfterDynamicType();
-```
-
 ## SchemaInstance
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Schema.sol)
@@ -1035,14 +959,6 @@ _Defines and handles the encoding/decoding of Schemas which describe the layout 
 
 ```solidity
 type Schema is bytes32;
-```
-
-## Slice_OutOfBounds
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Slice.sol)
-
-```solidity
-error Slice_OutOfBounds(bytes data, uint256 start, uint256 end);
 ```
 
 ## SliceInstance
