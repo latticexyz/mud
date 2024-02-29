@@ -26,6 +26,7 @@ import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
 import { RevertSubscriber } from "./RevertSubscriber.sol";
 import { EchoSubscriber } from "./EchoSubscriber.sol";
 import { setDynamicDataLengthAtIndex } from "./setDynamicDataLengthAtIndex.sol";
+import { IFieldLayoutErrors } from "../src/IFieldLayoutErrors.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -130,7 +131,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     vm.expectRevert(
       abi.encodeWithSelector(
-        FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields.selector,
+        IFieldLayoutErrors.FieldLayoutLib_TooManyDynamicFields.selector,
         invalidFieldLayout.numDynamicFields(),
         5
       )

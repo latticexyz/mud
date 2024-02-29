@@ -2,6 +2,7 @@
 pragma solidity >=0.8.24;
 
 import { BYTE_TO_BITS } from "./constants.sol";
+import { IPackedCounterErrors } from "./IPackedCounterErrors.sol";
 
 /**
  * @title PackedCounter Type Definition
@@ -139,8 +140,6 @@ library PackedCounterLib {
  * @dev Offers decoding, extracting, and setting functionalities for a PackedCounter.
  */
 library PackedCounterInstance {
-  error PackedCounter_InvalidLength(uint256 length);
-
   /**
    * @notice Decode the accumulated counter from a PackedCounter.
    * @dev Extracts the right-most 7 bytes of a PackedCounter.
@@ -178,7 +177,7 @@ library PackedCounterInstance {
     uint256 newValueAtIndex
   ) internal pure returns (PackedCounter) {
     if (newValueAtIndex > MAX_VAL) {
-      revert PackedCounter_InvalidLength(newValueAtIndex);
+      revert IPackedCounterErrors.PackedCounter_InvalidLength(newValueAtIndex);
     }
 
     uint256 rawPackedCounter = uint256(PackedCounter.unwrap(packedCounter));
