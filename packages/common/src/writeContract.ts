@@ -20,6 +20,7 @@ const debug = parentDebug.extend("writeContract");
 
 // TODO: migrate away from this approach once we can hook into viem's nonce management: https://github.com/wagmi-dev/viem/discussions/1230
 
+/** @deprecated Use `walletClient.extend(transactionQueue())` instead. */
 export async function writeContract<
   chain extends Chain | undefined,
   account extends Account | undefined,
