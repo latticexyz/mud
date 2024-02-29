@@ -27,8 +27,18 @@ describe("getDynamicAbiTypeKeys", () => {
 describe("resolveSchema", () => {
   it("should map user types to their primitive type", () => {
     const resolvedSchema = resolveSchema({ regular: "uint256", user: "CustomType" }, { CustomType: "bytes32" });
-
     expectTypeOf<typeof resolvedSchema.regular>().toEqualTypeOf<{ type: "uint256"; internalType: "uint256" }>();
     expectTypeOf<typeof resolvedSchema.user>().toEqualTypeOf<{ type: "bytes32"; internalType: "CustomType" }>();
+  });
+
+  it("should throw an error if a type is not part of the user types nor abi types", () => {
+    resolveSchema(
+      {
+        regular: "uint256",
+        // @ts-expect-error Type '"NotACustomType"' is not assignable to type 'AbiType | "CustomType"'.
+        user: "NotACustomType",
+      },
+      { CustomType: "bytes32" }
+    );
   });
 });

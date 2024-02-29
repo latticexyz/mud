@@ -10,9 +10,14 @@ export type SchemaInput<userTypes extends UserTypes = UserTypes> = UserTypes ext
       [key: string]: AbiType | keyof userTypes;
     };
 
-export type StaticSchemaInput = {
-  [key: string]: StaticAbiType;
-};
+export type StaticSchemaInput<userTypes extends StaticUserTypes = StaticUserTypes> = StaticUserTypes extends userTypes
+  ? // Only allow keyof userTypes if a narrow userTypes type is passed in
+    {
+      [key: string]: StaticAbiType;
+    }
+  : {
+      [key: string]: AbiType | keyof userTypes;
+    };
 
 export type UserTypes = {
   [key: string]: AbiType;
