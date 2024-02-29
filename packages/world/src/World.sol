@@ -26,7 +26,7 @@ import { IWorldKernel } from "./IWorldKernel.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
-import { SystemCallData } from "./modules/init/types.sol";
+import { SystemCallData, SystemCallValueData } from "./modules/init/types.sol";
 
 /**
  * @title World Contract
@@ -350,27 +350,6 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
-   * @notice Make batch calls to multiple systems into a single transaction.
-   * @dev Iterates through an array of system calls, executes them, and returns an array of return data.
-   * @param systemCalls An array of SystemCallData that contains systemId and callData for each call.
-   * @return returnDatas An array of bytes containing the return data for each system call.
-   */
-  function batchCall(
-    SystemCallData[] calldata systemCalls
-  ) external payable virtual prohibitDirectCallback returns (bytes[] memory returnDatas) {
-    returnDatas = new bytes[](systemCalls.length);
-
-    for (uint256 i; i < systemCalls.length; i++) {
-      returnDatas[i] = SystemCall.callWithHooksOrRevert(
-        msg.sender,
-        systemCalls[i].systemId,
-        systemCalls[i].callData,
-        0
-      );
-    }
-  }
-
-  /**
    * @notice Calls a system with a given system ID on behalf of the given delegator.
    * @param delegator The address on whose behalf the system is called.
    * @param systemId The ID of the system to be called.
@@ -411,6 +390,47 @@ contract World is StoreData, IWorldKernel {
     }
 
     revert World_DelegationNotFound(delegator, msg.sender);
+  }
+
+  function batchCall(
+    SystemCallData[] calldata systemCalls
+  ) external payable virtual prohibitDirectCallback returns (bytes[] memory returnDatas) {
+    returnDatas = new bytes[](systemCalls.length);
+
+    for (uint256 i; i < systemCalls.length; i++) {
+      returnDatas[i] = SystemCall.callWithHooksOrRevert(
+        msg.sender,
+        systemCalls[i].systemId,
+        systemCalls[i].callData,
+        0
+      );
+    }
+  }
+
+  /**
+   * @notice Make batch calls to multiple systems into a single transaction.
+   * @dev Iterates through an array of system calls, executes them, and returns an array of return data.
+   * @param systemCalls An array of SystemCallData that contains systemId and callData for each call.
+   * @return returnDatas An array of bytes containing the return data for each system call.
+   */
+  function batchCallValue(
+    SystemCallValueData[] calldata systemCalls
+  ) external payable virtual prohibitDirectCallback returns (bytes[] memory returnDatas) {
+    returnDatas = new bytes[](systemCalls.length);
+
+    uint256 sum = 0;
+    for (uint256 i; i < systemCalls.length; i++) {
+      returnDatas[i] = SystemCall.callWithHooksOrRevert(
+        msg.sender,
+        systemCalls[i].systemId,
+        systemCalls[i].callData,
+        systemCalls[i].value
+      );
+
+      sum += systemCalls[i].value;
+    }
+
+    require(sum == msg.value, "something doesn't add up");
   }
 
   /************************************************************************

@@ -4,7 +4,7 @@ pragma solidity >=0.8.24;
 import { IWorldErrors } from "./IWorldErrors.sol";
 import { IModule } from "./IModule.sol";
 import { ResourceId } from "./WorldResourceId.sol";
-import { SystemCallData } from "./modules/init/types.sol";
+import { SystemCallData, SystemCallValueData } from "./modules/init/types.sol";
 
 /**
  * @title World Module Installation Interface
@@ -44,6 +44,10 @@ interface IWorldCall {
    * @return returnDatas An array of bytes containing the return data for each system call.
    */
   function batchCall(SystemCallData[] calldata systemCalls) external payable returns (bytes[] memory returnDatas);
+
+  function batchCallValue(
+    SystemCallValueData[] calldata systemCalls
+  ) external payable returns (bytes[] memory returnDatas);
 
   /**
    * @notice Call the system at the given system ID on behalf of the given delegator.

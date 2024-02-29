@@ -16,6 +16,15 @@ struct SystemCallData {
   bytes callData;
 }
 
+struct SystemCallValueData {
+  /// @dev The ID of the system to call.
+  ResourceId systemId;
+  /// @dev The call data to pass to the system function.
+  bytes callData;
+  /// @dev The value to pass to the system.
+  uint256 value;
+}
+
 /**
  * @title System Call From Data Structure
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
