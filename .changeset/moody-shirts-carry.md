@@ -21,14 +21,5 @@ You can migrate your own code like this:
  const worldContract = getContract({
    client: { publicClient, walletClient },
 -  onWrite,
-});
-```
-Code previously written as:
-
-```ts
-const worldContract = mud_getContract({
-  // ...
-  client: { /* ... */, wallet: walletClient },
-  onWrite,
  });
 ```
