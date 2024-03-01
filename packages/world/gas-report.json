@@ -45,61 +45,61 @@
     "file": "test/BatchCall.t.sol",
     "test": "testBatchCallFromReturnData",
     "name": "call systems with batchCallFrom",
-    "gasUsed": 50689
+    "gasUsed": 50549
   },
   {
     "file": "test/BatchCall.t.sol",
     "test": "testBatchCallReturnData",
     "name": "call systems with batchCall",
-    "gasUsed": 49764
+    "gasUsed": 21859
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testCreate2Factory",
     "name": "deploy contract via Create2",
-    "gasUsed": 4615190
+    "gasUsed": 4882223
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12643627
+    "gasUsed": 12842909
   },
   {
     "file": "test/World.t.sol",
     "test": "testCall",
     "name": "call a system via the World",
-    "gasUsed": 11681
+    "gasUsed": 11659
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromNamespaceDelegation",
     "name": "call a system via a namespace fallback delegation",
-    "gasUsed": 24776
+    "gasUsed": 24754
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 46495
+    "gasUsed": 46496
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 12123
+    "gasUsed": 12101
   },
   {
     "file": "test/World.t.sol",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 8958
+    "gasUsed": 8936
   },
   {
     "file": "test/World.t.sol",
     "test": "testPushToDynamicField",
     "name": "Push data to the table",
-    "gasUsed": 85647
+    "gasUsed": 85714
   },
   {
     "file": "test/World.t.sol",
@@ -111,7 +111,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 122690
+    "gasUsed": 122691
   },
   {
     "file": "test/World.t.sol",
@@ -129,7 +129,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 532676
+    "gasUsed": 532698
   },
   {
     "file": "test/World.t.sol",
@@ -141,19 +141,19 @@
     "file": "test/World.t.sol",
     "test": "testSetField",
     "name": "Write data to a table field",
-    "gasUsed": 36436
+    "gasUsed": 36414
   },
   {
     "file": "test/World.t.sol",
     "test": "testSetRecord",
     "name": "Write data to the table",
-    "gasUsed": 38167
+    "gasUsed": 38145
   },
   {
     "file": "test/World.t.sol",
     "test": "testUnregisterNamespaceDelegation",
     "name": "unregister a namespace delegation",
-    "gasUsed": 26404
+    "gasUsed": 26426
   },
   {
     "file": "test/World.t.sol",
@@ -165,25 +165,25 @@
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (cold)",
-    "gasUsed": 25434
+    "gasUsed": 25501
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (warm)",
-    "gasUsed": 12580
+    "gasUsed": 12647
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (cold)",
-    "gasUsed": 25794
+    "gasUsed": 25750
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (warm)",
-    "gasUsed": 12995
+    "gasUsed": 12951
   },
   {
     "file": "test/WorldResourceId.t.sol",
