@@ -11,22 +11,30 @@ export type InvalidKeys<validKey extends string> =
   `Keys must have static ABI types (${stringifyUnion<validKey>} are allowed)`;
 
 export type TableConfigInput<
-  schema extends SchemaInput = SchemaInput,
-  keys extends ValidKeys<schema> = ValidKeys<schema>
-> = TableFullConfigInput<schema, keys> | TableShorthandConfigInput;
+  schema extends SchemaInput<userTypes> = SchemaInput,
+  userTypes extends UserTypes = UserTypes,
+  keys extends ValidKeys<schema, userTypes> = ValidKeys<schema, userTypes>
+> = TableFullConfigInput<schema, userTypes, keys> | TableShorthandConfigInput<userTypes>;
 
-export type TableShorthandConfigInput = AbiType | SchemaInput;
+export type TableShorthandConfigInput<userTypes extends UserTypes = UserTypes> =
+  | SchemaInput<userTypes>
+  | AbiOrUserType<userTypes>;
+
+export type AbiOrUserType<userTypes extends UserTypes = UserTypes> = UserTypes extends userTypes
+  ? AbiType
+  : AbiType | keyof userTypes;
 
 // @alvrs Make sure if you are ever wanting to compare against an array like
 // this you add `readonly` to it
-export type ValidKeys<schema extends SchemaInput> = readonly [
-  getStaticAbiTypeKeys<schema>,
-  ...getStaticAbiTypeKeys<schema>[]
+export type ValidKeys<schema extends SchemaInput<userTypes>, userTypes extends UserTypes = UserTypes> = readonly [
+  getStaticAbiTypeKeys<schema, userTypes>,
+  ...getStaticAbiTypeKeys<schema, userTypes>[]
 ];
 
 export type TableFullConfigInput<
-  schema extends SchemaInput = SchemaInput,
-  keys extends ValidKeys<schema> = ValidKeys<schema>
+  schema extends SchemaInput<userTypes> = SchemaInput,
+  userTypes extends UserTypes = UserTypes,
+  keys extends ValidKeys<schema, userTypes> = ValidKeys<schema, userTypes>
 > = {
   schema: schema;
   keys: keys;
@@ -34,32 +42,35 @@ export type TableFullConfigInput<
 
 // We don't use `conform` here because the restrictions we're imposing here are not native to typescript
 type validateTableShorthandConfig<
-  input extends TableShorthandConfigInput,
-  userTypes extends UserTypes
-> = input extends AbiType
-  ? input
-  : input extends SchemaInput
+  input extends TableShorthandConfigInput<userTypes>,
+  userTypes extends UserTypes = UserTypes
+> = input extends SchemaInput<userTypes>
   ? // If a shorthand schema is provided, require it to have a static key field
     "key" extends getStaticAbiTypeKeys<input, userTypes>
     ? input
     : NoStaticKeyFieldError
+  : input extends AbiOrUserType<userTypes>
+  ? input
   : InvalidInput;
 
 export type resolveTableShorthandConfig<
-  input extends TableShorthandConfigInput,
-  userTypes extends UserTypes
-> = input extends AbiType
-  ? // If a single ABI type is provided as shorthand, expand it with a default `bytes32` key
-    TableFullConfigInput<{ key: "bytes32"; value: input }, ["key"]>
-  : input extends SchemaInput
-  ? "key" extends getStaticAbiTypeKeys<input>
+  input,
+  userTypes extends UserTypes = UserTypes
+> = input extends SchemaInput<userTypes>
+  ? "key" extends getStaticAbiTypeKeys<input, userTypes>
     ? // If the shorthand includes a static field called `key`, use it as key
-      TableFullConfigInput<input, ["key"]>
+      TableFullConfigInput<input, userTypes, ["key"]>
     : never
+  : input extends AbiOrUserType<userTypes>
+  ? resolveTableShorthandConfig<{ key: "bytes32"; value: input }, userTypes>
   : never;
 
-export function resolveTableShorthandConfig<input extends TableShorthandConfigInput, userTypes extends UserTypes>(
-  input: validateTableShorthandConfig<input, userTypes>
+export function resolveTableShorthandConfig<
+  input extends TableShorthandConfigInput<userTypes>,
+  userTypes extends UserTypes = UserTypes
+>(
+  input: validateTableShorthandConfig<input, userTypes>,
+  userTypes?: userTypes
 ): resolveTableShorthandConfig<input, userTypes> {
   // TODO: runtime implementation
   return input as never;
@@ -71,14 +82,19 @@ export type inferSchema<input extends TableConfigInput> = input extends TableFul
   ? resolveTableShorthandConfig<input>["schema"]
   : never;
 
-export type validateTableConfig<input> = input extends TableShorthandConfigInput
-  ? validateTableShorthandConfig<input>
+export type validateTableConfig<
+  input,
+  userTypes extends UserTypes = UserTypes
+> = input extends TableShorthandConfigInput
+  ? validateTableShorthandConfig<input, userTypes>
   : input extends TableFullConfigInput
-  ? validateTableFullConfig<input>
+  ? validateTableFullConfig<input, userTypes>
   : TableFullConfigInput | TableShorthandConfigInput;
 
-type validateTableFullConfig<input extends TableFullConfigInput> = {
-  [k in keyof input]: k extends "keys" ? validateKeys<input[k], getStaticAbiTypeKeys<input["schema"]>> : input[k];
+type validateTableFullConfig<input extends TableFullConfigInput, userTypes extends UserTypes = UserTypes> = {
+  [k in keyof input]: k extends "keys"
+    ? validateKeys<input[k], getStaticAbiTypeKeys<input["schema"], userTypes>>
+    : input[k];
 };
 
 type validateKeys<keys, validKey extends PropertyKey> = {

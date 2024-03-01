@@ -35,13 +35,14 @@ export type getStaticAbiTypeKeys<
 > = SchemaInput extends schema
   ? // If `schema` is the default Schema type, return a broad string type
     string
-  : {
-      [key in keyof schema]: UserTypes extends userTypes
-        ? // If no narrow userTypes is passed in, ignore userTypes
-          schema[key] extends StaticAbiType
-          ? key
-          : never
-        : schema[key] extends keyof userTypes
+  : UserTypes extends userTypes
+  ? // If no narrow userTypes is passed in, ignore userTypes
+    {
+      [key in keyof schema]: schema[key] extends StaticAbiType ? key : never;
+    }[keyof schema]
+  : // If narrow userTypes is passed in, also allow static user types as keys
+    {
+      [key in keyof schema]: schema[key] extends keyof userTypes
         ? // If the type is user type, check if the corresponding user type is static
           userTypes[schema[key]] extends StaticAbiType
           ? key
