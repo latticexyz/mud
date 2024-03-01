@@ -46,5 +46,4 @@ export type Query = {
   readonly from: readonly TableSubject[];
   readonly except?: readonly TableSubject[];
   readonly where?: readonly QueryCondition[];
-  readonly records?: readonly TableSubject[];
 };

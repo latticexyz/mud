@@ -26,7 +26,6 @@ export async function findSubjects<table extends Table>({
   query,
 }: QueryParameters<table>): Promise<QueryResult> {
   // TODO: handle `query.except` subjects
-  // TODO: handle `query.records` subjects
   const fromTables = Object.fromEntries(query.from.map((subject) => [subject.tableId, subject.subject]));
 
   // TODO: store/lookup subjects separately rather than mapping each time so we can "memoize" better?

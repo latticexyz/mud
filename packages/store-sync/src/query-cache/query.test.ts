@@ -108,7 +108,6 @@ describe("query", async () => {
     const result = await query(store, {
       from: [{ tableId: tables.Terrain.tableId, subject: ["x", "y"] }],
       where: [{ left: { tableId: tables.Terrain.tableId, field: "terrainType" }, op: "=", right: 2 }],
-      records: [{ tableId: tables.Position.tableId, subject: ["x", "y"] }],
     });
 
     expect(result).toMatchInlineSnapshot(`
