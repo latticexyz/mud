@@ -5,6 +5,7 @@ import { StoreConfig, Tables } from "@latticexyz/store";
 import { groupBy } from "@latticexyz/common/utils";
 import { encodeAbiParameters } from "viem";
 import { matchesCondition } from "./matchesCondition";
+import { findSubjects } from "./findSubjects";
 
 type QueryResult<query extends Query> = {
   // TODO: resolve the actual types via config look up of query subjects
@@ -26,46 +27,9 @@ type QueryResult<query extends Query> = {
 // TODO: make query smarter/config aware for shorthand
 // TODO: make condition types smarter, so condition literal matches the field primitive type
 
-export function query<config extends StoreConfig, extraTables extends Tables | undefined>(
+export async function query<config extends StoreConfig, extraTables extends Tables | undefined>(
   store: ZustandStore<AllTables<config, extraTables>>,
   query: Query
 ): Promise<QueryResult<typeof query>> {
-  // TODO: handle `query.except` subjects
-  // TODO: handle `query.records` subjects
-  const fromTables = Object.fromEntries(query.from.map((subject) => [subject.tableId, subject.subject]));
-
-  const records = Object.values(store.getState().records)
-    .filter((record) => fromTables[record.table.tableId])
-    .map((record) => {
-      const subjectFields = fromTables[record.table.tableId];
-      const schema = { ...record.table.keySchema, ...record.table.valueSchema };
-      const fields = { ...record.key, ...record.value };
-      const subject = subjectFields.map((field) => fields[field]);
-      const subjectSchema = subjectFields.map((field) => schema[field]);
-      // TODO: fix subject type
-      const encodedSubject = encodeAbiParameters(subjectSchema, subject);
-      return {
-        ...record,
-        schema,
-        fields,
-        subjectSchema,
-        subject,
-        encodedSubject,
-      };
-    });
-
-  const matchedSubjects = Array.from(groupBy(records, (record) => record.encodedSubject).values())
-    .map((records) => ({
-      subject: records[0].subject,
-      encodedSubject: records[0].encodedSubject,
-      records,
-    }))
-    .filter(({ records }) => {
-      // make sure our matched subject has records in all `query.from` tables
-      const tableIds = Array.from(new Set(records.map((record) => record.table.tableId)));
-      return tableIds.length === query.from.length;
-    })
-    .filter((match) => (query.where ? query.where.every((condition) => matchesCondition(condition, match)) : true));
-
-  return Promise.resolve({ subjects: matchedSubjects.map((match) => match.subject) });
+  return findSubjects({ records: Object.values(store.getState().records), query });
 }
