@@ -1,6 +1,6 @@
 import { error } from "./error";
 import { AbiType, SchemaInput, UserTypes, getStaticAbiTypeKeys, resolveSchema } from "./schema";
-import { stringifyUnion } from "@arktype/util";
+import { conform, stringifyUnion } from "@arktype/util";
 
 export type NoStaticKeyFieldError =
   error<"Provide a `key` field with static ABI type or a full config with explicit keys override.">;
@@ -82,16 +82,15 @@ export type inferSchema<input extends TableConfigInput> = input extends TableFul
   ? resolveTableShorthandConfig<input>["schema"]
   : never;
 
-export type validateTableConfig<
-  input,
-  userTypes extends UserTypes = UserTypes
-> = input extends TableShorthandConfigInput
-  ? validateTableShorthandConfig<input, userTypes>
-  : input extends TableFullConfigInput
-  ? validateTableFullConfig<input, userTypes>
-  : TableFullConfigInput | TableShorthandConfigInput;
+export type validateTableConfig<input, userTypes = undefined> = userTypes extends UserTypes
+  ? input extends TableShorthandConfigInput<userTypes>
+    ? validateTableShorthandConfig<input, userTypes>
+    : input extends TableFullConfigInput<userTypes>
+    ? validateTableFullConfig<input, userTypes>
+    : TableConfigInput
+  : TableConfigInput;
 
-type validateTableFullConfig<input extends TableFullConfigInput, userTypes extends UserTypes = UserTypes> = {
+type validateTableFullConfig<input extends TableFullConfigInput<userTypes>, userTypes extends UserTypes = UserTypes> = {
   [k in keyof input]: k extends "keys"
     ? validateKeys<input[k], getStaticAbiTypeKeys<input["schema"], userTypes>>
     : input[k];
@@ -101,7 +100,10 @@ type validateKeys<keys, validKey extends PropertyKey> = {
   [i in keyof keys]: keys[i] extends validKey ? keys[i] : validKey;
 };
 
-type resolveTableFullConfig<input extends TableFullConfigInput, userTypes extends UserTypes> = {
+type resolveTableFullConfig<
+  input extends TableFullConfigInput<SchemaInput<userTypes>, userTypes>,
+  userTypes extends UserTypes
+> = {
   keys: input["keys"];
   schema: resolveSchema<input["schema"], userTypes>;
   keySchema: resolveSchema<
@@ -118,11 +120,14 @@ type resolveTableFullConfig<input extends TableFullConfigInput, userTypes extend
   >;
 };
 
-export type resolveTableConfig<input, userTypes extends UserTypes> = input extends TableShorthandConfigInput
-  ? resolveTableConfig<resolveTableShorthandConfig<input>, userTypes>
-  : input extends TableFullConfigInput
+export type resolveTableConfig<
+  input,
+  userTypes extends UserTypes = UserTypes
+> = input extends TableShorthandConfigInput<userTypes>
+  ? resolveTableConfig<resolveTableShorthandConfig<input, userTypes>, userTypes>
+  : input extends TableFullConfigInput<SchemaInput<userTypes>, userTypes>
   ? resolveTableFullConfig<input, userTypes>
-  : never;
+  : "error 1";
 
 /**
  * If a shorthand table config is passed (just a schema or even just a single ABI type) we expand it with sane defaults:
@@ -131,7 +136,7 @@ export type resolveTableConfig<input, userTypes extends UserTypes> = input exten
  * - A schema without a `key` field is invalid.
  */
 export function resolveTableConfig<input, userTypes extends UserTypes = UserTypes>(
-  input: validateTableConfig<input>,
+  input: validateTableConfig<input, userTypes>,
   userTypes?: userTypes
 ): resolveTableConfig<input, userTypes> {
   // TODO: runtime implementation

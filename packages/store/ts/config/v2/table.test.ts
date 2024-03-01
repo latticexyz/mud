@@ -73,7 +73,17 @@ describe("resolveTableConfig", () => {
     expectTypeOf<typeof table.valueSchema.value>().toEqualTypeOf<{ type: "address"; internalType: "address" }>();
   });
 
-  it.todo("should expand a single custom type into a key/value schema");
+  it("should expand a single custom type into a key/value schema", () => {
+    const table = resolveTableConfig("CustomType", { CustomType: "address" });
+    expectTypeOf<keyof typeof table.schema>().toEqualTypeOf<"key" | "value">();
+    expectTypeOf<typeof table.schema.key>().toEqualTypeOf<{ type: "bytes32"; internalType: "bytes32" }>();
+    expectTypeOf<typeof table.schema.value>().toEqualTypeOf<{ type: "address"; internalType: "CustomType" }>();
+    expectTypeOf<typeof table.keys>().toEqualTypeOf<["key"]>();
+    expectTypeOf<keyof typeof table.keySchema>().toEqualTypeOf<"key">();
+    expectTypeOf<typeof table.keySchema.key>().toEqualTypeOf<{ type: "bytes32"; internalType: "bytes32" }>();
+    expectTypeOf<keyof typeof table.valueSchema>().toEqualTypeOf<"value">();
+    expectTypeOf<typeof table.valueSchema.value>().toEqualTypeOf<{ type: "address"; internalType: "CustomType" }>();
+  });
 
   it("should use `key` as single key if it has a static ABI type", () => {
     const table = resolveTableConfig({ key: "address", name: "string", age: "uint256" });
@@ -83,9 +93,12 @@ describe("resolveTableConfig", () => {
     expectTypeOf<typeof table.schema.age>().toEqualTypeOf<{ type: "uint256"; internalType: "uint256" }>();
     expectTypeOf<typeof table.keys>().toEqualTypeOf<["key"]>();
     expectTypeOf<keyof typeof table.keySchema>().toEqualTypeOf<"key">();
-    expectTypeOf<typeof table.keySchema>().toEqualTypeOf<{ key: "address" }>();
+    expectTypeOf<typeof table.keySchema>().toEqualTypeOf<{ key: { type: "address"; internalType: "address" } }>();
     expectTypeOf<keyof typeof table.valueSchema>().toEqualTypeOf<"name" | "age">();
-    expectTypeOf<typeof table.valueSchema>().toEqualTypeOf<{ name: "string"; age: "uint256" }>();
+    expectTypeOf<typeof table.valueSchema>().toEqualTypeOf<{
+      name: { type: "string"; internalType: "string" };
+      age: { type: "uint256"; internalType: "uint256" };
+    }>();
   });
 
   it.todo("should use `key` as single key if it has a static custom type");
