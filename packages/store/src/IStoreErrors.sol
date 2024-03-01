@@ -7,6 +7,8 @@ import { ResourceId } from "./ResourceId.sol";
  * @title IStoreErrors
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This interface includes errors for Store.
+ * @dev We bundle these errors in an interface (instead of at the file-level or in their corresponding library) so they can be inherited by IStore.
+ * This ensures that all possible errors are included in the IStore ABI for proper decoding in the frontend.
  */
 interface IStoreErrors {
   // Errors include a stringified version of the tableId for easier debugging if cleartext tableIds are used
