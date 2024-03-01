@@ -4,7 +4,7 @@ import { Hex, encodePacked } from "viem";
 
 export function encodeField<TSchemaAbiType extends SchemaAbiType>(
   fieldType: TSchemaAbiType,
-  value: AbiParameterToPrimitiveType<{ type: TSchemaAbiType }>
+  value: AbiParameterToPrimitiveType<{ type: TSchemaAbiType }>,
 ): Hex {
   if (isArrayAbiType(fieldType) && Array.isArray(value)) {
     const staticFieldType = arrayAbiTypeToStaticAbiType(fieldType);
@@ -13,7 +13,7 @@ export function encodeField<TSchemaAbiType extends SchemaAbiType>(
       ? "0x"
       : encodePacked(
           value.map(() => staticFieldType),
-          value
+          value,
         );
   }
   return encodePacked([fieldType], [value]);

@@ -24,7 +24,7 @@ export async function ensureNamespaceOwner({
       "existing namespaces:",
       Array.from(existingNamespaces)
         .map((namespace) => (namespace === "" ? "<root>" : namespace))
-        .join(", ")
+        .join(", "),
     );
   }
 
@@ -39,7 +39,7 @@ export async function ensureNamespaceOwner({
         key: { namespaceId: resourceToHex({ type: "namespace", namespace, name: "" }) },
       });
       return [namespace, owner];
-    })
+    }),
   );
 
   const unauthorizedNamespaces = namespaceOwners
@@ -63,8 +63,8 @@ export async function ensureNamespaceOwner({
         abi: worldAbi,
         functionName: "registerNamespace",
         args: [resourceToHex({ namespace, type: "namespace", name: "" })],
-      })
-    )
+      }),
+    ),
   );
 
   return registrationTxs;

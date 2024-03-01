@@ -22,62 +22,58 @@ describe("getLeftPaddingBits", () => {
 describe("renderValueTypeToBytes32", () => {
   it("returns Solidity code to cast native type to bytes32", () => {
     expect(renderValueTypeToBytes32("someField", { typeUnwrap: "", internalTypeId: "bytes32" })).toMatchInlineSnapshot(
-      '"someField"'
+      '"someField"',
     );
     expect(
-      renderValueTypeToBytes32("someField", { typeUnwrap: "SomeStruct.unwrap", internalTypeId: "bytes32" })
+      renderValueTypeToBytes32("someField", { typeUnwrap: "SomeStruct.unwrap", internalTypeId: "bytes32" }),
     ).toMatchInlineSnapshot('"SomeStruct.unwrap(someField)"');
 
     expect(renderValueTypeToBytes32("someField", { typeUnwrap: "", internalTypeId: "bytes16" })).toMatchInlineSnapshot(
-      '"bytes32(someField)"'
+      '"bytes32(someField)"',
     );
     expect(
-      renderValueTypeToBytes32("someField", { typeUnwrap: "SomeStruct.unwrap", internalTypeId: "bytes16" })
+      renderValueTypeToBytes32("someField", { typeUnwrap: "SomeStruct.unwrap", internalTypeId: "bytes16" }),
     ).toMatchInlineSnapshot('"bytes32(SomeStruct.unwrap(someField))"');
 
     expect(renderValueTypeToBytes32("someField", { typeUnwrap: "", internalTypeId: "uint8" })).toMatchInlineSnapshot(
-      '"bytes32(uint256(someField))"'
+      '"bytes32(uint256(someField))"',
     );
     expect(
-      renderValueTypeToBytes32("someField", { typeUnwrap: "SomeStruct.unwrap", internalTypeId: "uint8" })
+      renderValueTypeToBytes32("someField", { typeUnwrap: "SomeStruct.unwrap", internalTypeId: "uint8" }),
     ).toMatchInlineSnapshot('"bytes32(uint256(SomeStruct.unwrap(someField)))"');
 
     expect(renderValueTypeToBytes32("someField", { typeUnwrap: "", internalTypeId: "bool" })).toMatchInlineSnapshot(
-      '"_boolToBytes32(someField)"'
+      '"_boolToBytes32(someField)"',
     );
     expect(
-      renderValueTypeToBytes32("someField", { typeUnwrap: "SomeStruct.unwrap", internalTypeId: "bool" })
+      renderValueTypeToBytes32("someField", { typeUnwrap: "SomeStruct.unwrap", internalTypeId: "bool" }),
     ).toMatchInlineSnapshot('"_boolToBytes32(SomeStruct.unwrap(someField))"');
 
     expect(renderValueTypeToBytes32("someField", { typeUnwrap: "", internalTypeId: "address" })).toMatchInlineSnapshot(
-      '"bytes32(uint256(uint160(someField)))"'
+      '"bytes32(uint256(uint160(someField)))"',
     );
     expect(
-      renderValueTypeToBytes32("someField", { typeUnwrap: "SomeStruct.unwrap", internalTypeId: "address" })
+      renderValueTypeToBytes32("someField", { typeUnwrap: "SomeStruct.unwrap", internalTypeId: "address" }),
     ).toMatchInlineSnapshot('"bytes32(uint256(uint160(SomeStruct.unwrap(someField))))"');
   });
 });
 
 describe("renderTableId", () => {
   it("returns Solidity code to compute table ID", () => {
-    expect(renderTableId({ namespace: "somewhere", name: "Player", offchainOnly: false, tableIdName: "PlayerTableId" }))
-      .toMatchInlineSnapshot(`
+    expect(renderTableId({ namespace: "somewhere", name: "Player", offchainOnly: false })).toMatchInlineSnapshot(`
+      "
+          // Hex below is the result of \`WorldResourceIdLib.encode({ namespace: \\"somewhere\\", name: \\"Player\\", typeId: RESOURCE_TABLE });\`
+          ResourceId constant _tableId = ResourceId.wrap(0x7462736f6d6577686572650000000000506c6179657200000000000000000000);
         "
-            // Hex below is the result of \`WorldResourceIdLib.encode({ namespace: \\"somewhere\\", name: \\"Player\\", typeId: RESOURCE_TABLE });\`
-            ResourceId constant _tableId = ResourceId.wrap(0x7462736f6d6577686572650000000000506c6179657200000000000000000000);
-            ResourceId constant PlayerTableId = _tableId;
-          "
-      `);
+    `);
   });
 
   it("returns Solidity code to compute offchain table ID", () => {
-    expect(renderTableId({ namespace: "somewhere", name: "Player", offchainOnly: true, tableIdName: "PlayerTableId" }))
-      .toMatchInlineSnapshot(`
+    expect(renderTableId({ namespace: "somewhere", name: "Player", offchainOnly: true })).toMatchInlineSnapshot(`
+      "
+          // Hex below is the result of \`WorldResourceIdLib.encode({ namespace: \\"somewhere\\", name: \\"Player\\", typeId: RESOURCE_OFFCHAIN_TABLE });\`
+          ResourceId constant _tableId = ResourceId.wrap(0x6f74736f6d6577686572650000000000506c6179657200000000000000000000);
         "
-            // Hex below is the result of \`WorldResourceIdLib.encode({ namespace: \\"somewhere\\", name: \\"Player\\", typeId: RESOURCE_OFFCHAIN_TABLE });\`
-            ResourceId constant _tableId = ResourceId.wrap(0x6f74736f6d6577686572650000000000506c6179657200000000000000000000);
-            ResourceId constant PlayerTableId = _tableId;
-          "
-      `);
+    `);
   });
 });

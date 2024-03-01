@@ -29,7 +29,7 @@ export async function ensureFunctions({
         "found",
         wrongSystem.length,
         "functions already registered but pointing at a different system ID:",
-        wrongSystem.map((func) => func.signature).join(", ")
+        wrongSystem.map((func) => func.signature).join(", "),
       );
     }
   }
@@ -59,7 +59,7 @@ export async function ensureFunctions({
               debug(`failed to register function ${func.signature}, retrying in ${delay}ms...`);
               await wait(delay);
             },
-          }
+          },
         );
       }
       return pRetry(
@@ -79,8 +79,8 @@ export async function ensureFunctions({
             debug(`failed to register function ${func.signature}, retrying in ${delay}ms...`);
             await wait(delay);
           },
-        }
+        },
       );
-    })
+    }),
   );
 }

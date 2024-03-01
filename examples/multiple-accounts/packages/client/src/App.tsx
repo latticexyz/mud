@@ -31,8 +31,7 @@ const makeWorldContract = () => {
     world: getContract({
       address: networkConfig.worldAddress as Hex,
       abi: IWorldAbi,
-      publicClient: publicClient,
-      walletClient: client,
+      client: { public: publicClient, wallet: client },
     }),
     client,
   };
