@@ -9,6 +9,10 @@ import { IWorldErrors } from "./IWorldErrors.sol";
 using WorldResourceIdInstance for ResourceId;
 
 /**
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ */
+
+/**
  * @notice Checks if a given `resourceId` is a valid namespace.
  * @dev Reverts with `IWorldErrors.World_InvalidNamespace` if the namespace includes the reserved `__` separator string or ends with `_`.
  * @param resourceId The resource ID to validate.

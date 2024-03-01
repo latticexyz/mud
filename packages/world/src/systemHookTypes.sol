@@ -3,6 +3,7 @@ pragma solidity >=0.8.24;
 
 /**
  * @title System Hook Types
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This file provides constants for defining the different types of system hooks.
  * System hooks can be used to execute additional logic before or after system actions.
  */

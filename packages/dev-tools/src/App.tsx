@@ -29,7 +29,7 @@ export function App() {
         className={twMerge(
           "pointer-events-auto w-full max-w-screen-sm h-full absolute right-0",
           "transition duration-500",
-          shown ? "translate-x-0" : "translate-x-full"
+          shown ? "translate-x-0" : "translate-x-full",
         )}
       >
         <div className="absolute bottom-0 right-full min-w-max flex flex-col-reverse items-end justify-center m-2 text-gray-500">
@@ -49,7 +49,7 @@ export function App() {
           className={twMerge(
             "w-full h-full bg-slate-800 text-white/80 text-sm flex flex-col",
             "transition duration-500",
-            shown ? "opacity-100" : "opacity-0"
+            shown ? "opacity-100" : "opacity-0",
           )}
         >
           <RouterProvider router={router} />

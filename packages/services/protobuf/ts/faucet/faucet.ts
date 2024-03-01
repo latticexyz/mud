@@ -231,7 +231,7 @@ export const FaucetStore = {
         }
         return acc;
       },
-      {}
+      {},
     );
     message.usernameToAddress = Object.entries(object.usernameToAddress ?? {}).reduce<{ [key: string]: string }>(
       (acc, [key, value]) => {
@@ -240,7 +240,7 @@ export const FaucetStore = {
         }
         return acc;
       },
-      {}
+      {},
     );
     message.latestDrip = Object.entries(object.latestDrip ?? {}).reduce<{ [key: string]: number }>(
       (acc, [key, value]) => {
@@ -249,7 +249,7 @@ export const FaucetStore = {
         }
         return acc;
       },
-      {}
+      {},
     );
     message.totalDripCount = object.totalDripCount ?? 0;
     return message;
@@ -1092,24 +1092,24 @@ export interface FaucetServiceImplementation<CallContextExt = {}> {
   dripVerifyTweet(request: DripRequest, context: CallContext & CallContextExt): Promise<DeepPartial<DripResponse>>;
   timeUntilDrip(
     request: DripRequest,
-    context: CallContext & CallContextExt
+    context: CallContext & CallContextExt,
   ): Promise<DeepPartial<TimeUntilDripResponse>>;
   getLinkedTwitters(
     request: GetLinkedTwittersRequest,
-    context: CallContext & CallContextExt
+    context: CallContext & CallContextExt,
   ): Promise<DeepPartial<GetLinkedTwittersResponse>>;
   getLinkedTwitterForAddress(
     request: LinkedTwitterForAddressRequest,
-    context: CallContext & CallContextExt
+    context: CallContext & CallContextExt,
   ): Promise<DeepPartial<LinkedTwitterForAddressResponse>>;
   getLinkedAddressForTwitter(
     request: LinkedAddressForTwitterRequest,
-    context: CallContext & CallContextExt
+    context: CallContext & CallContextExt,
   ): Promise<DeepPartial<LinkedAddressForTwitterResponse>>;
   /** Admin utility endpoints for modifying state. Requires a signature with faucet private key. */
   setLinkedTwitter(
     request: SetLinkedTwitterRequest,
-    context: CallContext & CallContextExt
+    context: CallContext & CallContextExt,
   ): Promise<DeepPartial<SetLinkedTwitterResponse>>;
 }
 
@@ -1119,24 +1119,24 @@ export interface FaucetServiceClient<CallOptionsExt = {}> {
   dripVerifyTweet(request: DeepPartial<DripRequest>, options?: CallOptions & CallOptionsExt): Promise<DripResponse>;
   timeUntilDrip(
     request: DeepPartial<DripRequest>,
-    options?: CallOptions & CallOptionsExt
+    options?: CallOptions & CallOptionsExt,
   ): Promise<TimeUntilDripResponse>;
   getLinkedTwitters(
     request: DeepPartial<GetLinkedTwittersRequest>,
-    options?: CallOptions & CallOptionsExt
+    options?: CallOptions & CallOptionsExt,
   ): Promise<GetLinkedTwittersResponse>;
   getLinkedTwitterForAddress(
     request: DeepPartial<LinkedTwitterForAddressRequest>,
-    options?: CallOptions & CallOptionsExt
+    options?: CallOptions & CallOptionsExt,
   ): Promise<LinkedTwitterForAddressResponse>;
   getLinkedAddressForTwitter(
     request: DeepPartial<LinkedAddressForTwitterRequest>,
-    options?: CallOptions & CallOptionsExt
+    options?: CallOptions & CallOptionsExt,
   ): Promise<LinkedAddressForTwitterResponse>;
   /** Admin utility endpoints for modifying state. Requires a signature with faucet private key. */
   setLinkedTwitter(
     request: DeepPartial<SetLinkedTwitterRequest>,
-    options?: CallOptions & CallOptionsExt
+    options?: CallOptions & CallOptionsExt,
   ): Promise<SetLinkedTwitterResponse>;
 }
 
@@ -1164,12 +1164,12 @@ type Builtin = Date | Function | Uint8Array | string | number | boolean | undefi
 export type DeepPartial<T> = T extends Builtin
   ? T
   : T extends Array<infer U>
-  ? Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U>
-  ? ReadonlyArray<DeepPartial<U>>
-  : T extends {}
-  ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+    ? Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 function longToNumber(long: Long): number {
   if (long.gt(Number.MAX_SAFE_INTEGER)) {

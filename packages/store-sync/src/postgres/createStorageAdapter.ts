@@ -80,8 +80,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               and(
                 eq(tables.recordsTable.address, log.address),
                 eq(tables.recordsTable.tableId, log.args.tableId),
-                eq(tables.recordsTable.keyBytes, keyBytes)
-              )
+                eq(tables.recordsTable.keyBytes, keyBytes),
+              ),
             )
             .limit(1)
             .execute()
@@ -131,8 +131,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               and(
                 eq(tables.recordsTable.address, log.address),
                 eq(tables.recordsTable.tableId, log.args.tableId),
-                eq(tables.recordsTable.keyBytes, keyBytes)
-              )
+                eq(tables.recordsTable.keyBytes, keyBytes),
+              ),
             )
             .limit(1)
             .execute()
@@ -195,8 +195,8 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
               and(
                 eq(tables.recordsTable.address, log.address),
                 eq(tables.recordsTable.tableId, log.args.tableId),
-                eq(tables.recordsTable.keyBytes, keyBytes)
-              )
+                eq(tables.recordsTable.keyBytes, keyBytes),
+              ),
             )
             .execute();
         }

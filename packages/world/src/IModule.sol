@@ -5,6 +5,7 @@ import { IERC165 } from "./IERC165.sol";
 
 /**
  * @title IModule
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Interface for the Module system.
  * A module can be installed within the context of a world, either as a root or non-root module.
  * This interface adheres to the ERC-165 standard for determining interface support.

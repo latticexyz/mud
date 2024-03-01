@@ -38,8 +38,8 @@ export function apiRoutes(database: Sql): Middleware {
         ctx.body = "no logs found";
         error(
           `no logs found for chainId ${options.chainId}, address ${options.address}, filters ${JSON.stringify(
-            options.filters
-          )}`
+            options.filters,
+          )}`,
         );
         return;
       }

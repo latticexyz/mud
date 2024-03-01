@@ -22,7 +22,7 @@ import { ISystemHook } from "../../../ISystemHook.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";
 import { IDelegationControl } from "../../../IDelegationControl.sol";
 
-import { SystemHooks, SystemHooksTableId } from "../../../codegen/tables/SystemHooks.sol";
+import { SystemHooks } from "../../../codegen/tables/SystemHooks.sol";
 import { SystemRegistry } from "../../../codegen/tables/SystemRegistry.sol";
 import { Systems } from "../../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../../codegen/tables/FunctionSelectors.sol";
@@ -34,6 +34,7 @@ import { LimitedCallContext } from "../LimitedCallContext.sol";
 
 /**
  * @title WorldRegistrationSystem
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This contract provides functions related to registering resources other than tables in the World.
  */
 contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
@@ -109,7 +110,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     AccessControl.requireOwner(systemId, _msgSender());
 
     // Remove the hook from the list of hooks for this system in the system hooks table
-    HookLib.filterListByAddress(SystemHooksTableId, systemId, address(hookAddress));
+    HookLib.filterListByAddress(SystemHooks._tableId, systemId, address(hookAddress));
   }
 
   /**
