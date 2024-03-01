@@ -63,4 +63,10 @@ interface IStoreEvents {
    * @param keyTuple An array representing the composite key for the record.
    */
   event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
+
+  /**
+   * @notice Emitted when the store is initialized.
+   * @param storeVersion The version of the Store contract.
+   */
+  event HelloStore(bytes32 indexed storeVersion);
 }

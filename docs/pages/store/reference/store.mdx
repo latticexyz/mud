@@ -102,6 +102,20 @@ event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 | `tableId`  | `ResourceId` | The ID of the table where the record is deleted.        |
 | `keyTuple` | `bytes32[]`  | An array representing the composite key for the record. |
 
+#### HelloStore
+
+Emitted when the store is initialized.
+
+```solidity
+event HelloStore(bytes32 indexed storeVersion);
+```
+
+**Parameters**
+
+| Name           | Type      | Description                        |
+| -------------- | --------- | ---------------------------------- |
+| `storeVersion` | `bytes32` | The version of the Store contract. |
+
 ## IStoreErrors
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreErrors.sol)
@@ -211,22 +225,6 @@ function storeVersion() external view returns (bytes32 version);
 | Name      | Type      | Description                        |
 | --------- | --------- | ---------------------------------- |
 | `version` | `bytes32` | The version of the Store contract. |
-
-### Events
-
-#### HelloStore
-
-Emitted when the store is initialized.
-
-```solidity
-event HelloStore(bytes32 indexed storeVersion);
-```
-
-**Parameters**
-
-| Name           | Type      | Description                        |
-| -------------- | --------- | ---------------------------------- |
-| `storeVersion` | `bytes32` | The version of the Store contract. |
 
 ## IStoreRead
 
