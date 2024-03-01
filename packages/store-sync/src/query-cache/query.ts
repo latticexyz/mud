@@ -21,8 +21,10 @@ type QueryResult<query extends Query> = {
 //       - only keys as subjects for now?
 //       - subjects and conditions all have valid fields
 //       - can only compare like types?
+//       - `where` tables are in `from`
 
 // TODO: make query smarter/config aware for shorthand
+// TODO: make condition types smarter, so condition literal matches the field primitive type
 
 export function query<config extends StoreConfig, extraTables extends Tables | undefined>(
   store: ZustandStore<AllTables<config, extraTables>>,
@@ -52,7 +54,7 @@ export function query<config extends StoreConfig, extraTables extends Tables | u
       };
     });
 
-  const matches = Array.from(groupBy(records, (record) => record.encodedSubject).values())
+  const matchedSubjects = Array.from(groupBy(records, (record) => record.encodedSubject).values())
     .map((records) => ({
       subject: records[0].subject,
       encodedSubject: records[0].encodedSubject,
@@ -65,5 +67,5 @@ export function query<config extends StoreConfig, extraTables extends Tables | u
     })
     .filter((match) => (query.where ? query.where.every((condition) => matchesCondition(condition, match)) : true));
 
-  return Promise.resolve({ subjects: matches.map((match) => match.subject) });
+  return Promise.resolve({ subjects: matchedSubjects.map((match) => match.subject) });
 }

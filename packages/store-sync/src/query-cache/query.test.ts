@@ -80,4 +80,46 @@ describe("query", async () => {
       }
     `);
   });
+
+  it("can get players that are still alive", async () => {
+    const result = await query(store, {
+      from: [
+        { tableId: tables.Position.tableId, subject: ["player"] },
+        { tableId: tables.Health.tableId, subject: ["player"] },
+      ],
+      where: [{ left: { tableId: tables.Health.tableId, field: "health" }, op: "!=", right: 0n }],
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "subjects": [
+          [
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+          ],
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
+        ],
+      }
+    `);
+  });
+
+  it("can get all players in grassland", async () => {
+    const result = await query(store, {
+      from: [{ tableId: tables.Terrain.tableId, subject: ["x", "y"] }],
+      where: [{ left: { tableId: tables.Terrain.tableId, field: "terrainType" }, op: "=", right: 2 }],
+      records: [{ tableId: tables.Position.tableId, subject: ["x", "y"] }],
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "subjects": [
+          [
+            3,
+            5,
+          ],
+        ],
+      }
+    `);
+  });
 });
