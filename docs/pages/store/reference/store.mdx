@@ -5,7 +5,9 @@
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol)
 
 **Inherits:**
-[IStoreData](/store/reference/store#istoredata), [IStoreRegistration](/store/reference/store#istoreregistration), [IStoreErrors](/store/reference/store#istoreerrors)
+[IStoreData](/store/reference/store#istoredata), [IStoreRegistration](/store/reference/store#istoreregistration), [IStoreErrors](/store/reference/store#istoreerrors), [IFieldLayoutErrors](/src/IFieldLayoutErrors.sol/interface.IFieldLayoutErrors.md), [IPackedCounterErrors](/src/IPackedCounterErrors.sol/interface.IPackedCounterErrors.md), [ISchemaErrors](/src/ISchemaErrors.sol/interface.ISchemaErrors.md), [ISliceErrors](/src/ISliceErrors.sol/interface.ISliceErrors.md)
+
+IStore implements the error interfaces for each library that it uses.
 
 ## IStoreEvents
 
@@ -19,7 +21,11 @@ Emitted when a new record is set in the store.
 
 ```solidity
 event Store_SetRecord(
-    ResourceId indexed tableId, bytes32[] keyTuple, bytes staticData, PackedCounter encodedLengths, bytes dynamicData
+  ResourceId indexed tableId,
+  bytes32[] keyTuple,
+  bytes staticData,
+  PackedCounter encodedLengths,
+  bytes dynamicData
 );
 ```
 
@@ -59,13 +65,13 @@ Emitted when dynamic data in the store is spliced.
 
 ```solidity
 event Store_SpliceDynamicData(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    uint8 dynamicFieldIndex,
-    uint48 start,
-    uint40 deleteCount,
-    PackedCounter encodedLengths,
-    bytes data
+  ResourceId indexed tableId,
+  bytes32[] keyTuple,
+  uint8 dynamicFieldIndex,
+  uint48 start,
+  uint40 deleteCount,
+  PackedCounter encodedLengths,
+  bytes data
 );
 ```
 
@@ -99,6 +105,11 @@ event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 ## IStoreErrors
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreErrors.sol)
+
+This interface includes errors for Store.
+
+_We bundle these errors in an interface (instead of at the file-level or in their corresponding library) so they can be inherited by IStore.
+This ensures that all possible errors are included in the IStore ABI for proper decoding in the frontend._
 
 ### Errors
 

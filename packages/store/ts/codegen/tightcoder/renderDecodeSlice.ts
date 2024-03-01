@@ -25,7 +25,7 @@ export function renderDecodeSlice() {
           renderTightCoderDecode({
             internalTypeId: staticAbiType,
             staticByteLength: staticAbiTypeToByteLength[staticAbiType],
-          })
+          }),
         )
         .join("\n")}
     }

@@ -2,7 +2,7 @@ import { Animation, Assets } from "../types";
 
 export function generateFrames<A extends Assets>(
   anims: Phaser.Animations.AnimationManager,
-  animation: Animation<A>
+  animation: Animation<A>,
 ): Phaser.Types.Animations.AnimationFrame[] {
   if (animation.prefix && animation.suffix) {
     return anims.generateFrameNames(animation.assetKey, {

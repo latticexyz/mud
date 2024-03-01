@@ -140,7 +140,7 @@ contract SystemSwitchTest is Test, GasReporter {
   function testCallRootFromRootReadTable() public {
     vm.prank(caller);
     bytes memory returnData = _executeFromSystemA(rootSystemBId, abi.encodeCall(EchoSystem.readTable, ()));
-    assertEq(Schema.unwrap(abi.decode(returnData, (Schema))), Schema.unwrap(ResourceIds.getKeySchema()));
+    assertEq(Schema.unwrap(abi.decode(returnData, (Schema))), Schema.unwrap(ResourceIds._keySchema));
   }
 
   // - ROOT FROM NON ROOT ---------------------------------------------------------------------------- //
@@ -179,7 +179,7 @@ contract SystemSwitchTest is Test, GasReporter {
   function testCallRootFromNonRootReadTable() public {
     vm.prank(caller);
     bytes memory returnData = _executeFromSystemA(rootSystemBId, abi.encodeCall(EchoSystem.readTable, ()));
-    assertEq(Schema.unwrap(abi.decode(returnData, (Schema))), Schema.unwrap(ResourceIds.getKeySchema()));
+    assertEq(Schema.unwrap(abi.decode(returnData, (Schema))), Schema.unwrap(ResourceIds._keySchema));
   }
 
   // - NON ROOT FROM ROOT ---------------------------------------------------------------------------- //

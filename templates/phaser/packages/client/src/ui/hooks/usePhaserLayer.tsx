@@ -80,7 +80,7 @@ export const usePhaserLayer = ({ networkLayer }: Props) => {
         }
       }
     },
-    [container]
+    [container],
   );
 
   return useMemo(() => ({ ref, phaserLayer }), [ref, phaserLayer]);

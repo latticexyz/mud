@@ -14,7 +14,7 @@ const mudPackages: MudPackages = Object.fromEntries(
       JSON.parse(readFileSync(filename, "utf8")),
     ])
     .filter(([, packageJson]) => !packageJson.private)
-    .map(([localPath, packageJson]) => [packageJson.name, { localPath }])
+    .map(([localPath, packageJson]) => [packageJson.name, { localPath }]),
 );
 
 export default defineConfig({

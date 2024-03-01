@@ -61,7 +61,7 @@ export function resolveConfig<config extends ConfigInput>({
       allowAll: system.openAccess,
       allowedAddresses: system.accessListAddresses as Hex[],
       allowedSystemIds: system.accessListSystems.map((name) =>
-        resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name })
+        resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name }),
       ),
       getAddress: (deployer: Address) => getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
       bytecode: contractData.bytecode,
@@ -81,8 +81,8 @@ export function resolveConfig<config extends ConfigInput>({
     const names = overlappingSystems.map((system) => system.name);
     throw new Error(
       `Found systems with overlapping system ID: ${names.join(
-        ", "
-      )}.\n\nSystem IDs are generated from the first 16 bytes of the name, so you may need to rename them to avoid the overlap.`
+        ", ",
+      )}.\n\nSystem IDs are generated from the first 16 bytes of the name, so you may need to rename them to avoid the overlap.`,
     );
   }
 
@@ -96,9 +96,9 @@ export function resolveConfig<config extends ConfigInput>({
             type: table.offchainOnly ? "offchainTable" : "table",
             namespace: config.namespace,
             name: table.name,
-          })
+          }),
         ),
-      ])
+      ]),
     ),
   };
 

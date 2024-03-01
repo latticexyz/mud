@@ -10,7 +10,7 @@ import { WorldDeploy } from "./common";
 export async function deployWorld(
   client: Client<Transport, Chain | undefined, Account>,
   deployerAddress: Hex,
-  salt: Hex
+  salt: Hex,
 ): Promise<WorldDeploy> {
   const worldFactory = await ensureWorldFactory(client, deployerAddress);
 

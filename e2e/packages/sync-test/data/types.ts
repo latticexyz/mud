@@ -2,9 +2,10 @@
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
 import config from "../../contracts/mud.config";
 import { Hex } from "viem";
-type SchemaToPrimitive<Schema> = Schema extends Record<string, SchemaAbiType>
-  ? { [key in keyof Schema]: SchemaAbiTypeToPrimitiveType<Schema[key]> }
-  : never;
+type SchemaToPrimitive<Schema> =
+  Schema extends Record<string, SchemaAbiType>
+    ? { [key in keyof Schema]: SchemaAbiTypeToPrimitiveType<Schema[key]> }
+    : never;
 
 type Key<Table extends keyof (typeof config)["tables"]> = SchemaToPrimitive<
   (typeof config)["tables"][Table]["keySchema"]
