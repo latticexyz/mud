@@ -643,22 +643,6 @@ function initialize(IModule initModule) external;
 | ------------ | --------- | ----------------------------------------------------- |
 | `initModule` | `IModule` | The InitModule to be installed during initialization. |
 
-### Events
-
-#### HelloWorld
-
-_Emitted upon successful World initialization._
-
-```solidity
-event HelloWorld(bytes32 indexed worldVersion);
-```
-
-**Parameters**
-
-| Name           | Type      | Description                                 |
-| -------------- | --------- | ------------------------------------------- |
-| `worldVersion` | `bytes32` | The version of the World being initialized. |
-
 ## IWorldModuleInstallation
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldKernel.sol)
