@@ -108,6 +108,9 @@ event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
 This interface includes errors for Store.
 
+_We bundle these errors in an interface (instead of at the file-level or in their corresponding library) so they can be inherited by IStore.
+This ensures that all possible errors are included in the IStore ABI for proper decoding in the frontend._
+
 ### Errors
 
 #### Store_TableAlreadyExists
