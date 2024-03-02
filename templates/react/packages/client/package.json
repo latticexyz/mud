@@ -19,11 +19,13 @@
     "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
+    "@tanstack/react-query": "5.22.2",
     "contracts": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rxjs": "7.5.5",
-    "viem": "2.7.12"
+    "viem": "2.7.12",
+    "wagmi": "2.5.7"
   },
   "devDependencies": {
     "@types/react": "18.2.22",

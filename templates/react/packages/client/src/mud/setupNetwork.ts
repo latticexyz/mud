@@ -9,7 +9,6 @@ import {
   webSocket,
   http,
   createWalletClient,
-  Hex,
   parseEther,
   ClientConfig,
   getContract,
@@ -18,7 +17,7 @@ import { createFaucetService } from "@latticexyz/services/faucet";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
-import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
+import { createBurnerAccount, transportObserver, ContractWrite, getBurnerPrivateKey } from "@latticexyz/common";
 import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
 import { Subject, share } from "rxjs";
 
@@ -59,7 +58,7 @@ export async function setupNetwork() {
    * Create a temporary wallet and a viem client for it
    * (see https://viem.sh/docs/clients/wallet.html).
    */
-  const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+  const burnerAccount = createBurnerAccount(getBurnerPrivateKey());
   const burnerWalletClient = createWalletClient({
     ...clientOptions,
     account: burnerAccount,
@@ -71,7 +70,7 @@ export async function setupNetwork() {
    * Create an object for communicating with the deployed World.
    */
   const worldContract = getContract({
-    address: networkConfig.worldAddress as Hex,
+    address: networkConfig.worldAddress,
     abi: IWorldAbi,
     client: { public: publicClient, wallet: burnerWalletClient },
   });
@@ -84,7 +83,7 @@ export async function setupNetwork() {
    */
   const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
     config: mudConfig,
-    address: networkConfig.worldAddress as Hex,
+    address: networkConfig.worldAddress,
     publicClient,
     startBlock: BigInt(networkConfig.initialBlockNumber),
   });

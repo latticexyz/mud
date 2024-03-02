@@ -2,17 +2,19 @@
  * This file sets up all the definitions required for a MUD client.
  */
 
-import { createSystemCalls } from "./createSystemCalls";
+import { createConfig } from "wagmi";
 import { setupNetwork } from "./setupNetwork";
-
-export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
 export async function setup() {
   const network = await setupNetwork();
-  const systemCalls = createSystemCalls(network);
+
+  const wagmiConfig = createConfig({
+    chains: [network.publicClient.chain],
+    client: () => network.publicClient,
+  });
 
   return {
     network,
-    systemCalls,
+    wagmiConfig,
   };
 }

@@ -1,15 +1,63 @@
+import { SyncStep } from "@latticexyz/store-sync";
 import { useMUD } from "./MUDContext";
+import { delegateToBurner, isDelegated, addTask, toggleTask, deleteTask } from "./mud/systemCalls";
 
 const styleUnset = { all: "unset" } as const;
 
 export const App = () => {
   const {
-    network: { tables, useStore },
-    systemCalls: { addTask, toggleTask, deleteTask },
+    network: { useStore },
+    externalWalletClient,
   } = useMUD();
 
-  const tasks = useStore((state) => {
-    const records = Object.values(state.getRecords(tables.Tasks));
+  const syncProgress = useStore((state) => state.syncProgress);
+
+  if (!externalWalletClient) return <></>;
+
+  if (syncProgress.step === SyncStep.LIVE) {
+    return <Loaded />;
+  } else {
+    return <div>Loading</div>;
+  }
+};
+
+const Loaded = () => {
+  const { network, externalWalletClient } = useMUD();
+
+  if (!externalWalletClient) throw new Error("Must be used after an external wallet connection");
+
+  const delegation = network.useStore((state) =>
+    state.getValue(network.tables.UserDelegationControl, {
+      delegator: externalWalletClient.account.address,
+      delegatee: network.walletClient.account.address,
+    }),
+  );
+
+  if (delegation && isDelegated(delegation.delegationControlId)) {
+    return (
+      <div>
+        <div>Burner wallet account: {network.walletClient.account.address}</div>
+        <Delegated />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <button type="button" onClick={() => delegateToBurner(network, externalWalletClient)}>
+        Set up burner wallet account
+      </button>
+    </div>
+  );
+};
+
+const Delegated = () => {
+  const { network, externalWalletClient } = useMUD();
+
+  if (!externalWalletClient) throw new Error("Must be used after an external wallet connection");
+
+  const tasks = network.useStore((state) => {
+    const records = Object.values(state.getRecords(network.tables.Tasks));
     records.sort((a, b) => Number(a.value.createdAt - b.value.createdAt));
     return records;
   });
@@ -31,7 +79,7 @@ export const App = () => {
 
                     checkbox.disabled = true;
                     try {
-                      await toggleTask(task.key.key);
+                      await toggleTask(network, externalWalletClient, task.key.key);
                     } finally {
                       checkbox.disabled = false;
                     }
@@ -51,7 +99,7 @@ export const App = () => {
                     const button = event.currentTarget;
                     button.disabled = true;
                     try {
-                      await deleteTask(task.key.key);
+                      await deleteTask(network, externalWalletClient, task.key.key);
                     } finally {
                       button.disabled = false;
                     }
@@ -82,7 +130,7 @@ export const App = () => {
 
                   fieldset.disabled = true;
                   try {
-                    await addTask(desc);
+                    await addTask(network, externalWalletClient, desc);
                     form.reset();
                   } finally {
                     fieldset.disabled = false;

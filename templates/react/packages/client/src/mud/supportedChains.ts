@@ -17,4 +17,11 @@ import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains"
  * See https://mud.dev/tutorials/minimal/deploy#run-the-user-interface
  * for instructions on how to add networks.
  */
-export const supportedChains: MUDChain[] = [mudFoundry, latticeTestnet];
+export const supportedChains: MUDChain[] = [
+  {
+    ...mudFoundry,
+    // See https://github.com/latticexyz/mud/pull/2330
+    blockExplorers: { default: { name: "", url: "http://localhost:3000" } },
+  },
+  latticeTestnet,
+];

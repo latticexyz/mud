@@ -1,11 +1,12 @@
 import { createContext, ReactNode, useContext } from "react";
-import { SetupResult } from "./mud/setup";
+import { useAccount, useWalletClient } from "wagmi";
+import { type SetupNetworkResult } from "./mud/setupNetwork";
 
-const MUDContext = createContext<SetupResult | null>(null);
+const MUDContext = createContext<SetupNetworkResult | null>(null);
 
 type Props = {
   children: ReactNode;
-  value: SetupResult;
+  value: SetupNetworkResult;
 };
 
 export const MUDProvider = ({ children, value }: Props) => {
@@ -15,7 +16,18 @@ export const MUDProvider = ({ children, value }: Props) => {
 };
 
 export const useMUD = () => {
-  const value = useContext(MUDContext);
-  if (!value) throw new Error("Must be used within a MUDProvider");
-  return value;
+  const network = useContext(MUDContext);
+  if (!network) throw new Error("Must be used within a MUDProvider");
+
+  const { data: connectorWalletClient } = useWalletClient();
+  const { chainId } = useAccount();
+
+  let externalWalletClient;
+  if (network.publicClient.chain.id === chainId && connectorWalletClient?.chain.id === chainId) {
+    externalWalletClient = connectorWalletClient;
+  }
+
+  return { network, externalWalletClient };
 };
+
+export type ExternalWalletClient = NonNullable<ReturnType<typeof useMUD>["externalWalletClient"]>;

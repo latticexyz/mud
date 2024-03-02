@@ -5,16 +5,6 @@
  */
 
 /*
- * By default the template just creates a temporary wallet
- * (called a burner wallet) and uses a faucet (on our test net)
- * to get ETH for it.
- *
- * See https://mud.dev/tutorials/minimal/deploy#wallet-managed-address
- * for how to use the user's own address instead.
- */
-import { getBurnerPrivateKey } from "@latticexyz/common";
-
-/*
  * Import the addresses of the World, possibly on multiple chains,
  * from packages/contracts/worlds.json. When the contracts package
  * deploys a new `World`, it updates this file.
@@ -35,6 +25,8 @@ import worlds from "contracts/worlds.json";
  * for instructions on how to add networks.
  */
 import { supportedChains } from "./supportedChains";
+
+import { isHex } from "viem";
 
 export async function getNetworkConfig() {
   const params = new URLSearchParams(window.location.search);
@@ -65,7 +57,7 @@ export async function getNetworkConfig() {
    */
   const world = worlds[chain.id.toString()];
   const worldAddress = params.get("worldAddress") || world?.address;
-  if (!worldAddress) {
+  if (!isHex(worldAddress)) {
     throw new Error(`No world address found for chain ${chainId}. Did you run \`mud deploy\`?`);
   }
 
@@ -81,7 +73,6 @@ export async function getNetworkConfig() {
     : world?.blockNumber ?? 0n;
 
   return {
-    privateKey: getBurnerPrivateKey(),
     chainId,
     chain,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
