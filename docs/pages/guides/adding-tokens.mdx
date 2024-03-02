@@ -10,18 +10,159 @@ With the token as part of a MUD `World` you get automatic synchronization on the
 
 ## The sample program
 
-We modify the React template to pay accounts that complete todo items.
-
-## Install an ERC20 token
+We modify the React template to pay accounts that complete to do items.
+In addition, we will modify the template program to run out of a different namespace than the root one.
 
 1. Create and run the application.
    Select the **react** template.
+   Do not run it yet.
 
    ```sh copy
    pnpm create mud@next erc20-tutorial
-   cd erc20-tutorial
+   cd erc20-tutorial/packages/contracts
+   rm -rf test
+   ```
+
+1. In a separate command line window, go to the `.../erc20-tutorial/packages/contracts`.
+
+1. Modify `mud.config.ts` to specify a namespace.
+
+   <CollapseCode>
+
+   ```typescript filename="mud.config.ts" copy showLineNumbers {4}
+   import { mudConfig } from "@latticexyz/world/register";
+
+   export default mudConfig({
+     namespace: "TaskApp",
+     tables: {
+       Tasks: {
+         valueSchema: {
+           createdAt: "uint256",
+           completedAt: "uint256",
+           description: "string",
+         },
+       },
+     },
+   });
+   ```
+
+   </CollapseCode>
+
+1. Update the `script/PostDeploy.s.sol` script.
+   Because the `System` is now in a namespace, the functions are called `<namespace>__<function>`.
+
+    <CollapseCode>
+
+   ```solidity filename="PostDeploy.s.sol" copy showLineNumbers {26,28-29}
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.24;
+
+   import { Script } from "forge-std/Script.sol";
+   import { console } from "forge-std/console.sol";
+   import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+   import { IWorld } from "../src/codegen/world/IWorld.sol";
+   import { Tasks, TasksData } from "../src/codegen/index.sol";
+
+   contract PostDeploy is Script {
+     function run(address worldAddress) external {
+       // Specify a store so that you can use tables directly in PostDeploy
+       StoreSwitch.setStoreAddress(worldAddress);
+
+       // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+       uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+       // Start broadcasting transactions from the deployer account
+       vm.startBroadcast(deployerPrivateKey);
+
+       // We can set table records directly
+       Tasks.set("1", TasksData({ description: "Walk the dog", createdAt: block.timestamp, completedAt$
+
+       // Or we can call our own systems
+       IWorld(worldAddress).TaskApp__addTask("Take out the trash");
+
+       bytes32 key = IWorld(worldAddress).TaskApp__addTask("Do the dishes");
+       IWorld(worldAddress).TaskApp__completeTask(key);
+
+       vm.stopBroadcast();
+     }
+   }
+   ```
+
+    </CollapseCode>
+
+1. Update `../client/src/mud/createSystemCalls.ts`.
+
+   <CollapseCode>
+
+   ```typescript filename="createSystemCalls.ts" copy showLineNumbers {34,40-41,46}
+   /*
+   * Create the system calls that the client can use to ask
+   * for changes in the World state (using the System contracts).
+   */
+
+   import { Hex } from "viem";
+   import { SetupNetworkResult } from "./setupNetwork";
+
+   export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+   export function createSystemCalls(
+     /*
+     * The parameter list informs TypeScript that:
+     *
+     * - The first parameter is expected to be a
+     *   SetupNetworkResult, as defined in setupNetwork.ts
+     *
+     *   Out of this parameter, we only care about two fields:
+     *   - worldContract (which comes from getContract, see
+     *     https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupN$
+     *
+     *   - waitForTransaction (which comes from syncToRecs, see
+     *     https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupN$
+     *
+     * - From the second parameter, which is a ClientComponent,
+     *   we only care about Counter. This parameter comes to use
+     *   through createClientComponents.ts, but it originates in
+     *   syncToRecs
+     *   (https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNe$
+     */
+     { tables, useStore, worldContract, waitForTransaction }: SetupNetworkResult
+   ) {
+     const addTask = async (label: string) => {
+       const tx = await worldContract.write.TaskApp__addTask([label]);
+       await waitForTransaction(tx);
+     };
+
+     const toggleTask = async (key: Hex) => {
+       const isComplete = (useStore.getState().getValue(tables.Tasks, { key })?.completedAt ?? 0n) > 0$
+       const tx = isComplete ? await worldContract.write.TaskApp__resetTask([key])
+           : await worldContract.write.TaskApp__completeTask([key]);
+       await waitForTransaction(tx);
+     };
+
+     const deleteTask = async (key: Hex) => {
+       const tx = await worldContract.write.TaskApp__deleteTask([key]);
+       await waitForTransaction(tx);
+     };
+
+     return {
+       addTask,
+       toggleTask,
+       deleteTask,
+     };
+   }
+   ```
+
+   </CollapseCode>
+
+1. Now you can start the application.
+
+   ```sh copy
+   cd ../..
    pnpm dev
    ```
+
+## Install an ERC20 token
 
 1. Create a `packages/contract/.env` file with these variables:
 
@@ -50,7 +191,7 @@ We modify the React template to pay accounts that complete todo items.
    WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
    ```
 
-1. Create a file `packages/contracts/scripts/Deploy-ERC20.s.sol`.
+1. Create a file `packages/contracts/script/Deploy-ERC20.s.sol`.
 
    ```solidity filename="Deploy-ERC20.s.sol" copy
    // SPDX-License-Identifier: MIT
@@ -84,9 +225,6 @@ We modify the React template to pay accounts that complete todo items.
        vm.startBroadcast(privateKey);
 
        IWorld world = IWorld(worldAddress);
-
-       ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("DDDD"));
-       world.registerNamespace(namespaceResource);
 
        PuppetModule puppetModule = new PuppetModule();
        world.installModule(puppetModule, new bytes(0));
@@ -153,15 +291,6 @@ We modify the React template to pay accounts that complete todo items.
    Standard in MUD scripts.
 
    ```solidity
-   ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("DDDD"));
-   world.registerNamespace(namespaceResource);
-   ```
-
-   Register the `DDDD` namespace.
-   I chose the namespace `DDDD` because the hexadecimal ascii representation of the letter `D` is 44.
-   This means that it is easy to identify entities in the namespace because the hexadecimal `ResourceId` contains `44444444`.
-
-   ```solidity
        PuppetModule puppetModule = new PuppetModule();
        world.installModule(puppetModule, new bytes(0));
    ```
@@ -176,7 +305,11 @@ We modify the React template to pay accounts that complete todo items.
        console.log("Token address:", address(token));
    ```
 
-   Create the token. Note that you can only have one ERC-20 token per namespace.
+   Create the token and its namespace.
+   Note that the ERC-20 module _has_ to register a previously unused namespace.
+
+   I chose the namespace `DDDD` because the hexadecimal ascii representation of the letter `D` is 44.
+   This means that it is easy to identify entities in the namespace because the hexadecimal `ResourceId` contains `44444444`.
 
    ```solidity
        test(token, myAddress);
@@ -257,7 +390,7 @@ We modify the React template to pay accounts that complete todo items.
    WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
 
    # Address of the token
-   TOKEN_ADDRESS=0x67671478a98e62381bf90cDd328cFFcDdd26c83A
+   TOKEN_ADDRESS=0x65093117a463E57BfB36A03346AB6f9bbA8177D2
    ```
 
    </CollapseCode>
@@ -351,7 +484,7 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
    WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
 
    # Address of the token
-   TOKEN_ADDRESS=0x67671478a98e62381bf90cDd328cFFcDdd26c83A
+   TOKEN_ADDRESS=0x65093117a463E57BfB36A03346AB6f9bbA8177D2
    ```
 
 1. Create `script/Deploy-RewardSystem.s.sol`.
@@ -372,6 +505,8 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
 
    import { IERC20Mintable } from "@latticexyz/world-modules/src/modules/erc20-puppet/IERC20Mintable.sol";
 
+   import { Systems } from "@latticexyz/world/src/codegen/index.sol";
+
    import { Token, RewardSize } from "../src/codegen/index.sol";
    import { RewardSystem } from "../src/systems/RewardSystem.sol";
 
@@ -389,9 +524,6 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
        // Start broadcasting transactions from the deployer account
        vm.startBroadcast(privateKey);
 
-       ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("DDDD"));
-       world.registerNamespace(namespaceResource);
-
        // Register the singleton tables
        Token.register();
        RewardSize.register();
@@ -408,9 +540,6 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
 
        world.registerSystem(systemResource, rewardSystem, false);
        world.registerFunctionSelector(systemResource, "giveReward(address)");
-
-       // Allow systems in the root namespace to access rewardSystem.
-       world.grantAccess(systemResource, worldAddress);
 
        // Mint a million tokens for rewardSystem.
        IERC20Mintable token = IERC20Mintable(tokenAddress);
@@ -510,15 +639,7 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
    ```
 
    Register the function selector.
-   Because this function is in a non-root namespace, it gets a fully qualified name, `DDDD_RewardSystem_giveReward`, when called through the `World`.
-
-   ```solidity
-       // Allow systems in the root namespace to access rewardSystem.
-       world.grantAccess(systemResource, worldAddress);
-   ```
-
-   We need `TaskSystem`, which is in the root namespace, to be able to give rewards.
-   Because it is a root namespace `System`, it runs at the `World` address so that's the address that needs the access.
+   Because this function is in a non-root namespace, it gets a fully qualified name, `DDDD__giveReward`, when called through the `World`.
 
    ```solidity
        // Mint a million tokens for rewardSystem.
@@ -528,14 +649,6 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
 
    Normally the only entity allowed to mint ERC-20 tokens is the namespace owner.
    The easiest way to make sure `RewardSystem` has enough tokens to give is simply to give it enough tokens, and refill as needed.
-
-   ```solidity
-       // This is a workaround for issue
-       // https://github.com/latticexyz/mud/issues/2089
-       token.mint(address(worldAddress), 10 ** 6 * RewardSize.get());
-   ```
-
-   The issue is that even though `RewardSystem` is in a non-root namespace (`DDDD`), when called from `TaskSystem` it runs as the `World` address - so we need to give that address tokens to distribute.
 
    ```solidity
        vm.stopBroadcast();
@@ -569,7 +682,7 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
 1. Give `$MY_ADDRESS` a reward.
 
    ```sh copy
-   cast send --private-key $PRIVATE_KEY $WORLD_ADDRESS "DDDD_RewardSystem_giveReward(address)" $MY_ADDRESS
+   cast send --private-key $PRIVATE_KEY $WORLD_ADDRESS "DDDD__giveReward(address)" $MY_ADDRESS
    ```
 
 1. Check the balance for `$MY_ADDRESS`.
@@ -583,7 +696,7 @@ The steps are explained in [the _Extending World_ guide](./extending-world).
    However, if we try to use a different account it fails.
 
    ```sh copy
-   cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d $WORLD_ADDRESS "DDDD_RewardSystem_giveReward(address)" $MY_ADDRESS
+   cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d $WORLD_ADDRESS "DDDD__giveReward(address)" $MY_ADDRESS
    ```
 
 ### Tie `RewardSystem` to finished tasks
@@ -592,7 +705,7 @@ Finally, we need to give rewards to users when they earn them by finishing a tas
 There are two ways we can do this:
 
 - Modify the application to call `RewardSystem`.
-- Use a hook that is called when the relevant table, `:Tasks`, is modified.
+- Use a hook that is called when the relevant table, `TaskApp:Tasks`, is modified.
 
 For the sake of simplicity here we will modify the application.
 
@@ -600,16 +713,16 @@ For the sake of simplicity here we will modify the application.
 
    <CollapseCode>
 
-   ```solidity filename="TasksSystem.sol" showLineNumbers copy {7-9,20-21}
+   ```solidity filename="TasksSystem.sol" showLineNumbers copy {7-9,19}
    // SPDX-License-Identifier: MIT
    pragma solidity >=0.8.21;
 
    import { System } from "@latticexyz/world/src/System.sol";
    import { Tasks, TasksData } from "../codegen/index.sol";
 
-   // We are calling a System from a System in the root namespace,
-   // so we need SystemSwitch
-   import { SystemSwitch } from "@latticexyz/world-modules/src/utils/SystemSwitch.sol";
+   interface WorldWithRewards {
+     function DDDD__giveReward(address) external;
+   }
 
    contract TasksSystem is System {
      function addTask(string memory description) public returns (bytes32 key) {
@@ -619,8 +732,7 @@ For the sake of simplicity here we will modify the application.
 
      function completeTask(bytes32 key) public {
        Tasks.setCompletedAt(key, block.timestamp);
-
-       SystemSwitch.call(abi.encodeWithSignature("DDDD_RewardSystem_giveReward(address)", _msgSender()));
+       WorldWithRewards(_world()).DDDD__giveReward(_msgSender());
      }
 
      function resetTask(bytes32 key) public {
@@ -635,8 +747,115 @@ For the sake of simplicity here we will modify the application.
 
    </CollapseCode>
 
-   [For security reasons](/retrospectives/2023-09-12-register-system-vulnerability) a root namespace `System` is not allowed to call the `World` directly.
-   [`SystemSwitch`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/utils/SystemSwitch.sol) is the mechanism we use to allow such calls when necessary, for example here to give a reward.
+   <details>
+
+   <summary>Explanation</summary>
+
+   ```solidity
+   interface WorldWithRewards {
+     function DDDD__giveReward(address) external;
+   }
+   ```
+
+   If you define your own interface for `World` you can add whatever function signatures are supported.
+   Note that in Ethereum [a function signature](https://docs.soliditylang.org/en/latest/abi-spec.html#function-selector) is the function name and its parameter types, it does not include the return type.
+
+   ```solidity
+     WorldWithRewards(_world()).DDDD__giveReward(_msgSender());
+   ```
+
+   This is how we use the `WorldWithRewards` interface we created.
+   The [`_world()`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L38-L44) call gives us the address of the `World` that called us.
+   When we specify `WorldWithRewards(<address>)`, we are telling Solidity that there is already a `WorldWithRewards` at that address, and therefore we can use functions that are supported by `WorldWithRewards`, such as `DDDD__giveReward`.
+
+   </details>
+
+1. We changed the system's code, so `TasksSystem` gets redeployed at a new address.
+   Therefore, this is the earliest point we can grant access to the new `TasksSystem`.
+
+   1. Change to `packages/contracts`
+
+      ```sh copy
+      cd packages/contracts
+      ```
+
+   1. Create a file `script/GrantAccess.s.sol`
+
+      <CollapseCode>
+
+      ```solidity filename="GrantAccess.s.sol" copy showLineNumbers {29-34}
+      // SPDX-License-Identifier: MIT
+      pragma solidity >=0.8.21;
+
+      import { Script } from "forge-std/Script.sol";
+      import { console } from "forge-std/console.sol";
+
+      import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+      import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+      import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+      import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+      import { IWorld } from "../src/codegen/world/IWorld.sol";
+      import { Systems } from "@latticexyz/world/src/codegen/index.sol";
+
+      contract GrantAccess is Script {
+        function run() external {
+          // Load the environment
+          uint256 privateKey = vm.envUint("PRIVATE_KEY");
+          address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+          // Specify a store so that you can use tables directly
+          StoreSwitch.setStoreAddress(worldAddress);
+
+          // Start broadcasting transactions from the deployer account
+          vm.startBroadcast(privateKey);
+
+          IWorld world = IWorld(worldAddress);
+
+          ResourceId rewardSystemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "DDDD", "RewardSystem");
+          ResourceId tasksSystem = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "TaskApp", "TasksSystem");
+          address tasksSystemAddress = Systems.getSystem(tasksSystem);
+          world.grantAccess(rewardSystemResource, tasksSystemAddress);
+
+          vm.stopBroadcast();
+        }
+      }
+      ```
+
+      </CollapseCode>
+
+      <details>
+
+      <summary>Explanation</summary>
+
+      ```solidity
+      ResourceId rewardSystemResource =
+        WorldResourceIdLib.encode(RESOURCE_SYSTEM, "DDDD", "RewardSystem");
+      ```
+
+      The `ResourceId` for `RewardSystem`, [the object](https://en.wikipedia.org/wiki/Access_control_matrix) of the new access, the entity on which we provide permissions.
+
+      ```solidity
+      ResourceId tasksSystem =
+        WorldResourceIdLib.encode(RESOURCE_SYSTEM, "TaskApp", "TasksSystem");
+      address tasksSystemAddress = Systems.getSystem(tasksSystem);
+      ```
+
+      Use the `world:Systems` table to get the address for [the subject](https://en.wikipedia.org/wiki/Access_control_matrix), the entity that gets permissions.
+
+      ```solidity
+      world.grantAccess(rewardSystemResource, tasksSystemAddress);
+      ```
+
+      Actually grant the subject access to the object.
+
+      </details>
+
+   1. Run the script.
+
+      ```sh copy
+      forge script script/GrantAccess.s.sol --rpc-url http://127.0.0.1:8545 --broadcast
+      ```
 
 1. On the web interface, mark some tasks as completed.
 
@@ -648,44 +867,8 @@ For the sake of simplicity here we will modify the application.
 
 1. Because of our changes it is impossible to complete a task before the ERC-20 token and `RewardSystem` are installed.
    This means that `scripts/PostDeploy.s.sol`, as written, will fail.
-   To fix it, comment out the lines that specify a task is completed.
+   We don't need it, so we just delete it (under `erc20-tutorial/packages/contracts`).
 
-   <CollapseCode>
-
-   ```solidity filename="PostDeploy.s.sol" showLineNumbers copy {28-29}
-   // SPDX-License-Identifier: MIT
-   pragma solidity >=0.8.21;
-
-   import { Script } from "forge-std/Script.sol";
-   import { console } from "forge-std/console.sol";
-   import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-
-   import { IWorld } from "../src/codegen/world/IWorld.sol";
-   import { Tasks, TasksData } from "../src/codegen/index.sol";
-
-   contract PostDeploy is Script {
-     function run(address worldAddress) external {
-       // Specify a store so that you can use tables directly in PostDeploy
-       StoreSwitch.setStoreAddress(worldAddress);
-
-       // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
-       uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-
-       // Start broadcasting transactions from the deployer account
-       vm.startBroadcast(deployerPrivateKey);
-
-       // We can set table records directly
-       Tasks.set("1", TasksData({ description: "Walk the dog", createdAt: block.timestamp, completedAt: 0 }));
-
-       // Or we can call our own systems
-       IWorld(worldAddress).addTask("Take out the trash");
-
-       // bytes32 key = IWorld(worldAddress).addTask("Do the dishes");
-       // IWorld(worldAddress).completeTask(key);
-
-       vm.stopBroadcast();
-     }
-   }
+   ```sh copy
+   rm scripts/PostDeploy.s.sol`
    ```
-
-    </CollapseCode>
