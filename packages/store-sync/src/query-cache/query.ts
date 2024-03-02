@@ -1,20 +1,7 @@
-import { DynamicPrimitiveType, StaticPrimitiveType } from "@latticexyz/schema-type";
 import { ZustandStore } from "../zustand";
-import { AllTables, Query } from "./common";
+import { AllTables, Query, QueryResult } from "./common";
 import { StoreConfig, Tables } from "@latticexyz/store";
-import { groupBy } from "@latticexyz/common/utils";
-import { encodeAbiParameters } from "viem";
-import { matchesCondition } from "./matchesCondition";
 import { findSubjects } from "./findSubjects";
-
-type QueryResult<query extends Query> = {
-  // TODO: resolve the actual types via config look up of query subjects
-  readonly subjects: readonly (StaticPrimitiveType | DynamicPrimitiveType)[];
-  // TODO: infer whether records should be here if records was provided in query
-  // TODO: resolve record types from config and requested table records
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  readonly records?: readonly Object[];
-};
 
 // TODO: validate query
 //       - one subject per table
@@ -31,5 +18,8 @@ export async function query<config extends StoreConfig, extraTables extends Tabl
   store: ZustandStore<AllTables<config, extraTables>>,
   query: Query
 ): Promise<QueryResult<typeof query>> {
-  return findSubjects({ records: Object.values(store.getState().records), query });
+  const records = Object.values(store.getState().records);
+  const matches = findSubjects({ records, query });
+
+  return matches;
 }

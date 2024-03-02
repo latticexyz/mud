@@ -934,6 +934,9 @@ importers:
       drizzle-orm:
         specifier: ^0.28.5
         version: 0.28.5(@types/sql.js@1.4.4)(kysely@0.26.3)(postgres@3.3.5)(sql.js@1.8.0)
+      fast-deep-equal:
+        specifier: ^3.1.3
+        version: 3.1.3
       kysely:
         specifier: ^0.26.3
         version: 0.26.3

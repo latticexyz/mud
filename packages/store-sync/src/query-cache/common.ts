@@ -1,6 +1,7 @@
 import { StoreConfig, Tables, ResolvedStoreConfig } from "@latticexyz/store";
 import { Hex } from "viem";
 import { storeTables, worldTables } from "../common";
+import { DynamicPrimitiveType, StaticPrimitiveType } from "@latticexyz/schema-type";
 
 // TODO: move to some common utils file/module/package
 export type satisfy<base, t extends base> = t;
@@ -46,4 +47,9 @@ export type Query = {
   readonly from: readonly TableSubject[];
   readonly except?: readonly TableSubject[];
   readonly where?: readonly QueryCondition[];
+};
+
+export type QueryResult<query extends Query> = {
+  // TODO: resolve the actual types via config look up of query subjects
+  readonly subjects: readonly (StaticPrimitiveType | DynamicPrimitiveType)[];
 };

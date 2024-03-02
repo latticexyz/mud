@@ -21,10 +21,10 @@ type QueryResult = {
 
 // TODO: make condition types smarter, so condition literal matches the field primitive type
 
-export async function findSubjects<table extends Table>({
+export function findSubjects<table extends Table>({
   records: initialRecords,
   query,
-}: QueryParameters<table>): Promise<QueryResult> {
+}: QueryParameters<table>): QueryResult {
   // TODO: handle `query.except` subjects
   const fromTables = Object.fromEntries(query.from.map((subject) => [subject.tableId, subject.subject]));
 
