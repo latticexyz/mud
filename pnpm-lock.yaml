@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@arktype/attest':
-        specifier: 0.6.2
-        version: 0.6.2(typescript@5.1.6)
+        specifier: 0.6.4
+        version: 0.6.4(typescript@5.1.6)
       '@changesets/cli':
         specifier: ^2.26.1
         version: 2.26.1
@@ -754,9 +754,6 @@ importers:
         specifier: ^3.21.4
         version: 3.21.4
     devDependencies:
-      '@arktype/attest':
-        specifier: ^0.6.2
-        version: 0.6.2(typescript@5.1.6)
       '@latticexyz/abi-ts':
         specifier: workspace:*
         version: link:../abi-ts
@@ -1198,14 +1195,14 @@ packages:
       '@jridgewell/trace-mapping': 0.3.18
     dev: true
 
-  /@arktype/attest@0.6.2(typescript@5.1.6):
-    resolution: {integrity: sha512-wMHBB9RTH61+MLJbFqsdhSaUrCYR9b0abEUuttLbzmRpqK3XkgJPBMH1NvL1JR1pHm9aFoyFxfrl32jg3nO28A==}
+  /@arktype/attest@0.6.4(typescript@5.1.6):
+    resolution: {integrity: sha512-e0ZIITIany0UIpw2p1wiYKrqcK+iRvh9FLabVkWh/mhppm8n4jWPHyIut8OrURPWfB7Obd/cQ1Vu3DuchSfL7A==}
     hasBin: true
     peerDependencies:
       typescript: '*'
     dependencies:
       '@arktype/fs': 0.0.11
-      '@arktype/util': 0.0.20
+      '@arktype/util': 0.0.23
       '@typescript/analyze-trace': 0.10.1
       '@typescript/vfs': 1.5.0
       arktype: 1.0.29-alpha
@@ -1218,13 +1215,8 @@ packages:
     resolution: {integrity: sha512-f3p8apUMOTl6KlFNTrOX6twQJDeSdSmtYPVca7SaQjUUTAxfUlaROY1/i1C3y2llYDrrQBEbsggk8k2Oxxgrvw==}
     dev: true
 
-  /@arktype/util@0.0.20:
-    resolution: {integrity: sha512-Wv7lx8lFTPHXLnNi8v4LPEUyml9M2yqeWhRk/Vmejci/XZvR49bD9qEAw7xtIyWDlx8yE84XkXMhHFY2/3fYEQ==}
-    dev: true
-
   /@arktype/util@0.0.23:
     resolution: {integrity: sha512-MwtDGjbgfXWxlExjIL78HvPlWOma1XFEcDd3VWuCPMt/f+3TR7fXyiGFNlIYZGOYdOIU7qgjaE8dmbd6jdJa3Q==}
-    dev: false
 
   /@babel/code-frame@7.21.4:
     resolution: {integrity: sha512-LYvhNKfwWSPpocw8GI7gpK2nq3HSDuEPC/uSYaALSJu9xjsalaaYFOq0Pwt5KmVqwEbZlDu81aLXwBOmD/Fv9g==}

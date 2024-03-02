@@ -1,11 +1,25 @@
 import { describe, it, expectTypeOf } from "vitest";
+import { attest } from "@arktype/attest";
 import { resolveTableConfig, resolveTableShorthandConfig } from "./table";
 
 describe("resolveTableShorthandConfig", () => {
   it("should expand a single ABI type into a key/value schema", () => {
     const table = resolveTableShorthandConfig("address");
-    expectTypeOf<typeof table.schema>().toEqualTypeOf<{ key: "bytes32"; value: "address" }>();
-    expectTypeOf<typeof table.keys>().toEqualTypeOf<["key"]>();
+    // vitest:
+    // expectTypeOf<typeof table.schema>().toEqualTypeOf<{ key: "bytes32"; value: "address" }>();
+    // attest:
+    attest<{ key: "bytes32"; value: "address" }>(table.schema);
+    // you can try modifying the generic parameter to something incorrect and
+    // run pnpm t to see the assertion error
+
+    // vitest:
+    // expectTypeOf<typeof table.keys>().toEqualTypeOf<["key"]>();
+    // attest:
+    attest<["key"]>(table.keys);
+    // once you're making runtime assertions as well, you can easily combine them like this:
+    // attest<ExpectedType>(actual).equals(expectedValue)
+    // there's lots of other very useful features for a repo like this as well, check out the README!:
+    // https://github.com/arktypeio/arktype/tree/2.0/ark/attest#readme
   });
 
   it("should expand a single custom into a key/value schema", () => {
