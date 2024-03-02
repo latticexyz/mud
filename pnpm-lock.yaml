@@ -1128,6 +1128,39 @@ importers:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0)
 
+  test/mock-game-contracts:
+    devDependencies:
+      '@latticexyz/cli':
+        specifier: link:../../packages/cli
+        version: link:../../packages/cli
+      '@latticexyz/schema-type':
+        specifier: link:../../packages/schema-type
+        version: link:../../packages/schema-type
+      '@latticexyz/store':
+        specifier: link:../../packages/store
+        version: link:../../packages/store
+      '@latticexyz/world':
+        specifier: link:../../packages/world
+        version: link:../../packages/world
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
+      ds-test:
+        specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
+        version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
+      forge-std:
+        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
+      prettier:
+        specifier: ^2.6.2
+        version: 2.8.4
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      typescript:
+        specifier: 5.1.6
+        version: 5.1.6
+
 packages:
 
   /@adraffy/ens-normalize@1.10.0:
@@ -5022,7 +5055,6 @@ packages:
   /dotenv@16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
     engines: {node: '>=12'}
-    dev: false
 
   /dprint-node@1.0.7:
     resolution: {integrity: sha512-NTZOW9A7ipb0n7z7nC3wftvsbceircwVHSgzobJsEQa+7RnOMbhrfX5IflA6CtC4GA63DSAiHYXa4JKEy9F7cA==}
