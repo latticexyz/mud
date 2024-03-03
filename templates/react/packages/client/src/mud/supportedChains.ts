@@ -11,7 +11,7 @@
 
  */
 
-import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains";
+import { type MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains";
 
 /*
  * See https://mud.dev/tutorials/minimal/deploy#run-the-user-interface

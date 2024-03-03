@@ -1,13 +1,15 @@
 import { useAccount, useChains, useConnect, useDisconnect, useSwitchChain } from "wagmi";
 
-export const ExternalWallet = () => {
+export function ExternalConnectorPanel() {
   const { isConnected } = useAccount();
 
   return <div>{isConnected ? <Account /> : <Connect />}</div>;
-};
+}
 
 function Connect() {
   const { connect, connectors, error } = useConnect();
+
+  if (!connectors.length) return <div>No external wallet found</div>;
 
   return (
     <div>

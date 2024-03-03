@@ -1,60 +1,10 @@
-import { SyncStep } from "@latticexyz/store-sync";
-import { useMUD } from "./MUDContext";
-import { delegateToBurner, isDelegated, addTask, toggleTask, deleteTask } from "./mud/systemCalls";
+import { useMUD } from "./mud/useMUD";
+import { addTask, toggleTask, deleteTask } from "./mud/systemCalls";
 
 const styleUnset = { all: "unset" } as const;
 
-export const App = () => {
-  const {
-    network: { useStore },
-    externalWalletClient,
-  } = useMUD();
-
-  const syncProgress = useStore((state) => state.syncProgress);
-
-  if (!externalWalletClient) return <></>;
-
-  if (syncProgress.step === SyncStep.LIVE) {
-    return <Loaded />;
-  } else {
-    return <div>Loading</div>;
-  }
-};
-
-const Loaded = () => {
-  const { network, externalWalletClient } = useMUD();
-
-  if (!externalWalletClient) throw new Error("Must be used after an external wallet connection");
-
-  const delegation = network.useStore((state) =>
-    state.getValue(network.tables.UserDelegationControl, {
-      delegator: externalWalletClient.account.address,
-      delegatee: network.walletClient.account.address,
-    }),
-  );
-
-  if (delegation && isDelegated(delegation.delegationControlId)) {
-    return (
-      <div>
-        <div>Burner wallet account: {network.walletClient.account.address}</div>
-        <Delegated />
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <button type="button" onClick={() => delegateToBurner(network, externalWalletClient)}>
-        Set up burner wallet account
-      </button>
-    </div>
-  );
-};
-
-const Delegated = () => {
-  const { network, externalWalletClient } = useMUD();
-
-  if (!externalWalletClient) throw new Error("Must be used after an external wallet connection");
+export function App() {
+  const { network, burner } = useMUD();
 
   const tasks = network.useStore((state) => {
     const records = Object.values(state.getRecords(network.tables.Tasks));
@@ -73,13 +23,15 @@ const Delegated = () => {
                   type="checkbox"
                   checked={task.value.completedAt > 0n}
                   title={task.value.completedAt === 0n ? "Mark task as completed" : "Mark task as incomplete"}
+                  disabled={!burner}
                   onChange={async (event) => {
+                    if (!burner) return;
                     event.preventDefault();
                     const checkbox = event.currentTarget;
 
                     checkbox.disabled = true;
                     try {
-                      await toggleTask(network, externalWalletClient, task.key.key);
+                      await toggleTask(network, burner.walletClient, task.key.key);
                     } finally {
                       checkbox.disabled = false;
                     }
@@ -92,14 +44,16 @@ const Delegated = () => {
                   type="button"
                   title="Delete task"
                   style={styleUnset}
+                  disabled={!burner}
                   onClick={async (event) => {
+                    if (!burner) return;
                     event.preventDefault();
                     if (!window.confirm("Are you sure you want to delete this task?")) return;
 
                     const button = event.currentTarget;
                     button.disabled = true;
                     try {
-                      await deleteTask(network, externalWalletClient, task.key.key);
+                      await deleteTask(network, burner.walletClient, task.key.key);
                     } finally {
                       button.disabled = false;
                     }
@@ -119,6 +73,7 @@ const Delegated = () => {
             <td colSpan={2}>
               <form
                 onSubmit={async (event) => {
+                  if (!burner) return;
                   event.preventDefault();
                   const form = event.currentTarget;
                   const fieldset = form.querySelector("fieldset");
@@ -130,14 +85,14 @@ const Delegated = () => {
 
                   fieldset.disabled = true;
                   try {
-                    await addTask(network, externalWalletClient, desc);
+                    await addTask(network, burner.walletClient, desc);
                     form.reset();
                   } finally {
                     fieldset.disabled = false;
                   }
                 }}
               >
-                <fieldset style={styleUnset}>
+                <fieldset disabled={!burner} style={styleUnset}>
                   <input type="text" name="description" />{" "}
                   <button type="submit" title="Add task">
                     Add
@@ -150,4 +105,4 @@ const Delegated = () => {
       </table>
     </>
   );
-};
+}
