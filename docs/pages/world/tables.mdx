@@ -23,8 +23,8 @@ When a `System` reads or writes storage via [table libraries](/store/table-libra
 
 <Callout type="warning" emoji="⚠️">
   Once a table is created its schema should be considered *immutable*. You could, in theory, modify the schema by
-  changing the content of the `store:Tables` table, but doing so confuses the synchronization code, which expects the
-  table's metadata to be consistent.
+  changing the content of the `store:Tables` table, but doing so corrupts the table and confuses the synchronization
+  code, which expects the table's metadata to be consistent.
 </Callout>
 
 ## Code samples
