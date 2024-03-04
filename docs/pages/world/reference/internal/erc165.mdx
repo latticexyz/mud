@@ -93,11 +93,7 @@ function supportsERC165InterfaceUnchecked(address account, bytes4 interfaceId) i
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/requireInterface.sol)
 
-Utility function to validate interface support on a given contract using ERC-165.
-
 Checks if a given contract at `contractAddress` supports the interface with ID `interfaceId`.
-
-_This function uses the ERC-165 standard's `supportsInterface` to check if a given contract supports a specific interface._
 
 _Uses the ERC-165 `supportsInterface` method. If the contract doesn't support the interface or doesn't implement ERC-165, the function will revert with a relevant error message._
 

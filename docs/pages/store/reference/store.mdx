@@ -5,7 +5,9 @@
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol)
 
 **Inherits:**
-[IStoreData](/store/reference/store#istoredata), [IStoreRegistration](/store/reference/store#istoreregistration), [IStoreErrors](/store/reference/store#istoreerrors)
+[IStoreData](/store/reference/store#istoredata), [IStoreRegistration](/store/reference/store#istoreregistration), [IStoreErrors](/store/reference/store#istoreerrors), [IFieldLayoutErrors](/src/IFieldLayoutErrors.sol/interface.IFieldLayoutErrors.md), [IPackedCounterErrors](/src/IPackedCounterErrors.sol/interface.IPackedCounterErrors.md), [ISchemaErrors](/src/ISchemaErrors.sol/interface.ISchemaErrors.md), [ISliceErrors](/src/ISliceErrors.sol/interface.ISliceErrors.md)
+
+IStore implements the error interfaces for each library that it uses.
 
 ## IStoreEvents
 
@@ -13,13 +15,31 @@
 
 ### Events
 
+#### HelloStore
+
+Emitted when the store is initialized.
+
+```solidity
+event HelloStore(bytes32 indexed storeVersion);
+```
+
+**Parameters**
+
+| Name           | Type      | Description                        |
+| -------------- | --------- | ---------------------------------- |
+| `storeVersion` | `bytes32` | The version of the Store contract. |
+
 #### Store_SetRecord
 
 Emitted when a new record is set in the store.
 
 ```solidity
 event Store_SetRecord(
-    ResourceId indexed tableId, bytes32[] keyTuple, bytes staticData, PackedCounter encodedLengths, bytes dynamicData
+  ResourceId indexed tableId,
+  bytes32[] keyTuple,
+  bytes staticData,
+  PackedCounter encodedLengths,
+  bytes dynamicData
 );
 ```
 
@@ -59,13 +79,13 @@ Emitted when dynamic data in the store is spliced.
 
 ```solidity
 event Store_SpliceDynamicData(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    uint8 dynamicFieldIndex,
-    uint48 start,
-    uint40 deleteCount,
-    PackedCounter encodedLengths,
-    bytes data
+  ResourceId indexed tableId,
+  bytes32[] keyTuple,
+  uint8 dynamicFieldIndex,
+  uint48 start,
+  uint40 deleteCount,
+  PackedCounter encodedLengths,
+  bytes data
 );
 ```
 
@@ -99,6 +119,11 @@ event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 ## IStoreErrors
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreErrors.sol)
+
+This interface includes errors for Store.
+
+_We bundle these errors in an interface (instead of at the file-level or in their corresponding library) so they can be inherited by IStore.
+This ensures that all possible errors are included in the IStore ABI for proper decoding in the frontend._
 
 ### Errors
 
@@ -200,22 +225,6 @@ function storeVersion() external view returns (bytes32 version);
 | Name      | Type      | Description                        |
 | --------- | --------- | ---------------------------------- |
 | `version` | `bytes32` | The version of the Store contract. |
-
-### Events
-
-#### HelloStore
-
-Emitted when the store is initialized.
-
-```solidity
-event HelloStore(bytes32 indexed storeVersion);
-```
-
-**Parameters**
-
-| Name           | Type      | Description                        |
-| -------------- | --------- | ---------------------------------- |
-| `storeVersion` | `bytes32` | The version of the Store contract. |
 
 ## IStoreRead
 
@@ -482,9 +491,7 @@ function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) external;
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreRegistration.sol)
 
-The IStoreRegistration interface includes methods for managing table field layouts,
-metadata, and hooks, which are usually called once in the setup phase of an application,
-making them less performance critical than the methods.
+_This interface includes methods for managing table field layouts, metadata, and hooks, which are usually called once in the setup phase of an application, making them less performance critical than the methods._
 
 ### Functions
 

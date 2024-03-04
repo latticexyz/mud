@@ -7,6 +7,7 @@ import { Slice } from "../Slice.sol";
 
 /**
  * @title DecodeSlice Library
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice A library for decoding slices of data into specific data types.
  * @dev This library provides functions for decoding slices into arrays of basic uint types.
  */

@@ -88,7 +88,7 @@ export function Not<T extends Schema>(component: Component<T>): NotQueryFragment
  */
 export function HasValue<T extends Schema>(
   component: Component<T>,
-  value: Partial<ComponentValue<T>>
+  value: Partial<ComponentValue<T>>,
 ): HasValueQueryFragment<T> {
   return { type: QueryFragmentType.HasValue, component, value };
 }
@@ -112,7 +112,7 @@ export function HasValue<T extends Schema>(
  */
 export function NotValue<T extends Schema>(
   component: Component<T>,
-  value: Partial<ComponentValue<T>>
+  value: Partial<ComponentValue<T>>,
 ): NotValueQueryFragment<T> {
   return { type: QueryFragmentType.NotValue, component, value };
 }
@@ -199,7 +199,7 @@ function passesQueryFragment<T extends Schema>(entity: Entity, fragment: EntityQ
  * @returns True if the query fragment is positive, else false.
  */
 function isPositiveFragment<T extends Schema>(
-  fragment: QueryFragment<T>
+  fragment: QueryFragment<T>,
 ): fragment is HasQueryFragment<T> | HasValueQueryFragment<T> {
   return fragment.type === QueryFragmentType.Has || fragment.type == QueryFragmentType.HasValue;
 }
@@ -211,7 +211,7 @@ function isPositiveFragment<T extends Schema>(
  * @returns True if the query fragment is negative, else false.
  */
 function isNegativeFragment<T extends Schema>(
-  fragment: QueryFragment<T>
+  fragment: QueryFragment<T>,
 ): fragment is NotQueryFragment<T> | NotValueQueryFragment<T> {
   return fragment.type === QueryFragmentType.Not || fragment.type == QueryFragmentType.NotValue;
 }
@@ -253,7 +253,7 @@ function isBreakingPassState(passes: boolean, fragment: EntityQueryFragment<Sche
 function passesQueryFragmentProxy<T extends Schema>(
   entity: Entity,
   fragment: EntityQueryFragment<T>,
-  proxyRead: ProxyReadQueryFragment
+  proxyRead: ProxyReadQueryFragment,
 ): boolean | null {
   let proxyEntity = entity;
   let passes = false;
@@ -288,7 +288,7 @@ function passesQueryFragmentProxy<T extends Schema>(
 export function getChildEntities(
   entity: Entity,
   component: Component<{ value: Type.Entity }>,
-  depth: number
+  depth: number,
 ): Set<Entity> {
   if (depth === 0) return new Set();
 
@@ -416,7 +416,7 @@ export function runQuery(fragments: QueryFragment[], initialSet?: Set<Entity>): 
  */
 export function defineQuery(
   fragments: QueryFragment[],
-  options?: { runOnInit?: boolean; initialSet?: Set<Entity> }
+  options?: { runOnInit?: boolean; initialSet?: Set<Entity> },
 ): {
   update$: Observable<ComponentUpdate & { type: UpdateType }>;
   matching: ObservableSet<Entity>;
@@ -503,7 +503,7 @@ export function defineQuery(
               return { ...update, type: UpdateType.Enter };
             }
           }),
-      filterNullish()
+      filterNullish(),
     );
 
   return {
@@ -521,7 +521,7 @@ export function defineQuery(
  */
 export function defineUpdateQuery(
   fragments: QueryFragment[],
-  options?: { runOnInit?: boolean }
+  options?: { runOnInit?: boolean },
 ): Observable<ComponentUpdate & { type: UpdateType }> {
   return defineQuery(fragments, options).update$.pipe(filter((e) => e.type === UpdateType.Update));
 }
@@ -535,7 +535,7 @@ export function defineUpdateQuery(
  */
 export function defineEnterQuery(
   fragments: QueryFragment[],
-  options?: { runOnInit?: boolean }
+  options?: { runOnInit?: boolean },
 ): Observable<ComponentUpdate> {
   return defineQuery(fragments, options).update$.pipe(filter((e) => e.type === UpdateType.Enter));
 }
@@ -549,7 +549,7 @@ export function defineEnterQuery(
  */
 export function defineExitQuery(
   fragments: QueryFragment[],
-  options?: { runOnInit?: boolean }
+  options?: { runOnInit?: boolean },
 ): Observable<ComponentUpdate> {
   return defineQuery(fragments, options).update$.pipe(filter((e) => e.type === UpdateType.Exit));
 }

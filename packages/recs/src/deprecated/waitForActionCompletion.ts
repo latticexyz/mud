@@ -5,7 +5,7 @@ import { waitForComponentValueIn } from "./waitForComponentValueIn";
 
 export async function waitForActionCompletion(
   Action: ReturnType<typeof defineActionComponent>,
-  entity: Entity
+  entity: Entity,
 ): Promise<void> {
   return waitForComponentValueIn(Action, entity, [
     { state: ActionState.Cancelled },

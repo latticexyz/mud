@@ -8,6 +8,10 @@ import { IWorldErrors } from "./IWorldErrors.sol";
 using WorldResourceIdInstance for ResourceId;
 
 /**
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ */
+
+/**
  * @notice Checks if a given `resourceId` is a namespace.
  * @dev Reverts with `IWorldErrors.World_InvalidResourceType` if the ID does not have the correct components.
  * @param resourceId The resource ID to check.

@@ -5,7 +5,7 @@ import { CoordMap } from "@latticexyz/utils";
 import { ChunkedTilemapConfig, createChunkedTilemap } from "./createChunkedTilemap";
 
 export function createVirtualTilemap<TileKeys extends number, LayerKeys extends string>(
-  config: Omit<ChunkedTilemapConfig<TileKeys, LayerKeys>, "tiles">
+  config: Omit<ChunkedTilemapConfig<TileKeys, LayerKeys>, "tiles">,
 ): VirtualTilemap<TileKeys, LayerKeys> {
   const {
     chunks,

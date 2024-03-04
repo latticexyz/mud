@@ -8,7 +8,7 @@ import { FromTsProtoServiceDefinition } from "nice-grpc-web/lib/service-definiti
  * @returns FaucetServiceClient
  */
 export function createFaucetService(
-  url: string
+  url: string,
 ): RawClient<FromTsProtoServiceDefinition<typeof FaucetServiceDefinition>> {
   return createClient(FaucetServiceDefinition, createChannel(url));
 }
