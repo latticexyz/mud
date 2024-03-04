@@ -12,7 +12,7 @@ walletClient.extend(
     worldAddress,
     delegatorAddress,
     getSystemId: (functionSelector) =>
-      network.useStore.getState().getValue(network.tables.FunctionSelectors, { functionSelector })!.systemId,
+      useStore.getState().getValue(tables.FunctionSelectors, { functionSelector })!.systemId,
   }),
 );
 ```
