@@ -84,7 +84,12 @@ function BurnerExtension(props: {
 
   const burner = useMemo(() => {
     const walletClient = props.burner.walletClient.extend(
-      delegatedActions({ network, delegatorAddress: props.externalWalletClient.account.address }),
+      delegatedActions({
+        worldAddress: network.worldAddress,
+        delegatorAddress: props.externalWalletClient.account.address,
+        getSystemId: (functionSelector) =>
+          network.useStore.getState().getValue(network.tables.FunctionSelectors, { functionSelector })!.systemId,
+      }),
     );
     return { ...props.burner, walletClient };
   }, [props.burner, props.externalWalletClient.account.address, network]);
