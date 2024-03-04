@@ -61,22 +61,21 @@ export type getDynamicAbiTypeKeys<
     string
   : Exclude<keyof schema, getStaticAbiTypeKeys<schema, userTypes>>;
 
-export type resolveSchema<
-  schema extends SchemaInput<userTypes>,
-  userTypes extends UserTypes
-> = UserTypes extends userTypes
-  ? {
-      [key in keyof schema]: {
-        type: schema[key];
-        internalType: schema[key];
-      };
-    }
-  : {
-      [key in keyof schema]: {
-        type: schema[key] extends keyof userTypes ? userTypes[schema[key]] : schema[key];
-        internalType: schema[key];
-      };
-    };
+export type resolveSchema<schema, userTypes extends UserTypes> = schema extends SchemaInput<userTypes>
+  ? UserTypes extends userTypes
+    ? {
+        [key in keyof schema]: {
+          type: schema[key];
+          internalType: schema[key];
+        };
+      }
+    : {
+        [key in keyof schema]: {
+          type: schema[key] extends keyof userTypes ? userTypes[schema[key]] : schema[key];
+          internalType: schema[key];
+        };
+      }
+  : never;
 
 export function resolveSchema<schema extends SchemaInput<userTypes>, userTypes extends UserTypes = UserTypes>(
   schema: schema,
