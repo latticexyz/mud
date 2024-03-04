@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12697195
+    "gasUsed": 12643627
   },
   {
     "file": "test/World.t.sol",
@@ -93,7 +93,7 @@
     "file": "test/World.t.sol",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 8957
+    "gasUsed": 8958
   },
   {
     "file": "test/World.t.sol",
@@ -141,7 +141,7 @@
     "file": "test/World.t.sol",
     "test": "testSetField",
     "name": "Write data to a table field",
-    "gasUsed": 36435
+    "gasUsed": 36436
   },
   {
     "file": "test/World.t.sol",

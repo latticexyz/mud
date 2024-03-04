@@ -42,6 +42,6 @@ export async function getSystems({
           .map(({ address }) => address),
         functions: systemFunctions,
       };
-    })
+    }),
   );
 }

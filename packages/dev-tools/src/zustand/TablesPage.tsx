@@ -57,7 +57,7 @@ export function TablesPage() {
                 <NavButton
                   className={twMerge(
                     "px-2 py-1.5 text-left hover:bg-blue-700 hover:text-white",
-                    table === selectedTable ? "bg-slate-600" : null
+                    table === selectedTable ? "bg-slate-600" : null,
                   )}
                   key={table.tableId}
                   to={table.tableId}

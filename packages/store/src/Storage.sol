@@ -7,6 +7,7 @@ import { BYTE_TO_BITS } from "./constants.sol";
 
 /**
  * @title Storage Library
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Provides functions for low-level storage manipulation, including storing and retrieving bytes.
  */
 library Storage {

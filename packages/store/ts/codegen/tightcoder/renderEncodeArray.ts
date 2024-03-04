@@ -13,7 +13,8 @@ export function renderEncodeArray() {
     import { TightCoder } from "./TightCoder.sol";
 
     /**
-     * @title EncodeArray
+     * @title EncodeArray 
+     * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
      * @dev This library provides utilities for encoding arrays into tightly packed bytes representations.
      */
     library EncodeArray {
@@ -22,7 +23,7 @@ export function renderEncodeArray() {
           renderTightCoderEncode({
             internalTypeId: staticAbiType,
             staticByteLength: staticAbiTypeToByteLength[staticAbiType],
-          })
+          }),
         )
         .join("\n")}
       }

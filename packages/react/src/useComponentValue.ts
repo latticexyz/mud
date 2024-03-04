@@ -13,18 +13,18 @@ import { useEffect, useState } from "react";
 export function useComponentValue<S extends Schema>(
   component: Component<S>,
   entity: Entity | undefined,
-  defaultValue: ComponentValue<S>
+  defaultValue: ComponentValue<S>,
 ): ComponentValue<S>;
 
 export function useComponentValue<S extends Schema>(
   component: Component<S>,
-  entity: Entity | undefined
+  entity: Entity | undefined,
 ): ComponentValue<S> | undefined;
 
 export function useComponentValue<S extends Schema>(
   component: Component<S>,
   entity: Entity | undefined,
-  defaultValue?: ComponentValue<S>
+  defaultValue?: ComponentValue<S>,
 ) {
   const [value, setValue] = useState(entity != null ? getComponentValue(component, entity) : undefined);
 

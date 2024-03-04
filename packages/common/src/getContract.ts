@@ -42,7 +42,7 @@ export type GetContractOptions<
   TChain extends Chain,
   TAccount extends Account,
   TPublicClient extends PublicClient<TTransport, TChain>,
-  TWalletClient extends WalletClient<TTransport, TChain, TAccount>
+  TWalletClient extends WalletClient<TTransport, TChain, TAccount>,
 > = GetContractParameters<
   TTransport,
   TChain,
@@ -56,6 +56,7 @@ export type GetContractOptions<
 
 // TODO: migrate away from this approach once we can hook into viem: https://github.com/wagmi-dev/viem/discussions/1230
 
+/** @deprecated Use `walletClient.extend(transactionQueue()).extend(writeObserver({ onWrite }))` and viem's `getContract` instead. */
 export function getContract<
   TTransport extends Transport,
   TAddress extends Address,
@@ -63,7 +64,7 @@ export function getContract<
   TChain extends Chain,
   TAccount extends Account,
   TPublicClient extends PublicClient<TTransport, TChain>,
-  TWalletClient extends WalletClient<TTransport, TChain, TAccount>
+  TWalletClient extends WalletClient<TTransport, TChain, TAccount>,
 >({
   abi,
   address,
@@ -99,7 +100,7 @@ export function getContract<
           return (
             ...parameters: [
               args?: readonly unknown[],
-              options?: UnionOmit<WriteContractParameters, "abi" | "address" | "functionName" | "args">
+              options?: UnionOmit<WriteContractParameters, "abi" | "address" | "functionName" | "args">,
             ]
           ) => {
             const { args, options } = getFunctionParameters(parameters);
@@ -125,7 +126,7 @@ export function getContract<
             return result;
           };
         },
-      }
+      },
     );
   }
 

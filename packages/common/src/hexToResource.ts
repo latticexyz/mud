@@ -6,7 +6,7 @@ import { ReverseMap } from "./type-utils/common";
 import { resourceToLabel } from "./resourceLabel";
 
 const resourceTypeIdToType = Object.fromEntries(
-  Object.entries(resourceTypeIds).map(([key, value]) => [value, key])
+  Object.entries(resourceTypeIds).map(([key, value]) => [value, key]),
 ) as ReverseMap<typeof resourceTypeIds>;
 
 function getResourceType(resourceTypeId: string): ResourceType | undefined {
@@ -24,9 +24,7 @@ export function hexToResource(hex: Hex): Resource {
   const name = hexToString(sliceHex(hex, 16, 32)).replace(/\0+$/, "");
 
   if (!type) {
-    throw new Error(
-      `Unknown type (${resourceTypeId}) for resource (${resourceTypeId}:${resourceToLabel({ namespace, name })})`
-    );
+    throw new Error(`Unknown type (${resourceTypeId}) for resource (${resourceToLabel({ namespace, name })})`);
   }
 
   return { resourceId: hex, type, namespace, name };

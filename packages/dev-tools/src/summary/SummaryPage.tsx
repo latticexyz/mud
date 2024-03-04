@@ -8,7 +8,7 @@ import packageJson from "../../package.json";
 import { useDevToolsContext } from "../DevToolsContext";
 
 const isLinked = Object.entries(packageJson.dependencies).some(
-  ([name, version]) => name.startsWith("@latticexyz/") && version.startsWith("link:")
+  ([name, version]) => name.startsWith("@latticexyz/") && version.startsWith("link:"),
 );
 
 export function SummaryPage() {
