@@ -15,6 +15,20 @@ IStore implements the error interfaces for each library that it uses.
 
 ### Events
 
+#### HelloStore
+
+Emitted when the store is initialized.
+
+```solidity
+event HelloStore(bytes32 indexed storeVersion);
+```
+
+**Parameters**
+
+| Name           | Type      | Description                        |
+| -------------- | --------- | ---------------------------------- |
+| `storeVersion` | `bytes32` | The version of the Store contract. |
+
 #### Store_SetRecord
 
 Emitted when a new record is set in the store.
@@ -211,22 +225,6 @@ function storeVersion() external view returns (bytes32 version);
 | Name      | Type      | Description                        |
 | --------- | --------- | ---------------------------------- |
 | `version` | `bytes32` | The version of the Store contract. |
-
-### Events
-
-#### HelloStore
-
-Emitted when the store is initialized.
-
-```solidity
-event HelloStore(bytes32 indexed storeVersion);
-```
-
-**Parameters**
-
-| Name           | Type      | Description                        |
-| -------------- | --------- | ---------------------------------- |
-| `storeVersion` | `bytes32` | The version of the Store contract. |
 
 ## IStoreRead
 
