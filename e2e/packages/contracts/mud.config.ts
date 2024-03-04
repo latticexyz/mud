@@ -51,5 +51,22 @@ export default mudConfig({
       keySchema: {},
       valueSchema: "uint256[2]",
     },
+    BattleResult: {
+      keySchema: { battleId: "bytes32" },
+      valueSchema: {
+        aggressorEntity: "bytes32", //can be fleet or space rock
+        aggressorDamage: "uint256", //can be fleet or space rock
+        targetEntity: "bytes32", //can be fleet or space rock
+        targetDamage: "uint256", //can be fleet or space rock
+        winner: "bytes32",
+        rock: "bytes32", // place where battle took place
+        player: "bytes32", // player who initiated the battle
+        targetPlayer: "bytes32", // player who was attacked
+        timestamp: "uint256", // timestamp of battle
+        aggressorAllies: "bytes32[]", //only fleets
+        targetAllies: "bytes32[]", //only fleets
+      },
+      offchainOnly: true,
+    },
   },
 });

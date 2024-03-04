@@ -7,7 +7,8 @@
   "scripts": {
     "generate-bench-data-bulk": "tsx generate-bench-data-bulk.ts",
     "generate-bench-data-query": "tsx generate-bench-data-query.ts",
-    "generate-test-data": "tsx generate-test-data.ts"
+    "generate-test-data": "tsx generate-test-data.ts",
+    "generate-test-data-battle": "tsx generate-test-data-battle.ts"
   },
   "devDependencies": {
     "@latticexyz/block-logs-stream": "link:../../../packages/block-logs-stream",
