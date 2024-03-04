@@ -1,0 +1,632 @@
+{
+    "ts/config/v2/table.test.ts": [
+        {
+            "location": {
+                "start": {
+                    "line": 15,
+                    "char": 5
+                },
+                "end": {
+                    "line": 15,
+                    "char": 35
+                }
+            },
+            "args": [
+                {
+                    "type": "TableFullConfigInput<{ key: \"bytes32\"; value: \"address\"; }, UserTypes, [\"key\"]>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ readonly schema: { readonly key: \"bytes32\"; readonly value: \"address\"; }; readonly keys: readonly [\"key\"]; }",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 27,
+                    "char": 5
+                },
+                "end": {
+                    "line": 27,
+                    "char": 35
+                }
+            },
+            "args": [
+                {
+                    "type": "TableFullConfigInput<{ key: \"bytes32\"; value: \"CustomType\"; }, { CustomType: \"uint256\"; }, [\"key\"]>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ readonly schema: { readonly key: \"bytes32\"; readonly value: \"CustomType\"; }; readonly keys: readonly [\"key\"]; }",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 32,
+                    "char": 5
+                },
+                "end": {
+                    "line": 32,
+                    "char": 56
+                }
+            },
+            "args": [
+                {
+                    "type": "TableFullConfigInput<{ [key: string]: AbiType; }, UserTypes, [\"key\"]> | TableFullConfigInput<{ key: \"bytes32\"; value: \"address\"; }, UserTypes, [...]> | ... 5 more ... | TableFullConfigInput<...>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Argument of type '\"NotAnAbiType\"' is not assignable to parameter of type 'TableShorthandConfigInput<UserTypes>'."
+            ],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 52,
+                    "char": 5
+                },
+                "end": {
+                    "line": 52,
+                    "char": 35
+                }
+            },
+            "args": [
+                {
+                    "type": "TableFullConfigInput<{ key: \"address\"; name: \"string\"; age: \"uint256\"; }, UserTypes, [\"key\"]>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ readonly schema: { readonly key: \"address\"; readonly name: \"string\"; readonly age: \"uint256\"; }; readonly keys: readonly [\"key\"]; }",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 57,
+                    "char": 5
+                },
+                "end": {
+                    "line": 57,
+                    "char": 76
+                }
+            },
+            "args": [
+                {
+                    "type": "never",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Argument of type '{ name: string; age: string; }' is not assignable to parameter of type '\"Provide a `key` field with static ABI type or a full config with explicit keys override. \"'."
+            ],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 64,
+                    "char": 5
+                },
+                "end": {
+                    "line": 64,
+                    "char": 91
+                }
+            },
+            "args": [
+                {
+                    "type": "never",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Argument of type '{ key: string; name: string; age: string; }' is not assignable to parameter of type '\"Provide a `key` field with static ABI type or a full config with explicit keys override. \"'."
+            ],
+            "completions": "Encountered multiple completion candidates for string(s) 'string'. Assertions on the same prefix must be split into multiple attest calls so the results can be distinguished."
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 71,
+                    "char": 5
+                },
+                "end": {
+                    "line": 71,
+                    "char": 84
+                }
+            },
+            "args": [
+                {
+                    "type": "TableFullConfigInput<{ [key: string]: AbiType; }, UserTypes, [\"key\"]> | TableFullConfigInput<{ key: \"bytes32\"; value: \"address\"; }, UserTypes, [...]> | ... 5 more ... | TableFullConfigInput<...>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Type '\"NotACustomType\"' is not assignable to type 'AbiType'."
+            ],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 85,
+                    "char": 5
+                },
+                "end": {
+                    "line": 85,
+                    "char": 35
+                }
+            },
+            "args": [
+                {
+                    "type": "TableFullConfigInput<{ key: \"CustomType\"; name: \"string\"; age: \"uint256\"; }, { CustomType: \"uint256\"; }, [\"key\"]>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ readonly schema: { readonly key: \"CustomType\"; readonly name: \"string\"; readonly age: \"uint256\"; }; readonly keys: readonly [\"key\"]; }",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 89,
+                    "char": 5
+                },
+                "end": {
+                    "line": 92,
+                    "char": 6
+                }
+            },
+            "args": [
+                {
+                    "type": "never",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Argument of type '{ key: string; name: string; age: string; }' is not assignable to parameter of type '\"Provide a `key` field with static ABI type or a full config with explicit keys override. \"'."
+            ],
+            "completions": {
+                "bytes": [
+                    "bytes32"
+                ]
+            }
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 124,
+                    "char": 5
+                },
+                "end": {
+                    "line": 124,
+                    "char": 35
+                }
+            },
+            "args": [
+                {
+                    "type": "resolveTableFullConfig<TableFullConfigInput<{ key: \"bytes32\"; value: \"address\"; }, UserTypes, [\"key\"]>, UserTypes>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ readonly schema: { readonly key: { readonly type: \"bytes32\"; readonly internalType: \"bytes32\"; }; readonly value: { readonly type: \"address\"; readonly internalType: \"address\"; }; }; readonly keySchema: { ...; }; readonly valueSchema: { ...; }; readonly keys: readonly [...]; }",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 154,
+                    "char": 5
+                },
+                "end": {
+                    "line": 154,
+                    "char": 35
+                }
+            },
+            "args": [
+                {
+                    "type": "resolveTableFullConfig<TableFullConfigInput<{ key: \"bytes32\"; value: \"CustomType\"; }, { CustomType: \"address\"; }, [\"key\"]>, { CustomType: \"address\"; }>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ readonly schema: { readonly key: { readonly type: \"bytes32\"; readonly internalType: \"bytes32\"; }; readonly value: { readonly type: \"address\"; readonly internalType: \"CustomType\"; }; }; readonly keySchema: { ...; }; readonly valueSchema: { ...; }; readonly keys: readonly [...]; }",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 192,
+                    "char": 5
+                },
+                "end": {
+                    "line": 192,
+                    "char": 35
+                }
+            },
+            "args": [
+                {
+                    "type": "resolveTableFullConfig<TableFullConfigInput<{ key: \"address\"; name: \"string\"; age: \"uint256\"; }, UserTypes, [\"key\"]>, UserTypes>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ readonly schema: { readonly key: { readonly type: \"address\"; readonly internalType: \"address\"; }; readonly name: { readonly type: \"string\"; readonly internalType: \"string\"; }; readonly age: { readonly type: \"uint256\"; readonly internalType: \"uint256\"; }; }; readonly keySchema: { ...; }; readonly valueSchema: { ......",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 230,
+                    "char": 5
+                },
+                "end": {
+                    "line": 230,
+                    "char": 35
+                }
+            },
+            "args": [
+                {
+                    "type": "resolveTableFullConfig<TableFullConfigInput<{ key: \"CustomType\"; name: \"string\"; age: \"uint256\"; }, { CustomType: \"uint256\"; }, [\"key\"]>, { CustomType: \"uint256\"; }>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ schema: { key: { type: string; internalType: string; }; name: { type: string; internalType: string; }; age: { type: string; internalType: string; }; }; keySchema: { key: { type: string; internalType: string; }; }; valueSchema: { ...; }; keys: string[]; }",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 235,
+                    "char": 5
+                },
+                "end": {
+                    "line": 235,
+                    "char": 82
+                }
+            },
+            "args": [
+                {
+                    "type": "never",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Argument of type '{ key: string; name: string; age: string; }' is not assignable to parameter of type '\"Provide a `key` field with static ABI type or a full config with explicit keys override. \"'."
+            ],
+            "completions": "Encountered multiple completion candidates for string(s) 'string'. Assertions on the same prefix must be split into multiple attest calls so the results can be distinguished."
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 246,
+                    "char": 5
+                },
+                "end": {
+                    "line": 246,
+                    "char": 67
+                }
+            },
+            "args": [
+                {
+                    "type": "never",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Argument of type '{ name: string; age: string; }' is not assignable to parameter of type '\"Provide a `key` field with static ABI type or a full config with explicit keys override. \"'."
+            ],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 271,
+                    "char": 5
+                },
+                "end": {
+                    "line": 271,
+                    "char": 35
+                }
+            },
+            "args": [
+                {
+                    "type": "resolveTableFullConfig<{ schema: { key: \"address\"; name: \"string\"; age: \"uint256\"; }; keys: [\"age\"]; }, UserTypes>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ readonly schema: { readonly key: { readonly type: \"address\"; readonly internalType: \"address\"; }; readonly name: { readonly type: \"string\"; readonly internalType: \"string\"; }; readonly age: { readonly type: \"uint256\"; readonly internalType: \"uint256\"; }; }; readonly keySchema: { ...; }; readonly valueSchema: { ......",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 294,
+                    "char": 5
+                },
+                "end": {
+                    "line": 294,
+                    "char": 35
+                }
+            },
+            "args": [
+                {
+                    "type": "resolveTableFullConfig<{ schema: { key: \"address\"; name: \"string\"; age: \"uint256\"; }; keys: [\"age\", \"key\"]; }, UserTypes>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ readonly schema: { readonly key: { readonly type: \"address\"; readonly internalType: \"address\"; }; readonly name: { readonly type: \"string\"; readonly internalType: \"string\"; }; readonly age: { readonly type: \"uint256\"; readonly internalType: \"uint256\"; }; }; readonly keySchema: { ...; }; readonly valueSchema: { ......",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 302,
+                    "char": 5
+                },
+                "end": {
+                    "line": 308,
+                    "char": 6
+                }
+            },
+            "args": [
+                {
+                    "type": "resolveTableFullConfig<{ schema: { key: \"address\"; name: \"string\"; age: \"uint256\"; }; keys: [\"name\"]; }, UserTypes>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Type '\"name\"' is not assignable to type '\"key\" | \"age\"'."
+            ],
+            "completions": {}
+        }
+    ]
+}

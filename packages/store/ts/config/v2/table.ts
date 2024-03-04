@@ -1,14 +1,14 @@
-import { error } from "./error";
+import { ErrorMessage } from "@arktype/util";
 import { AbiType, SchemaInput, UserTypes, getStaticAbiTypeKeys, resolveSchema } from "./schema";
-import { conform, stringifyUnion } from "@arktype/util";
+import { stringifyUnion } from "@arktype/util";
 
 export type NoStaticKeyFieldError =
-  error<"Provide a `key` field with static ABI type or a full config with explicit keys override.">;
-export type InvalidInput = error<"Provide a valid shorthand or full table config.">;
+  ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit keys override.">;
+export type InvalidInput = ErrorMessage<"Provide a valid shorthand or full table config.">;
 // @alvrs I added @arktype/util (already transitive of arktype anyways) which has a bunch of type-level utilities like
 // this one for string unions which are otherwise quite messy to do from scratch
 export type InvalidKeys<validKey extends string> =
-  `Keys must have static ABI types (${stringifyUnion<validKey>} are allowed)`;
+  ErrorMessage<`Keys must have static ABI types (${stringifyUnion<validKey>} are allowed)`>;
 
 export type TableConfigInput<
   schema extends SchemaInput<userTypes> = SchemaInput,
