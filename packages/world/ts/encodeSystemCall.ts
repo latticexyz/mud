@@ -2,10 +2,10 @@ import { Abi, EncodeFunctionDataParameters, Hex, encodeFunctionData, type Contra
 import type { AbiParametersToPrimitiveTypes, ExtractAbiFunction } from "abitype";
 import IWorldCallAbi from "../out/IWorldKernel.sol/IWorldCall.abi.json";
 
-export type SystemCall<abi extends Abi, functionName extends ContractFunctionName<abi>> = EncodeFunctionDataParameters<
-  abi,
-  functionName
-> & {
+export type SystemCall<
+  abi extends Abi = Abi,
+  functionName extends ContractFunctionName<abi> = ContractFunctionName<abi>,
+> = EncodeFunctionDataParameters<abi, functionName> & {
   readonly systemId: Hex;
 };
 
