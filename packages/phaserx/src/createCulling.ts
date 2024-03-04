@@ -50,7 +50,7 @@ export function createCulling(objectPool: ObjectPool, camera: Camera, chunks: Ch
     map((chunk: ChunkCoord) => from(chunkRegistry.get(chunk))), // Map to streams of entityIds
     mergeMap((entities) => entities), // Flatten the stream of entities
     map((entityId) => objectPool.get(entityId, "Existing")), // Map entityId to embodiedEntity
-    filterNullish()
+    filterNullish(),
   );
 
   // Spawn entities when their chunk appears in the viewport
@@ -77,7 +77,7 @@ export function createCulling(objectPool: ObjectPool, camera: Camera, chunks: Ch
           entity.despawn();
         }
       },
-      { fireImmediately: true }
+      { fireImmediately: true },
     );
     disposer.set(entity.id, dispose);
   }

@@ -34,7 +34,7 @@ export function decodeRecord(valueSchema: Schema, data: Hex): readonly (StaticPr
         expectedLength: schemaStaticDataLength,
         actualLength: actualStaticDataLength,
         bytesOffset,
-      }
+      },
     );
   }
 
@@ -63,7 +63,7 @@ export function decodeRecord(valueSchema: Schema, data: Hex): readonly (StaticPr
           expectedLength: dataLayout.totalByteLength,
           actualLength: actualDynamicDataLength,
           bytesOffset,
-        }
+        },
       );
     }
   }

@@ -20,16 +20,17 @@ const debug = parentDebug.extend("writeContract");
 
 // TODO: migrate away from this approach once we can hook into viem's nonce management: https://github.com/wagmi-dev/viem/discussions/1230
 
+/** @deprecated Use `walletClient.extend(transactionQueue())` instead. */
 export async function writeContract<
   chain extends Chain | undefined,
   account extends Account | undefined,
   abi extends Abi | readonly unknown[],
   functionName extends ContractFunctionName<abi, "nonpayable" | "payable">,
   args extends ContractFunctionArgs<abi, "nonpayable" | "payable", functionName>,
-  chainOverride extends Chain | undefined
+  chainOverride extends Chain | undefined,
 >(
   client: Client<Transport, chain, account>,
-  request: WriteContractParameters<abi, functionName, args, chain, account, chainOverride>
+  request: WriteContractParameters<abi, functionName, args, chain, account, chainOverride>,
 ): Promise<WriteContractReturnType> {
   const rawAccount = request.account ?? client.account;
   if (!rawAccount) {
@@ -88,8 +89,8 @@ export async function writeContract<
             // TODO: prepareWrite again if there are gas errors?
             throw error;
           },
-        }
+        },
       ),
-    { throwOnTimeout: true }
+    { throwOnTimeout: true },
   );
 }

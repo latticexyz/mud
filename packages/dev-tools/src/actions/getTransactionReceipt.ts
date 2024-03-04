@@ -7,7 +7,7 @@ const cache: Record<string, Promise<TransactionReceipt>> = {};
 
 export function getTransactionReceipt(
   publicClient: PublicClient<Transport, Chain>,
-  write: ContractWrite
+  write: ContractWrite,
 ): Promise<TransactionReceipt> {
   if (!cache[write.id]) {
     cache[write.id] = write.result.then((hash) => publicClient.waitForTransactionReceipt({ hash }));

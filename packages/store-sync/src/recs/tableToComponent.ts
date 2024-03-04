@@ -31,7 +31,7 @@ export function tableToComponent<table extends Table>(world: World, table: table
         Object.entries(table.valueSchema).map(([fieldName, { type: schemaAbiType }]) => [
           fieldName,
           schemaAbiTypeToRecsType[schemaAbiType as SchemaAbiType],
-        ])
+        ]),
       ),
       __staticData: Type.OptionalString,
       __encodedLengths: Type.OptionalString,
@@ -45,6 +45,6 @@ export function tableToComponent<table extends Table>(world: World, table: table
         keySchema: mapObject(table.keySchema, ({ type }) => type),
         valueSchema: mapObject(table.valueSchema, ({ type }) => type),
       },
-    }
+    },
   ) as TableToComponent<table>;
 }

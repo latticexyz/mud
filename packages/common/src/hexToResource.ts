@@ -6,7 +6,7 @@ import { ReverseMap } from "./type-utils/common";
 import { resourceToLabel } from "./resourceLabel";
 
 const resourceTypeIdToType = Object.fromEntries(
-  Object.entries(resourceTypeIds).map(([key, value]) => [value, key])
+  Object.entries(resourceTypeIds).map(([key, value]) => [value, key]),
 ) as ReverseMap<typeof resourceTypeIds>;
 
 function getResourceType(resourceTypeId: string): ResourceType | undefined {

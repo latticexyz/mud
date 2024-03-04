@@ -27,10 +27,10 @@ export function renderRecordMethods(options: RenderTableOptions) {
          * @notice Get the full data${_commentSuffix}.
          */
         function ${_methodNamePrefix}get(${renderArguments([
-        _typedStore,
-        _typedTableId,
-        _typedKeyArgs,
-      ])}) internal view returns (${renderDecodedRecord(options)}) {
+          _typedStore,
+          _typedTableId,
+          _typedKeyArgs,
+        ])}) internal view returns (${renderDecodedRecord(options)}) {
           ${_keyTupleDefinition}
           
           (
@@ -40,7 +40,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
             ) = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
             return decode(_staticData, _encodedLengths, _dynamicData);
           }
-        `
+        `,
     );
   }
 
@@ -70,7 +70,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
           ${_store}.setRecord(${internalArguments});
         }
     `;
-    }
+    },
   );
 
   if (structName !== undefined) {
@@ -100,7 +100,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
             ${_store}.setRecord(${internalArguments});
           }
       `;
-      }
+      },
     );
   }
 
@@ -170,7 +170,7 @@ export function renderDeleteRecordMethods(options: RenderTableOptions) {
           ${_store}.deleteRecord(${internalArguments});
         }
       `;
-    }
+    },
   );
 }
 
@@ -202,13 +202,13 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
        * @notice Decode the tightly packed blob of static data using this table's field layout.
        */
       function decodeStatic(bytes memory _blob) internal pure returns (${renderArguments(
-        staticFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+        staticFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`),
       )}) {
         ${renderList(
           staticFields,
           (field, index) => `
           ${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
-          `
+          `,
         )}
       }
     `;
@@ -220,7 +220,7 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
        * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
        */
       function decodeDynamic(PackedCounter _encodedLengths, bytes memory _blob) internal pure returns (${renderArguments(
-        dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+        dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`),
       )}) {
         ${renderList(
           dynamicFields,
@@ -245,7 +245,7 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
                 ${field.name} = ${renderDecodeDynamicFieldPartial(field)};
               `;
             }
-          }
+          },
         )}
       }
     `;
@@ -273,7 +273,7 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
   if (dynamicFields.length > 0) {
     result += `
       (${renderArguments(
-        dynamicFields.map((field) => `${fieldNamePrefix}${field.name}`)
+        dynamicFields.map((field) => `${fieldNamePrefix}${field.name}`),
       )}) = decodeDynamic(_encodedLengths, _dynamicData);
     `;
   }

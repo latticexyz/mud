@@ -12,7 +12,7 @@ export function defineActionComponent<T = unknown>(world: World) {
       overrides: Type.OptionalStringArray,
       txHash: Type.OptionalString,
     },
-    { id: "Action" }
+    { id: "Action" },
   );
   return Action as Component<SchemaOf<typeof Action>, Metadata, T>;
 }

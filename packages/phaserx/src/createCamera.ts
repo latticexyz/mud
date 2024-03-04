@@ -20,7 +20,7 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
       onPinch: (state) => pinchStream$.next(state),
       onWheel: (state) => wheelStream$.next(state),
     },
-    {}
+    {},
   );
 
   // function getNearestLevel(currentZoom: number): number {
@@ -51,7 +51,7 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
         return zoom + scaledDelta;
       }), // Compute pinch speed
       map((zoom) => Math.min(Math.max(zoom, options.minZoom), options.maxZoom)), // Limit zoom values
-      scan((acc, curr) => [acc[1], curr], [1, 1]) // keep track of the last value to offset the map position (not implemented yet)
+      scan((acc, curr) => [acc[1], curr], [1, 1]), // keep track of the last value to offset the map position (not implemented yet)
     )
     .subscribe(([, zoom]) => {
       // Set the gesture zoom state to the current zoom value to avoid zooming beyond the max values
@@ -67,7 +67,7 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
       // @ts-ignore
       map((state) => state.delta.map((x) => x * options.wheelSpeed)), // Compute wheel speed
       map((movement) => movement.map((m: number) => m / phaserCamera.zoom)), // Adjust for current zoom value
-      map((movement) => [phaserCamera.scrollX + movement[0], phaserCamera.scrollY + movement[1]]) // Compute new pinch
+      map((movement) => [phaserCamera.scrollX + movement[0], phaserCamera.scrollY + movement[1]]), // Compute new pinch
     )
     .subscribe(([x, y]) => {
       phaserCamera.setScroll(x, y);
