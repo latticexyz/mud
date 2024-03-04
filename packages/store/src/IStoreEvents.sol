@@ -10,6 +10,12 @@ import { PackedCounter } from "./PackedCounter.sol";
  */
 interface IStoreEvents {
   /**
+   * @notice Emitted when the store is initialized.
+   * @param storeVersion The version of the Store contract.
+   */
+  event HelloStore(bytes32 indexed storeVersion);
+
+  /**
    * @notice Emitted when a new record is set in the store.
    * @param tableId The ID of the table where the record is set.
    * @param keyTuple An array representing the composite key for the record.
