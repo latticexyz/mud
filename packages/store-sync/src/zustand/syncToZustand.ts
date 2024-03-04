@@ -9,7 +9,7 @@ import { SyncStep } from "../SyncStep";
 
 type AllTables<
   config extends StoreConfig,
-  extraTables extends Tables | undefined
+  extraTables extends Tables | undefined,
 > = ResolvedStoreConfig<config>["tables"] &
   (extraTables extends Tables ? extraTables : Record<never, never>) &
   typeof storeTables &

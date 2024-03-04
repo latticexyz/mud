@@ -10,11 +10,11 @@ import { WorldConfig } from "../../config/types";
 export async function worldgen(
   config: StoreConfig & WorldConfig,
   existingContracts: { path: string; basename: string }[],
-  outputBaseDirectory: string
+  outputBaseDirectory: string,
 ) {
   const resolvedConfig = resolveWorldConfig(
     config,
-    existingContracts.map(({ basename }) => basename)
+    existingContracts.map(({ basename }) => basename),
   );
 
   const worldgenBaseDirectory = path.join(outputBaseDirectory, config.worldgenDirectory);

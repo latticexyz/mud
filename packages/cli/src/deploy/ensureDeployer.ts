@@ -12,7 +12,7 @@ export async function ensureDeployer(client: Client<Transport, Chain | undefined
     debug("found CREATE2 deployer at", deployer);
     if (bytecode !== deployerBytecode) {
       console.warn(
-        `\n  ⚠️ Bytecode for deployer at ${deployer} did not match the expected CREATE2 bytecode. You may have unexpected results.\n`
+        `\n  ⚠️ Bytecode for deployer at ${deployer} did not match the expected CREATE2 bytecode. You may have unexpected results.\n`,
       );
     }
     return deployer;
@@ -48,7 +48,7 @@ export async function ensureDeployer(client: Client<Transport, Chain | undefined
       if (String(error).includes("only replay-protected (EIP-155) transactions allowed over RPC")) {
         console.warn(
           // eslint-disable-next-line max-len
-          `\n  ⚠️ Your chain or RPC does not allow for non EIP-155 signed transactions, so your deploys will not be determinstic and contract addresses may change between deploys.\n\n  We recommend running your chain's node with \`--rpc.allow-unprotected-txs\` to enable determinstic deployments.\n`
+          `\n  ⚠️ Your chain or RPC does not allow for non EIP-155 signed transactions, so your deploys will not be determinstic and contract addresses may change between deploys.\n\n  We recommend running your chain's node with \`--rpc.allow-unprotected-txs\` to enable determinstic deployments.\n`,
         );
         debug("deploying CREATE2 deployer");
         return sendTransaction(client, {
@@ -57,7 +57,7 @@ export async function ensureDeployer(client: Client<Transport, Chain | undefined
         });
       }
       throw error;
-    }
+    },
   );
 
   const deployReceipt = await waitForTransactionReceipt(client, { hash: deployTx });
@@ -67,7 +67,7 @@ export async function ensureDeployer(client: Client<Transport, Chain | undefined
 
   if (deployReceipt.contractAddress !== deployer) {
     console.warn(
-      `\n  ⚠️ CREATE2 deployer created at ${deployReceipt.contractAddress} does not match the CREATE2 determinstic deployer we expected (${deployer})`
+      `\n  ⚠️ CREATE2 deployer created at ${deployReceipt.contractAddress} does not match the CREATE2 determinstic deployer we expected (${deployer})`,
     );
   }
 
