@@ -62,10 +62,10 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
             JSON.stringify({
               address: getAddress(log.address),
               ...hexToResource(log.args.tableId),
-            })
-          )
-        )
-      ).map((json) => JSON.parse(json))
+            }),
+          ),
+        ),
+      ).map((json) => JSON.parse(json)),
     );
 
     await database.transaction(async (tx) => {
@@ -76,21 +76,21 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
             and(
               eq(mudStoreTables.address, address),
               eq(mudStoreTables.namespace, namespace),
-              eq(mudStoreTables.name, name)
-            )
+              eq(mudStoreTables.name, name),
+            ),
           )
           .run();
       }
 
       for (const log of logs) {
         const table = tables.find(
-          (table) => table.address === getAddress(log.address) && table.tableId === log.args.tableId
+          (table) => table.address === getAddress(log.address) && table.tableId === log.args.tableId,
         );
         if (!table) {
           const tableId = hexToResource(log.args.tableId);
           debug(
             `table ${resourceToLabel({ namespace: tableId.namespace, name: tableId.name })} not found, skipping log`,
-            log
+            log,
           );
           continue;
         }

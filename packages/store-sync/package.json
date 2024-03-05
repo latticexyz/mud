@@ -84,6 +84,8 @@
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/sql.js": "^1.4.4",
+    "@viem/anvil": "^0.0.7",
+    "mock-game-contracts": "workspace:*",
     "tsup": "^6.7.0",
     "vitest": "0.34.6"
   },

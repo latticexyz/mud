@@ -22,7 +22,7 @@ export function createObjectPool(scene: Phaser.Scene) {
 
   function get<Type extends keyof GameObjectTypes | "Existing">(
     entity: number | string,
-    type: Type
+    type: Type,
   ): ObjectPoolReturnType<typeof type> {
     if (typeof entity === "number") entity = String(entity);
     let embodiedEntity = objects.get(entity);

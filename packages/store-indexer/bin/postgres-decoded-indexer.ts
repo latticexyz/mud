@@ -22,8 +22,8 @@ const env = parseEnv(
       HEALTHCHECK_HOST: z.string().optional(),
       HEALTHCHECK_PORT: z.coerce.number().optional(),
       SENTRY_DSN: z.string().optional(),
-    })
-  )
+    }),
+  ),
 );
 
 const transports: Transport[] = [
@@ -81,9 +81,10 @@ let isCaughtUp = false;
 combineLatest([latestBlockNumber$, storedBlockLogs$])
   .pipe(
     filter(
-      ([latestBlockNumber, { blockNumber: lastBlockNumberProcessed }]) => latestBlockNumber === lastBlockNumberProcessed
+      ([latestBlockNumber, { blockNumber: lastBlockNumberProcessed }]) =>
+        latestBlockNumber === lastBlockNumberProcessed,
     ),
-    first()
+    first(),
   )
   .subscribe(() => {
     isCaughtUp = true;
@@ -104,12 +105,12 @@ if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
   server.use(
     healthcheck({
       isReady: () => isCaughtUp,
-    })
+    }),
   );
   server.use(helloWorld());
 
   server.listen({ host: env.HEALTHCHECK_HOST, port: env.HEALTHCHECK_PORT });
   console.log(
-    `postgres indexer healthcheck server listening on http://${env.HEALTHCHECK_HOST}:${env.HEALTHCHECK_PORT}`
+    `postgres indexer healthcheck server listening on http://${env.HEALTHCHECK_HOST}:${env.HEALTHCHECK_PORT}`,
   );
 }

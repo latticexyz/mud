@@ -26,8 +26,8 @@ const env = parseEnv(
     z.object({
       SQLITE_FILENAME: z.string().default("indexer.db"),
       SENTRY_DSN: z.string().optional(),
-    })
-  )
+    }),
+  ),
 );
 
 const transports: Transport[] = [
@@ -60,7 +60,7 @@ try {
         currentChainState.schemaVersion,
         "to",
         schemaVersion,
-        "recreating database"
+        "recreating database",
       );
       fs.truncateSync(env.SQLITE_FILENAME);
     } else if (currentChainState.lastUpdatedBlockNumber != null) {
@@ -85,9 +85,10 @@ let isCaughtUp = false;
 combineLatest([latestBlockNumber$, storedBlockLogs$])
   .pipe(
     filter(
-      ([latestBlockNumber, { blockNumber: lastBlockNumberProcessed }]) => latestBlockNumber === lastBlockNumberProcessed
+      ([latestBlockNumber, { blockNumber: lastBlockNumberProcessed }]) =>
+        latestBlockNumber === lastBlockNumberProcessed,
     ),
-    first()
+    first(),
   )
   .subscribe(() => {
     isCaughtUp = true;
@@ -104,7 +105,7 @@ server.use(cors());
 server.use(
   healthcheck({
     isReady: () => isCaughtUp,
-  })
+  }),
 );
 server.use(helloWorld());
 server.use(apiRoutes(database));
@@ -116,7 +117,7 @@ server.use(
     createContext: async () => ({
       queryAdapter: await createQueryAdapter(database),
     }),
-  })
+  }),
 );
 
 server.listen({ host: env.HOST, port: env.PORT });

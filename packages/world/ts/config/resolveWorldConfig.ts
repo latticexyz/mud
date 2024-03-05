@@ -28,7 +28,7 @@ export function resolveWorldConfig(config: StoreConfig & WorldConfig, existingCo
 
   // Combine the default and overridden system names and filter out excluded systems
   const systemNames = [...new Set([...defaultSystemNames, ...overriddenSystemNames])].filter(
-    (name) => !config.excludeSystems.includes(name)
+    (name) => !config.excludeSystems.includes(name),
   );
 
   // Resolve the config

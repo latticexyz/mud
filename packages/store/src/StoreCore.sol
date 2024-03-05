@@ -17,6 +17,7 @@ import { Hook, HookLib } from "./Hook.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
 import { ResourceId } from "./ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.sol";
+import { IStoreEvents } from "./IStoreEvents.sol";
 
 /**
  * @title StoreCore Library
@@ -24,61 +25,6 @@ import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.so
  * @notice This library includes implementations for all IStore methods and events related to the store actions.
  */
 library StoreCore {
-  /**
-   * @notice Emitted when a new record is set in the store.
-   * @param tableId The ID of the table where the record is set.
-   * @param keyTuple An array representing the composite key for the record.
-   * @param staticData The static data of the record.
-   * @param encodedLengths The encoded lengths of the dynamic data of the record.
-   * @param dynamicData The dynamic data of the record.
-   */
-  event Store_SetRecord(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    bytes staticData,
-    PackedCounter encodedLengths,
-    bytes dynamicData
-  );
-
-  /**
-   * @notice Emitted when static data in the store is spliced.
-   * @dev In static data, data is always overwritten starting at the start position,
-   * so the total length of the data remains the same and no data is shifted.
-   * @param tableId The ID of the table where the data is spliced.
-   * @param keyTuple An array representing the key for the record.
-   * @param start The start position in bytes for the splice operation.
-   * @param data The data to write to the static data of the record at the start byte.
-   */
-  event Store_SpliceStaticData(ResourceId indexed tableId, bytes32[] keyTuple, uint48 start, bytes data);
-
-  /**
-   * @notice Emitted when dynamic data in the store is spliced.
-   * @param tableId The ID of the table where the data is spliced.
-   * @param keyTuple An array representing the composite key for the record.
-   * @param dynamicFieldIndex The index of the dynamic field to splice data, relative to the start of the dynamic fields.
-   * (Dynamic field index = field index - number of static fields)
-   * @param start The start position in bytes for the splice operation.
-   * @param deleteCount The number of bytes to delete in the splice operation.
-   * @param encodedLengths The encoded lengths of the dynamic data of the record.
-   * @param data The data to insert into the dynamic data of the record at the start byte.
-   */
-  event Store_SpliceDynamicData(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    uint8 dynamicFieldIndex,
-    uint48 start,
-    uint40 deleteCount,
-    PackedCounter encodedLengths,
-    bytes data
-  );
-
-  /**
-   * @notice Emitted when a record is deleted from the store.
-   * @param tableId The ID of the table where the record is deleted.
-   * @param keyTuple An array representing the composite key for the record.
-   */
-  event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
-
   /**
    * @notice Initialize the store address in StoreSwitch.
    * @dev Consumers must call this function in their constructor.
@@ -363,7 +309,7 @@ library StoreCore {
     // Early return if the table is an offchain table
     if (tableId.getType() == RESOURCE_OFFCHAIN_TABLE) {
       // Emit event to notify indexers
-      emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
+      emit IStoreEvents.Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
       return;
     }
 
@@ -384,7 +330,7 @@ library StoreCore {
     }
 
     // Emit event to notify indexers
-    emit Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
+    emit IStoreEvents.Store_SetRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
 
     // Store the static data at the static data location
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
@@ -454,7 +400,7 @@ library StoreCore {
     // Early return if the table is an offchain table
     if (tableId.getType() == RESOURCE_OFFCHAIN_TABLE) {
       // Emit event to notify offchain indexers
-      emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
+      emit IStoreEvents.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
       return;
     }
 
@@ -475,7 +421,7 @@ library StoreCore {
     }
 
     // Emit event to notify offchain indexers
-    emit StoreCore.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
+    emit IStoreEvents.Store_SpliceStaticData({ tableId: tableId, keyTuple: keyTuple, start: start, data: data });
 
     // Store the provided value in storage
     Storage.store({ storagePointer: location, offset: start, data: data });
@@ -652,7 +598,7 @@ library StoreCore {
     // Early return if the table is an offchain table
     if (tableId.getType() == RESOURCE_OFFCHAIN_TABLE) {
       // Emit event to notify indexers
-      emit Store_DeleteRecord(tableId, keyTuple);
+      emit IStoreEvents.Store_DeleteRecord(tableId, keyTuple);
       return;
     }
 
@@ -666,7 +612,7 @@ library StoreCore {
     }
 
     // Emit event to notify indexers
-    emit Store_DeleteRecord(tableId, keyTuple);
+    emit IStoreEvents.Store_DeleteRecord(tableId, keyTuple);
 
     // Delete static data
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
@@ -1090,7 +1036,7 @@ library StoreCoreInternal {
       }
 
       // Emit event to notify offchain indexers
-      emit StoreCore.Store_SpliceDynamicData({
+      emit IStoreEvents.Store_SpliceDynamicData({
         tableId: tableId,
         keyTuple: keyTuple,
         dynamicFieldIndex: dynamicFieldIndex,

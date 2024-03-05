@@ -83,6 +83,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
             ...opts,
             configPath,
             rpc,
+            rpcBatch: false,
             skipBuild: false,
             printConfig: false,
             profile: undefined,
@@ -106,7 +107,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
           console.log(chalk.gray("\nWaiting for file changes…\n"));
         }
       }),
-      filter(isDefined)
+      filter(isDefined),
     );
 
     deploys$.subscribe();

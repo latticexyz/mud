@@ -30,7 +30,7 @@ export function createSystemCalls(
    *   (https://github.com/latticexyz/mud/blob/main/templates/threejs/packages/client/src/mud/setupNetwork.ts#L75-L81).
    */
   { worldContract, waitForTransaction, playerEntity }: SetupNetworkResult,
-  { Position }: ClientComponents
+  { Position }: ClientComponents,
 ) {
   const moveTo = async (x: number, y: number, z: number) => {
     /*

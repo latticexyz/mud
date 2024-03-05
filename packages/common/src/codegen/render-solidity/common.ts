@@ -94,7 +94,7 @@ export function renderImports(imports: ImportDatum[]): string {
           path: solidityRelativeImportPath(importDatum.fromPath, importDatum.usedInPath),
         };
       }
-    })
+    }),
   );
 }
 
@@ -107,7 +107,7 @@ export function renderRelativeImports(imports: RelativeImportDatum[]): string {
     imports.map(({ symbol, fromPath, usedInPath }) => ({
       symbol,
       path: solidityRelativeImportPath(fromPath, usedInPath),
-    }))
+    })),
   );
 }
 
@@ -154,7 +154,7 @@ interface RenderWithStoreCallbackData {
  */
 export function renderWithStore(
   storeArgument: boolean,
-  callback: (data: RenderWithStoreCallbackData) => string
+  callback: (data: RenderWithStoreCallbackData) => string,
 ): string {
   let result = "";
   result += callback({ _typedStore: undefined, _store: "StoreSwitch", _commentSuffix: "", _methodNamePrefix: "" });
@@ -190,7 +190,7 @@ export function renderWithStore(
 export function renderWithFieldSuffix(
   withSuffixlessFieldMethods: boolean,
   fieldName: string,
-  callback: (_methodNameSuffix: string) => string
+  callback: (_methodNameSuffix: string) => string,
 ): string {
   const methodNameSuffix = `${fieldName[0].toUpperCase()}${fieldName.slice(1)}`;
   let result = "";
@@ -214,7 +214,7 @@ export function renderTableId({
 }: Pick<StaticResourceData, "namespace" | "name" | "offchainOnly">): string {
   return `
     // Hex below is the result of \`WorldResourceIdLib.encode({ namespace: ${JSON.stringify(
-      namespace
+      namespace,
     )}, name: ${JSON.stringify(name)}, typeId: ${offchainOnly ? "RESOURCE_OFFCHAIN_TABLE" : "RESOURCE_TABLE"} });\`
     ResourceId constant _tableId = ResourceId.wrap(${resourceToHex({
       type: offchainOnly ? "offchainTable" : "table",
@@ -231,7 +231,7 @@ export function renderTableId({
  */
 export function renderValueTypeToBytes32(
   name: string,
-  { typeUnwrap, internalTypeId }: Pick<RenderType, "typeUnwrap" | "internalTypeId">
+  { typeUnwrap, internalTypeId }: Pick<RenderType, "typeUnwrap" | "internalTypeId">,
 ): string {
   const innerText = typeUnwrap.length ? `${typeUnwrap}(${name})` : name;
 
@@ -276,7 +276,7 @@ export function getLeftPaddingBits(field: Pick<RenderType, "internalTypeId" | "s
 function internalRenderList<T>(
   lineTerminator: string,
   list: T[],
-  renderItem: (item: T, index: number) => string
+  renderItem: (item: T, index: number) => string,
 ): string {
   return list
     .map((item, index) => renderItem(item, index) + (index === list.length - 1 ? "" : lineTerminator))

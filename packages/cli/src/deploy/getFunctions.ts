@@ -51,7 +51,7 @@ export async function getFunctions({
         systemFunctionSignature,
         systemFunctionSelector,
       };
-    })
+    }),
   );
 
   return functions;

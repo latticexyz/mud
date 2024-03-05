@@ -18,8 +18,8 @@ export function tablesWithRecordsToLogs(tables: readonly TableWithRecords[]): St
             keyTuple: encodeKey(table.keySchema, record.key),
             ...encodeValueArgs(table.valueSchema, record.value),
           },
-        })
-      )
+        }),
+      ),
     ),
   ];
 }
