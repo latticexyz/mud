@@ -22,14 +22,14 @@ describe("sync BattleResult table`", () => {
 
     expect(Array.from(getComponentEntities(components.BattleResult))).toMatchInlineSnapshot(`
       [
-        "0x0000000000000000000000000000000000000000000000000000000000000001",
+        "0x94a20d7cecba2a0266a9f899622dd00d801b15bd7640739b3f708d7429cd4506",
       ]
     `);
 
     expect(
       getComponentValue(
         components.BattleResult,
-        "0x0000000000000000000000000000000000000000000000000000000000000001" as Entity,
+        "0x94a20d7cecba2a0266a9f899622dd00d801b15bd7640739b3f708d7429cd4506" as Entity,
       )?.aggressorAllies,
     ).toMatchInlineSnapshot(`
     [
@@ -47,7 +47,7 @@ describe("sync BattleResult table`", () => {
     expect(
       getComponentValue(
         components.BattleResult,
-        "0x0000000000000000000000000000000000000000000000000000000000000001" as Entity,
+        "0x94a20d7cecba2a0266a9f899622dd00d801b15bd7640739b3f708d7429cd4506" as Entity,
       )?.targetAllies,
     ).toMatchInlineSnapshot(`
     [
