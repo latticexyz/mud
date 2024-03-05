@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { WalletClient, Transport, Chain, Account } from "viem";
 import { BurnerProvider, type Burner } from "./BurnerContext";
 import { useNetwork } from "../NetworkContext";
-import { ExternalConnectorPanel } from "./ExternalConnectorPanel";
+import { ExternalConnector } from "./ExternalConnector";
 import { isDelegated, delegateToBurner } from "./delegation";
 import { createBurner } from "./createBurner";
 import { delegatedActions } from "./delegatedActions";
@@ -26,7 +26,7 @@ export function WalletAdapterExternal(props: { children: ReactNode }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <ExternalConnectorPanel />
+        <ExternalConnector />
         <Connection>{props.children}</Connection>
       </QueryClientProvider>
     </WagmiProvider>
@@ -38,7 +38,7 @@ function Connection(props: { children: ReactNode }) {
   const { data: externalWalletClient } = useWalletClient();
   const { chainId } = useAccount();
 
-  if (externalWalletClient && network.publicClient.chain.id === chainId) {
+  if (externalWalletClient && chainId === network.publicClient.chain.id) {
     return <Delegation externalWalletClient={externalWalletClient}>{props.children}</Delegation>;
   }
 
@@ -59,9 +59,9 @@ function Delegation(props: { externalWalletClient: WalletClient<Transport, Chain
 
   if (delegation && isDelegated(delegation.delegationControlId)) {
     return (
-      <BurnerExtension externalWalletClient={props.externalWalletClient} burner={burner}>
+      <Content externalWalletClient={props.externalWalletClient} burner={burner}>
         {props.children}
-      </BurnerExtension>
+      </Content>
     );
   }
 
@@ -75,7 +75,7 @@ function Delegation(props: { externalWalletClient: WalletClient<Transport, Chain
   );
 }
 
-function BurnerExtension(props: {
+function Content(props: {
   externalWalletClient: WalletClient<Transport, Chain, Account>;
   burner: Burner;
   children: ReactNode;
