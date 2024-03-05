@@ -6,7 +6,7 @@ import mudConfig from "../../../../e2e/packages/contracts/mud.config";
 import worldRpcLogs from "../../../../test-data/world-logs-battle.json";
 import { resolveConfig } from "@latticexyz/store";
 import { logsToBlocks } from "../../test/logsToBlocks";
-import { SNAPSHOT } from "./battleResultParse.test";
+import { SNAPSHOT } from "./snapshot";
 
 const config = resolveConfig(mudConfig);
 
