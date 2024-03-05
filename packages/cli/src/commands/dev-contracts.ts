@@ -83,6 +83,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
             ...opts,
             configPath,
             rpc,
+            rpcBatch: false,
             skipBuild: false,
             printConfig: false,
             profile: undefined,
