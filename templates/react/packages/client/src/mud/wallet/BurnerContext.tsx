@@ -1,9 +1,5 @@
 import { createContext, useContext, type ReactNode } from "react";
-import type { WalletClient, Transport, Chain, Account } from "viem";
-import { type Observable } from "rxjs";
-import { type ContractWrite } from "@latticexyz/common";
-
-export type Burner = { walletClient: WalletClient<Transport, Chain, Account>; write$: Observable<ContractWrite> };
+import { type Burner } from "./createBurner";
 
 export const BurnerContext = createContext<Burner | null>(null);
 

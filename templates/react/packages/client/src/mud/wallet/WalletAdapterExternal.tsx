@@ -2,11 +2,11 @@ import { useMemo, type ReactNode } from "react";
 import { WagmiProvider, createConfig, useAccount, useWalletClient } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { WalletClient, Transport, Chain, Account } from "viem";
-import { BurnerProvider, type Burner } from "./BurnerContext";
+import { BurnerProvider } from "./BurnerContext";
 import { useNetwork } from "../NetworkContext";
 import { ExternalConnector } from "./ExternalConnector";
 import { isDelegated, delegateToBurner } from "./delegation";
-import { createBurner } from "./createBurner";
+import { createBurner, type Burner } from "./createBurner";
 import { delegatedActions } from "./delegatedActions";
 
 export function WalletAdapterExternal(props: { children: ReactNode }) {
@@ -48,7 +48,7 @@ function Connection(props: { children: ReactNode }) {
 function Delegation(props: { externalWalletClient: WalletClient<Transport, Chain, Account>; children: ReactNode }) {
   const network = useNetwork();
 
-  const burner = useMemo(() => createBurner(network.publicClient.chain), [network.publicClient.chain]);
+  const burner = useMemo(() => createBurner(network), [network]);
 
   const delegation = network.useStore((state) =>
     state.getValue(network.tables.UserDelegationControl, {
