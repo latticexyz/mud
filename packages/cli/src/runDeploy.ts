@@ -24,7 +24,7 @@ export const deployOptions = {
   rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
   rpcBatch: {
     type: "boolean",
-    desc: "Enable batch processing of RPC requests",
+    desc: "Enable batch processing of RPC requests in viem client (defaults to batch size of 100 and wait of 1s)",
   },
   deployerAddress: {
     type: "string",
@@ -90,10 +90,12 @@ in your contracts directory to use the default anvil private key.`,
 
   const client = createWalletClient({
     transport: http(rpc, {
-      batch: opts.rpcBatch && {
-        batchSize: 100,
-        wait: 1000,
-      },
+      batch: opts.rpcBatch
+        ? {
+            batchSize: 100,
+            wait: 1000,
+          }
+        : undefined,
     }),
     account: privateKeyToAccount(privateKey),
   });
