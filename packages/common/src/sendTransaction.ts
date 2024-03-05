@@ -52,17 +52,15 @@ export async function sendTransaction<
       account,
     } as CallParameters<TChain>);
 
-    // TODO: estimate gas
-
     return request;
   }
-
-  const preparedRequest = await prepare();
 
   return await nonceManager.mempoolQueue.add(
     () =>
       pRetry(
         async () => {
+          const preparedRequest = await prepare();
+
           if (!nonceManager.hasNonce()) {
             await nonceManager.resetNonce();
           }
