@@ -11,11 +11,6 @@ This contract is designed to extract trusted context values (like msg.sender and
 from the appended calldata. It provides mechanisms similar to EIP-2771 (https://eips.ethereum.org/EIPS/eip-2771),
 but allowing any contract to be the trusted forwarder.
 
-_World Context Consumer Interface
-This interface defines the functions a contract needs to consume the world context.
-It includes helper functions to retrieve the message sender, value, and world address.
-Additionally, it integrates with the ERC-165 standard for interface detection._
-
 _This contract should only be used for contracts without their own storage, like Systems._
 
 ### Functions

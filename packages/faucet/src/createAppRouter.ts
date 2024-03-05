@@ -19,7 +19,7 @@ export function createAppRouter() {
       .input(
         z.object({
           address: z.string().refine(isHex),
-        })
+        }),
       )
       .mutation(async (opts): Promise<Hex> => {
         const { client, faucetAccount, dripAmount } = opts.ctx;

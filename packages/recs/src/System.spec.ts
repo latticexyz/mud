@@ -100,13 +100,13 @@ describe("System", () => {
 
       expect(mock).toHaveBeenCalledTimes(1);
       expect(mock).toHaveBeenCalledWith(
-        expect.objectContaining({ entity: entity1, component: CanMove, value: [{ value: true }, undefined] })
+        expect.objectContaining({ entity: entity1, component: CanMove, value: [{ value: true }, undefined] }),
       );
 
       const entity2 = createEntity(world, [withValue(CanMove, { value: true })]);
       expect(mock).toHaveBeenCalledTimes(2);
       expect(mock).toHaveBeenCalledWith(
-        expect.objectContaining({ entity: entity2, component: CanMove, value: [{ value: true }, undefined] })
+        expect.objectContaining({ entity: entity2, component: CanMove, value: [{ value: true }, undefined] }),
       );
     });
 
@@ -126,13 +126,13 @@ describe("System", () => {
 
       expect(mock).toHaveBeenCalledTimes(1);
       expect(mock).toHaveBeenCalledWith(
-        expect.objectContaining({ entity: entity1, component: CanMove, value: [undefined, { value: true }] })
+        expect.objectContaining({ entity: entity1, component: CanMove, value: [undefined, { value: true }] }),
       );
 
       removeComponent(CanMove, entity2);
       expect(mock).toHaveBeenCalledTimes(2);
       expect(mock).toHaveBeenCalledWith(
-        expect.objectContaining({ entity: entity2, component: CanMove, value: [undefined, { value: true }] })
+        expect.objectContaining({ entity: entity2, component: CanMove, value: [undefined, { value: true }] }),
       );
     });
   });

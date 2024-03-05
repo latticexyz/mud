@@ -6,6 +6,10 @@ import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
 import { ResourceId } from "./ResourceId.sol";
 
+/**
+ * @title IStoreRead
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ */
 interface IStoreRead {
   function getFieldLayout(ResourceId tableId) external view returns (FieldLayout fieldLayout);
 

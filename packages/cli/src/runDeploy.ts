@@ -68,8 +68,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const rpc = opts.rpc ?? (await getRpcUrl(profile));
   console.log(
     chalk.bgBlue(
-      chalk.whiteBright(`\n Deploying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`)
-    )
+      chalk.whiteBright(`\n Deploying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`),
+    ),
   );
 
   // Run build
@@ -82,7 +82,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     throw new MUDError(
       `Missing PRIVATE_KEY environment variable.
 Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
-in your contracts directory to use the default anvil private key.`
+in your contracts directory to use the default anvil private key.`,
     );
   }
 
@@ -135,7 +135,7 @@ in your contracts directory to use the default anvil private key.`
     writeFileSync(config.worldsFile, JSON.stringify(deploys, null, 2));
 
     console.log(
-      chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${config.worldsFile} and ${deploysDir}): \n`))
+      chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${config.worldsFile} and ${deploysDir}): \n`)),
     );
   }
 

@@ -14,7 +14,7 @@ describe("tableToLog", () => {
         name: storeTables.Tables.name,
         keySchema: flattenSchema(storeTables.Tables.keySchema),
         valueSchema: flattenSchema(storeTables.Tables.valueSchema),
-      })
+      }),
     ).toMatchInlineSnapshot(`
       {
         "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",

@@ -12,8 +12,6 @@ export interface RelativeImportDatum {
 export type ImportDatum = AbsoluteImportDatum | RelativeImportDatum;
 
 export interface StaticResourceData {
-  /** Name of the table id constant to render. */
-  tableIdName: string;
   /** Table namespace string */
   namespace: string;
   /** Table name string */

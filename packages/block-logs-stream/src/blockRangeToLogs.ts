@@ -65,12 +65,12 @@ export function blockRangeToLogs<TAbiEvents extends readonly AbiEvent[]>({
           fromBlock,
           toBlock,
           maxBlockRange,
-        })
+        }),
       ).pipe(
         tap(({ toBlock }) => {
           fromBlock = toBlock + 1n;
-        })
+        }),
       );
-    })
+    }),
   );
 }

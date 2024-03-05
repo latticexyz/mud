@@ -73,7 +73,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
           (filter) =>
             filter.tableId === log.args.tableId &&
             (filter.key0 == null || filter.key0 === log.args.keyTuple[0]) &&
-            (filter.key1 == null || filter.key1 === log.args.keyTuple[1])
+            (filter.key1 == null || filter.key1 === log.args.keyTuple[1]),
         )
     : undefined;
 
@@ -120,7 +120,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
       return of(undefined);
     }),
-    shareReplay(1)
+    shareReplay(1),
   );
 
   const storedInitialBlockLogs$ = initialBlockLogs$.pipe(
@@ -168,13 +168,13 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
       return { blockNumber, logs };
     }),
-    shareReplay(1)
+    shareReplay(1),
   );
 
   const startBlock$ = initialBlockLogs$.pipe(
     map((block) => bigIntMax(block?.blockNumber ?? 0n, initialStartBlock)),
     // TODO: if start block is still 0, find via deploy event
-    tap((startBlock) => debug("starting sync from block", startBlock))
+    tap((startBlock) => debug("starting sync from block", startBlock)),
   );
 
   const latestBlock$ = createBlockStream({ publicClient, blockTag: followBlockTag }).pipe(shareReplay(1));
@@ -183,7 +183,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     tap((blockNumber) => {
       debug("on block number", blockNumber, "for", followBlockTag, "block tag");
     }),
-    shareReplay(1)
+    shareReplay(1),
   );
 
   let startBlock: bigint | null = null;
@@ -238,7 +238,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         }
       }
     }),
-    share()
+    share(),
   );
 
   const storedBlockLogs$ = concat(storedInitialBlockLogs$, storedBlock$).pipe(share());
@@ -249,10 +249,10 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   const recentBlocks$ = storedBlockLogs$.pipe(
     scan<StorageAdapterBlock, StorageAdapterBlock[]>(
       (recentBlocks, block) => [block, ...recentBlocks].slice(0, recentBlocksWindow),
-      []
+      [],
     ),
     filter((recentBlocks) => recentBlocks.length > 0),
-    shareReplay(1)
+    shareReplay(1),
   );
 
   // TODO: move to its own file so we can test it, have its own debug instance, etc.
@@ -278,7 +278,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
           throw error;
         }
       }),
-      tap((result) => debug("has tx?", tx, result))
+      tap((result) => debug("has tx?", tx, result)),
     );
 
     await firstValueFrom(hasTransaction$.pipe(filter(identity)));

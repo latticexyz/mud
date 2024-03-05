@@ -5,6 +5,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 /**
  * @title System Call Data Structure
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice Holds data for making system calls.
  * @dev Used to represent a call to a specific system identified by a ResourceId.
  */
@@ -17,6 +18,7 @@ struct SystemCallData {
 
 /**
  * @title System Call From Data Structure
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice Holds data for making system calls with a specific sender.
  * @dev Used to represent a call from a specific address to a specific system.
  */

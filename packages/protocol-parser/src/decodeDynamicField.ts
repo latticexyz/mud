@@ -14,7 +14,7 @@ import { InvalidHexLengthError, InvalidHexLengthForArrayFieldError } from "./err
 
 export function decodeDynamicField<
   TAbiType extends DynamicAbiType,
-  TPrimitiveType extends DynamicAbiTypeToPrimitiveType<TAbiType>
+  TPrimitiveType extends DynamicAbiTypeToPrimitiveType<TAbiType>,
 >(abiType: TAbiType, data: Hex): TPrimitiveType {
   if (abiType === "bytes") {
     return data as TPrimitiveType;

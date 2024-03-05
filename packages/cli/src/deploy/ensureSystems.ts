@@ -32,8 +32,8 @@ export async function ensureSystems({
     worldSystems.some(
       (worldSystem) =>
         worldSystem.systemId === system.systemId &&
-        getAddress(worldSystem.address) === getAddress(system.getAddress(deployerAddress))
-    )
+        getAddress(worldSystem.address) === getAddress(system.getAddress(deployerAddress)),
+    ),
   );
   if (existingSystems.length) {
     debug("existing systems", existingSystems.map(resourceToLabel).join(", "));
@@ -47,15 +47,15 @@ export async function ensureSystems({
     worldSystems.some(
       (worldSystem) =>
         worldSystem.systemId === system.systemId &&
-        getAddress(worldSystem.address) !== getAddress(system.getAddress(deployerAddress))
-    )
+        getAddress(worldSystem.address) !== getAddress(system.getAddress(deployerAddress)),
+    ),
   );
   if (systemsToUpgrade.length) {
     debug("upgrading systems", systemsToUpgrade.map(resourceToLabel).join(", "));
   }
 
   const systemsToAdd = missingSystems.filter(
-    (system) => !worldSystems.some((worldSystem) => worldSystem.systemId === system.systemId)
+    (system) => !worldSystems.some((worldSystem) => worldSystem.systemId === system.systemId),
   );
   if (systemsToAdd.length) {
     debug("registering new systems", systemsToAdd.map(resourceToLabel).join(", "));
@@ -90,9 +90,9 @@ export async function ensureSystems({
             debug(`failed to register system ${resourceToLabel(system)}, retrying in ${delay}ms...`);
             await wait(delay);
           },
-        }
-      )
-    )
+        },
+      ),
+    ),
   );
 
   // Adjust system access
@@ -101,7 +101,7 @@ export async function ensureSystems({
   const currentAccess = worldAccess.filter(({ resourceId }) => systemIds.includes(resourceId));
   const desiredAccess = [
     ...systems.flatMap((system) =>
-      system.allowedAddresses.map((address) => ({ resourceId: system.systemId, address }))
+      system.allowedAddresses.map((address) => ({ resourceId: system.systemId, address })),
     ),
     ...systems.flatMap((system) =>
       system.allowedSystemIds
@@ -111,7 +111,7 @@ export async function ensureSystems({
             worldSystems.find((s) => s.systemId === systemId)?.address ??
             systems.find((s) => s.systemId === systemId)?.getAddress(deployerAddress),
         }))
-        .filter((access): access is typeof access & { address: Address } => access.address != null)
+        .filter((access): access is typeof access & { address: Address } => access.address != null),
     ),
   ];
 
@@ -119,16 +119,16 @@ export async function ensureSystems({
     (access) =>
       !currentAccess.some(
         ({ resourceId, address }) =>
-          resourceId === access.resourceId && getAddress(address) === getAddress(access.address)
-      )
+          resourceId === access.resourceId && getAddress(address) === getAddress(access.address),
+      ),
   );
 
   const accessToRemove = currentAccess.filter(
     (access) =>
       !desiredAccess.some(
         ({ resourceId, address }) =>
-          resourceId === access.resourceId && getAddress(address) === getAddress(access.address)
-      )
+          resourceId === access.resourceId && getAddress(address) === getAddress(access.address),
+      ),
   );
 
   if (accessToRemove.length) {
@@ -156,8 +156,8 @@ export async function ensureSystems({
             debug(`failed to revoke access, retrying in ${delay}ms...`);
             await wait(delay);
           },
-        }
-      )
+        },
+      ),
     ),
     ...accessToAdd.map((access) =>
       pRetry(
@@ -176,8 +176,8 @@ export async function ensureSystems({
             debug(`failed to grant access, retrying in ${delay}ms...`);
             await wait(delay);
           },
-        }
-      )
+        },
+      ),
     ),
   ]);
 
