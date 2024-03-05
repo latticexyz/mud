@@ -1,5 +1,193 @@
 {
+    "ts/config/v2/store.test.ts": [
+        {
+            "location": {
+                "start": {
+                    "line": 37,
+                    "char": 5
+                },
+                "end": {
+                    "line": 37,
+                    "char": 36
+                }
+            },
+            "args": [
+                {
+                    "type": "{ tables: { Name: resolveTableFullConfig<TableFullConfigInput<{ key: \"bytes32\"; value: \"address\"; }, UserTypes, [\"key\"]>, UserTypes>; }; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ readonly tables: { readonly Name: { readonly schema: { readonly key: { readonly type: \"bytes32\"; readonly internalType: \"bytes32\"; }; readonly value: { readonly type: \"address\"; readonly internalType: \"address\"; }; }; readonly keySchema: { ...; }; readonly valueSchema: { ...; }; readonly keys: readonly [...]; }; }...",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 79,
+                    "char": 5
+                },
+                "end": {
+                    "line": 79,
+                    "char": 36
+                }
+            },
+            "args": [
+                {
+                    "type": "{ tables: { Example: resolveTableFullConfig<TableFullConfigInput<{ key: \"address\"; name: \"string\"; age: \"uint256\"; }, UserTypes, [\"key\"]>, UserTypes>; }; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ readonly tables: { readonly Example: { readonly schema: { readonly key: { readonly type: \"address\"; readonly internalType: \"address\"; }; readonly name: { readonly type: \"string\"; readonly internalType: \"string\"; }; readonly age: { ...; }; }; readonly keySchema: { ...; }; readonly valueSchema: { ...; }; readonly ke...",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 113,
+                    "char": 5
+                },
+                "end": {
+                    "line": 113,
+                    "char": 19
+                }
+            },
+            "args": [
+                {
+                    "type": "{ tables: { Example: resolveTableFullConfig<{ schema: { key: \"address\"; name: \"string\"; age: \"uint256\"; }; keys: [string]; }, UserTypes>; }; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [],
+            "completions": {}
+        }
+    ],
     "ts/config/v2/table.test.ts": [
+        {
+            "location": {
+                "start": {
+                    "line": 7,
+                    "char": 5
+                },
+                "end": {
+                    "line": 7,
+                    "char": 82
+                }
+            },
+            "args": [
+                {
+                    "type": "{ readonly key: \"bytes32\"; readonly value: \"address\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ key: \"bytes32\"; value: \"address\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 11,
+                    "char": 5
+                },
+                "end": {
+                    "line": 11,
+                    "char": 114
+                }
+            },
+            "args": [
+                {
+                    "type": "{ readonly key: \"bytes32\"; readonly value: \"CustomType\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ key: \"bytes32\"; value: \"CustomType\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
         {
             "location": {
                 "start": {
@@ -8,7 +196,207 @@
                 },
                 "end": {
                     "line": 15,
-                    "char": 35
+                    "char": 109
+                }
+            },
+            "args": [
+                {
+                    "type": "{ readonly key: \"bytes32\"; readonly value: \"address\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ key: \"bytes32\"; value: \"address\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 19,
+                    "char": 5
+                },
+                "end": {
+                    "line": 22,
+                    "char": 16
+                }
+            },
+            "args": [
+                {
+                    "type": "{ readonly key: \"bytes32\"; readonly value: \"CustomType\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ key: \"bytes32\"; value: \"CustomType\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 26,
+                    "char": 5
+                },
+                "end": {
+                    "line": 29,
+                    "char": 16
+                }
+            },
+            "args": [
+                {
+                    "type": "{ readonly key: \"bytes32\"; readonly value: \"address\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ key: \"bytes32\"; value: \"address\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 33,
+                    "char": 5
+                },
+                "end": {
+                    "line": 36,
+                    "char": 16
+                }
+            },
+            "args": [
+                {
+                    "type": "{ readonly key: \"bytes32\"; readonly value: \"CustomType\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ key: \"bytes32\"; value: \"CustomType\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 40,
+                    "char": 5
+                },
+                "end": {
+                    "line": 48,
+                    "char": 70
+                }
+            },
+            "args": [
+                {
+                    "type": "{ readonly key: \"CustomType\"; readonly name: \"string\"; readonly age: \"uint256\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ key: \"CustomType\"; name: \"string\"; age: \"uint256\"; }",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 61,
+                    "char": 7
+                },
+                "end": {
+                    "line": 61,
+                    "char": 37
                 }
             },
             "args": [
@@ -43,12 +431,12 @@
         {
             "location": {
                 "start": {
-                    "line": 27,
-                    "char": 5
+                    "line": 73,
+                    "char": 7
                 },
                 "end": {
-                    "line": 27,
-                    "char": 35
+                    "line": 73,
+                    "char": 37
                 }
             },
             "args": [
@@ -83,17 +471,17 @@
         {
             "location": {
                 "start": {
-                    "line": 32,
-                    "char": 5
+                    "line": 78,
+                    "char": 7
                 },
                 "end": {
-                    "line": 32,
-                    "char": 56
+                    "line": 78,
+                    "char": 58
                 }
             },
             "args": [
                 {
-                    "type": "TableFullConfigInput<{ [key: string]: AbiType; }, UserTypes, [\"key\"]> | TableFullConfigInput<{ key: \"bytes32\"; value: \"address\"; }, UserTypes, [...]> | ... 5 more ... | TableFullConfigInput<...>",
+                    "type": "TableFullConfigInput<{ key: \"bytes32\"; value: \"address\"; }, UserTypes, [\"key\"]> | TableFullConfigInput<{ key: \"bytes32\"; value: \"string\"; }, UserTypes, [...]> | ... 5 more ... | TableFullConfigInput<...>",
                     "relationships": {
                         "args": [
                             "equality"
@@ -111,12 +499,12 @@
         {
             "location": {
                 "start": {
-                    "line": 39,
-                    "char": 5
+                    "line": 85,
+                    "char": 7
                 },
                 "end": {
-                    "line": 39,
-                    "char": 85
+                    "line": 85,
+                    "char": 87
                 }
             },
             "args": [
@@ -139,12 +527,12 @@
         {
             "location": {
                 "start": {
-                    "line": 54,
-                    "char": 5
+                    "line": 100,
+                    "char": 7
                 },
                 "end": {
-                    "line": 54,
-                    "char": 35
+                    "line": 100,
+                    "char": 37
                 }
             },
             "args": [
@@ -179,12 +567,12 @@
         {
             "location": {
                 "start": {
-                    "line": 59,
-                    "char": 5
+                    "line": 105,
+                    "char": 7
                 },
                 "end": {
-                    "line": 59,
-                    "char": 76
+                    "line": 105,
+                    "char": 78
                 }
             },
             "args": [
@@ -207,12 +595,12 @@
         {
             "location": {
                 "start": {
-                    "line": 66,
-                    "char": 5
+                    "line": 112,
+                    "char": 7
                 },
                 "end": {
-                    "line": 66,
-                    "char": 91
+                    "line": 112,
+                    "char": 93
                 }
             },
             "args": [
@@ -235,17 +623,17 @@
         {
             "location": {
                 "start": {
-                    "line": 73,
-                    "char": 5
+                    "line": 119,
+                    "char": 7
                 },
                 "end": {
-                    "line": 73,
-                    "char": 84
+                    "line": 119,
+                    "char": 86
                 }
             },
             "args": [
                 {
-                    "type": "TableFullConfigInput<{ [key: string]: AbiType; }, UserTypes, [\"key\"]> | TableFullConfigInput<{ key: \"bytes32\"; value: \"address\"; }, UserTypes, [...]> | ... 5 more ... | TableFullConfigInput<...>",
+                    "type": "TableFullConfigInput<{ key: \"bytes32\"; value: \"address\"; }, UserTypes, [\"key\"]> | TableFullConfigInput<{ key: \"bytes32\"; value: \"string\"; }, UserTypes, [...]> | ... 5 more ... | TableFullConfigInput<...>",
                     "relationships": {
                         "args": [
                             "equality"
@@ -263,12 +651,12 @@
         {
             "location": {
                 "start": {
-                    "line": 87,
-                    "char": 5
+                    "line": 133,
+                    "char": 7
                 },
                 "end": {
-                    "line": 87,
-                    "char": 35
+                    "line": 133,
+                    "char": 37
                 }
             },
             "args": [
@@ -303,12 +691,12 @@
         {
             "location": {
                 "start": {
-                    "line": 91,
-                    "char": 5
+                    "line": 137,
+                    "char": 7
                 },
                 "end": {
-                    "line": 94,
-                    "char": 6
+                    "line": 140,
+                    "char": 8
                 }
             },
             "args": [
@@ -335,12 +723,12 @@
         {
             "location": {
                 "start": {
-                    "line": 126,
-                    "char": 5
+                    "line": 172,
+                    "char": 7
                 },
                 "end": {
-                    "line": 126,
-                    "char": 35
+                    "line": 172,
+                    "char": 37
                 }
             },
             "args": [
@@ -375,12 +763,12 @@
         {
             "location": {
                 "start": {
-                    "line": 156,
-                    "char": 5
+                    "line": 202,
+                    "char": 7
                 },
                 "end": {
-                    "line": 156,
-                    "char": 35
+                    "line": 202,
+                    "char": 37
                 }
             },
             "args": [
@@ -415,12 +803,12 @@
         {
             "location": {
                 "start": {
-                    "line": 194,
-                    "char": 5
+                    "line": 240,
+                    "char": 7
                 },
                 "end": {
-                    "line": 194,
-                    "char": 35
+                    "line": 240,
+                    "char": 37
                 }
             },
             "args": [
@@ -455,12 +843,12 @@
         {
             "location": {
                 "start": {
-                    "line": 232,
-                    "char": 5
+                    "line": 281,
+                    "char": 7
                 },
                 "end": {
-                    "line": 232,
-                    "char": 35
+                    "line": 281,
+                    "char": 37
                 }
             },
             "args": [
@@ -478,7 +866,7 @@
             ],
             "typeArgs": [
                 {
-                    "type": "{ schema: { key: { type: string; internalType: string; }; name: { type: string; internalType: string; }; age: { type: string; internalType: string; }; }; keySchema: { key: { type: string; internalType: string; }; }; valueSchema: { ...; }; keys: string[]; }",
+                    "type": "{ readonly schema: { readonly key: { readonly type: \"uint256\"; readonly internalType: \"CustomType\"; }; readonly name: { readonly type: \"string\"; readonly internalType: \"string\"; }; readonly age: { readonly type: \"uint256\"; readonly internalType: \"uint256\"; }; }; readonly keySchema: { ...; }; readonly valueSchema: { ...",
                     "relationships": {
                         "args": [
                             "supertype"
@@ -495,12 +883,12 @@
         {
             "location": {
                 "start": {
-                    "line": 237,
-                    "char": 5
+                    "line": 286,
+                    "char": 7
                 },
                 "end": {
-                    "line": 237,
-                    "char": 82
+                    "line": 286,
+                    "char": 84
                 }
             },
             "args": [
@@ -523,12 +911,12 @@
         {
             "location": {
                 "start": {
-                    "line": 244,
-                    "char": 5
+                    "line": 293,
+                    "char": 7
                 },
                 "end": {
-                    "line": 244,
-                    "char": 80
+                    "line": 293,
+                    "char": 82
                 }
             },
             "args": [
@@ -551,17 +939,17 @@
         {
             "location": {
                 "start": {
-                    "line": 251,
-                    "char": 5
+                    "line": 300,
+                    "char": 7
                 },
                 "end": {
-                    "line": 251,
-                    "char": 47
+                    "line": 300,
+                    "char": 49
                 }
             },
             "args": [
                 {
-                    "type": "\"error 1\"",
+                    "type": "never",
                     "relationships": {
                         "args": [
                             "equality"
@@ -572,19 +960,19 @@
             ],
             "typeArgs": [],
             "errors": [
-                "Argument of type '\"NotAnAbiType\"' is not assignable to parameter of type 'TableConfigInput<{ [key: string]: AbiType; }, UserTypes, ValidKeys<{ [key: string]: AbiType; }, UserTypes>>'."
+                "Argument of type '\"NotAnAbiType\"' is not assignable to parameter of type 'TableConfigInput<never, UserTypes, ValidKeys<never, UserTypes>>'."
             ],
             "completions": {}
         },
         {
             "location": {
                 "start": {
-                    "line": 258,
-                    "char": 5
+                    "line": 307,
+                    "char": 7
                 },
                 "end": {
-                    "line": 258,
-                    "char": 67
+                    "line": 307,
+                    "char": 69
                 }
             },
             "args": [
@@ -607,12 +995,12 @@
         {
             "location": {
                 "start": {
-                    "line": 283,
-                    "char": 5
+                    "line": 332,
+                    "char": 7
                 },
                 "end": {
-                    "line": 283,
-                    "char": 35
+                    "line": 332,
+                    "char": 37
                 }
             },
             "args": [
@@ -647,12 +1035,12 @@
         {
             "location": {
                 "start": {
-                    "line": 306,
-                    "char": 5
+                    "line": 355,
+                    "char": 7
                 },
                 "end": {
-                    "line": 306,
-                    "char": 35
+                    "line": 355,
+                    "char": 37
                 }
             },
             "args": [
@@ -687,12 +1075,12 @@
         {
             "location": {
                 "start": {
-                    "line": 347,
-                    "char": 5
+                    "line": 396,
+                    "char": 7
                 },
                 "end": {
-                    "line": 347,
-                    "char": 35
+                    "line": 396,
+                    "char": 37
                 }
             },
             "args": [
@@ -710,7 +1098,7 @@
             ],
             "typeArgs": [
                 {
-                    "type": "{ schema: { key: { type: string; internalType: string; }; name: { type: string; internalType: string; }; age: { type: string; internalType: string; }; }; keySchema: { key: { type: string; internalType: string; }; }; valueSchema: { ...; }; keys: string[]; }",
+                    "type": "{ readonly schema: { readonly key: { readonly type: \"address\"; readonly internalType: \"address\"; }; readonly name: { readonly type: \"string\"; readonly internalType: \"CustomString\"; }; readonly age: { readonly type: \"uint256\"; readonly internalType: \"CustomNumber\"; }; }; readonly keySchema: { ...; }; readonly valueSc...",
                     "relationships": {
                         "args": [
                             "supertype"
@@ -727,12 +1115,52 @@
         {
             "location": {
                 "start": {
-                    "line": 353,
-                    "char": 5
+                    "line": 437,
+                    "char": 7
                 },
                 "end": {
-                    "line": 359,
-                    "char": 6
+                    "line": 437,
+                    "char": 37
+                }
+            },
+            "args": [
+                {
+                    "type": "resolveTableFullConfig<TableFullConfigInput<{ key: \"CustomNumber\"; name: \"CustomString\"; age: \"CustomNumber\"; }, { CustomString: \"string\"; CustomNumber: \"uint256\"; }, [\"key\"]>, { ...; }>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ readonly schema: { readonly key: { readonly type: \"uint256\"; readonly internalType: \"CustomNumber\"; }; readonly name: { readonly type: \"string\"; readonly internalType: \"CustomString\"; }; readonly age: { readonly type: \"uint256\"; readonly internalType: \"CustomNumber\"; }; }; readonly keySchema: { ...; }; readonly va...",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 441,
+                    "char": 7
+                },
+                "end": {
+                    "line": 447,
+                    "char": 8
                 }
             },
             "args": [
@@ -751,6 +1179,90 @@
                 "Type '\"name\"' is not assignable to type '\"key\" | \"age\"'."
             ],
             "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 451,
+                    "char": 7
+                },
+                "end": {
+                    "line": 460,
+                    "char": 8
+                }
+            },
+            "args": [
+                {
+                    "type": "resolveTableFullConfig<{ schema: { key: \"address\"; name: \"string\"; age: \"uint256\"; }; keys: [\"name\"]; }, { CustomType: \"string\"; }>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Type '\"name\"' is not assignable to type '\"key\" | \"age\"'."
+            ],
+            "completions": "Encountered multiple completion candidates for string(s) 'string'. Assertions on the same prefix must be split into multiple attest calls so the results can be distinguished."
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 464,
+                    "char": 7
+                },
+                "end": {
+                    "line": 473,
+                    "char": 8
+                }
+            },
+            "args": [
+                {
+                    "type": "resolveTableFullConfig<{ schema: { key: \"CustomType\"; name: \"string\"; age: \"uint256\"; }; keys: [\"key\"]; }, { CustomType: \"string\"; }>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Type '\"key\"' is not assignable to type '\"age\"'."
+            ],
+            "completions": "Encountered multiple completion candidates for string(s) 'string'. Assertions on the same prefix must be split into multiple attest calls so the results can be distinguished."
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 477,
+                    "char": 7
+                },
+                "end": {
+                    "line": 486,
+                    "char": 8
+                }
+            },
+            "args": [
+                {
+                    "type": "resolveTableFullConfig<{ schema: { key: \"address\"; name: \"string\"; age: \"uint256\"; }; keys: [\"NotAKey\"]; }, { CustomType: \"string\"; }>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Type '\"NotAKey\"' is not assignable to type '\"key\" | \"age\"'."
+            ],
+            "completions": "Encountered multiple completion candidates for string(s) 'string'. Assertions on the same prefix must be split into multiple attest calls so the results can be distinguished."
         }
     ]
 }

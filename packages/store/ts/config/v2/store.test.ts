@@ -1,23 +1,82 @@
 import { describe, it, expectTypeOf } from "vitest";
 import { resolveStoreConfig } from "./store";
+import { attest } from "@arktype/attest";
 
 describe("resolveStoreConfig", () => {
   it("should accept a shorthand store config as input and expand it", () => {
     const config = resolveStoreConfig({ tables: { Name: "address" } });
-    const table = config.tables.Name;
-    expectTypeOf<typeof table.schema>().toEqualTypeOf<{ key: "bytes32"; value: "address" }>();
-    expectTypeOf<typeof table.keys>().toEqualTypeOf<["key"]>();
-    expectTypeOf<typeof table.keySchema>().toEqualTypeOf<{ key: "bytes32" }>();
-    expectTypeOf<typeof table.valueSchema>().toEqualTypeOf<{ value: "address" }>();
+    const expected = {
+      tables: {
+        Name: {
+          schema: {
+            key: {
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+            value: {
+              type: "address",
+              internalType: "address",
+            },
+          },
+          keySchema: {
+            key: {
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+          },
+          valueSchema: {
+            value: {
+              type: "address",
+              internalType: "address",
+            },
+          },
+          keys: ["key"],
+        },
+      },
+    } as const;
+    attest<typeof expected>(config).equals(expected);
   });
 
   it("given a schema with a key field with static ABI type, it should use `key` as single key", () => {
     const config = resolveStoreConfig({ tables: { Example: { key: "address", name: "string", age: "uint256" } } });
-    const table = config.tables.Example;
-    expectTypeOf<typeof table.schema>().toEqualTypeOf<{ key: "address"; name: "string"; age: "uint256" }>();
-    expectTypeOf<typeof table.keys>().toEqualTypeOf<["key"]>();
-    expectTypeOf<typeof table.keySchema>().toEqualTypeOf<{ key: "address" }>();
-    expectTypeOf<typeof table.valueSchema>().toEqualTypeOf<{ name: "string"; age: "uint256" }>();
+    const expected = {
+      tables: {
+        Example: {
+          schema: {
+            key: {
+              type: "address",
+              internalType: "address",
+            },
+            name: {
+              type: "string",
+              internalType: "string",
+            },
+            age: {
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
+          keySchema: {
+            key: {
+              type: "address",
+              internalType: "address",
+            },
+          },
+          valueSchema: {
+            name: {
+              type: "string",
+              internalType: "string",
+            },
+            age: {
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
+          keys: ["key"],
+        },
+      },
+    } as const;
+    attest<typeof expected>(config).equals(expected);
   });
 
   it("throw an error if the shorthand doesn't include a key field", () => {
@@ -46,16 +105,44 @@ describe("resolveStoreConfig", () => {
         },
       },
     });
-    const table = config.tables.Example;
-
-    expectTypeOf<typeof table.schema>().toEqualTypeOf<{
-      key: "address";
-      name: "string";
-      age: "uint256";
-    }>();
-    expectTypeOf<typeof table.keys>().toEqualTypeOf<["age"]>();
-    expectTypeOf<typeof table.keySchema>().toEqualTypeOf<{ age: "uint256" }>();
-    expectTypeOf<typeof table.valueSchema>().toEqualTypeOf<{ key: "address"; name: "string" }>();
+    const expected = {
+      tables: {
+        Example: {
+          schema: {
+            key: {
+              type: "address",
+              internalType: "address",
+            },
+            name: {
+              type: "string",
+              internalType: "string",
+            },
+            age: {
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
+          keySchema: {
+            age: {
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
+          valueSchema: {
+            key: {
+              type: "address",
+              internalType: "address",
+            },
+            name: {
+              type: "string",
+              internalType: "string",
+            },
+          },
+          keys: ["age"],
+        },
+      },
+    } as const;
+    attest<typeof expected>(config).equals(expected);
   });
 
   it("it should return the full config given a full config with two keys", () => {
@@ -67,16 +154,44 @@ describe("resolveStoreConfig", () => {
         },
       },
     });
-    const table = config.tables.Example;
-
-    expectTypeOf<typeof table.schema>().toEqualTypeOf<{
-      key: "address";
-      name: "string";
-      age: "uint256";
-    }>();
-    expectTypeOf<typeof table.keys>().toEqualTypeOf<["age", "key"]>();
-    expectTypeOf<typeof table.keySchema>().toEqualTypeOf<{ age: "uint256"; key: "address" }>();
-    expectTypeOf<typeof table.valueSchema>().toEqualTypeOf<{ name: "string" }>();
+    const expected = {
+      tables: {
+        Example: {
+          schema: {
+            key: {
+              type: "address",
+              internalType: "address",
+            },
+            name: {
+              type: "string",
+              internalType: "string",
+            },
+            age: {
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
+          keySchema: {
+            age: {
+              type: "uint256",
+              internalType: "uint256",
+            },
+            key: {
+              type: "address",
+              internalType: "address",
+            },
+          },
+          valueSchema: {
+            name: {
+              type: "string",
+              internalType: "string",
+            },
+          },
+          keys: ["age", "key"],
+        },
+      },
+    } as const;
+    attest<typeof expected>(config).equals(expected);
   });
 
   it("should work for two tables in the config with different schemas", () => {
@@ -92,26 +207,78 @@ describe("resolveStoreConfig", () => {
         },
       },
     });
-    const firstTable = config.tables.First;
-    const secondTable = config.tables.Second;
 
-    expectTypeOf<typeof firstTable.schema>().toEqualTypeOf<{
-      firstKey: "address";
-      firstName: "string";
-      firstAge: "uint256";
-    }>();
-    expectTypeOf<typeof firstTable.keys>().toEqualTypeOf<["firstKey", "firstAge"]>();
-    expectTypeOf<typeof firstTable.keySchema>().toEqualTypeOf<{ firstAge: "uint256"; firstKey: "address" }>();
-    expectTypeOf<typeof firstTable.valueSchema>().toEqualTypeOf<{ firstName: "string" }>();
-
-    expectTypeOf<typeof secondTable.schema>().toEqualTypeOf<{
-      secondKey: "address";
-      secondName: "string";
-      secondAge: "uint256";
-    }>();
-    expectTypeOf<typeof secondTable.keys>().toEqualTypeOf<["secondKey", "secondAge"]>();
-    expectTypeOf<typeof secondTable.keySchema>().toEqualTypeOf<{ secondAge: "uint256"; secondKey: "address" }>();
-    expectTypeOf<typeof secondTable.valueSchema>().toEqualTypeOf<{ secondName: "string" }>();
+    const expected = {
+      tables: {
+        First: {
+          schema: {
+            firstKey: {
+              type: "address",
+              internalType: "address",
+            },
+            firstName: {
+              type: "string",
+              internalType: "string",
+            },
+            firstAge: {
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
+          keySchema: {
+            firstKey: {
+              type: "address",
+              internalType: "address",
+            },
+            firstAge: {
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
+          valueSchema: {
+            firstName: {
+              type: "string",
+              internalType: "string",
+            },
+          },
+          keys: ["firstKey", "firstAge"],
+        },
+        Second: {
+          schema: {
+            secondKey: {
+              type: "address",
+              internalType: "address",
+            },
+            secondName: {
+              type: "string",
+              internalType: "string",
+            },
+            secondAge: {
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
+          keySchema: {
+            secondKey: {
+              type: "address",
+              internalType: "address",
+            },
+            secondAge: {
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
+          valueSchema: {
+            secondName: {
+              type: "string",
+              internalType: "string",
+            },
+          },
+          keys: ["secondKey", "secondAge"],
+        },
+      },
+    };
+    attest<typeof expected>(config).equals(expected);
   });
 
   it("should throw if referring to fields of different tables", () => {
