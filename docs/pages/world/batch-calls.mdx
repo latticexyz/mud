@@ -1,4 +1,5 @@
 import { CollapseCode } from "../../components/CollapseCode";
+import { Callout } from "nextra/components";
 
 # Batch calls
 
@@ -11,6 +12,8 @@ If any of the calls revert, so does `batchCall` / `batchCallFrom`, so all the st
 
 The advantage of using `batchCall` rather than [the standard multicall](https://github.com/mds1/multicall) is that `batchCall` is a native MUD function that lives in the `World` contract, so it does not change `msg.sender`.
 As a result, when you use `batchCall` MUD can apply [access control](./namespaces-access-control), and `System`s can rely on the value of [`_msgSender()`](./systems#writing-systems).
+
+## Batch calls from Solidity
 
 <CollapseCode>
 
@@ -100,5 +103,193 @@ Every item in this array has two fields:
 
 Call [`batchCall`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/BatchCallSystem.sol#L15-L35).
 The results are returned as an array by `bytes`, one for each call.
+
+</details>
+
+## Batch calls from TypeScript
+
+The ideal place for these calls is [`createSystemCalls.ts`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/createSystemCalls.ts), where all the other system calls are located.
+
+<CollapseCode>
+
+```typescript filename="createSystemCalls.ts" copy showLineNumbers {9-10,33-80,86}
+/*
+ * Create the system calls that the client can use to ask
+ * for changes in the World state (using the System contracts).
+ */
+
+import { Hex } from "viem";
+import { SetupNetworkResult } from "./setupNetwork";
+
+import { resourceToHex } from "@latticexyz/common";
+import { encodeFunctionData } from "viem";
+
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+export function createSystemCalls({ tables, useStore, worldContract, waitForTransaction }: SetupNetworkResult) {
+  const addTask = async (label: string) => {
+    const tx = await worldContract.write.addTask([label]);
+    await waitForTransaction(tx);
+  };
+
+  const toggleTask = async (key: Hex) => {
+    const isComplete = (useStore.getState().getValue(tables.Tasks, { key })?.completedAt ?? 0n) > 0n;
+    const tx = isComplete ? await worldContract.write.resetTask([key]) : await worldContract.write.completeTask([key]);
+    await waitForTransaction(tx);
+  };
+
+  const deleteTask = async (key: Hex) => {
+    const tx = await worldContract.write.deleteTask([key]);
+    await waitForTransaction(tx);
+  };
+
+  const batchCallTasks = async () => {
+    const resourceId = resourceToHex({
+      type: "system",
+      namespace: "",
+      name: "TasksSystem",
+    });
+
+    const addTaskAbi = [
+      {
+        type: "function",
+        name: "addTask",
+        inputs: [
+          {
+            name: "description",
+            type: "string",
+            internalType: "string",
+          },
+        ],
+        outputs: [
+          {
+            name: "key",
+            type: "bytes32",
+            internalType: "bytes32",
+          },
+        ],
+        stateMutability: "nonpayable",
+      },
+    ];
+
+    const getCalldata = (description) =>
+      encodeFunctionData({
+        abi: addTaskAbi,
+        args: [description],
+      });
+
+    const tasks = ["This is a test", `This task was made at ${Date()}`, "Yet another task"];
+
+    const tx = await worldContract.write.batchCall([tasks.map((task) => [resourceId, getCalldata(task)])]);
+    await waitForTransaction(tx);
+  }; // end of batchCallTasks
+
+  return {
+    addTask,
+    toggleTask,
+    deleteTask,
+    batchCallTasks,
+  };
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```typescript
+import { resourceToHex } from "@latticexyz/common";
+import { encodeFunctionData } from "viem";
+```
+
+Definitions we need.
+
+```typescript
+  const batchCallTasks = async () => {
+    const resourceId = resourceToHex({
+      type: "system",
+      namespace: "",
+      name: "TasksSystem"
+    })
+```
+
+The input to `batchCall` is an array, in which every entry is a structure with two fields:
+
+- The `resourceId` of the `System` we are calling (in this case, `TasksSystem`)
+- The calldata to send that `System`.
+
+Here we generate the `resourceId`.
+
+```typescript
+const addTaskAbi = [
+  {
+    type: "function",
+    name: "addTask",
+    inputs: [
+      {
+        name: "description",
+        type: "string",
+        internalType: "string",
+      },
+    ],
+    outputs: [
+      {
+        name: "key",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+];
+```
+
+To generate the calldata we need the [ABI](https://docs.soliditylang.org/en/latest/abi-spec.html).
+
+<Callout type="info" emoji="ⓘ">
+  It is not always possible to get the ABI from `worldContract`, because that contract has the functions as they are to be called when accessing the `World`.
+  This means that if a function is *not* in the root namespace, it will appear in `worldContract` is `<namespace>__<function name>`. 
+  However, in `batchCall` the namespace and `System` are already encoded in the `resourceId`.
+  The function name to use is the function name when calling the `System`, without the `<namespace>__` prefix.
+  So it is best to take the ABI from the `packages/contracts/out/<system name>.sol/<system name>.abi.json` file.
+</Callout>
+
+```typescript
+const getCalldata = (description) =>
+  encodeFunctionData({
+    abi: addTaskAbi,
+    args: [description],
+  });
+```
+
+With the ABI and the arguments (in this case there is only one, `description`) we use [`encodeFunctionData`](https://viem.sh/docs/contract/encodeFunctionData.html) to generate the calldata.
+
+```typescript
+const tasks = ["This is a test", `This task was made at ${Date()}`, "Yet another task"];
+
+const tx = await worldContract.write.batchCall([tasks.map((task) => [resourceId, getCalldata(task)])]);
+```
+
+The parameter to `batchCall` is:
+
+```json
+[
+  [<resourceId for a System>, <calldata for that System>],
+  [<resourceId for a System>, <calldata for that System>],
+   .
+   .
+   .
+  [<resourceId for a System>, <calldata for that System>],
+]
+```
+
+Because of the way [`worldContract.write`](https://viem.sh/docs/contract/getContract.html#with-wallet-client) works, even when there is a single parameter it has to be enclosed in a list.
+
+```typescript
+    await waitForTransaction(tx)
+  }    // end of batchCallTasks
+```
 
 </details>
