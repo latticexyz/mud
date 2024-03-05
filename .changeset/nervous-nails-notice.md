@@ -8,11 +8,15 @@ Usage example:
 
 ```ts
 walletClient.extend(
-  delegation({
+  callFrom({
     worldAddress,
     delegatorAddress,
-    getSystemId: (functionSelector) =>
-      useStore.getState().getValue(tables.FunctionSelectors, { functionSelector })!.systemId,
+    worldFunctionToSystemFunction: async (worldFunctionSelector) => {
+      const systemFunction = useStore
+        .getState()
+        .getValue(tables.FunctionSelectors, { functionSelector: worldFunctionSelector })!;
+      return { systemId: systemFunction.systemId, systemFunctionSelector: systemFunction.systemFunctionSelector };
+    },
   }),
 );
 ```
