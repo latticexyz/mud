@@ -9,5 +9,5 @@ pragma solidity >=0.8.24;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IBattleResultSystem {
-  function setBattleResult(bytes32 battleId, bytes32[] memory aggressorAllies, bytes32[] memory targetAllies) external;
+  function setBattleResult(bytes32[] memory aggressorAllies, bytes32[] memory targetAllies) external;
 }

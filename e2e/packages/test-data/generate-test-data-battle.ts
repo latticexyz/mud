@@ -3,7 +3,6 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createAnvil } from "@viem/anvil";
 import { generateLogs } from "./generateLogs";
-import { keccak256 } from "viem";
 
 const anvil = createAnvil({
   blockTime: 1,
@@ -20,7 +19,6 @@ const logs = await generateLogs(rpc, async (worldContract) => {
 
   const lastTx = await worldContract.write.setBattleResult(
     [
-      "0x0000000000000000000000000000000000000000000000000000000000000001",
       [
         "0x0000000000000000000000000000000000000000000000000000000000000000",
         "0x0000000000000000000000000000000000000000000000000000000000000000",

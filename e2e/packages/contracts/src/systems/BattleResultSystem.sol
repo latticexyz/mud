@@ -5,17 +5,19 @@ import { System } from "@latticexyz/world/src/System.sol";
 import { BattleResult } from "../codegen/index.sol";
 
 contract BattleResultSystem is System {
-  function setBattleResult(bytes32 battleId, bytes32[] memory aggressorAllies, bytes32[] memory targetAllies) public {
+  function setBattleResult(bytes32[] memory aggressorAllies, bytes32[] memory targetAllies) public {
+    bytes32 battleId = 0x94a20d7cecba2a0266a9f899622dd00d801b15bd7640739b3f708d7429cd4506;
+
     BattleResult.set(
       battleId,
-      bytes32(0),
-      0,
-      bytes32(0),
-      0,
-      bytes32(0),
-      bytes32(0),
-      bytes32(0),
-      bytes32(0),
+      0x0000000000000000000000007dd96aa0f6696245c8552a2d724ead6c7fd53bd9,
+      1113070286360635566937587904628021806668047062500,
+      0x000000000000000000000000c2f7cc4036725ab3f8fc43902bdfaf8227fe15e4,
+      69980746864888223526231262040118823537535255020068965997689579658446014452633,
+      0x0000000000000000000000000000000000000000000000000000000000042680,
+      0x0000000000000000000000000000000000000000000000000000000065e1fc8c,
+      0x0000000000000000000000000000000000000000000000000000000000000000,
+      0x0000000000000000000000000000000000000000000000000000000000000000,
       0,
       aggressorAllies,
       targetAllies
