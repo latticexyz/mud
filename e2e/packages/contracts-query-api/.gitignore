@@ -1,9 +1,0 @@
-out/
-cache/
-node_modules/
-bindings/
-artifacts/
-broadcast/
-
-# Ignore all deploy artifacts
-deploys/**/*.json

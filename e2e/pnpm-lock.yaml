@@ -46,7 +46,7 @@ importers:
         version: 0.4.0
       contracts:
         specifier: workspace:*
-        version: link:../contracts-query-api
+        version: link:../contracts
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -114,48 +114,6 @@ importers:
       prettier:
         specifier: 3.2.5
         version: 3.2.5
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
-      typescript:
-        specifier: 5.1.6
-        version: 5.1.6
-      vite:
-        specifier: ^4.2.1
-        version: 4.3.5(@types/node@20.1.3)
-      vitest:
-        specifier: 0.34.6
-        version: 0.34.6(happy-dom@12.10.3)
-
-  packages/contracts-query-api:
-    devDependencies:
-      '@latticexyz/cli':
-        specifier: link:../../../packages/cli
-        version: link:../../../packages/cli
-      '@latticexyz/config':
-        specifier: link:../../../packages/config
-        version: link:../../../packages/config
-      '@latticexyz/schema-type':
-        specifier: link:../../../packages/schema-type
-        version: link:../../../packages/schema-type
-      '@latticexyz/store':
-        specifier: link:../../../packages/store
-        version: link:../../../packages/store
-      '@latticexyz/world':
-        specifier: link:../../../packages/world
-        version: link:../../../packages/world
-      dotenv:
-        specifier: ^16.0.3
-        version: 16.0.3
-      ds-test:
-        specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
-        version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
-      forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
-        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
-      prettier:
-        specifier: ^2.6.2
-        version: 2.6.2
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
