@@ -14,7 +14,7 @@ export function logToTable(log: StorageAdapterLog & { eventName: "Store_SetRecor
 
   const value = decodeValue(
     schemasTable.valueSchema,
-    concatHex([log.args.staticData, log.args.encodedLengths, log.args.dynamicData])
+    concatHex([log.args.staticData, log.args.encodedLengths, log.args.dynamicData]),
   );
 
   const keySchema = hexToSchema(value.keySchema);

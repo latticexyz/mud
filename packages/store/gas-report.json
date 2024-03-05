@@ -21,7 +21,7 @@
     "file": "test/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "Callbacks: get field (warm)",
-    "gasUsed": 2615
+    "gasUsed": 2616
   },
   {
     "file": "test/Callbacks.t.sol",
@@ -321,7 +321,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 723941
+    "gasUsed": 717787
   },
   {
     "file": "test/Mixed.t.sol",
@@ -1107,7 +1107,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 447721
+    "gasUsed": 443849
   },
   {
     "file": "test/Vector2.t.sol",

@@ -4,7 +4,17 @@ pragma solidity >=0.8.24;
 import { ResourceId } from "./ResourceId.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 
+/**
+ * @title IStoreEvents
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ */
 interface IStoreEvents {
+  /**
+   * @notice Emitted when the store is initialized.
+   * @param storeVersion The version of the Store contract.
+   */
+  event HelloStore(bytes32 indexed storeVersion);
+
   /**
    * @notice Emitted when a new record is set in the store.
    * @param tableId The ID of the table where the record is set.

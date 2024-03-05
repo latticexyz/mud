@@ -15,7 +15,7 @@ export function createDebugger(
   chunks: Chunks,
   scene: Phaser.Scene,
   objectPool: ObjectPool,
-  map: AnimatedTilemap<number, string, string>
+  map: AnimatedTilemap<number, string, string>,
 ) {
   const options = {
     logViewport: false,
@@ -47,8 +47,8 @@ export function createDebugger(
       console.log(
         `Entities: ${objectPool.objects.size} / Pool size: ${Object.values(objectPool.groups).reduce(
           (acc, curr) => acc + curr.getChildren().length,
-          0
-        )} / Pool active: ${Object.values(objectPool.groups).reduce((acc, curr) => acc + curr.countActive(), 0)}`
+          0,
+        )} / Pool active: ${Object.values(objectPool.groups).reduce((acc, curr) => acc + curr.countActive(), 0)}`,
       );
     }
 
@@ -66,7 +66,7 @@ export function createDebugger(
         chunks.chunkSize,
         chunks.chunkSize,
         getRandomColor(),
-        0.5
+        0.5,
       );
       visualChunk.setInteractive();
       visualChunk.on("pointerup", () => {

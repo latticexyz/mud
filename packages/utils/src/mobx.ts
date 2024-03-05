@@ -15,7 +15,7 @@ export async function awaitValue<T>(comp: IComputedValue<T | undefined> | IObser
         resolve(value);
       }
     },
-    { fireImmediately: true }
+    { fireImmediately: true },
   );
 
   const value = await promise;
