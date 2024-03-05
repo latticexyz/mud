@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { createHydratedStore, tables } from "./test/createHydratedStore";
 import { query } from "./query";
-import { deployMockGame } from "../../test/deployMockGame";
+import { deployMockGame } from "../../test/mockGame";
 
 describe("query", async () => {
-  await deployMockGame();
-  const store = await createHydratedStore();
+  const worldAddress = await deployMockGame();
 
   it("can get players with a position", async () => {
+    const { store } = await createHydratedStore(worldAddress);
     const result = await query(store, {
       from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
     });
@@ -33,6 +33,7 @@ describe("query", async () => {
   });
 
   it("can get players at position (3, 5)", async () => {
+    const { store } = await createHydratedStore(worldAddress);
     const result = await query(store, {
       from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
       where: [
@@ -56,6 +57,7 @@ describe("query", async () => {
   });
 
   it("can get players within the bounds of (-5, -5) and (5, 5)", async () => {
+    const { store } = await createHydratedStore(worldAddress);
     const result = await query(store, {
       from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
       where: [
@@ -84,6 +86,7 @@ describe("query", async () => {
   });
 
   it("can get players that are still alive", async () => {
+    const { store } = await createHydratedStore(worldAddress);
     const result = await query(store, {
       from: [
         { tableId: tables.Position.tableId, subject: ["player"] },
@@ -107,6 +110,7 @@ describe("query", async () => {
   });
 
   it("can get all players in grassland", async () => {
+    const { store } = await createHydratedStore(worldAddress);
     const result = await query(store, {
       from: [{ tableId: tables.Terrain.tableId, subject: ["x", "y"] }],
       where: [{ left: { tableId: tables.Terrain.tableId, field: "terrainType" }, op: "=", right: 2 }],

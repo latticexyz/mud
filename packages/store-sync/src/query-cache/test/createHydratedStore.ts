@@ -1,11 +1,12 @@
 import { storeEventsAbi } from "@latticexyz/store";
 import { createStorageAdapter } from "../../zustand/createStorageAdapter";
 import { ZustandStore, createStore } from "../../zustand/createStore";
-import { config } from "../../../test/deployMockGame";
+import { config } from "../../../test/mockGame";
 import { fetchAndStoreLogs } from "../../fetchAndStoreLogs";
 import { publicClient } from "../../../test/common";
 import { storeTables, worldTables } from "../../common";
 import { AllTables } from "../common";
+import { Address } from "viem";
 
 export const tables = {
   ...config.tables,
@@ -13,20 +14,33 @@ export const tables = {
   ...worldTables,
 } as unknown as AllTables<typeof config>;
 
-export async function createHydratedStore(): Promise<ZustandStore<typeof tables>> {
-  const useStore = createStore<typeof tables>({ tables });
-  const storageAdapter = createStorageAdapter({ store: useStore });
+export async function createHydratedStore(worldAddress: Address): Promise<{
+  store: ZustandStore<typeof tables>;
+  fetchLatestLogs: () => Promise<void>;
+}> {
+  const store = createStore<typeof tables>({ tables });
+  const storageAdapter = createStorageAdapter({ store });
 
-  console.log("fetching blocks");
-  for await (const block of fetchAndStoreLogs({
-    storageAdapter,
-    publicClient,
-    events: storeEventsAbi,
-    fromBlock: 0n,
-    toBlock: await publicClient.getBlockNumber(),
-  })) {
-    // console.log("got block", block.blockNumber);
+  let latestBlock = -1n;
+  async function fetchLatestLogs(): Promise<void> {
+    const fromBlock = latestBlock + 1n;
+    const toBlock = await publicClient.getBlockNumber();
+    if (toBlock <= fromBlock) return;
+    console.log("fetching blocks", fromBlock, "to", toBlock);
+    for await (const block of fetchAndStoreLogs({
+      storageAdapter,
+      publicClient,
+      address: worldAddress,
+      events: storeEventsAbi,
+      fromBlock,
+      toBlock,
+    })) {
+      console.log("got block logs", block.blockNumber, block.logs.length);
+    }
+    latestBlock = toBlock;
   }
 
-  return useStore;
+  await fetchLatestLogs();
+
+  return { store, fetchLatestLogs };
 }

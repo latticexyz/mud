@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { storeEventsAbi } from "@latticexyz/store";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { createStore } from "./createStore";
-import { config, deployMockGame } from "../../test/deployMockGame";
+import { config, deployMockGame } from "../../test/mockGame";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
 import { publicClient } from "../../test/common";
 
