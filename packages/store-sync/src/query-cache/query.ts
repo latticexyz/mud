@@ -1,6 +1,6 @@
 import { ZustandStore } from "../zustand";
 import { AllTables, Query, QueryResult } from "./common";
-import { StoreConfig, Tables } from "@latticexyz/store";
+import { ResolvedStoreConfig, StoreConfig, Tables } from "@latticexyz/store";
 import { findSubjects } from "./findSubjects";
 
 // TODO: validate query
@@ -14,10 +14,10 @@ import { findSubjects } from "./findSubjects";
 // TODO: make query smarter/config aware for shorthand
 // TODO: make condition types smarter, so condition literal matches the field primitive type
 
-export async function query<config extends StoreConfig, extraTables extends Tables | undefined>(
-  store: ZustandStore<AllTables<config, extraTables>>,
-  query: Query
-): Promise<QueryResult<typeof query>> {
+export async function query<
+  config extends ResolvedStoreConfig<StoreConfig>,
+  extraTables extends Tables | undefined = undefined,
+>(store: ZustandStore<AllTables<config, extraTables>>, query: Query): Promise<QueryResult<typeof query>> {
   const records = Object.values(store.getState().records);
   const matches = findSubjects({ records, query });
 

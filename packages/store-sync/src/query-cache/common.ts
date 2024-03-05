@@ -8,9 +8,9 @@ export type satisfy<base, t extends base> = t;
 
 // TODO: make this better with new config resolver
 export type AllTables<
-  config extends StoreConfig,
-  extraTables extends Tables | undefined
-> = ResolvedStoreConfig<config>["tables"] &
+  config extends ResolvedStoreConfig<StoreConfig>,
+  extraTables extends Tables | undefined = undefined,
+> = config["tables"] &
   (extraTables extends Tables ? extraTables : Record<never, never>) &
   typeof storeTables &
   typeof worldTables;

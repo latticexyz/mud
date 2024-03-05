@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import { createHydratedStore, tables } from "./test/createHydratedStore";
 import { subscribeToQuery } from "./subscribeToQuery";
 import { firstValueFrom } from "rxjs";
+import { deployMockGame } from "../../test/deployMockGame";
 
 describe("subscribeToQuery", async () => {
+  await deployMockGame();
   const store = await createHydratedStore();
 
   it("can get players with a position", async () => {
