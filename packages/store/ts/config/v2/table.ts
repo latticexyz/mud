@@ -76,10 +76,12 @@ export function resolveTableShorthandConfig<
   return input as never;
 }
 
-export type inferSchema<input extends TableConfigInput> = input extends TableFullConfigInput
+export type inferSchema<input, userTypes extends UserTypes = UserTypes> = input extends TableFullConfigInput
   ? input["schema"]
-  : input extends SchemaInput
-  ? resolveTableShorthandConfig<input>["schema"]
+  : input extends TableFullConfigInput<SchemaInput<userTypes>, userTypes>
+  ? input["schema"]
+  : input extends TableShorthandConfigInput<userTypes>
+  ? inferSchema<resolveTableShorthandConfig<input, userTypes>, userTypes>
   : never;
 
 export type validateTableConfig<input, userTypes = undefined> = userTypes extends UserTypes
@@ -87,7 +89,7 @@ export type validateTableConfig<input, userTypes = undefined> = userTypes extend
     ? validateTableShorthandConfig<input, userTypes>
     : input extends TableFullConfigInput<userTypes>
     ? validateTableFullConfig<input, userTypes>
-    : TableConfigInput
+    : TableConfigInput<inferSchema<input, userTypes>, userTypes>
   : TableConfigInput;
 
 type validateTableFullConfig<input extends TableFullConfigInput<userTypes>, userTypes extends UserTypes = UserTypes> = {
@@ -127,7 +129,7 @@ export type resolveTableConfig<
   ? resolveTableConfig<resolveTableShorthandConfig<input, userTypes>, userTypes>
   : input extends TableFullConfigInput<SchemaInput<userTypes>, userTypes>
   ? resolveTableFullConfig<input, userTypes>
-  : "error 1";
+  : never;
 
 /**
  * If a shorthand table config is passed (just a schema or even just a single ABI type) we expand it with sane defaults:

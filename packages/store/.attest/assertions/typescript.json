@@ -111,11 +111,39 @@
         {
             "location": {
                 "start": {
-                    "line": 52,
+                    "line": 39,
                     "char": 5
                 },
                 "end": {
-                    "line": 52,
+                    "line": 39,
+                    "char": 85
+                }
+            },
+            "args": [
+                {
+                    "type": "TableFullConfigInput<{ key: \"bytes32\"; value: \"string\"; }, { CustomType: \"uint256\"; }, [\"key\"]> | TableFullConfigInput<{ key: \"bytes32\"; value: \"bytes\"; }, { CustomType: \"uint256\"; }, [...]> | ... 6 more ... | TableFullConfigInput<...>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Argument of type '\"NotACustomType\"' is not assignable to parameter of type 'TableShorthandConfigInput<{ CustomType: \"uint256\"; }>'."
+            ],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 54,
+                    "char": 5
+                },
+                "end": {
+                    "line": 54,
                     "char": 35
                 }
             },
@@ -151,11 +179,11 @@
         {
             "location": {
                 "start": {
-                    "line": 57,
+                    "line": 59,
                     "char": 5
                 },
                 "end": {
-                    "line": 57,
+                    "line": 59,
                     "char": 76
                 }
             },
@@ -179,11 +207,11 @@
         {
             "location": {
                 "start": {
-                    "line": 64,
+                    "line": 66,
                     "char": 5
                 },
                 "end": {
-                    "line": 64,
+                    "line": 66,
                     "char": 91
                 }
             },
@@ -207,11 +235,11 @@
         {
             "location": {
                 "start": {
-                    "line": 71,
+                    "line": 73,
                     "char": 5
                 },
                 "end": {
-                    "line": 71,
+                    "line": 73,
                     "char": 84
                 }
             },
@@ -235,11 +263,11 @@
         {
             "location": {
                 "start": {
-                    "line": 85,
+                    "line": 87,
                     "char": 5
                 },
                 "end": {
-                    "line": 85,
+                    "line": 87,
                     "char": 35
                 }
             },
@@ -275,11 +303,11 @@
         {
             "location": {
                 "start": {
-                    "line": 89,
+                    "line": 91,
                     "char": 5
                 },
                 "end": {
-                    "line": 92,
+                    "line": 94,
                     "char": 6
                 }
             },
@@ -307,11 +335,11 @@
         {
             "location": {
                 "start": {
-                    "line": 124,
+                    "line": 126,
                     "char": 5
                 },
                 "end": {
-                    "line": 124,
+                    "line": 126,
                     "char": 35
                 }
             },
@@ -347,11 +375,11 @@
         {
             "location": {
                 "start": {
-                    "line": 154,
+                    "line": 156,
                     "char": 5
                 },
                 "end": {
-                    "line": 154,
+                    "line": 156,
                     "char": 35
                 }
             },
@@ -387,11 +415,11 @@
         {
             "location": {
                 "start": {
-                    "line": 192,
+                    "line": 194,
                     "char": 5
                 },
                 "end": {
-                    "line": 192,
+                    "line": 194,
                     "char": 35
                 }
             },
@@ -427,11 +455,11 @@
         {
             "location": {
                 "start": {
-                    "line": 230,
+                    "line": 232,
                     "char": 5
                 },
                 "end": {
-                    "line": 230,
+                    "line": 232,
                     "char": 35
                 }
             },
@@ -467,11 +495,11 @@
         {
             "location": {
                 "start": {
-                    "line": 235,
+                    "line": 237,
                     "char": 5
                 },
                 "end": {
-                    "line": 235,
+                    "line": 237,
                     "char": 82
                 }
             },
@@ -495,11 +523,67 @@
         {
             "location": {
                 "start": {
-                    "line": 246,
+                    "line": 244,
                     "char": 5
                 },
                 "end": {
-                    "line": 246,
+                    "line": 244,
+                    "char": 80
+                }
+            },
+            "args": [
+                {
+                    "type": "never",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Argument of type '{ key: string; }' is not assignable to parameter of type '\"Provide a `key` field with static ABI type or a full config with explicit keys override. \"'."
+            ],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 251,
+                    "char": 5
+                },
+                "end": {
+                    "line": 251,
+                    "char": 47
+                }
+            },
+            "args": [
+                {
+                    "type": "\"error 1\"",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": []
+                    }
+                }
+            ],
+            "typeArgs": [],
+            "errors": [
+                "Argument of type '\"NotAnAbiType\"' is not assignable to parameter of type 'TableConfigInput<{ [key: string]: AbiType; }, UserTypes, ValidKeys<{ [key: string]: AbiType; }, UserTypes>>'."
+            ],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 258,
+                    "char": 5
+                },
+                "end": {
+                    "line": 258,
                     "char": 67
                 }
             },
@@ -523,11 +607,11 @@
         {
             "location": {
                 "start": {
-                    "line": 271,
+                    "line": 283,
                     "char": 5
                 },
                 "end": {
-                    "line": 271,
+                    "line": 283,
                     "char": 35
                 }
             },
@@ -563,11 +647,11 @@
         {
             "location": {
                 "start": {
-                    "line": 294,
+                    "line": 306,
                     "char": 5
                 },
                 "end": {
-                    "line": 294,
+                    "line": 306,
                     "char": 35
                 }
             },
@@ -603,11 +687,51 @@
         {
             "location": {
                 "start": {
-                    "line": 302,
+                    "line": 347,
                     "char": 5
                 },
                 "end": {
-                    "line": 308,
+                    "line": 347,
+                    "char": 35
+                }
+            },
+            "args": [
+                {
+                    "type": "resolveTableFullConfig<TableFullConfigInput<{ key: \"address\"; name: \"CustomString\"; age: \"CustomNumber\"; }, { CustomString: \"string\"; CustomNumber: \"uint256\"; }, [\"key\"]>, { CustomString: \"string\"; CustomNumber: \"uint256\"; }>",
+                    "relationships": {
+                        "args": [
+                            "equality"
+                        ],
+                        "typeArgs": [
+                            "subtype"
+                        ]
+                    }
+                }
+            ],
+            "typeArgs": [
+                {
+                    "type": "{ schema: { key: { type: string; internalType: string; }; name: { type: string; internalType: string; }; age: { type: string; internalType: string; }; }; keySchema: { key: { type: string; internalType: string; }; }; valueSchema: { ...; }; keys: string[]; }",
+                    "relationships": {
+                        "args": [
+                            "supertype"
+                        ],
+                        "typeArgs": [
+                            "equality"
+                        ]
+                    }
+                }
+            ],
+            "errors": [],
+            "completions": {}
+        },
+        {
+            "location": {
+                "start": {
+                    "line": 353,
+                    "char": 5
+                },
+                "end": {
+                    "line": 359,
                     "char": 6
                 }
             },
