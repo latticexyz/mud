@@ -15,31 +15,31 @@ export type StoreTablesConfigInput<scope extends AbiTypeScope = AbiTypeScope> = 
   [key: string]: TableInput<SchemaInput<scope>, scope>;
 };
 
+export type validateStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = {
+  [key in keyof input]: validateTableConfig<input[key], scope>;
+};
+
+export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<{
+  [key in keyof input]: resolveTableConfig<input[key], scope>;
+}>;
+
 type scopeWithUserTypes<userTypes> = UserTypes extends userTypes
   ? AbiTypeScope
   : userTypes extends UserTypes
   ? extendScope<AbiTypeScope, userTypes>
   : AbiTypeScope;
 
-export type validateStoreTablesConfig<input, userTypes = undefined> = {
-  [key in keyof input]: validateTableConfig<input[key], scopeWithUserTypes<userTypes>>;
-};
-
 export type validateStoreConfig<input> = {
   [key in keyof input]: key extends "tables"
-    ? validateStoreTablesConfig<input[key], get<input, "userTypes">>
+    ? validateStoreTablesConfig<input[key], scopeWithUserTypes<get<input, "userTypes">>>
     : key extends "userTypes"
     ? UserTypes
     : input[key];
 };
 
-export type resolveStoreTablesConfig<input, userTypes = undefined> = evaluate<{
-  [key in keyof input]: resolveTableConfig<input[key], scopeWithUserTypes<userTypes>>;
-}>;
-
 export type resolveStoreConfig<input> = evaluate<{
   [key in keyof input]: key extends "tables"
-    ? resolveStoreTablesConfig<input[key], get<input, "userTypes">>
+    ? resolveStoreTablesConfig<input[key], scopeWithUserTypes<get<input, "userTypes">>>
     : input[key];
 }>;
 
