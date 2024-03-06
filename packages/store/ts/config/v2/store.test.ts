@@ -1,6 +1,7 @@
 import { describe, it } from "vitest";
 import { resolveStoreConfig } from "./store";
 import { attest } from "@arktype/attest";
+import { AbiTypeScope, extendScope } from "./scope";
 
 describe("resolveStoreConfig", () => {
   it("should accept a shorthand store config as input and expand it", () => {
@@ -36,7 +37,82 @@ describe("resolveStoreConfig", () => {
     }>(config);
   });
 
+  it("it should accept a user type as input and expand it", () => {
+    const scope = extendScope(AbiTypeScope, { CustomType: "address" });
+    const config = resolveStoreConfig({ tables: { Name: "CustomType" } }, scope);
+    attest<{
+      tables: {
+        Name: {
+          schema: {
+            key: {
+              type: "bytes32";
+              internalType: "bytes32";
+            };
+            value: {
+              type: "address";
+              internalType: "CustomType";
+            };
+          };
+          keySchema: {
+            key: {
+              type: "bytes32";
+              internalType: "bytes32";
+            };
+          };
+          valueSchema: {
+            value: {
+              type: "address";
+              internalType: "CustomType";
+            };
+          };
+          keys: ["key"];
+        };
+      };
+    }>(config);
+  });
+
   it("given a schema with a key field with static ABI type, it should use `key` as single key", () => {
+    const config = resolveStoreConfig({ tables: { Example: { key: "address", name: "string", age: "uint256" } } });
+    attest<{
+      tables: {
+        Example: {
+          schema: {
+            key: {
+              type: "address";
+              internalType: "address";
+            };
+            name: {
+              type: "string";
+              internalType: "string";
+            };
+            age: {
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
+          keySchema: {
+            key: {
+              type: "address";
+              internalType: "address";
+            };
+          };
+          valueSchema: {
+            name: {
+              type: "string";
+              internalType: "string";
+            };
+            age: {
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
+          keys: ["key"];
+        };
+      };
+    }>(config);
+  });
+
+  it("given a schema with a key field with static custom type, it should use `key` as single key", () => {
     const config = resolveStoreConfig({ tables: { Example: { key: "address", name: "string", age: "uint256" } } });
     attest<{
       tables: {
@@ -98,6 +174,8 @@ describe("resolveStoreConfig", () => {
     );
   });
 
+  it.todo("throw an error if the shorthand config includes a non-static user type as key field");
+
   it("should return the full config given a full config with one key", () => {
     const config = resolveStoreConfig({
       tables: {
@@ -145,6 +223,8 @@ describe("resolveStoreConfig", () => {
       };
     }>(config);
   });
+
+  it.todo("should return the full config given a full config with one key and user types");
 
   it("it should return the full config given a full config with two keys", () => {
     const config = resolveStoreConfig({
@@ -279,6 +359,8 @@ describe("resolveStoreConfig", () => {
     }>(config);
   });
 
+  it.todo("should resolve two tables in the config with different schemas and user types");
+
   it("should throw if referring to fields of different tables", () => {
     attest(
       resolveStoreConfig({
@@ -310,4 +392,6 @@ describe("resolveStoreConfig", () => {
       })
     ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
+
+  it.todo("should throw an error if the provided key is not a static field with user types");
 });
