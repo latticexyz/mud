@@ -31,7 +31,7 @@ export function App() {
 
                     checkbox.disabled = true;
                     try {
-                      await toggleTask(network, burner.worldContract, task.key.key);
+                      await toggleTask(network, burner.walletClient, task.key.key);
                     } finally {
                       checkbox.disabled = false;
                     }
@@ -53,7 +53,7 @@ export function App() {
                     const button = event.currentTarget;
                     button.disabled = true;
                     try {
-                      await deleteTask(network, burner.worldContract, task.key.key);
+                      await deleteTask(network, burner.walletClient, task.key.key);
                     } finally {
                       button.disabled = false;
                     }
@@ -85,7 +85,7 @@ export function App() {
 
                   fieldset.disabled = true;
                   try {
-                    await addTask(network, burner.worldContract, desc);
+                    await addTask(network, burner.walletClient, desc);
                     form.reset();
                   } finally {
                     fieldset.disabled = false;
