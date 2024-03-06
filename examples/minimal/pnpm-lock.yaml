@@ -39,8 +39,8 @@ importers:
         specifier: link:../../../../packages/dev-tools
         version: link:../../../../packages/dev-tools
       '@latticexyz/phaserx':
-        specifier: link:../../../../packages/phaserx
-        version: link:../../../../packages/phaserx
+        specifier: '@latticexyz/phaserx'
+        version: link:@latticexyz/phaserx
       '@latticexyz/react':
         specifier: link:../../../../packages/react
         version: link:../../../../packages/react
