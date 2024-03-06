@@ -5,8 +5,7 @@ import { deployMockGame, worldAbi } from "../../test/mockGame";
 import { waitForTransactionReceipt, writeContract } from "viem/actions";
 import { keccak256, parseEther, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { publicClient, testClient, walletClient } from "../../test/common";
-import { wait } from "@latticexyz/common/utils";
+import { testClient } from "../../test/common";
 import { observe } from "../../test/observe";
 
 const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));
@@ -27,7 +26,6 @@ describe("subscribeToQuery", async () => {
     });
     const results = observe(result$);
 
-    await wait(0);
     expect(results.length).toBe(1);
     expect(results.lastValue).toMatchInlineSnapshot(`
       {
@@ -48,7 +46,7 @@ describe("subscribeToQuery", async () => {
       }
     `);
 
-    const tx = await writeContract(walletClient, {
+    const tx = await writeContract(testClient, {
       account: henryAccount,
       chain: null,
       address: worldAddress,
@@ -57,10 +55,9 @@ describe("subscribeToQuery", async () => {
       args: [1, 2],
     });
     await testClient.mine({ blocks: 2 });
-    await waitForTransactionReceipt(publicClient, { hash: tx });
+    await waitForTransactionReceipt(testClient, { hash: tx });
     await fetchLatestLogs();
 
-    await wait(0);
     expect(results.length).toBe(2);
     expect(results.lastValue).toMatchInlineSnapshot(`
       {
@@ -96,7 +93,6 @@ describe("subscribeToQuery", async () => {
     });
     const results = observe(result$);
 
-    await wait(0);
     expect(results.length).toBe(1);
     expect(results.lastValue).toMatchInlineSnapshot(`
       {
@@ -111,8 +107,7 @@ describe("subscribeToQuery", async () => {
       }
     `);
 
-    console.log("moving in");
-    const tx = await writeContract(walletClient, {
+    const tx = await writeContract(testClient, {
       account: henryAccount,
       chain: null,
       address: worldAddress,
@@ -121,10 +116,9 @@ describe("subscribeToQuery", async () => {
       args: [3, 5],
     });
     await testClient.mine({ blocks: 2 });
-    await waitForTransactionReceipt(publicClient, { hash: tx });
+    await waitForTransactionReceipt(testClient, { hash: tx });
     await fetchLatestLogs();
 
-    await wait(0);
     expect(results.length).toBe(2);
     expect(results.lastValue).toMatchInlineSnapshot(`
       {
@@ -142,8 +136,7 @@ describe("subscribeToQuery", async () => {
       }
     `);
 
-    console.log("moving out");
-    const tx2 = await writeContract(walletClient, {
+    const tx2 = await writeContract(testClient, {
       account: henryAccount,
       chain: null,
       address: worldAddress,
@@ -152,10 +145,9 @@ describe("subscribeToQuery", async () => {
       args: [2, 4],
     });
     await testClient.mine({ blocks: 2 });
-    await waitForTransactionReceipt(publicClient, { hash: tx2 });
+    await waitForTransactionReceipt(testClient, { hash: tx2 });
     await fetchLatestLogs();
 
-    await wait(0);
     expect(results.length).toBe(3);
     expect(results.lastValue).toMatchInlineSnapshot(`
       {
@@ -173,7 +165,7 @@ describe("subscribeToQuery", async () => {
 
   it("can get players within the bounds of (-5, -5) and (5, 5)", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
-    const result$ = await subscribeToQuery(store, {
+    const result$ = subscribeToQuery(store, {
       from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
       where: [
         { left: { tableId: tables.Position.tableId, field: "x" }, op: ">=", right: -5 },
@@ -184,7 +176,6 @@ describe("subscribeToQuery", async () => {
     });
     const results = observe(result$);
 
-    await wait(0);
     expect(results.length).toBe(1);
     expect(results.lastValue).toMatchInlineSnapshot(`
       {
@@ -208,17 +199,15 @@ describe("subscribeToQuery", async () => {
 
   it("can get players that are still alive", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
-    const result$ = await subscribeToQuery(store, {
+    const result$ = subscribeToQuery(store, {
       from: [
         { tableId: tables.Position.tableId, subject: ["player"] },
         { tableId: tables.Health.tableId, subject: ["player"] },
       ],
       where: [{ left: { tableId: tables.Health.tableId, field: "health" }, op: "!=", right: 0n }],
     });
-
     const results = observe(result$);
 
-    await wait(0);
     expect(results.length).toBe(1);
     expect(results.lastValue).toMatchInlineSnapshot(`
       {
@@ -236,14 +225,13 @@ describe("subscribeToQuery", async () => {
 
   it("can get all players in grassland", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
-    const result$ = await subscribeToQuery(store, {
+    const result$ = subscribeToQuery(store, {
       from: [{ tableId: tables.Terrain.tableId, subject: ["x", "y"] }],
       where: [{ left: { tableId: tables.Terrain.tableId, field: "terrainType" }, op: "=", right: 2 }],
     });
 
     const results = observe(result$);
 
-    await wait(0);
     expect(results.length).toBe(1);
     expect(results.lastValue).toMatchInlineSnapshot(`
       {

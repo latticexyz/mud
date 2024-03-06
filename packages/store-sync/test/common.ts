@@ -1,4 +1,4 @@
-import { createPublicClient, createTestClient, createWalletClient, http } from "viem";
+import { createTestClient, http, publicActions, walletActions } from "viem";
 
 export const anvilHost = "127.0.0.1";
 export const anvilPort = 8555;
@@ -12,15 +12,7 @@ const transport = http(anvilRpcUrl);
 export const testClient = createTestClient({
   mode: "anvil",
   transport,
-  pollingInterval: 100,
-});
-
-export const publicClient = createPublicClient({
-  transport,
-  pollingInterval: 100,
-});
-
-export const walletClient = createWalletClient({
-  transport,
-  pollingInterval: 100,
-});
+  pollingInterval: 10,
+})
+  .extend(publicActions)
+  .extend(walletActions);

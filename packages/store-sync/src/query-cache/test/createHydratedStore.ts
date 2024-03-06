@@ -3,10 +3,11 @@ import { createStorageAdapter } from "../../zustand/createStorageAdapter";
 import { ZustandStore, createStore } from "../../zustand/createStore";
 import { config } from "../../../test/mockGame";
 import { fetchAndStoreLogs } from "../../fetchAndStoreLogs";
-import { publicClient } from "../../../test/common";
+import { testClient } from "../../../test/common";
 import { storeTables, worldTables } from "../../common";
 import { AllTables } from "../common";
 import { Address } from "viem";
+import { getBlockNumber } from "viem/actions";
 
 export const tables = {
   ...config.tables,
@@ -24,18 +25,18 @@ export async function createHydratedStore(worldAddress: Address): Promise<{
   let latestBlock = -1n;
   async function fetchLatestLogs(): Promise<void> {
     const fromBlock = latestBlock + 1n;
-    const toBlock = await publicClient.getBlockNumber();
+    const toBlock = await getBlockNumber(testClient);
     if (toBlock <= fromBlock) return;
-    console.log("fetching blocks", fromBlock, "to", toBlock);
+    // console.log("fetching blocks", fromBlock, "to", toBlock);
     for await (const block of fetchAndStoreLogs({
       storageAdapter,
-      publicClient,
+      publicClient: testClient,
       address: worldAddress,
       events: storeEventsAbi,
       fromBlock,
       toBlock,
     })) {
-      console.log("got block logs", block.blockNumber, block.logs.length);
+      // console.log("got block logs", block.blockNumber, block.logs.length);
     }
     latestBlock = toBlock;
   }
