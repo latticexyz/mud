@@ -39,8 +39,8 @@ importers:
         specifier: link:../../../../packages/dev-tools
         version: link:../../../../packages/dev-tools
       '@latticexyz/phaserx':
-        specifier: '@latticexyz/phaserx'
-        version: link:@latticexyz/phaserx
+        specifier: 2.0.0-next.17
+        version: 2.0.0-next.17
       '@latticexyz/react':
         specifier: link:../../../../packages/react
         version: link:../../../../packages/react
@@ -932,6 +932,24 @@ packages:
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
     dev: false
 
+  /@latticexyz/phaserx@2.0.0-next.17:
+    resolution: {integrity: sha512-W8lEqitnXPrv56/SbdyBLVL6QCAirybbicfZbRRcAIw+egyDqrkAHtf6e30pyrxHNuJ5YCeVrj8kyHsHKbYgyg==}
+    dependencies:
+      '@latticexyz/utils': 2.0.0-next.17
+      '@use-gesture/vanilla': 10.2.9
+      mobx: 6.7.0
+      phaser: 3.60.0-beta.14
+      rxjs: 7.5.5
+    dev: false
+
+  /@latticexyz/utils@2.0.0-next.17:
+    resolution: {integrity: sha512-cxHLSwyYFCR4Dv6yBb3VKM+smsSSjOwYg8Wm/h3yskA5iRMyZiFAKfEbS50gjDiO3RMJaJ9Y7ggLsilr8/r+bw==}
+    dependencies:
+      mobx: 6.7.0
+      proxy-deep: 3.1.1
+      rxjs: 7.5.5
+    dev: false
+
   /@noble/curves@1.2.0:
     resolution: {integrity: sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==}
     dependencies:
@@ -1236,6 +1254,16 @@ packages:
       '@typescript-eslint/types': 5.46.1
       eslint-visitor-keys: 3.4.0
     dev: true
+
+  /@use-gesture/core@10.2.9:
+    resolution: {integrity: sha512-MsPUCWZ6BSir8XqSrfQCyrFuBz405YI2D0hfZ7TXX/hhF0kekN+noPhHjg7m85vMyCYf92fjt3J5AbjoGV4eMw==}
+    dev: false
+
+  /@use-gesture/vanilla@10.2.9:
+    resolution: {integrity: sha512-DVH5d0Owaw1qsviNPt6o632q8YqSXM4GMPkeMlPevzpeXwRvPPFh3ngKX/zTRER9LXKvCDOMSL7WFY1l4J+a6Q==}
+    dependencies:
+      '@use-gesture/core': 10.2.9
+    dev: false
 
   /@vitejs/plugin-react@3.1.0(vite@4.2.1):
     resolution: {integrity: sha512-AfgcRL8ZBhAlc3BFdigClmTUMISmmzHn7sB2h9U1odvc5U/MjWXsAaz18b/WoppUTDBzxOJwo2VdClfUcItu9g==}
@@ -1960,6 +1988,10 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /eventemitter3@4.0.7:
+    resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
+    dev: false
 
   /execa@5.1.1:
     resolution: {integrity: sha512-8uSpZZocAZRBAPIEINJj3Lo9HyGitllczc27Eh5YYojjMFMn8yHMDMaUHE2Jqfq05D/wucwI4JGURyXt1vchyg==}
@@ -2838,6 +2870,12 @@ packages:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
     dev: true
+
+  /phaser@3.60.0-beta.14:
+    resolution: {integrity: sha512-HFEtibIQCqQyirSnUslWjtdKCadxOjnOBlf4g5eDlKFzqBUbD991/X0OPUT/dIrPF7Tx6wmg0iORCXqZCF0f5Q==}
+    dependencies:
+      eventemitter3: 4.0.7
+    dev: false
 
   /picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
