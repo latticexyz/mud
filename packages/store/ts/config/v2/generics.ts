@@ -4,3 +4,5 @@ export type conform<t, base> = t extends base ? t : base;
 declare const __brand: unique symbol;
 type Brand<B> = { [__brand]: B };
 export type Branded<T, B> = T & Brand<B>;
+
+export type get<input, key> = key extends keyof input ? input[key] : undefined;

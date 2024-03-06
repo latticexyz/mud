@@ -38,8 +38,7 @@ describe("resolveStoreConfig", () => {
   });
 
   it("it should accept a user type as input and expand it", () => {
-    const scope = extendScope(AbiTypeScope, { CustomType: "address" });
-    const config = resolveStoreConfig({ tables: { Name: "CustomType" } }, scope);
+    const config = resolveStoreConfig({ tables: { Name: "CustomType" }, userTypes: { CustomType: "address" } });
     attest<{
       tables: {
         Name: {
