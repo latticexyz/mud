@@ -5,20 +5,15 @@ import { AbiTypeScope, EmptyScope, ScopeOptions, extendScope, getStaticAbiTypeKe
 describe("extendScope", () => {
   it("should extend the provided scope", () => {
     const extendedScope = extendScope(EmptyScope, { static: "uint256", dynamic: "string" });
-    attest<ScopeOptions<{ static: "uint256" }, { static: "uint256"; dynamic: "string" }>>(
-      extendedScope
-    ).type.toString.snap(
-      '{ staticTypes: { static: "uint256"; }; allTypes: { static: "uint256"; dynamic: "string"; }; }'
+    attest<ScopeOptions<{ static: "uint256"; dynamic: "string" }>>(extendedScope).type.toString.snap(
+      '{ validTypes: { static: "uint256"; dynamic: "string"; }; }'
     );
 
     const furtherExtendedScope = extendScope(extendedScope, { static2: "uint256", dynamic2: "string" });
-    attest<
-      ScopeOptions<
-        { static: "uint256"; static2: "uint256" },
-        { static: "uint256"; dynamic: "string"; static2: "uint256"; dynamic2: "string" }
-      >
-    >(furtherExtendedScope).type.toString.snap(
-      '{ staticTypes: { static: "uint256"; static2: "uint256"; }; allTypes: { static: "uint256"; dynamic: "string"; static2: "uint256"; dynamic2: "string"; }; }'
+    attest<ScopeOptions<{ static: "uint256"; dynamic: "string"; static2: "uint256"; dynamic2: "string" }>>(
+      furtherExtendedScope
+    ).type.toString.snap(
+      '{ validTypes: { static: "uint256"; dynamic: "string"; static2: "uint256"; dynamic2: "string"; }; }'
     );
   });
 });

@@ -1,22 +1,17 @@
 import { Dict, evaluate } from "@arktype/util";
 import { SchemaInput } from "./schema";
+import { StaticAbiType, DynamicAbiType } from "@latticexyz/schema-type";
 
-export type StaticAbiType = "uint256" | "address" | "bool" | "bytes32";
-export type AbiType = StaticAbiType | "bytes" | "string" | "bool[]";
+export type AbiType = StaticAbiType | DynamicAbiType;
 
-export const EmptyScope = { staticTypes: {}, allTypes: {} } as const;
+export const EmptyScope = { validTypes: {} } as const satisfies ScopeOptions;
+export type EmptyScope = typeof EmptyScope;
 
-export type AbiTypeScope = ScopeOptions<{ [t in StaticAbiType]: t }, { [t in AbiType]: t }>;
-export const AbiTypeScope = {} as AbiTypeScope; // TODO: runtime implementation
+export type AbiTypeScope = ScopeOptions<{ [t in AbiType]: t }>;
+export const AbiTypeScope = { validTypes: {} } as AbiTypeScope; // TODO: runtime implementation
 
-export type EmptyScope = ScopeOptions<(typeof EmptyScope)["staticTypes"], (typeof EmptyScope)["allTypes"]>;
-
-export type ScopeOptions<
-  staticTypes extends Dict<string, StaticAbiType> = Dict<string, StaticAbiType>,
-  allTypes extends Dict<string, AbiType> = Dict<string, AbiType>
-> = {
-  staticTypes: staticTypes;
-  allTypes: allTypes;
+export type ScopeOptions<validTypes extends Dict<string, AbiType> = Dict<string, AbiType>> = {
+  validTypes: validTypes;
 };
 
 export type getStaticAbiTypeKeys<
@@ -25,20 +20,17 @@ export type getStaticAbiTypeKeys<
 > = SchemaInput extends types
   ? string
   : {
-      [key in keyof types]: scope["allTypes"][types[key]] extends StaticAbiType ? key : never;
+      [key in keyof types]: scope["validTypes"][types[key]] extends StaticAbiType ? key : never;
     }[keyof types];
 
-export type extendScope<scope extends ScopeOptions, types extends Dict<string, AbiType>> = evaluate<
-  ScopeOptions<
-    evaluate<scope["staticTypes"] & { [key in getStaticAbiTypeKeys<types>]: types[key] }>,
-    evaluate<scope["allTypes"] & types>
-  >
+export type extendScope<scope extends ScopeOptions, additionalTypes extends Dict<string, AbiType>> = evaluate<
+  ScopeOptions<evaluate<scope["validTypes"] & additionalTypes>>
 >;
 
-export function extendScope<scope extends ScopeOptions, types extends Dict<string, AbiType>>(
+export function extendScope<scope extends ScopeOptions, additionalTypes extends Dict<string, AbiType>>(
   scope: scope,
-  types: types
-): extendScope<scope, types> {
+  additionalTypes: additionalTypes
+): extendScope<scope, additionalTypes> {
   // TODO: runtime implementation
   return {} as never;
 }

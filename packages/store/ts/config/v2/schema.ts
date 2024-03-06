@@ -2,13 +2,13 @@ import { evaluate } from "@arktype/util";
 import { AbiTypeScope } from "./scope";
 
 export type SchemaInput<scope extends AbiTypeScope = AbiTypeScope> = {
-  [key: string]: keyof scope["allTypes"];
+  [key: string]: keyof scope["validTypes"];
 };
 
 export type resolveSchema<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = evaluate<{
   [key in keyof schema]: {
     /** the Solidity primitive ABI type */
-    type: scope["allTypes"][schema[key]];
+    type: scope["validTypes"][schema[key]];
     /** the user defined type or Solidity primitive ABI type */
     internalType: schema[key];
   };
