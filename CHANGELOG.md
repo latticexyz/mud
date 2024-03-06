@@ -1,3 +1,569 @@
+## Version 2.0.0-next.17
+
+Release date: Tue Feb 20 2024
+
+### Major changes
+
+**[chore: upgrade to Solidity 0.8.24 (#2202)](https://github.com/latticexyz/mud/commit/aabd30767cdda7ce0c32663e7cc483db1b66d967)** (@latticexyz/world-modules, @latticexyz/schema-type, @latticexyz/gas-report, @latticexyz/common, @latticexyz/noise, @latticexyz/store, @latticexyz/world, @latticexyz/cli, create-mud)
+
+Bumped Solidity version to 0.8.24.
+
+**[feat(world): rename CoreModule to InitModule (#2227)](https://github.com/latticexyz/mud/commit/db7798be2181c1b9e55380a195a04100aab627fd)** (@latticexyz/world)
+
+Renamed `CoreModule` to `InitModule` and `CoreRegistrationSystem` to `RegistrationSystem`.
+
+**[feat(cli,world): add user defined salt in WorldFactory.deployWorld() (#2219)](https://github.com/latticexyz/mud/commit/618dd0e89232896326c30ce55f183fceb0edabdb)** (@latticexyz/cli, @latticexyz/world)
+
+`WorldFactory` now expects a user-provided `salt` when calling `deployWorld(...)` (instead of the previous globally incrementing counter). This enables deterministic world addresses across different chains.
+
+When using `mud deploy`, you can provide a `bytes32` hex-encoded salt using the `--salt` option, otherwise it defaults to a random hex value.
+
+**[feat(store): rename StoreCore.registerCoreTables to registerInternalTables (#2225)](https://github.com/latticexyz/mud/commit/5c52bee094fe5dad445a2d600cbea83e29302c40)** (@latticexyz/store, @latticexyz/world)
+
+Renamed `StoreCore`'s `registerCoreTables` method to `registerInternalTables`.
+
+### Minor changes
+
+**[fix(world-modules): `SystemSwitch` properly calls systems from root (#2205)](https://github.com/latticexyz/mud/commit/c4fc850416df72f055be9fb1eb36a0edfaa1febc)** (@latticexyz/world-modules)
+
+Fixed `SystemSwitch` to properly call non-root systems from root systems.
+
+**[feat(store-sync): wait for idle after each chunk of logs in a block (#2254)](https://github.com/latticexyz/mud/commit/997286bacafa43bd997c3c752b445acc23726bde)** (@latticexyz/store-sync)
+
+`createStoreSync` now [waits for idle](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback) between each chunk of logs in a block to allow for downstream render cycles to trigger. This means that hydrating logs from an indexer will no longer block until hydration completes, but rather allow for `onProgress` callbacks to trigger.
+
+**[feat(world): deployment salt by msg.sender (#2210)](https://github.com/latticexyz/mud/commit/6470fe1fd1fc73104cfdd01d79793203bffe5d1c)** (@latticexyz/world)
+
+`WorldFactory` now derives a salt based on number of worlds deployed by `msg.sender`, which should help with predictable world deployments across chains.
+
+### Patch changes
+
+**[feat(cli): hardcode table ID with codegen (#2229)](https://github.com/latticexyz/mud/commit/a35c05ea95395e9c7da3e18030fc200c2cde1353)** (@latticexyz/cli, @latticexyz/common, @latticexyz/store, @latticexyz/world-modules, @latticexyz/world, create-mud)
+
+Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+
+**[fix(store): reorder core table registration (#2164)](https://github.com/latticexyz/mud/commit/05b3e8882ef846e26dbf18946f64533f70d3bf41)** (@latticexyz/store)
+
+Fixed a race condition when registering core tables, where we would set a record in the `ResourceIds` table before the table was registered.
+
+**[fix(world): check table exists for register store and system hook [L-09] (#2195)](https://github.com/latticexyz/mud/commit/745485cda0d3a46e3d63d05c0149b2448e578010)** (@latticexyz/world)
+
+Updated `WorldRegistrationSystem` to check that systems exist before registering system hooks.
+
+**[fix(store-sync): fix overflowing column types, bump postgres sync version (#2270)](https://github.com/latticexyz/mud/commit/6c615b608e73d3bdabde3ad03823f1dce87f2ac6)** (@latticexyz/store-sync)
+
+Bumped the Postgres column size for `int32`, `uint32`, `int64`, and `uint64` types to avoid overflows
+
+**[feat(store-sync): bool array column types for decoded indexer (#2283)](https://github.com/latticexyz/mud/commit/4e445a1abb764de970381f5c5570ce135b712c4c)** (@latticexyz/store-sync)
+
+Moved boolean array types to use array column types (instead of JSON columns) for the Postgres decoded indexer
+
+**[docs: add missing changeset (#2282)](https://github.com/latticexyz/mud/commit/669fa43e5adcd2b3e44a298544c62ef9e0df642a)** (@latticexyz/store-sync)
+
+Moved numerical array types to use array column types (instead of JSON columns) for the Postgres decoded indexer
+
+**[docs: changeset for #2187 (#2188)](https://github.com/latticexyz/mud/commit/78a837167e527511d1a03fe67f60eb1d2e80aaa2)** (@latticexyz/cli)
+
+Fixed registration of world signatures/selectors for namespaced systems. We changed these signatures in [#2160](https://github.com/latticexyz/mud/pull/2160), but missed updating part of the deploy step.
+
+**[fix(common): include only errors defined in the contract (#2194)](https://github.com/latticexyz/mud/commit/c162ad5a546a92009aafc6150d9449738234b1ef)** (@latticexyz/common)
+
+Prevented errors not included in the contract (but present in the file) from being included in the interface by `contractToInterface`
+
+**[refactor(store): push to StoreHooks with StoreCore method (#2201)](https://github.com/latticexyz/mud/commit/55a05fd7af2abe68d2a041f55bafdd03f5d68788)** (@latticexyz/store)
+
+Refactored `StoreCore.registerStoreHook` to use `StoreHooks._push` for gas efficiency.
+
+**[refactor(world,world-modules): rename module args to encodedArgs (#2199)](https://github.com/latticexyz/mud/commit/e2d089c6d3970094e0310e84b096db0487967cc9)** (@latticexyz/world-modules, @latticexyz/world)
+
+Renamed the Module `args` parameter to `encodedArgs` to better reflect that it is ABI-encoded arguments.
+
+**[feat(world): rename CoreModule to InitModule (#2227)](https://github.com/latticexyz/mud/commit/db7798be2181c1b9e55380a195a04100aab627fd)** (@latticexyz/cli)
+
+Updated deployer with world's new `InitModule` naming.
+
+**[fix(world): prevent namespace from ending with underscore [M-05] (#2182)](https://github.com/latticexyz/mud/commit/17f98720928444ce8f82639b6d1f1eb01012a1c8)** (@latticexyz/world)
+
+Added a check to prevent namespaces from ending with an underscore (which could cause problems with world function signatures).
+
+**[fix(world): check table exists for register store and system hook [L-09] (#2195)](https://github.com/latticexyz/mud/commit/745485cda0d3a46e3d63d05c0149b2448e578010)** (@latticexyz/store)
+
+Updated `StoreCore` to check that tables exist before registering store hooks.
+
+---
+
+## Version 2.0.0-next.16
+
+Release date: Tue Jan 23 2024
+
+### Major changes
+
+**[feat(world): remove system name from function signatures/selectors [M-05] (#2160)](https://github.com/latticexyz/mud/commit/0f27afddb73d855d119ea432d7943cd96952e4da)** (@latticexyz/world-modules, @latticexyz/world)
+
+World function signatures for namespaced systems have changed from `{namespace}_{systemName}_{functionName}` to `{namespace}__{functionName}` (double underscore, no system name). This is more ergonomic and is more consistent with namespaced resources in other parts of the codebase (e.g. MUD config types, table names in the schemaful indexer).
+
+If you have a project using the `namespace` key in your `mud.config.ts` or are manually registering systems and function selectors on a namespace, you will likely need to codegen your system interfaces (`pnpm build`) and update any calls to these systems through the world's namespaced function signatures.
+
+**[chore: add module addresses changeset (#2172)](https://github.com/latticexyz/mud/commit/865253dba0aeccf30615e446c8946583ee6b1068)** (@latticexyz/world, @latticexyz/world-modules)
+
+Refactored `InstalledModules` to key modules by addresses instead of pre-defined names. Previously, modules could report arbitrary names, meaning misconfigured modules could be installed under a name intended for another module.
+
+**[feat(world): require namespace to exist before registering systems/tables in it [C-01] (#2007)](https://github.com/latticexyz/mud/commit/063daf80ef9aa9151903061fc7d80c170a96cb07)** (@latticexyz/cli, @latticexyz/world-modules, @latticexyz/world)
+
+Previously `registerSystem` and `registerTable` had a side effect of registering namespaces if the system or table's namespace didn't exist yet.
+This caused a possible frontrunning issue, where an attacker could detect a `registerSystem`/`registerTable` transaction in the mempool,
+insert a `registerNamespace` transaction before it, grant themselves access to the namespace, transfer ownership of the namespace to the victim,
+so that the `registerSystem`/`registerTable` transactions still went through successfully.
+To mitigate this issue, the side effect of registering a namespace in `registerSystem` and `registerTable` has been removed.
+Calls to these functions now expect the respective namespace to exist and the caller to own the namespace, otherwise they revert.
+
+Changes in consuming projects are only necessary if tables or systems are registered manually.
+If only the MUD deployer is used to register tables and systems, no changes are necessary, as the MUD deployer has been updated accordingly.
+
+```diff
++  world.registerNamespace(namespaceId);
+   world.registerSystem(systemId, system, true);
+```
+
+```diff
++  world.registerNamespace(namespaceId);
+   MyTable.register();
+```
+
+**[refactor(cli,world,world-modules): split and separately deploy core systems (#2128)](https://github.com/latticexyz/mud/commit/57d8965dfaa5275bd803a48c22d42b50b83c23ed)** (@latticexyz/cli)
+
+Separated core systems deployment from `CoreModule`, and added the systems as arguments to `CoreModule`
+
+**[refactor(cli,world,world-modules): split and separately deploy core systems (#2128)](https://github.com/latticexyz/mud/commit/57d8965dfaa5275bd803a48c22d42b50b83c23ed)** (@latticexyz/world)
+
+- Split `CoreSystem` into `AccessManagementSystem`, `BalanceTransferSystem`, `BatchCallSystem`, `CoreRegistrationSystem`
+- Changed `CoreModule` to receive the addresses of these systems as arguments, instead of deploying them
+- Replaced `CORE_SYSTEM_ID` constant with `ACCESS_MANAGEMENT_SYSTEM_ID`, `BALANCE_TRANSFER_SYSTEM_ID`, `BATCH_CALL_SYSTEM_ID`, `CORE_REGISTRATION_SYSTEM_ID`, for each respective system
+
+These changes separate the initcode of `CoreModule` from the bytecode of core systems, which effectively removes a limit on the total bytecode of all core systems.
+
+**[feat(world): prevent invalid namespace strings [M-05] (#2169)](https://github.com/latticexyz/mud/commit/c642ff3a0ad0d6f47d53d7c381ad6d3fffe52bbf)** (@latticexyz/world)
+
+Namespaces are not allowed to contain double underscores ("\_\_") anymore, as this sequence of characters is used to [separate the namespace and function selector](https://github.com/latticexyz/mud/pull/2168) in namespaced systems.
+This is to prevent signature clashes of functions in different namespaces.
+
+(Example: If namespaces were allowed to contain this separator string, a function "function" in namespace "namespace\_\_my" would result in the namespaced function selector "namespace\_\_my\_\_function",
+and would clash with a function "my\_\_function" in namespace "namespace".)
+
+**[fix(cli): mud set-version --link shouldn't fetch versions (#2000)](https://github.com/latticexyz/mud/commit/854de0761fd3744c2076a2b995f0f9274a8ef971)** (@latticexyz/store-sync)
+
+Postgres storage adapter now uses snake case for decoded table names and column names. This allows for better SQL ergonomics when querying these tables.
+
+To avoid naming conflicts for now, schemas are still case-sensitive and need to be queried with double quotes. We may change this in the future with [namespace validation](https://github.com/latticexyz/mud/issues/1991).
+
+### Minor changes
+
+**[feat(store): never allow empty FieldLayout (#2122)](https://github.com/latticexyz/mud/commit/3ac68ade6e60dae2caad9f12ca146b1d461cb1c4)** (@latticexyz/store)
+
+Removed `allowEmpty` option from `FieldLayout.validate()` as field layouts should never be empty.
+
+**[feat(store): improve FieldLayout errors [N-03] (#2114)](https://github.com/latticexyz/mud/commit/103f635ebc20ac1aecc5c526c4bcb928e860a7ed)** (@latticexyz/store)
+
+Improved error messages for invalid `FieldLayout`s
+
+```diff
+-error FieldLayoutLib_InvalidLength(uint256 length);
++error FieldLayoutLib_TooManyFields(uint256 numFields, uint256 maxFields);
++error FieldLayoutLib_TooManyDynamicFields(uint256 numFields, uint256 maxFields);
++error FieldLayoutLib_Empty();
+```
+
+### Patch changes
+
+**[fix(store): emit event after calling beforeSetRecord hook [L-02] (#2017)](https://github.com/latticexyz/mud/commit/c6c13f2ea7e405cac2bc9cf77659d2d66bfdc0d2)** (@latticexyz/store)
+
+Storage events are now emitted after "before" hooks, so that the resulting logs are now correctly ordered and reflect onchain logic. This resolves issues with store writes and event emissions happening in "before" hooks.
+
+**[refactor(world-modules): simplify getUniqueEntity call (#2161)](https://github.com/latticexyz/mud/commit/eaa766ef7d68b76bb783531a1a2691abdaa27df5)** (@latticexyz/world-modules)
+
+Removed `IUniqueEntitySystem` in favor of calling `getUniqueEntity` via `world.call` instead of the world function selector. This had a small gas improvement.
+
+**[refactor(store,world): rename ambiguous elements [N-03] (#2091)](https://github.com/latticexyz/mud/commit/e6c03a87a5c80b5ed9ddc1aaf6ad73f544c03648)** (@latticexyz/store, @latticexyz/world)
+
+Renamed the `requireNoCallback` modifier to `prohibitDirectCallback`.
+
+**[refactor(world): use \_getSystem when fetching system addresses [N-11] (#2022)](https://github.com/latticexyz/mud/commit/c207d35e822afe5f04225d6854fb039116cc7840)** (@latticexyz/world)
+
+Optimised `StoreRegistrationSystem` and `WorldRegistrationSystem` by fetching individual fields instead of entire records where possible.
+
+**[fix(world): inline debug constants [L-11] (#1976)](https://github.com/latticexyz/mud/commit/d00c4a9af5fe54b1d21caa9f5cd525e48b3960f5)** (@latticexyz/world)
+
+Removed `ROOT_NAMESPACE_STRING` and `ROOT_NAME_STRING` exports in favor of inlining these constants, to avoid reuse as they're meant for internal error messages and debugging.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/store, @latticexyz/world)
+
+Refactored various files to specify integers in a hex base instead of decimals.
+
+**[fix(store): do not render push and pop for static arrays, use static length [M-02] (#2175)](https://github.com/latticexyz/mud/commit/1bf2e908763529e08c3d233f68eaf6705c9fffab)** (@latticexyz/store)
+
+Updated codegen to not render `push` and `pop` methods for static arrays. The `length` method now returns the hardcoded known length instead of calculating it like with a dynamic array.
+
+**[fix(world): module supports world context consumer id [L-12] (#2032)](https://github.com/latticexyz/mud/commit/f6f402896d8256da3b868f865a960db68393caf4)** (@latticexyz/world)
+
+Added the WorldContextConsumer interface ID to `supportsInterface` in the Module contract.
+
+**[fix(world): limit call context of `CoreSystem` to delegatecall [C-02] (#2111)](https://github.com/latticexyz/mud/commit/08b4221712cb004867e5c43b4b408aa45d9e3355)** (@latticexyz/world)
+
+Systems are expected to be always called via the central World contract.
+Depending on whether it is a root or non-root system, the call is performed via `delegatecall` or `call`.
+Since Systems are expected to be stateless and only interact with the World state, it is not necessary to prevent direct calls to the systems.
+However, since the `CoreSystem` is known to always be registered as a root system in the World, it is always expected to be delegatecalled,
+so we made this expectation explicit by reverting if it is not delegatecalled.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/world)
+
+Made the `coreModule` variable in `WorldFactory` immutable.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/world)
+
+Removed the unnecessary `extcodesize` check from the `Create2` library.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/world-modules, @latticexyz/store, @latticexyz/world)
+
+Refactored `ResourceId` to use a global Solidity `using` statement.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/world-modules, @latticexyz/store, @latticexyz/world)
+
+Refactored EIP165 usages to use the built-in interfaceId property instead of pre-defined constants.
+
+**[fix(world): prevent initialising the world multiple times [L-05] (#2170)](https://github.com/latticexyz/mud/commit/2bfee9217c0b08b2cca5b4a5aef6f4c2f0e7d2f2)** (@latticexyz/world)
+
+Added a table to track the `CoreModule` address the world was initialised with.
+
+**[fix(store-sync): improve syncToZustand hydration speed (#2145)](https://github.com/latticexyz/mud/commit/a735e14b44f7bd0ed72745610d49b55a181f5401)** (@latticexyz/store-sync)
+
+Improved `syncToZustand` speed of hydrating from snapshot by only applying block logs once per block instead of once per log.
+
+**[fix(store): revert if slice bound is invalid [L-10] (#2034)](https://github.com/latticexyz/mud/commit/7b28d32e579a0ed09122982617bb938b3e2b5a98)** (@latticexyz/store)
+
+Added a custom error `Store_InvalidBounds` for when the `start:end` slice in `getDynamicFieldSlice` is invalid (it used to revert with the default overflow error)
+
+**[refactor(store): order load function arguments [N-02] (#2033)](https://github.com/latticexyz/mud/commit/9f8b84e733412323103fdd81067f8edc9d681a17)** (@latticexyz/store)
+
+Aligned the order of function arguments in the `Storage` library.
+
+```solidity
+store(uint256 storagePointer, uint256 offset, bytes memory data)
+store(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer)
+load(uint256 storagePointer, uint256 offset, uint256 length)
+load(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer)
+```
+
+**[fix(world): check namespace exists before balance transfer [L-03] (#2095)](https://github.com/latticexyz/mud/commit/aee8020a65ca5cfebb2ca479357a535bbf07269b)** (@latticexyz/world)
+
+Namespace balances can no longer be transferred to non-existent namespaces.
+
+**[fix(store): add missing FieldLayout and Schema validations [L-07] (#2046)](https://github.com/latticexyz/mud/commit/ad4ac44594f222fdfeca77e4d262eb47ef735836)** (@latticexyz/store)
+
+Added more validation checks for `FieldLayout` and `Schema`.
+
+**[fix(world): prevent misconfigured delegations, allow unregistering [L-04] (#2096)](https://github.com/latticexyz/mud/commit/e4a6189df7b2bbf5c88cc050c529d8f0ee49bc5a)** (@latticexyz/world)
+
+Prevented invalid delegations by performing full validation regardless of whether `initCallData` is empty. Added an `unregisterDelegation` function which allows explicit unregistration, as opposed of passing in zero bytes into `registerDelegation`.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/world-modules, @latticexyz/store, @latticexyz/world)
+
+Refactored various Solidity files to not explicitly initialise variables to zero.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/store)
+
+Refactored some Store functions to use a right bit mask instead of left.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/store)
+
+Simplified a check in `Slice.getSubslice`.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/world)
+
+Refactored `WorldContext` to get the world address from `WorldContextConsumerLib` instead of `StoreSwitch`.
+
+**[refactor(store,world,world-modules): code suggestions [N-08] (#2140)](https://github.com/latticexyz/mud/commit/37c228c63235e184a40623d9bb1f6494abdf25e4)** (@latticexyz/store)
+
+Optimised the `Schema.validate` function to decrease gas use.
+
+---
+
+## Version 2.0.0-next.15
+
+Release date: Wed Jan 03 2024
+
+### Major changes
+
+**[fix(store-sync,store-indexer): make last updated block number not null (#1972)](https://github.com/latticexyz/mud/commit/504e25dc83a210a1ef3b66d8487d9e292470620c)** (@latticexyz/store-sync)
+
+`lastUpdatedBlockNumber` columns in Postgres storage adapters are no longer nullable
+
+**[feat(store-indexer): clean database if outdated (#1984)](https://github.com/latticexyz/mud/commit/e48fb3b037d2ee888a8c61a6fc51721c903559e3)** (@latticexyz/store-sync)
+
+Renamed singleton `chain` table to `config` table for clarity.
+
+**[feat(store-sync, store-indexer): order logs by logIndex (#2037)](https://github.com/latticexyz/mud/commit/85b94614b83cd0964a305d488c1efb247445b915)** (@latticexyz/store-indexer, @latticexyz/store-sync)
+
+The postgres indexer is now storing the `logIndex` of the last update of a record to be able to return the snapshot logs in the order they were emitted onchain.
+
+**[feat(store-sync): fetch and store logs (#2003)](https://github.com/latticexyz/mud/commit/a4aff73c538265ecfd2a17ecf98edcaa6a2ef935)** (@latticexyz/store-sync)
+
+Previously, all `store-sync` strategies were susceptible to a potential memory leak where the stream that fetches logs from the RPC would get ahead of the stream that stores the logs in the provided storage adapter. We saw this most often when syncing to remote Postgres servers, where inserting records was much slower than we retrieving them from the RPC. In these cases, the stream would build up a backlog of items until the machine ran out of memory.
+
+This is now fixed by waiting for logs to be stored before fetching the next batch of logs from the RPC. To make this strategy work, we no longer return `blockLogs$` (stream of logs fetched from RPC but before they're stored) and instead just return `storedBlockLogs$` (stream of logs fetched from RPC after they're stored).
+
+**[feat(store-sync,store-indexer): schemaless indexer (#1965)](https://github.com/latticexyz/mud/commit/1b5eb0d075579d2437b4329266ca37735e65ce41)** (@latticexyz/store-sync)
+
+`syncToPostgres` from `@latticexyz/store-sync/postgres` now uses a single table to store all records in their bytes form (`staticData`, `encodedLengths`, and `dynamicData`), more closely mirroring onchain state and enabling more scalability and stability for automatic indexing of many worlds.
+
+The previous behavior, where schemaful SQL tables are created and populated for each MUD table, has been moved to a separate `@latticexyz/store-sync/postgres-decoded` export bundle. This approach is considered less stable and is intended to be used for analytics purposes rather than hydrating clients. Some previous metadata columns on these tables have been removed in favor of the bytes records table as the source of truth for onchain state.
+
+This overhaul is considered breaking and we recommend starting a fresh database when syncing with either of these strategies.
+
+**[feat(store-sync): snake case postgres names in decoded tables (#1989)](https://github.com/latticexyz/mud/commit/7b73f44d98dd25483c037e76d174e30e99488bd3)** (@latticexyz/store-sync)
+
+Postgres storage adapter now uses snake case for decoded table names and column names. This allows for better SQL ergonomics when querying these tables.
+
+To avoid naming conflicts for now, schemas are still case-sensitive and need to be queried with double quotes. We may change this in the future with [namespace validation](https://github.com/latticexyz/mud/issues/1991).
+
+### Minor changes
+
+**[feat(store-sync,store-indexer): sync from getLogs indexer endpoint (#1973)](https://github.com/latticexyz/mud/commit/5df1f31bc9d35969de6f03396905778748017f38)** (@latticexyz/store-sync)
+
+Refactored how we fetch snapshots from an indexer, preferring the new `getLogs` endpoint and falling back to the previous `findAll` if it isn't available. This refactor also prepares for an easier entry point for adding client caching of snapshots.
+
+The `initialState` option for various sync methods (`syncToPostgres`, `syncToRecs`, etc.) is now deprecated in favor of `initialBlockLogs`. For now, we'll automatically convert `initialState` into `initialBlockLogs`, but if you want to update your code, you can do:
+
+```ts
+import { tablesWithRecordsToLogs } from "@latticexyz/store-sync";
+
+const initialBlockLogs = {
+  blockNumber: initialState.blockNumber,
+  logs: tablesWithRecordsToLogs(initialState.tables),
+};
+```
+
+**[feat(create-mud): remove window global usage in vanilla template (#1774)](https://github.com/latticexyz/mud/commit/f6133591a86eb169a7b1b2b8d342733a887af610)** (create-mud)
+
+Replaced usage of `window` global in vanilla JS template with an event listener on the button.
+
+**[feat(cli): add build command (#1990)](https://github.com/latticexyz/mud/commit/59d78c93ba80d20e5d7c4f47b9fe24575bcdc8cd)** (@latticexyz/cli)
+
+Added a `mud build` command that generates table libraries, system interfaces, and typed ABIs.
+
+**[feat(store-sync,store-indexer): schemaless indexer (#1965)](https://github.com/latticexyz/mud/commit/1b5eb0d075579d2437b4329266ca37735e65ce41)** (@latticexyz/common)
+
+Added `unique` and `groupBy` array helpers to `@latticexyz/common/utils`.
+
+```ts
+import { unique } from "@latticexyz/common/utils";
+
+unique([1, 2, 1, 4, 3, 2]);
+// [1, 2, 4, 3]
+```
+
+```ts
+import { groupBy } from "@latticexyz/common/utils";
+
+const records = [
+  { type: "cat", name: "Bob" },
+  { type: "cat", name: "Spot" },
+  { type: "dog", name: "Rover" },
+];
+Object.fromEntries(groupBy(records, (record) => record.type));
+// {
+//   "cat": [{ type: "cat", name: "Bob" }, { type: "cat", name: "Spot" }],
+//   "dog: [{ type: "dog", name: "Rover" }]
+// }
+```
+
+**[feat(store-sync,store-indexer): schemaless indexer (#1965)](https://github.com/latticexyz/mud/commit/1b5eb0d075579d2437b4329266ca37735e65ce41)** (@latticexyz/store-indexer)
+
+The `findAll` method is now considered deprecated in favor of a new `getLogs` method. This is only implemented in the Postgres indexer for now, with SQLite coming soon. The new `getLogs` method will be an easier and more robust data source to hydrate the client and other indexers and will allow us to add streaming updates from the indexer in the near future.
+
+For backwards compatibility, `findAll` is now implemented on top of `getLogs`, with record key/value decoding done in memory at request time. This may not scale for large databases, so use wisely.
+
+**[feat(store-indexer): clean database if outdated (#1984)](https://github.com/latticexyz/mud/commit/e48fb3b037d2ee888a8c61a6fc51721c903559e3)** (@latticexyz/store-indexer)
+
+When the Postgres indexer starts up, it will now attempt to detect if the database is outdated and, if so, cleans up all MUD-related schemas and tables before proceeding.
+
+**[feat(store-indexer, store-sync): improve query performance and enable compression, add new api (#2026)](https://github.com/latticexyz/mud/commit/4c1dcd81eae44c37f66bd80871daf02834c04fb5)** (@latticexyz/common)
+
+- Added a `Result<Ok, Err>` type for more explicit and typesafe error handling ([inspired by Rust](https://doc.rust-lang.org/std/result/)).
+
+- Added a `includes` util as typesafe alternative to [`Array.prototype.includes()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes).
+
+**[docs: add changeset for zustand sync progress (#1931)](https://github.com/latticexyz/mud/commit/7eabd06f7af9748aba842d116f1dcd0ef5635999)** (@latticexyz/store-sync)
+
+Added and populated `syncProgress` key in Zustand store for sync progress, like we do for RECS sync. This will let apps using `syncToZustand` render a loading state while initial client hydration is in progress.
+
+```tsx
+const syncProgress = useStore((state) => state.syncProgress);
+
+if (syncProgress.step !== SyncStep.LIVE) {
+  return <>Loading ({Math.floor(syncProgress.percentage)}%)</>;
+}
+```
+
+**[feat(store-sync,store-indexer): sync from getLogs indexer endpoint (#1973)](https://github.com/latticexyz/mud/commit/5df1f31bc9d35969de6f03396905778748017f38)** (@latticexyz/common)
+
+Updated `chunk` types to use readonly arrays
+
+**[feat(store-sync,store-indexer): sync from getLogs indexer endpoint (#1973)](https://github.com/latticexyz/mud/commit/5df1f31bc9d35969de6f03396905778748017f38)** (@latticexyz/store-indexer)
+
+Added `getLogs` query support to sqlite indexer
+
+**[feat(store-indexer, store-sync): improve query performance and enable compression, add new api (#2026)](https://github.com/latticexyz/mud/commit/4c1dcd81eae44c37f66bd80871daf02834c04fb5)** (@latticexyz/store-indexer, @latticexyz/store-sync)
+
+- Improved query performance by 10x by moving from drizzle ORM to handcrafted SQL.
+- Moved away from `trpc` for more granular control over the transport layer.
+  Added an `/api/logs` endpoint using the new query and gzip compression for 40x less data transferred over the wire.
+  Deprecated the `/trpc/getLogs` and `/trpc/findAll` endpoints.
+- Added a `createIndexerClient` client for the new `/api` indexer API exported from `@latticexyz/store-sync/indexer-client`.
+  The `createIndexerClient` export from `@latticexyz/store-sync/trpc-indexer` is deprecated.
+
+```diff
+- import { createIndexerClient } from "@latticexyz/store-sync/trpc-indexer";
++ import { createIndexerClient } from "@latticexyz/store-sync/indexer-client";
+
+- const indexer = createIndexerClient({ url: "https://indexer.holesky.redstone.xyz/trpc" });
++ const indexer = createIndexerClient({ url: "https://indexer.holesky.redstone.xyz" });
+
+- const snapshot = indexer.getLogs.query(options);
++ const snapshot = indexer.getLogs(options);
+```
+
+**[feat(store-indexer): return a "not found" error when no snapshot is found for a `/api/logs` request (#2043)](https://github.com/latticexyz/mud/commit/f61b4bc0903d09c4c71f01270012953adee50701)** (@latticexyz/store-indexer)
+
+The `/api/logs` indexer endpoint is now returning a `404` snapshot not found error when no snapshot is found for the provided filter instead of an empty `200` response.
+
+**[fix(cli): add worldAddress to dev-contracts (#1892)](https://github.com/latticexyz/mud/commit/1feecf4955462554c650f56e4777aa330e31f667)** (@latticexyz/store-indexer)
+
+Added `STORE_ADDRESS` environment variable to index only a specific MUD Store.
+
+### Patch changes
+
+**[fix(store,world): exclude ERC165 interface ID from custom interface ID's [L-06] (#2014)](https://github.com/latticexyz/mud/commit/d8c8f66bfd403994216e856d5e92368f7a63be38)** (@latticexyz/store, @latticexyz/world)
+
+Exclude ERC165 interface ID from custom interface ID's.
+
+**[fix(store-sync,store-indexer): make last updated block number not null (#1972)](https://github.com/latticexyz/mud/commit/504e25dc83a210a1ef3b66d8487d9e292470620c)** (@latticexyz/store-indexer)
+
+Records are now ordered by `lastUpdatedBlockNumber` at the Postgres SQL query level
+
+**[fix(store): slice4 output should be bytes4 [M-03] (#2031)](https://github.com/latticexyz/mud/commit/1b86eac0530d069ff267f6fee8d6a71d6bbb365b)** (@latticexyz/store)
+
+Changed the type of the output variable in the `slice4` function to `bytes4`.
+
+**[fix(cli): mud set-version --link shouldn't fetch versions (#2000)](https://github.com/latticexyz/mud/commit/854de0761fd3744c2076a2b995f0f9274a8ef971)** (@latticexyz/cli)
+
+Using `mud set-version --link` will no longer attempt to fetch the latest version from npm.
+
+**[fix(store,world): fix mud config TS errors (#1974)](https://github.com/latticexyz/mud/commit/1077c7f53b6c0d6ea7663fe2722b0e768d407741)** (@latticexyz/store, @latticexyz/world)
+
+Fixed an issue where `mud.config.ts` source file was not included in the package, causing TS errors downstream.
+
+**[feat(store-indexer): command to run decoded indexer (#2001)](https://github.com/latticexyz/mud/commit/b00550cef2a3824dd38122a16b6e768bd88f9357)** (@latticexyz/store-indexer)
+
+Added a script to run the decoded postgres indexer.
+
+**[chore(store-indexer, store-sync): add explicit error logs (#2045)](https://github.com/latticexyz/mud/commit/0a3b9b1c9c821b153cb07281b585feb006ec621e)** (@latticexyz/store-indexer, @latticexyz/store-sync)
+
+Added explicit error logs for unexpected situations.
+Previously all `debug` logs were going to `stderr`, which made it hard to find the unexpected errors.
+Now `debug` logs go to `stdout` and we can add explicit `stderr` logs.
+
+**[chore(common): log benchmark to stderr (#2047)](https://github.com/latticexyz/mud/commit/933b54b5fcdd9400e21e8e0114bb4c691e830fec)** (@latticexyz/common)
+
+The benchmark util now logs to `stdout` instead of `stderr`.
+
+**[chore(world): add explicit visibility to coreSystem [N-07] (#2029)](https://github.com/latticexyz/mud/commit/f8dab7334d41d1a53dfad0bbd13a1bbe6fc0cbf8)** (@latticexyz/world)
+
+Added explicit `internal` visibility to the `coreSystem` variable in `CoreModule`.
+
+**[fix(world,world-modules): requireInterface correctly specifies ERC165 [M-02] (#2016)](https://github.com/latticexyz/mud/commit/1a0fa7974b493258c7fc8f0708c442ed548e227e)** (@latticexyz/world)
+
+Fixed `requireInterface` to correctly specify ERC165.
+
+**[feat(world): add isInstalled to Module (#2056)](https://github.com/latticexyz/mud/commit/eb384bb0e073b1261b8ab92bc74c32ec4956c886)** (@latticexyz/world-modules, @latticexyz/world)
+
+Added `isInstalled` and `requireNotInstalled` helpers to `Module` base contract.
+
+**[fix(store-sync): create table registration logs from indexer records (#1919)](https://github.com/latticexyz/mud/commit/712866f5fb392a4e39b59cd4565da61adc3c005f)** (@latticexyz/store-sync)
+
+`createStoreSync` now correctly creates table registration logs from indexer records.
+
+**[chore(store-indexer): setup Sentry middleware in indexer (#2054)](https://github.com/latticexyz/mud/commit/85d16e48b6b3d15fe895dba550fb8d176481e1cd)** (@latticexyz/store-indexer)
+
+Added a Sentry middleware and `SENTRY_DNS` environment variable to the postgres indexer.
+
+**[fix(world): register FunctionSignatures table [L-01] (#1841)](https://github.com/latticexyz/mud/commit/e5a962bc31086fc4c13bbb4aa049b7a14599b11d)** (@latticexyz/world)
+
+`World` now correctly registers the `FunctionSignatures` table.
+
+**[feat(store-indexer): replace fastify with koa (#2006)](https://github.com/latticexyz/mud/commit/c314badd13412a7a96692046b0402a00988994f1)** (@latticexyz/store-indexer)
+
+Replaced Fastify with Koa for store-indexer frontends
+
+**[fix(create-mud): include `.gitignore` files in created projects (#1945)](https://github.com/latticexyz/mud/commit/6963a9e85ea97b47be2edd199afa98100f728cf1)** (create-mud)
+
+Templates now correctly include their respective `.gitignore` files
+
+**[fix(cli): always rebuild IWorld ABI (#1929)](https://github.com/latticexyz/mud/commit/2699630c0e0c2027f331a9defe7f90a8968f7b3d)** (@latticexyz/cli)
+
+Deploys will now always rebuild `IWorld.sol` interface (a workaround for https://github.com/foundry-rs/foundry/issues/6241)
+
+**[build: allow use by TypeScript projects with `bundler`/`node16` config (#2084)](https://github.com/latticexyz/mud/commit/590542030e7500f8d3cce6e54e4961d9f8a1a6d5)** (@latticexyz/abi-ts, @latticexyz/block-logs-stream, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/faucet, @latticexyz/gas-report, @latticexyz/noise, @latticexyz/phaserx, @latticexyz/protocol-parser, @latticexyz/react, @latticexyz/recs, @latticexyz/schema-type, @latticexyz/services, @latticexyz/store-sync, @latticexyz/store, @latticexyz/utils, @latticexyz/world-modules, @latticexyz/world)
+
+TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+
+**[fix(store): onBeforeSpliceDynamicData receives the previous encoded lengths [M-01] (#2020)](https://github.com/latticexyz/mud/commit/6db95ce15e1c51422ca0494883210105c3e742ba)** (@latticexyz/store)
+
+Fixed `StoreCore` to pass `previousEncodedLengths` into `onBeforeSpliceDynamicData`.
+
+**[fix(store-indexer): disable prepared statements (#2058)](https://github.com/latticexyz/mud/commit/392c4b88d033d2d175541b974189a3f4da49e335)** (@latticexyz/store-indexer)
+
+Disabled prepared statements for the postgres indexer, which led to issues in combination with `pgBouncer`.
+
+**[chore: pipe debug logs to stdout, add separate util to pipe to stderr (#2044)](https://github.com/latticexyz/mud/commit/5d737cf2e7a1a305d7ef0bee99c07c17d80233c8)** (@latticexyz/abi-ts, @latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/faucet, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store)
+
+Updated the `debug` util to pipe to `stdout` and added an additional util to explicitly pipe to `stderr` when needed.
+
+**[chore(store-indexer): stringify filter in error log (#2048)](https://github.com/latticexyz/mud/commit/5ab67e3350bd08d15fbbe28c498cec62d2aaa116)** (@latticexyz/store-indexer)
+
+The error log if no data is found in `/api/logs` is now stringifying the filter instead of logging `[object Object]`.
+
+**[fix(store): fix potential memory corruption [M-04] (#1978)](https://github.com/latticexyz/mud/commit/5ac4c97f43756e3fca4ab01f6c881822100fa56d)** (@latticexyz/store)
+
+Fixed M-04 Memory Corruption on Load From Storage
+It only affected external use of `Storage.load` with a `memoryPointer` argument
+
+**[chore(store,world): remove unused imports [N-05] (#2028)](https://github.com/latticexyz/mud/commit/e481717413a280e830b33b44a16c8c2475452b07)** (@latticexyz/store, @latticexyz/world)
+
+Removed unused imports from various files in the `store` and `world` packages.
+
+**[fix(store-indexer): add postgres-decoded-indexer binary (#2062)](https://github.com/latticexyz/mud/commit/735d957c6906e896e3e496158b9afd35da4688d4)** (@latticexyz/store-indexer)
+
+Added a binary for the `postgres-decoded` indexer.
+
+**[fix(world-modules): rename token address fields (#1986)](https://github.com/latticexyz/mud/commit/747d8d1b819882c1f84b8029fd4ade669f772322)** (@latticexyz/world-modules)
+
+Renamed token address fields in ERC20 and ERC721 modules to `tokenAddress`
+
+**[fix(react): trigger useComponentValue on deleted records (#1959)](https://github.com/latticexyz/mud/commit/9ef3f9a7c2ea52778027fb61988f876b590b22b0)** (@latticexyz/react)
+
+Fixed an issue where `useComponentValue` would not detect a change and re-render if the component value was immediately removed.
+
+**[fix(store-sync): use dynamic data in postgres decoded indexer (#1983)](https://github.com/latticexyz/mud/commit/34203e4ed88c2aa79f994b99a96be4fcff21ca06)** (@latticexyz/store-sync)
+
+Fixed invalid value when decoding records in `postgres-decoded` storage adapter
+
+**[fix(faucet): use MUD's sendTransaction for better nonce handling (#2080)](https://github.com/latticexyz/mud/commit/9082c179c5a1907cc79ec95543664e63fc327bb4)** (@latticexyz/faucet)
+
+Updated to use MUD's `sendTransaction`, which does a better of managing nonces for higher volumes of transactions.
+
+---
+
 ## Version 2.0.0-next.14
 
 Release date: Fri Nov 10 2023

@@ -1,5 +1,8 @@
 import { StorageAdapterLog, storeTables } from "./common";
 
+/**
+ * @internal
+ */
 export function isTableRegistrationLog(
   log: StorageAdapterLog
 ): log is StorageAdapterLog & { eventName: "Store_SetRecord" } {

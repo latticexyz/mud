@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { renderFieldLayout } from "./renderFieldLayout";
-import { RenderType } from "@latticexyz/common/codegen";
 
 describe("renderFieldLayout", () => {
   it("should match the FieldLayout.sol encoding", () => {
@@ -33,10 +32,46 @@ describe("renderFieldLayout", () => {
       { isDynamic: true, staticByteLength: 0 },
       { isDynamic: true, staticByteLength: 0 },
       { isDynamic: true, staticByteLength: 0 },
-    ] as RenderType[];
+    ];
 
-    expect(renderFieldLayout(fields)).toEqual(
-      `FieldLayout constant _fieldLayout = FieldLayout.wrap(0x013418040102030405060708090a0b0c0d0e0f10111213141516172000000000);`
+    expect(renderFieldLayout(fields)).toMatchInlineSnapshot(
+      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x013418040102030405060708090a0b0c0d0e0f10111213141516172000000000);"'
     );
+
+    expect(renderFieldLayout([{ isDynamic: false, staticByteLength: 2 }])).toMatchInlineSnapshot(
+      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x0002010002000000000000000000000000000000000000000000000000000000);"'
+    );
+
+    expect(renderFieldLayout([{ isDynamic: false, staticByteLength: 8 }])).toMatchInlineSnapshot(
+      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x0008010008000000000000000000000000000000000000000000000000000000);"'
+    );
+
+    expect(renderFieldLayout([{ isDynamic: false, staticByteLength: 16 }])).toMatchInlineSnapshot(
+      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x0010010010000000000000000000000000000000000000000000000000000000);"'
+    );
+
+    expect(renderFieldLayout([{ isDynamic: true, staticByteLength: 0 }])).toMatchInlineSnapshot(
+      '"FieldLayout constant _fieldLayout = FieldLayout.wrap(0x0000000100000000000000000000000000000000000000000000000000000000);"'
+    );
+  });
+
+  it("should fail when trying to encode too many fields", () => {
+    const fields = new Array(50).fill({ isDynamic: false, staticByteLength: 2 });
+    expect(() => renderFieldLayout(fields)).toThrowError("FieldLayout: too many fields");
+  });
+
+  it("should fail when trying to encode too many dynamic fields", () => {
+    const fields = new Array(10).fill({ isDynamic: true, staticByteLength: 0 });
+    expect(() => renderFieldLayout(fields)).toThrowError("FieldLayout: too many dynamic fields");
+  });
+
+  it("should fail when trying to encode dynamic type before static type", () => {
+    const fields = [
+      { isDynamic: false, staticByteLength: 2 },
+      { isDynamic: true, staticByteLength: 0 },
+      { isDynamic: false, staticByteLength: 2 },
+    ];
+
+    expect(() => renderFieldLayout(fields)).toThrowError("FieldLayout: static type after dynamic type");
   });
 });

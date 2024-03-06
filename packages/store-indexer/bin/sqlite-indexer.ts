@@ -6,20 +6,26 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
-import fastify from "fastify";
-import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
-import { AppRouter, createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
+import Koa from "koa";
+import cors from "@koa/cors";
+import { createKoaMiddleware } from "trpc-koa-adapter";
+import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
 import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
 import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
+import { healthcheck } from "../src/koa-middleware/healthcheck";
+import { helloWorld } from "../src/koa-middleware/helloWorld";
+import { apiRoutes } from "../src/sqlite/apiRoutes";
+import { sentry } from "../src/koa-middleware/sentry";
 
 const env = parseEnv(
   z.intersection(
     z.intersection(indexerEnvSchema, frontendEnvSchema),
     z.object({
       SQLITE_FILENAME: z.string().default("indexer.db"),
+      SENTRY_DSN: z.string().optional(),
     })
   )
 );
@@ -69,6 +75,7 @@ try {
 const { latestBlockNumber$, storedBlockLogs$ } = await syncToSqlite({
   database,
   publicClient,
+  followBlockTag: env.FOLLOW_BLOCK_TAG,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
   address: env.STORE_ADDRESS,
@@ -87,27 +94,30 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
     console.log("all caught up");
   });
 
-// @see https://fastify.dev/docs/latest/
-const server = fastify({
-  maxParamLength: 5000,
-});
+const server = new Koa();
 
-await server.register(import("@fastify/cors"));
+if (env.SENTRY_DSN) {
+  server.use(sentry(env.SENTRY_DSN));
+}
 
-// k8s healthchecks
-server.get("/healthz", (req, res) => res.code(200).send());
-server.get("/readyz", (req, res) => (isCaughtUp ? res.code(200).send("ready") : res.code(424).send("backfilling")));
+server.use(cors());
+server.use(
+  healthcheck({
+    isReady: () => isCaughtUp,
+  })
+);
+server.use(helloWorld());
+server.use(apiRoutes(database));
 
-// @see https://trpc.io/docs/server/adapters/fastify
-server.register(fastifyTRPCPlugin<AppRouter>, {
-  prefix: "/trpc",
-  trpcOptions: {
+server.use(
+  createKoaMiddleware({
+    prefix: "/trpc",
     router: createAppRouter(),
     createContext: async () => ({
       queryAdapter: await createQueryAdapter(database),
     }),
-  },
-});
+  })
+);
 
-await server.listen({ host: env.HOST, port: env.PORT });
+server.listen({ host: env.HOST, port: env.PORT });
 console.log(`sqlite indexer frontend listening on http://${env.HOST}:${env.PORT}`);

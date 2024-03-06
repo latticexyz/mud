@@ -1,18 +1,28 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { ResourceId } from "./ResourceId.sol";
 
+/**
+ * @title IStoreErrors
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ * @notice This interface includes errors for Store.
+ * @dev We bundle these errors in an interface (instead of at the file-level or in their corresponding library) so they can be inherited by IStore.
+ * This ensures that all possible errors are included in the IStore ABI for proper decoding in the frontend.
+ */
 interface IStoreErrors {
   // Errors include a stringified version of the tableId for easier debugging if cleartext tableIds are used
   error Store_TableAlreadyExists(ResourceId tableId, string tableIdString);
   error Store_TableNotFound(ResourceId tableId, string tableIdString);
   error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
 
-  error Store_InvalidDynamicDataLength(uint256 expected, uint256 received);
+  error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
+  error Store_InvalidBounds(uint256 start, uint256 end);
   error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
   error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
   error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
   error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
+  error Store_InvalidValueSchemaStaticLength(uint256 expected, uint256 received);
+  error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
   error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
 }

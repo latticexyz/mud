@@ -1,46 +1,51 @@
 #!/usr/bin/env node
 import "dotenv/config";
 import { z } from "zod";
-import fastify from "fastify";
-import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
-import { AppRouter, createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
-import { createQueryAdapter } from "../src/postgres/createQueryAdapter";
+import Koa from "koa";
+import cors from "@koa/cors";
+import { createKoaMiddleware } from "trpc-koa-adapter";
+import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { frontendEnvSchema, parseEnv } from "./parseEnv";
+import { createQueryAdapter } from "../src/postgres/deprecated/createQueryAdapter";
+import { apiRoutes } from "../src/postgres/apiRoutes";
+import { sentry } from "../src/koa-middleware/sentry";
+import { healthcheck } from "../src/koa-middleware/healthcheck";
+import { helloWorld } from "../src/koa-middleware/helloWorld";
 
 const env = parseEnv(
   z.intersection(
     frontendEnvSchema,
     z.object({
       DATABASE_URL: z.string(),
+      SENTRY_DSN: z.string().optional(),
     })
   )
 );
 
-const database = drizzle(postgres(env.DATABASE_URL));
+const database = postgres(env.DATABASE_URL, { prepare: false });
 
-// @see https://fastify.dev/docs/latest/
-const server = fastify({
-  maxParamLength: 5000,
-});
+const server = new Koa();
 
-await server.register(import("@fastify/cors"));
+if (env.SENTRY_DSN) {
+  server.use(sentry(env.SENTRY_DSN));
+}
 
-// k8s healthchecks
-server.get("/healthz", (req, res) => res.code(200).send());
-server.get("/readyz", (req, res) => res.code(200).send());
+server.use(cors());
+server.use(healthcheck());
+server.use(helloWorld());
+server.use(apiRoutes(database));
 
-// @see https://trpc.io/docs/server/adapters/fastify
-server.register(fastifyTRPCPlugin<AppRouter>, {
-  prefix: "/trpc",
-  trpcOptions: {
+server.use(
+  createKoaMiddleware({
+    prefix: "/trpc",
     router: createAppRouter(),
     createContext: async () => ({
-      queryAdapter: await createQueryAdapter(database),
+      queryAdapter: await createQueryAdapter(drizzle(database)),
     }),
-  },
-});
+  })
+);
 
-await server.listen({ host: env.HOST, port: env.PORT });
+server.listen({ host: env.HOST, port: env.PORT });
 console.log(`postgres indexer frontend listening on http://${env.HOST}:${env.PORT}`);

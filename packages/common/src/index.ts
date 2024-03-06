@@ -1,4 +1,5 @@
 export * from "./common";
+export * from "./createBenchmark";
 export * from "./createBurnerAccount";
 export * from "./createNonceManager";
 export * from "./getContract";
@@ -7,8 +8,10 @@ export * from "./getNonceManager";
 export * from "./getNonceManagerId";
 export * from "./hexToResource";
 export * from "./readHex";
+export * from "./resourceLabel";
 export * from "./resourceToHex";
 export * from "./resourceTypes";
+export * from "./result";
 export * from "./sendTransaction";
 export * from "./spliceHex";
 export * from "./transportObserver";

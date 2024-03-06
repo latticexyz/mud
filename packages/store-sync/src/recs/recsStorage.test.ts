@@ -58,5 +58,21 @@ describe("recsStorage", () => {
         ],
       }
     `);
+
+    expect(
+      [...getComponentEntities(components.NumberList)].map((entity) => getComponentValue(components.NumberList, entity))
+    ).toMatchInlineSnapshot(`
+    [
+      {
+        "__dynamicData": "0x000001a400000045",
+        "__encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
+        "__staticData": undefined,
+        "value": [
+          420,
+          69,
+        ],
+      },
+    ]
+  `);
   });
 });

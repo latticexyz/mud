@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
-import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "./IStoreHook.sol";
-import { ERC165_INTERFACE_ID } from "./IERC165.sol";
+import { IStoreHook } from "./IStoreHook.sol";
+import { IERC165 } from "./IERC165.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { ResourceId } from "./ResourceId.sol";
 
 /**
  * @title Store Hook Contract
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This abstract contract provides hooks for the storage operations.
  * @dev Implementers should override the hook functions to provide custom logic.
  * If any hooks are activated without overriding these functions, they revert.
@@ -21,7 +22,7 @@ abstract contract StoreHook is IStoreHook {
    * @return true if the interface is supported, false otherwise.
    */
   function supportsInterface(bytes4 interfaceId) public pure virtual returns (bool) {
-    return interfaceId == STORE_HOOK_INTERFACE_ID || interfaceId == ERC165_INTERFACE_ID;
+    return interfaceId == type(IStoreHook).interfaceId || interfaceId == type(IERC165).interfaceId;
   }
 
   /**

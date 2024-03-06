@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 /**
  * @title World Factory Interface
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This interface defines the contract responsible for deploying and keeping track
  * of World contract instances.
  */
@@ -10,19 +11,14 @@ interface IWorldFactory {
   /**
    * @dev Emitted when a new World contract is deployed.
    * @param newContract The address of the newly deployed World contract.
+   * @param salt User defined salt for deterministic world addresses across chains.
    */
-  event WorldDeployed(address indexed newContract);
-
-  /**
-   * @notice Returns the total count of deployed World contracts.
-   * @return The total number of World contracts deployed by this factory.
-   */
-  function worldCount() external view returns (uint256);
+  event WorldDeployed(address indexed newContract, uint256 salt);
 
   /**
    * @notice Deploys a new World contract.
    * @dev The deployment of the World contract will result in the `WorldDeployed` event being emitted.
    * @return worldAddress The address of the newly deployed World contract.
    */
-  function deployWorld() external returns (address worldAddress);
+  function deployWorld(bytes memory salt) external returns (address worldAddress);
 }

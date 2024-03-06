@@ -1,5 +1,150 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Major Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+- db7798be: Renamed `CoreModule` to `InitModule` and `CoreRegistrationSystem` to `RegistrationSystem`.
+- 618dd0e8: `WorldFactory` now expects a user-provided `salt` when calling `deployWorld(...)` (instead of the previous globally incrementing counter). This enables deterministic world addresses across different chains.
+
+  When using `mud deploy`, you can provide a `bytes32` hex-encoded salt using the `--salt` option, otherwise it defaults to a random hex value.
+
+### Minor Changes
+
+- 6470fe1f: `WorldFactory` now derives a salt based on number of worlds deployed by `msg.sender`, which should help with predictable world deployments across chains.
+
+### Patch Changes
+
+- a35c05ea: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+- 745485cd: Updated `WorldRegistrationSystem` to check that systems exist before registering system hooks.
+- e2d089c6: Renamed the Module `args` parameter to `encodedArgs` to better reflect that it is ABI-encoded arguments.
+- 17f98720: Added a check to prevent namespaces from ending with an underscore (which could cause problems with world function signatures).
+- 5c52bee0: Renamed `StoreCore`'s `registerCoreTables` method to `registerInternalTables`.
+- Updated dependencies [a35c05ea]
+- Updated dependencies [05b3e888]
+- Updated dependencies [aabd3076]
+- Updated dependencies [c162ad5a]
+- Updated dependencies [55a05fd7]
+- Updated dependencies [5c52bee0]
+- Updated dependencies [745485cd]
+  - @latticexyz/common@2.0.0-next.17
+  - @latticexyz/store@2.0.0-next.17
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/config@2.0.0-next.17
+
+## 2.0.0-next.16
+
+### Major Changes
+
+- 0f27afdd: World function signatures for namespaced systems have changed from `{namespace}_{systemName}_{functionName}` to `{namespace}__{functionName}` (double underscore, no system name). This is more ergonomic and is more consistent with namespaced resources in other parts of the codebase (e.g. MUD config types, table names in the schemaful indexer).
+
+  If you have a project using the `namespace` key in your `mud.config.ts` or are manually registering systems and function selectors on a namespace, you will likely need to codegen your system interfaces (`pnpm build`) and update any calls to these systems through the world's namespaced function signatures.
+
+- 865253db: Refactored `InstalledModules` to key modules by addresses instead of pre-defined names. Previously, modules could report arbitrary names, meaning misconfigured modules could be installed under a name intended for another module.
+- 063daf80: Previously `registerSystem` and `registerTable` had a side effect of registering namespaces if the system or table's namespace didn't exist yet.
+  This caused a possible frontrunning issue, where an attacker could detect a `registerSystem`/`registerTable` transaction in the mempool,
+  insert a `registerNamespace` transaction before it, grant themselves access to the namespace, transfer ownership of the namespace to the victim,
+  so that the `registerSystem`/`registerTable` transactions still went through successfully.
+  To mitigate this issue, the side effect of registering a namespace in `registerSystem` and `registerTable` has been removed.
+  Calls to these functions now expect the respective namespace to exist and the caller to own the namespace, otherwise they revert.
+
+  Changes in consuming projects are only necessary if tables or systems are registered manually.
+  If only the MUD deployer is used to register tables and systems, no changes are necessary, as the MUD deployer has been updated accordingly.
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     world.registerSystem(systemId, system, true);
+  ```
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     MyTable.register();
+  ```
+
+- 57d8965d: - Split `CoreSystem` into `AccessManagementSystem`, `BalanceTransferSystem`, `BatchCallSystem`, `CoreRegistrationSystem`
+
+  - Changed `CoreModule` to receive the addresses of these systems as arguments, instead of deploying them
+  - Replaced `CORE_SYSTEM_ID` constant with `ACCESS_MANAGEMENT_SYSTEM_ID`, `BALANCE_TRANSFER_SYSTEM_ID`, `BATCH_CALL_SYSTEM_ID`, `CORE_REGISTRATION_SYSTEM_ID`, for each respective system
+
+  These changes separate the initcode of `CoreModule` from the bytecode of core systems, which effectively removes a limit on the total bytecode of all core systems.
+
+- c642ff3a: Namespaces are not allowed to contain double underscores ("\_\_") anymore, as this sequence of characters is used to [separate the namespace and function selector](https://github.com/latticexyz/mud/pull/2168) in namespaced systems.
+  This is to prevent signature clashes of functions in different namespaces.
+
+  (Example: If namespaces were allowed to contain this separator string, a function "function" in namespace "namespace\_\_my" would result in the namespaced function selector "namespace\_\_my\_\_function",
+  and would clash with a function "my\_\_function" in namespace "namespace".)
+
+### Patch Changes
+
+- e6c03a87: Renamed the `requireNoCallback` modifier to `prohibitDirectCallback`.
+- c207d35e: Optimised `StoreRegistrationSystem` and `WorldRegistrationSystem` by fetching individual fields instead of entire records where possible.
+- d00c4a9a: Removed `ROOT_NAMESPACE_STRING` and `ROOT_NAME_STRING` exports in favor of inlining these constants, to avoid reuse as they're meant for internal error messages and debugging.
+- 37c228c6: Refactored various files to specify integers in a hex base instead of decimals.
+- f6f40289: Added the WorldContextConsumer interface ID to `supportsInterface` in the Module contract.
+- 08b42217: Systems are expected to be always called via the central World contract.
+  Depending on whether it is a root or non-root system, the call is performed via `delegatecall` or `call`.
+  Since Systems are expected to be stateless and only interact with the World state, it is not necessary to prevent direct calls to the systems.
+  However, since the `CoreSystem` is known to always be registered as a root system in the World, it is always expected to be delegatecalled,
+  so we made this expectation explicit by reverting if it is not delegatecalled.
+- 37c228c6: Made the `coreModule` variable in `WorldFactory` immutable.
+- 37c228c6: Removed the unnecessary `extcodesize` check from the `Create2` library.
+- 37c228c6: Refactored `ResourceId` to use a global Solidity `using` statement.
+- 37c228c6: Refactored EIP165 usages to use the built-in interfaceId property instead of pre-defined constants.
+- 2bfee921: Added a table to track the `CoreModule` address the world was initialised with.
+- aee8020a: Namespace balances can no longer be transferred to non-existent namespaces.
+- e4a6189d: Prevented invalid delegations by performing full validation regardless of whether `initCallData` is empty. Added an `unregisterDelegation` function which allows explicit unregistration, as opposed of passing in zero bytes into `registerDelegation`.
+- 37c228c6: Refactored various Solidity files to not explicitly initialise variables to zero.
+- 37c228c6: Refactored `WorldContext` to get the world address from `WorldContextConsumerLib` instead of `StoreSwitch`.
+- Updated dependencies [c6c13f2e]
+- Updated dependencies [e6c03a87]
+- Updated dependencies [37c228c6]
+- Updated dependencies [1bf2e908]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [7b28d32e]
+- Updated dependencies [9f8b84e7]
+- Updated dependencies [ad4ac445]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [3ac68ade]
+- Updated dependencies [37c228c6]
+- Updated dependencies [103f635e]
+  - @latticexyz/store@2.0.0-next.16
+  - @latticexyz/common@2.0.0-next.16
+  - @latticexyz/config@2.0.0-next.16
+  - @latticexyz/schema-type@2.0.0-next.16
+
+## 2.0.0-next.15
+
+### Patch Changes
+
+- d8c8f66b: Exclude ERC165 interface ID from custom interface ID's.
+- 1077c7f5: Fixed an issue where `mud.config.ts` source file was not included in the package, causing TS errors downstream.
+- f8dab733: Added explicit `internal` visibility to the `coreSystem` variable in `CoreModule`.
+- 1a0fa797: Fixed `requireInterface` to correctly specify ERC165.
+- eb384bb0: Added `isInstalled` and `requireNotInstalled` helpers to `Module` base contract.
+- e5a962bc: `World` now correctly registers the `FunctionSignatures` table.
+- 59054203: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- e4817174: Removed unused imports from various files in the `store` and `world` packages.
+- Updated dependencies [d8c8f66b]
+- Updated dependencies [1b86eac0]
+- Updated dependencies [1077c7f5]
+- Updated dependencies [933b54b5]
+- Updated dependencies [59054203]
+- Updated dependencies [1b5eb0d0]
+- Updated dependencies [6db95ce1]
+- Updated dependencies [5d737cf2]
+- Updated dependencies [5ac4c97f]
+- Updated dependencies [e4817174]
+- Updated dependencies [4c1dcd81]
+- Updated dependencies [5df1f31b]
+  - @latticexyz/store@2.0.0-next.15
+  - @latticexyz/common@2.0.0-next.15
+  - @latticexyz/config@2.0.0-next.15
+  - @latticexyz/schema-type@2.0.0-next.15
+
 ## 2.0.0-next.14
 
 ### Patch Changes

@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Client, Transport, getAddress } from "viem";
+import { Account, Address, Chain, Client, Hex, Transport, getAddress } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
@@ -9,17 +9,26 @@ import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
 import { Table } from "./configToTables";
-import { assertNamespaceOwner } from "./assertNamespaceOwner";
+import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
-import { resourceLabel } from "./resourceLabel";
+import { resourceToLabel } from "@latticexyz/common";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
-import { worldFactoryContracts } from "./ensureWorldFactory";
+import { randomBytes } from "crypto";
+import { ensureWorldFactory } from "./ensureWorldFactory";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
   config: Config<configInput>;
+  salt?: Hex;
   worldAddress?: Address;
+  /**
+   * Address of determinstic deployment proxy: https://github.com/Arachnid/deterministic-deployment-proxy
+   * By default, we look for a deployment at 0x4e59b44847b379578588920ca78fbf26c0b4956c and, if not, deploy one.
+   * If the target chain does not support legacy transactions, we deploy the proxy bytecode anyway, but it will
+   * not have a deterministic address.
+   */
+  deployerAddress?: Hex;
 };
 
 /**
@@ -31,19 +40,22 @@ type DeployOptions<configInput extends ConfigInput> = {
 export async function deploy<configInput extends ConfigInput>({
   client,
   config,
+  salt,
   worldAddress: existingWorldAddress,
+  deployerAddress: initialDeployerAddress,
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   const tables = Object.values(config.tables) as Table[];
-  const systems = Object.values(config.systems);
-  const libraries = Object.values(config.libraries);
 
-  await ensureDeployer(client);
+  const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
+
+  await ensureWorldFactory(client, deployerAddress);
 
   // deploy all libraries ahead of other contracts
   await ensureContractsDeployed({
     client,
+    deployerAddress,
     contracts: [
-      ...uniqueBy(libraries, (library) => getAddress(library.address)).map((library) => ({
+      ...uniqueBy(config.libraries, (library) => getAddress(library.getAddress(deployerAddress))).map((library) => ({
         bytecode: library.bytecode,
         deployedBytecodeSize: library.deployedBytecodeSize,
         label: `${library.fullyQualifiedName} library`,
@@ -54,14 +66,14 @@ export async function deploy<configInput extends ConfigInput>({
   // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
   await ensureContractsDeployed({
     client,
+    deployerAddress,
     contracts: [
-      ...worldFactoryContracts,
-      ...uniqueBy(systems, (system) => getAddress(system.address)).map((system) => ({
+      ...uniqueBy(config.systems, (system) => getAddress(system.getAddress(deployerAddress))).map((system) => ({
         bytecode: system.bytecode,
         deployedBytecodeSize: system.deployedBytecodeSize,
-        label: `${resourceLabel(system)} system`,
+        label: `${resourceToLabel(system)} system`,
       })),
-      ...uniqueBy(config.modules, (mod) => getAddress(mod.address)).map((mod) => ({
+      ...uniqueBy(config.modules, (mod) => getAddress(mod.getAddress(deployerAddress))).map((mod) => ({
         bytecode: mod.bytecode,
         deployedBytecodeSize: mod.deployedBytecodeSize,
         label: `${mod.name} module`,
@@ -71,7 +83,7 @@ export async function deploy<configInput extends ConfigInput>({
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client);
+    : await deployWorld(client, deployerAddress, salt ?? `0x${randomBytes(32).toString("hex")}`);
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);
@@ -80,11 +92,16 @@ export async function deploy<configInput extends ConfigInput>({
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
 
-  await assertNamespaceOwner({
+  const namespaceTxs = await ensureNamespaceOwner({
     client,
     worldDeploy,
-    resourceIds: [...tables.map((table) => table.tableId), ...systems.map((system) => system.systemId)],
+    resourceIds: [...tables.map((table) => table.tableId), ...config.systems.map((system) => system.systemId)],
   });
+
+  debug("waiting for all namespace registration transactions to confirm");
+  for (const tx of namespaceTxs) {
+    await waitForTransactionReceipt(client, { hash: tx });
+  }
 
   const tableTxs = await ensureTables({
     client,
@@ -93,16 +110,18 @@ export async function deploy<configInput extends ConfigInput>({
   });
   const systemTxs = await ensureSystems({
     client,
+    deployerAddress,
     worldDeploy,
-    systems,
+    systems: config.systems,
   });
   const functionTxs = await ensureFunctions({
     client,
     worldDeploy,
-    functions: systems.flatMap((system) => system.functions),
+    functions: config.systems.flatMap((system) => system.functions),
   });
   const moduleTxs = await ensureModules({
     client,
+    deployerAddress,
     worldDeploy,
     modules: config.modules,
   });

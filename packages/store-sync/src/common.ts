@@ -34,7 +34,7 @@ export type Table = {
 export type TableWithRecords = Table & { records: TableRecord[] };
 
 export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true, StoreEventsAbi>;
-export type BlockLogs = { blockNumber: StoreEventsLog["blockNumber"]; logs: StoreEventsLog[] };
+export type BlockLogs = { blockNumber: StoreEventsLog["blockNumber"]; logs: readonly StoreEventsLog[] };
 
 // only two keys for now, to reduce complexity of creating indexes on SQL tables
 // TODO: make tableId optional to enable filtering just on keys (any table)
@@ -78,6 +78,10 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
    * */
   tableIds?: Hex[];
   /**
+   * Optional block tag to follow for the latest block number. Defaults to `latest`. It's recommended to use `safe` for indexers.
+   */
+  followBlockTag?: "latest" | "safe" | "finalized";
+  /**
    * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.
    */
   startBlock?: bigint;
@@ -90,25 +94,32 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
    */
   indexerUrl?: string;
   /**
-   * Optional initial state to hydrate from. Useful if you're hydrating from your own indexer or cache.
+   * Optional initial state to hydrate from. Useful if you're hydrating from an indexer or cache.
+   * @deprecated Use `initialLogs` option instead.
    */
   initialState?: {
-    blockNumber: bigint | null;
-    tables: TableWithRecords[];
+    blockNumber: bigint;
+    tables: readonly TableWithRecords[];
+  };
+  /**
+   * Optional initial logs to hydrate from. Useful if you're hydrating from an indexer or cache.
+   */
+  initialBlockLogs?: {
+    blockNumber: bigint;
+    logs: readonly StorageAdapterLog[];
   };
 };
 
 export type SyncResult = {
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
-  blockLogs$: Observable<BlockLogs>;
   storedBlockLogs$: Observable<StorageAdapterBlock>;
   waitForTransaction: (tx: Hex) => Promise<void>;
 };
 
 // TODO: add optional, original log to this?
 export type StorageAdapterLog = Partial<StoreEventsLog> & UnionPick<StoreEventsLog, "address" | "eventName" | "args">;
-export type StorageAdapterBlock = { blockNumber: BlockLogs["blockNumber"]; logs: StorageAdapterLog[] };
+export type StorageAdapterBlock = { blockNumber: BlockLogs["blockNumber"]; logs: readonly StorageAdapterLog[] };
 export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
 
 export const schemasTableId = storeTables.Tables.tableId;

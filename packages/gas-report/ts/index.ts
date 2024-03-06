@@ -114,7 +114,7 @@ async function runGasReport(options: Options): Promise<GasReport> {
       console.log("Done reading stdin");
     } else {
       // Run the default test command to capture the logs
-      const child = execa("forge", ["test", "-vvv"], {
+      const child = execa("forge", ["test", "-vvv", "--isolate"], {
         stdio: ["inherit", "pipe", "inherit"],
         env: { GAS_REPORTER_ENABLED: "true" },
       });
@@ -130,7 +130,9 @@ async function runGasReport(options: Options): Promise<GasReport> {
   const lines = logs.split("\n").map(stripAnsi);
   const gasReportPattern = /^\s*GAS REPORT: (\d+) (.*)$/;
   const testFunctionPattern = /^\[(?:PASS|FAIL).*\] (\w+)\(\)/;
-  const testFilePattern = /^Running \d+ tests? for (.*):(.*)$/;
+  // Matches "Running" for forge versions before 2024-02-15
+  // And "Ran" for forge versions after 2024-02-15
+  const testFilePattern = /^(?:Running|Ran) \d+ tests? for (.*):(.*)$/;
 
   function nearestLine(pattern: RegExp, startIndex: number = lines.length - 1): number {
     for (let i = startIndex; i >= 0; i--) {

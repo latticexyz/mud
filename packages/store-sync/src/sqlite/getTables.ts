@@ -1,5 +1,5 @@
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
-import { inArray } from "drizzle-orm";
+import { asc, inArray } from "drizzle-orm";
 import { Table } from "../common";
 import { getTableName } from "./getTableName";
 import { mudStoreTables } from "./internalTables";
@@ -15,6 +15,10 @@ export function getTables(
     .select()
     .from(mudStoreTables)
     .where(ids.length ? inArray(mudStoreTables.id, ids) : undefined)
+    .orderBy(
+      asc(mudStoreTables.lastUpdatedBlockNumber)
+      // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
+    )
     .all();
 
   return tables;

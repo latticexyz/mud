@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { IStore } from "./IStore.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
@@ -12,6 +12,7 @@ import { ResourceId } from "./ResourceId.sol";
 
 /**
  * @title StoreSwitch Library
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This library serves as an interface switch to interact with the store,
  *         either by directing calls to itself or to a designated external store.
  * @dev The primary purpose is to abstract the storage details, such that the

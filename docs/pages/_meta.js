@@ -1,22 +1,41 @@
 import worldPackageJson from "../../packages/world/package.json" assert { type: "json" };
 
 export default {
-  index: "Overview",
-  introduction: "Introduction",
-  "what-is-mud": "What is MUD?",
-  "quick-start": "Quickstart",
+  introduction: {
+    title: "What is MUD?",
+    theme: { breadcrumb: false },
+  },
+  quickstart: {
+    title: "Get started",
+    theme: { breadcrumb: false },
+  },
+  protocol: {
+    title: "Protocol",
+    type: "separator",
+  },
   store: "Store",
   world: "World",
-  "client-side": "MUD client",
-  indexer: "Indexer",
+  framework: {
+    title: "Framework",
+    type: "separator",
+  },
+  config: "Config",
   cli: "CLI",
-  ecs: "ECS and MUD",
-  plugins: "Plugins",
-  tutorials: "Tutorials",
-  reference: "Reference",
-  contribute: "Contribute",
+  "state-query": "State Query",
+  services: "Services",
+  "---": {
+    title: "", // no title renders as a line
+    type: "separator",
+  },
+  guides: "Guides",
+  templates: "Templates",
+  contribute: {
+    title: "Contribute",
+    theme: { breadcrumb: false },
+  },
   changelog: "Changelog",
   retrospectives: "Retrospectives",
+  // --------------------
   version: {
     title: worldPackageJson.version,
     type: "menu",

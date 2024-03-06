@@ -5,7 +5,8 @@ on:
     branches:
       - v2
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+# Ensure only one workflow/job is publishing to npm at a time
+concurrency: publish-to-npm
 
 jobs:
   version:

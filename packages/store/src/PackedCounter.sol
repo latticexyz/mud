@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
+
+import { BYTE_TO_BITS } from "./constants.sol";
+import { IPackedCounterErrors } from "./IPackedCounterErrors.sol";
 
 /**
  * @title PackedCounter Type Definition
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Describes how the packed counter is structured.
  * - 0x00-0x06 The least significant 7 bytes (uint56) represent the total byte length of dynamic (variable length) data.
  * - 0x07-0xB The next five bytes (uint40) represent the length of the first dynamic field.
@@ -18,14 +22,15 @@ using PackedCounterInstance for PackedCounter global;
 // Constants for packed counter handling:
 
 // Number of bits for the 7-byte accumulator
-uint256 constant ACC_BITS = 7 * 8;
+uint256 constant ACC_BITS = 7 * BYTE_TO_BITS;
 // Number of bits for the 5-byte sections
-uint256 constant VAL_BITS = 5 * 8;
+uint256 constant VAL_BITS = 5 * BYTE_TO_BITS;
 // Maximum value of a 5-byte section
 uint256 constant MAX_VAL = type(uint40).max;
 
 /**
  * @title PackedCounter Library
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice Static functions for handling PackedCounter type.
  * @dev Provides utility functions to pack values into a PackedCounter.
  * The caller must ensure that the value arguments are <= MAX_VAL.
@@ -48,7 +53,7 @@ library PackedCounterLib {
   }
 
   /**
-   * @notice Packs a single value into a PackedCounter.
+   * @notice Packs two values into a PackedCounter.
    * @dev Encodes the given values 'a'-'b' into the structure of a PackedCounter.
    * @param a The length of the first dynamic field's data.
    * @param b The length of the second dynamic field's data.
@@ -65,7 +70,7 @@ library PackedCounterLib {
   }
 
   /**
-   * @notice Packs a single value into a PackedCounter.
+   * @notice Packs three values into a PackedCounter.
    * @dev Encodes the given values 'a'-'c' into the structure of a PackedCounter.
    * @param a The length of the first dynamic field's data.
    * @param b The length of the second dynamic field's data.
@@ -84,7 +89,7 @@ library PackedCounterLib {
   }
 
   /**
-   * @notice Packs a single value into a PackedCounter.
+   * @notice Packs four values into a PackedCounter.
    * @dev Encodes the given values 'a'-'d' into the structure of a PackedCounter.
    * @param a The length of the first dynamic field's data.
    * @param b The length of the second dynamic field's data.
@@ -105,13 +110,13 @@ library PackedCounterLib {
   }
 
   /**
-   * @notice Packs a single value into a PackedCounter.
+   * @notice Packs five values into a PackedCounter.
    * @dev Encodes the given values 'a'-'e' into the structure of a PackedCounter.
    * @param a The length of the first dynamic field's data.
    * @param b The length of the second dynamic field's data.
    * @param c The length of the third dynamic field's data.
    * @param d The length of the fourth dynamic field's data.
-   * @param e The length of the fourth dynamic field's data.
+   * @param e The length of the fifth dynamic field's data.
    * @return The resulting PackedCounter containing the encoded values.
    */
   function pack(uint256 a, uint256 b, uint256 c, uint256 d, uint256 e) internal pure returns (PackedCounter) {
@@ -130,12 +135,11 @@ library PackedCounterLib {
 
 /**
  * @title PackedCounter Instance Library
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice Instance functions for handling a PackedCounter.
  * @dev Offers decoding, extracting, and setting functionalities for a PackedCounter.
  */
 library PackedCounterInstance {
-  error PackedCounter_InvalidLength(uint256 length);
-
   /**
    * @notice Decode the accumulated counter from a PackedCounter.
    * @dev Extracts the right-most 7 bytes of a PackedCounter.
@@ -173,7 +177,7 @@ library PackedCounterInstance {
     uint256 newValueAtIndex
   ) internal pure returns (PackedCounter) {
     if (newValueAtIndex > MAX_VAL) {
-      revert PackedCounter_InvalidLength(newValueAtIndex);
+      revert IPackedCounterErrors.PackedCounter_InvalidLength(newValueAtIndex);
     }
 
     uint256 rawPackedCounter = uint256(PackedCounter.unwrap(packedCounter));

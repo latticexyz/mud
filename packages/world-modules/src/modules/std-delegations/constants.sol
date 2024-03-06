@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
-
-bytes16 constant MODULE_NAME = bytes16("stddelegations.m");
 
 // Callbound delegation
 ResourceId constant CALLBOUND_DELEGATION = ResourceId.wrap(

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { DelegationControl } from "@latticexyz/world/src/DelegationControl.sol";
 import { ResourceId } from "@latticexyz/world/src/WorldResourceId.sol";

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { console } from "forge-std/console.sol";
@@ -8,7 +8,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World } from "@latticexyz/world/src/World.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
-import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
+import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
@@ -72,8 +72,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   IERC721Mintable token;
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world = createWorld();
     world.installModule(new PuppetModule(), new bytes(0));
     StoreSwitch.setStoreAddress(address(world));
 
@@ -157,7 +156,9 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     vm.assume(owner != address(0));
 
     _expectMintEvent(owner, id);
+    startGasReport("mint");
     token.mint(owner, id);
+    endGasReport();
 
     assertEq(token.balanceOf(owner), 1);
     assertEq(token.ownerOf(id), owner);
@@ -182,7 +183,9 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     assertEq(token.balanceOf(owner), 1, "after mint");
 
     _expectBurnEvent(owner, id);
+    startGasReport("burn");
     token.burn(id);
+    endGasReport();
 
     assertEq(token.balanceOf(owner), 0, "after burn");
 
@@ -190,8 +193,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.ownerOf(id);
   }
 
-  function testBurnRevertAccessDenined(uint256 id, address owner, address operator) public {
-    _assumeDifferentNonZero(owner, operator);
+  function testBurnRevertAccessDenied(uint256 id, address owner, address operator) public {
+    _assumeDifferentNonZero(owner, operator, address(this));
 
     _expectMintEvent(owner, id);
     token.mint(owner, id);
@@ -207,7 +210,10 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.mint(owner, tokenId);
 
     vm.prank(owner);
+
+    startGasReport("transferFrom");
     token.transferFrom(owner, to, tokenId);
+    endGasReport();
 
     assertEq(token.balanceOf(owner), 0);
     assertEq(token.balanceOf(to), 1);
@@ -221,7 +227,11 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
 
     vm.prank(owner);
     _expectApprovalEvent(owner, spender, id);
+
+    startGasReport("approve");
     token.approve(spender, id);
+    endGasReport();
+
     assertEq(token.getApproved(id), spender);
   }
 
@@ -230,7 +240,11 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
 
     vm.prank(owner);
     _expectApprovalForAllEvent(owner, operator, approved);
+
+    startGasReport("setApprovalForAll");
     token.setApprovalForAll(operator, approved);
+    endGasReport();
+
     assertEq(token.isApprovedForAll(owner, operator), approved);
   }
 
@@ -276,7 +290,9 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     token.setApprovalForAll(operator, true);
 
     vm.prank(operator);
+    startGasReport("safeTransferFrom");
     token.safeTransferFrom(from, to, id);
+    endGasReport();
 
     assertEq(token.getApproved(id), address(0));
     assertEq(token.ownerOf(id), to);
@@ -285,9 +301,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testSafeTransferFromToERC721Recipient(uint256 id, address from, address operator) public {
-    _assumeDifferentNonZero(from, operator);
-
     ERC721Recipient recipient = new ERC721Recipient();
+    _assumeDifferentNonZero(from, operator, address(recipient));
 
     token.mint(from, id);
 
@@ -340,7 +355,9 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     _assumeEOA(to);
     vm.assume(to != address(0));
 
+    startGasReport("safeMint");
     token.safeMint(to, id);
+    endGasReport();
 
     assertEq(token.ownerOf(id), to);
     assertEq(token.balanceOf(to), 1);
@@ -576,5 +593,33 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   function testOwnerOfNonExistent(uint256 id) public {
     vm.expectRevert(abi.encodeWithSelector(ERC721NonexistentToken.selector, id));
     token.ownerOf(id);
+  }
+
+  function testMintGas() public {
+    testMint(1e18, address(0xABCD));
+  }
+
+  function testBurnGas() public {
+    testBurn(1e18, address(0xABCD));
+  }
+
+  function testTransferFromGas() public {
+    testTransferFrom(address(0xABCD), address(0xBEEF), 1e18);
+  }
+
+  function testApproveGas() public {
+    testApprove(address(0xABCD), 1e18, address(0xBEEF));
+  }
+
+  function testApproveAllGas() public {
+    testApproveAll(address(0xABCD), address(0xBEEF), true);
+  }
+
+  function testSafeTransferFromToEOAGas() public {
+    testSafeTransferFromToEOA(1, address(0xABCD), address(0xBEEF), address(0xDEFE));
+  }
+
+  function testSafeMintToEOAGas() public {
+    testSafeMintToEOA(1, address(0xABCD));
   }
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { UNLIMITED_DELEGATION } from "./constants.sol";
@@ -8,6 +8,7 @@ import { SystemCall } from "./SystemCall.sol";
 
 /**
  * @title Delegation
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Library for managing and verifying delegations.
  */
 library Delegation {

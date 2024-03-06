@@ -83,12 +83,15 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
             ...opts,
             configPath,
             rpc,
+            rpcBatch: false,
             skipBuild: false,
             printConfig: false,
             profile: undefined,
             saveDeployment: true,
+            deployerAddress: undefined,
             worldAddress,
             srcDir,
+            salt: "0x",
           });
           worldAddress = deploy.address;
           // if there were changes while we were deploying, trigger it again

@@ -1,5 +1,57 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Patch Changes
+
+- Updated dependencies [a35c05ea]
+- Updated dependencies [05b3e888]
+- Updated dependencies [aabd3076]
+- Updated dependencies [55a05fd7]
+- Updated dependencies [5c52bee0]
+- Updated dependencies [745485cd]
+  - @latticexyz/store@2.0.0-next.17
+  - @latticexyz/recs@2.0.0-next.17
+
+## 2.0.0-next.16
+
+### Patch Changes
+
+- Updated dependencies [c6c13f2e]
+- Updated dependencies [e6c03a87]
+- Updated dependencies [37c228c6]
+- Updated dependencies [1bf2e908]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [7b28d32e]
+- Updated dependencies [9f8b84e7]
+- Updated dependencies [ad4ac445]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [3ac68ade]
+- Updated dependencies [37c228c6]
+- Updated dependencies [103f635e]
+  - @latticexyz/store@2.0.0-next.16
+  - @latticexyz/recs@2.0.0-next.16
+
+## 2.0.0-next.15
+
+### Patch Changes
+
+- 59054203: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- 9ef3f9a7: Fixed an issue where `useComponentValue` would not detect a change and re-render if the component value was immediately removed.
+- Updated dependencies [d8c8f66b]
+- Updated dependencies [1b86eac0]
+- Updated dependencies [1077c7f5]
+- Updated dependencies [59054203]
+- Updated dependencies [6db95ce1]
+- Updated dependencies [5d737cf2]
+- Updated dependencies [5ac4c97f]
+- Updated dependencies [e4817174]
+  - @latticexyz/store@2.0.0-next.15
+  - @latticexyz/recs@2.0.0-next.15
+
 ## 2.0.0-next.14
 
 ### Patch Changes

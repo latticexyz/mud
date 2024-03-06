@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { IERC165 } from "./IERC165.sol";
+import { ERC165Checker } from "./ERC165Checker.sol";
 import { IWorldErrors } from "./IWorldErrors.sol";
 
 /**
- * @title Interface Validator
- * @notice Utility function to validate interface support on a given contract using ERC-165.
- * @dev This function uses the ERC-165 standard's `supportsInterface` to check if a given contract supports a specific interface.
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  */
 
 /**
@@ -17,11 +16,7 @@ import { IWorldErrors } from "./IWorldErrors.sol";
  * @param interfaceId The interface ID to verify.
  */
 function requireInterface(address contractAddress, bytes4 interfaceId) view {
-  try IERC165(contractAddress).supportsInterface(interfaceId) returns (bool supported) {
-    if (!supported) {
-      revert IWorldErrors.World_InterfaceNotSupported(contractAddress, interfaceId);
-    }
-  } catch {
+  if (!ERC165Checker.supportsInterface(contractAddress, interfaceId)) {
     revert IWorldErrors.World_InterfaceNotSupported(contractAddress, interfaceId);
   }
 }

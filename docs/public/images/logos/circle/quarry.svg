@@ -1,0 +1,43 @@
+<svg width="2918" height="2918" viewBox="0 0 2918 2918" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1265_1027)">
+<rect width="2918" height="2918" rx="1459" fill="#F34242"/>
+<rect width="2918" height="2918" fill="#00BB56"/>
+<rect x="669" y="669" width="197.5" height="194.153" fill="white"/>
+<rect width="197.5" height="194.153" transform="matrix(-1 0 0 1 2249 669)" fill="white"/>
+<rect x="2249" y="2249" width="197.5" height="200.848" transform="rotate(180 2249 2249)" fill="white"/>
+<rect width="197.5" height="200.848" transform="matrix(1 0 0 -1 669 2249)" fill="white"/>
+<rect opacity="0.75" x="669" y="863.156" width="197.5" height="197.5" fill="white"/>
+<rect opacity="0.3" x="669" y="1060.66" width="197.5" height="197.5" fill="white"/>
+<rect opacity="0.3" x="1064" y="669" width="197.5" height="194.153" fill="white"/>
+<rect opacity="0.3" x="1656.5" y="669" width="197.5" height="194.153" fill="white"/>
+<rect opacity="0.3" x="2051.5" y="1060.66" width="197.5" height="197.5" fill="white"/>
+<rect opacity="0.3" x="2051.5" y="1653.16" width="197.5" height="197.5" fill="white"/>
+<rect opacity="0.3" x="1656.5" y="2048.16" width="197.5" height="200.848" fill="white"/>
+<rect opacity="0.3" x="1064" y="2048.16" width="197.5" height="200.848" fill="white"/>
+<rect opacity="0.3" x="669" y="1653.16" width="197.5" height="197.5" fill="white"/>
+<rect opacity="0.75" width="197.5" height="197.5" transform="matrix(-1 0 0 1 2249 863.156)" fill="white"/>
+<rect opacity="0.75" x="2249" y="2048.16" width="197.5" height="197.5" transform="rotate(180 2249 2048.16)" fill="white"/>
+<rect opacity="0.75" width="197.5" height="197.5" transform="matrix(1 0 0 -1 669 2048.16)" fill="white"/>
+<rect opacity="0.75" x="866.5" y="669" width="197.5" height="194.153" fill="white"/>
+<rect opacity="0.75" width="197.5" height="194.153" transform="matrix(-1 0 0 1 2051.5 669)" fill="white"/>
+<rect opacity="0.75" x="2051.5" y="2249" width="197.5" height="200.848" transform="rotate(180 2051.5 2249)" fill="white"/>
+<rect opacity="0.75" width="197.5" height="200.848" transform="matrix(1 0 0 -1 866.5 2249)" fill="white"/>
+<rect x="1064" y="1060.66" width="197.5" height="197.5" fill="white"/>
+<rect x="1064" y="1258.16" width="197.5" height="197.5" fill="white"/>
+<rect x="1064" y="1455.66" width="197.5" height="197.5" fill="white"/>
+<rect x="1064" y="1653.16" width="197.5" height="197.5" fill="white"/>
+<rect x="1261.5" y="1653.16" width="197.5" height="197.5" fill="white"/>
+<rect x="1459" y="1653.16" width="197.5" height="197.5" fill="white"/>
+<rect x="1656.5" y="1653.16" width="197.5" height="197.5" fill="white"/>
+<rect x="1656.5" y="1455.66" width="197.5" height="197.5" fill="white"/>
+<rect x="1656.5" y="1258.16" width="197.5" height="197.5" fill="white"/>
+<rect x="1261.5" y="1060.66" width="197.5" height="197.5" fill="white"/>
+<rect x="1459" y="1060.66" width="197.5" height="197.5" fill="white"/>
+<rect x="1656.5" y="1060.66" width="197.5" height="197.5" fill="white"/>
+</g>
+<defs>
+<clipPath id="clip0_1265_1027">
+<rect width="2918" height="2918" rx="1459" fill="white"/>
+</clipPath>
+</defs>
+</svg>
