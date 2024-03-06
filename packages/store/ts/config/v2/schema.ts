@@ -1,5 +1,4 @@
-export type StaticAbiType = "uint256" | "address" | "bool" | "bytes32";
-export type AbiType = StaticAbiType | "bytes" | "string" | "bool[]";
+import { StaticAbiType, AbiType } from "./scope";
 
 export type SchemaInput<userTypes extends UserTypes = UserTypes> = UserTypes extends userTypes
   ? // Only allow keyof userTypes if a narrow userTypes type is passed in
