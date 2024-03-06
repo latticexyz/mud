@@ -4,9 +4,9 @@ pragma solidity >=0.8.24;
 import { IERC165 } from "./IERC165.sol";
 
 /**
- * @title ISliceErrors
+ * @title IModuleErrors
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- * @notice This interface includes errors for the Slice library.
+ * @notice This interface includes errors for the Module library.
  * @dev We bundle these errors in an interface (instead of at the file-level or in their corresponding library) so they can be inherited by IWorldKernel.
  * This ensures that all errors are included in the IWorldKernel ABI for proper decoding in the frontend.
  */
