@@ -1,6 +1,25 @@
 import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { inferSchema, resolveTableConfig, resolveTableShorthandConfig } from "./table";
+import { ValidKeys, inferSchema, resolveTableConfig, resolveTableShorthandConfig } from "./table";
+import { AbiTypeScope, extendScope } from "./scope";
+import { SchemaInput } from "./schema";
+
+describe("ValidKeys", () => {
+  it("should return a tuple of valid keys", () => {
+    attest<ReadonlyArray<"static">, ValidKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>>();
+  });
+
+  it("should return a tuple of valid keys with an extended scope", () => {
+    const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
+    attest<
+      ReadonlyArray<"static" | "customStatic">,
+      ValidKeys<
+        { static: "uint256"; dynamic: "string"; customStatic: "static"; customDynamic: "dynamic" },
+        typeof scope
+      >
+    >();
+  });
+});
 
 describe("inferSchema", () => {
   it("should infer the schema of a single ABI type shorthand table config", () => {

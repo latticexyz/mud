@@ -1,7 +1,7 @@
 import { ErrorMessage } from "@arktype/util";
 import { SchemaInput, resolveSchema } from "./schema";
 import { stringifyUnion } from "@arktype/util";
-import { AbiTypeScope, ScopeOptions } from "./scope";
+import { AbiTypeScope, ScopeOptions, getStaticAbiTypeKeys } from "./scope";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit keys override.">;
@@ -20,9 +20,10 @@ export type TableInput<
 // @alvrs Make sure if you are ever wanting to compare against an array like
 // this you add `readonly` to it
 export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = readonly [
-  getStaticAbiTypeKeys<schema, userTypes>,
-  ...getStaticAbiTypeKeys<schema, userTypes>[]
+  ...getStaticAbiTypeKeys<schema, scope>[]
 ];
+
+type test = ValidKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>;
 
 // Below this is before refactor ------------------------
 
