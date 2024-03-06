@@ -4,6 +4,7 @@ pragma solidity >=0.8.24;
 import { IWorldErrors } from "./IWorldErrors.sol";
 import { IModule } from "./IModule.sol";
 import { ResourceId } from "./WorldResourceId.sol";
+import { IModuleErrors } from "./IModuleErrors.sol";
 
 /**
  * @title World Module Installation Interface
@@ -59,7 +60,7 @@ interface IWorldCall {
  * internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
  * registered functions selectors from the `InitModule`.
  */
-interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors {
+interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors, IModuleErrors {
   /**
    * @dev Emitted upon successful World initialization.
    * @param worldVersion The version of the World being initialized.
