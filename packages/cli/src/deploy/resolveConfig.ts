@@ -110,7 +110,7 @@ export async function resolveConfig<config extends ConfigInput>({
   const modules = config.modules.map((mod) => {
     const contractData =
       defaultModuleContracts.find((defaultMod) => defaultMod.name === mod.name) ??
-      getContractData(`${mod.name}.sol`, mod.name, forgeOutDir, libraries);
+      getContractData(`${mod.name}.sol`, mod.name, forgeOutDir, libraries, deployerAddress);
     const installArgs = mod.args
       .map((arg) => resolveWithContext(arg, resolveContext))
       .map((arg) => {
