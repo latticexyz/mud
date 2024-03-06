@@ -39,5 +39,6 @@ export function extendScope<scope extends ScopeOptions, types extends Dict<strin
   scope: scope,
   types: types
 ): extendScope<scope, types> {
+  // TODO: runtime implementation
   return {} as never;
 }

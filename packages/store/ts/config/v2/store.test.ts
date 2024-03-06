@@ -1,7 +1,6 @@
 import { describe, it } from "vitest";
 import { resolveStoreConfig } from "./store";
 import { attest } from "@arktype/attest";
-import { AbiTypeScope, extendScope } from "./scope";
 
 describe("resolveStoreConfig", () => {
   it("should accept a shorthand store config as input and expand it", () => {
@@ -67,6 +66,7 @@ describe("resolveStoreConfig", () => {
           keys: ["key"];
         };
       };
+      userTypes: { CustomType: "address" };
     }>(config);
   });
 
@@ -277,6 +277,7 @@ describe("resolveStoreConfig", () => {
           keys: ["age"];
         };
       };
+      userTypes: { static: "address"; dynamic: "string" };
     }>(config);
   });
 
@@ -496,6 +497,7 @@ describe("resolveStoreConfig", () => {
           keys: ["secondKey", "secondAge"];
         };
       };
+      userTypes: { Static: "address"; Dynamic: "string" };
     }>(config);
   });
 

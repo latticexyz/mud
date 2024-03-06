@@ -6,3 +6,9 @@ type Brand<B> = { [__brand]: B };
 export type Branded<T, B> = T & Brand<B>;
 
 export type get<input, key> = key extends keyof input ? input[key] : undefined;
+
+export type freeze<T> = T extends Array<infer R>
+  ? ReadonlyArray<freeze<R>>
+  : T extends object
+  ? { readonly [P in keyof T]: freeze<T[P]> }
+  : T;

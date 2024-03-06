@@ -6,8 +6,6 @@ import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 export type NoStaticKeyFieldError =
   ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit keys override.">;
 export type InvalidInput = ErrorMessage<"Provide a valid shorthand or full table config.">;
-// @alvrs I added @arktype/util (already transitive of arktype anyways) which has a bunch of type-level utilities like
-// this one for string unions which are otherwise quite messy to do from scratch
 export type InvalidKeys<validKey extends string> =
   ErrorMessage<`Keys must have static ABI types (${stringifyUnion<validKey>} are allowed)`>;
 
@@ -67,14 +65,14 @@ export function resolveTableShorthand<input, scope extends AbiTypeScope = AbiTyp
   scope?: scope
 ): resolveTableShorthand<input, scope> {
   // TODO: runtime implementation
-  return input as never;
+  return {} as never;
 }
 
-export type validateKeys<validKeys extends PropertyKey[], keys> = {
-  [i in keyof keys]: keys[i] extends validKeys[i & number] ? keys[i] : validKeys[i & number];
+export type validateKeys<validKeys extends PropertyKey, keys> = {
+  [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
 };
 
-export function validateKeys<validKeys extends PropertyKey[], keys = PropertyKey[]>(
+export function validateKeys<validKeys extends PropertyKey, keys = PropertyKey[]>(
   keys: validateKeys<validKeys, keys>
 ): keys {
   return {} as never;
@@ -85,12 +83,12 @@ type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> = input
   scope
 >
   ? {
-      keys: validateKeys<ValidKeys<input["schema"], scope>, input["keys"]>;
+      keys: validateKeys<getStaticAbiTypeKeys<input["schema"], scope>, input["keys"]>;
       schema: input["schema"];
     }
   : input extends { keys: unknown; schema: SchemaInput }
   ? {
-      keys: validateKeys<ValidKeys<input["schema"], scope>, input["keys"]>;
+      keys: validateKeys<getStaticAbiTypeKeys<input["schema"], scope>, input["keys"]>;
       schema: SchemaInput<scope>;
     }
   : {
@@ -127,14 +125,13 @@ type resolveTableFullConfig<
   >;
 }>;
 
-export type resolveTableConfig<
-  input,
-  scope extends AbiTypeScope = AbiTypeScope
-> = input extends TableShorthandInput<scope>
-  ? resolveTableConfig<resolveTableShorthand<input, scope>, scope>
-  : input extends TableFullInput<SchemaInput<scope>, scope>
-  ? resolveTableFullConfig<input, scope>
-  : never;
+export type resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<
+  input extends TableShorthandInput<scope>
+    ? resolveTableFullConfig<resolveTableShorthand<input, scope>, scope>
+    : input extends TableFullInput<SchemaInput<scope>, scope>
+    ? resolveTableFullConfig<input, scope>
+    : never
+>;
 
 /**
  * If a shorthand table config is passed () we expand it with sane defaults:

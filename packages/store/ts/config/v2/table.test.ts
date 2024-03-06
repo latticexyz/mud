@@ -1,11 +1,14 @@
 import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
 import { ValidKeys, resolveTableConfig, resolveTableShorthand, validateKeys } from "./table";
-import { AbiTypeScope, extendScope } from "./scope";
+import { AbiTypeScope, extendScope, getStaticAbiTypeKeys } from "./scope";
 
 describe("validateKeys", () => {
   it("should return a tuple of valid keys", () => {
-    attest<["static"], validateKeys<ValidKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>, ["static"]>>();
+    attest<
+      ["static"],
+      validateKeys<getStaticAbiTypeKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>, ["static"]>
+    >();
   });
 
   it("should return a tuple of valid keys with an extended scope", () => {
@@ -13,7 +16,7 @@ describe("validateKeys", () => {
     attest<
       ["static", "customStatic"],
       validateKeys<
-        ValidKeys<
+        getStaticAbiTypeKeys<
           { static: "uint256"; dynamic: "string"; customStatic: "static"; customDynamic: "dynamic" },
           typeof scope
         >,
@@ -23,10 +26,10 @@ describe("validateKeys", () => {
   });
 
   it("should throw if an invalid key is provided", () => {
-    // @ts-expect-error Type '"dynamic"' is not assignable to type '"static"'.
-    attest(validateKeys<ValidKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>>(["dynamic"])).type.errors(
-      `Type '"dynamic"' is not assignable to type '"static"'.`
-    );
+    attest(
+      // @ts-expect-error Type '"dynamic"' is not assignable to type '"static"'.
+      validateKeys<getStaticAbiTypeKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>>(["dynamic"])
+    ).type.errors(`Type '"dynamic"' is not assignable to type '"static"'.`);
   });
 
   it("should return a tuple of valid keys with an extended scope", () => {
@@ -34,7 +37,7 @@ describe("validateKeys", () => {
     attest<
       ["static", "customStatic"],
       validateKeys<
-        ValidKeys<
+        getStaticAbiTypeKeys<
           { static: "uint256"; dynamic: "string"; customStatic: "static"; customDynamic: "dynamic" },
           typeof scope
         >,
