@@ -7,7 +7,7 @@ export default async function globalSetup(): Promise<() => Promise<void>> {
     host: anvilHost,
     port: anvilPort,
     options: {
-      // noMining: true,
+      noMining: true,
     },
   });
 

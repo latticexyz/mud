@@ -19,7 +19,7 @@ export function subscribeToQuery<
     );
 
     // then listen for changes to records and reevaluate
-    return store.subscribe((state, prevState) => {
+    const unsub = store.subscribe((state, prevState) => {
       if (state.records === prevState.records) return;
 
       subscriber.next(
@@ -29,5 +29,10 @@ export function subscribeToQuery<
         }),
       );
     });
+
+    return () => {
+      console.log("unsubscribing");
+      unsub();
+    };
   }).pipe(distinctUntilChanged(isEqual));
 }

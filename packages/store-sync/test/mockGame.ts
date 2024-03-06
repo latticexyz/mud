@@ -10,14 +10,14 @@ export const config = resolveConfig(mudConfig);
 export { worldAbi };
 
 export async function deployMockGame(): Promise<Hex> {
-  // const automine = await testClient.getAutomine();
+  const automine = await testClient.getAutomine();
 
-  // if (!automine) {
-  //   console.log("turning on automine for deploy");
-  //   await testClient.setAutomine(true);
-  // }
+  if (!automine) {
+    console.log("turning on automine for deploy");
+    await testClient.setAutomine(true);
+  }
 
-  console.log("deploying mock game");
+  console.log("deploying mock game to", anvilRpcUrl);
   const { stdout, stderr } = await execa(
     "pnpm",
     ["mud", "deploy", "--rpc", anvilRpcUrl, "--saveDeployment", "false", "--skipBuild"],
@@ -39,10 +39,10 @@ export async function deployMockGame(): Promise<Hex> {
   }
   console.log("deployed mock game", worldAddress);
 
-  // if (!automine) {
-  //   console.log("turning off automine");
-  //   await testClient.setAutomine(false);
-  // }
+  if (!automine) {
+    console.log("turning off automine");
+    await testClient.setAutomine(false);
+  }
 
   return worldAddress;
 }
