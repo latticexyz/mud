@@ -9,8 +9,6 @@ import path from "path";
 
 export async function getPublicLibraries(forgeOutDir: string) {
   const libraryDeps: {
-    contractFullPath: string;
-    libraryFullPath: string;
     libraryFilename: string;
     libraryName: string;
     contractFullyQualifiedName: string;
@@ -22,7 +20,7 @@ export async function getPublicLibraries(forgeOutDir: string) {
     const json = JSON.parse((await readFile(contractOutPath, "utf8")).trim());
     const linkReferences = json.bytecode.linkReferences as LinkReferences;
 
-    const contractFullPath = json.ast.absolutePath;
+    const contractFullPath = Object.keys(json.metadata.settings.compilationTarget)[0];
     // skip files that do not reference any contract/library
     if (!json.metadata) continue;
     const contractName = json.metadata.settings.compilationTarget[contractFullPath];
@@ -31,8 +29,6 @@ export async function getPublicLibraries(forgeOutDir: string) {
       const names = Object.keys(namePositions);
       for (const libraryName of names) {
         libraryDeps.push({
-          contractFullPath: json.ast.absolutePath,
-          libraryFullPath,
           libraryFilename: path.basename(libraryFullPath),
           libraryName,
           contractFullyQualifiedName: `${contractFullPath}:${contractName}`,

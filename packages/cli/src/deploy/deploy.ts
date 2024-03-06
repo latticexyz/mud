@@ -14,7 +14,7 @@ import { debug } from "./debug";
 import { resourceLabel } from "./resourceLabel";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
-import { coreModuleBytecode, worldFactoryBytecode, worldFactoryContracts } from "./ensureWorldFactory";
+import { worldFactoryContracts } from "./ensureWorldFactory";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;

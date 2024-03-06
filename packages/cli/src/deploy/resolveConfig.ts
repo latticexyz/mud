@@ -10,7 +10,6 @@ import {
   getCreate2Address,
   getAddress,
   hexToBytes,
-  Abi,
   bytesToHex,
   getFunctionSignature,
 } from "viem";
