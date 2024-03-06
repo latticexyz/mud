@@ -11,8 +11,6 @@ export type InvalidInput = ErrorMessage<"Provide a valid shorthand or full table
 export type InvalidKeys<validKey extends string> =
   ErrorMessage<`Keys must have static ABI types (${stringifyUnion<validKey>} are allowed)`>;
 
-// @alvrs Make sure if you are ever wanting to compare against an array like
-// this you add `readonly` to it
 export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = [
   getStaticAbiTypeKeys<schema, scope>,
   ...getStaticAbiTypeKeys<schema, scope>[]
@@ -52,13 +50,15 @@ type validateTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> = 
 export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> = input extends SchemaInput<scope>
   ? "key" extends getStaticAbiTypeKeys<input, scope>
     ? // If the shorthand includes a static field called `key`, use it as key
-      TableFullInput<input, scope, ["key"]>
+      evaluate<TableFullInput<input, scope, ["key"]>>
     : never
   : input extends keyof scope["allTypes"]
-  ? TableFullInput<
-      { key: "bytes32"; value: input },
-      scope,
-      ["key" & getStaticAbiTypeKeys<{ key: "bytes32"; value: input }, scope>]
+  ? evaluate<
+      TableFullInput<
+        { key: "bytes32"; value: input },
+        scope,
+        ["key" & getStaticAbiTypeKeys<{ key: "bytes32"; value: input }, scope>]
+      >
     >
   : never;
 
@@ -70,33 +70,33 @@ export function resolveTableShorthand<input, scope extends AbiTypeScope = AbiTyp
   return input as never;
 }
 
-type validateKeys<keys, validKey extends PropertyKey> = {
-  [i in keyof keys]: keys[i] extends validKey ? keys[i] : validKey;
+export type validateKeys<validKeys extends PropertyKey[], keys> = {
+  [i in keyof keys]: keys[i] extends validKeys[i & number] ? keys[i] : validKeys[i & number];
 };
+
+export function validateKeys<validKeys extends PropertyKey[], keys = PropertyKey[]>(
+  keys: validateKeys<validKeys, keys>
+): keys {
+  return {} as never;
+}
 
 type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> = input extends TableFullInput<
   SchemaInput<scope>,
   scope
 >
   ? {
-      keys: validateKeys<input["keys"], getStaticAbiTypeKeys<input["schema"], scope>>;
+      keys: validateKeys<ValidKeys<input["schema"], scope>, input["keys"]>;
       schema: input["schema"];
     }
   : input extends { keys: unknown; schema: SchemaInput }
   ? {
-      keys: validateKeys<input["keys"], getStaticAbiTypeKeys<input["schema"], scope>>;
+      keys: validateKeys<ValidKeys<input["schema"], scope>, input["keys"]>;
       schema: SchemaInput<scope>;
     }
   : {
       keys: string[];
       schema: SchemaInput<scope>;
     };
-
-// export type inferSchema<input, scope extends AbiTypeScope = AbiTypeScope> = input extends TableFullInput
-//   ? input["schema"]
-//   : input extends TableShorthandInput
-//   ? resolveTableShorthand<input, scope>["schema"]
-//   : never;
 
 export type validateTableConfig<
   input,

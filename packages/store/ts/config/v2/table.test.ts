@@ -1,20 +1,44 @@
 import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { ValidKeys, resolveTableConfig, resolveTableShorthand } from "./table";
+import { ValidKeys, resolveTableConfig, resolveTableShorthand, validateKeys } from "./table";
 import { AbiTypeScope, extendScope } from "./scope";
 
-describe("ValidKeys", () => {
+describe("validateKeys", () => {
   it("should return a tuple of valid keys", () => {
-    attest<"static"[], ValidKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>>();
+    attest<["static"], validateKeys<ValidKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>, ["static"]>>();
   });
 
   it("should return a tuple of valid keys with an extended scope", () => {
     const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
     attest<
-      ("static" | "customStatic")[],
-      ValidKeys<
-        { static: "uint256"; dynamic: "string"; customStatic: "static"; customDynamic: "dynamic" },
-        typeof scope
+      ["static", "customStatic"],
+      validateKeys<
+        ValidKeys<
+          { static: "uint256"; dynamic: "string"; customStatic: "static"; customDynamic: "dynamic" },
+          typeof scope
+        >,
+        ["static", "customStatic"]
+      >
+    >();
+  });
+
+  it("should throw if an invalid key is provided", () => {
+    // @ts-expect-error Type '"dynamic"' is not assignable to type '"static"'.
+    attest(validateKeys<ValidKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>>(["dynamic"])).type.errors(
+      `Type '"dynamic"' is not assignable to type '"static"'.`
+    );
+  });
+
+  it("should return a tuple of valid keys with an extended scope", () => {
+    const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
+    attest<
+      ["static", "customStatic"],
+      validateKeys<
+        ValidKeys<
+          { static: "uint256"; dynamic: "string"; customStatic: "static"; customDynamic: "dynamic" },
+          typeof scope
+        >,
+        ["static", "customStatic"]
       >
     >();
   });
@@ -473,7 +497,7 @@ describe("resolveTableConfig", () => {
         },
         scope
       )
-    ).type.errors(`Type '"name"' is not assignable to type '"age"'`);
+    ).type.errors(`Type '"key"' is not assignable to type '"age"'`);
   });
 
   it("should throw if the provided key is neither a custom nor ABI type", () => {
