@@ -1,13 +1,9 @@
 import { ErrorMessage, evaluate } from "@arktype/util";
 import { SchemaInput, resolveSchema } from "./schema";
-import { stringifyUnion } from "@arktype/util";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit keys override.">;
-export type InvalidInput = ErrorMessage<"Provide a valid shorthand or full table config.">;
-export type InvalidKeys<validKey extends string> =
-  ErrorMessage<`Keys must have static ABI types (${stringifyUnion<validKey>} are allowed)`>;
 
 export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = [
   getStaticAbiTypeKeys<schema, scope>,
@@ -75,6 +71,7 @@ export type validateKeys<validKeys extends PropertyKey, keys> = {
 export function validateKeys<validKeys extends PropertyKey, keys = PropertyKey[]>(
   keys: validateKeys<validKeys, keys>
 ): keys {
+  // TODO: runtime implementation
   return {} as never;
 }
 

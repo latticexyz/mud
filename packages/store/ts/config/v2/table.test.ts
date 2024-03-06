@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { ValidKeys, resolveTableConfig, resolveTableShorthand, validateKeys } from "./table";
+import { resolveTableConfig, resolveTableShorthand, validateKeys } from "./table";
 import { AbiTypeScope, extendScope, getStaticAbiTypeKeys } from "./scope";
 
 describe("validateKeys", () => {
@@ -136,50 +136,6 @@ describe("resolveTableShorthand", () => {
     );
   });
 });
-
-// describe("inferSchema", () => {
-//   it("should infer the schema of a single ABI type shorthand table config", () => {
-//     attest<inferSchema<"address">, { key: "bytes32"; value: "address" }>();
-//   });
-
-//   it("should infer the schema of a single ABI type shorthand table config with custom types", () => {
-//     const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
-//     attest<inferSchema<"CustomType", typeof scope>, { key: "bytes32"; value: "CustomType" }>();
-//   });
-
-//   it("should infer the schema of a schema shorthand table config", () => {
-//     attest<inferSchema<{ key: "bytes32"; value: "address" }>, { key: "bytes32"; value: "address" }>();
-//   });
-
-//   it("should infer the schema of a full table config", () => {
-//     attest<
-//       inferSchema<{ schema: { key: "bytes32"; value: "address" }; keys: ["key"] }>,
-//       {
-//         key: "bytes32";
-//         value: "address";
-//       }
-//     >();
-//   });
-
-//   it("should infer the schema of a full table config with custom types", () => {
-//     attest<inferSchema<{ schema: { key: "bytes32"; value: "CustomType" }; keys: ["key"] }, { CustomType: "string" }>>({
-//       key: "bytes32",
-//       value: "CustomType",
-//     } as const);
-//   });
-
-//   it("test", () => {
-//     attest<
-//       inferSchema<
-//         {
-//           schema: { key: "CustomType"; name: "string"; age: "uint256" };
-//           keys: ["key"];
-//         },
-//         { CustomType: "string" }
-//       >
-//     >({ key: "CustomType", name: "string", age: "uint256" } as const);
-//   });
-// });
 
 describe("resolveTableConfig", () => {
   it("should expand a single ABI type into a key/value schema", () => {
