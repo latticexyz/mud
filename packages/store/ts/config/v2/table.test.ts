@@ -336,7 +336,7 @@ describe("resolveTableConfig", () => {
         key: { type: "address"; internalType: "address" };
         name: { type: "string"; internalType: "string" };
       };
-      keys: "age"[];
+      keys: ["age"];
     }>(table);
   });
 
@@ -358,8 +358,7 @@ describe("resolveTableConfig", () => {
       valueSchema: {
         name: { type: "string"; internalType: "string" };
       };
-      // TODO: how can we return a tuple here instead of an unordered array?
-      keys: ("age" | "key")[];
+      keys: ["age", "key"];
     }>(table);
   });
 

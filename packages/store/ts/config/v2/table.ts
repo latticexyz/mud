@@ -14,6 +14,7 @@ export type InvalidKeys<validKey extends string> =
 // @alvrs Make sure if you are ever wanting to compare against an array like
 // this you add `readonly` to it
 export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = [
+  getStaticAbiTypeKeys<schema, scope>,
   ...getStaticAbiTypeKeys<schema, scope>[]
 ];
 
@@ -109,7 +110,7 @@ export type validateTableConfig<
 type resolveTableFullConfig<
   input extends TableFullInput<SchemaInput<scope>, scope>,
   scope extends AbiTypeScope = AbiTypeScope
-> = {
+> = evaluate<{
   keys: input["keys"];
   schema: resolveSchema<input["schema"], scope>;
   keySchema: resolveSchema<
@@ -124,7 +125,7 @@ type resolveTableFullConfig<
     },
     scope
   >;
-};
+}>;
 
 export type resolveTableConfig<
   input,
