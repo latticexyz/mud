@@ -59,7 +59,8 @@ interface IWorldCall {
  * @notice The IWorldKernel interface includes all methods that are part of the World contract's
  * internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
  * registered functions selectors from the `InitModule`.
- * @dev The IWorldKernel interface inherits IModuleErrors because the world can be delegatecalled with module code.
+ * @dev The IWorldKernel interface inherits IModuleErrors because the world can be delegatecalled with module code,
+ * so it's ABI should include these errors.
  */
 interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors, IModuleErrors {
   /**
