@@ -5,6 +5,9 @@ export type AbiType = StaticAbiType | "bytes" | "string" | "bool[]";
 
 export const EmptyScope = { staticTypes: {}, allTypes: {} } as const;
 
+export type AbiTypeScope = ScopeOptions<{ [t in StaticAbiType]: t }, { [t in AbiType]: t }>;
+export const AbiTypeScope = {} as AbiTypeScope; // TODO: runtime implementation
+
 export type EmptyScope = ScopeOptions<(typeof EmptyScope)["staticTypes"], (typeof EmptyScope)["allTypes"]>;
 
 export type ScopeOptions<
