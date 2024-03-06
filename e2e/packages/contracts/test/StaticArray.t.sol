@@ -15,14 +15,14 @@ contract StaticArrayTest is MudTest {
     data[2] = memoryCorruptionCheck;
 
     uint256[2] memory result = toStaticArray_uint256_2(data);
-    assertEq(result[0], 0);
-    assertEq(result[1], 0);
+    assertEq(result[0], 1);
+    assertEq(result[1], 2);
 
     uint256 memoryAfterResult;
     assembly {
       memoryAfterResult := mload(add(result, 0x40))
       mstore(0x40, add(mload(0x40), 0x20))
     }
-    assertNotEq(memoryAfterResult, memoryCorruptionCheck);
+    assertEq(memoryAfterResult, memoryCorruptionCheck);
   }
 }
