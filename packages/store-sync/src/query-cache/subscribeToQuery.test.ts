@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { createHydratedStore, tables } from "./test/createHydratedStore";
 import { subscribeToQuery } from "./subscribeToQuery";
 import { deployMockGame, worldAbi } from "../../test/mockGame";
-import { waitForTransactionReceipt, writeContract } from "viem/actions";
+import { writeContract } from "viem/actions";
 import { keccak256, parseEther, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { testClient } from "../../test/common";
@@ -13,10 +13,12 @@ const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));
 describe("subscribeToQuery", async () => {
   await testClient.setBalance({ address: henryAccount.address, value: parseEther("1") });
   const worldAddress = await deployMockGame();
-  const id = await testClient.snapshot();
 
   beforeEach(async () => {
-    await testClient.revert({ id });
+    const state = await testClient.dumpState();
+    return async (): Promise<void> => {
+      await testClient.loadState({ state });
+    };
   });
 
   it("can get players with a position", async () => {
@@ -46,7 +48,7 @@ describe("subscribeToQuery", async () => {
       }
     `);
 
-    const tx = await writeContract(testClient, {
+    await writeContract(testClient, {
       account: henryAccount,
       chain: null,
       address: worldAddress,
@@ -55,7 +57,6 @@ describe("subscribeToQuery", async () => {
       args: [1, 2],
     });
     await testClient.mine({ blocks: 2 });
-    await waitForTransactionReceipt(testClient, { hash: tx });
     await fetchLatestLogs();
 
     expect(results.length).toBe(2);
@@ -107,7 +108,7 @@ describe("subscribeToQuery", async () => {
       }
     `);
 
-    const tx = await writeContract(testClient, {
+    await writeContract(testClient, {
       account: henryAccount,
       chain: null,
       address: worldAddress,
@@ -116,7 +117,6 @@ describe("subscribeToQuery", async () => {
       args: [3, 5],
     });
     await testClient.mine({ blocks: 2 });
-    await waitForTransactionReceipt(testClient, { hash: tx });
     await fetchLatestLogs();
 
     expect(results.length).toBe(2);
@@ -136,7 +136,7 @@ describe("subscribeToQuery", async () => {
       }
     `);
 
-    const tx2 = await writeContract(testClient, {
+    await writeContract(testClient, {
       account: henryAccount,
       chain: null,
       address: worldAddress,
@@ -145,7 +145,6 @@ describe("subscribeToQuery", async () => {
       args: [2, 4],
     });
     await testClient.mine({ blocks: 2 });
-    await waitForTransactionReceipt(testClient, { hash: tx2 });
     await fetchLatestLogs();
 
     expect(results.length).toBe(3);
@@ -189,8 +188,64 @@ describe("subscribeToQuery", async () => {
           [
             "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
+        ],
+      }
+    `);
+
+    await writeContract(testClient, {
+      account: henryAccount,
+      chain: null,
+      address: worldAddress,
+      abi: worldAbi,
+      functionName: "move",
+      args: [3, 5],
+    });
+    await testClient.mine({ blocks: 2 });
+    await fetchLatestLogs();
+
+    expect(results.length).toBe(2);
+    expect(results.lastValue).toMatchInlineSnapshot(`
+      {
+        "subjects": [
+          [
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+          ],
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
+          [
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
           [
             "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+          ],
+        ],
+      }
+    `);
+
+    await writeContract(testClient, {
+      account: henryAccount,
+      chain: null,
+      address: worldAddress,
+      abi: worldAbi,
+      functionName: "move",
+      args: [100, 100],
+    });
+    await testClient.mine({ blocks: 2 });
+    await fetchLatestLogs();
+
+    expect(results.length).toBe(3);
+    expect(results.lastValue).toMatchInlineSnapshot(`
+      {
+        "subjects": [
+          [
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+          ],
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
+          [
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
         ],
       }

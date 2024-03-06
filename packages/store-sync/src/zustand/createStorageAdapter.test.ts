@@ -4,7 +4,8 @@ import { createStorageAdapter } from "./createStorageAdapter";
 import { createStore } from "./createStore";
 import { config, deployMockGame } from "../../test/mockGame";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
-import { publicClient } from "../../test/common";
+import { testClient } from "../../test/common";
+import { getBlockNumber } from "viem/actions";
 
 describe("createStorageAdapter", async () => {
   await deployMockGame();
@@ -16,10 +17,10 @@ describe("createStorageAdapter", async () => {
     console.log("fetching blocks");
     for await (const block of fetchAndStoreLogs({
       storageAdapter,
-      publicClient,
+      publicClient: testClient,
       events: storeEventsAbi,
       fromBlock: 0n,
-      toBlock: await publicClient.getBlockNumber(),
+      toBlock: await getBlockNumber(testClient),
     })) {
       // console.log("got block", block.blockNumber);
     }

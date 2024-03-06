@@ -1,10 +1,18 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { createHydratedStore, tables } from "./test/createHydratedStore";
 import { query } from "./query";
 import { deployMockGame } from "../../test/mockGame";
+import { testClient } from "../../test/common";
 
 describe("query", async () => {
   const worldAddress = await deployMockGame();
+
+  beforeEach(async () => {
+    const state = await testClient.dumpState();
+    return async (): Promise<void> => {
+      await testClient.loadState({ state });
+    };
+  });
 
   it("can get players with a position", async () => {
     const { store } = await createHydratedStore(worldAddress);
