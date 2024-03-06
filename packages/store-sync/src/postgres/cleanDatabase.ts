@@ -12,9 +12,9 @@ const schemata = pgSchema("information_schema").table("schemata", {
 });
 
 function isMudSchemaName(schemaName: string): boolean {
-  // address-prefixed schemas like {address}__{namespace} used by decoded postgres tables
+  // each store address has its own schema used by decoded postgres tables
   // optional prefix for schemas created in tests
-  if (/(^|__)0x[0-9a-f]{40}__/i.test(schemaName)) {
+  if (/(^|__)0x[0-9a-f]{40}$/i.test(schemaName)) {
     return true;
   }
   // schema for internal tables
