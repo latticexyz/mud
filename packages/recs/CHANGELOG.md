@@ -1,5 +1,29 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Patch Changes
+
+- Updated dependencies [aabd3076]
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/utils@2.0.0-next.17
+
+## 2.0.0-next.16
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.0.0-next.16
+- @latticexyz/utils@2.0.0-next.16
+
+## 2.0.0-next.15
+
+### Patch Changes
+
+- 59054203: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- Updated dependencies [59054203]
+  - @latticexyz/schema-type@2.0.0-next.15
+  - @latticexyz/utils@2.0.0-next.15
+
 ## 2.0.0-next.14
 
 ### Patch Changes
@@ -315,7 +339,7 @@
        .pipe(
          map((block) => Number(block.timestamp) * 1000), // Map to timestamp in ms
          filter((blockTimestamp) => blockTimestamp !== clock.lastUpdateTime), // Ignore if the clock was already refreshed with this block
-         filter((blockTimestamp) => blockTimestamp !== clock.currentTime) // Ignore if the current local timestamp is correct
+         filter((blockTimestamp) => blockTimestamp !== clock.currentTime), // Ignore if the current local timestamp is correct
        )
        .subscribe(clock.update); // Update the local clock
      ```

@@ -1,16 +1,22 @@
-import { useTheme } from "nextra-theme-docs";
-
 export default function NavLogo() {
-  const { resolvedTheme } = useTheme();
   return (
-    <div style={{ display: "grid", gridAutoFlow: "column", alignItems: "center" }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "0.25em",
+        fontSize: "32px",
+        fontFamily: "PP Supply Mono",
+        textTransform: "uppercase",
+      }}
+    >
       {/* TODO: figure out how to size Logo and use that here instead */}
       <img
-        src={resolvedTheme === "light" ? "/logo512-black.png" : "/logo512-white.png"}
-        style={{ height: "calc(var(--nextra-navbar-height) - 25px)" }}
+        src="/images/logos/mud-white.svg"
+        style={{ height: "calc(var(--nextra-navbar-height) - 35px)" }}
         alt="MUD logo"
       />
-      <p style={{ fontWeight: "bold", fontSize: "25px", marginTop: "6px", paddingLeft: "4px" }}>MUD</p>
+      MUD
     </div>
   );
 }

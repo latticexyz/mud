@@ -1,6 +1,11 @@
-import { getLeftPaddingBits } from "@latticexyz/common/codegen";
+import { RenderType, getLeftPaddingBits } from "@latticexyz/common/codegen";
 
-export function renderTightCoderDecode(element: { internalTypeId: string; staticByteLength: number }) {
+/**
+ * Renders `decodeArray_*` method for decoding `Slice` into the array of provided primitive type
+ * @param element name and byte length of the primitive type
+ * @returns string of Solidity code
+ */
+export function renderTightCoderDecode(element: Pick<RenderType, "internalTypeId" | "staticByteLength">) {
   return `
     /**
      * @notice Decodes a slice into an array of ${element.internalTypeId}.
@@ -25,7 +30,12 @@ export function renderTightCoderDecode(element: { internalTypeId: string; static
   `;
 }
 
-export function renderTightCoderEncode(element: { internalTypeId: string; staticByteLength: number }) {
+/**
+ * Renders `encode` method for encoding the array of provided primitive type into `Slice`
+ * @param element name and byte length of the primitive type
+ * @returns string of Solidity code
+ */
+export function renderTightCoderEncode(element: Pick<RenderType, "internalTypeId" | "staticByteLength">) {
   return `
 
     /**

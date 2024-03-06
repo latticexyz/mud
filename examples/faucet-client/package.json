@@ -1,0 +1,14 @@
+{
+  "name": "mud-example-faucer-client",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "drip": "tsx index.ts"
+  },
+  "dependencies": {
+    "@latticexyz/faucet": "link:../../packages/faucet",
+    "tsx": "^3.12.7"
+  }
+}

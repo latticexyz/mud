@@ -19,7 +19,7 @@ export function defineAssetsConfig<A extends Assets>(assets: A) {
 }
 
 export function defineMapConfig<A extends Assets, T extends TilesetConfig<A>, L extends LayerConfig<A, T>>(
-  config: MapConfig<A, T, L>
+  config: MapConfig<A, T, L>,
 ) {
   return config;
 }
@@ -29,7 +29,7 @@ export function defineSceneConfig<
   S extends { [key: string]: Sprite<Assets> },
   T extends TilesetConfig<A>,
   M extends MapsConfig<A, T>,
-  Ans extends Animation<A>[]
+  Ans extends Animation<A>[],
 >(config: SceneConfig<A, S, T, M, Ans>) {
   return config;
 }
@@ -44,14 +44,14 @@ export function defineCameraConfig(config: CameraConfig) {
 
 export function isSprite(
   gameObject: Phaser.GameObjects.GameObject,
-  type: keyof GameObjectTypes
+  type: keyof GameObjectTypes,
 ): gameObject is GameObject<"Sprite"> {
   return type === "Sprite";
 }
 
 export function isRectangle(
   gameObject: Phaser.GameObjects.GameObject,
-  type: keyof GameObjectTypes
+  type: keyof GameObjectTypes,
 ): gameObject is GameObject<"Rectangle"> {
   return type === "Rectangle";
 }

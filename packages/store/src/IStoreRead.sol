@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { PackedCounter } from "./PackedCounter.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
 import { ResourceId } from "./ResourceId.sol";
 
+/**
+ * @title IStoreRead
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ */
 interface IStoreRead {
   function getFieldLayout(ResourceId tableId) external view returns (FieldLayout fieldLayout);
 

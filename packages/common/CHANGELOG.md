@@ -1,5 +1,66 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Minor Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+
+### Patch Changes
+
+- a35c05ea: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+- c162ad5a: Prevented errors not included in the contract (but present in the file) from being included in the interface by `contractToInterface`
+- Updated dependencies [aabd3076]
+  - @latticexyz/schema-type@2.0.0-next.17
+
+## 2.0.0-next.16
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.0.0-next.16
+
+## 2.0.0-next.15
+
+### Minor Changes
+
+- 1b5eb0d0: Added `unique` and `groupBy` array helpers to `@latticexyz/common/utils`.
+
+  ```ts
+  import { unique } from "@latticexyz/common/utils";
+
+  unique([1, 2, 1, 4, 3, 2]);
+  // [1, 2, 4, 3]
+  ```
+
+  ```ts
+  import { groupBy } from "@latticexyz/common/utils";
+
+  const records = [
+    { type: "cat", name: "Bob" },
+    { type: "cat", name: "Spot" },
+    { type: "dog", name: "Rover" },
+  ];
+  Object.fromEntries(groupBy(records, (record) => record.type));
+  // {
+  //   "cat": [{ type: "cat", name: "Bob" }, { type: "cat", name: "Spot" }],
+  //   "dog: [{ type: "dog", name: "Rover" }]
+  // }
+  ```
+
+- 4c1dcd81: - Added a `Result<Ok, Err>` type for more explicit and typesafe error handling ([inspired by Rust](https://doc.rust-lang.org/std/result/)).
+
+  - Added a `includes` util as typesafe alternative to [`Array.prototype.includes()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes).
+
+- 5df1f31b: Updated `chunk` types to use readonly arrays
+
+### Patch Changes
+
+- 933b54b5: The benchmark util now logs to `stdout` instead of `stderr`.
+- 59054203: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- 5d737cf2: Updated the `debug` util to pipe to `stdout` and added an additional util to explicitly pipe to `stderr` when needed.
+- Updated dependencies [59054203]
+  - @latticexyz/schema-type@2.0.0-next.15
+
 ## 2.0.0-next.14
 
 ### Patch Changes
@@ -608,7 +669,7 @@
        .pipe(
          map((block) => Number(block.timestamp) * 1000), // Map to timestamp in ms
          filter((blockTimestamp) => blockTimestamp !== clock.lastUpdateTime), // Ignore if the clock was already refreshed with this block
-         filter((blockTimestamp) => blockTimestamp !== clock.currentTime) // Ignore if the current local timestamp is correct
+         filter((blockTimestamp) => blockTimestamp !== clock.currentTime), // Ignore if the current local timestamp is correct
        )
        .subscribe(clock.update); // Update the local clock
      ```

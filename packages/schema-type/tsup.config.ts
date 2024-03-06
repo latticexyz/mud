@@ -5,7 +5,7 @@ export default defineConfig({
   outDir: "dist/typescript",
   target: "esnext",
   format: ["esm"],
-  dts: false,
+  dts: true,
   sourcemap: true,
   clean: true,
   minify: true,

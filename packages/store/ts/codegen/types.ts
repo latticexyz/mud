@@ -14,7 +14,7 @@ export interface RenderTableOptions {
   libraryName: string;
   /** Name of the struct to render. If undefined, struct and its methods aren't rendered. */
   structName?: string;
-  /** Data used to statically registed the table. If undefined, all methods receive `_tableId` as an argument. */
+  /** Data used to statically register the table. If undefined, all methods receive `_tableId` as an argument. */
   staticResourceData?: StaticResourceData;
   /** Path for store package imports */
   storeImportPath: string;

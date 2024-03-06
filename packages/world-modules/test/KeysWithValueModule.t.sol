@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -9,7 +9,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
-import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
@@ -21,7 +21,7 @@ import { WorldResourceIdLib, WorldResourceIdInstance, NAME_BITS, TYPE_BITS } fro
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
 import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
 
-import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
+import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
 import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
@@ -29,7 +29,6 @@ import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.
 import { getTargetTableId, MODULE_NAMESPACE_BITS, TABLE_NAMESPACE_BITS } from "../src/modules/keyswithvalue/getTargetTableId.sol";
 
 contract KeysWithValueModuleTest is Test, GasReporter {
-  using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
   IBaseWorld world;
@@ -55,8 +54,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: sourceName });
     targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
 
-    world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
 
     keyTuple1 = new bytes32[](1);
@@ -106,6 +104,16 @@ contract KeysWithValueModuleTest is Test, GasReporter {
   }
 
   function testInstallTwice() public {
+    // Register source table
+    world.registerTable(
+      sourceTableId,
+      sourceTableFieldLayout,
+      sourceTableKeySchema,
+      sourceTableSchema,
+      new string[](1),
+      new string[](1)
+    );
+
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
     vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));

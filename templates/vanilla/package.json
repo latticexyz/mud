@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../packages/cli",
+    "@types/debug": "4.1.7",
     "@typescript-eslint/eslint-plugin": "5.46.1",
     "@typescript-eslint/parser": "5.46.1",
     "eslint": "8.29.0",

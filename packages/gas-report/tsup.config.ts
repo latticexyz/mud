@@ -4,7 +4,7 @@ export default defineConfig({
   entry: ["ts/index.ts", "ts/gas-report.ts"],
   target: "esnext",
   format: ["esm"],
-  dts: false,
+  dts: true,
   sourcemap: true,
   clean: true,
   minify: true,

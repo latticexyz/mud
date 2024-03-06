@@ -6,11 +6,12 @@ on:
       # Target main branch
       - "main"
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+# Ensure only one workflow/job is publishing to npm at a time
+concurrency: publish-to-npm
 
 jobs:
   prerelease:
-    name: Changests Prerelease
+    name: Changesets Prerelease
     if: github.repository == 'latticexyz/mud'
     runs-on: ubuntu-latest
     # Permissions necessary for Changesets to push a new branch and open PRs

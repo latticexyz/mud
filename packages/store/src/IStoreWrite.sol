@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { IStoreEvents } from "./IStoreEvents.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { ResourceId } from "./ResourceId.sol";
 
+/**
+ * @title IStoreWrite
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ */
 interface IStoreWrite is IStoreEvents {
   // Set full record (including full dynamic data)
   function setRecord(

@@ -1,12 +1,24 @@
 import { RenderType } from "@latticexyz/common/codegen";
 import { BYTE_TO_BITS, LayoutOffsets, MAX_DYNAMIC_FIELDS, MAX_TOTAL_FIELDS, WORD_LAST_INDEX } from "../constants";
 
-export function renderFieldLayout(fields: RenderType[]) {
+type FieldLayoutRenderType = Pick<RenderType, "isDynamic" | "staticByteLength">;
+
+/**
+ * Renders Solidity code that defines and initializes `_fieldLayout` constant
+ * @param fields array of field data necessary to construct FieldLayout
+ * @returns string of Solidity code
+ */
+export function renderFieldLayout(fields: FieldLayoutRenderType[]): string {
   return `FieldLayout constant _fieldLayout = FieldLayout.wrap(${encodeFieldLayout(fields)});`;
 }
 
 // Make sure this logic stays aligned with @latticexyz/store/src/FieldLayout.sol
-export function encodeFieldLayout(fields: RenderType[]) {
+/**
+ * Returns Solidity hexadecimal which represents the encoded FieldLayout
+ * @param fields array of field data necessary to construct FieldLayout
+ * @returns string of Solidity code
+ */
+function encodeFieldLayout(fields: FieldLayoutRenderType[]): string {
   const staticFields = fields.filter(({ isDynamic }) => !isDynamic);
   const numDynamicFields = fields.length - staticFields.length;
 
@@ -14,8 +26,8 @@ export function encodeFieldLayout(fields: RenderType[]) {
   let totalLength = 0;
   const totalFields = fields.length;
 
-  if (totalFields > MAX_TOTAL_FIELDS) throw new Error(`FieldLayout: invalid length ${totalFields}`);
-  if (numDynamicFields > MAX_DYNAMIC_FIELDS) throw new Error(`FieldLayout: invalid length ${numDynamicFields}`);
+  if (totalFields > MAX_TOTAL_FIELDS) throw new Error("FieldLayout: too many fields");
+  if (numDynamicFields > MAX_DYNAMIC_FIELDS) throw new Error("FieldLayout: too many dynamic fields");
 
   for (let i = 0; i < staticFields.length; i++) {
     const { isDynamic, staticByteLength } = fields[i];

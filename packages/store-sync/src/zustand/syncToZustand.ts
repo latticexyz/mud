@@ -5,10 +5,11 @@ import { ZustandStore } from "./createStore";
 import { createStore } from "./createStore";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { Address } from "viem";
+import { SyncStep } from "../SyncStep";
 
 type AllTables<
   config extends StoreConfig,
-  extraTables extends Tables | undefined
+  extraTables extends Tables | undefined,
 > = ResolvedStoreConfig<config>["tables"] &
   (extraTables extends Tables ? extraTables : Record<never, never>) &
   typeof storeTables &
@@ -52,6 +53,11 @@ export async function syncToZustand<config extends StoreConfig, extraTables exte
   const storeSync = await createStoreSync({
     storageAdapter,
     ...syncOptions,
+    onProgress: (syncProgress) => {
+      // already live, no need for more progress updates
+      if (useStore.getState().syncProgress.step === SyncStep.LIVE) return;
+      useStore.setState(() => ({ syncProgress }));
+    },
   });
 
   const sub = startSync ? storeSync.storedBlockLogs$.subscribe() : null;

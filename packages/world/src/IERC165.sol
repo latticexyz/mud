@@ -1,13 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
-
-/**
- * @dev Calculation for ERC-165 interface ID for the `supportsInterface` function.
- */
-bytes4 constant ERC165_INTERFACE_ID = IERC165.supportsInterface.selector;
+pragma solidity >=0.8.24;
 
 /**
  * @title IERC165
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Interface for the ERC-165 standard as described in the EIP-165.
  * Allows for contracts to be checked for their support of an interface.
  * See: https://eips.ethereum.org/EIPS/eip-165

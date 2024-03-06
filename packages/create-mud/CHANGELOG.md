@@ -1,5 +1,27 @@
 # Change Log
 
+## 2.0.0-next.17
+
+### Minor Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+
+### Patch Changes
+
+- a35c05ea: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+
+## 2.0.0-next.16
+
+## 2.0.0-next.15
+
+### Minor Changes
+
+- f6133591: Replaced usage of `window` global in vanilla JS template with an event listener on the button.
+
+### Patch Changes
+
+- 6963a9e8: Templates now correctly include their respective `.gitignore` files
+
 ## 2.0.0-next.14
 
 ### Minor Changes
@@ -614,7 +636,7 @@
        .pipe(
          map((block) => Number(block.timestamp) * 1000), // Map to timestamp in ms
          filter((blockTimestamp) => blockTimestamp !== clock.lastUpdateTime), // Ignore if the clock was already refreshed with this block
-         filter((blockTimestamp) => blockTimestamp !== clock.currentTime) // Ignore if the current local timestamp is correct
+         filter((blockTimestamp) => blockTimestamp !== clock.currentTime), // Ignore if the current local timestamp is correct
        )
        .subscribe(clock.update); // Update the local clock
      ```

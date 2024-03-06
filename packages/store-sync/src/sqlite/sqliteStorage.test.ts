@@ -24,7 +24,7 @@ const blocks = groupLogsByBlockNumber(
       strict: true,
     });
     return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
-  })
+  }),
 );
 
 describe("sqliteStorage", async () => {
@@ -38,16 +38,17 @@ describe("sqliteStorage", async () => {
 
   beforeEach(async () => {
     db = drizzle(new SqlJs.Database(), {
+      // TODO: make a debug-based logger so this can be toggled by env var
       // logger: new DefaultLogger(),
     });
   });
 
   it("should create tables and data from block log", async () => {
     expect(() => db.select().from(chainState).all()).toThrowErrorMatchingInlineSnapshot(
-      '"no such table: __chainState"'
+      '"no such table: __chainState"',
     );
     expect(() => db.select().from(mudStoreTables).all()).toThrowErrorMatchingInlineSnapshot(
-      '"no such table: __mudStoreTables"'
+      '"no such table: __mudStoreTables"',
     );
 
     const storageAdapter = await sqliteStorage({ database: db, publicClient });
@@ -64,7 +65,7 @@ describe("sqliteStorage", async () => {
         {
           "chainId": 31337,
           "lastError": null,
-          "lastUpdatedBlockNumber": 12n,
+          "lastUpdatedBlockNumber": 21n,
           "schemaVersion": 1,
         },
       ]
@@ -73,11 +74,11 @@ describe("sqliteStorage", async () => {
     expect(db.select().from(mudStoreTables).where(eq(mudStoreTables.name, "NumberList")).all()).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342",
-          "id": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342____NumberList",
+          "address": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2",
+          "id": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2____NumberList",
           "keySchema": {},
           "lastError": null,
-          "lastUpdatedBlockNumber": 12n,
+          "lastUpdatedBlockNumber": 21n,
           "name": "NumberList",
           "namespace": "",
           "schemaVersion": 1,
@@ -93,11 +94,11 @@ describe("sqliteStorage", async () => {
     expect(tables).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342",
-          "id": "0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342____NumberList",
+          "address": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2",
+          "id": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2____NumberList",
           "keySchema": {},
           "lastError": null,
-          "lastUpdatedBlockNumber": 12n,
+          "lastUpdatedBlockNumber": 21n,
           "name": "NumberList",
           "namespace": "",
           "schemaVersion": 1,
@@ -117,7 +118,7 @@ describe("sqliteStorage", async () => {
           "__encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
           "__isDeleted": false,
           "__key": "0x",
-          "__lastUpdatedBlockNumber": 12n,
+          "__lastUpdatedBlockNumber": 21n,
           "__staticData": null,
           "value": [
             420,

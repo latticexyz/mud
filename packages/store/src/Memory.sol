@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
-import { leftMask } from "./leftMask.sol";
+import { rightMask } from "./rightMask.sol";
 
 /**
  * @title Memory Operations
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice A library for performing low-level memory operations.
  * @dev This library provides low-level memory operations with safety checks.
  */
@@ -47,16 +48,16 @@ library Memory {
     if (length == 0) return;
 
     // Copy the 0-31 length tail
-    uint256 mask = leftMask(length);
+    uint256 mask = rightMask(length);
     /// @solidity memory-safe-assembly
     assembly {
       mstore(
         toPointer,
         or(
           // store the left part
-          and(mload(fromPointer), mask),
+          and(mload(fromPointer), not(mask)),
           // preserve the right part
-          and(mload(toPointer), not(mask))
+          and(mload(toPointer), mask)
         )
       )
     }

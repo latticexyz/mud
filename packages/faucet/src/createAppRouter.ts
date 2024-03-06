@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { initTRPC } from "@trpc/server";
 import { Client, Hex, LocalAccount, formatEther, isHex } from "viem";
-import { sendTransaction } from "viem/actions";
+import { sendTransaction } from "@latticexyz/common";
 import { debug } from "./debug";
 
 export type AppContext = {
@@ -19,7 +19,7 @@ export function createAppRouter() {
       .input(
         z.object({
           address: z.string().refine(isHex),
-        })
+        }),
       )
       .mutation(async (opts): Promise<Hex> => {
         const { client, faucetAccount, dripAmount } = opts.ctx;

@@ -1,4 +1,4 @@
 export * from "./renderSystemInterface";
-export * from "./renderWorld";
+export * from "./renderWorldInterface";
 export * from "./types";
 export * from "./worldgen";

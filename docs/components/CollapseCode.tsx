@@ -6,13 +6,13 @@ type Props = {
 };
 
 export function CollapseCode({ children }: Props) {
-  const ref = useRef<HTMLDivElement>();
+  const ref = useRef<HTMLDivElement | null>(null);
   const [collapsed, setCollapsed] = useState(true);
 
   useEffect(() => {
     if (!ref.current) return;
     const lines = Array.from(ref.current.querySelectorAll(".line"));
-    const highlightedPositions = [];
+    const highlightedPositions: number[] = [];
     lines.forEach((line, i) => {
       if (line.matches(".highlighted")) {
         highlightedPositions.push(i);

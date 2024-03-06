@@ -21,9 +21,10 @@
     "@latticexyz/world": "link:../../../../packages/world",
     "contracts": "workspace:*",
     "rxjs": "7.5.5",
-    "viem": "1.14.0"
+    "viem": "2.7.12"
   },
   "devDependencies": {
+    "@types/react-dom": "18.2.7",
     "vite": "^4.2.1",
     "wait-port": "^1.0.4"
   }

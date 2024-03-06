@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -9,10 +9,10 @@ import { System } from "../src/System.sol";
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID } from "../src/constants.sol";
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Balances } from "../src/codegen/tables/Balances.sol";
 import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "../src/worldResourceTypes.sol";
+import { createWorld } from "./createWorld.sol";
 
 using WorldResourceIdInstance for ResourceId;
 
@@ -35,9 +35,10 @@ contract WorldBalanceTest is Test, GasReporter {
   address public caller = address(4242);
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
+
+    world.registerNamespace(namespaceId);
 
     world.registerSystem(rootSystemId, rootSystem, true);
     world.registerSystem(nonRootSystemId, nonRootSystem, true);
@@ -124,7 +125,7 @@ contract WorldBalanceTest is Test, GasReporter {
     // Call a function on a non-root system with value
     vm.deal(caller, value);
     vm.prank(caller);
-    (success, data) = address(world).call{ value: value }(abi.encodeWithSignature("namespace_testSystem_echoValue()"));
+    (success, data) = address(world).call{ value: value }(abi.encodeWithSignature("namespace__echoValue()"));
     assertTrue(success);
     assertEq(abi.decode(data, (uint256)), value);
 
@@ -272,6 +273,32 @@ contract WorldBalanceTest is Test, GasReporter {
 
     // Expect the non root namespace to have no balance
     assertEq(Balances.get(invalidNamespace), 0);
+  }
+
+  function testTransferBalanceToNamespaceRevertResourceNotFound() public {
+    bytes14 toNamespace = "not_registered";
+    ResourceId toNamespaceId = WorldResourceIdLib.encodeNamespace(toNamespace);
+
+    uint256 value = 1 ether;
+
+    // Expect the root namespace to have no balance
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), 0);
+
+    // Send balance to root namespace
+    vm.deal(caller, value);
+    vm.prank(caller);
+    (bool success, bytes memory data) = address(world).call{ value: value }("");
+    assertTrue(success);
+    assertEq(data.length, 0);
+
+    // Expect the root namespace to have the value as balance
+    assertEq(Balances.get(ROOT_NAMESPACE_ID), value);
+
+    // Expect revert when attempting to transfer to a non-existent namespace
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, toNamespaceId, toNamespaceId.toString())
+    );
+    world.transferBalanceToNamespace(ROOT_NAMESPACE_ID, toNamespaceId, value);
   }
 
   function testTransferBalanceToAddress() public {

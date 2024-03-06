@@ -21,7 +21,7 @@ export function getContractData(
   filename: string,
   contractName: string,
   forgeOutDirectory: string,
-  libraries: PublicLibrary[]
+  libraries: PublicLibrary[],
 ): { bytecode: Hex; abi: Abi; deployedBytecodeSize: number } {
   let data: any;
   const contractDataPath = path.join(forgeOutDirectory, filename, contractName + ".json");
@@ -54,7 +54,7 @@ function linkLibraries(bytecode: Hex, linkReferences: LinkReferences, libraries:
       if (placeholderData === undefined) {
         throw new Error(`Unlinked library ${fullyQualifiedName}`);
       }
-      const trimmedAddress = placeholderData.address.slice(2).toLowerCase();
+      const trimmedAddress = placeholderData.getAddress().slice(2).toLowerCase();
       result = result.replaceAll(placeholderData.addressPlaceholder, trimmedAddress) as Hex;
     }
   }

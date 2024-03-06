@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
-import { STORE_VERSION } from "./version.sol";
 import { IStoreRead } from "./IStoreRead.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { FieldLayout } from "./FieldLayout.sol";
@@ -11,6 +10,7 @@ import { ResourceId } from "./ResourceId.sol";
 
 /**
  * @title StoreRead
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev A contract that provides read operations for storage tables using `StoreCore`.
  */
 contract StoreRead is IStoreRead {

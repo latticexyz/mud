@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
-import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "./ISystemHook.sol";
-import { ERC165_INTERFACE_ID } from "./IERC165.sol";
+import { ISystemHook } from "./ISystemHook.sol";
+import { IERC165 } from "./IERC165.sol";
 
 /**
  * @title SystemHook
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev The abstract SystemHook contract implements the ERC-165 supportsInterface function for ISystemHook.
  * System hooks are used for executing additional logic before or after certain system actions.
  */
@@ -17,6 +18,6 @@ abstract contract SystemHook is ISystemHook {
    * @return true if the contract implements `interfaceId`, false otherwise.
    */
   function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
-    return interfaceId == SYSTEM_HOOK_INTERFACE_ID || interfaceId == ERC165_INTERFACE_ID;
+    return interfaceId == type(ISystemHook).interfaceId || interfaceId == type(IERC165).interfaceId;
   }
 }
