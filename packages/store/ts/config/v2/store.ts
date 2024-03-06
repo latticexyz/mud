@@ -26,18 +26,22 @@ export type validateStoreTablesConfig<input, userTypes = undefined> = {
 };
 
 export type validateStoreConfig<input> = {
-  [k in keyof input]: k extends "tables"
-    ? validateStoreTablesConfig<input[k], get<input, "userTypes">>
-    : k extends "userTypes"
+  [key in keyof input]: key extends "tables"
+    ? validateStoreTablesConfig<input[key], get<input, "userTypes">>
+    : key extends "userTypes"
     ? UserTypes
-    : input[k];
+    : input[key];
 };
 
-export type resolveStoreConfig<input, scope extends AbiTypeScope = AbiTypeScope> = input extends StoreConfigInput
-  ? {
-      tables: { [key in keyof input["tables"]]: resolveTableConfig<input["tables"][key], scope> };
-    }
-  : never;
+export type resolveStoreTablesConfig<input, userTypes = undefined> = {
+  [key in keyof input]: resolveTableConfig<input[key], scopeWithUserTypes<userTypes>>;
+};
+
+export type resolveStoreConfig<input> = {
+  [key in keyof input]: key extends "tables"
+    ? resolveStoreTablesConfig<input[key], get<input, "userTypes">>
+    : input[key];
+};
 
 export function resolveStoreConfig<input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {
   return {} as never;

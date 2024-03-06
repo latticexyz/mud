@@ -173,7 +173,15 @@ describe("resolveStoreConfig", () => {
     );
   });
 
-  it.todo("throw an error if the shorthand config includes a non-static user type as key field");
+  it("throw an error if the shorthand config includes a non-static user type as key field", () => {
+    attest(
+      resolveStoreConfig({
+        // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+        tables: { Example: { key: "dynamic", name: "string", age: "uint256" } },
+        userTypes: { dynamic: "string", static: "address" },
+      })
+    ).type.errors("Provide a `key` field with static ABI type or a full config with explicit keys override.");
+  });
 
   it("should return the full config given a full config with one key", () => {
     const config = resolveStoreConfig({
@@ -223,7 +231,54 @@ describe("resolveStoreConfig", () => {
     }>(config);
   });
 
-  it.todo("should return the full config given a full config with one key and user types");
+  it("should return the full config given a full config with one key and user types", () => {
+    const config = resolveStoreConfig({
+      tables: {
+        Example: {
+          schema: { key: "dynamic", name: "string", age: "static" },
+          keys: ["age"],
+        },
+      },
+      userTypes: { static: "address", dynamic: "string" },
+    });
+    attest<{
+      tables: {
+        Example: {
+          schema: {
+            key: {
+              type: "string";
+              internalType: "dynamic";
+            };
+            name: {
+              type: "string";
+              internalType: "string";
+            };
+            age: {
+              type: "address";
+              internalType: "static";
+            };
+          };
+          keySchema: {
+            age: {
+              type: "address";
+              internalType: "static";
+            };
+          };
+          valueSchema: {
+            key: {
+              type: "string";
+              internalType: "dynamic";
+            };
+            name: {
+              type: "string";
+              internalType: "string";
+            };
+          };
+          keys: ["age"];
+        };
+      };
+    }>(config);
+  });
 
   it("it should return the full config given a full config with two keys", () => {
     const config = resolveStoreConfig({
@@ -358,7 +413,91 @@ describe("resolveStoreConfig", () => {
     }>(config);
   });
 
-  it.todo("should resolve two tables in the config with different schemas and user types");
+  it("should resolve two tables in the config with different schemas and user types", () => {
+    const config = resolveStoreConfig({
+      tables: {
+        First: {
+          schema: { firstKey: "Static", firstName: "Dynamic", firstAge: "uint256" },
+          keys: ["firstKey", "firstAge"],
+        },
+        Second: {
+          schema: { secondKey: "Static", secondName: "Dynamic", secondAge: "uint256" },
+          keys: ["secondKey", "secondAge"],
+        },
+      },
+      userTypes: { Static: "address", Dynamic: "string" },
+    });
+    attest<{
+      tables: {
+        First: {
+          schema: {
+            firstKey: {
+              type: "address";
+              internalType: "Static";
+            };
+            firstName: {
+              type: "string";
+              internalType: "Dynamic";
+            };
+            firstAge: {
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
+          keySchema: {
+            firstKey: {
+              type: "address";
+              internalType: "Static";
+            };
+            firstAge: {
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
+          valueSchema: {
+            firstName: {
+              type: "string";
+              internalType: "Dynamic";
+            };
+          };
+          keys: ["firstKey", "firstAge"];
+        };
+        Second: {
+          schema: {
+            secondKey: {
+              type: "address";
+              internalType: "Static";
+            };
+            secondName: {
+              type: "string";
+              internalType: "Dynamic";
+            };
+            secondAge: {
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
+          keySchema: {
+            secondKey: {
+              type: "address";
+              internalType: "Static";
+            };
+            secondAge: {
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
+          valueSchema: {
+            secondName: {
+              type: "string";
+              internalType: "Dynamic";
+            };
+          };
+          keys: ["secondKey", "secondAge"];
+        };
+      };
+    }>(config);
+  });
 
   it("should throw if referring to fields of different tables", () => {
     attest(
@@ -392,5 +531,20 @@ describe("resolveStoreConfig", () => {
     ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 
-  it.todo("should throw an error if the provided key is not a static field with user types");
+  it("should throw an error if the provided key is not a static field with user types", () => {
+    attest(
+      resolveStoreConfig({
+        tables: {
+          Example: {
+            schema: { key: "address", name: "Dynamic", age: "uint256" },
+            // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'.
+            keys: ["name"],
+          },
+        },
+        userTypes: {
+          Dynamic: "string",
+        },
+      })
+    ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+  });
 });
