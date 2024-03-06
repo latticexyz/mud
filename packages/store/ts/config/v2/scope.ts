@@ -1,4 +1,5 @@
 import { Dict, evaluate } from "@arktype/util";
+import { SchemaInput } from "./schema";
 
 export type StaticAbiType = "uint256" | "address" | "bool" | "bytes32";
 export type AbiType = StaticAbiType | "bytes" | "string" | "bool[]";
@@ -18,8 +19,8 @@ export type ScopeOptions<
   allTypes: allTypes;
 };
 
-export type getStaticAbiTypeKeys<types extends Dict<string, AbiType>> = {
-  [key in keyof types]: types[key] extends StaticAbiType ? key : never;
+export type getStaticAbiTypeKeys<types extends SchemaInput<scope>, scope extends AbiTypeScope = AbiTypeScope> = {
+  [key in keyof types]: scope["allTypes"][types[key]] extends StaticAbiType ? key : never;
 }[keyof types];
 
 export type extendScope<scope extends ScopeOptions, types extends Dict<string, AbiType>> = evaluate<

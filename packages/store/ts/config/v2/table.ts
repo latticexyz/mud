@@ -1,6 +1,7 @@
 import { ErrorMessage } from "@arktype/util";
-import { AbiType, SchemaInput, UserTypes, getStaticAbiTypeKeys, resolveSchema } from "./schema";
+import { SchemaInput, resolveSchema } from "./schema";
 import { stringifyUnion } from "@arktype/util";
+import { AbiTypeScope, ScopeOptions } from "./scope";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit keys override.">;
@@ -9,6 +10,21 @@ export type InvalidInput = ErrorMessage<"Provide a valid shorthand or full table
 // this one for string unions which are otherwise quite messy to do from scratch
 export type InvalidKeys<validKey extends string> =
   ErrorMessage<`Keys must have static ABI types (${stringifyUnion<validKey>} are allowed)`>;
+
+export type TableInput<
+  schema extends SchemaInput<scope>,
+  scope extends AbiTypeScope = AbiTypeScope,
+  keys extends ValidKeys<schema, scope> = ValidKeys<schema, scope>
+> = TableFullConfigInput<schema, userTypes, keys> | TableShorthandConfigInput<userTypes>;
+
+// @alvrs Make sure if you are ever wanting to compare against an array like
+// this you add `readonly` to it
+export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = readonly [
+  getStaticAbiTypeKeys<schema, userTypes>,
+  ...getStaticAbiTypeKeys<schema, userTypes>[]
+];
+
+// Below this is before refactor ------------------------
 
 export type TableConfigInput<
   schema extends SchemaInput<userTypes> = SchemaInput,
@@ -23,13 +39,6 @@ export type TableShorthandConfigInput<userTypes extends UserTypes = UserTypes> =
 export type AbiOrUserType<userTypes extends UserTypes = UserTypes> = UserTypes extends userTypes
   ? AbiType
   : AbiType | keyof userTypes;
-
-// @alvrs Make sure if you are ever wanting to compare against an array like
-// this you add `readonly` to it
-export type ValidKeys<schema extends SchemaInput<userTypes>, userTypes extends UserTypes = UserTypes> = readonly [
-  getStaticAbiTypeKeys<schema, userTypes>,
-  ...getStaticAbiTypeKeys<schema, userTypes>[]
-];
 
 export type TableFullConfigInput<
   schema extends SchemaInput<userTypes> = SchemaInput,
