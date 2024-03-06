@@ -2,22 +2,111 @@ import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
 import { ValidKeys, inferSchema, resolveTableConfig, resolveTableShorthandConfig } from "./table";
 import { AbiTypeScope, extendScope } from "./scope";
-import { SchemaInput } from "./schema";
 
 describe("ValidKeys", () => {
   it("should return a tuple of valid keys", () => {
-    attest<ReadonlyArray<"static">, ValidKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>>();
+    attest<"static"[], ValidKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>>();
   });
 
   it("should return a tuple of valid keys with an extended scope", () => {
     const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
     attest<
-      ReadonlyArray<"static" | "customStatic">,
+      ("static" | "customStatic")[],
       ValidKeys<
         { static: "uint256"; dynamic: "string"; customStatic: "static"; customDynamic: "dynamic" },
         typeof scope
       >
     >();
+  });
+});
+
+describe.only("resolveTableShorthandConfig", () => {
+  it("should expand a single ABI type into a key/value schema", () => {
+    const table = resolveTableShorthandConfig("address");
+    attest<{
+      schema: {
+        key: "bytes32";
+        value: "address";
+      };
+      keys: ["key"];
+    }>(table).type.toString.snap('{ schema: { key: "bytes32"; value: "address"; }; keys: ["key"]; }');
+  });
+
+  it.only("should expand a single custom into a key/value schema", () => {
+    const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
+    const table = resolveTableShorthandConfig("CustomType", scope);
+    attest<{
+      schema: {
+        key: "bytes32";
+        value: "CustomType";
+      };
+      keys: ["key"];
+    }>(table).type.toString.snap('{ schema: { key: "bytes32"; value: "CustomType"; }; keys: ["key"]; }');
+  });
+
+  it("should throw if the provided shorthand is not an ABI type and no user types are provided", () => {
+    // @ts-expect-error Argument of type '"NotAnAbiType"' is not assignable to parameter of type AbiType'
+    attest(resolveTableShorthandConfig("NotAnAbiType")).type.errors(
+      `Argument of type '"NotAnAbiType"' is not assignable to parameter of type 'AbiType'.`
+    );
+  });
+
+  it("should throw if the provided shorthand is not a user type", () => {
+    const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
+    // @ts-expect-error Argument of type '"NotACustomType"' is not assignable to parameter of type AbiType | "CustomType"
+    attest(resolveTableShorthandConfig("NotACustomType", scope)).type.errors(
+      `Argument of type '"NotACustomType"' is not assignable to parameter of type 'AbiType | "CustomType"'.`
+    );
+  });
+
+  it.only("should use `key` as single key if it has a static ABI type", () => {
+    const table = resolveTableShorthandConfig({ key: "address", name: "string", age: "uint256" });
+    attest<{
+      schema: {
+        key: "address";
+        name: "string";
+        age: "uint256";
+      };
+      keys: ["key"];
+    }>(table).type.toString.snap('{ schema: { key: "address"; name: "string"; age: "uint256"; }; keys: ["key"]; }');
+  });
+
+  it("should throw an error if the shorthand doesn't include a key field", () => {
+    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+    attest(resolveTableShorthandConfig({ name: "string", age: "uint256" })).type.errors(
+      "Provide a `key` field with static ABI type or a full config with explicit keys override."
+    );
+  });
+
+  it("should throw an error if the shorthand config includes a non-static key field", () => {
+    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+    attest(resolveTableShorthandConfig({ key: "string", name: "string", age: "uint256" })).type.errors(
+      "Provide a `key` field with static ABI type or a full config with explicit keys override."
+    );
+  });
+
+  it("should throw an error if an invalid type is passed in", () => {
+    // @ts-expect-error Type '"NotACustomType"' is not assignable to type 'AbiType'.
+    attest(resolveTableShorthandConfig({ key: "uint256", name: "NotACustomType" })).type.errors(
+      `Type '"NotACustomType"' is not assignable to type 'AbiType'.`
+    );
+  });
+
+  it("should use `key` as single key if it has a static custom type", () => {
+    const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
+    const table = resolveTableShorthandConfig({ key: "CustomType", name: "string", age: "uint256" }, scope);
+    attest<{
+      schema: { key: "CustomType"; name: "string"; age: "uint256" };
+      keys: ["key"];
+    }>(table).type.toString.snap('{ schema: { key: "CustomType"; name: "string"; age: "uint256"; }; keys: ["key"]; }');
+  });
+
+  it("should throw an error if `key` is not a custom static type", () => {
+    const scope = extendScope(AbiTypeScope, { CustomType: "bytes" });
+    // @ts-expect-error "Error: Provide a `key` field with static ABI type or a full config with explicit keys override."
+    attest(resolveTableShorthandConfig({ key: "CustomType", name: "string", age: "uint256" }, scope)).type.errors(
+      `Provide a \`key\` field with static ABI type or a full config with explicit keys override.`
+    );
   });
 });
 
@@ -65,99 +154,6 @@ describe("inferSchema", () => {
         { CustomType: "string" }
       >
     >({ key: "CustomType", name: "string", age: "uint256" } as const);
-  });
-
-  describe("resolveTableShorthandConfig", () => {
-    it("should expand a single ABI type into a key/value schema", () => {
-      const table = resolveTableShorthandConfig("address");
-      const expected = {
-        schema: {
-          key: "bytes32",
-          value: "address",
-        },
-        keys: ["key"],
-      } as const;
-      attest<typeof expected>(table).equals(expected);
-    });
-
-    it("should expand a single custom into a key/value schema", () => {
-      const table = resolveTableShorthandConfig("CustomType", { CustomType: "uint256" });
-      const expected = {
-        schema: {
-          key: "bytes32",
-          value: "CustomType",
-        },
-        keys: ["key"],
-      } as const;
-      attest<typeof expected>(table).equals(expected);
-    });
-
-    it("should throw if the provided shorthand is not an ABI type and no user types are provided", () => {
-      // @ts-expect-error Argument of type '"NotAnAbiType"' is not assignable to parameter of type 'TableShorthandConfigInput<UserTypes>'
-      attest(resolveTableShorthandConfig("NotAnAbiType")).type.errors(
-        `"NotAnAbiType"' is not assignable to parameter of type 'TableShorthandConfigInput<UserTypes>`
-      );
-    });
-
-    it("should throw if the provided shorthand is not a user type", () => {
-      // @ts-expect-error Argument of type '"NotACustomType"' is not assignable to parameter of type 'TableShorthandConfigInput<{ CustomType: "uint256"; }>'
-      attest(resolveTableShorthandConfig("NotACustomType", { CustomType: "uint256" })).type.errors(
-        `"NotACustomType"' is not assignable to parameter of type 'TableShorthandConfigInput<{ CustomType: "uint256"; }>`
-      );
-    });
-
-    it("should use `key` as single key if it has a static ABI type", () => {
-      const table = resolveTableShorthandConfig({ key: "address", name: "string", age: "uint256" });
-      const expected = {
-        schema: {
-          key: "address",
-          name: "string",
-          age: "uint256",
-        },
-        keys: ["key"],
-      } as const;
-      attest<typeof expected>(table).equals(expected);
-    });
-
-    it("should throw an error if the shorthand doesn't include a key field", () => {
-      // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
-      attest(resolveTableShorthandConfig({ name: "string", age: "uint256" })).type.errors(
-        "Provide a `key` field with static ABI type or a full config with explicit keys override."
-      );
-    });
-
-    it("should throw an error if the shorthand config includes a non-static key field", () => {
-      // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
-      attest(resolveTableShorthandConfig({ key: "string", name: "string", age: "uint256" })).type.errors(
-        "Provide a `key` field with static ABI type or a full config with explicit keys override."
-      );
-    });
-
-    it("should throw an error if an invalid type is passed in", () => {
-      // @ts-expect-error Type '"NotACustomType"' is not assignable to type 'AbiType'.
-      attest(resolveTableShorthandConfig({ key: "uint256", name: "NotACustomType" })).type.errors(
-        `Type '"NotACustomType"' is not assignable to type 'AbiType'.`
-      );
-    });
-
-    it("should use `key` as single key if it has a static custom type", () => {
-      const table = resolveTableShorthandConfig(
-        { key: "CustomType", name: "string", age: "uint256" },
-        { CustomType: "uint256" }
-      );
-      const expected = {
-        schema: { key: "CustomType", name: "string", age: "uint256" },
-        keys: ["key"],
-      } as const;
-      attest<typeof expected>(table).equals(expected);
-    });
-
-    it("should throw an error if `key` is not a custom static type", () => {
-      attest(
-        // @ts-expect-error "Error: Provide a `key` field with static ABI type or a full config with explicit keys override."
-        resolveTableShorthandConfig({ key: "CustomType", name: "string", age: "uint256" }, { CustomType: "bytes" })
-      ).type.errors(`Provide a \`key\` field with static ABI type or a full config with explicit keys override.`);
-    });
   });
 
   describe("resolveTableConfig", () => {

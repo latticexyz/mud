@@ -1,7 +1,7 @@
-import { ErrorMessage } from "@arktype/util";
+import { ErrorMessage, evaluate } from "@arktype/util";
 import { SchemaInput, resolveSchema } from "./schema";
 import { stringifyUnion } from "@arktype/util";
-import { AbiTypeScope, ScopeOptions, getStaticAbiTypeKeys } from "./scope";
+import { AbiType, AbiTypeScope, ScopeOptions, getStaticAbiTypeKeys } from "./scope";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit keys override.">;
@@ -11,80 +11,64 @@ export type InvalidInput = ErrorMessage<"Provide a valid shorthand or full table
 export type InvalidKeys<validKey extends string> =
   ErrorMessage<`Keys must have static ABI types (${stringifyUnion<validKey>} are allowed)`>;
 
+// @alvrs Make sure if you are ever wanting to compare against an array like
+// this you add `readonly` to it
+export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = [
+  ...getStaticAbiTypeKeys<schema, scope>[]
+];
+
 export type TableInput<
   schema extends SchemaInput<scope>,
   scope extends AbiTypeScope = AbiTypeScope,
   keys extends ValidKeys<schema, scope> = ValidKeys<schema, scope>
-> = TableFullConfigInput<schema, userTypes, keys> | TableShorthandConfigInput<userTypes>;
+> = TableFullConfigInput<schema, scope, keys> | TableShorthandConfigInput<scope>;
 
-// @alvrs Make sure if you are ever wanting to compare against an array like
-// this you add `readonly` to it
-export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = readonly [
-  ...getStaticAbiTypeKeys<schema, scope>[]
-];
-
-type test = ValidKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>;
-
-// Below this is before refactor ------------------------
-
-export type TableConfigInput<
-  schema extends SchemaInput<userTypes> = SchemaInput,
-  userTypes extends UserTypes = UserTypes,
-  keys extends ValidKeys<schema, userTypes> = ValidKeys<schema, userTypes>
-> = TableFullConfigInput<schema, userTypes, keys> | TableShorthandConfigInput<userTypes>;
-
-export type TableShorthandConfigInput<userTypes extends UserTypes = UserTypes> =
-  | SchemaInput<userTypes>
-  | AbiOrUserType<userTypes>;
-
-export type AbiOrUserType<userTypes extends UserTypes = UserTypes> = UserTypes extends userTypes
-  ? AbiType
-  : AbiType | keyof userTypes;
+export type TableShorthandConfigInput<scope extends AbiTypeScope = AbiTypeScope> =
+  | SchemaInput<scope>
+  | keyof scope["allTypes"];
 
 export type TableFullConfigInput<
-  schema extends SchemaInput<userTypes> = SchemaInput,
-  userTypes extends UserTypes = UserTypes,
-  keys extends ValidKeys<schema, userTypes> = ValidKeys<schema, userTypes>
+  schema extends SchemaInput<scope> = SchemaInput,
+  scope extends AbiTypeScope = AbiTypeScope,
+  keys extends ValidKeys<schema, scope> = ValidKeys<schema, scope>
 > = {
   schema: schema;
   keys: keys;
 };
 
 // We don't use `conform` here because the restrictions we're imposing here are not native to typescript
-type validateTableShorthandConfig<
-  input extends TableShorthandConfigInput<userTypes>,
-  userTypes extends UserTypes = UserTypes
-> = input extends SchemaInput<userTypes>
+type validateTableShorthandConfig<input, scope extends AbiTypeScope = AbiTypeScope> = input extends SchemaInput<scope>
   ? // If a shorthand schema is provided, require it to have a static key field
-    "key" extends getStaticAbiTypeKeys<input, userTypes>
+    "key" extends getStaticAbiTypeKeys<input, scope>
     ? input
     : NoStaticKeyFieldError
-  : input extends AbiOrUserType<userTypes>
+  : input extends keyof scope["allTypes"]
   ? input
-  : InvalidInput;
+  : input extends string
+  ? keyof scope["allTypes"]
+  : SchemaInput<scope>;
 
 export type resolveTableShorthandConfig<
   input,
-  userTypes extends UserTypes = UserTypes
-> = input extends SchemaInput<userTypes>
-  ? "key" extends getStaticAbiTypeKeys<input, userTypes>
+  scope extends AbiTypeScope = AbiTypeScope
+> = input extends SchemaInput<scope>
+  ? "key" extends getStaticAbiTypeKeys<input, scope>
     ? // If the shorthand includes a static field called `key`, use it as key
-      TableFullConfigInput<input, userTypes, ["key"]>
+      evaluate<TableFullConfigInput<input, scope, ["key"]>>
     : never
-  : input extends AbiOrUserType<userTypes>
-  ? resolveTableShorthandConfig<{ key: "bytes32"; value: input }, userTypes>
+  : input extends keyof scope["allTypes"]
+  ? resolveTableShorthandConfig<{ key: "bytes32"; value: input }, scope>
   : never;
 
-export function resolveTableShorthandConfig<
-  input extends TableShorthandConfigInput<userTypes>,
-  userTypes extends UserTypes = UserTypes
->(
-  input: validateTableShorthandConfig<input, userTypes>,
-  userTypes?: userTypes
-): resolveTableShorthandConfig<input, userTypes> {
+export function resolveTableShorthandConfig<input, scope extends AbiTypeScope = AbiTypeScope>(
+  input: validateTableShorthandConfig<input, scope>,
+  scope?: scope
+): resolveTableShorthandConfig<input, scope> {
   // TODO: runtime implementation
   return input as never;
 }
+
+// Below this is before refactor ------------------------
 
 export type inferSchema<input, userTypes extends UserTypes = UserTypes> = input extends TableFullConfigInput
   ? input["schema"]
