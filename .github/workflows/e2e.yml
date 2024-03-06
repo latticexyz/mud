@@ -53,3 +53,7 @@ jobs:
           DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
         working-directory: ./e2e/packages/sync-test
         run: pnpm test:ci
+
+      - name: Run contracts tests
+        working-directory: ./e2e/packages/contracts
+        run: pnpm test:ci
