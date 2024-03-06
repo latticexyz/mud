@@ -15,7 +15,7 @@ describe("buildTable", () => {
     });
 
     expect(getTableConfig(table).schema).toMatch(/0xffffffffffffffffffffffffffffffffffffffff$/);
-    expect(getTableConfig(table).name).toMatchInlineSnapshot('"test_ns_users_table"');
+    expect(getTableConfig(table).name).toMatchInlineSnapshot('"test_ns__users_table"');
     expect(
       mapObject(getTableColumns(table), (column) => ({
         name: column.name,
@@ -75,7 +75,7 @@ describe("buildTable", () => {
     });
 
     expect(getTableConfig(table).schema).toMatch(/0xffffffffffffffffffffffffffffffffffffffff$/);
-    expect(getTableConfig(table).name).toMatchInlineSnapshot('"test_ns_users_table"');
+    expect(getTableConfig(table).name).toMatchInlineSnapshot('"test_ns__users_table"');
     expect(
       mapObject(getTableColumns(table), (column) => ({
         name: column.name,

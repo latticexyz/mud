@@ -75,7 +75,7 @@ describe("sqliteStorage", async () => {
       [
         {
           "address": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2",
-          "id": "0x7c78d585f136d7247f9dea68f60ce8a2d3f311e2__number_list",
+          "id": "0x7c78d585f136d7247f9dea68f60ce8a2d3f311e2____number_list",
           "keySchema": {},
           "lastError": null,
           "lastUpdatedBlockNumber": 21n,
@@ -95,7 +95,7 @@ describe("sqliteStorage", async () => {
       [
         {
           "address": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2",
-          "id": "0x7c78d585f136d7247f9dea68f60ce8a2d3f311e2__number_list",
+          "id": "0x7c78d585f136d7247f9dea68f60ce8a2d3f311e2____number_list",
           "keySchema": {},
           "lastError": null,
           "lastUpdatedBlockNumber": 21n,

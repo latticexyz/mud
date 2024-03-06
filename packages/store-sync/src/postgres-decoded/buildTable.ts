@@ -51,7 +51,7 @@ export function buildTable<TKeySchema extends KeySchema, TValueSchema extends Va
   // with namespaces of a similar name (e.g. `MyNamespace` vs. `my_namespace`).
   // TODO: consider snake case when we resolve https://github.com/latticexyz/mud/issues/1991
   const schemaName = transformSchemaName(address.toLowerCase());
-  const tableName = snakeCase(namespace ? `${namespace}__${name}` : name);
+  const tableName = namespace ? `${snakeCase(namespace)}__${snakeCase(name)}` : snakeCase(name);
 
   // Column names, however, are safe to snake case because they're scoped to tables, defined once per table, and there's a limited number of fields in total.
 
