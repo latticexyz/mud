@@ -7,7 +7,7 @@ import { useNetwork } from "../NetworkContext";
 import { ExternalConnector } from "./ExternalConnector";
 import { isDelegated, delegateToBurner } from "./delegation";
 import { createBurner } from "./createBurner";
-import { delegatedActions } from "./delegatedActions";
+import { callFrom } from "./delegatedActions";
 
 export function WalletAdapterExternal(props: { children: ReactNode }) {
   const { publicClient } = useNetwork();
@@ -84,11 +84,15 @@ function Content(props: {
 
   const burner = useMemo(() => {
     const walletClient = props.burner.walletClient.extend(
-      delegatedActions({
+      callFrom({
         worldAddress: network.worldAddress,
         delegatorAddress: props.externalWalletClient.account.address,
-        getSystemId: (functionSelector) =>
-          network.useStore.getState().getValue(network.tables.FunctionSelectors, { functionSelector })!.systemId,
+        worldFunctionToSystemFunction: async (worldFunctionSelector) => {
+          const systemFunction = network.useStore
+            .getState()
+            .getValue(network.tables.FunctionSelectors, { functionSelector: worldFunctionSelector })!;
+          return { systemId: systemFunction.systemId, systemFunctionSelector: systemFunction.systemFunctionSelector };
+        },
       }),
     );
     return { ...props.burner, walletClient };

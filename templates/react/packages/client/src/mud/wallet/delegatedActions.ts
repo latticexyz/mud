@@ -1,53 +1,69 @@
-import type { WalletClient, Transport, Chain, Account, Hex, WalletActions, WriteContractReturnType } from "viem";
-import { getAction, getAbiItem, formatAbiItem, toFunctionSelector, type GetAbiItemParameters } from "viem/utils";
+import {
+  slice,
+  concat,
+  type WalletClient,
+  type Transport,
+  type Chain,
+  type Account,
+  type Hex,
+  type WalletActions,
+  type WriteContractReturnType,
+  type EncodeFunctionDataParameters,
+} from "viem";
+import { getAction, encodeFunctionData } from "viem/utils";
 import { writeContract } from "viem/actions";
-import { encodeSystemCallFrom, type SystemCallFrom } from "@latticexyz/world";
 
-type DelegatedActionsParameters = {
+type CallFromParameters = {
   worldAddress: Hex;
   delegatorAddress: Hex;
-  getSystemId: (functionSelector: Hex) => Hex;
+  worldFunctionToSystemFunction: (
+    worldFunctionSelector: Hex,
+  ) => Promise<{ systemId: Hex; systemFunctionSelector: Hex }>;
 };
 
-// By extending clients with this function after delegation, the delegation automatically applies
-// to the World contract writes, meaning these calls are made on behalf of the delegator.
-export function delegatedActions<TChain extends Chain, TAccount extends Account>({
+// By extending viem clients with this function after delegation, the delegation is automatically
+// applied to the World contract writes, meaning these writes are made on behalf of the delegator.
+export function callFrom<TChain extends Chain, TAccount extends Account>({
   worldAddress,
   delegatorAddress,
-  getSystemId,
-}: DelegatedActionsParameters): (
+  worldFunctionToSystemFunction,
+}: CallFromParameters): (
   client: WalletClient<Transport, TChain, TAccount>,
 ) => Pick<WalletActions<TChain, TAccount>, "writeContract"> {
   return (client) => ({
     // Applies to: `client.writeContract`, `getContract(client, ...).write`
-    writeContract: (originalArgs): Promise<WriteContractReturnType> => {
+    writeContract: async (writeArgs): Promise<WriteContractReturnType> => {
       // Skip if the contract isn't the World.
-      if (originalArgs.address !== worldAddress) {
-        return getAction(client, writeContract, "writeContract")(originalArgs);
+      if (writeArgs.address !== worldAddress) {
+        return getAction(client, writeContract, "writeContract")(writeArgs);
       }
 
-      // Ensured not to be `undefined` because of the `writeContract` args type.
-      const functionAbiItem = getAbiItem({
-        abi: originalArgs.abi,
-        name: originalArgs.functionName,
-        args: originalArgs.args,
-      } as unknown as GetAbiItemParameters)!;
+      // Encode the World's calldata (which includes the World's function selector).
+      const worldCalldata = encodeFunctionData({
+        abi: writeArgs.abi,
+        functionName: writeArgs.functionName,
+        args: writeArgs.args,
+      } as unknown as EncodeFunctionDataParameters);
 
-      // `callFrom` requires `systemId`.
-      const functionSelector = toFunctionSelector(formatAbiItem(functionAbiItem));
-      const systemId = getSystemId(functionSelector);
+      // The first 4 bytes of calldata represent the function selector.
+      const worldFunctionSelector = slice(worldCalldata, 0, 4);
+
+      // Get the systemId and System's function selector.
+      const { systemId, systemFunctionSelector } = await worldFunctionToSystemFunction(worldFunctionSelector);
+
+      // Construct the System's calldata.
+      // If there's no args, use the System's function selector as calldata.
+      // Otherwise, use the World's calldata, replacing the World's function selector with the System's.
+      const systemCalldata =
+        worldCalldata === worldFunctionSelector
+          ? systemFunctionSelector
+          : concat([systemFunctionSelector, slice(worldCalldata, 4)]);
 
       // Construct args for `callFrom`.
-      const callFromArgs: typeof originalArgs = {
-        ...originalArgs,
+      const callFromArgs: typeof writeArgs = {
+        ...writeArgs,
         functionName: "callFrom",
-        args: encodeSystemCallFrom({
-          abi: originalArgs.abi,
-          from: delegatorAddress,
-          systemId,
-          functionName: originalArgs.functionName,
-          args: originalArgs.args,
-        } as unknown as SystemCallFrom),
+        args: [delegatorAddress, systemId, systemCalldata],
       };
 
       return getAction(client, writeContract, "writeContract")(callFromArgs);
