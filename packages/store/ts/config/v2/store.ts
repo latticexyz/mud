@@ -5,10 +5,12 @@ import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
 import { get } from "./generics";
 
 type UserTypes = Dict<string, AbiType>;
+type Enums = Dict<string, string[]>;
 
-export type StoreConfigInput<userTypes extends UserTypes = UserTypes> = {
+export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
   tables: StoreTablesConfigInput<scopeWithUserTypes<userTypes>>;
   userTypes?: userTypes;
+  enums?: enums;
 };
 
 export type StoreTablesConfigInput<scope extends AbiTypeScope = AbiTypeScope> = {
@@ -23,23 +25,53 @@ export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiType
   [key in keyof input]: resolveTableConfig<input[key], scope>;
 }>;
 
-type scopeWithUserTypes<userTypes> = UserTypes extends userTypes
-  ? AbiTypeScope
+type scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTypeScope> = UserTypes extends userTypes
+  ? scope
   : userTypes extends UserTypes
-  ? extendScope<AbiTypeScope, userTypes>
-  : AbiTypeScope;
+  ? extendScope<scope, userTypes>
+  : scope;
+
+type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = Enums extends enums
+  ? scope
+  : enums extends Enums
+  ? extendScope<scope, { [key in keyof enums]: "uint8" }>
+  : scope;
+
+// This results in [string, string]
+type validateLiteralTuple<tuple> = tuple extends [infer first, ...infer rest]
+  ? first extends string
+    ? [first, ...validateLiteralTuple<rest>]
+    : []
+  : [];
+
+// This results in ("first" | "second")[]
+// type validateLiteralTuple<tuple> = { [key in keyof tuple]: tuple[key] };
+
+type validateEnums<enums> = enums extends Enums
+  ? {
+      [key in keyof enums]: validateLiteralTuple<enums[key]>;
+    }
+  : Enums;
 
 export type validateStoreConfig<input> = {
   [key in keyof input]: key extends "tables"
-    ? validateStoreTablesConfig<input[key], scopeWithUserTypes<get<input, "userTypes">>>
+    ? validateStoreTablesConfig<
+        input[key],
+        scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
+      >
     : key extends "userTypes"
     ? UserTypes
+    : key extends "enums"
+    ? validateEnums<input[key]>
     : input[key];
 };
 
 export type resolveStoreConfig<input> = evaluate<{
   [key in keyof input]: key extends "tables"
-    ? resolveStoreTablesConfig<input[key], scopeWithUserTypes<get<input, "userTypes">>>
+    ? resolveStoreTablesConfig<
+        input[key],
+        scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
+      >
     : input[key];
 }>;
 

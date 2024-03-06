@@ -549,4 +549,60 @@ describe("resolveStoreConfig", () => {
       })
     ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
+
+  it("should return the full config given a full config with enums and user types", () => {
+    const config = resolveStoreConfig({
+      tables: {
+        Example: {
+          schema: { key: "dynamic", name: "ValidNames", age: "static" },
+          primaryKey: ["name"],
+        },
+      },
+      userTypes: { static: "address", dynamic: "string" },
+      enums: {
+        ValidNames: ["first", "second"],
+      },
+    });
+    attest<{
+      tables: {
+        Example: {
+          schema: {
+            key: {
+              type: "string";
+              internalType: "dynamic";
+            };
+            name: {
+              type: "uint8";
+              internalType: "ValidNames";
+            };
+            age: {
+              type: "address";
+              internalType: "static";
+            };
+          };
+          keySchema: {
+            name: {
+              type: "uint8";
+              internalType: "ValidNames";
+            };
+          };
+          valueSchema: {
+            age: {
+              type: "address";
+              internalType: "static";
+            };
+            key: {
+              type: "string";
+              internalType: "dynamic";
+            };
+          };
+          primaryKey: ["name"];
+        };
+      };
+      userTypes: { static: "address"; dynamic: "string" };
+      enums: {
+        ValidNames: ["first", "second"];
+      };
+    }>(config);
+  });
 });
