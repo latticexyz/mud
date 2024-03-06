@@ -30,7 +30,7 @@ describe("resolveStoreConfig", () => {
               internalType: "address";
             };
           };
-          keys: ["key"];
+          primaryKey: ["key"];
         };
       };
     }>(config);
@@ -63,7 +63,7 @@ describe("resolveStoreConfig", () => {
               internalType: "CustomType";
             };
           };
-          keys: ["key"];
+          primaryKey: ["key"];
         };
       };
       userTypes: { CustomType: "address" };
@@ -105,7 +105,7 @@ describe("resolveStoreConfig", () => {
               internalType: "uint256";
             };
           };
-          keys: ["key"];
+          primaryKey: ["key"];
         };
       };
     }>(config);
@@ -146,7 +146,7 @@ describe("resolveStoreConfig", () => {
               internalType: "uint256";
             };
           };
-          keys: ["key"];
+          primaryKey: ["key"];
         };
       };
     }>(config);
@@ -156,31 +156,31 @@ describe("resolveStoreConfig", () => {
     attest(
       resolveStoreConfig({
         tables: {
-          // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+          // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
           Example: {
             name: "string",
             age: "uint256",
           },
         },
       })
-    ).type.errors("Provide a `key` field with static ABI type or a full config with explicit keys override.");
+    ).type.errors("Provide a `key` field with static ABI type or a full config with explicit primaryKey override.");
   });
 
   it("throw an error if the shorthand config includes a non-static key field", () => {
-    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
     attest(resolveStoreConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } })).type.errors(
-      "Provide a `key` field with static ABI type or a full config with explicit keys override."
+      "Provide a `key` field with static ABI type or a full config with explicit primaryKey override."
     );
   });
 
   it("throw an error if the shorthand config includes a non-static user type as key field", () => {
     attest(
       resolveStoreConfig({
-        // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+        // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
         tables: { Example: { key: "dynamic", name: "string", age: "uint256" } },
         userTypes: { dynamic: "string", static: "address" },
       })
-    ).type.errors("Provide a `key` field with static ABI type or a full config with explicit keys override.");
+    ).type.errors("Provide a `key` field with static ABI type or a full config with explicit primaryKey override.");
   });
 
   it("should return the full config given a full config with one key", () => {
@@ -188,7 +188,7 @@ describe("resolveStoreConfig", () => {
       tables: {
         Example: {
           schema: { key: "address", name: "string", age: "uint256" },
-          keys: ["age"],
+          primaryKey: ["age"],
         },
       },
     });
@@ -225,7 +225,7 @@ describe("resolveStoreConfig", () => {
               internalType: "string";
             };
           };
-          keys: ["age"];
+          primaryKey: ["age"];
         };
       };
     }>(config);
@@ -236,7 +236,7 @@ describe("resolveStoreConfig", () => {
       tables: {
         Example: {
           schema: { key: "dynamic", name: "string", age: "static" },
-          keys: ["age"],
+          primaryKey: ["age"],
         },
       },
       userTypes: { static: "address", dynamic: "string" },
@@ -274,19 +274,19 @@ describe("resolveStoreConfig", () => {
               internalType: "string";
             };
           };
-          keys: ["age"];
+          primaryKey: ["age"];
         };
       };
       userTypes: { static: "address"; dynamic: "string" };
     }>(config);
   });
 
-  it("it should return the full config given a full config with two keys", () => {
+  it("it should return the full config given a full config with two primaryKey", () => {
     const config = resolveStoreConfig({
       tables: {
         Example: {
           schema: { key: "address", name: "string", age: "uint256" },
-          keys: ["age", "key"],
+          primaryKey: ["age", "key"],
         },
       },
     });
@@ -323,7 +323,7 @@ describe("resolveStoreConfig", () => {
               internalType: "string";
             };
           };
-          keys: ["age", "key"];
+          primaryKey: ["age", "key"];
         };
       };
     }>(config);
@@ -334,11 +334,11 @@ describe("resolveStoreConfig", () => {
       tables: {
         First: {
           schema: { firstKey: "address", firstName: "string", firstAge: "uint256" },
-          keys: ["firstKey", "firstAge"],
+          primaryKey: ["firstKey", "firstAge"],
         },
         Second: {
           schema: { secondKey: "address", secondName: "string", secondAge: "uint256" },
-          keys: ["secondKey", "secondAge"],
+          primaryKey: ["secondKey", "secondAge"],
         },
       },
     });
@@ -375,7 +375,7 @@ describe("resolveStoreConfig", () => {
               internalType: "string";
             };
           };
-          keys: ["firstKey", "firstAge"];
+          primaryKey: ["firstKey", "firstAge"];
         };
         Second: {
           schema: {
@@ -408,7 +408,7 @@ describe("resolveStoreConfig", () => {
               internalType: "string";
             };
           };
-          keys: ["secondKey", "secondAge"];
+          primaryKey: ["secondKey", "secondAge"];
         };
       };
     }>(config);
@@ -419,11 +419,11 @@ describe("resolveStoreConfig", () => {
       tables: {
         First: {
           schema: { firstKey: "Static", firstName: "Dynamic", firstAge: "uint256" },
-          keys: ["firstKey", "firstAge"],
+          primaryKey: ["firstKey", "firstAge"],
         },
         Second: {
           schema: { secondKey: "Static", secondName: "Dynamic", secondAge: "uint256" },
-          keys: ["secondKey", "secondAge"],
+          primaryKey: ["secondKey", "secondAge"],
         },
       },
       userTypes: { Static: "address", Dynamic: "string" },
@@ -461,7 +461,7 @@ describe("resolveStoreConfig", () => {
               internalType: "Dynamic";
             };
           };
-          keys: ["firstKey", "firstAge"];
+          primaryKey: ["firstKey", "firstAge"];
         };
         Second: {
           schema: {
@@ -494,7 +494,7 @@ describe("resolveStoreConfig", () => {
               internalType: "Dynamic";
             };
           };
-          keys: ["secondKey", "secondAge"];
+          primaryKey: ["secondKey", "secondAge"];
         };
       };
       userTypes: { Static: "address"; Dynamic: "string" };
@@ -507,12 +507,12 @@ describe("resolveStoreConfig", () => {
         tables: {
           First: {
             schema: { firstKey: "address", firstName: "string", firstAge: "uint256" },
-            keys: ["firstKey", "firstAge"],
+            primaryKey: ["firstKey", "firstAge"],
           },
           Second: {
             schema: { secondKey: "address", secondName: "string", secondAge: "uint256" },
             // @ts-expect-error Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'
-            keys: ["firstKey", "secondAge"],
+            primaryKey: ["firstKey", "secondAge"],
           },
         },
       })
@@ -526,7 +526,7 @@ describe("resolveStoreConfig", () => {
           Example: {
             schema: { key: "address", name: "string", age: "uint256" },
             // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'.
-            keys: ["name"],
+            primaryKey: ["name"],
           },
         },
       })
@@ -540,7 +540,7 @@ describe("resolveStoreConfig", () => {
           Example: {
             schema: { key: "address", name: "Dynamic", age: "uint256" },
             // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'.
-            keys: ["name"],
+            primaryKey: ["name"],
           },
         },
         userTypes: {

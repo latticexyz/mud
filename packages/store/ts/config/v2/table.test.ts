@@ -55,8 +55,8 @@ describe("resolveTableShorthand", () => {
         key: "bytes32";
         value: "address";
       };
-      keys: ["key"];
-    }>(table).type.toString.snap('{ schema: { key: "bytes32"; value: "address"; }; keys: ["key"]; }');
+      primaryKey: ["key"];
+    }>(table).type.toString.snap('{ schema: { key: "bytes32"; value: "address"; }; primaryKey: ["key"]; }');
   });
 
   it("should expand a single custom into a key/value schema", () => {
@@ -67,8 +67,8 @@ describe("resolveTableShorthand", () => {
         key: "bytes32";
         value: "CustomType";
       };
-      keys: ["key"];
-    }>(table).type.toString.snap('{ schema: { key: "bytes32"; value: "CustomType"; }; keys: ["key"]; }');
+      primaryKey: ["key"];
+    }>(table).type.toString.snap('{ schema: { key: "bytes32"; value: "CustomType"; }; primaryKey: ["key"]; }');
   });
 
   it("should throw if the provided shorthand is not an ABI type and no user types are provided", () => {
@@ -94,21 +94,23 @@ describe("resolveTableShorthand", () => {
         name: "string";
         age: "uint256";
       };
-      keys: ["key"];
-    }>(table).type.toString.snap('{ schema: { key: "address"; name: "string"; age: "uint256"; }; keys: ["key"]; }');
+      primaryKey: ["key"];
+    }>(table).type.toString.snap(
+      '{ schema: { key: "address"; name: "string"; age: "uint256"; }; primaryKey: ["key"]; }'
+    );
   });
 
   it("should throw an error if the shorthand doesn't include a key field", () => {
-    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
     attest(resolveTableShorthand({ name: "string", age: "uint256" })).type.errors(
-      "Provide a `key` field with static ABI type or a full config with explicit keys override."
+      "Provide a `key` field with static ABI type or a full config with explicit primaryKey override."
     );
   });
 
   it("should throw an error if the shorthand config includes a non-static key field", () => {
-    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
     attest(resolveTableShorthand({ key: "string", name: "string", age: "uint256" })).type.errors(
-      "Provide a `key` field with static ABI type or a full config with explicit keys override."
+      "Provide a `key` field with static ABI type or a full config with explicit primaryKey override."
     );
   });
 
@@ -124,15 +126,17 @@ describe("resolveTableShorthand", () => {
     const table = resolveTableShorthand({ key: "CustomType", name: "string", age: "uint256" }, scope);
     attest<{
       schema: { key: "CustomType"; name: "string"; age: "uint256" };
-      keys: ["key"];
-    }>(table).type.toString.snap('{ schema: { key: "CustomType"; name: "string"; age: "uint256"; }; keys: ["key"]; }');
+      primaryKey: ["key"];
+    }>(table).type.toString.snap(
+      '{ schema: { key: "CustomType"; name: "string"; age: "uint256"; }; primaryKey: ["key"]; }'
+    );
   });
 
   it("should throw an error if `key` is not a custom static type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "bytes" });
-    // @ts-expect-error "Error: Provide a `key` field with static ABI type or a full config with explicit keys override."
+    // @ts-expect-error "Error: Provide a `key` field with static ABI type or a full config with explicit primaryKey override."
     attest(resolveTableShorthand({ key: "CustomType", name: "string", age: "uint256" }, scope)).type.errors(
-      `Provide a \`key\` field with static ABI type or a full config with explicit keys override.`
+      `Provide a \`key\` field with static ABI type or a full config with explicit primaryKey override.`
     );
   });
 });
@@ -163,7 +167,7 @@ describe("resolveTableConfig", () => {
           internalType: "address";
         };
       };
-      keys: ["key"];
+      primaryKey: ["key"];
     }>(table);
   });
 
@@ -193,7 +197,7 @@ describe("resolveTableConfig", () => {
           internalType: "CustomType";
         };
       };
-      keys: ["key"];
+      primaryKey: ["key"];
     }>(table);
   });
 
@@ -230,7 +234,7 @@ describe("resolveTableConfig", () => {
           internalType: "uint256";
         };
       };
-      keys: ["key"];
+      primaryKey: ["key"];
     }>(table);
   });
 
@@ -268,22 +272,22 @@ describe("resolveTableConfig", () => {
           internalType: "uint256";
         };
       };
-      keys: ["key"];
+      primaryKey: ["key"];
     }>(table);
   });
 
   it("should throw if the shorthand key is a dynamic ABI type", () => {
-    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
     attest(resolveTableConfig({ key: "string", name: "string", age: "uint256" })).type.errors(
-      "Provide a `key` field with static ABI type or a full config with explicit keys override"
+      "Provide a `key` field with static ABI type or a full config with explicit primaryKey override"
     );
   });
 
   it("should throw if the shorthand key is a dyamic custom type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "bytes" });
-    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
     attest(resolveTableConfig({ key: "CustomType" }, scope)).type.errors(
-      "Provide a `key` field with static ABI type or a full config with explicit keys override."
+      "Provide a `key` field with static ABI type or a full config with explicit primaryKey override."
     );
   });
 
@@ -295,16 +299,16 @@ describe("resolveTableConfig", () => {
   });
 
   it("should throw if the shorthand doesn't include a key field", () => {
-    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
     attest(resolveTableConfig({ name: "string", age: "uint256" })).type.errors(
-      "Provide a `key` field with static ABI type or a full config with explicit keys override."
+      "Provide a `key` field with static ABI type or a full config with explicit primaryKey override."
     );
   });
 
   it("should return the full config given a full config with one key", () => {
     const table = resolveTableConfig({
       schema: { key: "address", name: "string", age: "uint256" },
-      keys: ["age"],
+      primaryKey: ["age"],
     });
     attest<{
       schema: {
@@ -319,14 +323,14 @@ describe("resolveTableConfig", () => {
         key: { type: "address"; internalType: "address" };
         name: { type: "string"; internalType: "string" };
       };
-      keys: ["age"];
+      primaryKey: ["age"];
     }>(table);
   });
 
-  it("should return the full config given a full config with two keys", () => {
+  it("should return the full config given a full config with two primaryKey", () => {
     const table = resolveTableConfig({
       schema: { key: "address", name: "string", age: "uint256" },
-      keys: ["age", "key"],
+      primaryKey: ["age", "key"],
     });
     attest<{
       schema: {
@@ -341,7 +345,7 @@ describe("resolveTableConfig", () => {
       valueSchema: {
         name: { type: "string"; internalType: "string" };
       };
-      keys: ["age", "key"];
+      primaryKey: ["age", "key"];
     }>(table);
   });
 
@@ -379,7 +383,7 @@ describe("resolveTableConfig", () => {
           internalType: "CustomNumber";
         };
       };
-      keys: ["key"];
+      primaryKey: ["key"];
     }>(table);
   });
 
@@ -417,7 +421,7 @@ describe("resolveTableConfig", () => {
           internalType: "CustomNumber";
         };
       };
-      keys: ["key"];
+      primaryKey: ["key"];
     }>(table);
   });
 
@@ -426,7 +430,7 @@ describe("resolveTableConfig", () => {
       resolveTableConfig({
         schema: { key: "address", name: "string", age: "uint256" },
         // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'
-        keys: ["name"],
+        primaryKey: ["name"],
       })
     ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
@@ -438,7 +442,7 @@ describe("resolveTableConfig", () => {
         {
           schema: { key: "address", name: "string", age: "uint256" },
           // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'
-          keys: ["name"],
+          primaryKey: ["name"],
         },
         scope
       )
@@ -452,7 +456,7 @@ describe("resolveTableConfig", () => {
         {
           schema: { key: "CustomType", name: "string", age: "uint256" },
           // @ts-expect-error Type '"key"' is not assignable to type '"age"'
-          keys: ["key"],
+          primaryKey: ["key"],
         },
         scope
       )
@@ -466,7 +470,7 @@ describe("resolveTableConfig", () => {
         {
           schema: { key: "address", name: "string", age: "uint256" },
           // @ts-expect-error Type '"NotAKey"' is not assignable to type '"key" | "age"'
-          keys: ["NotAKey"],
+          primaryKey: ["NotAKey"],
         },
         scope
       )
