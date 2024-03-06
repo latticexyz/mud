@@ -1,4 +1,4 @@
-import { Dict, evaluate } from "@arktype/util";
+import { Dict, conform, evaluate } from "@arktype/util";
 import { SchemaInput } from "./schema";
 import { AbiType, AbiTypeScope, extendScope } from "./scope";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
@@ -37,15 +37,11 @@ type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = Enums ex
   ? extendScope<scope, { [key in keyof enums]: "uint8" }>
   : scope;
 
-// This results in [string, string]
-type validateLiteralTuple<tuple> = tuple extends [infer first, ...infer rest]
-  ? first extends string
-    ? [first, ...validateLiteralTuple<rest>]
-    : []
-  : [];
-
-// This results in ("first" | "second")[]
-// type validateLiteralTuple<tuple> = { [key in keyof tuple]: tuple[key] };
+// Sometimes for TS to handle a tuple correctly, nesting the mapped type in a
+// `[...{}]` can help. It's also generally good if you're able to add a
+// parameter like `string[]` to an internal type to do that since you're
+// checking it in validateEnums anyways
+type validateLiteralTuple<tuple extends string[]> = [...{ [index in keyof tuple]: tuple[index] }];
 
 type validateEnums<enums> = enums extends Enums
   ? {
