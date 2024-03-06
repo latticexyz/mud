@@ -19,9 +19,14 @@ export type ScopeOptions<
   allTypes: allTypes;
 };
 
-export type getStaticAbiTypeKeys<types extends SchemaInput<scope>, scope extends AbiTypeScope = AbiTypeScope> = {
-  [key in keyof types]: scope["allTypes"][types[key]] extends StaticAbiType ? key : never;
-}[keyof types];
+export type getStaticAbiTypeKeys<
+  types extends SchemaInput<scope>,
+  scope extends AbiTypeScope = AbiTypeScope
+> = SchemaInput extends types
+  ? string
+  : {
+      [key in keyof types]: scope["allTypes"][types[key]] extends StaticAbiType ? key : never;
+    }[keyof types];
 
 export type extendScope<scope extends ScopeOptions, types extends Dict<string, AbiType>> = evaluate<
   ScopeOptions<
