@@ -15,6 +15,7 @@ import { getChainId } from "viem/actions";
 import { postDeploy } from "./utils/utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
+import { ensureDeployer } from "./deploy/ensureDeployer";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
@@ -86,8 +87,6 @@ in your contracts directory to use the default anvil private key.`,
     );
   }
 
-  const resolvedConfig = await resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
-
   const client = createWalletClient({
     transport: http(rpc, {
       batch: opts.rpcBatch
@@ -99,11 +98,21 @@ in your contracts directory to use the default anvil private key.`,
     }),
     account: privateKeyToAccount(privateKey),
   });
+
+  const deployerAddress = opts.deployerAddress ? (opts.deployerAddress as Hex) : await ensureDeployer(client);
+
+  const resolvedConfig = await resolveConfig({
+    config,
+    forgeSourceDir: srcDir,
+    forgeOutDir: outDir,
+    deployerAddress: deployerAddress as Hex,
+  });
+
   console.log("Deploying from", client.account.address);
 
   const startTime = Date.now();
   const worldDeploy = await deploy({
-    deployerAddress: opts.deployerAddress as Hex | undefined,
+    deployerAddress,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,

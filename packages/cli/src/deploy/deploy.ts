@@ -28,7 +28,7 @@ type DeployOptions<configInput extends ConfigInput> = {
    * If the target chain does not support legacy transactions, we deploy the proxy bytecode anyway, but it will
    * not have a deterministic address.
    */
-  deployerAddress?: Hex;
+  deployerAddress: Hex;
 };
 
 /**
@@ -42,11 +42,9 @@ export async function deploy<configInput extends ConfigInput>({
   config,
   salt,
   worldAddress: existingWorldAddress,
-  deployerAddress: initialDeployerAddress,
+  deployerAddress,
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   const tables = Object.values(config.tables) as Table[];
-
-  const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
   await ensureWorldFactory(client, deployerAddress);
 
