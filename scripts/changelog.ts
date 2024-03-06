@@ -116,7 +116,7 @@ async function getChanges(include: "diff" | "all") {
       const changeset = readFileSync(changesetPath).toString();
       const gitLog = (await execa("git", ["log", changesetPath])).stdout;
       return { ...parseChangeset(changeset), ...parseGitLog(gitLog) };
-    })
+    }),
   );
 
   // Sort the changesets into patch, minor and major updates

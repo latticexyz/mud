@@ -16,7 +16,7 @@ type WriteObserverParameters = { onWrite: (write: ContractWrite) => void };
 export function writeObserver<TChain extends Chain, TAccount extends Account>({
   onWrite,
 }: WriteObserverParameters): (
-  client: WalletClient<Transport, TChain, TAccount>
+  client: WalletClient<Transport, TChain, TAccount>,
 ) => Pick<WalletActions<TChain, TAccount>, "writeContract"> {
   let nextWriteId = 0;
 

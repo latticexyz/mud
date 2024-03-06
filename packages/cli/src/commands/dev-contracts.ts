@@ -107,7 +107,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
           console.log(chalk.gray("\nWaiting for file changes…\n"));
         }
       }),
-      filter(isDefined)
+      filter(isDefined),
     );
 
     deploys$.subscribe();

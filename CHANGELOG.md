@@ -3395,7 +3395,7 @@ As you migrate, you may find some features replaced, removed, or not included by
      .pipe(
        map((block) => Number(block.timestamp) * 1000), // Map to timestamp in ms
        filter((blockTimestamp) => blockTimestamp !== clock.lastUpdateTime), // Ignore if the clock was already refreshed with this block
-       filter((blockTimestamp) => blockTimestamp !== clock.currentTime) // Ignore if the current local timestamp is correct
+       filter((blockTimestamp) => blockTimestamp !== clock.currentTime), // Ignore if the current local timestamp is correct
      )
      .subscribe(clock.update); // Update the local clock
    ```
@@ -3633,7 +3633,7 @@ const latestBlock$ = await createBlockStream({ publicClient, blockTag: "latest" 
 
 const latestBlockNumber$ = latestBlock$.pipe(
   filter(isNonPendingBlock),
-  map((block) => block.number)
+  map((block) => block.number),
 );
 
 latestBlockNumber$
@@ -3649,7 +3649,7 @@ latestBlockNumber$
         "event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data)",
       ]),
     }),
-    mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs)))
+    mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs))),
   )
   .subscribe((block) => {
     console.log("got events for block", block);

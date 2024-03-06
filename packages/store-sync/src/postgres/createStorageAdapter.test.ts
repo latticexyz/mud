@@ -20,7 +20,7 @@ const blocks = groupLogsByBlockNumber(
       strict: true,
     });
     return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
-  })
+  }),
 );
 
 describe("createStorageAdapter", async () => {
@@ -63,9 +63,9 @@ describe("createStorageAdapter", async () => {
         .where(
           eq(
             storageAdapter.tables.recordsTable.tableId,
-            resourceToHex({ type: "table", namespace: "", name: "NumberList" })
-          )
-        )
+            resourceToHex({ type: "table", namespace: "", name: "NumberList" }),
+          ),
+        ),
     ).toMatchInlineSnapshot(`
       [
         {

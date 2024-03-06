@@ -29,6 +29,4 @@ interface IBaseWorld is
   IModuleInstallationSystem,
   IWorldRegistrationSystem,
   IRegistrationSystem
-{
-
-}
+{}

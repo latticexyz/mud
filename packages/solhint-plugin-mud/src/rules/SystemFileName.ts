@@ -46,7 +46,7 @@ export class SystemFileName implements SolhintRule {
       this.reporter.error(
         node,
         this.ruleId,
-        `System file must contain a contract with a matching name "${expectedContractName}"`
+        `System file must contain a contract with a matching name "${expectedContractName}"`,
       );
     }
   }

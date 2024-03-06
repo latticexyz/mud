@@ -22,6 +22,4 @@ interface IStore is
   IPackedCounterErrors,
   ISchemaErrors,
   ISliceErrors
-{
-
-}
+{}

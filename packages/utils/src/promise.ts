@@ -20,7 +20,7 @@ export const callWithRetry = <T>(
   fn: (...args: any[]) => Promise<T>,
   args: any[] = [],
   maxRetries = 10,
-  retryInterval = 1000
+  retryInterval = 1000,
 ): Promise<T> => {
   const [resolve, reject, promise] = deferred<T>();
   const process = async () => {

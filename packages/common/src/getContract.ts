@@ -42,7 +42,7 @@ export type GetContractOptions<
   TChain extends Chain,
   TAccount extends Account,
   TPublicClient extends PublicClient<TTransport, TChain>,
-  TWalletClient extends WalletClient<TTransport, TChain, TAccount>
+  TWalletClient extends WalletClient<TTransport, TChain, TAccount>,
 > = GetContractParameters<
   TTransport,
   TChain,
@@ -64,7 +64,7 @@ export function getContract<
   TChain extends Chain,
   TAccount extends Account,
   TPublicClient extends PublicClient<TTransport, TChain>,
-  TWalletClient extends WalletClient<TTransport, TChain, TAccount>
+  TWalletClient extends WalletClient<TTransport, TChain, TAccount>,
 >({
   abi,
   address,
@@ -100,7 +100,7 @@ export function getContract<
           return (
             ...parameters: [
               args?: readonly unknown[],
-              options?: UnionOmit<WriteContractParameters, "abi" | "address" | "functionName" | "args">
+              options?: UnionOmit<WriteContractParameters, "abi" | "address" | "functionName" | "args">,
             ]
           ) => {
             const { args, options } = getFunctionParameters(parameters);
@@ -126,7 +126,7 @@ export function getContract<
             return result;
           };
         },
-      }
+      },
     );
   }
 

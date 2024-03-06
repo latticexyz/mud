@@ -1,13 +1,12 @@
 import { readFile } from "fs/promises";
-import { getCreate2Address, keccak256, stringToHex } from "viem";
+import { Address, Hex, getCreate2Address, keccak256, stringToHex } from "viem";
 import toposort from "toposort";
 import glob from "glob";
 import { LinkReferences, getContractData } from "../utils/utils/getContractData";
-import { deployer } from "./ensureDeployer";
 import { PublicLibrary, salt } from "./common";
 import path from "path";
 
-export async function getPublicLibraries(forgeOutDir: string) {
+export async function getPublicLibraries(forgeOutDir: string, deployerAddress: Hex) {
   const libraryDeps: {
     libraryFilename: string;
     libraryName: string;
@@ -57,14 +56,14 @@ export async function getPublicLibraries(forgeOutDir: string) {
       libraryName,
       forgeOutDir,
       libraries,
+      deployerAddress,
     );
-    const address = getCreate2Address({ from: deployer, bytecode, salt });
 
     const hashPrefix = keccak256(stringToHex(libraryFullyQualifiedName)).slice(2, 36);
     const addressPlaceholder = `__$${hashPrefix}$__`;
 
     libraries.push({
-      address,
+      getAddress: (deployer: Address) => getCreate2Address({ from: deployer, bytecode: bytecode, salt }),
       bytecode,
       abi,
       deployedBytecodeSize,

@@ -20,7 +20,7 @@ const zSystemConfig = z.intersection(
       openAccess: z.literal(false),
       accessList: zSystemAccessList,
     }),
-  ])
+  ]),
 );
 
 const zValueWithType = z.object({

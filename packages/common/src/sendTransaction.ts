@@ -21,10 +21,10 @@ const debug = parentDebug.extend("sendTransaction");
 export async function sendTransaction<
   TChain extends Chain | undefined,
   TAccount extends Account | undefined,
-  TChainOverride extends Chain | undefined
+  TChainOverride extends Chain | undefined,
 >(
   client: Client<Transport, TChain, TAccount>,
-  request: SendTransactionParameters<TChain, TAccount, TChainOverride>
+  request: SendTransactionParameters<TChain, TAccount, TChainOverride>,
 ): Promise<SendTransactionReturnType> {
   const rawAccount = request.account ?? client.account;
   if (!rawAccount) {
@@ -82,8 +82,8 @@ export async function sendTransaction<
             // TODO: prepare again if there are gas errors?
             throw error;
           },
-        }
+        },
       ),
-    { throwOnTimeout: true }
+    { throwOnTimeout: true },
   );
 }

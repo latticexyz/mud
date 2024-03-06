@@ -20,8 +20,8 @@ const env = parseEnv(
     z.object({
       DATABASE_URL: z.string(),
       SENTRY_DSN: z.string().optional(),
-    })
-  )
+    }),
+  ),
 );
 
 const database = postgres(env.DATABASE_URL, { prepare: false });
@@ -44,7 +44,7 @@ server.use(
     createContext: async () => ({
       queryAdapter: await createQueryAdapter(drizzle(database)),
     }),
-  })
+  }),
 );
 
 server.listen({ host: env.HOST, port: env.PORT });

@@ -25,6 +25,4 @@ interface IWorld is
   INumberListSystem,
   INumberSystem,
   IVectorSystem
-{
-
-}
+{}

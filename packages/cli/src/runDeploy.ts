@@ -15,6 +15,7 @@ import { getChainId } from "viem/actions";
 import { postDeploy } from "./utils/utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
+import { ensureDeployer } from "./deploy/ensureDeployer";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
@@ -68,8 +69,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const rpc = opts.rpc ?? (await getRpcUrl(profile));
   console.log(
     chalk.bgBlue(
-      chalk.whiteBright(`\n Deploying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`)
-    )
+      chalk.whiteBright(`\n Deploying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`),
+    ),
   );
 
   // Run build
@@ -82,11 +83,9 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     throw new MUDError(
       `Missing PRIVATE_KEY environment variable.
 Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
-in your contracts directory to use the default anvil private key.`
+in your contracts directory to use the default anvil private key.`,
     );
   }
-
-  const resolvedConfig = await resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
   const client = createWalletClient({
     transport: http(rpc, {
@@ -99,11 +98,21 @@ in your contracts directory to use the default anvil private key.`
     }),
     account: privateKeyToAccount(privateKey),
   });
+
+  const deployerAddress = opts.deployerAddress ? (opts.deployerAddress as Hex) : await ensureDeployer(client);
+
+  const resolvedConfig = await resolveConfig({
+    config,
+    forgeSourceDir: srcDir,
+    forgeOutDir: outDir,
+    deployerAddress: deployerAddress as Hex,
+  });
+
   console.log("Deploying from", client.account.address);
 
   const startTime = Date.now();
   const worldDeploy = await deploy({
-    deployerAddress: opts.deployerAddress as Hex | undefined,
+    deployerAddress,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
@@ -137,7 +146,7 @@ in your contracts directory to use the default anvil private key.`
     writeFileSync(config.worldsFile, JSON.stringify(deploys, null, 2));
 
     console.log(
-      chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${config.worldsFile} and ${deploysDir}): \n`))
+      chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${config.worldsFile} and ${deploysDir}): \n`)),
     );
   }
 

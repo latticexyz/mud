@@ -18,19 +18,21 @@ export async function resolveConfig<config extends ConfigInput>({
   config,
   forgeSourceDir,
   forgeOutDir,
+  deployerAddress,
 }: {
   config: config;
   forgeSourceDir: string;
   forgeOutDir: string;
+  readonly deployerAddress: Hex;
 }): Promise<Config<config>> {
-  const libraries = await getPublicLibraries(forgeOutDir);
+  const libraries = await getPublicLibraries(forgeOutDir, deployerAddress);
 
   const tables = configToTables(config);
 
   // TODO: should the config parser/loader help with resolving systems?
   const contractNames = getExistingContracts(forgeSourceDir).map(({ basename }) => basename);
   const resolvedConfig = resolveWorldConfig(config, contractNames);
-  const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir, libraries);
+  const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir, libraries, deployerAddress);
   const baseSystemFunctions = baseSystemContractData.abi
     .filter((item): item is typeof item & { type: "function" } => item.type === "function")
     .map(toFunctionSignature);
@@ -39,7 +41,7 @@ export async function resolveConfig<config extends ConfigInput>({
     const namespace = config.namespace;
     const name = system.name;
     const systemId = resourceToHex({ type: "system", namespace, name });
-    const contractData = getContractData(`${systemName}.sol`, systemName, forgeOutDir, libraries);
+    const contractData = getContractData(`${systemName}.sol`, systemName, forgeOutDir, libraries, deployerAddress);
 
     const systemFunctions = contractData.abi
       .filter((item): item is typeof item & { type: "function" } => item.type === "function")
@@ -64,7 +66,7 @@ export async function resolveConfig<config extends ConfigInput>({
       allowAll: system.openAccess,
       allowedAddresses: system.accessListAddresses as Hex[],
       allowedSystemIds: system.accessListSystems.map((name) =>
-        resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name })
+        resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name }),
       ),
       getAddress: (deployer: Address) => getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
       bytecode: contractData.bytecode,
@@ -84,8 +86,8 @@ export async function resolveConfig<config extends ConfigInput>({
     const names = overlappingSystems.map((system) => system.name);
     throw new Error(
       `Found systems with overlapping system ID: ${names.join(
-        ", "
-      )}.\n\nSystem IDs are generated from the first 16 bytes of the name, so you may need to rename them to avoid the overlap.`
+        ", ",
+      )}.\n\nSystem IDs are generated from the first 16 bytes of the name, so you may need to rename them to avoid the overlap.`,
     );
   }
 
@@ -99,9 +101,9 @@ export async function resolveConfig<config extends ConfigInput>({
             type: table.offchainOnly ? "offchainTable" : "table",
             namespace: config.namespace,
             name: table.name,
-          })
+          }),
         ),
-      ])
+      ]),
     ),
   };
 
