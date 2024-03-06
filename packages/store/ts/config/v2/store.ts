@@ -1,11 +1,11 @@
-import { TableConfigInput, resolveTableConfig, validateTableConfig } from "./table";
+import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
 
 export interface StoreConfigInput {
   tables: StoreTablesConfigInput;
 }
 
 export interface StoreTablesConfigInput {
-  [key: string]: TableConfigInput;
+  [key: string]: TableInput;
 }
 
 export type validateStoreTablesConfig<input> = {

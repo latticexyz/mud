@@ -17,7 +17,7 @@ export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeSc
 ];
 
 export type TableInput<
-  schema extends SchemaInput<scope>,
+  schema extends SchemaInput<scope> = SchemaInput,
   scope extends AbiTypeScope = AbiTypeScope,
   keys extends ValidKeys<schema, scope> = ValidKeys<schema, scope>
 > = TableFullInput<schema, scope, keys> | TableShorthandInput<scope>;

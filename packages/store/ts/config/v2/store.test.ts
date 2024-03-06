@@ -1,99 +1,101 @@
-import { describe, it, expectTypeOf } from "vitest";
+import { describe, it } from "vitest";
 import { resolveStoreConfig } from "./store";
 import { attest } from "@arktype/attest";
 
 describe("resolveStoreConfig", () => {
   it("should accept a shorthand store config as input and expand it", () => {
     const config = resolveStoreConfig({ tables: { Name: "address" } });
-    const expected = {
+    attest<{
       tables: {
         Name: {
           schema: {
             key: {
-              type: "bytes32",
-              internalType: "bytes32",
-            },
+              type: "bytes32";
+              internalType: "bytes32";
+            };
             value: {
-              type: "address",
-              internalType: "address",
-            },
-          },
+              type: "address";
+              internalType: "address";
+            };
+          };
           keySchema: {
             key: {
-              type: "bytes32",
-              internalType: "bytes32",
-            },
-          },
+              type: "bytes32";
+              internalType: "bytes32";
+            };
+          };
           valueSchema: {
             value: {
-              type: "address",
-              internalType: "address",
-            },
-          },
-          keys: ["key"],
-        },
-      },
-    } as const;
-    attest<typeof expected>(config).equals(expected);
+              type: "address";
+              internalType: "address";
+            };
+          };
+          keys: ["key"];
+        };
+      };
+    }>(config);
   });
 
   it("given a schema with a key field with static ABI type, it should use `key` as single key", () => {
     const config = resolveStoreConfig({ tables: { Example: { key: "address", name: "string", age: "uint256" } } });
-    const expected = {
+    attest<{
       tables: {
         Example: {
           schema: {
             key: {
-              type: "address",
-              internalType: "address",
-            },
+              type: "address";
+              internalType: "address";
+            };
             name: {
-              type: "string",
-              internalType: "string",
-            },
+              type: "string";
+              internalType: "string";
+            };
             age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
           keySchema: {
             key: {
-              type: "address",
-              internalType: "address",
-            },
-          },
+              type: "address";
+              internalType: "address";
+            };
+          };
           valueSchema: {
             name: {
-              type: "string",
-              internalType: "string",
-            },
+              type: "string";
+              internalType: "string";
+            };
             age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          keys: ["key"],
-        },
-      },
-    } as const;
-    attest<typeof expected>(config).equals(expected);
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
+          keys: ["key"];
+        };
+      };
+    }>(config);
   });
 
   it("throw an error if the shorthand doesn't include a key field", () => {
-    resolveStoreConfig({
-      tables: {
-        // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
-        Example: {
-          name: "string",
-          age: "uint256",
+    attest(
+      resolveStoreConfig({
+        tables: {
+          // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
+          Example: {
+            name: "string",
+            age: "uint256",
+          },
         },
-      },
-    });
+      })
+    ).type.errors("Provide a `key` field with static ABI type or a full config with explicit keys override.");
   });
 
   it("throw an error if the shorthand config includes a non-static key field", () => {
     // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit keys override.
-    resolveStoreConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } });
+    attest(resolveStoreConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } })).type.errors(
+      "Provide a `key` field with static ABI type or a full config with explicit keys override."
+    );
   });
 
   it("should return the full config given a full config with one key", () => {
@@ -105,44 +107,43 @@ describe("resolveStoreConfig", () => {
         },
       },
     });
-    const expected = {
+    attest<{
       tables: {
         Example: {
           schema: {
             key: {
-              type: "address",
-              internalType: "address",
-            },
+              type: "address";
+              internalType: "address";
+            };
             name: {
-              type: "string",
-              internalType: "string",
-            },
+              type: "string";
+              internalType: "string";
+            };
             age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
           keySchema: {
             age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
           valueSchema: {
             key: {
-              type: "address",
-              internalType: "address",
-            },
+              type: "address";
+              internalType: "address";
+            };
             name: {
-              type: "string",
-              internalType: "string",
-            },
-          },
-          keys: ["age"],
-        },
-      },
-    } as const;
-    attest<typeof expected>(config).equals(expected);
+              type: "string";
+              internalType: "string";
+            };
+          };
+          keys: ["age"];
+        };
+      };
+    }>(config);
   });
 
   it("it should return the full config given a full config with two keys", () => {
@@ -154,47 +155,46 @@ describe("resolveStoreConfig", () => {
         },
       },
     });
-    const expected = {
+    attest<{
       tables: {
         Example: {
           schema: {
             key: {
-              type: "address",
-              internalType: "address",
-            },
+              type: "address";
+              internalType: "address";
+            };
             name: {
-              type: "string",
-              internalType: "string",
-            },
+              type: "string";
+              internalType: "string";
+            };
             age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
           keySchema: {
             age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
+              type: "uint256";
+              internalType: "uint256";
+            };
             key: {
-              type: "address",
-              internalType: "address",
-            },
-          },
+              type: "address";
+              internalType: "address";
+            };
+          };
           valueSchema: {
             name: {
-              type: "string",
-              internalType: "string",
-            },
-          },
-          keys: ["age", "key"],
-        },
-      },
-    } as const;
-    attest<typeof expected>(config).equals(expected);
+              type: "string";
+              internalType: "string";
+            };
+          };
+          keys: ["age", "key"];
+        };
+      };
+    }>(config);
   });
 
-  it("should work for two tables in the config with different schemas", () => {
+  it("should resolve two tables in the config with different schemas", () => {
     const config = resolveStoreConfig({
       tables: {
         First: {
@@ -207,105 +207,107 @@ describe("resolveStoreConfig", () => {
         },
       },
     });
-
-    const expected = {
+    attest<{
       tables: {
         First: {
           schema: {
             firstKey: {
-              type: "address",
-              internalType: "address",
-            },
+              type: "address";
+              internalType: "address";
+            };
             firstName: {
-              type: "string",
-              internalType: "string",
-            },
+              type: "string";
+              internalType: "string";
+            };
             firstAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
           keySchema: {
             firstKey: {
-              type: "address",
-              internalType: "address",
-            },
+              type: "address";
+              internalType: "address";
+            };
             firstAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
           valueSchema: {
             firstName: {
-              type: "string",
-              internalType: "string",
-            },
-          },
-          keys: ["firstKey", "firstAge"],
-        },
+              type: "string";
+              internalType: "string";
+            };
+          };
+          keys: ["firstKey", "firstAge"];
+        };
         Second: {
           schema: {
             secondKey: {
-              type: "address",
-              internalType: "address",
-            },
+              type: "address";
+              internalType: "address";
+            };
             secondName: {
-              type: "string",
-              internalType: "string",
-            },
+              type: "string";
+              internalType: "string";
+            };
             secondAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
           keySchema: {
             secondKey: {
-              type: "address",
-              internalType: "address",
-            },
+              type: "address";
+              internalType: "address";
+            };
             secondAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
+              type: "uint256";
+              internalType: "uint256";
+            };
+          };
           valueSchema: {
             secondName: {
-              type: "string",
-              internalType: "string",
-            },
-          },
-          keys: ["secondKey", "secondAge"],
-        },
-      },
-    };
-    attest<typeof expected>(config).equals(expected);
+              type: "string";
+              internalType: "string";
+            };
+          };
+          keys: ["secondKey", "secondAge"];
+        };
+      };
+    }>(config);
   });
 
   it("should throw if referring to fields of different tables", () => {
-    resolveStoreConfig({
-      tables: {
-        First: {
-          schema: { firstKey: "address", firstName: "string", firstAge: "uint256" },
-          keys: ["firstKey", "firstAge"],
+    attest(
+      resolveStoreConfig({
+        tables: {
+          First: {
+            schema: { firstKey: "address", firstName: "string", firstAge: "uint256" },
+            keys: ["firstKey", "firstAge"],
+          },
+          Second: {
+            schema: { secondKey: "address", secondName: "string", secondAge: "uint256" },
+            // @ts-expect-error Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'
+            keys: ["firstKey", "secondAge"],
+          },
         },
-        Second: {
-          schema: { secondKey: "address", secondName: "string", secondAge: "uint256" },
-          // @ts-expect-error Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'
-          keys: ["firstKey", "secondAge"],
-        },
-      },
-    });
+      })
+    ).type.errors(`Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'`);
   });
 
   it("should throw an error if the provided key is not a static field", () => {
-    resolveStoreConfig({
-      tables: {
-        Example: {
-          schema: { key: "address", name: "string", age: "uint256" },
-          // @ts-expect-error Keys must have static ABI types.
-          keys: ["name"],
+    attest(
+      resolveStoreConfig({
+        tables: {
+          Example: {
+            schema: { key: "address", name: "string", age: "uint256" },
+            // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'.
+            keys: ["name"],
+          },
         },
-      },
-    });
+      })
+    ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 });
