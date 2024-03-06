@@ -7,11 +7,11 @@ export const anvilPort = 8555;
 export const poolId = Number(process.env.VITEST_POOL_ID ?? 1);
 
 export const anvilRpcUrl = `http://${anvilHost}:${anvilPort}/${poolId}`;
-const transport = http(anvilRpcUrl);
 
 export const testClient = createTestClient({
   mode: "anvil",
-  transport,
+  // TODO: if tests get slow, try switching to websockets?
+  transport: http(anvilRpcUrl),
   pollingInterval: 10,
 })
   .extend(publicActions)

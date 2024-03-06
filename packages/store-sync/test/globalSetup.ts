@@ -6,9 +6,6 @@ export default async function globalSetup(): Promise<() => Promise<void>> {
   const shutdownAnvilProxy = await startAnvilProxy({
     host: anvilHost,
     port: anvilPort,
-    options: {
-      noMining: true,
-    },
   });
 
   console.log("building mock game");

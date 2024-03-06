@@ -7,7 +7,7 @@ import { testClient } from "../../../test/common";
 import { storeTables, worldTables } from "../../common";
 import { AllTables } from "../common";
 import { Address } from "viem";
-import { getBlockNumber } from "viem/actions";
+import { getBlock, getBlockNumber } from "viem/actions";
 
 export const tables = {
   ...config.tables,
@@ -22,11 +22,11 @@ export async function createHydratedStore(worldAddress: Address): Promise<{
   const store = createStore<typeof tables>({ tables });
   const storageAdapter = createStorageAdapter({ store });
 
-  let latestBlock = -1n;
+  let latestBlock = (await getBlock(testClient, { blockTag: "earliest" })).number - 1n;
   async function fetchLatestLogs(): Promise<void> {
-    const fromBlock = latestBlock + 1n;
     const toBlock = await getBlockNumber(testClient);
-    if (toBlock <= fromBlock) return;
+    if (toBlock < latestBlock) return;
+    const fromBlock = latestBlock + 1n;
     // console.log("fetching blocks", fromBlock, "to", toBlock);
     for await (const block of fetchAndStoreLogs({
       storageAdapter,

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { createHydratedStore, tables } from "./test/createHydratedStore";
 import { subscribeToQuery } from "./subscribeToQuery";
 import { deployMockGame, worldAbi } from "../../test/mockGame";
-import { writeContract } from "viem/actions";
+import { waitForTransactionReceipt, writeContract } from "viem/actions";
 import { keccak256, parseEther, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { testClient } from "../../test/common";
@@ -48,15 +48,16 @@ describe("subscribeToQuery", async () => {
       }
     `);
 
-    await writeContract(testClient, {
-      account: henryAccount,
-      chain: null,
-      address: worldAddress,
-      abi: worldAbi,
-      functionName: "move",
-      args: [1, 2],
+    await waitForTransactionReceipt(testClient, {
+      hash: await writeContract(testClient, {
+        account: henryAccount,
+        chain: null,
+        address: worldAddress,
+        abi: worldAbi,
+        functionName: "move",
+        args: [1, 2],
+      }),
     });
-    await testClient.mine({ blocks: 2 });
     await fetchLatestLogs();
 
     expect(results.length).toBe(2);
@@ -108,15 +109,16 @@ describe("subscribeToQuery", async () => {
       }
     `);
 
-    await writeContract(testClient, {
-      account: henryAccount,
-      chain: null,
-      address: worldAddress,
-      abi: worldAbi,
-      functionName: "move",
-      args: [3, 5],
+    await waitForTransactionReceipt(testClient, {
+      hash: await writeContract(testClient, {
+        account: henryAccount,
+        chain: null,
+        address: worldAddress,
+        abi: worldAbi,
+        functionName: "move",
+        args: [3, 5],
+      }),
     });
-    await testClient.mine({ blocks: 2 });
     await fetchLatestLogs();
 
     expect(results.length).toBe(2);
@@ -136,15 +138,16 @@ describe("subscribeToQuery", async () => {
       }
     `);
 
-    await writeContract(testClient, {
-      account: henryAccount,
-      chain: null,
-      address: worldAddress,
-      abi: worldAbi,
-      functionName: "move",
-      args: [2, 4],
+    await waitForTransactionReceipt(testClient, {
+      hash: await writeContract(testClient, {
+        account: henryAccount,
+        chain: null,
+        address: worldAddress,
+        abi: worldAbi,
+        functionName: "move",
+        args: [2, 4],
+      }),
     });
-    await testClient.mine({ blocks: 2 });
     await fetchLatestLogs();
 
     expect(results.length).toBe(3);
@@ -192,15 +195,16 @@ describe("subscribeToQuery", async () => {
       }
     `);
 
-    await writeContract(testClient, {
-      account: henryAccount,
-      chain: null,
-      address: worldAddress,
-      abi: worldAbi,
-      functionName: "move",
-      args: [3, 5],
+    await waitForTransactionReceipt(testClient, {
+      hash: await writeContract(testClient, {
+        account: henryAccount,
+        chain: null,
+        address: worldAddress,
+        abi: worldAbi,
+        functionName: "move",
+        args: [3, 5],
+      }),
     });
-    await testClient.mine({ blocks: 2 });
     await fetchLatestLogs();
 
     expect(results.length).toBe(2);
@@ -223,15 +227,16 @@ describe("subscribeToQuery", async () => {
       }
     `);
 
-    await writeContract(testClient, {
-      account: henryAccount,
-      chain: null,
-      address: worldAddress,
-      abi: worldAbi,
-      functionName: "move",
-      args: [100, 100],
+    await waitForTransactionReceipt(testClient, {
+      hash: await writeContract(testClient, {
+        account: henryAccount,
+        chain: null,
+        address: worldAddress,
+        abi: worldAbi,
+        functionName: "move",
+        args: [100, 100],
+      }),
     });
-    await testClient.mine({ blocks: 2 });
     await fetchLatestLogs();
 
     expect(results.length).toBe(3);

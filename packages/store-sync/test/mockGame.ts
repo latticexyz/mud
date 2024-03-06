@@ -1,5 +1,5 @@
 import { execa } from "execa";
-import { anvilRpcUrl, testClient } from "./common";
+import { anvilRpcUrl } from "./common";
 import mudConfig from "mock-game-contracts/mud.config";
 import { resolveConfig } from "@latticexyz/store";
 import { Hex, isHex } from "viem";
@@ -10,16 +10,11 @@ export const config = resolveConfig(mudConfig);
 export { worldAbi };
 
 export async function deployMockGame(): Promise<Hex> {
-  const automine = await testClient.getAutomine();
-
-  if (!automine) {
-    console.log("turning on automine for deploy");
-    await testClient.setAutomine(true);
-  }
-
   console.log("deploying mock game to", anvilRpcUrl);
   const { stdout, stderr } = await execa(
     "pnpm",
+    // skip build because its slow and we do it in global setup
+    // if we don't skip build here, it regenerates ABIs which cause the tests to re-run (because we import the ABI here), which re-runs this deploy...
     ["mud", "deploy", "--rpc", anvilRpcUrl, "--saveDeployment", "false", "--skipBuild"],
     {
       cwd: `${__dirname}/../../../test/mock-game-contracts`,
@@ -39,33 +34,5 @@ export async function deployMockGame(): Promise<Hex> {
   }
   console.log("deployed mock game", worldAddress);
 
-  if (!automine) {
-    console.log("turning off automine");
-    await testClient.setAutomine(false);
-  }
-
   return worldAddress;
 }
-
-// We manually define what we need from world ABI here because deploying causes it to get regenerated, which reruns tests, which reruns deploy
-// TODO: figure out a better strategy, maybe build once at the start and deploy without a rebuild?
-// export const worldAbi = [
-//   {
-//     type: "function",
-//     name: "move",
-//     inputs: [
-//       {
-//         name: "x",
-//         type: "int32",
-//         internalType: "int32",
-//       },
-//       {
-//         name: "y",
-//         type: "int32",
-//         internalType: "int32",
-//       },
-//     ],
-//     outputs: [],
-//     stateMutability: "nonpayable",
-//   },
-// ] as const;
