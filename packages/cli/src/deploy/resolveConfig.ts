@@ -10,7 +10,6 @@ import {
   getCreate2Address,
   getAddress,
   hexToBytes,
-  Abi,
   bytesToHex,
   getFunctionSignature,
 } from "viem";
@@ -74,7 +73,7 @@ export async function resolveConfig<config extends ConfigInput>({
       allowAll: system.openAccess,
       allowedAddresses: system.accessListAddresses as Hex[],
       allowedSystemIds: system.accessListSystems.map((name) =>
-        resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name })
+        resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name }),
       ),
       address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
       bytecode: contractData.bytecode,
@@ -92,8 +91,8 @@ export async function resolveConfig<config extends ConfigInput>({
       if (!targetSystem) {
         throw new Error(
           `System ${resourceLabel(system)} wanted access to ${resourceLabel(
-            hexToResource(systemId)
-          )}, but it wasn't found in the config.`
+            hexToResource(systemId),
+          )}, but it wasn't found in the config.`,
         );
       }
       return targetSystem.address;
@@ -101,7 +100,7 @@ export async function resolveConfig<config extends ConfigInput>({
     return {
       ...system,
       allowedAddresses: Array.from(
-        new Set([...allowedAddresses, ...allowedSystemAddresses].map((addr) => getAddress(addr)))
+        new Set([...allowedAddresses, ...allowedSystemAddresses].map((addr) => getAddress(addr))),
       ),
     };
   });
@@ -116,9 +115,9 @@ export async function resolveConfig<config extends ConfigInput>({
             type: table.offchainOnly ? "offchainTable" : "table",
             namespace: config.namespace,
             name: table.name,
-          })
+          }),
         ),
-      ])
+      ]),
     ),
   };
 
