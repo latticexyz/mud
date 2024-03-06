@@ -77,7 +77,10 @@ type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> = input
   SchemaInput<scope>,
   scope
 >
-  ? input
+  ? {
+      keys: validateKeys<input["keys"], getStaticAbiTypeKeys<input["schema"], scope>>;
+      schema: input["schema"];
+    }
   : input extends { keys: unknown; schema: SchemaInput }
   ? {
       keys: validateKeys<input["keys"], getStaticAbiTypeKeys<input["schema"], scope>>;
