@@ -1645,11 +1645,11 @@ contract WorldTest is Test, GasReporter {
     world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
-    string memory worldFunc = "msgSender()";
+    string memory systemFunc = "msgSender()";
 
     // Expect an error when trying to register a root function selector from an account without access
     _expectAccessDenied(address(0x01), "", "", RESOURCE_NAMESPACE);
-    world.registerRootFunctionSelector(systemId, worldFunc);
+    world.registerRootFunctionSelector(systemId, systemFunc);
 
     // Expect the World to not be able to register a root function selector when calling the function externally
     vm.prank(address(world));
@@ -1662,13 +1662,13 @@ contract WorldTest is Test, GasReporter {
     world.registerRootFunctionSelector(systemId, "smth");
 
     startGasReport("Register a root function selector");
-    bytes4 functionSelector = world.registerRootFunctionSelector(systemId, worldFunc);
+    bytes4 functionSelector = world.registerRootFunctionSelector(systemId, systemFunc);
     endGasReport();
 
-    assertEq(functionSelector, bytes4(keccak256(bytes(worldFunc))), "wrong function selector returned");
+    assertEq(functionSelector, bytes4(keccak256(bytes(systemFunc))), "wrong function selector returned");
 
     // Call the system via the World with the registered function selector
-    (bool success, bytes memory data) = address(world).call(abi.encodeWithSignature(worldFunc));
+    (bool success, bytes memory data) = address(world).call(abi.encodeWithSignature(systemFunc));
 
     assertTrue(success, "call failed");
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
