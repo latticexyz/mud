@@ -13,9 +13,11 @@
   "dependencies": {
     "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
+    "@latticexyz/protocol-parser": "link:../../../../packages/protocol-parser",
     "@latticexyz/react": "link:../../../../packages/react",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
     "@latticexyz/services": "link:../../../../packages/services",
+    "@latticexyz/store": "link:../../../../packages/store",
     "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",

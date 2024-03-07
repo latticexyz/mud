@@ -1,7 +1,6 @@
 import {
   slice,
   concat,
-  pad,
   type WalletClient,
   type Transport,
   type Chain,
@@ -15,6 +14,8 @@ import {
 import { getAction, encodeFunctionData } from "viem/utils";
 import { writeContract } from "viem/actions";
 import { resourceToHex } from "@latticexyz/common";
+import { resolveUserTypes } from "@latticexyz/store";
+import { decodeValueArgs, encodeKey } from "@latticexyz/protocol-parser";
 import worldConfig from "@latticexyz/world/mud.config";
 import IStoreReadAbi from "@latticexyz/world/out/IStoreRead.sol/IStoreRead.abi.json";
 
@@ -94,11 +95,15 @@ export function callFrom<TChain extends Chain, TAccount extends Account>({
   });
 }
 
-const functionSelectorsTableId = resourceToHex({
-  type: worldConfig.tables.FunctionSelectors.offchainOnly ? "offchainTable" : "table",
-  namespace: worldConfig.namespace,
-  name: worldConfig.tables.FunctionSelectors.name,
-});
+const functionSelectorsTable = {
+  tableId: resourceToHex({
+    type: worldConfig.tables.FunctionSelectors.offchainOnly ? "offchainTable" : "table",
+    namespace: worldConfig.namespace,
+    name: worldConfig.tables.FunctionSelectors.name,
+  }),
+  keySchema: resolveUserTypes(worldConfig.tables.FunctionSelectors.keySchema, worldConfig.userTypes),
+  valueSchema: resolveUserTypes(worldConfig.tables.FunctionSelectors.valueSchema, worldConfig.userTypes),
+};
 
 const systemFunctionCache = new Map<Hex, SystemFunction>();
 
@@ -113,17 +118,21 @@ async function retrieveSystemFunction(
   const cached = systemFunctionCache.get(cacheKey);
   if (cached) return cached;
 
-  // Refer to the corresponding Solidity code to understand the data structure.
-  const [staticData] = await publicClient.readContract({
+  const [staticData, encodedLengths, dynamicData] = await publicClient.readContract({
     address: worldAddress,
     abi: IStoreReadAbi,
     functionName: "getRecord",
-    args: [functionSelectorsTableId, [pad(worldFunctionSelector, { dir: "right", size: 32 })]],
+    args: [
+      functionSelectorsTable.tableId,
+      encodeKey(functionSelectorsTable.keySchema, { functionSelector: worldFunctionSelector }),
+    ],
   });
 
+  const decoded = decodeValueArgs(functionSelectorsTable.valueSchema, { staticData, encodedLengths, dynamicData });
+
   const systemFunction: SystemFunction = {
-    systemId: slice(staticData, 0, 32),
-    systemFunctionSelector: slice(staticData, 32, 36),
+    systemId: decoded.systemId,
+    systemFunctionSelector: decoded.systemFunctionSelector,
   };
 
   systemFunctionCache.set(cacheKey, systemFunction);
