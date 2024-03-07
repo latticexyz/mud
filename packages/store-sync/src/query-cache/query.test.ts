@@ -125,4 +125,20 @@ describe("query", async () => {
       ]
     `);
   });
+
+  it("can get all players without health (e.g. spectator)", async () => {
+    const { store } = await createHydratedStore(worldAddress);
+    const result = await query(store, {
+      from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
+      except: [{ tableId: tables.Health.tableId, subject: ["player"] }],
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      [
+        [
+          "0xdBa86119a787422C593ceF119E40887f396024E2",
+        ],
+      ]
+    `);
+  });
 });
