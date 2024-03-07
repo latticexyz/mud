@@ -4,10 +4,11 @@ import { AbiType, AbiTypeScope, extendScope } from "./scope";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
 import { get } from "./generics";
 
-type UserTypes = Dict<string, AbiType>;
-type Enums = Dict<string, string[]>;
+export type UserTypes = Dict<string, AbiType>;
+export type Enums = Dict<string, string[]>;
 
 export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
+  namespace: string;
   tables: StoreTablesConfigInput<scopeWithUserTypes<userTypes>>;
   userTypes?: userTypes;
   enums?: enums;
