@@ -1,5 +1,4 @@
 import { Account, Address, Chain, Client, Hex, Transport, getAddress } from "viem";
-import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
 import { Config, ConfigInput, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
