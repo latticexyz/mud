@@ -166,10 +166,7 @@ contract InitModule is Module {
       msgSender: _msgSender(),
       msgValue: 0,
       target: registrationSystem,
-      callData: abi.encodeCall(
-        WorldRegistrationSystem.registerRootFunctionSelector,
-        (systemId, functionSignature, bytes4(keccak256(bytes(functionSignature))))
-      )
+      callData: abi.encodeCall(WorldRegistrationSystem.registerRootFunctionSelector, (systemId, functionSignature))
     });
   }
 }

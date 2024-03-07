@@ -223,31 +223,29 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @notice Registers a root World function selector
    * @dev Creates a mapping for a root World function without namespace or name prefix
    * @param systemId The system ID
-   * @param worldFunctionSignature The signature of the World function
-   * @param systemFunctionSelector The selector of the system function
-   * @return worldFunctionSelector The selector of the World function
+   * @param systemFunctionSignature The signature of the World function
+   * @return systemFunctionSelector The selector of the World function
    */
   function registerRootFunctionSelector(
     ResourceId systemId,
-    string memory worldFunctionSignature,
-    bytes4 systemFunctionSelector
-  ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
+    string memory systemFunctionSignature
+  ) public onlyDelegatecall returns (bytes4 systemFunctionSelector) {
     // Require the caller to own the root namespace
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, _msgSender());
 
     // Compute the function selector from the provided signature
-    worldFunctionSelector = bytes4(keccak256(bytes(worldFunctionSignature)));
+    systemFunctionSelector = bytes4(keccak256(bytes(systemFunctionSignature)));
 
     // Require the function selector to be globally unique
-    ResourceId existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
+    ResourceId existingSystemId = FunctionSelectors._getSystemId(systemFunctionSelector);
 
-    if (ResourceId.unwrap(existingSystemId) != 0) revert World_FunctionSelectorAlreadyExists(worldFunctionSelector);
+    if (ResourceId.unwrap(existingSystemId) != 0) revert World_FunctionSelectorAlreadyExists(systemFunctionSelector);
 
     // Register the function selector
-    FunctionSelectors._set(worldFunctionSelector, systemId, systemFunctionSelector);
+    FunctionSelectors._set(systemFunctionSelector, systemId, systemFunctionSelector);
 
     // Register the function signature for offchain use
-    FunctionSignatures._set(worldFunctionSelector, worldFunctionSignature);
+    FunctionSignatures._set(systemFunctionSelector, systemFunctionSignature);
   }
 
   /**
