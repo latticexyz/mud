@@ -28,14 +28,14 @@ export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiType
 type scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTypeScope> = UserTypes extends userTypes
   ? scope
   : userTypes extends UserTypes
-  ? extendScope<scope, userTypes>
-  : scope;
+    ? extendScope<scope, userTypes>
+    : scope;
 
 type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = Enums extends enums
   ? scope
   : enums extends Enums
-  ? extendScope<scope, { [key in keyof enums]: "uint8" }>
-  : scope;
+    ? extendScope<scope, { [key in keyof enums]: "uint8" }>
+    : scope;
 
 export type validateStoreConfig<input> = {
   [key in keyof input]: key extends "tables"
@@ -44,10 +44,10 @@ export type validateStoreConfig<input> = {
         scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
       >
     : key extends "userTypes"
-    ? UserTypes
-    : key extends "enums"
-    ? narrow<input[key]>
-    : input[key];
+      ? UserTypes
+      : key extends "enums"
+        ? narrow<input[key]>
+        : input[key];
 };
 
 export type resolveStoreConfig<input> = evaluate<{

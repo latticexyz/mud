@@ -18,7 +18,7 @@ describe("resolveSchema", () => {
       },
     } as const;
     attest<typeof expected>(resolved).type.toString.snap(
-      '{ regular: { type: "uint256"; internalType: "uint256"; }; user: { type: "address"; internalType: "CustomType"; }; }'
+      '{ regular: { type: "uint256"; internalType: "uint256"; }; user: { type: "address"; internalType: "CustomType"; }; }',
     );
   });
 
@@ -30,7 +30,7 @@ describe("resolveSchema", () => {
         // @ts-expect-error Type '"NotACustomType"' is not assignable to type 'AbiType | "CustomType"'.
         user: "NotACustomType",
       },
-      scope
+      scope,
     );
   });
 });

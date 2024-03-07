@@ -162,14 +162,14 @@ describe("resolveStoreConfig", () => {
             age: "uint256",
           },
         },
-      })
+      }),
     ).type.errors("Provide a `key` field with static ABI type or a full config with explicit primaryKey override.");
   });
 
   it("throw an error if the shorthand config includes a non-static key field", () => {
     // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
     attest(resolveStoreConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } })).type.errors(
-      "Provide a `key` field with static ABI type or a full config with explicit primaryKey override."
+      "Provide a `key` field with static ABI type or a full config with explicit primaryKey override.",
     );
   });
 
@@ -179,7 +179,7 @@ describe("resolveStoreConfig", () => {
         // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
         tables: { Example: { key: "dynamic", name: "string", age: "uint256" } },
         userTypes: { dynamic: "string", static: "address" },
-      })
+      }),
     ).type.errors("Provide a `key` field with static ABI type or a full config with explicit primaryKey override.");
   });
 
@@ -515,7 +515,7 @@ describe("resolveStoreConfig", () => {
             primaryKey: ["firstKey", "secondAge"],
           },
         },
-      })
+      }),
     ).type.errors(`Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'`);
   });
 
@@ -529,7 +529,7 @@ describe("resolveStoreConfig", () => {
             primaryKey: ["name"],
           },
         },
-      })
+      }),
     ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 
@@ -546,7 +546,7 @@ describe("resolveStoreConfig", () => {
         userTypes: {
           Dynamic: "string",
         },
-      })
+      }),
     ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 
