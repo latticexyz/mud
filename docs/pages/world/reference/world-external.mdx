@@ -591,11 +591,14 @@ function callFrom(
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldKernel.sol)
 
 **Inherits:**
-[IWorldModuleInstallation](/world/reference/world-external#iworldmoduleinstallation), [IWorldCall](/world/reference/world-external#iworldcall), [IWorldErrors](/world/reference/world-external#iworlderrors)
+[IWorldModuleInstallation](/world/reference/world-external#iworldmoduleinstallation), [IWorldCall](/world/reference/world-external#iworldcall), [IWorldErrors](/world/reference/world-external#iworlderrors), [IModuleErrors](/src/IModuleErrors.sol/interface.IModuleErrors.md)
 
 The IWorldKernel interface includes all methods that are part of the World contract's
 internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
 registered functions selectors from the `InitModule`.
+
+_The IWorldKernel interface inherits IModuleErrors because the world can be delegatecalled with module code,
+so it's ABI should include these errors._
 
 ### Functions
 
