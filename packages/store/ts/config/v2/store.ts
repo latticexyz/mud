@@ -41,33 +41,33 @@ export type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = E
 // TODO: how would I make some keys required here?
 // I tried with stuff like `& StoreConfigInput` but any `&` here seems
 // to make us lose the fully narrow type inference
-// export type validateStoreConfig<input> = {
-//   [key in keyof input]: key extends "tables"
-//     ? validateStoreTablesConfig<
-//         input[key],
-//         scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-//       >
-//     : key extends "userTypes"
-//       ? UserTypes
-//       : key extends "enums"
-//         ? narrow<input[key]>
-//         : input[key];
-// };
+export type validateStoreConfig<input> = {
+  [key in keyof input]: key extends "tables"
+    ? validateStoreTablesConfig<
+        input[key],
+        scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
+      >
+    : key extends "userTypes"
+      ? UserTypes
+      : key extends "enums"
+        ? narrow<input[key]>
+        : input[key];
+};
 
 // Found a way here, but still wonder if/how I could reuse a `& StoreConfigInput` here
-export type validateStoreConfig<input> = conform<
-  input,
-  {
-    tables?: "tables" extends keyof input
-      ? validateStoreTablesConfig<
-          input["tables"],
-          scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-        >
-      : StoreConfigInput["tables"];
-    userTypes?: UserTypes;
-    enums?: "enums" extends keyof input ? narrow<input["enums"]> : Enums;
-  }
->;
+// export type validateStoreConfig2<input> = conform<
+//   input,
+//   {
+//     tables?: "tables" extends keyof input
+//       ? validateStoreTablesConfig<
+//           input["tables"],
+//           scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
+//         >
+//       : StoreConfigInput["tables"];
+//     userTypes?: UserTypes;
+//     enums?: "enums" extends keyof input ? narrow<input["enums"]> : Enums;
+//   }
+// >;
 
 export type resolveStoreConfig<input> = evaluate<{
   tables: "tables" extends keyof input

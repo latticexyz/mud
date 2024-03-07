@@ -21,7 +21,8 @@ describe("resolveWorldConfig", () => {
         },
       },
     });
-    config.tables.ExampleNamespace__ExampleTable;
+
+    attest<["key"]>(config.tables.ExampleNamespace__ExampleTable.primaryKey);
 
     attest<{
       tables: {

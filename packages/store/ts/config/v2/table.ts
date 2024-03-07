@@ -1,4 +1,4 @@
-import { ErrorMessage, evaluate } from "@arktype/util";
+import { ErrorMessage, conform, evaluate, narrow } from "@arktype/util";
 import { SchemaInput, resolveSchema } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 
