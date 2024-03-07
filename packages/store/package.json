@@ -47,12 +47,8 @@
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "old-test-with-vitest-typecheck": "vitest typecheck --run && vitest --run --passWithNoTests && forge test",
-    "test": "pnpm vitest-skip-types && forge test",
-    "test-with-types": "pnpm vitest-base && forge test",
-    "test:ci": "pnpm test-with-types",
-    "vitest-base": "vitest --run --passWithNoTests",
-    "vitest-skip-types": "pnpm vitest-base -- --skipTypes"
+    "test": "vitest typecheck --run && vitest --run --passWithNoTests && forge test",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@arktype/util": "0.0.25",
