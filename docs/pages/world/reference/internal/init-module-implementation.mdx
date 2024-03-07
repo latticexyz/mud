@@ -434,24 +434,22 @@ _Creates a mapping for a root World function without namespace or name prefix_
 ```solidity
 function registerRootFunctionSelector(
   ResourceId systemId,
-  string memory worldFunctionSignature,
-  bytes4 systemFunctionSelector
-) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
+  string memory systemFunctionSignature
+) public onlyDelegatecall returns (bytes4 systemFunctionSelector);
 ```
 
 **Parameters**
 
-| Name                     | Type         | Description                         |
-| ------------------------ | ------------ | ----------------------------------- |
-| `systemId`               | `ResourceId` | The system ID                       |
-| `worldFunctionSignature` | `string`     | The signature of the World function |
-| `systemFunctionSelector` | `bytes4`     | The selector of the system function |
+| Name                      | Type         | Description                         |
+| ------------------------- | ------------ | ----------------------------------- |
+| `systemId`                | `ResourceId` | The system ID                       |
+| `systemFunctionSignature` | `string`     | The signature of the World function |
 
 **Returns**
 
-| Name                    | Type     | Description                        |
-| ----------------------- | -------- | ---------------------------------- |
-| `worldFunctionSelector` | `bytes4` | The selector of the World function |
+| Name                     | Type     | Description                        |
+| ------------------------ | -------- | ---------------------------------- |
+| `systemFunctionSelector` | `bytes4` | The selector of the World function |
 
 #### registerDelegation
 
