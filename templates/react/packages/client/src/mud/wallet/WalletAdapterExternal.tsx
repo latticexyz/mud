@@ -7,7 +7,7 @@ import { useNetwork } from "../NetworkContext";
 import { ExternalConnector } from "./ExternalConnector";
 import { isDelegated, delegateToBurner } from "./delegation";
 import { createBurner } from "./createBurner";
-import { callFrom } from "./delegatedActions";
+import { callFrom } from "./callFrom";
 
 export function WalletAdapterExternal(props: { children: ReactNode }) {
   const { publicClient } = useNetwork();
