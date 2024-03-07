@@ -1,6 +1,5 @@
-import { DynamicPrimitiveType, StaticPrimitiveType } from "@latticexyz/schema-type";
 import { TableRecord } from "../zustand/common";
-import { Query } from "./common";
+import { Query, QueryResultSubject } from "./common";
 import { Table } from "@latticexyz/store";
 import { groupBy } from "@latticexyz/common/utils";
 import { encodeAbiParameters } from "viem";
@@ -15,16 +14,15 @@ type QueryParameters<table extends Table> = {
   readonly query: Query;
 };
 
-type QueryResult = {
-  readonly subjects: readonly (StaticPrimitiveType | DynamicPrimitiveType)[];
-};
-
 // TODO: make condition types smarter, so condition literal matches the field primitive type
 
 export function findSubjects<table extends Table>({
   records: initialRecords,
   query,
-}: QueryParameters<table>): QueryResult {
+}: QueryParameters<table>): readonly {
+  readonly id: string;
+  readonly subject: QueryResultSubject;
+}[] {
   // TODO: handle `query.except` subjects
   const fromTables = Object.fromEntries(query.from.map((subject) => [subject.tableId, subject.subject]));
 
@@ -37,21 +35,21 @@ export function findSubjects<table extends Table>({
       const fields = { ...record.key, ...record.value };
       const subject = subjectFields.map((field) => fields[field]);
       const subjectSchema = subjectFields.map((field) => schema[field]);
-      const encodedSubject = encodeAbiParameters(subjectSchema, subject);
+      const id = encodeAbiParameters(subjectSchema, subject);
       return {
         ...record,
         schema,
         fields,
         subjectSchema,
         subject,
-        encodedSubject,
+        id,
       };
     });
 
-  const matchedSubjects = Array.from(groupBy(records, (record) => record.encodedSubject).values())
+  const matchedSubjects = Array.from(groupBy(records, (record) => record.id).values())
     .map((records) => ({
+      id: records[0].id,
       subject: records[0].subject,
-      encodedSubject: records[0].encodedSubject,
       records,
     }))
     .filter(({ records }) => {
@@ -61,7 +59,5 @@ export function findSubjects<table extends Table>({
     })
     .filter((match) => (query.where ? query.where.every((condition) => matchesCondition(condition, match)) : true));
 
-  return {
-    subjects: matchedSubjects.map((match) => match.subject),
-  };
+  return matchedSubjects;
 }

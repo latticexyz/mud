@@ -1,9 +1,9 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createHydratedStore, tables } from "./test/createHydratedStore";
 import { subscribeToQuery } from "./subscribeToQuery";
 import { deployMockGame, worldAbi } from "../../test/mockGame";
 import { waitForTransactionReceipt, writeContract } from "viem/actions";
-import { keccak256, parseEther, stringToHex } from "viem";
+import { Address, keccak256, parseEther, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { testClient } from "../../test/common";
 import { observe } from "../../test/observe";
@@ -11,8 +11,12 @@ import { observe } from "../../test/observe";
 const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));
 
 describe("subscribeToQuery", async () => {
-  await testClient.setBalance({ address: henryAccount.address, value: parseEther("1") });
-  const worldAddress = await deployMockGame();
+  let worldAddress: Address;
+  beforeAll(async () => {
+    await testClient.setBalance({ address: henryAccount.address, value: parseEther("1") });
+    worldAddress = await deployMockGame();
+  });
+  // const worldAddress = await deployMockGame();
 
   beforeEach(async () => {
     const state = await testClient.dumpState();
@@ -30,22 +34,32 @@ describe("subscribeToQuery", async () => {
 
     expect(results.length).toBe(1);
     expect(results.lastValue).toMatchInlineSnapshot(`
-      {
-        "subjects": [
-          [
+      [
+        {
+          "subject": [
             "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
           ],
-          [
+          "type": "enter",
+        },
+        {
+          "subject": [
             "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
-          [
+          "type": "enter",
+        },
+        {
+          "subject": [
             "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
-          [
+          "type": "enter",
+        },
+        {
+          "subject": [
             "0xdBa86119a787422C593ceF119E40887f396024E2",
           ],
-        ],
-      }
+          "type": "enter",
+        },
+      ]
     `);
 
     await waitForTransactionReceipt(testClient, {
@@ -97,16 +111,20 @@ describe("subscribeToQuery", async () => {
 
     expect(results.length).toBe(1);
     expect(results.lastValue).toMatchInlineSnapshot(`
-      {
-        "subjects": [
-          [
+      [
+        {
+          "subject": [
             "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
-          [
+          "type": "enter",
+        },
+        {
+          "subject": [
             "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
-        ],
-      }
+          "type": "enter",
+        },
+      ]
     `);
 
     await waitForTransactionReceipt(testClient, {
@@ -180,19 +198,26 @@ describe("subscribeToQuery", async () => {
 
     expect(results.length).toBe(1);
     expect(results.lastValue).toMatchInlineSnapshot(`
-      {
-        "subjects": [
-          [
+      [
+        {
+          "subject": [
             "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
           ],
-          [
+          "type": "enter",
+        },
+        {
+          "subject": [
             "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
-          [
+          "type": "enter",
+        },
+        {
+          "subject": [
             "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
-        ],
-      }
+          "type": "enter",
+        },
+      ]
     `);
 
     await waitForTransactionReceipt(testClient, {
@@ -270,16 +295,20 @@ describe("subscribeToQuery", async () => {
 
     expect(results.length).toBe(1);
     expect(results.lastValue).toMatchInlineSnapshot(`
-      {
-        "subjects": [
-          [
+      [
+        {
+          "subject": [
             "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
           ],
-          [
+          "type": "enter",
+        },
+        {
+          "subject": [
             "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
-        ],
-      }
+          "type": "enter",
+        },
+      ]
     `);
   });
 
@@ -294,14 +323,15 @@ describe("subscribeToQuery", async () => {
 
     expect(results.length).toBe(1);
     expect(results.lastValue).toMatchInlineSnapshot(`
-      {
-        "subjects": [
-          [
+      [
+        {
+          "subject": [
             3,
             5,
           ],
-        ],
-      }
+          "type": "enter",
+        },
+      ]
     `);
   });
 });
