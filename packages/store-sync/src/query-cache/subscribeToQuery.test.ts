@@ -76,25 +76,14 @@ describe("subscribeToQuery", async () => {
 
     expect(results.length).toBe(2);
     expect(results.lastValue).toMatchInlineSnapshot(`
-      {
-        "subjects": [
-          [
-            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-          ],
-          [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-          ],
-          [
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-          ],
-          [
-            "0xdBa86119a787422C593ceF119E40887f396024E2",
-          ],
-          [
+      [
+        {
+          "subject": [
             "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
-        ],
-      }
+          "type": "enter",
+        },
+      ]
     `);
   });
 
@@ -141,19 +130,14 @@ describe("subscribeToQuery", async () => {
 
     expect(results.length).toBe(2);
     expect(results.lastValue).toMatchInlineSnapshot(`
-      {
-        "subjects": [
-          [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-          ],
-          [
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-          ],
-          [
+      [
+        {
+          "subject": [
             "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
-        ],
-      }
+          "type": "enter",
+        },
+      ]
     `);
 
     await waitForTransactionReceipt(testClient, {
@@ -170,16 +154,14 @@ describe("subscribeToQuery", async () => {
 
     expect(results.length).toBe(3);
     expect(results.lastValue).toMatchInlineSnapshot(`
-      {
-        "subjects": [
-          [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+      [
+        {
+          "subject": [
+            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
-          [
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-          ],
-        ],
-      }
+          "type": "exit",
+        },
+      ]
     `);
   });
 
@@ -234,22 +216,14 @@ describe("subscribeToQuery", async () => {
 
     expect(results.length).toBe(2);
     expect(results.lastValue).toMatchInlineSnapshot(`
-      {
-        "subjects": [
-          [
-            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-          ],
-          [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-          ],
-          [
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-          ],
-          [
+      [
+        {
+          "subject": [
             "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
-        ],
-      }
+          "type": "enter",
+        },
+      ]
     `);
 
     await waitForTransactionReceipt(testClient, {
@@ -266,19 +240,14 @@ describe("subscribeToQuery", async () => {
 
     expect(results.length).toBe(3);
     expect(results.lastValue).toMatchInlineSnapshot(`
-      {
-        "subjects": [
-          [
-            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+      [
+        {
+          "subject": [
+            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
-          [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-          ],
-          [
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-          ],
-        ],
-      }
+          "type": "exit",
+        },
+      ]
     `);
   });
 

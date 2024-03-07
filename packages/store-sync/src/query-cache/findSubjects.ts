@@ -19,10 +19,7 @@ type QueryParameters<table extends Table> = {
 export function findSubjects<table extends Table>({
   records: initialRecords,
   query,
-}: QueryParameters<table>): readonly {
-  readonly id: string;
-  readonly subject: QueryResultSubject;
-}[] {
+}: QueryParameters<table>): readonly QueryResultSubject[] {
   // TODO: handle `query.except` subjects
   const fromTables = Object.fromEntries(query.from.map((subject) => [subject.tableId, subject.subject]));
 
@@ -59,5 +56,5 @@ export function findSubjects<table extends Table>({
     })
     .filter((match) => (query.where ? query.where.every((condition) => matchesCondition(condition, match)) : true));
 
-  return matchedSubjects;
+  return matchedSubjects.map((match) => match.subject);
 }

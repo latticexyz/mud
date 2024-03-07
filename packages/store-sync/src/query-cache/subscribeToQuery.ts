@@ -2,7 +2,7 @@ import { ZustandStore } from "../zustand";
 import { AllTables, Query, QueryResultSubject } from "./common";
 import { ResolvedStoreConfig, StoreConfig, Tables } from "@latticexyz/store";
 import { findSubjects } from "./findSubjects";
-import { Observable } from "rxjs";
+import { Observable, distinctUntilChanged, filter, map, scan } from "rxjs";
 import isEqual from "fast-deep-equal";
 
 type QueryResultSubjectChange = {
@@ -12,48 +12,31 @@ type QueryResultSubjectChange = {
   readonly subject: QueryResultSubject;
 };
 
-type SubscribeToQueryResult<query extends Query> = readonly QueryResultSubjectChange[];
+type SubscribeToQueryResult<query extends Query> = Observable<readonly QueryResultSubjectChange[]>;
 
 export function subscribeToQuery<
   config extends ResolvedStoreConfig<StoreConfig>,
   extraTables extends Tables | undefined,
->(store: ZustandStore<AllTables<config, extraTables>>, query: Query): Observable<SubscribeToQueryResult<typeof query>> {
-  return new Observable<SubscribeToQueryResult<typeof query>>(function subscribe(subscriber) {
-    let currentSubjects = findSubjects({
-      records: Object.values(store.getState().records),
-      query,
-    });
-    let currentSubjectIds = new Set(currentSubjects.map((subject) => subject.id));
-    // TODO: should we check that set size is equal to subject array size?
-
+>(store: ZustandStore<AllTables<config, extraTables>>, query: Query): SubscribeToQueryResult<typeof query> {
+  const subjects$ = new Observable<readonly QueryResultSubject[]>(function subscribe(subscriber) {
     // return initial results immediately
-    subscriber.next(currentSubjects.map((subject) => ({ type: "enter", subject: subject.subject })));
+    subscriber.next(
+      findSubjects({
+        records: Object.values(store.getState().records),
+        query,
+      }),
+    );
 
     // then listen for changes to records and reevaluate
     const unsub = store.subscribe((state, prevState) => {
       if (state.records === prevState.records) return;
 
-      const nextSubjects = findSubjects({
-        records: Object.values(state.records),
-        query,
-      });
-      const nextSubjectIds = new Set(nextSubjects.map((subject) => subject.id));
-      // TODO: should we check that set size is equal to subject array size?
-
-      if (isEqual(currentSubjectIds, nextSubjectIds)) return;
-
-      const added = nextSubjects
-        .filter((subject) => !currentSubjectIds.has(subject.id))
-        .map((subject) => ({ type: "enter", subject: subject.subject }) as const);
-
-      const removed = currentSubjects
-        .filter((subject) => !nextSubjectIds.has(subject.id))
-        .map((subject) => ({ type: "exit", subject: subject.subject }) as const);
-
-      subscriber.next([...removed, ...added]);
-
-      currentSubjects = nextSubjects;
-      currentSubjectIds = nextSubjectIds;
+      subscriber.next(
+        findSubjects({
+          records: Object.values(state.records),
+          query,
+        }),
+      );
     });
 
     return () => {
@@ -61,4 +44,29 @@ export function subscribeToQuery<
       unsub();
     };
   });
+
+  const subjectChanges$ = subjects$.pipe(
+    scan<readonly QueryResultSubject[], { prev: readonly QueryResultSubject[]; curr: readonly QueryResultSubject[] }>(
+      (acc, curr) => ({ prev: acc.curr, curr }),
+      {
+        prev: [] as readonly QueryResultSubject[],
+        curr: [] as readonly QueryResultSubject[],
+      },
+    ),
+    map(({ prev, curr }) => {
+      const prevSet = new Set(prev.map((subject) => JSON.stringify(subject)));
+      const currSet = new Set(curr.map((subject) => JSON.stringify(subject)));
+
+      const enter = curr.filter((subject) => !prevSet.has(JSON.stringify(subject)));
+      const exit = prev.filter((subject) => !currSet.has(JSON.stringify(subject)));
+
+      return [
+        ...enter.map((subject) => ({ type: "enter" as const, subject })),
+        ...exit.map((subject) => ({ type: "exit" as const, subject })),
+      ];
+    }),
+    filter((changes) => changes.length > 0), // Filter out empty change sets
+  );
+
+  return subjectChanges$;
 }
