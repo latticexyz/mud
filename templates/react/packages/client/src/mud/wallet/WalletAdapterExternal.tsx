@@ -90,7 +90,7 @@ function Content(props: {
         worldFunctionToSystemFunction: async (worldFunctionSelector) => {
           const systemFunction = network.useStore
             .getState()
-            .getValue(network.tables.FunctionSelectors, { functionSelector: worldFunctionSelector })!;
+            .getValue(network.tables.FunctionSelectors, { worldFunctionSelector })!;
           return { systemId: systemFunction.systemId, systemFunctionSelector: systemFunction.systemFunctionSelector };
         },
       }),
