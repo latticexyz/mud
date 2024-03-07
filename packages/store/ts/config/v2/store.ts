@@ -1,4 +1,4 @@
-import { Dict, conform, evaluate } from "@arktype/util";
+import { Dict, evaluate } from "@arktype/util";
 import { SchemaInput } from "./schema";
 import { AbiType, AbiTypeScope, extendScope } from "./scope";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
