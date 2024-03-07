@@ -16,9 +16,7 @@ export type TableInput<
   primaryKey extends ValidKeys<schema, scope> = ValidKeys<schema, scope>,
 > = TableFullInput<schema, scope, primaryKey> | TableShorthandInput<scope>;
 
-export type TableShorthandInput<scope extends AbiTypeScope = AbiTypeScope> =
-  | SchemaInput<scope>
-  | keyof scope["validTypes"];
+export type TableShorthandInput<scope extends AbiTypeScope = AbiTypeScope> = SchemaInput<scope> | keyof scope["types"];
 
 export type TableFullInput<
   schema extends SchemaInput<scope> = SchemaInput,
@@ -36,10 +34,10 @@ export type validateTableShorthand<input, scope extends AbiTypeScope = AbiTypeSc
       "key" extends getStaticAbiTypeKeys<input, scope>
       ? input
       : NoStaticKeyFieldError
-    : input extends keyof scope["validTypes"]
+    : input extends keyof scope["types"]
       ? input
       : input extends string
-        ? keyof scope["validTypes"]
+        ? keyof scope["types"]
         : SchemaInput<scope>;
 
 export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> =
@@ -48,7 +46,7 @@ export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeSco
       ? // If the shorthand includes a static field called `key`, use it as key
         evaluate<TableFullInput<input, scope, ["key"]>>
       : never
-    : input extends keyof scope["validTypes"]
+    : input extends keyof scope["types"]
       ? evaluate<
           TableFullInput<
             { key: "bytes32"; value: input },
