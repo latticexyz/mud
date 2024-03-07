@@ -26,30 +26,45 @@ export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiType
   [key in keyof input]: resolveTableConfig<input[key], scope>;
 }>;
 
-type scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTypeScope> = UserTypes extends userTypes
+export type scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTypeScope> = UserTypes extends userTypes
   ? scope
   : userTypes extends UserTypes
     ? extendScope<scope, userTypes>
     : scope;
 
-type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = Enums extends enums
+export type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = Enums extends enums
   ? scope
   : enums extends Enums
     ? extendScope<scope, { [key in keyof enums]: "uint8" }>
     : scope;
 
+// TODO: how would I make some keys required here?
+// I tried with stuff like `& StoreConfigInput` but any `&` here seems
+// to make us lose the fully narrow type inference
+// export type validateStoreConfig<input> = {
+//   [key in keyof input]: key extends "tables"
+//     ? validateStoreTablesConfig<
+//         input[key],
+//         scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
+//       >
+//     : key extends "userTypes"
+//       ? UserTypes
+//       : key extends "enums"
+//         ? narrow<input[key]>
+//         : input[key];
+// };
+
+// Found a way here, but still wonder if/how I could reuse a `& StoreConfigInput` here
 export type validateStoreConfig<input> = {
-  [key in keyof input]: key extends "tables"
+  tables?: "tables" extends keyof input
     ? validateStoreTablesConfig<
-        input[key],
+        input["tables"],
         scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
       >
-    : key extends "userTypes"
-      ? UserTypes
-      : key extends "enums"
-        ? narrow<input[key]>
-        : input[key];
-};
+    : StoreConfigInput["tables"];
+  userTypes?: UserTypes;
+  enums?: "enums" extends keyof input ? narrow<input["enums"]> : Enums;
+} & { [key in keyof input]: input[key] }; // TODO: without this my types are resolving to `undefined` - why
 
 export type resolveStoreConfig<input> = evaluate<{
   tables: "tables" extends keyof input

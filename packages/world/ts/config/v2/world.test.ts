@@ -11,8 +11,9 @@ describe("resolveWorldConfig", () => {
           tables: {
             ExampleTable: {
               schema: {
-                key: "uint256",
+                key: "address",
                 value: "uint256",
+                dynamic: "string",
               },
               primaryKey: ["key"],
             },
@@ -20,6 +21,34 @@ describe("resolveWorldConfig", () => {
         },
       },
     });
+    config.tables.ExampleNamespace__ExampleTable;
+
+    attest<{
+      tables: {
+        ExampleNamespace__ExampleTable: {
+          schema: {
+            key: "address";
+            value: "uint256";
+            dynamic: "string";
+          };
+          primaryKey: ["key"];
+        };
+      };
+      namespaces: {
+        ExampleNamespace: {
+          tables: {
+            ExampleTable: {
+              schema: {
+                key: "address";
+                value: "uint256";
+                dynamic: "string";
+              };
+              primaryKey: ["key"];
+            };
+          };
+        };
+      };
+    }>(config);
   });
 
   describe("should have the same output as `resolveWorldConfig` for store config inputs", () => {
