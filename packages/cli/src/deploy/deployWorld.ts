@@ -34,5 +34,22 @@ export async function deployWorld(
   const deploy = logsToWorldDeploy(receipt.logs.map((log) => log as Log<bigint, number, false>));
   debug("deployed world to", deploy.address, "at block", deploy.deployBlock);
 
-  return { ...deploy, stateBlock: deploy.deployBlock };
+  debug("registering Module functions");
+
+  const registerTx = await writeContract(client, {
+    chain: client.chain ?? null,
+    address: worldFactory,
+    abi: WorldFactoryAbi,
+    functionName: "registerModuleFunctions",
+    args: [deploy.address],
+  });
+
+  debug("waiting for register module function");
+  const registerReceipt = await waitForTransactionReceipt(client, { hash: registerTx });
+  if (registerReceipt.status !== "success") {
+    console.error("register function failed", registerReceipt);
+    throw new Error("register function failed");
+  }
+
+  return { ...deploy, stateBlock: registerReceipt.blockNumber };
 }

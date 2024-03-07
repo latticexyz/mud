@@ -13,6 +13,7 @@ import { IERC165 } from "./IERC165.sol";
 interface IModule is IERC165 {
   /// @dev Errors to represent non-support of specific installation types.
   error Module_RootInstallNotSupported();
+  error Module_RootRegisterNotSupported();
   error Module_NonRootInstallNotSupported();
   error Module_AlreadyInstalled();
   error Module_MissingDependency(address dependency);
@@ -24,6 +25,12 @@ interface IModule is IERC165 {
    * @param encodedArgs The ABI encoded arguments that may be needed during the installation process.
    */
   function installRoot(bytes memory encodedArgs) external;
+  /**
+   * @notice Register function selectors.
+   * @dev This function breaks down the tasks in the installRoot function. Can work well with zkEVM..
+   * @param encodedArgs The ABI encoded arguments that may be needed during the installation process.
+   */
+  function registerRoot(bytes memory encodedArgs) external;
 
   /**
    * @notice Installs the module.

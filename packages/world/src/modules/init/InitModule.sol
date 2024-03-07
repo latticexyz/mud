@@ -60,11 +60,20 @@ contract InitModule is Module {
 
   /**
    * @notice Root installation of the module.
-   * @dev Registers core tables, systems, and function selectors in the World.
+   * @dev Registers core tables and systems in the World.
    */
   function installRoot(bytes memory) public override {
     _registerTables();
     _registerSystems();
+    //_registerFunctionSelectors();
+  }
+
+  /**
+   * @notice Root register module function selectors.
+   * @dev Registers function selectors in the World.
+   * This function breaks down the tasks in the installRoot function. Can work well with zkEVM.
+   */
+  function registerRoot(bytes memory) public override {
     _registerFunctionSelectors();
   }
 

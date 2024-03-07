@@ -85,7 +85,7 @@ in your contracts directory to use the default anvil private key.`,
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
   const client = createWalletClient({
-    transport: http(rpc),
+    transport: http(rpc, { timeout: 300000 }),
     account: privateKeyToAccount(privateKey),
   });
   console.log("Deploying from", client.account.address);

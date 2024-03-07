@@ -70,4 +70,7 @@ contract UniqueEntityModule is Module {
     // Register system's functions
     world.registerFunctionSelector(SYSTEM_ID, "getUniqueEntity()");
   }
+  function registerRoot(bytes memory) public pure {
+    revert Module_RootRegisterNotSupported();
+  }
 }

@@ -61,4 +61,7 @@ contract PuppetModule is Module {
     world.registerSystem(PUPPET_FACTORY, puppetFactorySystem, true);
     world.registerSystem(PUPPET_DELEGATION, puppetDelegationControl, true);
   }
+  function registerRoot(bytes memory) public pure {
+    revert Module_RootRegisterNotSupported();
+  }
 }

@@ -86,6 +86,21 @@ contract World is StoreData, IWorldKernel {
   }
 
   /**
+   * @notice Register module function selectors.
+   * @dev This function breaks down the tasks in the installRoot function. Can work well with zkEVM.
+   * Only the initial creator can initialize. This can be done only once.
+   */
+
+  function registerModuleFunction() public prohibitDirectCallback {
+    if (InitModuleAddress.get() == address(0)) {
+      revert World_NotAlreadyInitialized();
+    }
+
+    IModule initModule = IModule(InitModuleAddress.get());
+    _registerFunctionModule(initModule, new bytes(0));
+  }
+
+  /**
    * @notice Installs a given root module in the World.
    * @param module The module to be installed.
    * @param encodedArgs The ABI encoded arguments for module installation.
@@ -110,6 +125,26 @@ contract World is StoreData, IWorldKernel {
       msgValue: 0,
       target: address(module),
       callData: abi.encodeCall(IModule.installRoot, (encodedArgs))
+    });
+
+    // Register the module in the InstalledModules table
+    InstalledModules._set(address(module), keccak256(encodedArgs), true);
+  }
+
+  /**
+   * @dev Internal function to register module function selectors.
+   * @param module The module to be installed.
+   * @param encodedArgs The ABI encoded arguments for module installation.
+   */
+  function _registerFunctionModule(IModule module, bytes memory encodedArgs) internal {
+    // Require the provided address to implement the IModule interface
+    requireInterface(address(module), type(IModule).interfaceId);
+
+    WorldContextProviderLib.delegatecallWithContextOrRevert({
+      msgSender: msg.sender,
+      msgValue: 0,
+      target: address(module),
+      callData: abi.encodeCall(IModule.registerRoot, (encodedArgs))
     });
 
     // Register the module in the InstalledModules table

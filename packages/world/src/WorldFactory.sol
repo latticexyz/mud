@@ -38,8 +38,19 @@ contract WorldFactory is IWorldFactory {
 
     // Initialize the World and transfer ownership to the caller
     world.initialize(initModule);
-    world.transferOwnership(ROOT_NAMESPACE_ID, msg.sender);
 
     emit WorldDeployed(worldAddress, _salt);
+  }
+
+  /**
+   * @notice register module function selectors
+   * @dev This function breaks down the tasks in the installRoot function. Can work well with zkEVM.
+   * @param worldAddress The address of the newly deployed World contract
+   */
+  function registerModuleFunctions(address worldAddress) public {
+    IBaseWorld world = IBaseWorld(worldAddress);
+    // Initialize the World and transfer ownership to the caller
+    world.registerModuleFunction();
+    world.transferOwnership(ROOT_NAMESPACE_ID, msg.sender);
   }
 }

@@ -70,6 +70,9 @@ contract ERC721Module is Module {
   function installRoot(bytes memory) public pure {
     revert Module_RootInstallNotSupported();
   }
+  function registerRoot(bytes memory) public pure {
+    revert Module_RootRegisterNotSupported();
+  }
 }
 
 contract ERC721ModuleRegistrationLibrary {

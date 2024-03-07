@@ -107,4 +107,7 @@ contract KeysInTableModule is Module {
   function install(bytes memory) public pure {
     revert Module_NonRootInstallNotSupported();
   }
+  function registerRoot(bytes memory) public pure {
+    revert Module_RootRegisterNotSupported();
+  }
 }

@@ -14,6 +14,10 @@ interface IWorldErrors {
    * @notice Raised when trying to initialize an already initialized World.
    */
   error World_AlreadyInitialized();
+  /**
+   * @notice Raised when trying to register module an already initialized World.
+   */
+  error World_NotAlreadyInitialized();
 
   /**
    * @notice Raised when trying to register a resource that already exists.

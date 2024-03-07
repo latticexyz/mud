@@ -18,6 +18,12 @@ interface IWorldModuleInstallation {
    * @param encodedArgs The ABI encoded arguments for the module installation.
    */
   function installRootModule(IModule module, bytes memory encodedArgs) external;
+
+  /**
+   * @notice Register module function selectors.
+   * @dev Requires the caller to own the root namespace. The module is delegatecalled and installed in the root namespace.
+   */
+  function registerModuleFunction() external;
 }
 
 /**
