@@ -214,7 +214,8 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     bytes4 systemFunctionSelector = bytes4(keccak256(bytes(systemFunctionSignature)));
     FunctionSelectors._set(worldFunctionSelector, systemId, systemFunctionSelector);
 
-    // Register the function signature for offchain use
+    // Register the function signatures for offchain use
+    FunctionSignatures._set(systemFunctionSelector, systemFunctionSignature);
     FunctionSignatures._set(worldFunctionSelector, string(worldFunctionSignature));
   }
 
