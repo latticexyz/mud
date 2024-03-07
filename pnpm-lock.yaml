@@ -250,7 +250,7 @@ importers:
         version: 17.0.23
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
-        version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
+        version: git@github.com+dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
       forge-std:
         specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
         version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
@@ -522,27 +522,7 @@ importers:
 
   packages/noise: {}
 
-  packages/phaserx:
-    dependencies:
-      '@latticexyz/utils':
-        specifier: workspace:*
-        version: link:../utils
-      '@use-gesture/vanilla':
-        specifier: 10.2.9
-        version: 10.2.9
-      mobx:
-        specifier: ^6.7.0
-        version: 6.9.0
-      phaser:
-        specifier: 3.60.0-beta.14
-        version: 3.60.0-beta.14
-      rxjs:
-        specifier: 7.5.5
-        version: 7.5.5
-    devDependencies:
-      tsup:
-        specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
+  packages/phaserx: {}
 
   packages/protocol-parser:
     dependencies:
@@ -3726,16 +3706,6 @@ packages:
       - supports-color
     dev: true
 
-  /@use-gesture/core@10.2.9:
-    resolution: {integrity: sha512-MsPUCWZ6BSir8XqSrfQCyrFuBz405YI2D0hfZ7TXX/hhF0kekN+noPhHjg7m85vMyCYf92fjt3J5AbjoGV4eMw==}
-    dev: false
-
-  /@use-gesture/vanilla@10.2.9:
-    resolution: {integrity: sha512-DVH5d0Owaw1qsviNPt6o632q8YqSXM4GMPkeMlPevzpeXwRvPPFh3ngKX/zTRER9LXKvCDOMSL7WFY1l4J+a6Q==}
-    dependencies:
-      '@use-gesture/core': 10.2.9
-    dev: false
-
   /@viem/anvil@0.0.7(debug@4.3.4):
     resolution: {integrity: sha512-F+3ljCT1bEt8T4Fzm9gWpIgO3Dc7bzG1TtUtkStkJFMuummqZ8kvYc3UFMo5j3F51fSWZZvEkjs3+i7qf0AOqQ==}
     dependencies:
@@ -5858,6 +5828,7 @@ packages:
 
   /eventemitter3@4.0.7:
     resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
+    dev: true
 
   /eventemitter3@5.0.1:
     resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
@@ -8875,12 +8846,6 @@ packages:
       through2: 2.0.5
     dev: false
 
-  /phaser@3.60.0-beta.14:
-    resolution: {integrity: sha512-HFEtibIQCqQyirSnUslWjtdKCadxOjnOBlf4g5eDlKFzqBUbD991/X0OPUT/dIrPF7Tx6wmg0iORCXqZCF0f5Q==}
-    dependencies:
-      eventemitter3: 4.0.7
-    dev: false
-
   /picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
     dev: true
@@ -11449,6 +11414,12 @@ packages:
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
+
+  git@github.com+dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0:
+    resolution: {commit: e282159d5170298eb2455a6c05280ab5a73a4ef0, repo: git@github.com:dapphub/ds-test.git, type: git}
+    name: ds-test
+    version: 1.0.0
+    dev: true
 
   github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0:
     resolution: {tarball: https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0}

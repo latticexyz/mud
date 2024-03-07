@@ -4,6 +4,7 @@ pragma solidity >=0.8.24;
 import { IWorldErrors } from "./IWorldErrors.sol";
 import { IModule } from "./IModule.sol";
 import { ResourceId } from "./WorldResourceId.sol";
+import { IModuleErrors } from "./IModuleErrors.sol";
 import { IWorldEvents } from "./IWorldEvents.sol";
 
 /**
@@ -59,8 +60,10 @@ interface IWorldCall {
  * @notice The IWorldKernel interface includes all methods that are part of the World contract's
  * internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
  * registered functions selectors from the `InitModule`.
+ * @dev The IWorldKernel interface inherits IModuleErrors because the world can be delegatecalled with module code,
+ * so it's ABI should include these errors.
  */
-interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors, IWorldEvents {
+interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors, IWorldEvents, IModuleErrors {
   /**
    * @notice Retrieve the version of the World.
    * @return The version identifier of the World.
