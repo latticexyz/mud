@@ -20,8 +20,8 @@ export function createStorageAdapter<tables extends Tables>({
   return async function zustandStorageAdapter({ blockNumber, logs }) {
     // TODO: clean this up so that we do one store write per block
 
-    // record id => is deleted
-    const touchedIds: Map<string, boolean> = new Map();
+    const updatedIds: string[] = [];
+    const deletedIds: string[] = [];
 
     const rawRecords = { ...store.getState().rawRecords };
 
@@ -54,7 +54,7 @@ export function createStorageAdapter<tables extends Tables>({
           encodedLengths: log.args.encodedLengths,
           dynamicData: log.args.dynamicData,
         };
-        touchedIds.set(id, false);
+        updatedIds.push(id);
       } else if (log.eventName === "Store_SpliceStaticData") {
         debug("splicing static data", {
           namespace: table.namespace,
@@ -75,7 +75,7 @@ export function createStorageAdapter<tables extends Tables>({
           ...previousRecord,
           staticData,
         };
-        touchedIds.set(id, false);
+        updatedIds.push(id);
       } else if (log.eventName === "Store_SpliceDynamicData") {
         debug("splicing dynamic data", {
           namespace: table.namespace,
@@ -98,7 +98,7 @@ export function createStorageAdapter<tables extends Tables>({
           encodedLengths,
           dynamicData,
         };
-        touchedIds.set(id, false);
+        updatedIds.push(id);
       } else if (log.eventName === "Store_DeleteRecord") {
         debug("deleting record", {
           namespace: table.namespace,
@@ -107,18 +107,14 @@ export function createStorageAdapter<tables extends Tables>({
           log,
         });
         delete rawRecords[id];
-        touchedIds.set(id, true);
+        deletedIds.push(id);
       }
     }
 
-    if (!touchedIds.size) return;
+    if (!updatedIds.length && !deletedIds.length) return;
 
-    const updatedIds = Array.from(touchedIds.keys()).filter((id) => touchedIds.get(id) === false);
-    const deletedIds = Array.from(touchedIds.keys()).filter((id) => touchedIds.get(id) === true);
-
-    const previousRecords = store.getState().records;
-    const records: typeof previousRecords = {
-      ...Object.fromEntries(Object.entries(previousRecords).filter(([id]) => !deletedIds.includes(id))),
+    const records = {
+      ...Object.fromEntries(Object.entries(store.getState().records).filter(([id]) => !deletedIds.includes(id))),
       ...Object.fromEntries(
         updatedIds
           .map((id) => {
@@ -148,11 +144,6 @@ export function createStorageAdapter<tables extends Tables>({
       ),
     };
 
-    const lastUpdatedRecords = Array.from(touchedIds.keys()).map((id) => ({
-      previousRecord: previousRecords[id],
-      nextRecord: records[id],
-    }));
-
-    store.setState({ rawRecords, records, lastUpdatedRecords });
+    store.setState({ rawRecords, records });
   };
 }

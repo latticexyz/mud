@@ -33,11 +33,6 @@ export type ZustandState<tables extends Tables> = {
   readonly records: {
     readonly [id: string]: TableRecord<tables[keyof tables]>;
   };
-  /** Records that most recently updated. We subscribe to this for streaming updates. */
-  readonly lastUpdatedRecords: readonly {
-    readonly previousRecord: TableRecord<tables[keyof tables]>;
-    readonly nextRecord: TableRecord<tables[keyof tables]>;
-  }[];
   readonly getRecords: <table extends Table>(table: table) => TableRecords<table>;
   readonly getRecord: <table extends Table>(
     table: table,
@@ -67,7 +62,6 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
     tables: Object.fromEntries(Object.entries(opts.tables).map(([, table]) => [table.tableId, table])),
     rawRecords: {},
     records: {},
-    lastUpdatedRecords: [],
     getRecords: <table extends Table>(table: table): TableRecords<table> => {
       const records = get().records;
       return Object.fromEntries(
