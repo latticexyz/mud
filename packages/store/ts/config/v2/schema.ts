@@ -18,6 +18,16 @@ export function resolveSchema<schema extends SchemaInput<scope>, scope extends A
   schema: schema,
   scope?: scope,
 ): resolveSchema<schema, scope> {
-  // TODO: runtime implementation
-  return {} as never;
+  // TODO: runtime validation
+  const resolvedScope = scope ?? AbiTypeScope;
+  return Object.fromEntries(
+    Object.entries(schema).map(([key, type]) => [
+      key,
+      {
+        // TODO: any way to do this without type casting?
+        type: (resolvedScope.types as scope["types"])[type],
+        internalType: type,
+      },
+    ]),
+  ) as resolveSchema<schema, scope>;
 }
