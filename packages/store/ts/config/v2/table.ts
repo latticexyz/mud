@@ -1,8 +1,8 @@
 import { ErrorMessage, conform, evaluate } from "@arktype/util";
-import { SchemaInput, resolveSchema } from "./schema";
-import { get } from "./generics";
-import { AbiTypeScope, getStaticAbiTypeKeys, isScopeType } from "./scope";
 import { isStaticAbiType } from "@latticexyz/schema-type";
+import { get } from "./generics";
+import { SchemaInput, isSchemaInput, resolveSchema } from "./schema";
+import { AbiTypeScope, getStaticAbiTypeKeys, isScopeType } from "./scope";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.">;
@@ -11,6 +11,15 @@ export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeSc
   getStaticAbiTypeKeys<schema, scope>,
   ...getStaticAbiTypeKeys<schema, scope>[],
 ];
+
+function validKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope = AbiTypeScope>(
+  schema: schema,
+  scope: scope = AbiTypeScope as scope,
+): ValidKeys<schema, scope> {
+  return Object.entries(schema)
+    .filter(([, abiType]) => isStaticAbiType(scope.types[abiType]))
+    .map(([key]) => key) as ValidKeys<schema, scope>;
+}
 
 export type TableInput<
   schema extends SchemaInput<scope> = SchemaInput,
@@ -42,6 +51,30 @@ export type validateTableShorthand<input, scope extends AbiTypeScope = AbiTypeSc
         ? keyof scope["types"]
         : SchemaInput<scope>;
 
+export function validateTableShorthand<scope extends AbiTypeScope = AbiTypeScope>(
+  input: unknown,
+  scope: scope = AbiTypeScope as scope,
+): asserts input is TableShorthandInput<scope> {
+  if (typeof input === "string") {
+    if (isScopeType(input, scope)) {
+      return;
+    }
+    throw new Error(`Invalid ABI type. \`${input}\` not found in scope.`);
+  }
+  if (typeof input === "object" && input !== null) {
+    if (isSchemaInput(input, scope)) {
+      // TODO: resolve this error
+      // @ts-expect-error Argument of type 'string' is not assignable to parameter of type 'getStaticAbiTypeKeys<SchemaInput<scope>, scope>'.
+      if (validKeys(input, scope).includes("key")) {
+        return;
+      }
+      throw new Error(`Invalid schema. Expected a \`key\` field with a static ABI type.`);
+    }
+    throw new Error(`Invalid schema. Are you using invalid types or missing types in your scope?`);
+  }
+  throw new Error(`Invalid table shorthand.`);
+}
+
 export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> = input extends keyof scope["types"]
   ? evaluate<
       TableFullInput<
@@ -59,41 +92,24 @@ export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeSco
 
 export function resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope>(
   input: validateTableShorthand<input, scope>,
-  scope?: scope,
+  scope: scope = AbiTypeScope as scope,
 ): resolveTableShorthand<input, scope> {
-  // TODO: ideally we could default to AbiTypeScope in the arg definition but TS doesn't like it
-  const resolvedScope = scope ?? AbiTypeScope;
+  validateTableShorthand(input, scope);
 
-  if (typeof input === "string") {
-    if (isScopeType(input, resolvedScope)) {
-      return {
-        schema: {
-          key: "bytes32",
-          value: resolvedScope.types[input],
-        },
-        primaryKey: ["key"],
-        // TODO: fix this so we don't have to cast
-      } as resolveTableShorthand<input, scope>;
-    }
-    // TODO: custom error
-    throw new Error(`Invalid schema type, \`${input}\` not found in scope.`);
+  if (isSchemaInput(input, scope)) {
+    return {
+      schema: input,
+      primaryKey: ["key"],
+    } as resolveTableShorthand<input, scope>;
+  } else {
+    return {
+      schema: {
+        key: "bytes32",
+        value: (scope.types as scope["types"])[input],
+      },
+      primaryKey: ["key"],
+    } as resolveTableShorthand<input, scope>;
   }
-
-  // TODO: validate ABI types used in input schema
-
-  if (typeof input["key"] === "string") {
-    if (isStaticAbiType(resolvedScope.types[input["key"]])) {
-      return {
-        schema: input,
-        primaryKey: ["key"],
-      };
-    }
-    // TODO: custom error
-    throw new Error(`Invalid schema type for \`key\`, \`${input["key"]}\` not found in scope.`);
-  }
-
-  // TODO: custom error
-  throw new Error(`Invalid table shorthand, did not find \`key\` in schema input \`${JSON.stringify(input)}\`.`);
 }
 
 export type validateKeys<validKeys extends PropertyKey, keys> = {
