@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { IERC165 } from "./IERC165.sol";
-
 /**
  * @title IModuleErrors
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
