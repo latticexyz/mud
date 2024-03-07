@@ -1,4 +1,4 @@
-import { Dict, evaluate, narrow } from "@arktype/util";
+import { Dict, EmptyObject, evaluate, narrow } from "@arktype/util";
 import { SchemaInput } from "./schema";
 import { AbiType, AbiTypeScope, extendScope } from "./scope";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
@@ -8,7 +8,7 @@ export type UserTypes = Dict<string, AbiType>;
 export type Enums = Dict<string, string[]>;
 
 export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
-  namespace: string;
+  namespace?: string;
   tables: StoreTablesConfigInput<scopeWithUserTypes<userTypes>>;
   userTypes?: userTypes;
   enums?: enums;
@@ -48,16 +48,21 @@ export type validateStoreConfig<input> = {
       ? UserTypes
       : key extends "enums"
         ? narrow<input[key]>
-        : input[key];
+        : key extends "namespace"
+          ? input[key]
+          : never;
 };
 
 export type resolveStoreConfig<input> = evaluate<{
-  [key in keyof input]: key extends "tables"
+  tables: "tables" extends keyof input
     ? resolveStoreTablesConfig<
-        input[key],
+        input["tables"],
         scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
       >
-    : input[key];
+    : EmptyObject;
+  userTypes: "userTypes" extends keyof input ? input["userTypes"] : EmptyObject;
+  enums: "enums" extends keyof input ? input["enums"] : EmptyObject;
+  namespace: "namespace" extends keyof input ? input["namespace"] : "";
 }>;
 
 export function resolveStoreConfig<input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {

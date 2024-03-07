@@ -1,6 +1,7 @@
 import { describe, it } from "vitest";
 import { resolveStoreConfig } from "./store";
 import { attest } from "@arktype/attest";
+import { EmptyObject } from "@arktype/util";
 
 describe("resolveStoreConfig", () => {
   it("should accept a shorthand store config as input and expand it", () => {
@@ -33,6 +34,9 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["key"];
         };
       };
+      userTypes: EmptyObject;
+      enums: EmptyObject;
+      namespace: "";
     }>(config);
   });
 
@@ -67,6 +71,8 @@ describe("resolveStoreConfig", () => {
         };
       };
       userTypes: { CustomType: "address" };
+      enums: EmptyObject;
+      namespace: "";
     }>(config);
   });
 
@@ -108,6 +114,9 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["key"];
         };
       };
+      userTypes: EmptyObject;
+      enums: EmptyObject;
+      namespace: "";
     }>(config);
   });
 
@@ -149,6 +158,9 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["key"];
         };
       };
+      userTypes: EmptyObject;
+      enums: EmptyObject;
+      namespace: "";
     }>(config);
   });
 
@@ -228,6 +240,9 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["age"];
         };
       };
+      userTypes: EmptyObject;
+      enums: EmptyObject;
+      namespace: "";
     }>(config);
   });
 
@@ -278,6 +293,8 @@ describe("resolveStoreConfig", () => {
         };
       };
       userTypes: { static: "address"; dynamic: "string" };
+      enums: EmptyObject;
+      namespace: "";
     }>(config);
   });
 
@@ -326,6 +343,9 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["age", "key"];
         };
       };
+      userTypes: EmptyObject;
+      enums: EmptyObject;
+      namespace: "";
     }>(config);
   });
 
@@ -411,6 +431,9 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["secondKey", "secondAge"];
         };
       };
+      userTypes: EmptyObject;
+      enums: EmptyObject;
+      namespace: "";
     }>(config);
   });
 
@@ -498,6 +521,8 @@ describe("resolveStoreConfig", () => {
         };
       };
       userTypes: { Static: "address"; Dynamic: "string" };
+      enums: EmptyObject;
+      namespace: "";
     }>(config);
   });
 
@@ -603,6 +628,12 @@ describe("resolveStoreConfig", () => {
       enums: {
         ValidNames: ["first", "second"];
       };
+      namespace: "";
     }>(config);
+  });
+
+  it("should use the root namespace as default namespace", () => {
+    const config = resolveStoreConfig({ tables: { Example: {} } });
+    attest<"">(config.namespace);
   });
 });

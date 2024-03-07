@@ -476,4 +476,9 @@ describe("resolveTableConfig", () => {
       ),
     ).type.errors(`Type '"NotAKey"' is not assignable to type '"key" | "age"'`);
   });
+
+  it.todo("should throw if an empty schema is provided", () => {
+    // @ts-expect-error Schema must include at least one key
+    attest(resolveTableConfig({})).type.errors(`Schema must include at least one key`);
+  });
 });
