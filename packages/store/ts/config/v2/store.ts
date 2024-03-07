@@ -55,16 +55,19 @@ export type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = E
 // };
 
 // Found a way here, but still wonder if/how I could reuse a `& StoreConfigInput` here
-export type validateStoreConfig<input> = {
-  tables?: "tables" extends keyof input
-    ? validateStoreTablesConfig<
-        input["tables"],
-        scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-      >
-    : StoreConfigInput["tables"];
-  userTypes?: UserTypes;
-  enums?: "enums" extends keyof input ? narrow<input["enums"]> : Enums;
-} & { [key in keyof input]: input[key] }; // TODO: without this my types are resolving to `undefined` - why
+export type validateStoreConfig<input> = conform<
+  input,
+  {
+    tables?: "tables" extends keyof input
+      ? validateStoreTablesConfig<
+          input["tables"],
+          scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
+        >
+      : StoreConfigInput["tables"];
+    userTypes?: UserTypes;
+    enums?: "enums" extends keyof input ? narrow<input["enums"]> : Enums;
+  }
+>;
 
 export type resolveStoreConfig<input> = evaluate<{
   tables: "tables" extends keyof input
