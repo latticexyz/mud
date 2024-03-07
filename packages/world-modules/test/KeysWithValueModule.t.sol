@@ -16,6 +16,7 @@ import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncod
 
 import { World } from "@latticexyz/world/src/World.sol";
 import { IModule } from "@latticexyz/world/src/IModule.sol";
+import { IModuleErrors } from "@latticexyz/world/src/IModuleErrors.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance, NAME_BITS, TYPE_BITS } from "@latticexyz/world/src/WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
@@ -115,7 +116,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     );
 
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
-    vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
+    vm.expectRevert(IModuleErrors.Module_AlreadyInstalled.selector);
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
   }
 
