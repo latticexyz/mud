@@ -22,6 +22,10 @@ export const deployOptions = {
   profile: { type: "string", desc: "The foundry profile to use" },
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
   rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
+  rpcBatch: {
+    type: "boolean",
+    desc: "Enable batch processing of RPC requests in viem client (defaults to batch size of 100 and wait of 1s)",
+  },
   deployerAddress: {
     type: "string",
     desc: "Deploy using an existing deterministic deployer (https://github.com/Arachnid/deterministic-deployment-proxy)",
@@ -85,7 +89,15 @@ in your contracts directory to use the default anvil private key.`,
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
   const client = createWalletClient({
-    transport: http(rpc, { timeout: 300000 }),
+    transport: http(rpc, {
+      timeout: 300000,
+      batch: opts.rpcBatch
+        ? {
+            batchSize: 100,
+            wait: 1000,
+          }
+        : undefined,
+    }),
     account: privateKeyToAccount(privateKey),
   });
   console.log("Deploying from", client.account.address);
