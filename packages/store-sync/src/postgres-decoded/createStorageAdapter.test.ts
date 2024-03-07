@@ -27,7 +27,8 @@ const blocks = groupLogsByBlockNumber(
 
 describe("createStorageAdapter", async () => {
   const db = drizzle(postgres(process.env.DATABASE_URL!), {
-    logger: new DefaultLogger(),
+    // TODO: make a debug-based logger so this can be toggled by env var
+    // logger: new DefaultLogger(),
   });
 
   const publicClient = createPublicClient({

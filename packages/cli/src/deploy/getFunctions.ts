@@ -39,7 +39,7 @@ export async function getFunctions({
         client,
         worldDeploy,
         table: worldTables.world_FunctionSelectors,
-        key: { functionSelector: selector },
+        key: { worldFunctionSelector: selector },
       });
       const { namespace, name } = hexToResource(systemId);
       // TODO: find away around undoing contract logic (https://github.com/latticexyz/mud/issues/1708)

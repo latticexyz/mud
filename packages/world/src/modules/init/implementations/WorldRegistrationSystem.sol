@@ -202,8 +202,8 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
 
     // Compute global function selector
     string memory namespaceString = WorldResourceIdLib.toTrimmedString(systemId.getNamespace());
-    bytes memory worldFunctionSignature = abi.encodePacked(namespaceString, "__", systemFunctionSignature);
-    worldFunctionSelector = bytes4(keccak256(worldFunctionSignature));
+    string memory worldFunctionSignature = string.concat(namespaceString, "__", systemFunctionSignature);
+    worldFunctionSelector = bytes4(keccak256(bytes(worldFunctionSignature)));
 
     // Require the function selector to be globally unique
     ResourceId existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
@@ -214,8 +214,9 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     bytes4 systemFunctionSelector = bytes4(keccak256(bytes(systemFunctionSignature)));
     FunctionSelectors._set(worldFunctionSelector, systemId, systemFunctionSelector);
 
-    // Register the function signature for offchain use
-    FunctionSignatures._set(worldFunctionSelector, string(worldFunctionSignature));
+    // Register the function signatures for offchain use
+    FunctionSignatures._set(systemFunctionSelector, systemFunctionSignature);
+    FunctionSignatures._set(worldFunctionSelector, worldFunctionSignature);
   }
 
   /**
