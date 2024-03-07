@@ -727,8 +727,8 @@ importers:
   packages/store:
     dependencies:
       '@arktype/util':
-        specifier: 0.0.23
-        version: 0.0.23
+        specifier: 0.0.25
+        version: 0.0.25
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -1217,6 +1217,11 @@ packages:
 
   /@arktype/util@0.0.23:
     resolution: {integrity: sha512-MwtDGjbgfXWxlExjIL78HvPlWOma1XFEcDd3VWuCPMt/f+3TR7fXyiGFNlIYZGOYdOIU7qgjaE8dmbd6jdJa3Q==}
+    dev: true
+
+  /@arktype/util@0.0.25:
+    resolution: {integrity: sha512-rcUpLkSNC6mA9qSesSL2WvSLzEbyh2VvzeLcywE6i6bp9TPLpB6G3k5cpVjM3bCE6bpZmTR2SR3ybZuQ+tCvbw==}
+    dev: false
 
   /@babel/code-frame@7.21.4:
     resolution: {integrity: sha512-LYvhNKfwWSPpocw8GI7gpK2nq3HSDuEPC/uSYaALSJu9xjsalaaYFOq0Pwt5KmVqwEbZlDu81aLXwBOmD/Fv9g==}
