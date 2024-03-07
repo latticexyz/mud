@@ -636,4 +636,9 @@ describe("resolveStoreConfig", () => {
     const config = resolveStoreConfig({ tables: { Example: {} } });
     attest<"">(config.namespace);
   });
+
+  it("should throw if no tables are provided", () => {
+    const config = resolveStoreConfig({});
+    attest<"">(config.namespace);
+  });
 });

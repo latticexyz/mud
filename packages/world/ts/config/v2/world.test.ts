@@ -4,6 +4,24 @@ import { attest } from "@arktype/attest";
 import { EmptyObject } from "@arktype/util";
 
 describe("resolveWorldConfig", () => {
+  describe("should resolve namespaced tables", () => {
+    const config = resolveWorldConfig({
+      namespaces: {
+        ExampleNamespace: {
+          tables: {
+            ExampleTable: {
+              schema: {
+                key: "uint256",
+                value: "uint256",
+              },
+              primaryKey: ["key"],
+            },
+          },
+        },
+      },
+    });
+  });
+
   describe("should have the same output as `resolveWorldConfig` for store config inputs", () => {
     it("should accept a shorthand store config as input and expand it", () => {
       const config = resolveWorldConfig({ tables: { Name: "address" } });

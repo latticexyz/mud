@@ -1,4 +1,4 @@
-import { Dict, EmptyObject, evaluate, narrow } from "@arktype/util";
+import { Dict, EmptyObject, conform, evaluate, narrow } from "@arktype/util";
 import { SchemaInput } from "./schema";
 import { AbiType, AbiTypeScope, extendScope } from "./scope";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
@@ -48,9 +48,7 @@ export type validateStoreConfig<input> = {
       ? UserTypes
       : key extends "enums"
         ? narrow<input[key]>
-        : key extends "namespace"
-          ? input[key]
-          : never;
+        : input[key];
 };
 
 export type resolveStoreConfig<input> = evaluate<{
