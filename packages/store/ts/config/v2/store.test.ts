@@ -175,31 +175,31 @@ describe("resolveStoreConfig", () => {
     attest(
       resolveStoreConfig({
         tables: {
-          // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
+          // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.
           Example: {
             name: "string",
             age: "uint256",
           },
         },
       }),
-    ).type.errors("Provide a `key` field with static ABI type or a full config with explicit primaryKey override.");
+    ).type.errors("Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.");
   });
 
   it("throw an error if the shorthand config includes a non-static key field", () => {
-    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
+    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.
     attest(resolveStoreConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } })).type.errors(
-      "Provide a `key` field with static ABI type or a full config with explicit primaryKey override.",
+      "Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.",
     );
   });
 
   it("throw an error if the shorthand config includes a non-static user type as key field", () => {
     attest(
       resolveStoreConfig({
-        // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
+        // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.
         tables: { Example: { key: "dynamic", name: "string", age: "uint256" } },
         userTypes: { dynamic: "string", static: "address" },
       }),
-    ).type.errors("Provide a `key` field with static ABI type or a full config with explicit primaryKey override.");
+    ).type.errors("Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.");
   });
 
   it("should return the full config given a full config with one key", () => {

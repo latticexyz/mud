@@ -1,10 +1,11 @@
 import { ErrorMessage, conform, evaluate } from "@arktype/util";
 import { SchemaInput, resolveSchema } from "./schema";
-import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 import { get } from "./generics";
+import { AbiTypeScope, getStaticAbiTypeKeys, isScopeType } from "./scope";
+import { isStaticAbiType } from "@latticexyz/schema-type";
 
 export type NoStaticKeyFieldError =
-  ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit primaryKey override.">;
+  ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.">;
 
 export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = readonly [
   getStaticAbiTypeKeys<schema, scope>,
@@ -41,28 +42,58 @@ export type validateTableShorthand<input, scope extends AbiTypeScope = AbiTypeSc
         ? keyof scope["types"]
         : SchemaInput<scope>;
 
-export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> =
-  input extends SchemaInput<scope>
+export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> = input extends keyof scope["types"]
+  ? evaluate<
+      TableFullInput<
+        { key: "bytes32"; value: input },
+        scope,
+        ["key" & getStaticAbiTypeKeys<{ key: "bytes32"; value: input }, scope>]
+      >
+    >
+  : input extends SchemaInput<scope>
     ? "key" extends getStaticAbiTypeKeys<input, scope>
       ? // If the shorthand includes a static field called `key`, use it as key
         evaluate<TableFullInput<input, scope, ["key"]>>
       : never
-    : input extends keyof scope["types"]
-      ? evaluate<
-          TableFullInput<
-            { key: "bytes32"; value: input },
-            scope,
-            ["key" & getStaticAbiTypeKeys<{ key: "bytes32"; value: input }, scope>]
-          >
-        >
-      : never;
+    : never;
 
 export function resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope>(
   input: validateTableShorthand<input, scope>,
   scope?: scope,
 ): resolveTableShorthand<input, scope> {
-  // TODO: runtime implementation
-  return {} as never;
+  // TODO: ideally we could default to AbiTypeScope in the arg definition but TS doesn't like it
+  const resolvedScope = scope ?? AbiTypeScope;
+
+  if (typeof input === "string") {
+    if (isScopeType(input, resolvedScope)) {
+      return {
+        schema: {
+          key: "bytes32",
+          value: resolvedScope.types[input],
+        },
+        primaryKey: ["key"],
+        // TODO: fix this so we don't have to cast
+      } as resolveTableShorthand<input, scope>;
+    }
+    // TODO: custom error
+    throw new Error(`Invalid schema type, \`${input}\` not found in scope.`);
+  }
+
+  // TODO: validate ABI types used in input schema
+
+  if (typeof input["key"] === "string") {
+    if (isStaticAbiType(resolvedScope.types[input["key"]])) {
+      return {
+        schema: input,
+        primaryKey: ["key"],
+      };
+    }
+    // TODO: custom error
+    throw new Error(`Invalid schema type for \`key\`, \`${input["key"]}\` not found in scope.`);
+  }
+
+  // TODO: custom error
+  throw new Error(`Invalid table shorthand, did not find \`key\` in schema input \`${JSON.stringify(input)}\`.`);
 }
 
 export type validateKeys<validKeys extends PropertyKey, keys> = {
@@ -120,7 +151,7 @@ export type resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope>
 >;
 
 /**
- * If a shorthand table config is passed () we expand it with sane defaults:
+ * If a shorthand table config is passed we expand it with sane defaults:
  * - A single ABI type is turned into { schema: { key: "bytes32", value: INPUT }, key: ["key"] }.
  * - A schema with a `key` field with static ABI type is turned into { schema: INPUT, key: ["key"] }.
  * - A schema without a `key` field is invalid.
