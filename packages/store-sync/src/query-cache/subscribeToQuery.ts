@@ -2,7 +2,7 @@ import { ZustandStore } from "../zustand";
 import { AllTables, Query, QueryResultSubject } from "./common";
 import { ResolvedStoreConfig, StoreConfig, Tables } from "@latticexyz/store";
 import { findSubjects } from "./findSubjects";
-import { Observable, distinctUntilChanged, filter, map, scan } from "rxjs";
+import { Observable, distinctUntilChanged, filter, map, scan, share } from "rxjs";
 import isEqual from "fast-deep-equal";
 
 type QueryResultSubjectChange = {
@@ -12,40 +12,71 @@ type QueryResultSubjectChange = {
   readonly subject: QueryResultSubject;
 };
 
-type SubscribeToQueryResult<query extends Query> = Observable<readonly QueryResultSubjectChange[]>;
+type SubscribeToQueryResult<query extends Query> = {
+  /**
+   * Set of initial matching subjects for query.
+   */
+  subjects: readonly QueryResultSubject[];
+  /**
+   * Stream of matching subjects for query. First emission is is the same as `subjects`.
+   */
+  subjects$: Observable<readonly QueryResultSubject[]>;
+  /**
+   * Stream of subject changes for query.
+   * First emission will be an `enter` for each item in `subjects`, or an empty array if no matches.
+   * Each emission after that will only be the subjects that have changed (have entered or exited the result set).
+   */
+  subjectChanges$: Observable<readonly QueryResultSubjectChange[]>;
+};
 
 export function subscribeToQuery<
   config extends ResolvedStoreConfig<StoreConfig>,
   extraTables extends Tables | undefined,
 >(store: ZustandStore<AllTables<config, extraTables>>, query: Query): SubscribeToQueryResult<typeof query> {
-  const subjects$ = new Observable<readonly QueryResultSubject[]>(function subscribe(subscriber) {
-    // return initial results immediately
-    subscriber.next(
-      findSubjects({
-        records: Object.values(store.getState().records),
-        query,
-      }),
-    );
+  const initialRecords = store.getState().records;
+  const initialSubjects = findSubjects({
+    records: Object.values(initialRecords),
+    query,
+  });
 
-    // then listen for changes to records and reevaluate
-    const unsub = store.subscribe((state, prevState) => {
-      if (state.records === prevState.records) return;
+  function createSubjectStream(): Observable<readonly QueryResultSubject[]> {
+    return new Observable<readonly QueryResultSubject[]>(function subscribe(subscriber) {
+      // return initial results immediately
+      subscriber.next(initialSubjects);
 
-      subscriber.next(
-        findSubjects({
-          records: Object.values(state.records),
-          query,
-        }),
-      );
-    });
+      // if records have changed between query and subscription, reevaluate
+      const { records } = store.getState();
+      if (records !== initialRecords) {
+        subscriber.next(
+          findSubjects({
+            records: Object.values(records),
+            query,
+          }),
+        );
+      }
 
-    return () => {
-      console.log("unsubscribing");
-      unsub();
-    };
-  }).pipe(distinctUntilChanged(isEqual));
+      // then listen for changes to records and reevaluate
+      const unsub = store.subscribe((state, prevState) => {
+        if (state.records !== prevState.records) {
+          subscriber.next(
+            findSubjects({
+              records: Object.values(state.records),
+              query,
+            }),
+          );
+        }
+      });
 
-  const subjectChanges$ = subjects$.pipe(
+      return () => {
+        console.log("unsubscribing");
+        unsub();
+      };
+    }).pipe(distinctUntilChanged(isEqual));
+  }
+
+  const subjects$ = createSubjectStream();
+
+  const subjectChanges$ = createSubjectStream().pipe(
     scan<readonly QueryResultSubject[], { prev: readonly QueryResultSubject[]; curr: readonly QueryResultSubject[] }>(
       (acc, curr) => ({ prev: acc.curr, curr }),
       { prev: [], curr: [] },
@@ -64,5 +95,9 @@ export function subscribeToQuery<
     }),
   );
 
-  return subjectChanges$;
+  return {
+    subjects: initialSubjects,
+    subjects$,
+    subjectChanges$,
+  };
 }
