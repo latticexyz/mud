@@ -72,6 +72,7 @@ export function WriteSummary({ write }: Props) {
     // TODO: Since `functionSelectorAndArgs` corresponds to a System's function, decoding it using
     // the World ABI may not always be successful. For instance, namespaced system calls could
     // result in an error.
+    // See also https://github.com/latticexyz/mud/issues/2382
     try {
       const functionData = decodeFunctionData({ abi: worldAbi, data: functionSelectorAndArgs });
       functionName = functionData.functionName;

@@ -11,12 +11,13 @@ walletClient.extend(
   callFrom({
     worldAddress,
     delegatorAddress,
-    worldFunctionToSystemFunction: async (worldFunctionSelector) => {
-      const systemFunction = useStore
-        .getState()
-        .getValue(tables.FunctionSelectors, { functionSelector: worldFunctionSelector })!;
-      return { systemId: systemFunction.systemId, systemFunctionSelector: systemFunction.systemFunctionSelector };
-    },
+    publicClient, // Instead of passing `publicClient`, you can pass a function like below for more control.
+    // worldFunctionToSystemFunction: async (worldFunctionSelector) => {
+    //   const systemFunction = useStore
+    //     .getState()
+    //     .getValue(tables.FunctionSelectors, { functionSelector: worldFunctionSelector })!;
+    //   return { systemId: systemFunction.systemId, systemFunctionSelector: systemFunction.systemFunctionSelector };
+    // },
   }),
 );
 ```
