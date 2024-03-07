@@ -591,7 +591,7 @@ function callFrom(
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldKernel.sol)
 
 **Inherits:**
-[IWorldModuleInstallation](/world/reference/world-external#iworldmoduleinstallation), [IWorldCall](/world/reference/world-external#iworldcall), [IWorldErrors](/world/reference/world-external#iworlderrors), [IModuleErrors](/src/IModuleErrors.sol/interface.IModuleErrors.md)
+[IWorldModuleInstallation](/world/reference/world-external#iworldmoduleinstallation), [IWorldCall](/world/reference/world-external#iworldcall), [IWorldErrors](/world/reference/world-external#iworlderrors), [IWorldEvents](/src/IWorldEvents.sol/interface.IWorldEvents.md), [IModuleErrors](/src/IModuleErrors.sol/interface.IModuleErrors.md)
 
 The IWorldKernel interface includes all methods that are part of the World contract's
 internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
@@ -645,22 +645,6 @@ function initialize(IModule initModule) external;
 | Name         | Type      | Description                                           |
 | ------------ | --------- | ----------------------------------------------------- |
 | `initModule` | `IModule` | The InitModule to be installed during initialization. |
-
-### Events
-
-#### HelloWorld
-
-_Emitted upon successful World initialization._
-
-```solidity
-event HelloWorld(bytes32 indexed worldVersion);
-```
-
-**Parameters**
-
-| Name           | Type      | Description                                 |
-| -------------- | --------- | ------------------------------------------- |
-| `worldVersion` | `bytes32` | The version of the World being initialized. |
 
 ## IWorldModuleInstallation
 

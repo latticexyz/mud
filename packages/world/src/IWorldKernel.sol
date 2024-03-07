@@ -5,6 +5,7 @@ import { IWorldErrors } from "./IWorldErrors.sol";
 import { IModule } from "./IModule.sol";
 import { ResourceId } from "./WorldResourceId.sol";
 import { IModuleErrors } from "./IModuleErrors.sol";
+import { IWorldEvents } from "./IWorldEvents.sol";
 
 /**
  * @title World Module Installation Interface
@@ -62,13 +63,7 @@ interface IWorldCall {
  * @dev The IWorldKernel interface inherits IModuleErrors because the world can be delegatecalled with module code,
  * so it's ABI should include these errors.
  */
-interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors, IModuleErrors {
-  /**
-   * @dev Emitted upon successful World initialization.
-   * @param worldVersion The version of the World being initialized.
-   */
-  event HelloWorld(bytes32 indexed worldVersion);
-
+interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors, IWorldEvents, IModuleErrors {
   /**
    * @notice Retrieve the version of the World.
    * @return The version identifier of the World.
