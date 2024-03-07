@@ -1,8 +1,8 @@
-import { Dict, EmptyObject, conform, evaluate, narrow } from "@arktype/util";
+import { Dict, evaluate, narrow } from "@arktype/util";
+import { get } from "./generics";
 import { SchemaInput } from "./schema";
 import { AbiType, AbiTypeScope, extendScope } from "./scope";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
-import { get } from "./generics";
 
 export type UserTypes = Dict<string, AbiType>;
 export type Enums = Dict<string, string[]>;
@@ -29,14 +29,14 @@ export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiType
 export type scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTypeScope> = UserTypes extends userTypes
   ? scope
   : userTypes extends UserTypes
-    ? extendScope<scope, userTypes>
-    : scope;
+  ? extendScope<scope, userTypes>
+  : scope;
 
 export type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = Enums extends enums
   ? scope
   : enums extends Enums
-    ? extendScope<scope, { [key in keyof enums]: "uint8" }>
-    : scope;
+  ? extendScope<scope, { [key in keyof enums]: "uint8" }>
+  : scope;
 
 // TODO: how would I make some keys required here?
 // I tried with stuff like `& StoreConfigInput` but any `&` here seems
@@ -48,10 +48,10 @@ export type validateStoreConfig<input> = {
         scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
       >
     : key extends "userTypes"
-      ? UserTypes
-      : key extends "enums"
-        ? narrow<input[key]>
-        : input[key];
+    ? UserTypes
+    : key extends "enums"
+    ? narrow<input[key]>
+    : input[key];
 };
 
 // Found a way here, but still wonder if/how I could reuse a `& StoreConfigInput` here
@@ -75,9 +75,9 @@ export type resolveStoreConfig<input> = evaluate<{
         input["tables"],
         scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
       >
-    : EmptyObject;
-  userTypes: "userTypes" extends keyof input ? input["userTypes"] : EmptyObject;
-  enums: "enums" extends keyof input ? input["enums"] : EmptyObject;
+    : {};
+  userTypes: "userTypes" extends keyof input ? input["userTypes"] : {};
+  enums: "enums" extends keyof input ? input["enums"] : {};
   namespace: "namespace" extends keyof input ? input["namespace"] : "";
 }>;
 

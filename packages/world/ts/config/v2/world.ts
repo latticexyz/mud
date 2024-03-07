@@ -25,7 +25,8 @@ export type NamespacesInput = { [key: string]: NamespaceInput };
 export type NamespaceInput = Omit<StoreConfigInput, "userTypes" | "enums">;
 
 export type validateNamespaces<input, scope extends AbiTypeScope = AbiTypeScope> = {
-  [key in keyof input]: {
+  [key in keyof input]: 
+{
     tables: "tables" extends keyof input[key]
       ? validateStoreTablesConfig<get<input[key], "tables">, scope>
       : StoreTablesConfigInput<scope>;
@@ -48,30 +49,28 @@ export type validateNamespaces<input, scope extends AbiTypeScope = AbiTypeScope>
 // >;
 
 export type validateWorldConfig<input> = {
-  [key in keyof input]: key extends "tables"
+  readonly [key in keyof input]: key extends "tables"
     ? validateStoreTablesConfig<
         input[key],
         scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
       >
     : key extends "userTypes"
-      ? UserTypes
-      : key extends "enums"
-        ? narrow<input[key]>
-        : key extends "namespaces"
-          ? validateNamespaces<
-              input[key],
-              scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-            >
-          : input[key];
+    ? UserTypes
+    : key extends "enums"
+    ? narrow<input[key]>
+    : key extends "namespaces"
+    ? validateNamespaces<input[key], scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>>
+    : input[key];
 };
 
 export type namespacedTableKeys<input> = "namespaces" extends keyof input
   ? "tables" extends keyof input["namespaces"][keyof input["namespaces"]]
-    ? `${keyof input["namespaces"] & string}__${keyof input["namespaces"][keyof input["namespaces"]]["tables"] & string}`
+    ? `${keyof input["namespaces"] & string}__${keyof input["namespaces"][keyof input["namespaces"]]["tables"] &
+        string}`
     : never
   : never;
 
-export type resolveWorldConfig<input> = resolveStoreConfig<input> & {
+export type resolveWorldConfig<input> = evaluate< resolveStoreConfig<input> & {
   tables: "namespaces" extends keyof input
     ? {
         [key in namespacedTableKeys<input>]: key extends `${infer namespace}__${infer table}`
@@ -79,9 +78,9 @@ export type resolveWorldConfig<input> = resolveStoreConfig<input> & {
           : never;
       }
     : never;
-};
+}>;
 
-export function resolveWorldConfig<input>(input: validateWorldConfig<input>): resolveWorldConfig<input> {
+export function resolveWorldConfig<const input>(input: validateWorldConfig<input>): resolveWorldConfig<input> {
   // TODO: runtime implementation
   return {} as never;
 }
