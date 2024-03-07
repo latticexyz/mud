@@ -303,4 +303,26 @@ describe("subscribeToQuery", async () => {
       ]
     `);
   });
+
+  it("can get all players without health (e.g. spectator)", async () => {
+    const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
+    const result$ = subscribeToQuery(store, {
+      from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
+      except: [{ tableId: tables.Health.tableId, subject: ["player"] }],
+    });
+
+    const results = observe(result$);
+
+    expect(results.length).toBe(1);
+    expect(results.lastValue).toMatchInlineSnapshot(`
+      [
+        {
+          "subject": [
+            "0xdBa86119a787422C593ceF119E40887f396024E2",
+          ],
+          "type": "enter",
+        },
+      ]
+    `);
+  });
 });

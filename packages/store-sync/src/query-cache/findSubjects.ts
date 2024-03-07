@@ -1,7 +1,7 @@
 import { TableRecord } from "../zustand/common";
 import { Query, QueryResultSubject } from "./common";
 import { Table } from "@latticexyz/store";
-import { groupBy } from "@latticexyz/common/utils";
+import { groupBy, uniqueBy } from "@latticexyz/common/utils";
 import { encodeAbiParameters } from "viem";
 import { matchesCondition } from "./matchesCondition";
 
@@ -20,14 +20,20 @@ export function findSubjects<table extends Table>({
   records: initialRecords,
   query,
 }: QueryParameters<table>): readonly QueryResultSubject[] {
-  // TODO: handle `query.except` subjects
-  const fromTables = Object.fromEntries(query.from.map((subject) => [subject.tableId, subject.subject]));
+  const targetTables = Object.fromEntries(
+    uniqueBy([...query.from, ...(query.except ?? [])], (subject) => subject.tableId).map((subject) => [
+      subject.tableId,
+      subject.subject,
+    ]),
+  );
+  const fromTableIds = new Set(query.from.map((subject) => subject.tableId));
+  const exceptTableIds = new Set((query.except ?? []).map((subject) => subject.tableId));
 
   // TODO: store/lookup subjects separately rather than mapping each time so we can "memoize" better?
   const records = initialRecords
-    .filter((record) => fromTables[record.table.tableId])
+    .filter((record) => targetTables[record.table.tableId])
     .map((record) => {
-      const subjectFields = fromTables[record.table.tableId];
+      const subjectFields = targetTables[record.table.tableId];
       const schema = { ...record.table.keySchema, ...record.table.valueSchema };
       const fields = { ...record.key, ...record.value };
       const subject = subjectFields.map((field) => fields[field]);
@@ -50,9 +56,13 @@ export function findSubjects<table extends Table>({
       records,
     }))
     .filter(({ records }) => {
+      // make sure our matched subject has no records in `query.except` tables
+      return exceptTableIds.size ? !records.some((record) => exceptTableIds.has(record.table.tableId)) : true;
+    })
+    .filter(({ records }) => {
       // make sure our matched subject has records in all `query.from` tables
-      const tableIds = Array.from(new Set(records.map((record) => record.table.tableId)));
-      return tableIds.length === query.from.length;
+      const tableIds = new Set(records.map((record) => record.table.tableId));
+      return tableIds.size === fromTableIds.size;
     })
     .filter((match) => (query.where ? query.where.every((condition) => matchesCondition(condition, match)) : true));
 

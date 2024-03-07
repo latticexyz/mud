@@ -43,15 +43,12 @@ export function subscribeToQuery<
       console.log("unsubscribing");
       unsub();
     };
-  });
+  }).pipe(distinctUntilChanged(isEqual));
 
   const subjectChanges$ = subjects$.pipe(
     scan<readonly QueryResultSubject[], { prev: readonly QueryResultSubject[]; curr: readonly QueryResultSubject[] }>(
       (acc, curr) => ({ prev: acc.curr, curr }),
-      {
-        prev: [] as readonly QueryResultSubject[],
-        curr: [] as readonly QueryResultSubject[],
-      },
+      { prev: [], curr: [] },
     ),
     map(({ prev, curr }) => {
       const prevSet = new Set(prev.map((subject) => JSON.stringify(subject)));
@@ -65,7 +62,6 @@ export function subscribeToQuery<
         ...exit.map((subject) => ({ type: "exit" as const, subject })),
       ];
     }),
-    filter((changes) => changes.length > 0), // Filter out empty change sets
   );
 
   return subjectChanges$;
