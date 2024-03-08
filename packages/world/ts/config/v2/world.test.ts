@@ -4,7 +4,7 @@ import { attest } from "@arktype/attest";
 import { EmptyObject } from "@arktype/util";
 
 describe("resolveWorldConfig", () => {
-  it("should resolve namespaced tables", () => {
+  it.only("should resolve namespaced tables", () => {
     const config = resolveWorldConfig({
       namespaces: {
         ExampleNamespace: {
@@ -22,85 +22,87 @@ describe("resolveWorldConfig", () => {
       },
     });
 
-    attest<{
+    const expected = {
       tables: {
         ExampleNamespace__ExampleTable: {
           schema: {
             key: {
-              type: "address";
-              internalType: "address";
-            };
+              type: "address",
+              internalType: "address",
+            },
             value: {
-              type: "uint256";
-              internalType: "uint256";
-            };
+              type: "uint256",
+              internalType: "uint256",
+            },
             dynamic: {
-              type: "string";
-              internalType: "string";
-            };
-          };
+              type: "string",
+              internalType: "string",
+            },
+          },
           keySchema: {
             key: {
-              type: "address";
-              internalType: "address";
-            };
-          };
+              type: "address",
+              internalType: "address",
+            },
+          },
           valueSchema: {
             value: {
-              type: "uint256";
-              internalType: "uint256";
-            };
+              type: "uint256",
+              internalType: "uint256",
+            },
             dynamic: {
-              type: "string";
-              internalType: "string";
-            };
-          };
-          primaryKey: ["key"];
-        };
-      };
+              type: "string",
+              internalType: "string",
+            },
+          },
+          primaryKey: ["key"],
+        },
+      },
       namespaces: {
         ExampleNamespace: {
           tables: {
             ExampleTable: {
               schema: {
                 key: {
-                  type: "address";
-                  internalType: "address";
-                };
+                  type: "address",
+                  internalType: "address",
+                },
                 value: {
-                  type: "uint256";
-                  internalType: "uint256";
-                };
+                  type: "uint256",
+                  internalType: "uint256",
+                },
                 dynamic: {
-                  type: "string";
-                  internalType: "string";
-                };
-              };
+                  type: "string",
+                  internalType: "string",
+                },
+              },
               keySchema: {
                 key: {
-                  type: "address";
-                  internalType: "address";
-                };
-              };
+                  type: "address",
+                  internalType: "address",
+                },
+              },
               valueSchema: {
                 value: {
-                  type: "uint256";
-                  internalType: "uint256";
-                };
+                  type: "uint256",
+                  internalType: "uint256",
+                },
                 dynamic: {
-                  type: "string";
-                  internalType: "string";
-                };
-              };
-              primaryKey: ["key"];
-            };
-          };
-        };
-      };
-      userTypes: {};
-      enums: {};
-      namespace: "";
-    }>(config);
+                  type: "string",
+                  internalType: "string",
+                },
+              },
+              primaryKey: ["key"],
+            },
+          },
+        },
+      },
+      userTypes: {},
+      enums: {},
+      namespace: "",
+    } as const;
+
+    attest<typeof expected>(config);
   });
 
   it("should resolve namespaced table config with user types and enums", () => {
