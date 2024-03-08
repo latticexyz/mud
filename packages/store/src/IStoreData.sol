@@ -12,12 +12,6 @@ import { IStoreWrite } from "./IStoreWrite.sol";
  */
 interface IStoreData is IStoreRead, IStoreWrite {
   /**
-   * @notice Emitted when the store is initialized.
-   * @param storeVersion The version of the Store contract.
-   */
-  event HelloStore(bytes32 indexed storeVersion);
-
-  /**
    * @notice Returns the version of the Store contract.
    * @return version The version of the Store contract.
    */

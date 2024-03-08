@@ -86,7 +86,7 @@ export default mudConfig({
     },
     FunctionSelectors: {
       keySchema: {
-        functionSelector: "bytes4",
+        worldFunctionSelector: "bytes4",
       },
       valueSchema: {
         systemId: "ResourceId",
