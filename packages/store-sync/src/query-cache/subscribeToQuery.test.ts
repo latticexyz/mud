@@ -254,7 +254,6 @@ describe("subscribeToQuery", async () => {
         args: [2, 4],
       }),
     });
-    await testClient.mine({ blocks: 1 });
     await fetchLatestLogs();
 
     expect(observedSubjects.length).toBe(3);
@@ -404,7 +403,6 @@ describe("subscribeToQuery", async () => {
         args: [100, 100],
       }),
     });
-    await testClient.mine({ blocks: 1 });
     await fetchLatestLogs();
 
     expect(observedSubjects.length).toBe(3);

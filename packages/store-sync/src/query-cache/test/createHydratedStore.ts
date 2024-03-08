@@ -23,7 +23,6 @@ export async function createHydratedStore(worldAddress: Address): Promise<{
   const storageAdapter = createStorageAdapter({ store });
 
   let lastBlockProcessed = (await getBlock(testClient, { blockTag: "earliest" })).number - 1n;
-
   async function fetchLatestLogs(): Promise<void> {
     const toBlock = await getBlockNumber(testClient);
     if (toBlock > lastBlockProcessed) {
