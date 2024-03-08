@@ -1,5 +1,5 @@
-import { DeployedSystem, System, WorldDeploy, worldTables } from "./common";
-import { Address, Client } from "viem";
+import { DeployedSystem, WorldDeploy, worldTables } from "./common";
+import { Client } from "viem";
 import { getResourceIds } from "./getResourceIds";
 import { hexToResource, resourceToLabel } from "@latticexyz/common";
 import { getTableValue } from "./getTableValue";

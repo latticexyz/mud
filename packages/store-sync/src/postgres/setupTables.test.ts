@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { tables } from "./tables";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
-import { DefaultLogger } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { setupTables } from "./setupTables";
