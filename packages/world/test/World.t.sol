@@ -31,6 +31,7 @@ import { WorldContextProviderLib, IWorldContextConsumer } from "../src/WorldCont
 import { SystemHook } from "../src/SystemHook.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
 import { Module, IModule } from "../src/Module.sol";
+import { IWorldEvents } from "../src/IWorldEvents.sol";
 
 import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
@@ -162,7 +163,6 @@ contract RevertSystemHook is SystemHook {
 contract WorldTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
 
-  event HelloWorld(bytes32 indexed worldVersion);
   event HookCalled(bytes data);
   event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);
@@ -200,7 +200,7 @@ contract WorldTest is Test, GasReporter {
     InitModule initModule = createInitModule();
 
     vm.expectEmit(true, true, true, true);
-    emit HelloWorld(WORLD_VERSION);
+    emit IWorldEvents.HelloWorld(WORLD_VERSION);
     IBaseWorld newWorld = IBaseWorld(address(new World()));
     StoreSwitch.setStoreAddress(address(newWorld));
 
