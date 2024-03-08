@@ -21,7 +21,7 @@ export const supportedChains: MUDChain[] = [
   {
     ...mudFoundry,
     // See https://github.com/latticexyz/mud/pull/2330
-    blockExplorers: { default: { name: "", url: "http://localhost:3000" } },
+    blockExplorers: { default: { name: "", url: "https://example.com" } },
   },
   latticeTestnet,
 ];

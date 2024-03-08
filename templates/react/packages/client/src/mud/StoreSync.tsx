@@ -5,15 +5,15 @@ import { useNetwork } from "./NetworkContext";
 export function StoreSync(props: { children: ReactNode }) {
   const { useStore } = useNetwork();
 
-  const syncProgress = useStore((state) => state.syncProgress);
+  const { step, message, percentage } = useStore((state) => state.syncProgress);
 
-  if (syncProgress.step === SyncStep.LIVE) {
+  if (step === SyncStep.LIVE) {
     return props.children;
-  } else {
-    return (
-      <div>
-        {syncProgress.message} ({Math.floor(syncProgress.percentage)}%)
-      </div>
-    );
   }
+
+  return (
+    <div>
+      {message} ({Math.floor(percentage)}%)
+    </div>
+  );
 }

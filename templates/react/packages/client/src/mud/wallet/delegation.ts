@@ -13,23 +13,23 @@ export function isDelegated(delegationControlId: Hex) {
 export async function delegateToBurner(
   network: Network,
   externalWalletClient: WalletClient<Transport, Chain, Account>,
-  burnerWalletClient: WalletClient<Transport, Chain, Account>,
+  burnerAddress: Hex,
 ) {
   const { request } = await network.publicClient.simulateContract({
     account: externalWalletClient.account,
     address: network.worldAddress,
     abi: IWorldAbi,
     functionName: "registerDelegation",
-    args: [burnerWalletClient.account.address, UNLIMITED_DELEGATION, "0x0"],
+    args: [burnerAddress, UNLIMITED_DELEGATION, "0x0"],
   });
 
-  const tx1 = await externalWalletClient.writeContract(request);
-  await network.waitForTransaction(tx1);
+  const delegationTx = await externalWalletClient.writeContract(request);
+  await network.waitForTransaction(delegationTx);
 
   // for transaction fees
-  const tx2 = await externalWalletClient.sendTransaction({
-    to: burnerWalletClient.account.address,
+  const transferTx = await externalWalletClient.sendTransaction({
+    to: burnerAddress,
     value: parseEther("0.001"),
   });
-  await network.waitForTransaction(tx2);
+  await network.waitForTransaction(transferTx);
 }

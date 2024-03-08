@@ -1,13 +1,15 @@
 import { useMUD } from "./mud/useMUD";
-import { addTask, toggleTask, deleteTask } from "./mud/systemCalls";
 
 const styleUnset = { all: "unset" } as const;
 
-export function App() {
-  const { network, burner } = useMUD();
+export const App = () => {
+  const {
+    network: { tables, useStore },
+    burner,
+  } = useMUD();
 
-  const tasks = network.useStore((state) => {
-    const records = Object.values(state.getRecords(network.tables.Tasks));
+  const tasks = useStore((state) => {
+    const records = Object.values(state.getRecords(tables.Tasks));
     records.sort((a, b) => Number(a.value.createdAt - b.value.createdAt));
     return records;
   });
@@ -25,13 +27,13 @@ export function App() {
                   title={task.value.completedAt === 0n ? "Mark task as completed" : "Mark task as incomplete"}
                   disabled={!burner}
                   onChange={async (event) => {
-                    if (!burner) return;
                     event.preventDefault();
+                    if (!burner) return;
                     const checkbox = event.currentTarget;
 
                     checkbox.disabled = true;
                     try {
-                      await toggleTask(network, burner.worldContract, task.key.key);
+                      await burner.systemCalls.toggleTask(task.key.key);
                     } finally {
                       checkbox.disabled = false;
                     }
@@ -46,14 +48,14 @@ export function App() {
                   style={styleUnset}
                   disabled={!burner}
                   onClick={async (event) => {
-                    if (!burner) return;
                     event.preventDefault();
+                    if (!burner) return;
                     if (!window.confirm("Are you sure you want to delete this task?")) return;
 
                     const button = event.currentTarget;
                     button.disabled = true;
                     try {
-                      await deleteTask(network, burner.worldContract, task.key.key);
+                      await burner.systemCalls.deleteTask(task.key.key);
                     } finally {
                       button.disabled = false;
                     }
@@ -73,8 +75,8 @@ export function App() {
             <td colSpan={2}>
               <form
                 onSubmit={async (event) => {
-                  if (!burner) return;
                   event.preventDefault();
+                  if (!burner) return;
                   const form = event.currentTarget;
                   const fieldset = form.querySelector("fieldset");
                   if (!(fieldset instanceof HTMLFieldSetElement)) return;
@@ -85,7 +87,7 @@ export function App() {
 
                   fieldset.disabled = true;
                   try {
-                    await addTask(network, burner.worldContract, desc);
+                    await burner.systemCalls.addTask(desc);
                     form.reset();
                   } finally {
                     fieldset.disabled = false;
@@ -105,4 +107,4 @@ export function App() {
       </table>
     </>
   );
-}
+};
