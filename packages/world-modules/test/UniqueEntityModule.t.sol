@@ -7,6 +7,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World } from "@latticexyz/world/src/World.sol";
 import { IModule } from "@latticexyz/world/src/IModule.sol";
+import { IModuleErrors } from "@latticexyz/world/src/IModuleErrors.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { System } from "@latticexyz/world/src/System.sol";
@@ -60,7 +61,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
 
   function testInstallTwice() public {
     world.installModule(uniqueEntityModule, new bytes(0));
-    vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
+    vm.expectRevert(IModuleErrors.Module_AlreadyInstalled.selector);
     world.installModule(uniqueEntityModule, new bytes(0));
   }
 
@@ -84,7 +85,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
 
   function testInstallRootTwice() public {
     world.installRootModule(uniqueEntityModule, new bytes(0));
-    vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
+    vm.expectRevert(IModuleErrors.Module_AlreadyInstalled.selector);
     world.installRootModule(uniqueEntityModule, new bytes(0));
   }
 

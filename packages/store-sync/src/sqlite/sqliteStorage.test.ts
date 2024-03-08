@@ -38,6 +38,7 @@ describe("sqliteStorage", async () => {
 
   beforeEach(async () => {
     db = drizzle(new SqlJs.Database(), {
+      // TODO: make a debug-based logger so this can be toggled by env var
       // logger: new DefaultLogger(),
     });
   });
