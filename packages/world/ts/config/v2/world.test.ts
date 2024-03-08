@@ -4,7 +4,7 @@ import { attest } from "@arktype/attest";
 import { EmptyObject } from "@arktype/util";
 
 describe("resolveWorldConfig", () => {
-  describe("should resolve namespaced tables", () => {
+  it("should resolve namespaced tables", () => {
     const config = resolveWorldConfig({
       namespaces: {
         ExampleNamespace: {
@@ -22,15 +22,38 @@ describe("resolveWorldConfig", () => {
       },
     });
 
-    attest<["key"]>(config.tables.ExampleNamespace__ExampleTable.primaryKey);
-
     attest<{
       tables: {
         ExampleNamespace__ExampleTable: {
           schema: {
-            key: "address";
-            value: "uint256";
-            dynamic: "string";
+            key: {
+              type: "address";
+              internalType: "address";
+            };
+            value: {
+              type: "uint256";
+              internalType: "uint256";
+            };
+            dynamic: {
+              type: "string";
+              internalType: "string";
+            };
+          };
+          keySchema: {
+            key: {
+              type: "address";
+              internalType: "address";
+            };
+          };
+          valueSchema: {
+            value: {
+              type: "uint256";
+              internalType: "uint256";
+            };
+            dynamic: {
+              type: "string";
+              internalType: "string";
+            };
           };
           primaryKey: ["key"];
         };
@@ -40,15 +63,149 @@ describe("resolveWorldConfig", () => {
           tables: {
             ExampleTable: {
               schema: {
-                key: "address";
-                value: "uint256";
-                dynamic: "string";
+                key: {
+                  type: "address";
+                  internalType: "address";
+                };
+                value: {
+                  type: "uint256";
+                  internalType: "uint256";
+                };
+                dynamic: {
+                  type: "string";
+                  internalType: "string";
+                };
+              };
+              keySchema: {
+                key: {
+                  type: "address";
+                  internalType: "address";
+                };
+              };
+              valueSchema: {
+                value: {
+                  type: "uint256";
+                  internalType: "uint256";
+                };
+                dynamic: {
+                  type: "string";
+                  internalType: "string";
+                };
               };
               primaryKey: ["key"];
             };
           };
         };
       };
+      userTypes: {};
+      enums: {};
+      namespace: "";
+    }>(config);
+  });
+
+  it("should resolve namespaced table config with user types and enums", () => {
+    const config = resolveWorldConfig({
+      namespaces: {
+        ExampleNamespace: {
+          tables: {
+            ExampleTable: {
+              schema: {
+                key: "Static",
+                value: "MyEnum",
+                dynamic: "Dynamic",
+              },
+              primaryKey: ["key"],
+            },
+          },
+        },
+      },
+      userTypes: {
+        Static: "address",
+        Dynamic: "string",
+      },
+      enums: {
+        MyEnum: ["First", "Second"],
+      },
+    });
+
+    attest<{
+      tables: {
+        ExampleNamespace__ExampleTable: {
+          schema: {
+            key: {
+              type: "address";
+              internalType: "Static";
+            };
+            value: {
+              type: "uint8";
+              internalType: "MyEnum";
+            };
+            dynamic: {
+              type: "string";
+              internalType: "Dynamic";
+            };
+          };
+          keySchema: {
+            key: {
+              type: "address";
+              internalType: "Static";
+            };
+          };
+          valueSchema: {
+            value: {
+              type: "uint8";
+              internalType: "MyEnum";
+            };
+            dynamic: {
+              type: "string";
+              internalType: "Dynamic";
+            };
+          };
+          primaryKey: ["key"];
+        };
+      };
+      namespaces: {
+        ExampleNamespace: {
+          tables: {
+            ExampleTable: {
+              schema: {
+                key: {
+                  type: "address";
+                  internalType: "Static";
+                };
+                value: {
+                  type: "uint8";
+                  internalType: "MyEnum";
+                };
+                dynamic: {
+                  type: "string";
+                  internalType: "Dynamic";
+                };
+              };
+              keySchema: {
+                key: {
+                  type: "address";
+                  internalType: "Static";
+                };
+              };
+              valueSchema: {
+                value: {
+                  type: "uint8";
+                  internalType: "MyEnum";
+                };
+                dynamic: {
+                  type: "string";
+                  internalType: "Dynamic";
+                };
+              };
+              primaryKey: ["key"];
+            };
+          };
+        };
+      };
+      userTypes: {};
+      enums: {};
+      namespace: "";
     }>(config);
   });
 

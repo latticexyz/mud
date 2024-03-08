@@ -8,6 +8,7 @@ import {
   scopeWithEnums,
   scopeWithUserTypes,
   StoreTablesConfigInput,
+  resolveStoreTablesConfig,
 } from "@latticexyz/store/config";
 import { get } from "@latticexyz/store/ts/config/v2/generics";
 import { AbiTypeScope } from "@latticexyz/store/ts/config/v2/scope";
@@ -64,7 +65,17 @@ export type resolveWorldConfig<input> = evaluate<
             ? resolveTableConfig<get<get<get<get<input, "namespaces">, namespace>, "tables">, table>>
             : never;
         }
-      : never;
+      : {};
+    namespaces: "namespaces" extends keyof input
+      ? {
+          [key in keyof input["namespaces"]]: {
+            tables: resolveStoreTablesConfig<
+              get<input["namespaces"][key], "tables">,
+              scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
+            >;
+          };
+        }
+      : {};
   }
 >;
 
