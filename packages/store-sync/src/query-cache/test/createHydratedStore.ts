@@ -22,23 +22,24 @@ export async function createHydratedStore(worldAddress: Address): Promise<{
   const store = createStore<typeof tables>({ tables });
   const storageAdapter = createStorageAdapter({ store });
 
-  let latestBlock = (await getBlock(testClient, { blockTag: "earliest" })).number - 1n;
+  let lastBlockProcessed = (await getBlock(testClient, { blockTag: "earliest" })).number - 1n;
   async function fetchLatestLogs(): Promise<void> {
     const toBlock = await getBlockNumber(testClient);
-    if (toBlock < latestBlock) return;
-    const fromBlock = latestBlock + 1n;
-    // console.log("fetching blocks", fromBlock, "to", toBlock);
-    for await (const block of fetchAndStoreLogs({
-      storageAdapter,
-      publicClient: testClient,
-      address: worldAddress,
-      events: storeEventsAbi,
-      fromBlock,
-      toBlock,
-    })) {
-      // console.log("got block logs", block.blockNumber, block.logs.length);
+    if (toBlock > lastBlockProcessed) {
+      const fromBlock = lastBlockProcessed + 1n;
+      // console.log("fetching blocks", fromBlock, "to", toBlock);
+      for await (const block of fetchAndStoreLogs({
+        storageAdapter,
+        publicClient: testClient,
+        address: worldAddress,
+        events: storeEventsAbi,
+        fromBlock,
+        toBlock,
+      })) {
+        // console.log("got block logs", block.blockNumber, block.logs.length);
+      }
+      lastBlockProcessed = toBlock;
     }
-    latestBlock = toBlock;
   }
 
   await fetchLatestLogs();
