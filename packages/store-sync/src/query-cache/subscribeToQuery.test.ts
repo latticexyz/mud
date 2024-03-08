@@ -14,6 +14,7 @@ describe("subscribeToQuery", async () => {
   let worldAddress: Address;
 
   beforeAll(async () => {
+    await testClient.setIntervalMining({ interval: 0 });
     await testClient.setBalance({ address: henryAccount.address, value: parseEther("1") });
     worldAddress = await deployMockGame();
   });
