@@ -29,14 +29,14 @@ export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiType
 export type scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTypeScope> = UserTypes extends userTypes
   ? scope
   : userTypes extends UserTypes
-  ? extendScope<scope, userTypes>
-  : scope;
+    ? extendScope<scope, userTypes>
+    : scope;
 
 export type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = Enums extends enums
   ? scope
   : enums extends Enums
-  ? extendScope<scope, { [key in keyof enums]: "uint8" }>
-  : scope;
+    ? extendScope<scope, { [key in keyof enums]: "uint8" }>
+    : scope;
 
 // TODO: how would I make some keys required here?
 // I tried with stuff like `& StoreConfigInput` but any `&` here seems
@@ -48,10 +48,10 @@ export type validateStoreConfig<input> = {
         scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
       >
     : key extends "userTypes"
-    ? UserTypes
-    : key extends "enums"
-    ? narrow<input[key]>
-    : input[key];
+      ? UserTypes
+      : key extends "enums"
+        ? narrow<input[key]>
+        : input[key];
 };
 
 // Found a way here, but still wonder if/how I could reuse a `& StoreConfigInput` here
