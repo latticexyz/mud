@@ -1,6 +1,5 @@
 import { useMemo, useEffect } from "react";
-import { WagmiProvider, createConfig, useAccount, useWalletClient } from "wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useAccount, useWalletClient } from "wagmi";
 import type { WalletClient, Transport, Chain, Account, Hex } from "viem";
 import { useNetwork } from "../../NetworkContext";
 import { ExternalConnector } from "../ExternalConnector";
@@ -9,26 +8,11 @@ import { createBurner, getBurnerAddress } from "../burner";
 import { type SetBurnerProps } from "./types";
 
 export function External(props: SetBurnerProps) {
-  const { publicClient } = useNetwork();
-
-  const [wagmiConfig, queryClient] = useMemo(
-    () => [
-      createConfig({
-        chains: [publicClient.chain],
-        client: () => publicClient,
-      }),
-      new QueryClient(),
-    ],
-    [publicClient],
-  );
-
   return (
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <ExternalConnector />
-        <Connection setBurner={props.setBurner} />
-      </QueryClientProvider>
-    </WagmiProvider>
+    <>
+      <ExternalConnector />
+      <Connection setBurner={props.setBurner} />
+    </>
   );
 }
 
