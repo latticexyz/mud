@@ -15,7 +15,7 @@ walletClient.extend(
     // worldFunctionToSystemFunction: async (worldFunctionSelector) => {
     //   const systemFunction = useStore
     //     .getState()
-    //     .getValue(tables.FunctionSelectors, { functionSelector: worldFunctionSelector })!;
+    //     .getValue(tables.FunctionSelectors, { worldFunctionSelector })!;
     //   return { systemId: systemFunction.systemId, systemFunctionSelector: systemFunction.systemFunctionSelector };
     // },
   }),

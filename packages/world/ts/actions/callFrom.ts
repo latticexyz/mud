@@ -122,10 +122,7 @@ async function retrieveSystemFunction(
     address: worldAddress,
     abi: IStoreReadAbi,
     functionName: "getRecord",
-    args: [
-      functionSelectorsTable.tableId,
-      encodeKey(functionSelectorsTable.keySchema, { functionSelector: worldFunctionSelector }),
-    ],
+    args: [functionSelectorsTable.tableId, encodeKey(functionSelectorsTable.keySchema, { worldFunctionSelector })],
   });
 
   const decoded = decodeValueArgs(functionSelectorsTable.valueSchema, { staticData, encodedLengths, dynamicData });
