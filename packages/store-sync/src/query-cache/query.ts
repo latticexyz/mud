@@ -1,5 +1,5 @@
 import { ZustandStore } from "../zustand";
-import { AllTables, Query, QueryResult } from "./common";
+import { AllTables, Query, QueryResultSubject } from "./common";
 import { ResolvedStoreConfig, StoreConfig, Tables } from "@latticexyz/store";
 import { findSubjects } from "./findSubjects";
 
@@ -13,6 +13,8 @@ import { findSubjects } from "./findSubjects";
 
 // TODO: make query smarter/config aware for shorthand
 // TODO: make condition types smarter, so condition literal matches the field primitive type
+
+type QueryResult<query extends Query> = readonly QueryResultSubject[];
 
 export async function query<
   config extends ResolvedStoreConfig<StoreConfig>,
