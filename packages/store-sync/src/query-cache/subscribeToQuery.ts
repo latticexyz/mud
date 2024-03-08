@@ -12,6 +12,7 @@ type QueryResultSubjectChange = {
   readonly subject: QueryResultSubject;
 };
 
+// TODO: decide if this whole thing is returned in a promise or just `subjects`
 type SubscribeToQueryResult<query extends Query> = {
   /**
    * Set of initial matching subjects for query.
@@ -29,10 +30,10 @@ type SubscribeToQueryResult<query extends Query> = {
   subjectChanges$: Observable<readonly QueryResultSubjectChange[]>;
 };
 
-export function subscribeToQuery<
+export async function subscribeToQuery<
   config extends ResolvedStoreConfig<StoreConfig>,
   extraTables extends Tables | undefined,
->(store: ZustandStore<AllTables<config, extraTables>>, query: Query): SubscribeToQueryResult<typeof query> {
+>(store: ZustandStore<AllTables<config, extraTables>>, query: Query): Promise<SubscribeToQueryResult<typeof query>> {
   const initialRecords = store.getState().records;
   const initialSubjects = findSubjects({
     records: Object.values(initialRecords),

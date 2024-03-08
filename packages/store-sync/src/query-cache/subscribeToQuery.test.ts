@@ -28,7 +28,7 @@ describe("subscribeToQuery", async () => {
   it("can get players with a position", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects, subjects$, subjectChanges$ } = subscribeToQuery(store, {
+    const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
     });
 
@@ -151,7 +151,7 @@ describe("subscribeToQuery", async () => {
   it("can get players at position (3, 5)", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects, subjects$, subjectChanges$ } = subscribeToQuery(store, {
+    const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
       where: [
         { left: { tableId: tables.Position.tableId, field: "x" }, op: "=", right: 3 },
@@ -284,7 +284,7 @@ describe("subscribeToQuery", async () => {
   it("can get players within the bounds of (-5, -5) and (5, 5)", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects, subjects$, subjectChanges$ } = subscribeToQuery(store, {
+    const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
       where: [
         { left: { tableId: tables.Position.tableId, field: "x" }, op: ">=", right: -5 },
@@ -436,7 +436,7 @@ describe("subscribeToQuery", async () => {
   it("can get players that are still alive", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects, subjects$, subjectChanges$ } = subscribeToQuery(store, {
+    const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: [
         { tableId: tables.Position.tableId, subject: ["player"] },
         { tableId: tables.Health.tableId, subject: ["player"] },
@@ -493,7 +493,7 @@ describe("subscribeToQuery", async () => {
   it("can get all players in grassland", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects, subjects$, subjectChanges$ } = subscribeToQuery(store, {
+    const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: [{ tableId: tables.Terrain.tableId, subject: ["x", "y"] }],
       where: [{ left: { tableId: tables.Terrain.tableId, field: "terrainType" }, op: "=", right: 2 }],
     });
@@ -538,7 +538,7 @@ describe("subscribeToQuery", async () => {
   it("can get all players without health (e.g. spectator)", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects, subjects$, subjectChanges$ } = subscribeToQuery(store, {
+    const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
       except: [{ tableId: tables.Health.tableId, subject: ["player"] }],
     });
@@ -580,7 +580,7 @@ describe("subscribeToQuery", async () => {
   it("emits new subjects when initial matching set is empty", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects, subjects$, subjectChanges$ } = subscribeToQuery(store, {
+    const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
       where: [
         { left: { tableId: tables.Position.tableId, field: "x" }, op: "=", right: 999 },
@@ -638,7 +638,7 @@ describe("subscribeToQuery", async () => {
   it("emits changed subjects when subscribing some time after initial query", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects, subjects$, subjectChanges$ } = subscribeToQuery(store, {
+    const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
       where: [
         { left: { tableId: tables.Position.tableId, field: "x" }, op: "=", right: 3 },
