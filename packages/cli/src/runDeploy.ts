@@ -105,7 +105,6 @@ in your contracts directory to use the default anvil private key.`,
     config,
     forgeSourceDir: srcDir,
     forgeOutDir: outDir,
-    deployerAddress: deployerAddress as Hex,
   });
 
   console.log("Deploying from", client.account.address);

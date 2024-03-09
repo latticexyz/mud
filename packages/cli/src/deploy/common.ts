@@ -6,6 +6,7 @@ import IModuleAbi from "@latticexyz/world-modules/out/IModule.sol/IModule.abi.js
 import { Tables, configToTables } from "./configToTables";
 import { StoreConfig, helloStoreEvent } from "@latticexyz/store";
 import { WorldConfig, helloWorldEvent } from "@latticexyz/world";
+import { string } from "yargs";
 
 export const salt = padHex("0x", { size: 32 });
 
@@ -47,11 +48,43 @@ export type WorldFunction = {
   readonly systemFunctionSelector: Hex;
 };
 
+export type LibraryPlaceholder = {
+  /**
+   * Path to library source file, e.g. `src/libraries/SomeLib.sol`
+   */
+  path: string;
+  /**
+   * Library name, e.g. `SomeLib`
+   */
+  name: string;
+  start: number;
+  length: number;
+};
+
 export type DeterministicContract = {
-  readonly getAddress: (deployer: Address) => Address;
-  readonly bytecode: Hex;
+  // readonly getAddress: (deployer: Address) => Address;
+  // readonly bytecode: Hex;
+
+  readonly prepareDeploy: (
+    deployer: Address,
+    libraries: readonly Library[],
+  ) => {
+    readonly address: Address;
+    readonly bytecode: Hex;
+  };
   readonly deployedBytecodeSize: number;
   readonly abi: Abi;
+};
+
+export type Library = DeterministicContract & {
+  /**
+   * Path to library source file, e.g. `src/libraries/SomeLib.sol`
+   */
+  path: string;
+  /**
+   * Library name, e.g. `SomeLib`
+   */
+  name: string;
 };
 
 export type System = DeterministicContract & {
@@ -77,18 +110,10 @@ export type Module = DeterministicContract & {
   readonly installData: Hex; // TODO: figure out better naming for this
 };
 
-// https://docs.soliditylang.org/en/latest/using-the-compiler.html#library-linking
-export type PublicLibrary = DeterministicContract & {
-  readonly fullyQualifiedName: string;
-  readonly filename: string;
-  readonly name: string;
-  readonly addressPlaceholder: string;
-};
-
 export type ConfigInput = StoreConfig & WorldConfig;
 export type Config<config extends ConfigInput> = {
   readonly tables: Tables<config>;
   readonly systems: readonly System[];
   readonly modules: readonly Module[];
-  readonly libraries: readonly PublicLibrary[];
+  readonly libraries: readonly Library[];
 };

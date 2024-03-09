@@ -14,6 +14,10 @@ export async function ensureDeployer(client: Client<Transport, Chain | undefined
       console.warn(
         `\n  ⚠️ Bytecode for deployer at ${deployer} did not match the expected CREATE2 bytecode. You may have unexpected results.\n`,
       );
+      console.log("got bytecode");
+      console.log(bytecode);
+      console.log("expected bytecode");
+      console.log(deployerBytecode);
     }
     return deployer;
   }

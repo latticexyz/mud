@@ -1,4 +1,5 @@
-import { Account, Address, Chain, Client, Hex, Transport, getAddress } from "viem";
+import { Account, Address, Chain, Client, Hex, Transport } from "viem";
+import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
 import { Config, ConfigInput, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
@@ -11,7 +12,6 @@ import { Table } from "./configToTables";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
 import { resourceToLabel } from "@latticexyz/common";
-import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
@@ -27,7 +27,7 @@ type DeployOptions<configInput extends ConfigInput> = {
    * If the target chain does not support legacy transactions, we deploy the proxy bytecode anyway, but it will
    * not have a deterministic address.
    */
-  deployerAddress: Hex;
+  deployerAddress?: Hex;
 };
 
 /**
@@ -41,9 +41,11 @@ export async function deploy<configInput extends ConfigInput>({
   config,
   salt,
   worldAddress: existingWorldAddress,
-  deployerAddress,
+  deployerAddress: initialDeployerAddress,
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   const tables = Object.values(config.tables) as Table[];
+
+  const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
   await ensureWorldFactory(client, deployerAddress);
 
@@ -52,10 +54,10 @@ export async function deploy<configInput extends ConfigInput>({
     client,
     deployerAddress,
     contracts: [
-      ...uniqueBy(config.libraries, (library) => getAddress(library.getAddress(deployerAddress))).map((library) => ({
-        bytecode: library.bytecode,
+      ...config.libraries.map((library) => ({
+        bytecode: library.prepareDeploy(deployerAddress, config.libraries).bytecode,
         deployedBytecodeSize: library.deployedBytecodeSize,
-        label: `${library.fullyQualifiedName} library`,
+        label: `${library.path}:${library.name} library`,
       })),
     ],
   });
@@ -65,13 +67,13 @@ export async function deploy<configInput extends ConfigInput>({
     client,
     deployerAddress,
     contracts: [
-      ...uniqueBy(config.systems, (system) => getAddress(system.getAddress(deployerAddress))).map((system) => ({
-        bytecode: system.bytecode,
+      ...config.systems.map((system) => ({
+        bytecode: system.prepareDeploy(deployerAddress, config.libraries).bytecode,
         deployedBytecodeSize: system.deployedBytecodeSize,
         label: `${resourceToLabel(system)} system`,
       })),
-      ...uniqueBy(config.modules, (mod) => getAddress(mod.getAddress(deployerAddress))).map((mod) => ({
-        bytecode: mod.bytecode,
+      ...config.modules.map((mod) => ({
+        bytecode: mod.prepareDeploy(deployerAddress, config.libraries).bytecode,
         deployedBytecodeSize: mod.deployedBytecodeSize,
         label: `${mod.name} module`,
       })),
@@ -108,6 +110,7 @@ export async function deploy<configInput extends ConfigInput>({
   const systemTxs = await ensureSystems({
     client,
     deployerAddress,
+    libraries: config.libraries,
     worldDeploy,
     systems: config.systems,
   });
@@ -119,6 +122,7 @@ export async function deploy<configInput extends ConfigInput>({
   const moduleTxs = await ensureModules({
     client,
     deployerAddress,
+    libraries: config.libraries,
     worldDeploy,
     modules: config.modules,
   });

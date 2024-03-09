@@ -9,18 +9,21 @@ export const defaultModuleContracts = [
     name: "KeysWithValueModule",
     abi: KeysWithValueModuleData.abi as Abi,
     bytecode: KeysWithValueModuleData.bytecode.object as Hex,
+    placeholders: [], // TODO
     deployedBytecodeSize: size(KeysWithValueModuleData.deployedBytecode.object as Hex),
   },
   {
     name: "KeysInTableModule",
     abi: KeysInTableModuleData.abi as Abi,
     bytecode: KeysInTableModuleData.bytecode.object as Hex,
+    placeholders: [], // TODO
     deployedBytecodeSize: size(KeysInTableModuleData.deployedBytecode.object as Hex),
   },
   {
     name: "UniqueEntityModule",
     abi: UniqueEntityModuleData.abi as Abi,
     bytecode: UniqueEntityModuleData.bytecode.object as Hex,
+    placeholders: [], // TODO
     deployedBytecodeSize: size(UniqueEntityModuleData.deployedBytecode.object as Hex),
   },
 ];

@@ -2,16 +2,16 @@ import { readFileSync } from "fs";
 import path from "path";
 import { MUDError } from "@latticexyz/common/errors";
 import { Abi, Hex, size } from "viem";
-import { PublicLibrary } from "../../deploy/common";
+import { LibraryPlaceholder } from "../../deploy/common";
 
-export interface LinkReferences {
+export type LinkReferences = {
   [filename: string]: {
     [name: string]: {
       start: number;
       length: number;
     }[];
   };
-}
+};
 
 /**
  * Load the contract's abi and bytecode from the file system
@@ -21,9 +21,7 @@ export function getContractData(
   filename: string,
   contractName: string,
   forgeOutDirectory: string,
-  libraries: PublicLibrary[],
-  deployerAddress: Hex,
-): { bytecode: Hex; abi: Abi; deployedBytecodeSize: number } {
+): { bytecode: Hex; placeholders: readonly LibraryPlaceholder[]; abi: Abi; deployedBytecodeSize: number } {
   let data: any;
   const contractDataPath = path.join(forgeOutDirectory, filename, contractName + ".json");
   try {
@@ -34,40 +32,24 @@ export function getContractData(
 
   const bytecode = data?.bytecode?.object;
   if (!bytecode) throw new MUDError(`No bytecode found in ${contractDataPath}`);
-  const linkedBytecode = linkLibraries(bytecode, data?.bytecode?.linkReferences, libraries, deployerAddress);
 
   const deployedBytecode = data?.deployedBytecode?.object;
   if (!deployedBytecode) throw new MUDError(`No deployed bytecode found in ${contractDataPath}`);
-  const linkedDeployedBytecode = linkLibraries(
-    deployedBytecode,
-    data?.deployedBytecode?.linkReferences,
-    libraries,
-    deployerAddress,
-  );
 
   const abi = data?.abi;
   if (!abi) throw new MUDError(`No ABI found in ${contractDataPath}`);
 
-  return { abi, bytecode: linkedBytecode, deployedBytecodeSize: size(linkedDeployedBytecode as Hex) };
-}
+  const placeholders = Object.entries((data?.bytecode?.linkReferences ?? {}) as LinkReferences).flatMap(
+    ([path, contracts]) =>
+      Object.entries(contracts).flatMap(([contractName, locations]) =>
+        locations.map((location) => ({
+          path,
+          name: contractName,
+          start: location.start,
+          length: location.length,
+        })),
+      ),
+  );
 
-function linkLibraries(
-  bytecode: Hex,
-  linkReferences: LinkReferences,
-  libraries: PublicLibrary[],
-  deployerAddress: Hex,
-) {
-  let result = bytecode;
-  for (const [filename, referencedLibraries] of Object.entries(linkReferences)) {
-    for (const name of Object.keys(referencedLibraries)) {
-      const fullyQualifiedName = `${filename}:${name}`;
-      const placeholderData = libraries.find((library) => library.fullyQualifiedName === fullyQualifiedName);
-      if (placeholderData === undefined) {
-        throw new Error(`Unlinked library ${fullyQualifiedName}`);
-      }
-      const trimmedAddress = placeholderData.getAddress(deployerAddress).slice(2).toLowerCase();
-      result = result.replaceAll(placeholderData.addressPlaceholder, trimmedAddress) as Hex;
-    }
-  }
-  return result;
+  return { abi, bytecode, placeholders, deployedBytecodeSize: size(deployedBytecode as Hex) };
 }

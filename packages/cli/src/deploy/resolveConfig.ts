@@ -1,16 +1,18 @@
+import path from "path";
 import { resolveWorldConfig } from "@latticexyz/world";
-import { Config, ConfigInput, WorldFunction, salt } from "./common";
+import { Config, ConfigInput, Library, Module, System, WorldFunction, salt } from "./common";
 import { resourceToHex } from "@latticexyz/common";
 import { resolveWithContext } from "@latticexyz/config";
 import { encodeField } from "@latticexyz/protocol-parser";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
-import { Hex, getCreate2Address, hexToBytes, bytesToHex, Address, toFunctionSelector, toFunctionSignature } from "viem";
+import { Hex, hexToBytes, bytesToHex, toFunctionSelector, toFunctionSignature } from "viem";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { defaultModuleContracts } from "../utils/modules/constants";
 import { getContractData } from "../utils/utils/getContractData";
 import { configToTables } from "./configToTables";
-import { getPublicLibraries } from "./getPublicLibraries";
 import { groupBy } from "@latticexyz/common/utils";
+import { findLibraries } from "./findLibraries";
+import { createPrepareDeploy } from "./createPrepareDeploy";
 
 // TODO: this should be replaced by https://github.com/latticexyz/mud/issues/1668
 
@@ -18,30 +20,38 @@ export async function resolveConfig<config extends ConfigInput>({
   config,
   forgeSourceDir,
   forgeOutDir,
-  deployerAddress,
 }: {
   config: config;
   forgeSourceDir: string;
   forgeOutDir: string;
-  readonly deployerAddress: Hex;
 }): Promise<Config<config>> {
-  const libraries = await getPublicLibraries(forgeOutDir, deployerAddress);
+  const libraries = findLibraries(forgeOutDir).map((library): Library => {
+    // foundry/solc flattens artifacts, so we just use the path basename
+    const contractData = getContractData(path.basename(library.path), library.name, forgeOutDir);
+    return {
+      path: library.path,
+      name: library.name,
+      abi: contractData.abi,
+      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
+      deployedBytecodeSize: contractData.deployedBytecodeSize,
+    };
+  });
 
   const tables = configToTables(config);
 
   // TODO: should the config parser/loader help with resolving systems?
   const contractNames = getExistingContracts(forgeSourceDir).map(({ basename }) => basename);
   const resolvedConfig = resolveWorldConfig(config, contractNames);
-  const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir, libraries, deployerAddress);
+  const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir);
   const baseSystemFunctions = baseSystemContractData.abi
     .filter((item): item is typeof item & { type: "function" } => item.type === "function")
     .map(toFunctionSignature);
 
-  const systems = Object.entries(resolvedConfig.systems).map(([systemName, system]) => {
+  const systems = Object.entries(resolvedConfig.systems).map(([systemName, system]): System => {
     const namespace = config.namespace;
     const name = system.name;
     const systemId = resourceToHex({ type: "system", namespace, name });
-    const contractData = getContractData(`${systemName}.sol`, systemName, forgeOutDir, libraries, deployerAddress);
+    const contractData = getContractData(`${systemName}.sol`, systemName, forgeOutDir);
 
     const systemFunctions = contractData.abi
       .filter((item): item is typeof item & { type: "function" } => item.type === "function")
@@ -68,8 +78,7 @@ export async function resolveConfig<config extends ConfigInput>({
       allowedSystemIds: system.accessListSystems.map((name) =>
         resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name }),
       ),
-      getAddress: (deployer: Address) => getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
-      bytecode: contractData.bytecode,
+      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
       deployedBytecodeSize: contractData.deployedBytecodeSize,
       abi: contractData.abi,
       functions: systemFunctions,
@@ -107,10 +116,10 @@ export async function resolveConfig<config extends ConfigInput>({
     ),
   };
 
-  const modules = config.modules.map((mod) => {
+  const modules = config.modules.map((mod): Module => {
     const contractData =
       defaultModuleContracts.find((defaultMod) => defaultMod.name === mod.name) ??
-      getContractData(`${mod.name}.sol`, mod.name, forgeOutDir, libraries, deployerAddress);
+      getContractData(`${mod.name}.sol`, mod.name, forgeOutDir);
     const installArgs = mod.args
       .map((arg) => resolveWithContext(arg, resolveContext))
       .map((arg) => {
@@ -124,8 +133,7 @@ export async function resolveConfig<config extends ConfigInput>({
       name: mod.name,
       installAsRoot: mod.root,
       installData: installArgs.length === 0 ? "0x" : installArgs[0],
-      getAddress: (deployer: Address) => getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
-      bytecode: contractData.bytecode,
+      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
       deployedBytecodeSize: contractData.deployedBytecodeSize,
       abi: contractData.abi,
     };
