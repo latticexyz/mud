@@ -1,10 +1,10 @@
 import { readFile } from "fs/promises";
 import { Address, Hex, getCreate2Address, keccak256, stringToHex } from "viem";
-import toposort from "toposort";
 import glob from "glob";
 import { LinkReferences, getContractData } from "../utils/utils/getContractData";
 import { PublicLibrary, salt } from "./common";
 import path from "path";
+import { orderByDependencies } from "./orderByDependencies";
 
 export async function getPublicLibraries(forgeOutDir: string, deployerAddress: Hex) {
   const libraryDeps: {
@@ -17,11 +17,14 @@ export async function getPublicLibraries(forgeOutDir: string, deployerAddress: H
 
   for (const contractOutPath of files) {
     const json = JSON.parse((await readFile(contractOutPath, "utf8")).trim());
+    console.log(contractOutPath, json);
+
     const linkReferences = json.bytecode.linkReferences as LinkReferences;
 
-    const contractFullPath = Object.keys(json.metadata.settings.compilationTarget)[0];
     // skip files that do not reference any contract/library
     if (!json.metadata) continue;
+    console.log("contract", contractOutPath, json.metadata);
+    const contractFullPath = Object.keys(json.metadata.settings.compilationTarget)[0];
     const contractName = json.metadata.settings.compilationTarget[contractFullPath];
 
     for (const [libraryFullPath, namePositions] of Object.entries(linkReferences)) {
@@ -37,17 +40,11 @@ export async function getPublicLibraries(forgeOutDir: string, deployerAddress: H
     }
   }
 
-  const directedGraphEdges: [string, string][] = libraryDeps.map(
-    ({ contractFullyQualifiedName, libraryFullyQualifiedName }) => [
-      libraryFullyQualifiedName,
-      contractFullyQualifiedName,
-    ],
+  const orderedLibraryDeps = orderByDependencies(
+    libraryDeps,
+    (lib) => lib.libraryFullyQualifiedName,
+    (lib) => [lib.contractFullyQualifiedName],
   );
-  const dependencyOrder = toposort(directedGraphEdges);
-
-  const orderedLibraryDeps = libraryDeps.sort((a, b) => {
-    return dependencyOrder.indexOf(a.libraryFullyQualifiedName) - dependencyOrder.indexOf(b.libraryFullyQualifiedName);
-  });
 
   const libraries: PublicLibrary[] = [];
   for (const { libraryFilename, libraryName, libraryFullyQualifiedName } of orderedLibraryDeps) {
