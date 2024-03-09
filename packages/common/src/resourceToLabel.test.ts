@@ -1,5 +1,5 @@
 import { describe, it, expect, expectTypeOf } from "vitest";
-import { resourceToLabel } from "./resourceLabel";
+import { resourceToLabel } from "./resourceToLabel";
 
 describe("resourceToLabel", () => {
   it("creates a human-readable label for a resource", () => {
