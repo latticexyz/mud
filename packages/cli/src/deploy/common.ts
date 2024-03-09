@@ -6,7 +6,6 @@ import IModuleAbi from "@latticexyz/world-modules/out/IModule.sol/IModule.abi.js
 import { Tables, configToTables } from "./configToTables";
 import { StoreConfig, helloStoreEvent } from "@latticexyz/store";
 import { WorldConfig, helloWorldEvent } from "@latticexyz/world";
-import { string } from "yargs";
 
 export const salt = padHex("0x", { size: 32 });
 
