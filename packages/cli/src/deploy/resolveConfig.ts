@@ -16,7 +16,7 @@ import { createPrepareDeploy } from "./createPrepareDeploy";
 
 // TODO: this should be replaced by https://github.com/latticexyz/mud/issues/1668
 
-export async function resolveConfig<config extends ConfigInput>({
+export function resolveConfig<config extends ConfigInput>({
   config,
   forgeSourceDir,
   forgeOutDir,
@@ -24,7 +24,7 @@ export async function resolveConfig<config extends ConfigInput>({
   config: config;
   forgeSourceDir: string;
   forgeOutDir: string;
-}): Promise<Config<config>> {
+}): Config<config> {
   const libraries = findLibraries(forgeOutDir).map((library): Library => {
     // foundry/solc flattens artifacts, so we just use the path basename
     const contractData = getContractData(path.basename(library.path), library.name, forgeOutDir);
