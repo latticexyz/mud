@@ -1,5 +1,11 @@
-export type ResourceLabel<namespace extends string = string, name extends string = string> = `${namespace}__${name}`;
+const rootNamespace = "";
 
+export type ResourceLabel<
+  namespace extends string = string,
+  name extends string = string,
+> = namespace extends typeof rootNamespace ? name : `${namespace}__${name}`;
+
+// TODO: only return name if namespace is empty (i.e. root)
 export function resourceToLabel<namespace extends string, name extends string>({
   namespace,
   name,
@@ -7,5 +13,5 @@ export function resourceToLabel<namespace extends string, name extends string>({
   readonly namespace: namespace;
   readonly name: name;
 }): ResourceLabel<namespace, name> {
-  return `${namespace}__${name}`;
+  return (namespace === rootNamespace ? name : `${namespace}__${name}`) as ResourceLabel<namespace, name>;
 }
