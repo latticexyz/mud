@@ -56,14 +56,17 @@ export type LibraryPlaceholder = {
    * Library name, e.g. `SomeLib`
    */
   name: string;
+  /**
+   * Byte offset of placeholder in bytecode
+   */
   start: number;
+  /**
+   * Size of placeholder to replace in bytes
+   */
   length: number;
 };
 
 export type DeterministicContract = {
-  // readonly getAddress: (deployer: Address) => Address;
-  // readonly bytecode: Hex;
-
   readonly prepareDeploy: (
     deployer: Address,
     libraries: readonly Library[],
