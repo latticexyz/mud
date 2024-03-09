@@ -26,7 +26,7 @@ import worlds from "contracts/worlds.json";
  */
 import { supportedChains } from "./supportedChains";
 
-import { isHex } from "viem";
+import { isAddress } from "viem";
 
 export async function getNetworkConfig() {
   const params = new URLSearchParams(window.location.search);
@@ -57,8 +57,11 @@ export async function getNetworkConfig() {
    */
   const world = worlds[chain.id.toString()];
   const worldAddress = params.get("worldAddress") || world?.address;
-  if (!isHex(worldAddress)) {
+  if (!worldAddress) {
     throw new Error(`No world address found for chain ${chainId}. Did you run \`mud deploy\`?`);
+  }
+  if (!isAddress(worldAddress)) {
+    throw new Error(`The world address is not valid: ${worldAddress}`);
   }
 
   /*

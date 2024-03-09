@@ -5,9 +5,18 @@
 
 import { type Hex } from "viem";
 import { type Network } from "./setupNetwork";
-import { type WorldContract } from "./wallet/burner";
+import { type WorldContract } from "./wallet/createBurner";
 
-export function createSystemCalls({ tables, useStore, waitForTransaction }: Network, worldContract: WorldContract) {
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+export function createSystemCalls(
+  /*
+   * `tables`, `useStore`, and `waitForTransaction` are from `syncToZustand()`.
+   * `worldContract` is from `getContract()`.
+   */
+  { tables, useStore, waitForTransaction }: Network,
+  worldContract: WorldContract,
+) {
   const addTask = async (label: string) => {
     const tx = await worldContract.write.addTask([label]);
     await waitForTransaction(tx);

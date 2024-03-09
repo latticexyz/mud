@@ -1,9 +1,9 @@
 import { createWalletClient, getContract, type Hex } from "viem";
-import { privateKeyToAccount, privateKeyToAddress } from "viem/accounts";
 import { Subject, share } from "rxjs";
-import { getBurnerPrivateKey, type ContractWrite } from "@latticexyz/common";
+import { type ContractWrite } from "@latticexyz/common";
 import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
-import { createClientConfig } from "../createClientConfig";
+import { createViemClientConfig } from "../createViemClientConfig";
+import { getBurnerAccount } from "./getBurnerAccount";
 import { callFrom } from "./callFrom";
 import { type Network } from "../setupNetwork";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
@@ -11,7 +11,13 @@ import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 export type Burner = ReturnType<typeof createBurner>;
 export type WorldContract = Burner["worldContract"];
 
-export function createBurner(network: Network, externalWalletAccountAddress?: Hex) {
+// Create a burner object including `walletClient` and `worldContract`.
+//
+// A burner account is a temporary account stored in local storage.
+// This function checks its existence in storage; if absent, generates and saves the account.
+//
+// If `delegatorAddress` is provided, delegation is automatically applied to `walletClient.writeContract(world...)` and `worldContract.write()`.
+export function createBurner(network: Network, delegatorAddress?: Hex) {
   /*
    * Create an observable for contract writes that we can
    * pass into MUD dev tools for transaction observability.
@@ -19,25 +25,27 @@ export function createBurner(network: Network, externalWalletAccountAddress?: He
   const write$ = new Subject<ContractWrite>();
 
   /*
-   * Create a temporary wallet and a viem client for it
+   * Get or create a burner account, and create a viem client for it
    * (see https://viem.sh/docs/clients/wallet.html).
    */
   let walletClient = createWalletClient({
-    ...createClientConfig(network.publicClient.chain),
-    account: privateKeyToAccount(getBurnerPrivateKey()),
+    ...createViemClientConfig(network.publicClient.chain),
+    account: getBurnerAccount(),
   })
     .extend(transactionQueue())
     .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
 
-  if (externalWalletAccountAddress) {
+  if (delegatorAddress) {
     walletClient = walletClient.extend(
       callFrom({
         worldAddress: network.worldAddress,
-        delegatorAddress: externalWalletAccountAddress,
+        delegatorAddress,
         worldFunctionToSystemFunction: async (worldFunctionSelector) => {
           const systemFunction = network.useStore
             .getState()
-            .getValue(network.tables.FunctionSelectors, { worldFunctionSelector })!;
+            .getValue(network.tables.FunctionSelectors, { worldFunctionSelector });
+
+          if (!systemFunction) throw new Error(`Possibly not synced: ${worldFunctionSelector}`);
 
           return { systemId: systemFunction.systemId, systemFunctionSelector: systemFunction.systemFunctionSelector };
         },
@@ -54,9 +62,5 @@ export function createBurner(network: Network, externalWalletAccountAddress?: He
     client: { public: network.publicClient, wallet: walletClient },
   });
 
-  return { walletClient, worldContract, write$: write$.asObservable().pipe(share()) };
-}
-
-export function getBurnerAddress() {
-  return privateKeyToAddress(getBurnerPrivateKey());
+  return { walletClient, worldContract, write$: write$.asObservable().pipe(share()), delegatorAddress };
 }

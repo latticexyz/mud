@@ -6,12 +6,11 @@
 import { createPublicClient } from "viem";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
-import { createClientConfig } from "./createClientConfig";
+import { createViemClientConfig } from "./createViemClientConfig";
 
 /*
  * Import our MUD config, which includes strong types for
- * our tables and other config options. We use this to generate
- * things like RECS components and get back strong types for them.
+ * our tables and other config options. We use this for `syncToZustand()`.
  *
  * See https://mud.dev/templates/typescript/contracts#mudconfigts
  * for the source of this information.
@@ -27,10 +26,10 @@ export async function setupNetwork() {
    * Create a viem public (read only) client
    * (https://viem.sh/docs/clients/public.html)
    */
-  const publicClient = createPublicClient(createClientConfig(networkConfig.chain));
+  const publicClient = createPublicClient(createViemClientConfig(networkConfig.chain));
 
   /*
-   * Sync on-chain state into zustand and keeps our client in sync.
+   * Sync on-chain state into Zustand and keeps our client in sync.
    * Uses the MUD indexer if available, otherwise falls back
    * to the viem publicClient to make RPC calls to fetch MUD
    * events from the chain.
@@ -43,8 +42,8 @@ export async function setupNetwork() {
   });
 
   return {
-    worldAddress: networkConfig.worldAddress,
     publicClient,
+    worldAddress: networkConfig.worldAddress,
     ...syncResult,
   };
 }

@@ -11,7 +11,7 @@
 
  */
 
-import { type MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains";
+import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains";
 
 /*
  * See https://mud.dev/tutorials/minimal/deploy#run-the-user-interface
@@ -20,7 +20,8 @@ import { type MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/ch
 export const supportedChains: MUDChain[] = [
   {
     ...mudFoundry,
-    // See https://github.com/latticexyz/mud/pull/2330
+    // Uses a placeholder explorer URL as a workaround for a Wagmi issue.
+    // Details at: https://github.com/latticexyz/mud/pull/2330
     blockExplorers: { default: { name: "", url: "https://example.com" } },
   },
   latticeTestnet,
