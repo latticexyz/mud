@@ -1,10 +1,4 @@
-import {
-  decodeEventLog,
-  AbiEventSignatureNotFoundError,
-  decodeFunctionData,
-  Hex,
-  AbiFunctionSignatureNotFoundError,
-} from "viem";
+import { decodeEventLog, AbiEventSignatureNotFoundError, decodeFunctionData, Hex } from "viem";
 import { twMerge } from "tailwind-merge";
 import { isDefined } from "@latticexyz/common/utils";
 import { PendingIcon } from "../icons/PendingIcon";
@@ -68,20 +62,9 @@ export function WriteSummary({ write }: Props) {
     const functionSelectorAndArgs: Hex = write.request?.args?.length
       ? (write.request.args[write.request.args.length - 1] as Hex)
       : `0x`;
-
-    // TODO: Since `functionSelectorAndArgs` corresponds to a System's function, decoding it using
-    // the World ABI may not always be successful. For instance, namespaced system calls could
-    // result in an error.
-    // See also https://github.com/latticexyz/mud/issues/2382
-    try {
-      const functionData = decodeFunctionData({ abi: worldAbi, data: functionSelectorAndArgs });
-      functionName = functionData.functionName;
-      functionArgs = functionData.args;
-    } catch (error) {
-      if (!(error instanceof AbiFunctionSignatureNotFoundError)) {
-        throw error;
-      }
-    }
+    const functionData = decodeFunctionData({ abi: worldAbi, data: functionSelectorAndArgs });
+    functionName = functionData.functionName;
+    functionArgs = functionData.args;
   }
 
   return (
