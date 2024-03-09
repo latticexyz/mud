@@ -4,7 +4,7 @@ import { Library, System, WorldDeploy, worldAbi } from "./common";
 import { debug } from "./debug";
 import { getSystems } from "./getSystems";
 import { getResourceAccess } from "./getResourceAccess";
-import { uniqueBy, wait } from "@latticexyz/common/utils";
+import { wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 

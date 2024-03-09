@@ -1,6 +1,6 @@
 import path from "path";
 import { resolveWorldConfig } from "@latticexyz/world";
-import { Config, ConfigInput, Library, Module, System, WorldFunction, salt } from "./common";
+import { Config, ConfigInput, Library, Module, System, WorldFunction } from "./common";
 import { resourceToHex } from "@latticexyz/common";
 import { resolveWithContext } from "@latticexyz/config";
 import { encodeField } from "@latticexyz/protocol-parser";

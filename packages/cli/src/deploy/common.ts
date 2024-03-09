@@ -96,10 +96,7 @@ export type System = DeterministicContract & {
   readonly functions: readonly WorldFunction[];
 };
 
-export type DeployedSystem = Omit<
-  System,
-  "getAddress" | "abi" | "bytecode" | "deployedBytecodeSize" | "allowedSystemIds"
-> & {
+export type DeployedSystem = Omit<System, "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"> & {
   address: Address;
 };
 

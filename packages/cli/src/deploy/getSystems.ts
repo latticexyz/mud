@@ -1,5 +1,5 @@
-import { DeployedSystem, System, WorldDeploy, worldTables } from "./common";
-import { Address, Client } from "viem";
+import { DeployedSystem, WorldDeploy, worldTables } from "./common";
+import { Client } from "viem";
 import { getResourceIds } from "./getResourceIds";
 import { hexToResource, resourceToLabel } from "@latticexyz/common";
 import { getTableValue } from "./getTableValue";
@@ -23,7 +23,7 @@ export async function getSystems({
 
   debug("looking up systems", systems.map(resourceToLabel).join(", "));
   return await Promise.all(
-    systems.map(async (system) => {
+    systems.map(async (system): Promise<DeployedSystem> => {
       const { system: address, publicAccess } = await getTableValue({
         client,
         worldDeploy,
