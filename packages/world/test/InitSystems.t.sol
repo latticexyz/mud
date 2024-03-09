@@ -9,7 +9,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { createWorld } from "./createWorld.sol";
 
 import { LimitedCallContext } from "../src/modules/init/LimitedCallContext.sol";
-import { getFunctionSignaturesAccessManagement, getFunctionSignaturesBalanceTransfer, getFunctionSignaturesBatchCall, getFunctionSignaturesRegistration } from "../src/modules/init/functionSignatures.sol";
+import { getFunctionSignaturesAccessManagementSystem, getFunctionSignaturesBalanceTransferSystem, getFunctionSignaturesBatchCallSystem, getFunctionSignaturesRegistrationSystem } from "../src/modules/init/functionSignatures.sol";
 
 import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, REGISTRATION_SYSTEM_ID } from "../src/modules/init/constants.sol";
 
@@ -39,7 +39,7 @@ contract LimitedCallContextTest is Test {
   }
 
   function testAccessManagementSystem() public {
-    string[4] memory functionSignaturesAccessManagement = getFunctionSignaturesAccessManagement();
+    string[4] memory functionSignaturesAccessManagement = getFunctionSignaturesAccessManagementSystem();
 
     for (uint256 i; i < functionSignaturesAccessManagement.length; i++) {
       callSystem(ACCESS_MANAGEMENT_SYSTEM_ID, functionSignaturesAccessManagement[i]);
@@ -47,7 +47,7 @@ contract LimitedCallContextTest is Test {
   }
 
   function testBalanceTransferSystem() public {
-    string[2] memory functionSignaturesBalanceTransfer = getFunctionSignaturesBalanceTransfer();
+    string[2] memory functionSignaturesBalanceTransfer = getFunctionSignaturesBalanceTransferSystem();
 
     for (uint256 i; i < functionSignaturesBalanceTransfer.length; i++) {
       callSystem(BALANCE_TRANSFER_SYSTEM_ID, functionSignaturesBalanceTransfer[i]);
@@ -55,7 +55,7 @@ contract LimitedCallContextTest is Test {
   }
 
   function testBatchCallSystem() public {
-    string[2] memory functionSignaturesBatchCall = getFunctionSignaturesBatchCall();
+    string[2] memory functionSignaturesBatchCall = getFunctionSignaturesBatchCallSystem();
 
     for (uint256 i; i < functionSignaturesBatchCall.length; i++) {
       callSystem(BATCH_CALL_SYSTEM_ID, functionSignaturesBatchCall[i]);
@@ -63,7 +63,7 @@ contract LimitedCallContextTest is Test {
   }
 
   function testRegistrationSystem() public {
-    string[14] memory functionSignaturesRegistration = getFunctionSignaturesRegistration();
+    string[14] memory functionSignaturesRegistration = getFunctionSignaturesRegistrationSystem();
 
     for (uint256 i; i < functionSignaturesRegistration.length; i++) {
       callSystem(REGISTRATION_SYSTEM_ID, functionSignaturesRegistration[i]);
