@@ -22,7 +22,7 @@ const comparisons = {
 
 export function matchesCondition<table extends Table>(
   condition: QueryCondition,
-  subject: MatchedSubject<table>,
+  subject: MatchedSubject<table>
 ): boolean {
   switch (condition.op) {
     case "<":
@@ -34,13 +34,13 @@ export function matchesCondition<table extends Table>(
       return subject.records.some(
         (record) =>
           record.table.tableId === condition.left.tableId &&
-          comparisons[condition.op](record.fields[condition.left.field], condition.right),
+          comparisons[condition.op](record.fields[condition.left.field], condition.right)
       );
     case "in":
       return subject.records.some(
         (record) =>
           record.table.tableId === condition.left.tableId &&
-          condition.right.includes(record.fields[condition.left.field]),
+          condition.right.includes(record.fields[condition.left.field])
       );
   }
 }
