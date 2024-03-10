@@ -98,7 +98,6 @@ describe("subscribeToQuery", async () => {
         args: [1, 2],
       }),
     );
-    await testClient.mine({ blocks: 1 });
     await fetchLatestLogs();
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
@@ -203,7 +202,6 @@ describe("subscribeToQuery", async () => {
         args: [3, 5],
       }),
     );
-    await testClient.mine({ blocks: 1 });
     await fetchLatestLogs();
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
@@ -246,7 +244,6 @@ describe("subscribeToQuery", async () => {
         args: [2, 4],
       }),
     );
-    await testClient.mine({ blocks: 1 });
     await fetchLatestLogs();
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
@@ -353,7 +350,6 @@ describe("subscribeToQuery", async () => {
         args: [3, 5],
       }),
     );
-    await testClient.mine({ blocks: 1 });
     await fetchLatestLogs();
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
@@ -399,7 +395,6 @@ describe("subscribeToQuery", async () => {
         args: [100, 100],
       }),
     );
-    await testClient.mine({ blocks: 1 });
     await fetchLatestLogs();
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
@@ -624,7 +619,6 @@ describe("subscribeToQuery", async () => {
         args: [999, 999],
       }),
     );
-    await testClient.mine({ blocks: 1 });
     await fetchLatestLogs();
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
@@ -684,7 +678,6 @@ describe("subscribeToQuery", async () => {
         args: [3, 5],
       }),
     );
-    await testClient.mine({ blocks: 1 });
     await fetchLatestLogs();
 
     const latest$ = combineLatest({
@@ -743,7 +736,6 @@ describe("subscribeToQuery", async () => {
         args: [2, 4],
       }),
     );
-    await testClient.mine({ blocks: 1 });
     await fetchLatestLogs();
 
     expect(
