@@ -17,13 +17,13 @@ export const tables = {
 
 export async function createHydratedStore(worldAddress: Address): Promise<{
   store: ZustandStore<typeof tables>;
-  fetchLatestLogs: () => Promise<void>;
+  fetchLatestLogs: () => Promise<bigint>;
 }> {
   const store = createStore<typeof tables>({ tables });
   const storageAdapter = createStorageAdapter({ store });
 
   let lastBlockProcessed = (await getBlock(testClient, { blockTag: "earliest" })).number - 1n;
-  async function fetchLatestLogs(): Promise<void> {
+  async function fetchLatestLogs(): Promise<bigint> {
     const toBlock = await getBlockNumber(testClient);
     if (toBlock > lastBlockProcessed) {
       const fromBlock = lastBlockProcessed + 1n;
@@ -40,6 +40,7 @@ export async function createHydratedStore(worldAddress: Address): Promise<{
       }
       lastBlockProcessed = toBlock;
     }
+    return toBlock;
   }
 
   await fetchLatestLogs();

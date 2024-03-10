@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { storeEventsAbi } from "@latticexyz/store";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { createStore } from "./createStore";
@@ -6,9 +6,13 @@ import { config, deployMockGame } from "../../test/mockGame";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
 import { testClient } from "../../test/common";
 import { getBlockNumber } from "viem/actions";
+import { Address } from "viem";
 
 describe("createStorageAdapter", async () => {
-  await deployMockGame();
+  let worldAddress: Address;
+  beforeAll(async () => {
+    worldAddress = await deployMockGame();
+  });
 
   it("sets component values from logs", async () => {
     const useStore = createStore({ tables: config.tables });
