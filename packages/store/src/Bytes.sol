@@ -155,6 +155,18 @@ library Bytes {
   }
 
   /**
+   * @dev Extracts a 12-byte sequence from a bytes blob starting at a specific position.
+   * @param data The bytes blob from which a 12-byte sequence is to be extracted.
+   * @param start The starting position within the bytes blob for extraction.
+   * @return output The extracted bytes12 value from the specified position in the bytes blob.
+   */
+  function slice12(bytes memory data, uint256 start) internal pure returns (bytes12 output) {
+    assembly {
+      output := mload(add(add(data, 0x20), start))
+    }
+  }
+
+  /**
    * @dev Extracts a 20-byte sequence from a bytes blob starting at a specific position.
    * @param data The bytes blob from which a 20-byte sequence is to be extracted.
    * @param start The starting position within the bytes blob for extraction.
