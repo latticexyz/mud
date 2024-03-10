@@ -6,7 +6,7 @@ import { waitForTransactionReceipt, writeContract } from "viem/actions";
 import { Address, keccak256, parseEther, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { testClient } from "../../test/common";
-import { combineLatest, filter, firstValueFrom, map, scan, shareReplay } from "rxjs";
+import { combineLatest, filter, firstValueFrom, map, scan, shareReplay, tap } from "rxjs";
 import { QueryResultSubject } from "./common";
 import { waitForTransaction } from "./test/waitForTransaction";
 
@@ -689,7 +689,10 @@ describe("subscribeToQuery", async () => {
         scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubjectChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-    }).pipe(shareReplay(1));
+    }).pipe(
+      tap((value) => console.log("latest$", value)),
+      shareReplay(1),
+    );
 
     // we expect two emissions for by this point: initial subjects + subjects changed since starting the subscriptions
     expect(
