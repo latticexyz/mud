@@ -6,7 +6,7 @@ import { waitForTransactionReceipt, writeContract } from "viem/actions";
 import { Address, keccak256, parseEther, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { testClient } from "../../test/common";
-import { observe } from "../../test/observe";
+import { combineLatest, firstValueFrom, scan, shareReplay } from "rxjs";
 
 const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));
 
@@ -32,74 +32,58 @@ describe("subscribeToQuery", async () => {
       from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
     });
 
-    const observedSubjects = observe(subjects$);
-    const observedSubjectChanges = observe(subjectChanges$);
+    const latest$ = combineLatest({
+      subjects: subjects$,
+      subjectsObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+      subjectChanges: subjectChanges$,
+      subjectChangesObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+    }).pipe(shareReplay(1));
 
-    expect(subjects).toMatchInlineSnapshot(`
-      [
-        [
-          "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+            ],
+            "type": "enter",
+          },
+          {
+            "subject": [
+              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            ],
+            "type": "enter",
+          },
+          {
+            "subject": [
+              "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            ],
+            "type": "enter",
+          },
+          {
+            "subject": [
+              "0xdBa86119a787422C593ceF119E40887f396024E2",
+            ],
+            "type": "enter",
+          },
         ],
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-        [
-          "0xdBa86119a787422C593ceF119E40887f396024E2",
-        ],
-      ]
-    `);
-
-    expect(observedSubjects.length).toBe(1);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-        ],
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-        [
-          "0xdBa86119a787422C593ceF119E40887f396024E2",
-        ],
-      ]
-    `);
-
-    expect(observedSubjects.lastValue).toBe(subjects);
-
-    expect(observedSubjectChanges.length).toBe(1);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
+        "subjectChangesObserved": 1,
+        "subjects": [
+          [
             "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
           ],
-          "type": "enter",
-        },
-        {
-          "subject": [
+          [
             "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
-          "type": "enter",
-        },
-        {
-          "subject": [
+          [
             "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
-          "type": "enter",
-        },
-        {
-          "subject": [
+          [
             "0xdBa86119a787422C593ceF119E40887f396024E2",
           ],
-          "type": "enter",
-        },
-      ]
+        ],
+        "subjectsObserved": 1,
+      }
     `);
 
     await waitForTransactionReceipt(testClient, {
@@ -114,37 +98,36 @@ describe("subscribeToQuery", async () => {
     });
     await fetchLatestLogs();
 
-    expect(observedSubjects.length).toBe(2);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+            ],
+            "type": "enter",
+          },
         ],
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-        [
-          "0xdBa86119a787422C593ceF119E40887f396024E2",
-        ],
-        [
-          "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-        ],
-      ]
-    `);
-
-    expect(observedSubjectChanges.length).toBe(2);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
+        "subjectChangesObserved": 2,
+        "subjects": [
+          [
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+          ],
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
+          [
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
+          [
+            "0xdBa86119a787422C593ceF119E40887f396024E2",
+          ],
+          [
             "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
-          "type": "enter",
-        },
-      ]
+        ],
+        "subjectsObserved": 2,
+      }
     `);
   });
 
@@ -159,50 +142,40 @@ describe("subscribeToQuery", async () => {
       ],
     });
 
-    const observedSubjects = observe(subjects$);
-    const observedSubjectChanges = observe(subjectChanges$);
+    const latest$ = combineLatest({
+      subjects: subjects$,
+      subjectsObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+      subjectChanges: subjectChanges$,
+      subjectChangesObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+    }).pipe(shareReplay(1));
 
-    expect(subjects).toMatchInlineSnapshot(`
-      [
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            ],
+            "type": "enter",
+          },
+          {
+            "subject": [
+              "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            ],
+            "type": "enter",
+          },
         ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-      ]
-    `);
-
-    expect(observedSubjects.length).toBe(1);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-      ]
-    `);
-
-    expect(observedSubjects.lastValue).toBe(subjects);
-
-    expect(observedSubjectChanges.length).toBe(1);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
+        "subjectChangesObserved": 1,
+        "subjects": [
+          [
             "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
-          "type": "enter",
-        },
-        {
-          "subject": [
+          [
             "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
-          "type": "enter",
-        },
-      ]
+        ],
+        "subjectsObserved": 1,
+      }
     `);
 
     await waitForTransactionReceipt(testClient, {
@@ -217,31 +190,30 @@ describe("subscribeToQuery", async () => {
     });
     await fetchLatestLogs();
 
-    expect(observedSubjects.length).toBe(2);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+            ],
+            "type": "enter",
+          },
         ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-        [
-          "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-        ],
-      ]
-    `);
-
-    expect(observedSubjectChanges.length).toBe(2);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
+        "subjectChangesObserved": 2,
+        "subjects": [
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
+          [
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
+          [
             "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
-          "type": "enter",
-        },
-      ]
+        ],
+        "subjectsObserved": 2,
+      }
     `);
 
     await waitForTransactionReceipt(testClient, {
@@ -256,28 +228,27 @@ describe("subscribeToQuery", async () => {
     });
     await fetchLatestLogs();
 
-    expect(observedSubjects.length).toBe(3);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+            ],
+            "type": "exit",
+          },
         ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-      ]
-    `);
-
-    expect(observedSubjectChanges.length).toBe(3);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
-            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+        "subjectChangesObserved": 3,
+        "subjects": [
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
-          "type": "exit",
-        },
-      ]
+          [
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
+        ],
+        "subjectsObserved": 3,
+      }
     `);
   });
 
@@ -293,62 +264,50 @@ describe("subscribeToQuery", async () => {
         { left: { tableId: tables.Position.tableId, field: "y" }, op: "<=", right: 5 },
       ],
     });
-    const observedSubjects = observe(subjects$);
-    const observedSubjectChanges = observe(subjectChanges$);
 
-    expect(subjects).toMatchInlineSnapshot(`
-      [
-        [
-          "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-        ],
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-      ]
-    `);
+    const latest$ = combineLatest({
+      subjects: subjects$,
+      subjectsObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+      subjectChanges: subjectChanges$,
+      subjectChangesObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+    }).pipe(shareReplay(1));
 
-    expect(observedSubjects.length).toBe(1);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+            ],
+            "type": "enter",
+          },
+          {
+            "subject": [
+              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            ],
+            "type": "enter",
+          },
+          {
+            "subject": [
+              "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            ],
+            "type": "enter",
+          },
         ],
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-      ]
-    `);
-
-    expect(observedSubjects.lastValue).toBe(subjects);
-
-    expect(observedSubjectChanges.length).toBe(1);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
+        "subjectChangesObserved": 1,
+        "subjects": [
+          [
             "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
           ],
-          "type": "enter",
-        },
-        {
-          "subject": [
+          [
             "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
-          "type": "enter",
-        },
-        {
-          "subject": [
+          [
             "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
-          "type": "enter",
-        },
-      ]
+        ],
+        "subjectsObserved": 1,
+      }
     `);
 
     await waitForTransactionReceipt(testClient, {
@@ -363,34 +322,33 @@ describe("subscribeToQuery", async () => {
     });
     await fetchLatestLogs();
 
-    expect(observedSubjects.length).toBe(2);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+            ],
+            "type": "enter",
+          },
         ],
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-        [
-          "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-        ],
-      ]
-    `);
-
-    expect(observedSubjectChanges.length).toBe(2);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
+        "subjectChangesObserved": 2,
+        "subjects": [
+          [
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+          ],
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
+          [
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
+          [
             "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
-          "type": "enter",
-        },
-      ]
+        ],
+        "subjectsObserved": 2,
+      }
     `);
 
     await waitForTransactionReceipt(testClient, {
@@ -405,31 +363,30 @@ describe("subscribeToQuery", async () => {
     });
     await fetchLatestLogs();
 
-    expect(observedSubjects.length).toBe(3);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+            ],
+            "type": "exit",
+          },
         ],
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-      ]
-    `);
-
-    expect(observedSubjectChanges.length).toBe(3);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
-            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+        "subjectChangesObserved": 3,
+        "subjects": [
+          [
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
           ],
-          "type": "exit",
-        },
-      ]
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
+          [
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
+        ],
+        "subjectsObserved": 3,
+      }
     `);
   });
 
@@ -443,50 +400,41 @@ describe("subscribeToQuery", async () => {
       ],
       where: [{ left: { tableId: tables.Health.tableId, field: "health" }, op: "!=", right: 0n }],
     });
-    const observedSubjects = observe(subjects$);
-    const observedSubjectChanges = observe(subjectChanges$);
 
-    expect(subjects).toMatchInlineSnapshot(`
-      [
-        [
-          "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-        ],
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-      ]
-    `);
+    const latest$ = combineLatest({
+      subjects: subjects$,
+      subjectsObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+      subjectChanges: subjectChanges$,
+      subjectChangesObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+    }).pipe(shareReplay(1));
 
-    expect(observedSubjects.length).toBe(1);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+            ],
+            "type": "enter",
+          },
+          {
+            "subject": [
+              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            ],
+            "type": "enter",
+          },
         ],
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-      ]
-    `);
-
-    expect(observedSubjects.lastValue).toBe(subjects);
-
-    expect(observedSubjectChanges.length).toBe(1);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
+        "subjectChangesObserved": 1,
+        "subjects": [
+          [
             "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
           ],
-          "type": "enter",
-        },
-        {
-          "subject": [
+          [
             "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
-          "type": "enter",
-        },
-      ]
+        ],
+        "subjectsObserved": 1,
+      }
     `);
   });
 
@@ -497,41 +445,34 @@ describe("subscribeToQuery", async () => {
       from: [{ tableId: tables.Terrain.tableId, subject: ["x", "y"] }],
       where: [{ left: { tableId: tables.Terrain.tableId, field: "terrainType" }, op: "=", right: 2 }],
     });
-    const observedSubjects = observe(subjects$);
-    const observedSubjectChanges = observe(subjectChanges$);
 
-    expect(subjects).toMatchInlineSnapshot(`
-      [
-        [
-          3,
-          5,
+    const latest$ = combineLatest({
+      subjects: subjects$,
+      subjectsObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+      subjectChanges: subjectChanges$,
+      subjectChangesObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+    }).pipe(shareReplay(1));
+
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              3,
+              5,
+            ],
+            "type": "enter",
+          },
         ],
-      ]
-    `);
-
-    expect(observedSubjects.length).toBe(1);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          3,
-          5,
-        ],
-      ]
-    `);
-
-    expect(observedSubjects.lastValue).toBe(subjects);
-
-    expect(observedSubjectChanges.length).toBe(1);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
+        "subjectChangesObserved": 1,
+        "subjects": [
+          [
             3,
             5,
           ],
-          "type": "enter",
-        },
-      ]
+        ],
+        "subjectsObserved": 1,
+      }
     `);
   });
 
@@ -542,38 +483,32 @@ describe("subscribeToQuery", async () => {
       from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
       except: [{ tableId: tables.Health.tableId, subject: ["player"] }],
     });
-    const observedSubjects = observe(subjects$);
-    const observedSubjectChanges = observe(subjectChanges$);
 
-    expect(subjects).toMatchInlineSnapshot(`
-      [
-        [
-          "0xdBa86119a787422C593ceF119E40887f396024E2",
+    const latest$ = combineLatest({
+      subjects: subjects$,
+      subjectsObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+      subjectChanges: subjectChanges$,
+      subjectChangesObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+    }).pipe(shareReplay(1));
+
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0xdBa86119a787422C593ceF119E40887f396024E2",
+            ],
+            "type": "enter",
+          },
         ],
-      ]
-    `);
-
-    expect(observedSubjects.length).toBe(1);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          "0xdBa86119a787422C593ceF119E40887f396024E2",
-        ],
-      ]
-    `);
-
-    expect(observedSubjects.lastValue).toBe(subjects);
-
-    expect(observedSubjectChanges.length).toBe(1);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
+        "subjectChangesObserved": 1,
+        "subjects": [
+          [
             "0xdBa86119a787422C593ceF119E40887f396024E2",
           ],
-          "type": "enter",
-        },
-      ]
+        ],
+        "subjectsObserved": 1,
+      }
     `);
   });
 
@@ -588,18 +523,21 @@ describe("subscribeToQuery", async () => {
       ],
     });
 
-    const observedSubjects = observe(subjects$);
-    const observedSubjectChanges = observe(subjectChanges$);
+    const latest$ = combineLatest({
+      subjects: subjects$,
+      subjectsObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+      subjectChanges: subjectChanges$,
+      subjectChangesObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+    }).pipe(shareReplay(1));
 
-    expect(subjects).toMatchInlineSnapshot("[]");
-
-    expect(observedSubjects.length).toBe(1);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot("[]");
-
-    expect(observedSubjects.lastValue).toBe(subjects);
-
-    expect(observedSubjectChanges.length).toBe(1);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot("[]");
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [],
+        "subjectChangesObserved": 1,
+        "subjects": [],
+        "subjectsObserved": 1,
+      }
+    `);
 
     await waitForTransactionReceipt(testClient, {
       hash: await writeContract(testClient, {
@@ -613,25 +551,24 @@ describe("subscribeToQuery", async () => {
     });
     await fetchLatestLogs();
 
-    expect(observedSubjects.length).toBe(2);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+            ],
+            "type": "enter",
+          },
         ],
-      ]
-    `);
-
-    expect(observedSubjectChanges.length).toBe(2);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
+        "subjectChangesObserved": 2,
+        "subjects": [
+          [
             "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
-          "type": "enter",
-        },
-      ]
+        ],
+        "subjectsObserved": 2,
+      }
     `);
   });
 
@@ -646,15 +583,40 @@ describe("subscribeToQuery", async () => {
       ],
     });
 
-    expect(subjects).toMatchInlineSnapshot(`
-      [
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+    const latest$ = combineLatest({
+      subjects: subjects$,
+      subjectsObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+      subjectChanges: subjectChanges$,
+      subjectChangesObserved: subjects$.pipe(scan((count) => count + 1, 0)),
+    }).pipe(shareReplay(1));
+
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            ],
+            "type": "enter",
+          },
+          {
+            "subject": [
+              "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            ],
+            "type": "enter",
+          },
         ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+        "subjectChangesObserved": 1,
+        "subjects": [
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
+          [
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
         ],
-      ]
+        "subjectsObserved": 1,
+      }
     `);
 
     await waitForTransactionReceipt(testClient, {
@@ -669,21 +631,18 @@ describe("subscribeToQuery", async () => {
     });
     await fetchLatestLogs();
 
-    const observedSubjects = observe(subjects$);
-    const observedSubjectChanges = observe(subjectChanges$);
-
-    expect(observedSubjects.length).toBe(2);
-    expect(observedSubjects.values).toMatchInlineSnapshot(`
-      [
-        [
-          [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-          ],
-          [
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-          ],
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+            ],
+            "type": "enter",
+          },
         ],
-        [
+        "subjectChangesObserved": 2,
+        "subjects": [
           [
             "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
@@ -694,35 +653,8 @@ describe("subscribeToQuery", async () => {
             "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
         ],
-      ]
-    `);
-
-    expect(observedSubjectChanges.length).toBe(2);
-    expect(observedSubjectChanges.values).toMatchInlineSnapshot(`
-      [
-        [
-          {
-            "subject": [
-              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            ],
-            "type": "enter",
-          },
-          {
-            "subject": [
-              "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            ],
-            "type": "enter",
-          },
-        ],
-        [
-          {
-            "subject": [
-              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-            ],
-            "type": "enter",
-          },
-        ],
-      ]
+        "subjectsObserved": 2,
+      }
     `);
 
     await waitForTransactionReceipt(testClient, {
@@ -737,28 +669,27 @@ describe("subscribeToQuery", async () => {
     });
     await fetchLatestLogs();
 
-    expect(observedSubjects.length).toBe(3);
-    expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
-      [
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+    expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
+      {
+        "subjectChanges": [
+          {
+            "subject": [
+              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+            ],
+            "type": "exit",
+          },
         ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-      ]
-    `);
-
-    expect(observedSubjectChanges.length).toBe(3);
-    expect(observedSubjectChanges.lastValue).toMatchInlineSnapshot(`
-      [
-        {
-          "subject": [
-            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+        "subjectChangesObserved": 3,
+        "subjects": [
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
-          "type": "exit",
-        },
-      ]
+          [
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
+        ],
+        "subjectsObserved": 3,
+      }
     `);
   });
 });
