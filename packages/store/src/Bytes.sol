@@ -54,7 +54,9 @@ library Bytes {
 
   /************************************************************************
    *
-   *    SLICE
+   *    GET
+   *
+   *    Used by codegen libraries
    *
    ************************************************************************/
 
@@ -64,7 +66,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes1 value from the specified position in the bytes blob.
    */
-  function slice1(bytes memory data, uint256 start) internal pure returns (bytes1 output) {
+  function getBytes1(bytes memory data, uint256 start) internal pure returns (bytes1 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -76,7 +78,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes1 value from the specified position in the bytes32 value.
    */
-  function slice1(bytes32 data, uint256 start) internal pure returns (bytes1 output) {
+  function getBytes1(bytes32 data, uint256 start) internal pure returns (bytes1 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -88,7 +90,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes2 value from the specified position in the bytes blob.
    */
-  function slice2(bytes memory data, uint256 start) internal pure returns (bytes2 output) {
+  function getBytes2(bytes memory data, uint256 start) internal pure returns (bytes2 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -100,7 +102,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes2 value from the specified position in the bytes32 value.
    */
-  function slice2(bytes32 data, uint256 start) internal pure returns (bytes2 output) {
+  function getBytes2(bytes32 data, uint256 start) internal pure returns (bytes2 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -112,7 +114,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes3 value from the specified position in the bytes blob.
    */
-  function slice3(bytes memory data, uint256 start) internal pure returns (bytes3 output) {
+  function getBytes3(bytes memory data, uint256 start) internal pure returns (bytes3 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -124,7 +126,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes3 value from the specified position in the bytes32 value.
    */
-  function slice3(bytes32 data, uint256 start) internal pure returns (bytes3 output) {
+  function getBytes3(bytes32 data, uint256 start) internal pure returns (bytes3 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -136,7 +138,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes4 value from the specified position in the bytes blob.
    */
-  function slice4(bytes memory data, uint256 start) internal pure returns (bytes4 output) {
+  function getBytes4(bytes memory data, uint256 start) internal pure returns (bytes4 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -148,7 +150,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes4 value from the specified position in the bytes32 value.
    */
-  function slice4(bytes32 data, uint256 start) internal pure returns (bytes4 output) {
+  function getBytes4(bytes32 data, uint256 start) internal pure returns (bytes4 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -160,7 +162,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes5 value from the specified position in the bytes blob.
    */
-  function slice5(bytes memory data, uint256 start) internal pure returns (bytes5 output) {
+  function getBytes5(bytes memory data, uint256 start) internal pure returns (bytes5 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -172,7 +174,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes5 value from the specified position in the bytes32 value.
    */
-  function slice5(bytes32 data, uint256 start) internal pure returns (bytes5 output) {
+  function getBytes5(bytes32 data, uint256 start) internal pure returns (bytes5 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -184,7 +186,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes6 value from the specified position in the bytes blob.
    */
-  function slice6(bytes memory data, uint256 start) internal pure returns (bytes6 output) {
+  function getBytes6(bytes memory data, uint256 start) internal pure returns (bytes6 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -196,7 +198,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes6 value from the specified position in the bytes32 value.
    */
-  function slice6(bytes32 data, uint256 start) internal pure returns (bytes6 output) {
+  function getBytes6(bytes32 data, uint256 start) internal pure returns (bytes6 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -208,7 +210,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes7 value from the specified position in the bytes blob.
    */
-  function slice7(bytes memory data, uint256 start) internal pure returns (bytes7 output) {
+  function getBytes7(bytes memory data, uint256 start) internal pure returns (bytes7 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -220,7 +222,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes7 value from the specified position in the bytes32 value.
    */
-  function slice7(bytes32 data, uint256 start) internal pure returns (bytes7 output) {
+  function getBytes7(bytes32 data, uint256 start) internal pure returns (bytes7 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -232,7 +234,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes8 value from the specified position in the bytes blob.
    */
-  function slice8(bytes memory data, uint256 start) internal pure returns (bytes8 output) {
+  function getBytes8(bytes memory data, uint256 start) internal pure returns (bytes8 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -244,7 +246,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes8 value from the specified position in the bytes32 value.
    */
-  function slice8(bytes32 data, uint256 start) internal pure returns (bytes8 output) {
+  function getBytes8(bytes32 data, uint256 start) internal pure returns (bytes8 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -256,7 +258,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes9 value from the specified position in the bytes blob.
    */
-  function slice9(bytes memory data, uint256 start) internal pure returns (bytes9 output) {
+  function getBytes9(bytes memory data, uint256 start) internal pure returns (bytes9 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -268,7 +270,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes9 value from the specified position in the bytes32 value.
    */
-  function slice9(bytes32 data, uint256 start) internal pure returns (bytes9 output) {
+  function getBytes9(bytes32 data, uint256 start) internal pure returns (bytes9 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -280,7 +282,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes10 value from the specified position in the bytes blob.
    */
-  function slice10(bytes memory data, uint256 start) internal pure returns (bytes10 output) {
+  function getBytes10(bytes memory data, uint256 start) internal pure returns (bytes10 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -292,7 +294,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes10 value from the specified position in the bytes32 value.
    */
-  function slice10(bytes32 data, uint256 start) internal pure returns (bytes10 output) {
+  function getBytes10(bytes32 data, uint256 start) internal pure returns (bytes10 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -304,7 +306,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes11 value from the specified position in the bytes blob.
    */
-  function slice11(bytes memory data, uint256 start) internal pure returns (bytes11 output) {
+  function getBytes11(bytes memory data, uint256 start) internal pure returns (bytes11 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -316,7 +318,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes11 value from the specified position in the bytes32 value.
    */
-  function slice11(bytes32 data, uint256 start) internal pure returns (bytes11 output) {
+  function getBytes11(bytes32 data, uint256 start) internal pure returns (bytes11 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -328,7 +330,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes12 value from the specified position in the bytes blob.
    */
-  function slice12(bytes memory data, uint256 start) internal pure returns (bytes12 output) {
+  function getBytes12(bytes memory data, uint256 start) internal pure returns (bytes12 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -340,7 +342,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes12 value from the specified position in the bytes32 value.
    */
-  function slice12(bytes32 data, uint256 start) internal pure returns (bytes12 output) {
+  function getBytes12(bytes32 data, uint256 start) internal pure returns (bytes12 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -352,7 +354,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes13 value from the specified position in the bytes blob.
    */
-  function slice13(bytes memory data, uint256 start) internal pure returns (bytes13 output) {
+  function getBytes13(bytes memory data, uint256 start) internal pure returns (bytes13 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -364,7 +366,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes13 value from the specified position in the bytes32 value.
    */
-  function slice13(bytes32 data, uint256 start) internal pure returns (bytes13 output) {
+  function getBytes13(bytes32 data, uint256 start) internal pure returns (bytes13 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -376,7 +378,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes14 value from the specified position in the bytes blob.
    */
-  function slice14(bytes memory data, uint256 start) internal pure returns (bytes14 output) {
+  function getBytes14(bytes memory data, uint256 start) internal pure returns (bytes14 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -388,7 +390,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes14 value from the specified position in the bytes32 value.
    */
-  function slice14(bytes32 data, uint256 start) internal pure returns (bytes14 output) {
+  function getBytes14(bytes32 data, uint256 start) internal pure returns (bytes14 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -400,7 +402,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes15 value from the specified position in the bytes blob.
    */
-  function slice15(bytes memory data, uint256 start) internal pure returns (bytes15 output) {
+  function getBytes15(bytes memory data, uint256 start) internal pure returns (bytes15 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -412,7 +414,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes15 value from the specified position in the bytes32 value.
    */
-  function slice15(bytes32 data, uint256 start) internal pure returns (bytes15 output) {
+  function getBytes15(bytes32 data, uint256 start) internal pure returns (bytes15 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -424,7 +426,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes16 value from the specified position in the bytes blob.
    */
-  function slice16(bytes memory data, uint256 start) internal pure returns (bytes16 output) {
+  function getBytes16(bytes memory data, uint256 start) internal pure returns (bytes16 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -436,7 +438,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes16 value from the specified position in the bytes32 value.
    */
-  function slice16(bytes32 data, uint256 start) internal pure returns (bytes16 output) {
+  function getBytes16(bytes32 data, uint256 start) internal pure returns (bytes16 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -448,7 +450,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes17 value from the specified position in the bytes blob.
    */
-  function slice17(bytes memory data, uint256 start) internal pure returns (bytes17 output) {
+  function getBytes17(bytes memory data, uint256 start) internal pure returns (bytes17 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -460,7 +462,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes17 value from the specified position in the bytes32 value.
    */
-  function slice17(bytes32 data, uint256 start) internal pure returns (bytes17 output) {
+  function getBytes17(bytes32 data, uint256 start) internal pure returns (bytes17 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -472,7 +474,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes18 value from the specified position in the bytes blob.
    */
-  function slice18(bytes memory data, uint256 start) internal pure returns (bytes18 output) {
+  function getBytes18(bytes memory data, uint256 start) internal pure returns (bytes18 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -484,7 +486,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes18 value from the specified position in the bytes32 value.
    */
-  function slice18(bytes32 data, uint256 start) internal pure returns (bytes18 output) {
+  function getBytes18(bytes32 data, uint256 start) internal pure returns (bytes18 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -496,7 +498,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes19 value from the specified position in the bytes blob.
    */
-  function slice19(bytes memory data, uint256 start) internal pure returns (bytes19 output) {
+  function getBytes19(bytes memory data, uint256 start) internal pure returns (bytes19 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -508,7 +510,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes19 value from the specified position in the bytes32 value.
    */
-  function slice19(bytes32 data, uint256 start) internal pure returns (bytes19 output) {
+  function getBytes19(bytes32 data, uint256 start) internal pure returns (bytes19 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -520,7 +522,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes20 value from the specified position in the bytes blob.
    */
-  function slice20(bytes memory data, uint256 start) internal pure returns (bytes20 output) {
+  function getBytes20(bytes memory data, uint256 start) internal pure returns (bytes20 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -532,7 +534,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes20 value from the specified position in the bytes32 value.
    */
-  function slice20(bytes32 data, uint256 start) internal pure returns (bytes20 output) {
+  function getBytes20(bytes32 data, uint256 start) internal pure returns (bytes20 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -544,7 +546,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes21 value from the specified position in the bytes blob.
    */
-  function slice21(bytes memory data, uint256 start) internal pure returns (bytes21 output) {
+  function getBytes21(bytes memory data, uint256 start) internal pure returns (bytes21 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -556,7 +558,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes21 value from the specified position in the bytes32 value.
    */
-  function slice21(bytes32 data, uint256 start) internal pure returns (bytes21 output) {
+  function getBytes21(bytes32 data, uint256 start) internal pure returns (bytes21 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -568,7 +570,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes22 value from the specified position in the bytes blob.
    */
-  function slice22(bytes memory data, uint256 start) internal pure returns (bytes22 output) {
+  function getBytes22(bytes memory data, uint256 start) internal pure returns (bytes22 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -580,7 +582,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes22 value from the specified position in the bytes32 value.
    */
-  function slice22(bytes32 data, uint256 start) internal pure returns (bytes22 output) {
+  function getBytes22(bytes32 data, uint256 start) internal pure returns (bytes22 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -592,7 +594,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes23 value from the specified position in the bytes blob.
    */
-  function slice23(bytes memory data, uint256 start) internal pure returns (bytes23 output) {
+  function getBytes23(bytes memory data, uint256 start) internal pure returns (bytes23 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -604,7 +606,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes23 value from the specified position in the bytes32 value.
    */
-  function slice23(bytes32 data, uint256 start) internal pure returns (bytes23 output) {
+  function getBytes23(bytes32 data, uint256 start) internal pure returns (bytes23 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -616,7 +618,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes24 value from the specified position in the bytes blob.
    */
-  function slice24(bytes memory data, uint256 start) internal pure returns (bytes24 output) {
+  function getBytes24(bytes memory data, uint256 start) internal pure returns (bytes24 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -628,7 +630,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes24 value from the specified position in the bytes32 value.
    */
-  function slice24(bytes32 data, uint256 start) internal pure returns (bytes24 output) {
+  function getBytes24(bytes32 data, uint256 start) internal pure returns (bytes24 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -640,7 +642,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes25 value from the specified position in the bytes blob.
    */
-  function slice25(bytes memory data, uint256 start) internal pure returns (bytes25 output) {
+  function getBytes25(bytes memory data, uint256 start) internal pure returns (bytes25 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -652,7 +654,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes25 value from the specified position in the bytes32 value.
    */
-  function slice25(bytes32 data, uint256 start) internal pure returns (bytes25 output) {
+  function getBytes25(bytes32 data, uint256 start) internal pure returns (bytes25 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -664,7 +666,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes26 value from the specified position in the bytes blob.
    */
-  function slice26(bytes memory data, uint256 start) internal pure returns (bytes26 output) {
+  function getBytes26(bytes memory data, uint256 start) internal pure returns (bytes26 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -676,7 +678,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes26 value from the specified position in the bytes32 value.
    */
-  function slice26(bytes32 data, uint256 start) internal pure returns (bytes26 output) {
+  function getBytes26(bytes32 data, uint256 start) internal pure returns (bytes26 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -688,7 +690,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes27 value from the specified position in the bytes blob.
    */
-  function slice27(bytes memory data, uint256 start) internal pure returns (bytes27 output) {
+  function getBytes27(bytes memory data, uint256 start) internal pure returns (bytes27 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -700,7 +702,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes27 value from the specified position in the bytes32 value.
    */
-  function slice27(bytes32 data, uint256 start) internal pure returns (bytes27 output) {
+  function getBytes27(bytes32 data, uint256 start) internal pure returns (bytes27 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -712,7 +714,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes28 value from the specified position in the bytes blob.
    */
-  function slice28(bytes memory data, uint256 start) internal pure returns (bytes28 output) {
+  function getBytes28(bytes memory data, uint256 start) internal pure returns (bytes28 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -724,7 +726,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes28 value from the specified position in the bytes32 value.
    */
-  function slice28(bytes32 data, uint256 start) internal pure returns (bytes28 output) {
+  function getBytes28(bytes32 data, uint256 start) internal pure returns (bytes28 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -736,7 +738,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes29 value from the specified position in the bytes blob.
    */
-  function slice29(bytes memory data, uint256 start) internal pure returns (bytes29 output) {
+  function getBytes29(bytes memory data, uint256 start) internal pure returns (bytes29 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -748,7 +750,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes29 value from the specified position in the bytes32 value.
    */
-  function slice29(bytes32 data, uint256 start) internal pure returns (bytes29 output) {
+  function getBytes29(bytes32 data, uint256 start) internal pure returns (bytes29 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -760,7 +762,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes30 value from the specified position in the bytes blob.
    */
-  function slice30(bytes memory data, uint256 start) internal pure returns (bytes30 output) {
+  function getBytes30(bytes memory data, uint256 start) internal pure returns (bytes30 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -772,7 +774,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes30 value from the specified position in the bytes32 value.
    */
-  function slice30(bytes32 data, uint256 start) internal pure returns (bytes30 output) {
+  function getBytes30(bytes32 data, uint256 start) internal pure returns (bytes30 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -784,7 +786,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes31 value from the specified position in the bytes blob.
    */
-  function slice31(bytes memory data, uint256 start) internal pure returns (bytes31 output) {
+  function getBytes31(bytes memory data, uint256 start) internal pure returns (bytes31 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -796,7 +798,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes31 value from the specified position in the bytes32 value.
    */
-  function slice31(bytes32 data, uint256 start) internal pure returns (bytes31 output) {
+  function getBytes31(bytes32 data, uint256 start) internal pure returns (bytes31 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
@@ -808,7 +810,7 @@ library Bytes {
    * @param start The starting position within the bytes blob for extraction.
    * @return output The extracted bytes32 value from the specified position in the bytes blob.
    */
-  function slice32(bytes memory data, uint256 start) internal pure returns (bytes32 output) {
+  function getBytes32(bytes memory data, uint256 start) internal pure returns (bytes32 output) {
     assembly {
       output := mload(add(add(data, 0x20), start))
     }
@@ -820,7 +822,7 @@ library Bytes {
    * @param start The starting position within the bytes32 value for extraction.
    * @return output The extracted bytes32 value from the specified position in the bytes32 value.
    */
-  function slice32(bytes32 data, uint256 start) internal pure returns (bytes32 output) {
+  function getBytes32(bytes32 data, uint256 start) internal pure returns (bytes32 output) {
     assembly {
       output := shl(mul(8, start), data)
     }
