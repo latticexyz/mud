@@ -206,6 +206,27 @@ function slice8(bytes memory data, uint256 start) internal pure returns (bytes8 
 | -------- | -------- | ------------------------------------------------------------------------- |
 | `output` | `bytes8` | The extracted bytes8 value from the specified position in the bytes blob. |
 
+#### slice12
+
+_Extracts a 12-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function slice12(bytes memory data, uint256 start) internal pure returns (bytes12 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 16-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes12` | The extracted bytes12 value from the specified position in the bytes blob. |
+
 #### slice16
 
 _Extracts a 16-byte sequence from a bytes blob starting at a specific position._
