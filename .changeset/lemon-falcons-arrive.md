@@ -1,5 +1,5 @@
 ---
-"@latticexyz/store": minor
+"@latticexyz/store": patch
 ---
 
 Restored `Bytes.sliceN` helpers that were previously (mistakenly) removed and renamed them to `Bytes.getBytesN`.
