@@ -2,10 +2,10 @@ import { ZustandStore } from "../zustand";
 import { AllTables, Query, QueryResultSubject } from "./common";
 import { ResolvedStoreConfig, StoreConfig, Tables } from "@latticexyz/store";
 import { findSubjects } from "./findSubjects";
-import { Observable, distinctUntilChanged, filter, map, scan, share } from "rxjs";
+import { Observable, distinctUntilChanged, map, scan } from "rxjs";
 import isEqual from "fast-deep-equal";
 
-type QueryResultSubjectChange = {
+export type QueryResultSubjectChange = {
   // TODO: naming
   //       is enter/exit better than add/remove? what about enter/exit vs entered/exited? in/out?
   readonly type: "enter" | "exit";
@@ -68,10 +68,7 @@ export async function subscribeToQuery<
         }
       });
 
-      return () => {
-        console.log("unsubscribing");
-        unsub();
-      };
+      return () => void unsub();
     }).pipe(distinctUntilChanged(isEqual));
   }
 
