@@ -689,10 +689,7 @@ describe("subscribeToQuery", async () => {
         scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubjectChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-    }).pipe(
-      tap((value) => console.log("latest$", value)),
-      shareReplay(1),
-    );
+    }).pipe(shareReplay(1));
 
     // we expect two emissions for by this point: initial subjects + subjects changed since starting the subscriptions
     expect(
