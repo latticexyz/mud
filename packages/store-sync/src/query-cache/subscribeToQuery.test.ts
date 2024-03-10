@@ -7,6 +7,7 @@ import { Address, keccak256, parseEther, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { testClient } from "../../test/common";
 import { observe } from "../../test/observe";
+import { wait } from "@latticexyz/common/utils";
 
 const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));
 
@@ -114,6 +115,10 @@ describe("subscribeToQuery", async () => {
     });
     await fetchLatestLogs();
 
+    // CI seems to give inconsistent results with the result of the stream
+    // TODO: replace this wait with better control of data piped to stream
+    await wait(100);
+
     expect(observedSubjects.length).toBe(2);
     expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
       [
@@ -217,6 +222,10 @@ describe("subscribeToQuery", async () => {
     });
     await fetchLatestLogs();
 
+    // CI seems to give inconsistent results with the result of the stream
+    // TODO: replace this wait with better control of data piped to stream
+    await wait(100);
+
     expect(observedSubjects.length).toBe(2);
     expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
       [
@@ -255,6 +264,10 @@ describe("subscribeToQuery", async () => {
       }),
     });
     await fetchLatestLogs();
+
+    // CI seems to give inconsistent results with the result of the stream
+    // TODO: replace this wait with better control of data piped to stream
+    await wait(100);
 
     expect(observedSubjects.length).toBe(3);
     expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
@@ -363,6 +376,10 @@ describe("subscribeToQuery", async () => {
     });
     await fetchLatestLogs();
 
+    // CI seems to give inconsistent results with the result of the stream
+    // TODO: replace this wait with better control of data piped to stream
+    await wait(100);
+
     expect(observedSubjects.length).toBe(2);
     expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
       [
@@ -404,6 +421,10 @@ describe("subscribeToQuery", async () => {
       }),
     });
     await fetchLatestLogs();
+
+    // CI seems to give inconsistent results with the result of the stream
+    // TODO: replace this wait with better control of data piped to stream
+    await wait(100);
 
     expect(observedSubjects.length).toBe(3);
     expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
@@ -613,6 +634,10 @@ describe("subscribeToQuery", async () => {
     });
     await fetchLatestLogs();
 
+    // CI seems to give inconsistent results with the result of the stream
+    // TODO: replace this wait with better control of data piped to stream
+    await wait(100);
+
     expect(observedSubjects.length).toBe(2);
     expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
       [
@@ -668,6 +693,10 @@ describe("subscribeToQuery", async () => {
       }),
     });
     await fetchLatestLogs();
+
+    // CI seems to give inconsistent results with the result of the stream
+    // TODO: replace this wait with better control of data piped to stream
+    await wait(100);
 
     const observedSubjects = observe(subjects$);
     const observedSubjectChanges = observe(subjectChanges$);
@@ -736,6 +765,10 @@ describe("subscribeToQuery", async () => {
       }),
     });
     await fetchLatestLogs();
+
+    // CI seems to give inconsistent results with the result of the stream
+    // TODO: replace this wait with better control of data piped to stream
+    await wait(100);
 
     expect(observedSubjects.length).toBe(3);
     expect(observedSubjects.lastValue).toMatchInlineSnapshot(`
