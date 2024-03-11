@@ -637,11 +637,11 @@ library Tables {
   function decodeStatic(
     bytes memory _blob
   ) internal pure returns (FieldLayout fieldLayout, Schema keySchema, Schema valueSchema) {
-    fieldLayout = FieldLayout.wrap(Bytes.slice32(_blob, 0));
+    fieldLayout = FieldLayout.wrap(Bytes.getBytes32(_blob, 0));
 
-    keySchema = Schema.wrap(Bytes.slice32(_blob, 32));
+    keySchema = Schema.wrap(Bytes.getBytes32(_blob, 32));
 
-    valueSchema = Schema.wrap(Bytes.slice32(_blob, 64));
+    valueSchema = Schema.wrap(Bytes.getBytes32(_blob, 64));
   }
 
   /**
