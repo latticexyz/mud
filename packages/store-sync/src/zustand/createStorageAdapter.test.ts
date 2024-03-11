@@ -14,6 +14,7 @@ describe("createStorageAdapter", async () => {
     const storageAdapter = createStorageAdapter({ store: useStore });
 
     console.log("fetching blocks");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for await (const block of fetchAndStoreLogs({
       storageAdapter,
       publicClient,

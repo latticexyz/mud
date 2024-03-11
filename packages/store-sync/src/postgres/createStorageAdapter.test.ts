@@ -19,6 +19,7 @@ const blocks = groupLogsByBlockNumber(
       topics: log.topics as [Hex, ...Hex[]],
       strict: true,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
   }),
 );

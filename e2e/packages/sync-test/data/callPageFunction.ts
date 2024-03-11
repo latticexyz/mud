@@ -14,6 +14,7 @@ export async function callPageFunction(
   const context = [functionName, args, serialize.toString(), deserialize.toString()] as const;
   const serializedValue = await page.evaluate(async ([functionName, args, serializeString]) => {
     const _serialize = deserializeFunction(serializeString);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const value = await (window as any)[functionName](...args);
     const serializedValue = value ? _serialize(value) : undefined;
     return serializedValue;

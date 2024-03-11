@@ -65,6 +65,7 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
     getRecords: <table extends Table>(table: table): TableRecords<table> => {
       const records = get().records;
       return Object.fromEntries(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         Object.entries(records).filter(([id, record]) => record.table.tableId === table.tableId),
       ) as unknown as TableRecords<table>;
     },

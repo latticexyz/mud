@@ -145,6 +145,7 @@ export function WriteSummary({ write }: Props) {
             </thead>
             <tbody className="font-mono text-xs">
               {events.map(({ eventName, args }, i) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const table = hexToResource((args as any).tableId);
                 // TODO: dedupe this with logs table so we can get both rendering the same
                 return (
@@ -158,8 +159,10 @@ export function WriteSummary({ write }: Props) {
                       {eventName === "Store_DeleteRecord" ? <span className="text-red-500 font-bold">-</span> : null}
                     </td>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       {hexKeyTupleToEntity((args as any).keyTuple)}
                     </td>
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">{(args as any).data}</td>
                   </tr>
                 );

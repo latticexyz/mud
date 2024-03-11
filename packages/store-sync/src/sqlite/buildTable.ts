@@ -21,12 +21,15 @@ type SQLiteTableFromSchema<TKeySchema extends KeySchema, TValueSchema extends Va
   schema: string | undefined;
   columns: {
     // TODO: figure out column types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [metaColumn in keyof typeof metaColumns]: any;
   } & {
     // TODO: figure out column types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [keyColumn in keyof TKeySchema]: any;
   } & {
     // TODO: figure out column types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [valueColumn in keyof TValueSchema]: any;
   };
 }>;
