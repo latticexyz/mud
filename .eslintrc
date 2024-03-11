@@ -14,6 +14,7 @@
       {
         "extendDefaults": true,
         "types": {
+          // don't throw an error for the empty object type ({})
           "{}": false,
         },
       },

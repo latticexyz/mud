@@ -20,7 +20,7 @@ export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums exte
 
 export type NamespacesInput = { [key: string]: NamespaceInput };
 
-export type NamespaceInput = Omit<StoreConfigInput, "userTypes" | "enums">;
+export type NamespaceInput = Pick<StoreConfigInput, "tables">;
 
 export type validateNamespaces<input, scope extends AbiTypeScope = AbiTypeScope> = {
   [namespace in keyof input]: {

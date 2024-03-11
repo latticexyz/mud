@@ -253,6 +253,7 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         namespaces: {},
       } as const;
+
       attest<typeof config>(expected);
     });
 
@@ -470,6 +471,7 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         namespaces: {},
       } as const;
+
       attest<typeof expected>(config);
     });
 
@@ -669,6 +671,7 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         namespaces: {},
       } as const;
+
       attest<typeof expected>(config);
     });
 
@@ -760,6 +763,7 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         namespaces: {},
       } as const;
+
       attest<typeof expected>(config);
     });
 
@@ -868,11 +872,13 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         namespaces: {},
       } as const;
+
       attest<typeof expected>(config);
     });
 
     it("should use the root namespace as default namespace", () => {
       const config = resolveWorldConfig({ tables: { Example: {} } });
+
       attest<"">(config.namespace);
     });
   });

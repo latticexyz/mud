@@ -13,6 +13,7 @@ describe("validateKeys", () => {
 
   it("should return a tuple of valid keys with an extended scope", () => {
     const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
+
     attest<
       ["static", "customStatic"],
       validateKeys<
@@ -34,6 +35,7 @@ describe("validateKeys", () => {
 
   it("should return a tuple of valid keys with an extended scope", () => {
     const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
+
     attest<
       ["static", "customStatic"],
       validateKeys<
@@ -50,6 +52,7 @@ describe("validateKeys", () => {
 describe("resolveTableShorthand", () => {
   it("should expand a single ABI type into a key/value schema", () => {
     const table = resolveTableShorthand("address");
+
     attest<{
       schema: {
         key: "bytes32";
@@ -62,6 +65,7 @@ describe("resolveTableShorthand", () => {
   it("should expand a single custom into a key/value schema", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
     const table = resolveTableShorthand("CustomType", scope);
+
     attest<{
       schema: {
         key: "bytes32";
@@ -88,6 +92,7 @@ describe("resolveTableShorthand", () => {
 
   it("should use `key` as single key if it has a static ABI type", () => {
     const table = resolveTableShorthand({ key: "address", name: "string", age: "uint256" });
+
     attest<{
       schema: {
         key: "address";
@@ -124,6 +129,7 @@ describe("resolveTableShorthand", () => {
   it("should use `key` as single key if it has a static custom type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
     const table = resolveTableShorthand({ key: "CustomType", name: "string", age: "uint256" }, scope);
+
     attest<{
       schema: { key: "CustomType"; name: "string"; age: "uint256" };
       primaryKey: ["key"];
@@ -134,6 +140,7 @@ describe("resolveTableShorthand", () => {
 
   it("should throw an error if `key` is not a custom static type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "bytes" });
+
     // @ts-expect-error "Error: Provide a `key` field with static ABI type or a full config with explicit primaryKey override."
     attest(resolveTableShorthand({ key: "CustomType", name: "string", age: "uint256" }, scope)).type.errors(
       `Provide a \`key\` field with static ABI type or a full config with explicit primaryKey override.`,
@@ -169,6 +176,7 @@ describe("resolveTableConfig", () => {
       },
       primaryKey: ["key"],
     } as const;
+
     attest<typeof expected>(table);
   });
 
@@ -200,6 +208,7 @@ describe("resolveTableConfig", () => {
       },
       primaryKey: ["key"],
     } as const;
+
     attest<typeof expected>(table);
   });
 
@@ -238,6 +247,7 @@ describe("resolveTableConfig", () => {
       },
       primaryKey: ["key"],
     } as const;
+
     attest<typeof expected>(table);
   });
 
@@ -277,6 +287,7 @@ describe("resolveTableConfig", () => {
       },
       primaryKey: ["key"],
     } as const;
+
     attest<typeof expected>(table);
   });
 
@@ -329,6 +340,7 @@ describe("resolveTableConfig", () => {
       },
       primaryKey: ["age"],
     } as const;
+
     attest<typeof expected>(table);
   });
 
@@ -352,6 +364,7 @@ describe("resolveTableConfig", () => {
       },
       primaryKey: ["age", "key"],
     } as const;
+
     attest<typeof expected>(table);
   });
 
@@ -391,6 +404,7 @@ describe("resolveTableConfig", () => {
       },
       primaryKey: ["key"],
     } as const;
+
     attest<typeof expected>(table);
   });
 
@@ -430,6 +444,7 @@ describe("resolveTableConfig", () => {
       },
       primaryKey: ["key"],
     } as const;
+
     attest<typeof expected>(table);
   });
 

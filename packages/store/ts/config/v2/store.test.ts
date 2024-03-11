@@ -37,6 +37,7 @@ describe("resolveStoreConfig", () => {
       enums: {},
       namespace: "",
     } as const;
+
     attest<typeof expected>(config);
   });
 
@@ -74,6 +75,7 @@ describe("resolveStoreConfig", () => {
       enums: {},
       namespace: "",
     } as const;
+
     attest<typeof expected>(config);
   });
 
@@ -119,6 +121,7 @@ describe("resolveStoreConfig", () => {
       enums: {},
       namespace: "",
     } as const;
+
     attest<typeof expected>(config);
   });
 
@@ -164,6 +167,7 @@ describe("resolveStoreConfig", () => {
       enums: {},
       namespace: "",
     } as const;
+
     attest<typeof expected>(config);
   });
 
@@ -247,6 +251,7 @@ describe("resolveStoreConfig", () => {
       enums: {},
       namespace: "",
     } as const;
+
     attest<typeof expected>(config);
   });
 
@@ -300,6 +305,7 @@ describe("resolveStoreConfig", () => {
       enums: {},
       namespace: "",
     } as const;
+
     attest<typeof expected>(config);
   }),
     it("it should return the full config given a full config with two primaryKey", () => {
@@ -351,6 +357,7 @@ describe("resolveStoreConfig", () => {
         enums: {},
         namespace: "",
       } as const;
+
       attest<typeof expected>(config);
     });
 
@@ -440,6 +447,7 @@ describe("resolveStoreConfig", () => {
       enums: {},
       namespace: "",
     } as const;
+
     attest<typeof expected>(config);
   });
 
@@ -530,6 +538,7 @@ describe("resolveStoreConfig", () => {
       enums: {},
       namespace: "",
     } as const;
+
     attest<typeof expected>(config);
   });
 
@@ -637,11 +646,13 @@ describe("resolveStoreConfig", () => {
       },
       namespace: "",
     } as const;
+
     attest<typeof expected>(config);
   });
 
   it("should use the root namespace as default namespace", () => {
     const config = resolveStoreConfig({ tables: { Example: {} } });
+
     attest<"">(config.namespace);
   });
 });
