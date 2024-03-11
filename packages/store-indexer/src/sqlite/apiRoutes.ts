@@ -9,6 +9,7 @@ import { compress } from "../koa-middleware/compress";
 import { getTablesWithRecords } from "./getTablesWithRecords";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function apiRoutes(database: BaseSQLiteDatabase<"sync", any>): Middleware {
   const router = new Router();
 

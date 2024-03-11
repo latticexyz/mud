@@ -15,7 +15,9 @@ debug.log = console.debug.bind(console);
 error.log = console.error.bind(console);
 
 export async function setupTables(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   db: PgDatabase<any>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tables: PgTableWithColumns<any>[],
 ): Promise<() => Promise<void>> {
   const schemaNames = unique(tables.map((table) => getTableConfig(table).schema).filter(isDefined));
@@ -49,11 +51,13 @@ export async function setupTables(
       if (primaryKeyColumns.length) {
         query = query.addPrimaryKeyConstraint(
           `${tableConfig.name}_${primaryKeyColumns.join("_")}_pk`,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           primaryKeyColumns as any,
         );
       }
 
       for (const pk of tableConfig.primaryKeys) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         query = query.addPrimaryKeyConstraint(pk.getName(), pk.columns.map((col) => col.name) as any);
       }
 

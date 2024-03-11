@@ -60,7 +60,9 @@ export function configToTables<config extends StoreConfig>(config: config): Tabl
           namespace: config.namespace,
           name: table.name,
         }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         keySchema: resolveUserTypes(table.keySchema, userTypes) as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         valueSchema: resolveUserTypes(table.valueSchema, userTypes) as any,
       } satisfies Table<config, config["tables"][keyof config["tables"]]>,
     ]),

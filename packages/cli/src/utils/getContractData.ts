@@ -14,11 +14,12 @@ export function getContractData(
   contractName: string,
   forgeOutDirectory: string,
 ): { bytecode: Hex; placeholders: readonly LibraryPlaceholder[]; abi: Abi; deployedBytecodeSize: number } {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let data: any;
   const contractDataPath = path.join(forgeOutDirectory, filename, contractName + ".json");
   try {
     data = JSON.parse(readFileSync(contractDataPath, "utf8"));
-  } catch (error: any) {
+  } catch (error) {
     throw new MUDError(`Error reading file at ${contractDataPath}`);
   }
 

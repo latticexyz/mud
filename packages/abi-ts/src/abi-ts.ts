@@ -17,7 +17,7 @@ yargs(hideBin(process.argv))
   // Enable strict mode.
   .strict()
   // Custom error handler
-  .fail((msg, err) => {
+  .fail((msg) => {
     console.error(chalk.red(msg));
     if (msg.includes("Missing required argument")) {
       console.log(

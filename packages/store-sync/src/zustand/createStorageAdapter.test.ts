@@ -9,6 +9,7 @@ import { getBlockNumber } from "viem/actions";
 import { Address } from "viem";
 
 describe("createStorageAdapter", async () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let worldAddress: Address;
   beforeAll(async () => {
     worldAddress = await deployMockGame();
@@ -19,6 +20,7 @@ describe("createStorageAdapter", async () => {
     const storageAdapter = createStorageAdapter({ store: useStore });
 
     console.log("fetching blocks");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for await (const block of fetchAndStoreLogs({
       storageAdapter,
       publicClient: testClient,

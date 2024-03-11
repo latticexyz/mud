@@ -28,6 +28,7 @@ export async function createHydratedStore(worldAddress: Address): Promise<{
     if (toBlock > lastBlockProcessed) {
       const fromBlock = lastBlockProcessed + 1n;
       // console.log("fetching blocks", fromBlock, "to", toBlock);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       for await (const block of fetchAndStoreLogs({
         storageAdapter,
         publicClient: testClient,

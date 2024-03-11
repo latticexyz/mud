@@ -15,6 +15,7 @@ import { findSubjects } from "./findSubjects";
 // TODO: make condition types smarter, so condition literal matches the field primitive type
 // TODO: return matching records alongside subjects? because the record subset may be smaller than what querying for records with matching subjects
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type QueryResult<query extends Query> = readonly QueryResultSubject[];
 
 export async function query<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(

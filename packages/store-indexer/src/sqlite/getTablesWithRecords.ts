@@ -11,6 +11,7 @@ import { SyncFilter, TableWithRecords } from "@latticexyz/store-sync";
  * @deprecated
  * */
 export function getTablesWithRecords(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   database: BaseSQLiteDatabase<"sync", any>,
   {
     chainId,

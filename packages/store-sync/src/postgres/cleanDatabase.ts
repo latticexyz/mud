@@ -35,6 +35,7 @@ function isMudSchemaName(schemaName: string): boolean {
  * VERY DESTRUCTIVE! Finds and drops all MUD indexer related schemas and tables.
  * @internal
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function cleanDatabase(db: PgDatabase<any>): Promise<void> {
   const schemaNames = (await db.select({ schemaName: schemata.schemaName }).from(schemata).execute())
     .map((row) => row.schemaName)

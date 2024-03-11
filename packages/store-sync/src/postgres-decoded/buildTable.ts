@@ -17,12 +17,15 @@ type PgTableFromSchema<TKeySchema extends KeySchema, TValueSchema extends ValueS
   schema: string;
   columns: {
     // TODO: figure out column types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [metaColumn in keyof typeof metaColumns]: any;
   } & {
     // TODO: figure out column types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [keyColumn in keyof TKeySchema]: any;
   } & {
     // TODO: figure out column types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [valueColumn in keyof TValueSchema]: any;
   };
 }>;

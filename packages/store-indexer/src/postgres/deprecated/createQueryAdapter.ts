@@ -14,6 +14,7 @@ import { groupBy } from "@latticexyz/common/utils";
  * @returns {Promise<QueryAdapter>} A set of methods used by tRPC endpoints.
  * @deprecated
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createQueryAdapter(database: PgDatabase<any>): Promise<QueryAdapter> {
   const adapter: QueryAdapter = {
     async getLogs(opts) {
