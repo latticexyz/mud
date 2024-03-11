@@ -23,6 +23,7 @@ import { InitModuleAddress } from "./codegen/tables/InitModuleAddress.sol";
 
 import { IModule, IModule } from "./IModule.sol";
 import { IWorldKernel } from "./IWorldKernel.sol";
+import { IWorldEvents } from "./IWorldEvents.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
@@ -47,7 +48,7 @@ contract World is StoreData, IWorldKernel {
   /// @dev Event emitted when the World contract is created.
   constructor() {
     creator = msg.sender;
-    emit HelloWorld(WORLD_VERSION);
+    emit IWorldEvents.HelloWorld(WORLD_VERSION);
   }
 
   /**

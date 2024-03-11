@@ -314,9 +314,9 @@ library UsedKeysIndex {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (bool has, uint40 index) {
-    has = (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    has = (_toBool(uint8(Bytes.getBytes1(_blob, 0))));
 
-    index = (uint40(Bytes.slice5(_blob, 1)));
+    index = (uint40(Bytes.getBytes5(_blob, 1)));
   }
 
   /**

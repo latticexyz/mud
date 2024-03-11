@@ -572,9 +572,9 @@ library Mixed {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (uint32 u32, uint128 u128) {
-    u32 = (uint32(Bytes.slice4(_blob, 0)));
+    u32 = (uint32(Bytes.getBytes4(_blob, 0)));
 
-    u128 = (uint128(Bytes.slice16(_blob, 4)));
+    u128 = (uint128(Bytes.getBytes16(_blob, 4)));
   }
 
   /**

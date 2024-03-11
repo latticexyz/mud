@@ -266,7 +266,7 @@ export function renderEncodeFieldSingle(field: RenderField) {
 export function renderDecodeValueType(field: RenderType, offset: number) {
   const { staticByteLength } = field;
 
-  const innerSlice = `Bytes.slice${staticByteLength}(_blob, ${offset})`;
+  const innerSlice = `Bytes.getBytes${staticByteLength}(_blob, ${offset})`;
 
   return renderCastStaticBytesToType(field, innerSlice);
 }

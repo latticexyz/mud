@@ -125,11 +125,7 @@ contract SystemSwitchTest is Test, GasReporter {
   }
 
   function testCallRootFromRootWorldSelector() public {
-    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(
-      rootSystemBId,
-      "echo(string)",
-      EchoSystem.echo.selector
-    );
+    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(rootSystemBId, "echo(string)", "echo(string)");
     bytes memory callData = abi.encodeWithSelector(worldFunctionSelector, "hello");
 
     vm.prank(caller);
@@ -164,11 +160,7 @@ contract SystemSwitchTest is Test, GasReporter {
   }
 
   function testCallRootFromNonRootWorldSelector() public {
-    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(
-      rootSystemBId,
-      "echo(string)",
-      EchoSystem.echo.selector
-    );
+    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(rootSystemBId, "echo(string)", "echo(string)");
     bytes memory callData = abi.encodeWithSelector(worldFunctionSelector, "hello");
 
     vm.prank(caller);
@@ -203,11 +195,7 @@ contract SystemSwitchTest is Test, GasReporter {
   }
 
   function testCallNonRootFromRootWorldSelector() public {
-    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(
-      systemBId,
-      "echo(string)",
-      EchoSystem.echo.selector
-    );
+    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(systemBId, "echo(string)", "echo(string)");
     bytes memory callData = abi.encodeWithSelector(worldFunctionSelector, "hello");
 
     vm.prank(caller);
@@ -250,11 +238,7 @@ contract SystemSwitchTest is Test, GasReporter {
   }
 
   function testCallNonRootFromNonRootWorldSelector() public {
-    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(
-      systemBId,
-      "echo(string)",
-      EchoSystem.echo.selector
-    );
+    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(systemBId, "echo(string)", "echo(string)");
     bytes memory callData = abi.encodeWithSelector(worldFunctionSelector, "hello");
 
     vm.prank(caller);
