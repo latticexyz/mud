@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { StoreData } from "@latticexyz/store/src/StoreData.sol";
+import { Store } from "@latticexyz/store/src/Store.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
@@ -34,7 +34,7 @@ import { Balances } from "./codegen/tables/Balances.sol";
  * @dev This contract is the core "World" contract containing various methods for
  * data manipulation, system calls, and dynamic function selector handling.
  */
-contract World is StoreData, IWorldKernel {
+contract World is Store, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
 
   /// @notice Address of the contract's creator.

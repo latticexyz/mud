@@ -8,15 +8,15 @@ import { StoreCore } from "./StoreCore.sol";
 import { IStoreEvents } from "./IStoreEvents.sol";
 
 /**
- * @title Store Data Contract
+ * @title Store Contract
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This contract integrates the core storage functionalities and provides an interface for data storage.
  * @dev This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
  * but not write methods.
  */
-abstract contract StoreData is StoreWrite, StoreRead {
+abstract contract Store is StoreWrite, StoreRead {
   /**
-   * @notice Constructs the StoreData contract and initializes the StoreCore.
+   * @notice Constructs the Store contract and initializes the StoreCore.
    * @dev Emits a HelloStore event upon creation.
    */
   constructor() {
