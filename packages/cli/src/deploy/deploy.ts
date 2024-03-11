@@ -49,7 +49,7 @@ export async function deploy<configInput extends ConfigInput>({
 
   await ensureWorldFactory(client, deployerAddress);
 
-  // deploy all libraries ahead of other contracts
+  // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
   await ensureContractsDeployed({
     client,
     deployerAddress,
@@ -59,14 +59,6 @@ export async function deploy<configInput extends ConfigInput>({
         deployedBytecodeSize: library.deployedBytecodeSize,
         label: `${library.path}:${library.name} library`,
       })),
-    ],
-  });
-
-  // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
-  await ensureContractsDeployed({
-    client,
-    deployerAddress,
-    contracts: [
       ...config.systems.map((system) => ({
         bytecode: system.prepareDeploy(deployerAddress, config.libraries).bytecode,
         deployedBytecodeSize: system.deployedBytecodeSize,
