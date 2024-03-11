@@ -16,5 +16,6 @@ export type DevToolsOptions<config extends StoreConfig = StoreConfig> = {
   worldAbi: Abi;
   write$: Observable<ContractWrite>;
   recsWorld?: RecsWorld;
-  useStore?: ZustandStore;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useStore?: ZustandStore<any>;
 };
