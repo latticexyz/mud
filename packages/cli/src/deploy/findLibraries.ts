@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import glob from "glob";
-import { LinkReferences } from "../utils/utils/getContractData";
+import { LinkReferences } from "../utils/getContractData";
 import { orderByDependencies } from "./orderByDependencies";
 
 export function findLibraries(forgeOutDir: string): readonly {

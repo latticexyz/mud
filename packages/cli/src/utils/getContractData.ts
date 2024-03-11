@@ -2,16 +2,8 @@ import { readFileSync } from "fs";
 import path from "path";
 import { MUDError } from "@latticexyz/common/errors";
 import { Abi, Hex, size } from "viem";
-import { LibraryPlaceholder } from "../../deploy/common";
-
-export type LinkReferences = {
-  [filename: string]: {
-    [name: string]: {
-      start: number;
-      length: number;
-    }[];
-  };
-};
+import { LibraryPlaceholder } from "../deploy/common";
+import { findPlaceholders } from "./findPlaceholders";
 
 /**
  * Load the contract's abi and bytecode from the file system
@@ -39,17 +31,7 @@ export function getContractData(
   const abi = data?.abi;
   if (!abi) throw new MUDError(`No ABI found in ${contractDataPath}`);
 
-  const placeholders = Object.entries((data?.bytecode?.linkReferences ?? {}) as LinkReferences).flatMap(
-    ([path, contracts]) =>
-      Object.entries(contracts).flatMap(([contractName, locations]) =>
-        locations.map((location) => ({
-          path,
-          name: contractName,
-          start: location.start,
-          length: location.length,
-        })),
-      ),
-  );
+  const placeholders = findPlaceholders(data?.bytecode?.linkReferences ?? {});
 
   return { abi, bytecode, placeholders, deployedBytecodeSize: size(deployedBytecode as Hex) };
 }
