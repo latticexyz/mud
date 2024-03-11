@@ -5,10 +5,8 @@ import {
   StoreConfigInput,
   resolveStoreConfig,
   validateStoreTablesConfig,
-  scopeWithEnums,
-  scopeWithUserTypes,
-  StoreTablesConfigInput,
   resolveStoreTablesConfig,
+  extendedScope,
 } from "@latticexyz/store/config";
 import { get } from "@latticexyz/store/ts/config/v2/generics";
 import { AbiTypeScope } from "@latticexyz/store/ts/config/v2/scope";
@@ -25,28 +23,22 @@ export type NamespacesInput = { [key: string]: NamespaceInput };
 export type NamespaceInput = Omit<StoreConfigInput, "userTypes" | "enums">;
 
 export type validateNamespaces<input, scope extends AbiTypeScope = AbiTypeScope> = {
-  [key in keyof input]: {
-    tables: "tables" extends keyof input[key]
-      ? validateStoreTablesConfig<get<input[key], "tables">, scope>
-      : StoreTablesConfigInput<scope>;
+  [namespace in keyof input]: {
+    [key in keyof input[namespace]]: key extends "tables"
+      ? validateStoreTablesConfig<input[namespace][key], scope>
+      : input[namespace][key];
   };
 };
 
 export type validateWorldConfig<input> = {
   readonly [key in keyof input]: key extends "tables"
-    ? validateStoreTablesConfig<
-        input[key],
-        scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-      >
+    ? validateStoreTablesConfig<input[key], extendedScope<input>>
     : key extends "userTypes"
       ? UserTypes
       : key extends "enums"
         ? narrow<input[key]>
         : key extends "namespaces"
-          ? validateNamespaces<
-              input[key],
-              scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-            >
+          ? validateNamespaces<input[key], extendedScope<input>>
           : input[key];
 };
 
@@ -64,7 +56,7 @@ export type resolveWorldConfig<input> = evaluate<
           readonly [key in namespacedTableKeys<input>]: key extends `${infer namespace}__${infer table}`
             ? resolveTableConfig<
                 get<get<get<get<input, "namespaces">, namespace>, "tables">, table>,
-                scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
+                extendedScope<input>
               >
             : never;
         }
@@ -72,10 +64,7 @@ export type resolveWorldConfig<input> = evaluate<
     readonly namespaces: "namespaces" extends keyof input
       ? {
           [key in keyof input["namespaces"]]: {
-            readonly tables: resolveStoreTablesConfig<
-              get<input["namespaces"][key], "tables">,
-              scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-            >;
+            readonly tables: resolveStoreTablesConfig<get<input["namespaces"][key], "tables">, extendedScope<input>>;
           };
         }
       : {};

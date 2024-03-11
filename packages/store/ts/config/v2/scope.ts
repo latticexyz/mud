@@ -9,7 +9,6 @@ export type EmptyScope = typeof EmptyScope;
 
 export type AbiTypeScope = ScopeOptions<{ [t in AbiType]: t }>;
 export const AbiTypeScope = { types: {} } as AbiTypeScope; // TODO: runtime implementation
-export type AnyScope = ScopeOptions<{ [t: string]: AbiType }>;
 
 export type ScopeOptions<types extends Dict<string, AbiType> = Dict<string, AbiType>> = {
   types: types;

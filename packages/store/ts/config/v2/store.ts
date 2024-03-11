@@ -38,12 +38,11 @@ export type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = E
     ? extendScope<scope, { [key in keyof enums]: "uint8" }>
     : scope;
 
+export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
+
 export type validateStoreConfig<input> = {
   [key in keyof input]: key extends "tables"
-    ? validateStoreTablesConfig<
-        input[key],
-        scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-      >
+    ? validateStoreTablesConfig<input[key], extendedScope<input>>
     : key extends "userTypes"
       ? UserTypes
       : key extends "enums"
@@ -54,12 +53,7 @@ export type validateStoreConfig<input> = {
 export type resolveEnums<enums> = { [key in keyof enums]: Readonly<enums[key]> };
 
 export type resolveStoreConfig<input> = evaluate<{
-  readonly tables: "tables" extends keyof input
-    ? resolveStoreTablesConfig<
-        input["tables"],
-        scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-      >
-    : {};
+  readonly tables: "tables" extends keyof input ? resolveStoreTablesConfig<input["tables"], extendedScope<input>> : {};
   readonly userTypes: "userTypes" extends keyof input ? input["userTypes"] : {};
   readonly enums: "enums" extends keyof input ? resolveEnums<input["enums"]> : {};
   readonly namespace: "namespace" extends keyof input ? input["namespace"] : "";
