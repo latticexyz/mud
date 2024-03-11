@@ -1,11 +1,12 @@
-import { ErrorMessage, evaluate } from "@arktype/util";
+import { ErrorMessage, conform, evaluate } from "@arktype/util";
 import { SchemaInput, resolveSchema } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
+import { get } from "./generics";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit primaryKey override.">;
 
-export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = [
+export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = readonly [
   getStaticAbiTypeKeys<schema, scope>,
   ...getStaticAbiTypeKeys<schema, scope>[],
 ];
@@ -75,21 +76,29 @@ export function validateKeys<validKeys extends PropertyKey, keys = PropertyKey[]
   return {} as never;
 }
 
-export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> =
-  input extends TableFullInput<SchemaInput<scope>, scope>
-    ? {
-        primaryKey: validateKeys<getStaticAbiTypeKeys<input["schema"], scope>, input["primaryKey"]>;
-        schema: input["schema"];
-      }
-    : input extends { primaryKey: unknown; schema: SchemaInput }
-      ? {
-          primaryKey: validateKeys<getStaticAbiTypeKeys<input["schema"], scope>, input["primaryKey"]>;
-          schema: SchemaInput<scope>;
-        }
-      : {
-          primaryKey: string[];
-          schema: SchemaInput<scope>;
-        };
+// export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> =
+//   input extends TableFullInput<SchemaInput<scope>, scope>
+//     ? {
+//         primaryKey: validateKeys<getStaticAbiTypeKeys<input["schema"], scope>, input["primaryKey"]>;
+//         schema: input["schema"];
+//       }
+//     : input extends { primaryKey: unknown; schema: SchemaInput }
+//       ? {
+//           primaryKey: validateKeys<getStaticAbiTypeKeys<input["schema"], scope>, input["primaryKey"]>;
+//           schema: SchemaInput<scope>;
+//         }
+//       : {
+//           primaryKey: string[];
+//           schema: SchemaInput<scope>;
+//         };
+
+export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> = {
+  [key in keyof input]: key extends "primaryKey"
+    ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput<scope>>, scope>, input[key]>
+    : key extends "schema"
+      ? conform<input[key], SchemaInput<scope>>
+      : input[key];
+};
 
 export type validateTableConfig<input, scope extends AbiTypeScope = AbiTypeScope> =
   input extends TableShorthandInput<scope>
@@ -123,7 +132,7 @@ export type resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope>
     ? resolveTableFullConfig<resolveTableShorthand<input, scope>, scope>
     : input extends TableFullInput<SchemaInput<scope>, scope>
       ? resolveTableFullConfig<input, scope>
-      : never
+      : input
 >;
 
 /**

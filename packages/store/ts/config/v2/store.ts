@@ -38,9 +38,6 @@ export type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = E
     ? extendScope<scope, { [key in keyof enums]: "uint8" }>
     : scope;
 
-// TODO: how would I make some keys required here?
-// I tried with stuff like `& StoreConfigInput` but any `&` here seems
-// to make us lose the fully narrow type inference
 export type validateStoreConfig<input> = {
   [key in keyof input]: key extends "tables"
     ? validateStoreTablesConfig<
@@ -53,21 +50,6 @@ export type validateStoreConfig<input> = {
         ? narrow<input[key]>
         : input[key];
 };
-
-// Found a way here, but still wonder if/how I could reuse a `& StoreConfigInput` here
-// export type validateStoreConfig2<input> = conform<
-//   input,
-//   {
-//     tables?: "tables" extends keyof input
-//       ? validateStoreTablesConfig<
-//           input["tables"],
-//           scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-//         >
-//       : StoreConfigInput["tables"];
-//     userTypes?: UserTypes;
-//     enums?: "enums" extends keyof input ? narrow<input["enums"]> : Enums;
-//   }
-// >;
 
 export type resolveEnums<enums> = { [key in keyof enums]: Readonly<enums[key]> };
 
