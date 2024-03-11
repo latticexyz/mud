@@ -117,14 +117,14 @@ library Dynamics1 {
   /**
    * @notice Get the length of staticB32.
    */
-  function lengthStaticB32(bytes32 key) internal pure returns (uint256) {
+  function lengthStaticB32() internal pure returns (uint256) {
     return 1;
   }
 
   /**
    * @notice Get the length of staticB32.
    */
-  function _lengthStaticB32(bytes32 key) internal pure returns (uint256) {
+  function _lengthStaticB32() internal pure returns (uint256) {
     return 1;
   }
 
@@ -227,14 +227,14 @@ library Dynamics1 {
   /**
    * @notice Get the length of staticI32.
    */
-  function lengthStaticI32(bytes32 key) internal pure returns (uint256) {
+  function lengthStaticI32() internal pure returns (uint256) {
     return 2;
   }
 
   /**
    * @notice Get the length of staticI32.
    */
-  function _lengthStaticI32(bytes32 key) internal pure returns (uint256) {
+  function _lengthStaticI32() internal pure returns (uint256) {
     return 2;
   }
 
@@ -337,14 +337,14 @@ library Dynamics1 {
   /**
    * @notice Get the length of staticU128.
    */
-  function lengthStaticU128(bytes32 key) internal pure returns (uint256) {
+  function lengthStaticU128() internal pure returns (uint256) {
     return 3;
   }
 
   /**
    * @notice Get the length of staticU128.
    */
-  function _lengthStaticU128(bytes32 key) internal pure returns (uint256) {
+  function _lengthStaticU128() internal pure returns (uint256) {
     return 3;
   }
 
@@ -447,14 +447,14 @@ library Dynamics1 {
   /**
    * @notice Get the length of staticAddrs.
    */
-  function lengthStaticAddrs(bytes32 key) internal pure returns (uint256) {
+  function lengthStaticAddrs() internal pure returns (uint256) {
     return 4;
   }
 
   /**
    * @notice Get the length of staticAddrs.
    */
-  function _lengthStaticAddrs(bytes32 key) internal pure returns (uint256) {
+  function _lengthStaticAddrs() internal pure returns (uint256) {
     return 4;
   }
 
@@ -557,14 +557,14 @@ library Dynamics1 {
   /**
    * @notice Get the length of staticBools.
    */
-  function lengthStaticBools(bytes32 key) internal pure returns (uint256) {
+  function lengthStaticBools() internal pure returns (uint256) {
     return 5;
   }
 
   /**
    * @notice Get the length of staticBools.
    */
-  function _lengthStaticBools(bytes32 key) internal pure returns (uint256) {
+  function _lengthStaticBools() internal pure returns (uint256) {
     return 5;
   }
 

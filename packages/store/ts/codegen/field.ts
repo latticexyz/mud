@@ -92,15 +92,11 @@ export function renderFieldMethods(options: RenderTableOptions): string {
           result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
             renderWithStore(
               storeArgument,
-              ({ _typedStore, _commentSuffix, _methodNamePrefix }) => `
+              ({ _commentSuffix, _methodNamePrefix }) => `
                 /**
                  * @notice Get the length of ${field.name}${_commentSuffix}.
                  */
-                function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
-                  _typedStore,
-                  _typedTableId,
-                  _typedKeyArgs,
-                ])}) internal pure returns (uint256) {
+                function ${_methodNamePrefix}length${_methodNameSuffix}() internal pure returns (uint256) {
                   return ${typeWrappingData.staticLength};
                 }
               `,
