@@ -47,11 +47,46 @@ export type WorldFunction = {
   readonly systemFunctionSelector: Hex;
 };
 
+export type LibraryPlaceholder = {
+  /**
+   * Path to library source file, e.g. `src/libraries/SomeLib.sol`
+   */
+  path: string;
+  /**
+   * Library name, e.g. `SomeLib`
+   */
+  name: string;
+  /**
+   * Byte offset of placeholder in bytecode
+   */
+  start: number;
+  /**
+   * Size of placeholder to replace in bytes
+   */
+  length: number;
+};
+
 export type DeterministicContract = {
-  readonly getAddress: (deployer: Address) => Address;
-  readonly bytecode: Hex;
+  readonly prepareDeploy: (
+    deployer: Address,
+    libraries: readonly Library[],
+  ) => {
+    readonly address: Address;
+    readonly bytecode: Hex;
+  };
   readonly deployedBytecodeSize: number;
   readonly abi: Abi;
+};
+
+export type Library = DeterministicContract & {
+  /**
+   * Path to library source file, e.g. `src/libraries/SomeLib.sol`
+   */
+  path: string;
+  /**
+   * Library name, e.g. `SomeLib`
+   */
+  name: string;
 };
 
 export type System = DeterministicContract & {
@@ -64,10 +99,7 @@ export type System = DeterministicContract & {
   readonly functions: readonly WorldFunction[];
 };
 
-export type DeployedSystem = Omit<
-  System,
-  "getAddress" | "abi" | "bytecode" | "deployedBytecodeSize" | "allowedSystemIds"
-> & {
+export type DeployedSystem = Omit<System, "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"> & {
   address: Address;
 };
 
@@ -82,4 +114,5 @@ export type Config<config extends ConfigInput> = {
   readonly tables: Tables<config>;
   readonly systems: readonly System[];
   readonly modules: readonly Module[];
+  readonly libraries: readonly Library[];
 };
