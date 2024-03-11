@@ -107,6 +107,12 @@ export default mudConfig({
       keySchema: {},
       valueSchema: "address",
     },
+    TransactionContext: {
+      keySchema: {},
+      valueSchema: {
+        firstMsgSender: "address",
+      },
+    },
   },
   excludeSystems: [
     // Worldgen currently does not support systems inheriting logic
