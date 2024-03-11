@@ -6,12 +6,14 @@
 PostgreSQL sync/indexer now uses `{storeAddress}` for its database schema names and `{namespace}__{tableName}` for its database table names (or just `{tableName}` for root namespace), to be more consistent with the rest of the MUD codebase.
 
 For namespaced tables:
+
 ```diff
 - SELECT * FROM 0xfff__some_ns.some_table
 + SELECT * FROM 0xfff.some_ns__some_table
 ```
 
 For root tables:
+
 ```diff
 - SELECT * FROM 0xfff__.some_table
 + SELECT * FROM 0xfff.some_table
