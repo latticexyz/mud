@@ -14,10 +14,10 @@ export async function ensureContractsDeployed({
   readonly contracts: readonly Contract[];
 }): Promise<readonly Hex[]> {
   // Deployments assume a deterministic deployer, so we only need to deploy the unique bytecode
-  const unqiueContracts = uniqueBy(contracts, (contract) => contract.bytecode);
+  const uniqueContracts = uniqueBy(contracts, (contract) => contract.bytecode);
 
   const txs = (
-    await Promise.all(unqiueContracts.map((contract) => ensureContract({ client, deployerAddress, ...contract })))
+    await Promise.all(uniqueContracts.map((contract) => ensureContract({ client, deployerAddress, ...contract })))
   ).flat();
 
   if (txs.length) {
