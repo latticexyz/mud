@@ -114,11 +114,8 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_bytes32_1(staticB32)));
   }
 
-  // The length of staticB32.
+  // The length of staticB32
   uint256 constant lengthStaticB32 = 1;
-
-  // The length of staticB32.
-  uint256 constant _lengthStaticB32 = 1;
 
   /**
    * @notice Get an item of staticB32.
@@ -216,11 +213,8 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_int32_2(staticI32)));
   }
 
-  // The length of staticI32.
+  // The length of staticI32
   uint256 constant lengthStaticI32 = 2;
-
-  // The length of staticI32.
-  uint256 constant _lengthStaticI32 = 2;
 
   /**
    * @notice Get an item of staticI32.
@@ -318,11 +312,8 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint128_3(staticU128)));
   }
 
-  // The length of staticU128.
+  // The length of staticU128
   uint256 constant lengthStaticU128 = 3;
-
-  // The length of staticU128.
-  uint256 constant _lengthStaticU128 = 3;
 
   /**
    * @notice Get an item of staticU128.
@@ -420,11 +411,8 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 3, EncodeArray.encode(fromStaticArray_address_4(staticAddrs)));
   }
 
-  // The length of staticAddrs.
+  // The length of staticAddrs
   uint256 constant lengthStaticAddrs = 4;
-
-  // The length of staticAddrs.
-  uint256 constant _lengthStaticAddrs = 4;
 
   /**
    * @notice Get an item of staticAddrs.
@@ -522,11 +510,8 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 4, EncodeArray.encode(fromStaticArray_bool_5(staticBools)));
   }
 
-  // The length of staticBools.
+  // The length of staticBools
   uint256 constant lengthStaticBools = 5;
-
-  // The length of staticBools.
-  uint256 constant _lengthStaticBools = 5;
 
   /**
    * @notice Get an item of staticBools.

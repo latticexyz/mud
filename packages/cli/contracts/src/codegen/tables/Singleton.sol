@@ -138,11 +138,8 @@ library Singleton {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint32_2(v2)));
   }
 
-  // The length of v2.
+  // The length of v2
   uint256 constant lengthV2 = 2;
-
-  // The length of v2.
-  uint256 constant _lengthV2 = 2;
 
   /**
    * @notice Get an item of v2.
@@ -232,11 +229,8 @@ library Singleton {
     StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_uint32_2(v3)));
   }
 
-  // The length of v3.
+  // The length of v3
   uint256 constant lengthV3 = 2;
-
-  // The length of v3.
-  uint256 constant _lengthV3 = 2;
 
   /**
    * @notice Get an item of v3.
@@ -326,11 +320,8 @@ library Singleton {
     StoreCore.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint32_1(v4)));
   }
 
-  // The length of v4.
+  // The length of v4
   uint256 constant lengthV4 = 1;
-
-  // The length of v4.
-  uint256 constant _lengthV4 = 1;
 
   /**
    * @notice Get an item of v4.

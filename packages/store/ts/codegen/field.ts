@@ -89,14 +89,14 @@ export function renderFieldMethods(options: RenderTableOptions): string {
 
       if (options.withGetters) {
         if (typeWrappingData && typeWrappingData.kind === "staticArray") {
-          result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-            renderWithStore(
-              storeArgument,
-              ({ _commentSuffix, _methodNamePrefix }) => `
-                // The length of ${field.name}${_commentSuffix}.                 
-                uint256 constant ${_methodNamePrefix}length${_methodNameSuffix} = ${typeWrappingData.staticLength};
+          result += renderWithFieldSuffix(
+            options.withSuffixlessFieldMethods,
+            field.name,
+            (_methodNameSuffix) =>
+              `
+                // The length of ${field.name}
+                uint256 constant length${_methodNameSuffix} = ${typeWrappingData.staticLength};
               `,
-            ),
           );
         } else {
           result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
