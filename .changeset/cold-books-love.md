@@ -2,4 +2,4 @@
 "@latticexyz/common": patch
 ---
 
-Fixed `waitForIdle` to fall back to `setTimeout` for environments without `requestIdleCallback`.
+`waitForIdle` now falls back to `setTimeout` for environments without `requestIdleCallback`.
