@@ -7,7 +7,7 @@ import { Address } from "viem";
 import { SyncStep } from "../SyncStep";
 import { AllTables } from "./common";
 
-type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables | undefined> = SyncOptions & {
+type SyncToQueryCacheOptions<config extends StoreConfig, extraTables extends Tables | undefined> = SyncOptions & {
   // require address for now to keep the data model + retrieval simpler
   address: Address;
   config: config;
@@ -15,17 +15,17 @@ type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables
   startSync?: boolean;
 };
 
-type SyncToZustandResult<config extends StoreConfig, extraTables extends Tables | undefined> = SyncResult & {
+type SyncToQueryCacheResult<config extends StoreConfig, extraTables extends Tables | undefined> = SyncResult & {
   tables: AllTables<config, extraTables>;
   stopSync: () => void;
 };
 
-export async function syncToZustand<config extends StoreConfig, extraTables extends Tables | undefined>({
+export async function syncToQueryCache<config extends StoreConfig, extraTables extends Tables | undefined>({
   config,
   tables: extraTables,
   startSync = true,
   ...syncOptions
-}: SyncToZustandOptions<config, extraTables>): Promise<SyncToZustandResult<config, extraTables>> {
+}: SyncToQueryCacheOptions<config, extraTables>): Promise<SyncToQueryCacheResult<config, extraTables>> {
   // TODO: migrate this once we redo config to return fully resolved tables (https://github.com/latticexyz/mud/issues/1668)
   // TODO: move store/world tables into `resolveConfig`
   const resolvedConfig = resolveConfig(config);

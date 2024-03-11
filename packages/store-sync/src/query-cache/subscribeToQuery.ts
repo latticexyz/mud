@@ -1,6 +1,6 @@
 import { ZustandStore } from "../zustand";
 import { AllTables, Query, QueryResultSubject } from "./common";
-import { ResolvedStoreConfig, StoreConfig, Tables } from "@latticexyz/store";
+import { StoreConfig, Tables } from "@latticexyz/store";
 import { findSubjects } from "./findSubjects";
 import { Observable, distinctUntilChanged, map, scan } from "rxjs";
 import isEqual from "fast-deep-equal";
@@ -30,10 +30,10 @@ type SubscribeToQueryResult<query extends Query> = {
   subjectChanges$: Observable<readonly QueryResultSubjectChange[]>;
 };
 
-export async function subscribeToQuery<
-  config extends ResolvedStoreConfig<StoreConfig>,
-  extraTables extends Tables | undefined,
->(store: ZustandStore<AllTables<config, extraTables>>, query: Query): Promise<SubscribeToQueryResult<typeof query>> {
+export async function subscribeToQuery<config extends StoreConfig, extraTables extends Tables | undefined>(
+  store: ZustandStore<AllTables<config, extraTables>>,
+  query: Query,
+): Promise<SubscribeToQueryResult<typeof query>> {
   const initialRecords = store.getState().records;
   const initialSubjects = findSubjects({
     records: Object.values(initialRecords),

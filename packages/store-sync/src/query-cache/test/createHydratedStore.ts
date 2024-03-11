@@ -1,7 +1,7 @@
 import { storeEventsAbi } from "@latticexyz/store";
 import { createStorageAdapter } from "../../zustand/createStorageAdapter";
 import { ZustandStore, createStore } from "../../zustand/createStore";
-import { config } from "../../../test/mockGame";
+import { config, deprecatedConfig } from "../../../test/mockGame";
 import { fetchAndStoreLogs } from "../../fetchAndStoreLogs";
 import { testClient } from "../../../test/common";
 import { storeTables, worldTables } from "../../common";
@@ -13,7 +13,7 @@ export const tables = {
   ...config.tables,
   ...storeTables,
   ...worldTables,
-} as unknown as AllTables<typeof config>;
+} as unknown as AllTables<typeof deprecatedConfig>;
 
 export async function createHydratedStore(worldAddress: Address): Promise<{
   store: ZustandStore<typeof tables>;
