@@ -53,7 +53,7 @@ function getFunctionSignaturesRegistration() pure returns (string[14] memory) {
     "unregisterSystemHook(bytes32,address)",
     "registerSystem(bytes32,address,bool)",
     "registerFunctionSelector(bytes32,string)",
-    "registerRootFunctionSelector(bytes32,string,bytes4)",
+    "registerRootFunctionSelector(bytes32,string,string)",
     "registerDelegation(address,bytes32,bytes)",
     "unregisterDelegation(address)",
     "registerNamespaceDelegation(bytes32,bytes32,bytes)",

@@ -49,7 +49,7 @@ export default mudConfig({
     },
     StaticArray: {
       keySchema: {},
-      valueSchema: "uint256[2]",
+      valueSchema: "uint256[3]",
     },
   },
 });

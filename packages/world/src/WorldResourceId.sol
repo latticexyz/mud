@@ -49,7 +49,7 @@ library WorldResourceIdLib {
    */
   function toTrimmedString(bytes16 paddedString) internal pure returns (string memory) {
     uint256 length;
-    for (; length < 16; length++) if (Bytes.slice1(paddedString, length) == 0) break;
+    for (; length < 16; length++) if (Bytes.getBytes1(paddedString, length) == 0) break;
     bytes memory packedSelector = abi.encodePacked(paddedString);
     return string(Bytes.setLength(packedSelector, length));
   }
