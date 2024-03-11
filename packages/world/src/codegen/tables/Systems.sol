@@ -212,9 +212,9 @@ library Systems {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (address system, bool publicAccess) {
-    system = (address(Bytes.slice20(_blob, 0)));
+    system = (address(Bytes.getBytes20(_blob, 0)));
 
-    publicAccess = (_toBool(uint8(Bytes.slice1(_blob, 20))));
+    publicAccess = (_toBool(uint8(Bytes.getBytes1(_blob, 20))));
   }
 
   /**

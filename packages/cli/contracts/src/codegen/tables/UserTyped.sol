@@ -702,15 +702,15 @@ library UserTyped {
       ResourceId v5
     )
   {
-    v1 = TestTypeAddress.wrap(address(Bytes.slice20(_blob, 0)));
+    v1 = TestTypeAddress.wrap(address(Bytes.getBytes20(_blob, 0)));
 
-    v2 = TestTypeInt64.wrap(int64(uint64(Bytes.slice8(_blob, 20))));
+    v2 = TestTypeInt64.wrap(int64(uint64(Bytes.getBytes8(_blob, 20))));
 
-    v3 = TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(Bytes.slice1(_blob, 28))));
+    v3 = TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(Bytes.getBytes1(_blob, 28))));
 
-    v4 = TestTypeLibrary.TestTypeUint128.wrap(uint128(Bytes.slice16(_blob, 29)));
+    v4 = TestTypeLibrary.TestTypeUint128.wrap(uint128(Bytes.getBytes16(_blob, 29)));
 
-    v5 = ResourceId.wrap(Bytes.slice32(_blob, 45));
+    v5 = ResourceId.wrap(Bytes.getBytes32(_blob, 45));
   }
 
   /**

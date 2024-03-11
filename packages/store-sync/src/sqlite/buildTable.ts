@@ -3,6 +3,7 @@ import { buildColumn } from "./buildColumn";
 import { Address } from "viem";
 import { getTableName } from "./getTableName";
 import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
+import { snakeCase } from "change-case";
 
 export const metaColumns = {
   __key: buildColumn("__key", "bytes").primaryKey(),
@@ -53,11 +54,11 @@ export function buildTable<TKeySchema extends KeySchema, TValueSchema extends Va
   const tableName = getTableName(address, namespace, name);
 
   const keyColumns = Object.fromEntries(
-    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(name, type).notNull()]),
+    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()]),
   );
 
   const valueColumns = Object.fromEntries(
-    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(name, type).notNull()]),
+    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()]),
   );
 
   // TODO: unique constraint on key columns?

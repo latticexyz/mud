@@ -224,19 +224,20 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @dev Creates a mapping for a root World function without namespace or name prefix
    * @param systemId The system ID
    * @param worldFunctionSignature The signature of the World function
-   * @param systemFunctionSelector The selector of the system function
+   * @param systemFunctionSignature The signature of the system function
    * @return worldFunctionSelector The selector of the World function
    */
   function registerRootFunctionSelector(
     ResourceId systemId,
     string memory worldFunctionSignature,
-    bytes4 systemFunctionSelector
+    string memory systemFunctionSignature
   ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the root namespace
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, _msgSender());
 
     // Compute the function selector from the provided signature
     worldFunctionSelector = bytes4(keccak256(bytes(worldFunctionSignature)));
+    bytes4 systemFunctionSelector = bytes4(keccak256(bytes(systemFunctionSignature)));
 
     // Require the function selector to be globally unique
     ResourceId existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
@@ -246,7 +247,8 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     // Register the function selector
     FunctionSelectors._set(worldFunctionSelector, systemId, systemFunctionSelector);
 
-    // Register the function signature for offchain use
+    // Register the function signatures for offchain use
+    FunctionSignatures._set(systemFunctionSelector, systemFunctionSignature);
     FunctionSignatures._set(worldFunctionSelector, worldFunctionSignature);
   }
 

@@ -244,9 +244,9 @@ library LastCall {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (uint256 callTime, address sender) {
-    callTime = (uint256(Bytes.slice32(_blob, 0)));
+    callTime = (uint256(Bytes.getBytes32(_blob, 0)));
 
-    sender = (address(Bytes.slice20(_blob, 32)));
+    sender = (address(Bytes.getBytes20(_blob, 32)));
   }
 
   /**
