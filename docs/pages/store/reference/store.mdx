@@ -17,7 +17,7 @@ IStore implements the error interfaces for each library that it uses.
 
 #### HelloStore
 
-Emitted when the store is initialized.
+Emitted when the Store is created.
 
 ```solidity
 event HelloStore(bytes32 indexed storeVersion);
@@ -27,7 +27,7 @@ event HelloStore(bytes32 indexed storeVersion);
 
 | Name           | Type      | Description                        |
 | -------------- | --------- | ---------------------------------- |
-| `storeVersion` | `bytes32` | The version of the Store contract. |
+| `storeVersion` | `bytes32` | The protocol version of the Store. |
 
 #### Store_SetRecord
 
