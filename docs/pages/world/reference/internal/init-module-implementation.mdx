@@ -435,17 +435,17 @@ _Creates a mapping for a root World function without namespace or name prefix_
 function registerRootFunctionSelector(
   ResourceId systemId,
   string memory worldFunctionSignature,
-  bytes4 systemFunctionSelector
+  string memory systemFunctionSignature
 ) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
 ```
 
 **Parameters**
 
-| Name                     | Type         | Description                         |
-| ------------------------ | ------------ | ----------------------------------- |
-| `systemId`               | `ResourceId` | The system ID                       |
-| `worldFunctionSignature` | `string`     | The signature of the World function |
-| `systemFunctionSelector` | `bytes4`     | The selector of the system function |
+| Name                      | Type         | Description                          |
+| ------------------------- | ------------ | ------------------------------------ |
+| `systemId`                | `ResourceId` | The system ID                        |
+| `worldFunctionSignature`  | `string`     | The signature of the World function  |
+| `systemFunctionSignature` | `string`     | The signature of the system function |
 
 **Returns**
 
