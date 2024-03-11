@@ -1,13 +1,14 @@
 import { Dict, evaluate, narrow } from "@arktype/util";
+import { get } from "./generics";
 import { SchemaInput } from "./schema";
 import { AbiType, AbiTypeScope, extendScope } from "./scope";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
-import { get } from "./generics";
 
-type UserTypes = Dict<string, AbiType>;
-type Enums = Dict<string, string[]>;
+export type UserTypes = Dict<string, AbiType>;
+export type Enums = Dict<string, string[]>;
 
 export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
+  namespace?: string;
   tables: StoreTablesConfigInput<scopeWithUserTypes<userTypes>>;
   userTypes?: userTypes;
   enums?: enums;
@@ -22,27 +23,26 @@ export type validateStoreTablesConfig<input, scope extends AbiTypeScope = AbiTyp
 };
 
 export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<{
-  [key in keyof input]: resolveTableConfig<input[key], scope>;
+  readonly [key in keyof input]: resolveTableConfig<input[key], scope>;
 }>;
 
-type scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTypeScope> = UserTypes extends userTypes
+export type scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTypeScope> = UserTypes extends userTypes
   ? scope
   : userTypes extends UserTypes
     ? extendScope<scope, userTypes>
     : scope;
 
-type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = Enums extends enums
+export type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = Enums extends enums
   ? scope
   : enums extends Enums
     ? extendScope<scope, { [key in keyof enums]: "uint8" }>
     : scope;
 
+export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
+
 export type validateStoreConfig<input> = {
   [key in keyof input]: key extends "tables"
-    ? validateStoreTablesConfig<
-        input[key],
-        scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-      >
+    ? validateStoreTablesConfig<input[key], extendedScope<input>>
     : key extends "userTypes"
       ? UserTypes
       : key extends "enums"
@@ -50,16 +50,16 @@ export type validateStoreConfig<input> = {
         : input[key];
 };
 
+export type resolveEnums<enums> = { readonly [key in keyof enums]: Readonly<enums[key]> };
+
 export type resolveStoreConfig<input> = evaluate<{
-  [key in keyof input]: key extends "tables"
-    ? resolveStoreTablesConfig<
-        input[key],
-        scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-      >
-    : input[key];
+  readonly tables: "tables" extends keyof input ? resolveStoreTablesConfig<input["tables"], extendedScope<input>> : {};
+  readonly userTypes: "userTypes" extends keyof input ? input["userTypes"] : {};
+  readonly enums: "enums" extends keyof input ? resolveEnums<input["enums"]> : {};
+  readonly namespace: "namespace" extends keyof input ? input["namespace"] : "";
 }>;
 
-export function resolveStoreConfig<input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {
+export function resolveStoreConfig<const input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {
   // TODO: runtime implementation
   return {} as never;
 }
