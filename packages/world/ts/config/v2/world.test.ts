@@ -204,8 +204,13 @@ describe("resolveWorldConfig", () => {
           },
         },
       },
-      userTypes: {},
-      enums: {},
+      userTypes: {
+        Static: "address",
+        Dynamic: "string",
+      },
+      enums: {
+        MyEnum: ["First", "Second"],
+      },
       namespace: "",
     } as const;
 

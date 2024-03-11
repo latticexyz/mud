@@ -62,7 +62,10 @@ export type resolveWorldConfig<input> = evaluate<
     readonly tables: "namespaces" extends keyof input
       ? {
           readonly [key in namespacedTableKeys<input>]: key extends `${infer namespace}__${infer table}`
-            ? resolveTableConfig<get<get<get<get<input, "namespaces">, namespace>, "tables">, table>>
+            ? resolveTableConfig<
+                get<get<get<get<input, "namespaces">, namespace>, "tables">, table>,
+                scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
+              >
             : never;
         }
       : {};

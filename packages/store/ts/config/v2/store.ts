@@ -69,6 +69,8 @@ export type validateStoreConfig<input> = {
 //   }
 // >;
 
+export type resolveEnums<enums> = { [key in keyof enums]: Readonly<enums[key]> };
+
 export type resolveStoreConfig<input> = evaluate<{
   readonly tables: "tables" extends keyof input
     ? resolveStoreTablesConfig<
@@ -77,7 +79,7 @@ export type resolveStoreConfig<input> = evaluate<{
       >
     : {};
   readonly userTypes: "userTypes" extends keyof input ? input["userTypes"] : {};
-  readonly enums: "enums" extends keyof input ? input["enums"] : {};
+  readonly enums: "enums" extends keyof input ? resolveEnums<input["enums"]> : {};
   readonly namespace: "namespace" extends keyof input ? input["namespace"] : "";
 }>;
 
