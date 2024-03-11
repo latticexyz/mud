@@ -33,6 +33,7 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
    */
   function _initialMsgSender() public view returns (address sender) {
     sender = WorldContextConsumerLib._initialMsgSender();
+    if (sender == address(0)) sender = msg.sender;
   }
 
   /**
