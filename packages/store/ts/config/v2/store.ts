@@ -23,7 +23,7 @@ export type validateStoreTablesConfig<input, scope extends AbiTypeScope = AbiTyp
 };
 
 export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<{
-  [key in keyof input]: resolveTableConfig<input[key], scope>;
+  readonly [key in keyof input]: resolveTableConfig<input[key], scope>;
 }>;
 
 export type scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTypeScope> = UserTypes extends userTypes
@@ -70,15 +70,15 @@ export type validateStoreConfig<input> = {
 // >;
 
 export type resolveStoreConfig<input> = evaluate<{
-  tables: "tables" extends keyof input
+  readonly tables: "tables" extends keyof input
     ? resolveStoreTablesConfig<
         input["tables"],
         scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
       >
     : {};
-  userTypes: "userTypes" extends keyof input ? input["userTypes"] : {};
-  enums: "enums" extends keyof input ? input["enums"] : {};
-  namespace: "namespace" extends keyof input ? input["namespace"] : "";
+  readonly userTypes: "userTypes" extends keyof input ? input["userTypes"] : {};
+  readonly enums: "enums" extends keyof input ? input["enums"] : {};
+  readonly namespace: "namespace" extends keyof input ? input["namespace"] : "";
 }>;
 
 export function resolveStoreConfig<input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {

@@ -6,11 +6,11 @@ export type SchemaInput<scope extends AbiTypeScope = AbiTypeScope> = {
 };
 
 export type resolveSchema<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = evaluate<{
-  [key in keyof schema]: {
+  readonly [key in keyof schema]: {
     /** the Solidity primitive ABI type */
-    type: scope["types"][schema[key]];
+    readonly type: scope["types"][schema[key]];
     /** the user defined type or Solidity primitive ABI type */
-    internalType: schema[key];
+    readonly internalType: schema[key];
   };
 }>;
 

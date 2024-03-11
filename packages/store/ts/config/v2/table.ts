@@ -102,17 +102,17 @@ export type resolveTableFullConfig<
   input extends TableFullInput<SchemaInput<scope>, scope>,
   scope extends AbiTypeScope = AbiTypeScope,
 > = evaluate<{
-  primaryKey: input["primaryKey"];
-  schema: resolveSchema<input["schema"], scope>;
-  keySchema: resolveSchema<
+  readonly primaryKey: Readonly<input["primaryKey"]>;
+  readonly schema: resolveSchema<input["schema"], scope>;
+  readonly keySchema: resolveSchema<
     {
-      [key in input["primaryKey"][number]]: input["schema"][key];
+      readonly [key in input["primaryKey"][number]]: input["schema"][key];
     },
     scope
   >;
-  valueSchema: resolveSchema<
+  readonly valueSchema: resolveSchema<
     {
-      [key in Exclude<keyof input["schema"], input["primaryKey"][number]>]: input["schema"][key];
+      readonly [key in Exclude<keyof input["schema"], input["primaryKey"][number]>]: input["schema"][key];
     },
     scope
   >;

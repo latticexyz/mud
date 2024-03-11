@@ -13,7 +13,6 @@ import {
 import { get } from "@latticexyz/store/ts/config/v2/generics";
 import { AbiTypeScope } from "@latticexyz/store/ts/config/v2/scope";
 import { resolveTableConfig } from "@latticexyz/store/ts/config/v2/table";
-import { freeze } from "./generics";
 
 export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = evaluate<
   StoreConfigInput<userTypes, enums> & {
@@ -58,28 +57,26 @@ export type namespacedTableKeys<input> = "namespaces" extends keyof input
     : never
   : never;
 
-export type resolveWorldConfig<input> = freeze<
-  evaluate<
-    resolveStoreConfig<input> & {
-      tables: "namespaces" extends keyof input
-        ? {
-            [key in namespacedTableKeys<input>]: key extends `${infer namespace}__${infer table}`
-              ? resolveTableConfig<get<get<get<get<input, "namespaces">, namespace>, "tables">, table>>
-              : never;
-          }
-        : {};
-      namespaces: "namespaces" extends keyof input
-        ? {
-            [key in keyof input["namespaces"]]: {
-              tables: resolveStoreTablesConfig<
-                get<input["namespaces"][key], "tables">,
-                scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
-              >;
-            };
-          }
-        : {};
-    }
-  >
+export type resolveWorldConfig<input> = evaluate<
+  resolveStoreConfig<input> & {
+    readonly tables: "namespaces" extends keyof input
+      ? {
+          readonly [key in namespacedTableKeys<input>]: key extends `${infer namespace}__${infer table}`
+            ? resolveTableConfig<get<get<get<get<input, "namespaces">, namespace>, "tables">, table>>
+            : never;
+        }
+      : {};
+    readonly namespaces: "namespaces" extends keyof input
+      ? {
+          [key in keyof input["namespaces"]]: {
+            readonly tables: resolveStoreTablesConfig<
+              get<input["namespaces"][key], "tables">,
+              scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>
+            >;
+          };
+        }
+      : {};
+  }
 >;
 
 export function resolveWorldConfig<const input>(input: validateWorldConfig<input>): resolveWorldConfig<input> {
