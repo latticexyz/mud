@@ -1,5 +1,9 @@
-export function waitForIdle(): Promise<void> {
+export function waitForIdle(ms = 1): Promise<void> {
   return new Promise<void>((resolve) => {
-    requestIdleCallback(() => resolve());
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => resolve());
+    } else {
+      setTimeout(() => resolve(), ms);
+    }
   });
 }
