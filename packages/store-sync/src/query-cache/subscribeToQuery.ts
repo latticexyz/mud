@@ -14,6 +14,7 @@ export type QueryResultSubjectChange = {
 
 // TODO: decide if this whole thing is returned in a promise or just `subjects`
 // TODO: return matching records alongside subjects? because the record subset may be smaller than what querying for records with matching subjects
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type SubscribeToQueryResult<query extends Query> = {
   /**
    * Set of initial matching subjects for query.

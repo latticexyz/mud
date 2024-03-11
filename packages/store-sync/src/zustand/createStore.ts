@@ -44,7 +44,7 @@ export type ZustandState<tables extends Tables> = {
   ) => TableRecord<table>["value"] | undefined;
 };
 
-export type ZustandStore<tables extends Tables> = UseBoundStore<StoreApi<ZustandState<tables>>>;
+export type ZustandStore<tables extends Tables = Tables> = UseBoundStore<StoreApi<ZustandState<tables>>>;
 
 export type CreateStoreOptions<tables extends Tables> = {
   tables: tables;
