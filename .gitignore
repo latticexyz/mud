@@ -19,3 +19,5 @@ templates/*/pnpm-lock.yaml
 
 test-data/world-logs-bulk-*.json
 test-data/world-logs-query.json
+
+.attest

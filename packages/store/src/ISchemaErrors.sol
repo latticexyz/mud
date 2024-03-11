@@ -9,9 +9,14 @@ pragma solidity >=0.8.24;
  * This ensures that all possible errors are included in the IStore ABI for proper decoding in the frontend.
  */
 interface ISchemaErrors {
-  /// @dev Error raised when the provided schema has an invalid length.
+  /**
+   * @notice Error raised when the provided schema has an invalid length.
+   * @param length The length of the schema.
+   */
   error Schema_InvalidLength(uint256 length);
 
-  /// @dev Error raised when a static type is placed after a dynamic type in a schema.
+  /**
+   * @notice Error raised when a static type is placed after a dynamic type in a schema.
+   */
   error Schema_StaticTypeAfterDynamicType();
 }
