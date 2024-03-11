@@ -93,12 +93,8 @@ export function renderFieldMethods(options: RenderTableOptions): string {
             renderWithStore(
               storeArgument,
               ({ _commentSuffix, _methodNamePrefix }) => `
-                /**
-                 * @notice Get the length of ${field.name}${_commentSuffix}.
-                 */
-                function ${_methodNamePrefix}length${_methodNameSuffix}() internal pure returns (uint256) {
-                  return ${typeWrappingData.staticLength};
-                }
+                // The length of ${field.name}${_commentSuffix}.                 
+                uint256 constant ${_methodNamePrefix}length${_methodNameSuffix} = ${typeWrappingData.staticLength};
               `,
             ),
           );

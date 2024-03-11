@@ -67,14 +67,14 @@ contract TablegenTest is Test, StoreMock {
     assertEq(abi.encode(Dynamics2.get(key)), abi.encode(data2));
 
     // test length getters
-    assertEq(Dynamics1.lengthStaticB32(key), staticB32.length);
-    assertEq(Dynamics1.lengthStaticI32(key), staticI32.length);
-    assertEq(Dynamics1.lengthStaticU128(key), staticU128.length);
-    assertEq(Dynamics1.lengthStaticAddrs(key), staticAddrs.length);
-    assertEq(Dynamics1.lengthStaticBools(key), staticBools.length);
-    assertEq(Dynamics2.lengthU64(key), u64.length);
-    assertEq(Dynamics2.lengthStr(key), bytes(str).length);
-    assertEq(Dynamics2.lengthB(key), b.length);
+    assertEq(Dynamics1.lengthStaticB32, staticB32.length);
+    assertEq(Dynamics1.lengthStaticI32, staticI32.length);
+    assertEq(Dynamics1.lengthStaticU128, staticU128.length);
+    assertEq(Dynamics1.lengthStaticAddrs, staticAddrs.length);
+    assertEq(Dynamics1.lengthStaticBools, staticBools.length);
+    assertEq(Dynamics2.lengthU64, u64.length);
+    assertEq(Dynamics2.lengthStr, bytes(str).length);
+    assertEq(Dynamics2.lengthB, b.length);
 
     // test item getters
     assertEq(Dynamics1.getItemStaticB32(key, 0), staticB32[0]);

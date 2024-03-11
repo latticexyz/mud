@@ -138,19 +138,11 @@ library Singleton {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint32_2(v2)));
   }
 
-  /**
-   * @notice Get the length of v2.
-   */
-  function lengthV2() internal pure returns (uint256) {
-    return 2;
-  }
+  // The length of v2.
+  uint256 constant lengthV2 = 2;
 
-  /**
-   * @notice Get the length of v2.
-   */
-  function _lengthV2() internal pure returns (uint256) {
-    return 2;
-  }
+  // The length of v2.
+  uint256 constant _lengthV2 = 2;
 
   /**
    * @notice Get an item of v2.
@@ -240,19 +232,11 @@ library Singleton {
     StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_uint32_2(v3)));
   }
 
-  /**
-   * @notice Get the length of v3.
-   */
-  function lengthV3() internal pure returns (uint256) {
-    return 2;
-  }
+  // The length of v3.
+  uint256 constant lengthV3 = 2;
 
-  /**
-   * @notice Get the length of v3.
-   */
-  function _lengthV3() internal pure returns (uint256) {
-    return 2;
-  }
+  // The length of v3.
+  uint256 constant _lengthV3 = 2;
 
   /**
    * @notice Get an item of v3.
@@ -342,19 +326,11 @@ library Singleton {
     StoreCore.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint32_1(v4)));
   }
 
-  /**
-   * @notice Get the length of v4.
-   */
-  function lengthV4() internal pure returns (uint256) {
-    return 1;
-  }
+  // The length of v4.
+  uint256 constant lengthV4 = 1;
 
-  /**
-   * @notice Get the length of v4.
-   */
-  function _lengthV4() internal pure returns (uint256) {
-    return 1;
-  }
+  // The length of v4.
+  uint256 constant _lengthV4 = 1;
 
   /**
    * @notice Get an item of v4.
