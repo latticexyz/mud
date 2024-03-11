@@ -26,6 +26,12 @@ interface IWorldContextConsumer is IERC165 {
   function _msgSender() external view returns (address);
 
   /**
+   * @notice Extract the `msg.sender` from TransactionContext (mutex in World.sol on `call` and `callFrom` methods)
+   * @return The `msg.sender` that made the first call to World in this transaction
+   */
+  function _initialMsgSender() external view returns (address);
+
+  /**
    * @notice Extract the `msg.value` from the context appended to the calldata.
    * @return The `msg.value` in the call to the World contract before the World routed the
    * call to the WorldContextConsumer contract.
