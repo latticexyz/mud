@@ -1,6 +1,6 @@
 import { Tables } from "@latticexyz/store";
 import { StorageAdapter } from "../common";
-import { RawRecord } from "./common";
+import { RawRecord, TableRecord } from "./common";
 import { ZustandStore } from "./createStore";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { debug } from "./debug";
@@ -141,7 +141,7 @@ export function createStorageAdapter<tables extends Tables>({
                 keyTuple: rawRecord.keyTuple,
                 key: decodeKey(flattenSchema(table.keySchema), rawRecord.keyTuple),
                 value: decodeValueArgs(flattenSchema(table.valueSchema), rawRecord),
-              },
+              } satisfies TableRecord,
             ];
           })
           .filter(isDefined),

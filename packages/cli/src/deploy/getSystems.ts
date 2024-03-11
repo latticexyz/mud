@@ -23,7 +23,7 @@ export async function getSystems({
 
   debug("looking up systems", systems.map(resourceToLabel).join(", "));
   return await Promise.all(
-    systems.map(async (system) => {
+    systems.map(async (system): Promise<DeployedSystem> => {
       const { system: address, publicAccess } = await getTableValue({
         client,
         worldDeploy,

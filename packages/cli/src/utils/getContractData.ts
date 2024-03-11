@@ -2,18 +2,21 @@ import { readFileSync } from "fs";
 import path from "path";
 import { MUDError } from "@latticexyz/common/errors";
 import { Abi, Hex, size } from "viem";
+import { LibraryPlaceholder } from "../deploy/common";
+import { findPlaceholders } from "./findPlaceholders";
 
 /**
  * Load the contract's abi and bytecode from the file system
  * @param contractName: Name of the contract to load
  */
 export function getContractData(
+  filename: string,
   contractName: string,
   forgeOutDirectory: string,
-): { bytecode: Hex; abi: Abi; deployedBytecodeSize: number } {
+): { bytecode: Hex; placeholders: readonly LibraryPlaceholder[]; abi: Abi; deployedBytecodeSize: number } {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let data: any;
-  const contractDataPath = path.join(forgeOutDirectory, contractName + ".sol", contractName + ".json");
+  const contractDataPath = path.join(forgeOutDirectory, filename, contractName + ".json");
   try {
     data = JSON.parse(readFileSync(contractDataPath, "utf8"));
   } catch (error) {
@@ -29,5 +32,7 @@ export function getContractData(
   const abi = data?.abi;
   if (!abi) throw new MUDError(`No ABI found in ${contractDataPath}`);
 
-  return { abi, bytecode, deployedBytecodeSize: size(deployedBytecode as Hex) };
+  const placeholders = findPlaceholders(data?.bytecode?.linkReferences ?? {});
+
+  return { abi, bytecode, placeholders, deployedBytecodeSize: size(deployedBytecode as Hex) };
 }
