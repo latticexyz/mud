@@ -251,8 +251,9 @@ describe("resolveWorldConfig", () => {
         userTypes: {},
         enums: {},
         namespace: "",
+        namespaces: {},
       } as const;
-      attest<typeof expected>(config);
+      attest<typeof config>(expected);
     });
 
     it("it should accept a user type as input and expand it", () => {
@@ -288,6 +289,7 @@ describe("resolveWorldConfig", () => {
         userTypes: { CustomType: "address" },
         enums: {},
         namespace: "",
+        namespaces: {},
       } as const;
 
       attest<typeof expected>(config);
@@ -334,6 +336,7 @@ describe("resolveWorldConfig", () => {
         userTypes: {},
         enums: {},
         namespace: "",
+        namespaces: {},
       } as const;
 
       attest<typeof expected>(config);
@@ -380,6 +383,7 @@ describe("resolveWorldConfig", () => {
         userTypes: {},
         enums: {},
         namespace: "",
+        namespaces: {},
       } as const;
 
       attest<typeof expected>(config);
@@ -464,6 +468,7 @@ describe("resolveWorldConfig", () => {
         userTypes: {},
         enums: {},
         namespace: "",
+        namespaces: {},
       } as const;
       attest<typeof expected>(config);
     });
@@ -517,6 +522,7 @@ describe("resolveWorldConfig", () => {
         userTypes: { static: "address", dynamic: "string" },
         enums: {},
         namespace: "",
+        namespaces: {},
       } as const;
 
       attest<typeof expected>(config);
@@ -570,6 +576,7 @@ describe("resolveWorldConfig", () => {
         userTypes: {},
         enums: {},
         namespace: "",
+        namespaces: {},
       } as const;
 
       attest<typeof expected>(config);
@@ -660,6 +667,7 @@ describe("resolveWorldConfig", () => {
         userTypes: {},
         enums: {},
         namespace: "",
+        namespaces: {},
       } as const;
       attest<typeof expected>(config);
     });
@@ -750,6 +758,7 @@ describe("resolveWorldConfig", () => {
         userTypes: { Static: "address", Dynamic: "string" },
         enums: {},
         namespace: "",
+        namespaces: {},
       } as const;
       attest<typeof expected>(config);
     });
@@ -857,6 +866,7 @@ describe("resolveWorldConfig", () => {
           ValidNames: ["first", "second"],
         },
         namespace: "",
+        namespaces: {},
       } as const;
       attest<typeof expected>(config);
     });
