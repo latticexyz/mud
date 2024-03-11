@@ -18,7 +18,7 @@ describe("resolveSchema", () => {
       },
     } as const;
     attest<typeof expected>(resolved).type.toString.snap(
-      '{ regular: { type: "uint256"; internalType: "uint256"; }; user: { type: "address"; internalType: "CustomType"; }; }',
+      '{ readonly regular: { readonly type: "uint256"; readonly internalType: "uint256"; }; readonly user: { readonly type: "address"; readonly internalType: "CustomType"; }; }',
     );
   });
 

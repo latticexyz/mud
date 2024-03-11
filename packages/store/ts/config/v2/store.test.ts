@@ -1,167 +1,170 @@
 import { describe, it } from "vitest";
 import { resolveStoreConfig } from "./store";
 import { attest } from "@arktype/attest";
-import { EmptyObject } from "@arktype/util";
 
 describe("resolveStoreConfig", () => {
   it("should accept a shorthand store config as input and expand it", () => {
     const config = resolveStoreConfig({ tables: { Name: "address" } });
-    attest<{
+    const expected = {
       tables: {
         Name: {
           schema: {
             key: {
-              type: "bytes32";
-              internalType: "bytes32";
-            };
+              type: "bytes32",
+              internalType: "bytes32",
+            },
             value: {
-              type: "address";
-              internalType: "address";
-            };
-          };
+              type: "address",
+              internalType: "address",
+            },
+          },
           keySchema: {
             key: {
-              type: "bytes32";
-              internalType: "bytes32";
-            };
-          };
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+          },
           valueSchema: {
             value: {
-              type: "address";
-              internalType: "address";
-            };
-          };
-          primaryKey: ["key"];
-        };
-      };
-      userTypes: EmptyObject;
-      enums: EmptyObject;
-      namespace: "";
-    }>(config);
+              type: "address",
+              internalType: "address",
+            },
+          },
+          primaryKey: ["key"],
+        },
+      },
+      userTypes: {},
+      enums: {},
+      namespace: "",
+    } as const;
+    attest<typeof expected>(config);
   });
 
   it("it should accept a user type as input and expand it", () => {
     const config = resolveStoreConfig({ tables: { Name: "CustomType" }, userTypes: { CustomType: "address" } });
-    attest<{
+    const expected = {
       tables: {
         Name: {
           schema: {
             key: {
-              type: "bytes32";
-              internalType: "bytes32";
-            };
+              type: "bytes32",
+              internalType: "bytes32",
+            },
             value: {
-              type: "address";
-              internalType: "CustomType";
-            };
-          };
+              type: "address",
+              internalType: "CustomType",
+            },
+          },
           keySchema: {
             key: {
-              type: "bytes32";
-              internalType: "bytes32";
-            };
-          };
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+          },
           valueSchema: {
             value: {
-              type: "address";
-              internalType: "CustomType";
-            };
-          };
-          primaryKey: ["key"];
-        };
-      };
-      userTypes: { CustomType: "address" };
-      enums: EmptyObject;
-      namespace: "";
-    }>(config);
+              type: "address",
+              internalType: "CustomType",
+            },
+          },
+          primaryKey: ["key"],
+        },
+      },
+      userTypes: { CustomType: "address" },
+      enums: {},
+      namespace: "",
+    } as const;
+    attest<typeof expected>(config);
   });
 
   it("given a schema with a key field with static ABI type, it should use `key` as single key", () => {
     const config = resolveStoreConfig({ tables: { Example: { key: "address", name: "string", age: "uint256" } } });
-    attest<{
+    const expected = {
       tables: {
         Example: {
           schema: {
             key: {
-              type: "address";
-              internalType: "address";
-            };
+              type: "address",
+              internalType: "address",
+            },
             name: {
-              type: "string";
-              internalType: "string";
-            };
+              type: "string",
+              internalType: "string",
+            },
             age: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
           keySchema: {
             key: {
-              type: "address";
-              internalType: "address";
-            };
-          };
+              type: "address",
+              internalType: "address",
+            },
+          },
           valueSchema: {
             name: {
-              type: "string";
-              internalType: "string";
-            };
+              type: "string",
+              internalType: "string",
+            },
             age: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
-          primaryKey: ["key"];
-        };
-      };
-      userTypes: EmptyObject;
-      enums: EmptyObject;
-      namespace: "";
-    }>(config);
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
+          primaryKey: ["key"],
+        },
+      },
+      userTypes: {},
+      enums: {},
+      namespace: "",
+    } as const;
+    attest<typeof expected>(config);
   });
 
   it("given a schema with a key field with static custom type, it should use `key` as single key", () => {
     const config = resolveStoreConfig({ tables: { Example: { key: "address", name: "string", age: "uint256" } } });
-    attest<{
+    const expected = {
       tables: {
         Example: {
           schema: {
             key: {
-              type: "address";
-              internalType: "address";
-            };
+              type: "address",
+              internalType: "address",
+            },
             name: {
-              type: "string";
-              internalType: "string";
-            };
+              type: "string",
+              internalType: "string",
+            },
             age: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
           keySchema: {
             key: {
-              type: "address";
-              internalType: "address";
-            };
-          };
+              type: "address",
+              internalType: "address",
+            },
+          },
           valueSchema: {
             name: {
-              type: "string";
-              internalType: "string";
-            };
+              type: "string",
+              internalType: "string",
+            },
             age: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
-          primaryKey: ["key"];
-        };
-      };
-      userTypes: EmptyObject;
-      enums: EmptyObject;
-      namespace: "";
-    }>(config);
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
+          primaryKey: ["key"],
+        },
+      },
+      userTypes: {},
+      enums: {},
+      namespace: "",
+    } as const;
+    attest<typeof expected>(config);
   });
 
   it("throw an error if the shorthand doesn't include a key field", () => {
@@ -204,46 +207,47 @@ describe("resolveStoreConfig", () => {
         },
       },
     });
-    attest<{
+    const expected = {
       tables: {
         Example: {
           schema: {
             key: {
-              type: "address";
-              internalType: "address";
-            };
+              type: "address",
+              internalType: "address",
+            },
             name: {
-              type: "string";
-              internalType: "string";
-            };
+              type: "string",
+              internalType: "string",
+            },
             age: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
           keySchema: {
             age: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
           valueSchema: {
             key: {
-              type: "address";
-              internalType: "address";
-            };
+              type: "address",
+              internalType: "address",
+            },
             name: {
-              type: "string";
-              internalType: "string";
-            };
-          };
-          primaryKey: ["age"];
-        };
-      };
-      userTypes: EmptyObject;
-      enums: EmptyObject;
-      namespace: "";
-    }>(config);
+              type: "string",
+              internalType: "string",
+            },
+          },
+          primaryKey: ["age"],
+        },
+      },
+      userTypes: {},
+      enums: {},
+      namespace: "",
+    } as const;
+    attest<typeof expected>(config);
   });
 
   it("should return the full config given a full config with one key and user types", () => {
@@ -256,98 +260,99 @@ describe("resolveStoreConfig", () => {
       },
       userTypes: { static: "address", dynamic: "string" },
     });
-    attest<{
+    const expected = {
       tables: {
         Example: {
           schema: {
             key: {
-              type: "string";
-              internalType: "dynamic";
-            };
+              type: "string",
+              internalType: "dynamic",
+            },
             name: {
-              type: "string";
-              internalType: "string";
-            };
+              type: "string",
+              internalType: "string",
+            },
             age: {
-              type: "address";
-              internalType: "static";
-            };
-          };
+              type: "address",
+              internalType: "static",
+            },
+          },
           keySchema: {
             age: {
-              type: "address";
-              internalType: "static";
-            };
-          };
+              type: "address",
+              internalType: "static",
+            },
+          },
           valueSchema: {
             key: {
-              type: "string";
-              internalType: "dynamic";
-            };
+              type: "string",
+              internalType: "dynamic",
+            },
             name: {
-              type: "string";
-              internalType: "string";
-            };
-          };
-          primaryKey: ["age"];
-        };
-      };
-      userTypes: { static: "address"; dynamic: "string" };
-      enums: EmptyObject;
-      namespace: "";
-    }>(config);
-  });
-
-  it("it should return the full config given a full config with two primaryKey", () => {
-    const config = resolveStoreConfig({
-      tables: {
-        Example: {
-          schema: { key: "address", name: "string", age: "uint256" },
-          primaryKey: ["age", "key"],
+              type: "string",
+              internalType: "string",
+            },
+          },
+          primaryKey: ["age"],
         },
       },
+      userTypes: { static: "address", dynamic: "string" },
+      enums: {},
+      namespace: "",
+    } as const;
+    attest<typeof expected>(config);
+  }),
+    it("it should return the full config given a full config with two primaryKey", () => {
+      const config = resolveStoreConfig({
+        tables: {
+          Example: {
+            schema: { key: "address", name: "string", age: "uint256" },
+            primaryKey: ["age", "key"],
+          },
+        },
+      });
+      const expected = {
+        tables: {
+          Example: {
+            schema: {
+              key: {
+                type: "address",
+                internalType: "address",
+              },
+              name: {
+                type: "string",
+                internalType: "string",
+              },
+              age: {
+                type: "uint256",
+                internalType: "uint256",
+              },
+            },
+            keySchema: {
+              age: {
+                type: "uint256",
+                internalType: "uint256",
+              },
+              key: {
+                type: "address",
+                internalType: "address",
+              },
+            },
+            valueSchema: {
+              name: {
+                type: "string",
+                internalType: "string",
+              },
+            },
+            primaryKey: ["age", "key"],
+          },
+        },
+        userTypes: {},
+        enums: {},
+        namespace: "",
+      } as const;
+      attest<typeof expected>(config);
     });
-    attest<{
-      tables: {
-        Example: {
-          schema: {
-            key: {
-              type: "address";
-              internalType: "address";
-            };
-            name: {
-              type: "string";
-              internalType: "string";
-            };
-            age: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
-          keySchema: {
-            age: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-            key: {
-              type: "address";
-              internalType: "address";
-            };
-          };
-          valueSchema: {
-            name: {
-              type: "string";
-              internalType: "string";
-            };
-          };
-          primaryKey: ["age", "key"];
-        };
-      };
-      userTypes: EmptyObject;
-      enums: EmptyObject;
-      namespace: "";
-    }>(config);
-  });
 
   it("should resolve two tables in the config with different schemas", () => {
     const config = resolveStoreConfig({
@@ -362,79 +367,80 @@ describe("resolveStoreConfig", () => {
         },
       },
     });
-    attest<{
+    const expected = {
       tables: {
         First: {
           schema: {
             firstKey: {
-              type: "address";
-              internalType: "address";
-            };
+              type: "address",
+              internalType: "address",
+            },
             firstName: {
-              type: "string";
-              internalType: "string";
-            };
+              type: "string",
+              internalType: "string",
+            },
             firstAge: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
           keySchema: {
             firstKey: {
-              type: "address";
-              internalType: "address";
-            };
+              type: "address",
+              internalType: "address",
+            },
             firstAge: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
           valueSchema: {
             firstName: {
-              type: "string";
-              internalType: "string";
-            };
-          };
-          primaryKey: ["firstKey", "firstAge"];
-        };
+              type: "string",
+              internalType: "string",
+            },
+          },
+          primaryKey: ["firstKey", "firstAge"],
+        },
         Second: {
           schema: {
             secondKey: {
-              type: "address";
-              internalType: "address";
-            };
+              type: "address",
+              internalType: "address",
+            },
             secondName: {
-              type: "string";
-              internalType: "string";
-            };
+              type: "string",
+              internalType: "string",
+            },
             secondAge: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
           keySchema: {
             secondKey: {
-              type: "address";
-              internalType: "address";
-            };
+              type: "address",
+              internalType: "address",
+            },
             secondAge: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
           valueSchema: {
             secondName: {
-              type: "string";
-              internalType: "string";
-            };
-          };
-          primaryKey: ["secondKey", "secondAge"];
-        };
-      };
-      userTypes: EmptyObject;
-      enums: EmptyObject;
-      namespace: "";
-    }>(config);
+              type: "string",
+              internalType: "string",
+            },
+          },
+          primaryKey: ["secondKey", "secondAge"],
+        },
+      },
+      userTypes: {},
+      enums: {},
+      namespace: "",
+    } as const;
+    attest<typeof expected>(config);
   });
 
   it("should resolve two tables in the config with different schemas and user types", () => {
@@ -451,79 +457,80 @@ describe("resolveStoreConfig", () => {
       },
       userTypes: { Static: "address", Dynamic: "string" },
     });
-    attest<{
+    const expected = {
       tables: {
         First: {
           schema: {
             firstKey: {
-              type: "address";
-              internalType: "Static";
-            };
+              type: "address",
+              internalType: "Static",
+            },
             firstName: {
-              type: "string";
-              internalType: "Dynamic";
-            };
+              type: "string",
+              internalType: "Dynamic",
+            },
             firstAge: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
           keySchema: {
             firstKey: {
-              type: "address";
-              internalType: "Static";
-            };
+              type: "address",
+              internalType: "Static",
+            },
             firstAge: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
           valueSchema: {
             firstName: {
-              type: "string";
-              internalType: "Dynamic";
-            };
-          };
-          primaryKey: ["firstKey", "firstAge"];
-        };
+              type: "string",
+              internalType: "Dynamic",
+            },
+          },
+          primaryKey: ["firstKey", "firstAge"],
+        },
         Second: {
           schema: {
             secondKey: {
-              type: "address";
-              internalType: "Static";
-            };
+              type: "address",
+              internalType: "Static",
+            },
             secondName: {
-              type: "string";
-              internalType: "Dynamic";
-            };
+              type: "string",
+              internalType: "Dynamic",
+            },
             secondAge: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
           keySchema: {
             secondKey: {
-              type: "address";
-              internalType: "Static";
-            };
+              type: "address",
+              internalType: "Static",
+            },
             secondAge: {
-              type: "uint256";
-              internalType: "uint256";
-            };
-          };
+              type: "uint256",
+              internalType: "uint256",
+            },
+          },
           valueSchema: {
             secondName: {
-              type: "string";
-              internalType: "Dynamic";
-            };
-          };
-          primaryKey: ["secondKey", "secondAge"];
-        };
-      };
-      userTypes: { Static: "address"; Dynamic: "string" };
-      enums: EmptyObject;
-      namespace: "";
-    }>(config);
+              type: "string",
+              internalType: "Dynamic",
+            },
+          },
+          primaryKey: ["secondKey", "secondAge"],
+        },
+      },
+      userTypes: { Static: "address", Dynamic: "string" },
+      enums: {},
+      namespace: "",
+    } as const;
+    attest<typeof expected>(config);
   });
 
   it("should throw if referring to fields of different tables", () => {
@@ -588,48 +595,49 @@ describe("resolveStoreConfig", () => {
         ValidNames: ["first", "second"],
       },
     });
-    attest<{
+    const expected = {
       tables: {
         Example: {
           schema: {
             key: {
-              type: "string";
-              internalType: "dynamic";
-            };
+              type: "string",
+              internalType: "dynamic",
+            },
             name: {
-              type: "uint8";
-              internalType: "ValidNames";
-            };
+              type: "uint8",
+              internalType: "ValidNames",
+            },
             age: {
-              type: "address";
-              internalType: "static";
-            };
-          };
+              type: "address",
+              internalType: "static",
+            },
+          },
           keySchema: {
             name: {
-              type: "uint8";
-              internalType: "ValidNames";
-            };
-          };
+              type: "uint8",
+              internalType: "ValidNames",
+            },
+          },
           valueSchema: {
             age: {
-              type: "address";
-              internalType: "static";
-            };
+              type: "address",
+              internalType: "static",
+            },
             key: {
-              type: "string";
-              internalType: "dynamic";
-            };
-          };
-          primaryKey: ["name"];
-        };
-      };
-      userTypes: { static: "address"; dynamic: "string" };
+              type: "string",
+              internalType: "dynamic",
+            },
+          },
+          primaryKey: ["name"],
+        },
+      },
+      userTypes: { static: "address", dynamic: "string" },
       enums: {
-        ValidNames: ["first", "second"];
-      };
-      namespace: "";
-    }>(config);
+        ValidNames: ["first", "second"],
+      },
+      namespace: "",
+    } as const;
+    attest<typeof expected>(config);
   });
 
   it("should use the root namespace as default namespace", () => {

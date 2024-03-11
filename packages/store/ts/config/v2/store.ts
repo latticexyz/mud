@@ -83,7 +83,7 @@ export type resolveStoreConfig<input> = evaluate<{
   readonly namespace: "namespace" extends keyof input ? input["namespace"] : "";
 }>;
 
-export function resolveStoreConfig<input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {
+export function resolveStoreConfig<const input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {
   // TODO: runtime implementation
   return {} as never;
 }
