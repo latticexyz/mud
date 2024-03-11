@@ -13,6 +13,7 @@ import { findSubjects } from "./findSubjects";
 
 // TODO: make query smarter/config aware for shorthand
 // TODO: make condition types smarter, so condition literal matches the field primitive type
+// TODO: return matching records alongside subjects? because the record subset may be smaller than what querying for records with matching subjects
 
 type QueryResult<query extends Query> = readonly QueryResultSubject[];
 
