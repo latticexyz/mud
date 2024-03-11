@@ -226,9 +226,9 @@ library TwoFields {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (bool value1, bool value2) {
-    value1 = (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    value1 = (_toBool(uint8(Bytes.getBytes1(_blob, 0))));
 
-    value2 = (_toBool(uint8(Bytes.slice1(_blob, 1))));
+    value2 = (_toBool(uint8(Bytes.getBytes1(_blob, 1))));
   }
 
   /**

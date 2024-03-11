@@ -220,9 +220,9 @@ library FunctionSelectors {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (ResourceId systemId, bytes4 systemFunctionSelector) {
-    systemId = ResourceId.wrap(Bytes.slice32(_blob, 0));
+    systemId = ResourceId.wrap(Bytes.getBytes32(_blob, 0));
 
-    systemFunctionSelector = (Bytes.slice4(_blob, 32));
+    systemFunctionSelector = (Bytes.getBytes4(_blob, 32));
   }
 
   /**

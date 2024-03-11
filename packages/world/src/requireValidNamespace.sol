@@ -24,12 +24,14 @@ function requireValidNamespace(ResourceId resourceId) pure {
   uint256 trimmedNamespaceLength = bytes(trimmedNamespace).length;
 
   if (trimmedNamespaceLength > 0) {
-    if (Bytes.slice1(bytes(trimmedNamespace), trimmedNamespaceLength - 1) == "_") {
+    if (Bytes.getBytes1(bytes(trimmedNamespace), trimmedNamespaceLength - 1) == "_") {
       revert IWorldErrors.World_InvalidNamespace(namespace);
     }
 
     for (uint256 i; i < trimmedNamespaceLength - 1; i++) {
-      if (Bytes.slice1(bytes(trimmedNamespace), i) == "_" && Bytes.slice1(bytes(trimmedNamespace), i + 1) == "_") {
+      if (
+        Bytes.getBytes1(bytes(trimmedNamespace), i) == "_" && Bytes.getBytes1(bytes(trimmedNamespace), i + 1) == "_"
+      ) {
         revert IWorldErrors.World_InvalidNamespace(namespace);
       }
     }

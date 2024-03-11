@@ -486,7 +486,7 @@ library ERC20Metadata {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (uint8 decimals) {
-    decimals = (uint8(Bytes.slice1(_blob, 0)));
+    decimals = (uint8(Bytes.getBytes1(_blob, 0)));
   }
 
   /**
