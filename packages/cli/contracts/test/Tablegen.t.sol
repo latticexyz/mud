@@ -72,9 +72,9 @@ contract TablegenTest is Test, StoreMock {
     assertEq(Dynamics1.lengthStaticU128, staticU128.length);
     assertEq(Dynamics1.lengthStaticAddrs, staticAddrs.length);
     assertEq(Dynamics1.lengthStaticBools, staticBools.length);
-    assertEq(Dynamics2.lengthU64, u64.length);
-    assertEq(Dynamics2.lengthStr, bytes(str).length);
-    assertEq(Dynamics2.lengthB, b.length);
+    assertEq(Dynamics2.lengthU64(key), u64.length);
+    assertEq(Dynamics2.lengthStr(key), bytes(str).length);
+    assertEq(Dynamics2.lengthB(key), b.length);
 
     // test item getters
     assertEq(Dynamics1.getItemStaticB32(key, 0), staticB32[0]);
@@ -131,17 +131,17 @@ contract TablegenTest is Test, StoreMock {
     assertEq(Singleton.getV1(), -10);
 
     assertEq(abi.encode(Singleton.getV2()), abi.encode([uint32(1), 2]));
-    assertEq(Singleton.lengthV2(), 2);
+    assertEq(Singleton.lengthV2, 2);
     assertEq(Singleton.getItemV2(0), 1);
     assertEq(Singleton.getItemV2(1), 2);
 
     assertEq(abi.encode(Singleton.getV3()), abi.encode([uint32(3), 4]));
-    assertEq(Singleton.lengthV3(), 2);
+    assertEq(Singleton.lengthV3, 2);
     assertEq(Singleton.getItemV3(0), 3);
     assertEq(Singleton.getItemV3(1), 4);
 
     assertEq(abi.encode(Singleton.getV4()), abi.encode([uint32(5)]));
-    assertEq(Singleton.lengthV4(), 1);
+    assertEq(Singleton.lengthV4, 1);
     assertEq(Singleton.getItemV4(0), 5);
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 4, 4));
     assertEq(Singleton.getItemV4(1), 0);
