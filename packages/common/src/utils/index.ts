@@ -4,6 +4,7 @@ export * from "./bigIntMin";
 export * from "./bigIntSort";
 export * from "./chunk";
 export * from "./groupBy";
+export * from "./identity";
 export * from "./includes";
 export * from "./isDefined";
 export * from "./isNotNull";
