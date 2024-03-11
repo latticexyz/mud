@@ -5,6 +5,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
 import { IERC165 } from "./IERC165.sol";
 import { IWorldContextConsumer } from "./IWorldContextConsumer.sol";
+import { TransactionContext } from "./codegen/tables/TransactionContext.sol";
 
 // The context size is 20 bytes for msg.sender, and 32 bytes for msg.value
 uint256 constant CONTEXT_BYTES = 20 + 32;
@@ -24,6 +25,14 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
    */
   function _msgSender() public view returns (address sender) {
     return WorldContextConsumerLib._msgSender();
+  }
+
+  /**
+   * @notice Extract the `msg.sender` from TransactionContext (mutex in World.sol on `call` and `callFrom` methods)
+   * @return sender The `msg.sender` that made the first call to World in this transaction
+   */
+  function _initialMsgSender() public view returns (address sender) {
+    sender = WorldContextConsumerLib._initialMsgSender();
   }
 
   /**
@@ -68,6 +77,14 @@ library WorldContextConsumerLib {
       sender := shr(0x60, calldataload(sub(calldatasize(), CONTEXT_BYTES)))
     }
     if (sender == address(0)) sender = msg.sender;
+  }
+
+  /**
+   * @notice Extract the `msg.sender` from TransactionContext (mutex in World.sol on `call` and `callFrom` methods)
+   * @return sender The `msg.sender` that made the first call to World in this transaction
+   */
+  function _initialMsgSender() internal view returns (address sender) {
+    sender = TransactionContext.getFirstMsgSender();
   }
 
   /**

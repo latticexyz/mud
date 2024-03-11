@@ -15,3 +15,4 @@ import { SystemHooks, SystemHooksTableId } from "./tables/SystemHooks.sol";
 import { FunctionSelectors, FunctionSelectorsTableId } from "./tables/FunctionSelectors.sol";
 import { FunctionSignatures, FunctionSignaturesTableId } from "./tables/FunctionSignatures.sol";
 import { InitModuleAddress, InitModuleAddressTableId } from "./tables/InitModuleAddress.sol";
+import { TransactionContext, TransactionContextTableId } from "./tables/TransactionContext.sol";

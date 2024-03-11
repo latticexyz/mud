@@ -30,6 +30,7 @@ import { SystemHooks } from "../../codegen/tables/SystemHooks.sol";
 import { SystemRegistry } from "../../codegen/tables/SystemRegistry.sol";
 import { InitModuleAddress } from "../../codegen/tables/InitModuleAddress.sol";
 import { Balances } from "../../codegen/tables/Balances.sol";
+import { TransactionContext } from "../../codegen/tables/TransactionContext.sol";
 
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
@@ -93,6 +94,7 @@ contract InitModule is Module {
     SystemHooks.register();
     SystemRegistry.register();
     InitModuleAddress.register();
+    TransactionContext.register();
 
     ResourceIds._setExists(ROOT_NAMESPACE_ID, true);
     NamespaceOwner._set(ROOT_NAMESPACE_ID, _msgSender());

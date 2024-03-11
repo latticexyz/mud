@@ -26,6 +26,8 @@ import { IWorldKernel } from "./IWorldKernel.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
+import { SystemRegistry } from "./codegen/tables/SystemRegistry.sol";
+import { TransactionContext } from "./codegen/tables/TransactionContext.sol";
 
 /**
  * @title World Contract
@@ -57,6 +59,28 @@ contract World is StoreData, IWorldKernel {
       revert World_CallbackNotAllowed(msg.sig);
     }
     _;
+  }
+
+  /**
+   * @dev Transaction context mutex
+   */
+  modifier transactionContext(bool isCallFrom, address from) {
+    bool isInitialized = false;
+    if (TransactionContext.getFirstMsgSender() == address(0)) {
+      if (ResourceId.unwrap(SystemRegistry.get(msg.sender)) != bytes32(0)) {
+        revert World_DirectCallToSystemForbidden(msg.sender);
+      } else {
+        isInitialized = true;
+        if (isCallFrom) {
+          TransactionContext.setFirstMsgSender(from);
+        } else TransactionContext.setFirstMsgSender(msg.sender);
+      }
+    }
+    _;
+    // this ensure only the first pass of that modifier can zero-out transaction context
+    if (isInitialized == true) {
+      TransactionContext.setFirstMsgSender(address(0));
+    }
   }
 
   /**
@@ -340,7 +364,7 @@ contract World is StoreData, IWorldKernel {
   function call(
     ResourceId systemId,
     bytes memory callData
-  ) external payable virtual prohibitDirectCallback returns (bytes memory) {
+  ) external payable virtual prohibitDirectCallback transactionContext(false, address(0)) returns (bytes memory) {
     return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
   }
 
@@ -356,7 +380,7 @@ contract World is StoreData, IWorldKernel {
     address delegator,
     ResourceId systemId,
     bytes memory callData
-  ) external payable virtual prohibitDirectCallback returns (bytes memory) {
+  ) external payable virtual prohibitDirectCallback transactionContext(true, delegator) returns (bytes memory) {
     // If the delegator is the caller, call the system directly
     if (delegator == msg.sender) {
       return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
@@ -404,7 +428,7 @@ contract World is StoreData, IWorldKernel {
   /**
    * @dev Fallback function to call registered function selectors.
    */
-  fallback() external payable prohibitDirectCallback {
+  fallback() external payable prohibitDirectCallback transactionContext(false, address(0)) {
     (ResourceId systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
     if (ResourceId.unwrap(systemId) == 0) revert World_FunctionSelectorNotFound(msg.sig);
