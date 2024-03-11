@@ -15,7 +15,7 @@ import { ResourceId } from "../src/ResourceId.sol";
 /**
  * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
  */
-contract StoreMock is IStore, StoreData {
+contract StoreMock is StoreData {
   constructor() {
     StoreCore.initialize();
     StoreCore.registerInternalTables();
