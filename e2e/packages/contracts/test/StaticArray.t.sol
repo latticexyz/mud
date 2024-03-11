@@ -5,9 +5,9 @@ import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 
 import { toStaticArray_uint256_3 } from "../src/codegen/tables/StaticArray.sol";
 
-contract StaticArrayTest is MudTest {
-  uint256 internal memoryCorruptionCheck = uint256(keccak256("memoryCorruptionCheck"));
+uint256 constant memoryCorruptionCheck = uint256(keccak256("memoryCorruptionCheck"));
 
+contract StaticArrayTest is MudTest {
   /*
    * Test that the data is correctly copied when the dynamic and static arrays are the same length
    */
