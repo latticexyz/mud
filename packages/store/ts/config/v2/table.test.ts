@@ -82,7 +82,9 @@ describe("resolveTableShorthand", () => {
         value: "CustomType";
       };
       primaryKey: ["key"];
-    }>(table).type.toString.snap('{ schema: { key: "bytes32"; value: "CustomType"; }; primaryKey: ["key"]; }');
+    }>(table)
+      .snap({ schema: { key: "bytes32", value: "CustomType" }, primaryKey: ["key"] })
+      .type.toString.snap('{ schema: { key: "bytes32"; value: "CustomType"; }; primaryKey: ["key"]; }');
   });
 
   it("should throw if the provided shorthand is not an ABI type and no user types are provided", () => {
@@ -96,6 +98,7 @@ describe("resolveTableShorthand", () => {
 
   it("should throw if the provided shorthand is not a user type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
+
     attest(() =>
       // @ts-expect-error Argument of type '"NotACustomType"' is not assignable to parameter of type AbiType | "CustomType"
       resolveTableShorthand("NotACustomType", scope),
@@ -116,9 +119,9 @@ describe("resolveTableShorthand", () => {
         age: "uint256";
       };
       primaryKey: ["key"];
-    }>(table).type.toString.snap(
-      '{ schema: { key: "address"; name: "string"; age: "uint256"; }; primaryKey: ["key"]; }',
-    );
+    }>(table)
+      .snap({ schema: { key: "address", name: "string", age: "uint256" }, primaryKey: ["key"] })
+      .type.toString.snap('{ schema: { key: "address"; name: "string"; age: "uint256"; }; primaryKey: ["key"]; }');
   });
 
   it("should throw an error if the shorthand doesn't include a key field", () => {
@@ -155,9 +158,9 @@ describe("resolveTableShorthand", () => {
     attest<{
       schema: { key: "CustomType"; name: "string"; age: "uint256" };
       primaryKey: ["key"];
-    }>(table).type.toString.snap(
-      '{ schema: { key: "CustomType"; name: "string"; age: "uint256"; }; primaryKey: ["key"]; }',
-    );
+    }>(table)
+      .snap({ schema: { key: "CustomType", name: "string", age: "uint256" }, primaryKey: ["key"] })
+      .type.toString.snap('{ schema: { key: "CustomType"; name: "string"; age: "uint256"; }; primaryKey: ["key"]; }');
   });
 
   it("should throw an error if `key` is not a custom static type", () => {
@@ -200,7 +203,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["key"],
     } as const;
 
-    attest<typeof expected>(table);
+    attest<typeof expected>(table).snap({});
   });
 
   it("should expand a single custom type into a key/value schema", () => {

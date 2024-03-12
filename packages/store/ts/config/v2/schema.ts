@@ -40,7 +40,5 @@ export function isSchemaInput<scope extends AbiTypeScope = AbiTypeScope>(
   input: unknown,
   scope: scope = AbiTypeScope as scope,
 ): input is SchemaInput<scope> {
-  return (
-    typeof input === "object" && input !== null && Object.values(input).every((key) => Object.hasOwn(scope.types, key))
-  );
+  return typeof input === "object" && input !== null && Object.values(input).every((key) => keyof(key, scope.types));
 }

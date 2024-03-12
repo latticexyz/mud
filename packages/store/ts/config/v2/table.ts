@@ -1,8 +1,8 @@
 import { ErrorMessage, conform, evaluate } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type";
-import { get } from "./generics";
+import { get, keyof } from "./generics";
 import { SchemaInput, isSchemaInput, resolveSchema } from "./schema";
-import { AbiTypeScope, getStaticAbiTypeKeys, isScopeType } from "./scope";
+import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.">;
@@ -56,16 +56,14 @@ export function validateTableShorthand<scope extends AbiTypeScope = AbiTypeScope
   scope: scope = AbiTypeScope as scope,
 ): asserts input is TableShorthandInput<scope> {
   if (typeof input === "string") {
-    if (isScopeType(input, scope)) {
+    if (keyof(input, scope.types)) {
       return;
     }
     throw new Error(`Invalid ABI type. \`${input}\` not found in scope.`);
   }
   if (typeof input === "object" && input !== null) {
     if (isSchemaInput(input, scope)) {
-      // TODO: resolve this error
-      // @ts-expect-error Argument of type 'string' is not assignable to parameter of type 'getStaticAbiTypeKeys<SchemaInput<scope>, scope>'.
-      if (validKeys(input, scope).includes("key")) {
+      if (validKeys(input, scope).find((key) => key === "key")) {
         return;
       }
       throw new Error(`Invalid schema. Expected a \`key\` field with a static ABI type.`);
@@ -101,15 +99,15 @@ export function resolveTableShorthand<input, scope extends AbiTypeScope = AbiTyp
       schema: input,
       primaryKey: ["key"],
     } as resolveTableShorthand<input, scope>;
-  } else {
-    return {
-      schema: {
-        key: "bytes32",
-        value: (scope.types as scope["types"])[input],
-      },
-      primaryKey: ["key"],
-    } as resolveTableShorthand<input, scope>;
   }
+
+  return {
+    schema: {
+      key: "bytes32",
+      value: input,
+    },
+    primaryKey: ["key"],
+  } as resolveTableShorthand<input, scope>;
 }
 
 export type validateKeys<validKeys extends PropertyKey, keys> = {

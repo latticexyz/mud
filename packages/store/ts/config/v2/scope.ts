@@ -40,10 +40,3 @@ export function extendScope<scope extends ScopeOptions, additionalTypes extends 
     },
   };
 }
-
-export function isScopeType<scope extends AbiTypeScope = AbiTypeScope>(
-  input: unknown,
-  scope: scope,
-): input is keyof scope["types"] {
-  return typeof input === "string" && Object.hasOwn(scope.types, input);
-}
