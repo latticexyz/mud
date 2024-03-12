@@ -11,5 +11,6 @@ export function hasOwnKey<obj extends object, const key extends PropertyKey>(
   object: obj,
   key: key,
 ): object is { [k in key]: k extends keyof obj ? obj[k] : unknown } & obj {
-  return typeof object === "object" && object !== null && Object.hasOwn(object, key);
+  // eslint-disable-next-line no-prototype-builtins
+  return typeof object === "object" && object !== null && object.hasOwnProperty(key);
 }
