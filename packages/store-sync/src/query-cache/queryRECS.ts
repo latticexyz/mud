@@ -1,7 +1,6 @@
 import { ZustandStore } from "../zustand";
 import { AllTables } from "./common";
-import { StoreConfig, Tables } from "@latticexyz/store";
-import { Hex } from "viem";
+import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
 import isEqual from "fast-deep-equal";
 
 export enum QueryFragmentType {
@@ -9,36 +8,37 @@ export enum QueryFragmentType {
   HasValue,
 }
 
-type HasQueryFragment = {
+type HasQueryFragment<T extends Table> = {
   type: QueryFragmentType.Has;
-  tableId: Hex;
+  tableId: T["tableId"];
 };
 
-type HasValueQueryFragment = {
+type HasValueQueryFragment<T extends Table> = {
   type: QueryFragmentType.HasValue;
-  tableId: Hex;
-  value: any;
+  tableId: T["tableId"];
+  value: SchemaToPrimitives<T["valueSchema"]>;
 };
 
-export function Has(tableId: Hex): HasQueryFragment {
-  return { type: QueryFragmentType.Has, tableId };
+export function Has(table: Table): HasQueryFragment<T> {
+  return { type: QueryFragmentType.Has, tableId: table.tableId };
 }
 
-export function HasValue(tableId: Hex, value: any): HasValueQueryFragment {
-  return { type: QueryFragmentType.HasValue, tableId, value };
+export function HasValue<T extends Table>(
+  table: T,
+  value: SchemaToPrimitives<T["valueSchema"]>,
+): HasValueQueryFragment<T> {
+  return { type: QueryFragmentType.HasValue, tableId: table.tableId, value };
 }
 
-type Query = HasQueryFragment[];
+type QueryFragment<T extends Table> = HasQueryFragment<T> | HasValueQueryFragment<T>;
+
+type Query = QueryFragment<Table>[];
 
 export async function query<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
   store: ZustandStore<AllTables<config, extraTables>>,
   query: Query,
-): Promise<Hex> {
+): Promise<string[]> {
   const records = Object.values(store.getState().records);
-
-  // const matches = records
-  //   .filter((record) => query.map((fragment) => fragment.tableId).includes(record.table.tableId))
-  //   .map((record) => record.keyTuple.join(":"));
 
   const initialMatches = records.filter((record) => record.table.tableId === query[0].tableId);
 
@@ -51,6 +51,7 @@ export async function query<config extends StoreConfig, extraTables extends Tabl
           (record) => record.table.tableId === fragment.tableId && isEqual(record.value, fragment.value),
         );
       }
+      return matches;
     }, initialMatches)
     .map((record) => record.keyTuple.join(":"));
 
