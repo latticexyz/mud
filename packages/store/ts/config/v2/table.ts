@@ -12,13 +12,13 @@ export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeSc
   ...getStaticAbiTypeKeys<schema, scope>[],
 ];
 
-function validKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope = AbiTypeScope>(
+export function validKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope>(
   schema: schema,
-  scope: scope = AbiTypeScope as scope,
+  scope: scope,
 ): ValidKeys<schema, scope> {
   return Object.entries(schema)
-    .filter(([, abiType]) => isStaticAbiType(scope.types[abiType]))
-    .map(([key]) => key) as ValidKeys<schema, scope>;
+    .filter(([, internalType]) => isStaticAbiType(scope.types[internalType]))
+    .map(([key]) => key) as unknown as ValidKeys<schema, scope>;
 }
 
 export type TableInput<

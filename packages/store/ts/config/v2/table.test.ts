@@ -1,7 +1,15 @@
 import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { resolveTableConfig, resolveTableShorthand, validateKeys } from "./table";
+import { resolveTableConfig, resolveTableShorthand, validKeys, validateKeys } from "./table";
 import { AbiTypeScope, extendScope, getStaticAbiTypeKeys } from "./scope";
+
+describe("validKeys", () => {
+  it("should return a tuple of static keys from a schema and scope", () => {
+    const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
+    const schema = { static: "uint256", dynamic: "string", customStatic: "static", customDynamic: "dynamic" } as const;
+    attest(validKeys(schema, scope)).equals(["static", "customStatic"]);
+  });
+});
 
 describe("validateKeys", () => {
   it("should return a tuple of valid keys", () => {
