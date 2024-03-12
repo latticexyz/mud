@@ -1,5 +1,5 @@
 import { Dict, evaluate, narrow } from "@arktype/util";
-import { get } from "./generics";
+import { get, hasOwnKey } from "./generics";
 import { SchemaInput } from "./schema";
 import { AbiType, AbiTypeScope, extendScope } from "./scope";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
@@ -113,9 +113,9 @@ export type resolveStoreConfig<input> = evaluate<{
 
 export function resolveStoreConfig<const input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {
   return {
-    tables: "tables" in input ? resolveStoreTablesConfig(input["tables"], extendedScope(input)) : {},
-    userTypes: "userTypes" in input ? input["userTypes"] : {},
-    enums: "enums" in input ? input["enums"] : {},
-    namespace: "namespace" in input ? input["namespace"] : "",
+    tables: hasOwnKey(input, "tables") ? resolveStoreTablesConfig(input["tables"], extendedScope(input)) : {},
+    userTypes: hasOwnKey(input, "userTypes") ? input["userTypes"] : {},
+    enums: hasOwnKey(input, "enums") ? input["enums"] : {},
+    namespace: hasOwnKey(input, "namespace") ? input["namespace"] : "",
   } as resolveStoreConfig<input>;
 }
