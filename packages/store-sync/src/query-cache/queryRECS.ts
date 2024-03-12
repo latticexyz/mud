@@ -113,5 +113,6 @@ export async function queryRECS<config extends StoreConfig, extraTables extends 
     where,
   });
 
-  return result.map((result) => result.join(":"));
+  const entities = result.map((result) => result.join(":"));
+  return entities;
 }
