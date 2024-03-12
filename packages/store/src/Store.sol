@@ -13,6 +13,7 @@ import { IStoreEvents } from "./IStoreEvents.sol";
  * @notice This contract integrates the core storage functionalities and provides an interface for data storage.
  * @dev This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
  * but not write methods.
+ * Note that `Store` does not implement `IStore`, because we want `IWorldKernel` to inherit `IStore` but it does not implement all the Store methods.
  */
 abstract contract Store is StoreWrite, StoreRead {
   /**
