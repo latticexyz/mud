@@ -3,6 +3,8 @@ import { AllTables, QueryCondition, TableSubject } from "./common";
 import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
 import { query } from "./query";
 
+export type Entity = string;
+
 export enum QueryFragmentType {
   Has,
   HasValue,
@@ -90,7 +92,7 @@ function fragmentToQueryConditions(fragment: QueryFragment<Table>): QueryConditi
 export async function runQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
   store: ZustandStore<AllTables<config, extraTables>>,
   fragments: QueryFragment<Table>[],
-): Promise<string[]> {
+): Promise<Set<Entity>> {
   const from = fragments
     .filter(
       (fragment) =>
@@ -114,5 +116,5 @@ export async function runQuery<config extends StoreConfig, extraTables extends T
   });
 
   const entities = result.map((record) => record.join(":"));
-  return entities;
+  return new Set(entities);
 }
