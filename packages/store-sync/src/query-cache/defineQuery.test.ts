@@ -70,18 +70,10 @@ describe("defineQuery", async () => {
         "subjects$": {
           "count": 1,
           "value": [
-            [
-              "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-            ],
-            [
-              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            ],
-            [
-              "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            ],
-            [
-              "0xdBa86119a787422C593ceF119E40887f396024E2",
-            ],
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            "0xdBa86119a787422C593ceF119E40887f396024E2",
           ],
         },
       }
@@ -115,21 +107,11 @@ describe("defineQuery", async () => {
         "subjects$": {
           "count": 2,
           "value": [
-            [
-              "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-            ],
-            [
-              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            ],
-            [
-              "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            ],
-            [
-              "0xdBa86119a787422C593ceF119E40887f396024E2",
-            ],
-            [
-              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-            ],
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            "0xdBa86119a787422C593ceF119E40887f396024E2",
+            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
         },
       }
@@ -174,12 +156,8 @@ describe("defineQuery", async () => {
         "subjects$": {
           "count": 1,
           "value": [
-            [
-              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            ],
-            [
-              "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            ],
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
         },
       }
@@ -213,15 +191,9 @@ describe("defineQuery", async () => {
         "subjects$": {
           "count": 2,
           "value": [
-            [
-              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            ],
-            [
-              "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            ],
-            [
-              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-            ],
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
         },
       }
@@ -255,12 +227,8 @@ describe("defineQuery", async () => {
         "subjects$": {
           "count": 3,
           "value": [
-            [
-              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            ],
-            [
-              "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            ],
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
         },
       }
@@ -308,12 +276,8 @@ describe("defineQuery", async () => {
         "subjects$": {
           "count": 1,
           "value": [
-            [
-              "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-            ],
-            [
-              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            ],
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
         },
       }
@@ -355,10 +319,7 @@ describe("defineQuery", async () => {
         "subjects$": {
           "count": 1,
           "value": [
-            [
-              3,
-              5,
-            ],
+            "3:5",
           ],
         },
       }
@@ -397,9 +358,7 @@ describe("defineQuery", async () => {
         "subjects$": {
           "count": 1,
           "value": [
-            [
-              "0xdBa86119a787422C593ceF119E40887f396024E2",
-            ],
+            "0xdBa86119a787422C593ceF119E40887f396024E2",
           ],
         },
       }
@@ -463,9 +422,7 @@ describe("defineQuery", async () => {
         "subjects$": {
           "count": 2,
           "value": [
-            [
-              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-            ],
+            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
         },
       }
@@ -481,12 +438,8 @@ describe("defineQuery", async () => {
 
     expect(subjects).toMatchInlineSnapshot(`
       [
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
+        "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+        "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
       ]
     `);
 
@@ -534,15 +487,9 @@ describe("defineQuery", async () => {
         "subjects$": {
           "count": 2,
           "value": [
-            [
-              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            ],
-            [
-              "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            ],
-            [
-              "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-            ],
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
         },
       }
@@ -580,12 +527,8 @@ describe("defineQuery", async () => {
         "subjects$": {
           "count": 3,
           "value": [
-            [
-              "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            ],
-            [
-              "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            ],
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
         },
       }

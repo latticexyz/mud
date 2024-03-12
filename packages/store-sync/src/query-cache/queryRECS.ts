@@ -1,8 +1,9 @@
 import { ZustandStore } from "../zustand";
-import { AllTables, QueryCondition, TableSubject } from "./common";
+import { AllTables, QueryCondition, QueryResultSubject, TableSubject } from "./common";
 import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
 import { query } from "./query";
 import { subscribeToQuery } from "./subscribeToQuery";
+import { map } from "rxjs";
 
 export type Entity = string;
 
@@ -90,6 +91,10 @@ function fragmentToQueryConditions(fragment: QueryFragment<Table>): QueryConditi
   ) as QueryCondition[];
 }
 
+function queryResultSubjectToEntity(keyTuple: QueryResultSubject): Entity {
+  return keyTuple.join(":");
+}
+
 export async function runQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
   store: ZustandStore<AllTables<config, extraTables>>,
   fragments: QueryFragment<Table>[],
@@ -116,7 +121,7 @@ export async function runQuery<config extends StoreConfig, extraTables extends T
     where,
   });
 
-  const entities = result.map((record) => record.join(":"));
+  const entities = result.map((subject) => queryResultSubjectToEntity(subject));
   return new Set(entities);
 }
 
@@ -140,11 +145,15 @@ export async function defineQuery<config extends StoreConfig, extraTables extend
     .map(fragmentToQueryConditions)
     .flat();
 
-  const result = await subscribeToQuery(store, {
+  const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(store, {
     from,
     except,
     where,
   });
 
-  return result;
+  return {
+    subjects: subjects.map((subject) => queryResultSubjectToEntity(subject)),
+    subjects$: subjects$.pipe(map((subjects) => subjects.map((subject) => queryResultSubjectToEntity(subject)))),
+    subjectChanges$,
+  };
 }
