@@ -32,17 +32,15 @@ export function HasValue<T extends Table>(
 
 type QueryFragment<T extends Table> = HasQueryFragment<T> | HasValueQueryFragment<T>;
 
-type Query = QueryFragment<Table>[];
-
-export async function query<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
+export async function queryRECS<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
   store: ZustandStore<AllTables<config, extraTables>>,
-  query: Query,
+  fragments: QueryFragment<Table>[],
 ): Promise<string[]> {
   const records = Object.values(store.getState().records);
 
-  const initialMatches = records.filter((record) => record.table.tableId === query[0].tableId);
+  const initialMatches = records.filter((record) => record.table.tableId === fragments[0].tableId);
 
-  const matches = query
+  const matches = fragments
     .reduce((matches, fragment) => {
       if (fragment.type === QueryFragmentType.Has) {
         return matches.filter((record) => record.table.tableId === fragment.tableId);
