@@ -1,7 +1,7 @@
 import { ZustandStore } from "../zustand";
 import { AllTables } from "./common";
 import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
-import isEqual from "fast-deep-equal";
+import { query } from "./query";
 
 export enum QueryFragmentType {
   Has,
@@ -36,22 +36,22 @@ export async function queryRECS<config extends StoreConfig, extraTables extends 
   store: ZustandStore<AllTables<config, extraTables>>,
   fragments: QueryFragment<Table>[],
 ): Promise<string[]> {
-  const records = Object.values(store.getState().records);
+  const from = fragments.map((fragment) => ({ tableId: fragment.tableId, subject: ["player"] }));
+  const where = fragments
+    .filter((fragment) => fragment.type === QueryFragmentType.HasValue)
+    .map((fragment) =>
+      Object.entries((fragment as HasValueQueryFragment<Table>).value).map(([field, right]) => ({
+        left: { tableId: fragment.tableId, field },
+        op: "=",
+        right,
+      })),
+    )
+    .flat();
 
-  const initialMatches = records.filter((record) => record.table.tableId === fragments[0].tableId);
+  const result = await query(store, {
+    from,
+    where,
+  });
 
-  const matches = fragments
-    .reduce((matches, fragment) => {
-      if (fragment.type === QueryFragmentType.Has) {
-        return matches.filter((record) => record.table.tableId === fragment.tableId);
-      } else if (fragment.type === QueryFragmentType.HasValue) {
-        return matches.filter(
-          (record) => record.table.tableId === fragment.tableId && isEqual(record.value, fragment.value),
-        );
-      }
-      return matches;
-    }, initialMatches)
-    .map((record) => record.keyTuple.join(":"));
-
-  return matches;
+  return result.map((result) => result.join(":"));
 }
