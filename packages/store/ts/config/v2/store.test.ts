@@ -564,7 +564,7 @@ describe("resolveStoreConfig", () => {
         },
       }),
     )
-      .throws("wrong error")
+      .throws("Invalid primary key. Expected (secondKey|secondAge)[], received [firstKey,secondAge]")
       .type.errors(`Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'`);
   });
 
@@ -580,7 +580,7 @@ describe("resolveStoreConfig", () => {
         },
       }),
     )
-      .throws("wrong error")
+      .throws("Invalid primary key. Expected (key|age)[], received [name]")
       .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 
@@ -599,7 +599,7 @@ describe("resolveStoreConfig", () => {
         },
       }),
     )
-      .throws("wrong error")
+      .throws("Invalid primary key. Expected (key|age)[], received [name]")
       .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 
@@ -663,14 +663,14 @@ describe("resolveStoreConfig", () => {
   });
 
   it("should use the root namespace as default namespace", () => {
-    const config = resolveStoreConfig({ tables: { Example: {} } });
+    const config = resolveStoreConfig({});
 
-    attest<"">(config.namespace);
+    attest<"">(config.namespace).equals("");
   });
 
   it("should use pipe through non-default namespaces", () => {
-    const config = resolveStoreConfig({ tables: { Example: {} }, namespace: "custom" });
+    const config = resolveStoreConfig({ namespace: "custom" });
 
-    attest<"custom">(config.namespace);
+    attest<"custom">(config.namespace).equals("custom");
   });
 });
