@@ -36,6 +36,8 @@ describe("resolveSchema", () => {
         },
         scope,
       ),
-    ).throws(`"NotACustomType" is not a valid type in this scope.`);
+    )
+      .throws(`"NotACustomType" is not a valid type in this scope.`)
+      .type.errors(`Type '"NotACustomType"' is not assignable to type 'AbiType | "CustomType"'.`);
   });
 });
