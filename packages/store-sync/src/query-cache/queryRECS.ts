@@ -87,7 +87,7 @@ function fragmentToQueryConditions(fragment: QueryFragment<Table>): QueryConditi
   ) as QueryCondition[];
 }
 
-export async function queryRECS<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
+export async function runQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
   store: ZustandStore<AllTables<config, extraTables>>,
   fragments: QueryFragment<Table>[],
 ): Promise<string[]> {

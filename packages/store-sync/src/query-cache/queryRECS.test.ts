@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { createHydratedStore, tables } from "./test/createHydratedStore";
-import { Has, HasValue, Not, NotValue, queryRECS } from "./queryRECS";
+import { Has, HasValue, Not, NotValue, runQuery } from "./queryRECS";
 import { deployMockGame } from "../../test/mockGame";
 import { Address } from "viem";
 
@@ -12,7 +12,7 @@ describe("queryRECS", async () => {
 
   it("can get players with a position", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await queryRECS(store, [Has(tables.Position)]);
+    const result = await runQuery(store, [Has(tables.Position)]);
 
     expect(result).toMatchInlineSnapshot(`
       [
@@ -26,7 +26,7 @@ describe("queryRECS", async () => {
 
   it("can get players at position (3, 5)", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await queryRECS(store, [HasValue(tables.Position, { x: 3, y: 5 })]);
+    const result = await runQuery(store, [HasValue(tables.Position, { x: 3, y: 5 })]);
 
     expect(result).toMatchInlineSnapshot(`
       [
@@ -38,7 +38,7 @@ describe("queryRECS", async () => {
 
   it("can get players that are still alive", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await queryRECS(store, [Has(tables.Position), NotValue(tables.Health, { health: 0n })]);
+    const result = await runQuery(store, [Has(tables.Position), NotValue(tables.Health, { health: 0n })]);
 
     expect(result).toMatchInlineSnapshot(`
       [
@@ -50,7 +50,7 @@ describe("queryRECS", async () => {
 
   it("can get all players in grassland", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await queryRECS(store, [HasValue(tables.Terrain, { terrainType: 2 as never })]);
+    const result = await runQuery(store, [HasValue(tables.Terrain, { terrainType: 2 as never })]);
 
     expect(result).toMatchInlineSnapshot(`
       [
@@ -61,7 +61,7 @@ describe("queryRECS", async () => {
 
   it("can get all players without health (e.g. spectator)", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await queryRECS(store, [Has(tables.Position), Not(tables.Health)]);
+    const result = await runQuery(store, [Has(tables.Position), Not(tables.Health)]);
 
     expect(result).toMatchInlineSnapshot(`
       [
