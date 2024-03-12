@@ -3,32 +3,16 @@ import { AllTables } from "./common";
 import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
 import isEqual from "fast-deep-equal";
 
-export enum QueryFragmentType {
-  Has,
-  HasValue,
-}
-
 type HasQueryFragment<T extends Table> = {
-  type: QueryFragmentType.Has;
+  type: "Has";
   tableId: T["tableId"];
 };
 
 type HasValueQueryFragment<T extends Table> = {
-  type: QueryFragmentType.HasValue;
+  type: "HasValue";
   tableId: T["tableId"];
   value: SchemaToPrimitives<T["valueSchema"]>;
 };
-
-export function Has(table: Table): HasQueryFragment<T> {
-  return { type: QueryFragmentType.Has, tableId: table.tableId };
-}
-
-export function HasValue<T extends Table>(
-  table: T,
-  value: SchemaToPrimitives<T["valueSchema"]>,
-): HasValueQueryFragment<T> {
-  return { type: QueryFragmentType.HasValue, tableId: table.tableId, value };
-}
 
 type QueryFragment<T extends Table> = HasQueryFragment<T> | HasValueQueryFragment<T>;
 
@@ -44,9 +28,9 @@ export async function query<config extends StoreConfig, extraTables extends Tabl
 
   const matches = query
     .reduce((matches, fragment) => {
-      if (fragment.type === QueryFragmentType.Has) {
+      if (fragment.type === "Has") {
         return matches.filter((record) => record.table.tableId === fragment.tableId);
-      } else if (fragment.type === QueryFragmentType.HasValue) {
+      } else if (fragment.type === "HasValue") {
         return matches.filter(
           (record) => record.table.tableId === fragment.tableId && isEqual(record.value, fragment.value),
         );

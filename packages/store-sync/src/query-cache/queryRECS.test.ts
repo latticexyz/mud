@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { createHydratedStore, tables } from "./test/createHydratedStore";
-import { Has, HasValue, query } from "./queryRECS";
+import { query } from "./queryRECS";
 import { deployMockGame } from "../../test/mockGame";
 import { Address } from "viem";
 
@@ -12,7 +12,7 @@ describe("query", async () => {
 
   it("can get players with a position", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(store, [Has(tables.Position)]);
+    const result = await query(store, [{ type: "Has", tableId: tables.Position.tableId }]);
 
     expect(result).toMatchInlineSnapshot(`
       [
@@ -26,7 +26,7 @@ describe("query", async () => {
 
   it("can get players at position (3, 5)", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(store, [HasValue(tables.Position, { x: 3, y: 5 })]);
+    const result = await query(store, [{ type: "HasValue", tableId: tables.Position.tableId, value: { x: 3, y: 5 } }]);
 
     expect(result).toMatchInlineSnapshot(`
       [
