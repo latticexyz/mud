@@ -311,7 +311,7 @@ describe("resolveTableConfig", () => {
         primaryKey: ["name"],
       }),
     )
-      .throws(`Invalid primary key. Expected (key|age)[], received [name]`)
+      .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
       .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 
@@ -327,7 +327,7 @@ describe("resolveTableConfig", () => {
         scope,
       ),
     )
-      .throws(`Invalid primary key. Expected (key|age)[], received [name]`)
+      .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
       .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 
@@ -343,7 +343,7 @@ describe("resolveTableConfig", () => {
         scope,
       ),
     )
-      .throws(`Invalid primary key. Expected (age)[], received [key]`)
+      .throws('Invalid primary key. Expected `("age")[]`, received `["key"]`')
       .type.errors(`Type '"key"' is not assignable to type '"age"'`);
   });
 
@@ -359,7 +359,7 @@ describe("resolveTableConfig", () => {
         scope,
       ),
     )
-      .throws(`Invalid primary key. Expected (key|age)[], received [NotAKey]`)
+      .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["NotAKey"]`')
       .type.errors(`Type '"NotAKey"' is not assignable to type '"key" | "age"'`);
   });
 });

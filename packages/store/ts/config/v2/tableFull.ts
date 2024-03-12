@@ -77,7 +77,13 @@ export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeSco
 
   if (!hasOwnKey(input, "primaryKey") || !isValidPrimaryKey(input["primaryKey"], input["schema"], scope)) {
     throw new Error(
-      `Invalid primary key. Expected (${getValidKeys(input["schema"], scope).join("|")})[], received ${hasOwnKey(input, "primaryKey") ? `[${input["primaryKey"]}]` : "undefined"}`,
+      `Invalid primary key. Expected \`(${getValidKeys(input["schema"], scope)
+        .map((item) => `"${item}"`)
+        .join(" | ")})[]\`, received \`${
+        hasOwnKey(input, "primaryKey") && Array.isArray(input.primaryKey)
+          ? `[${input.primaryKey.map((item) => `"${item}"`).join(", ")}]`
+          : "undefined"
+      }\``,
     );
   }
 }

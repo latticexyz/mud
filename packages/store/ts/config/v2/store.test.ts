@@ -41,7 +41,7 @@ describe("resolveStoreConfig", () => {
     attest<typeof expected>(config).equals(expected);
   });
 
-  it("it should accept a user type as input and expand it", () => {
+  it("should accept a user type as input and expand it", () => {
     const config = resolveStoreConfig({ tables: { Name: "CustomType" }, userTypes: { CustomType: "address" } });
     const expected = {
       tables: {
@@ -314,7 +314,7 @@ describe("resolveStoreConfig", () => {
 
     attest<typeof expected>(config).equals(expected);
   }),
-    it("it should return the full config given a full config with two primaryKey", () => {
+    it("should return the full config given a full config with two primaryKey", () => {
       const config = resolveStoreConfig({
         tables: {
           Example: {
@@ -564,7 +564,7 @@ describe("resolveStoreConfig", () => {
         },
       }),
     )
-      .throws("Invalid primary key. Expected (secondKey|secondAge)[], received [firstKey,secondAge]")
+      .throws('Invalid primary key. Expected `("secondKey" | "secondAge")[]`, received `["firstKey", "secondAge"]`')
       .type.errors(`Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'`);
   });
 
@@ -580,7 +580,7 @@ describe("resolveStoreConfig", () => {
         },
       }),
     )
-      .throws("Invalid primary key. Expected (key|age)[], received [name]")
+      .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
       .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 
@@ -599,7 +599,7 @@ describe("resolveStoreConfig", () => {
         },
       }),
     )
-      .throws("Invalid primary key. Expected (key|age)[], received [name]")
+      .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
       .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 

@@ -257,7 +257,7 @@ describe("resolveWorldConfig", () => {
       attest<typeof config>(expected);
     });
 
-    it("it should accept a user type as input and expand it", () => {
+    it("should accept a user type as input and expand it", () => {
       const config = resolveWorldConfig({ tables: { Name: "CustomType" }, userTypes: { CustomType: "address" } });
       const expected = {
         tables: {
@@ -536,7 +536,7 @@ describe("resolveWorldConfig", () => {
       attest<typeof expected>(config);
     });
 
-    it("it should return the full config given a full config with two primaryKey", () => {
+    it("should return the full config given a full config with two primaryKey", () => {
       const config = resolveWorldConfig({
         tables: {
           Example: {
