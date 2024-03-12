@@ -3,6 +3,26 @@ import { mudConfig } from "@latticexyz/world/register";
 import { resolveTableId } from "@latticexyz/config";
 
 export default mudConfig({
+  enums: {
+    BuildingType: [
+      "One",
+      "Two",
+      "Three",
+      "Four",
+      "Five",
+      "Six",
+      "Seven",
+      "Eight",
+      "Nine",
+      "Ten",
+      "Eleven",
+      "Twelve",
+      "Thirteen",
+      "Fourteen",
+      "Fifteen",
+      "Sixteen",
+    ],
+  },
   systems: {
     IncrementSystem: {
       name: "increment",
@@ -35,6 +55,22 @@ export default mudConfig({
         itemVariant: "uint32",
       },
       valueSchema: { amount: "uint32" },
+    },
+    Buildings: {
+      keySchema: { building: "BuildingType", isTeamRight: "bool" },
+      dataStruct: true,
+      valueSchema: {
+        totalResourcesStaked: "uint256[5]",
+      },
+    },
+    PlayerDonated: {
+      valueSchema: {
+        player: "address",
+        isTeamRight: "bool",
+        building: "BuildingType",
+        resources: "uint256[5]",
+      },
+      offchainOnly: true,
     },
   },
   modules: [

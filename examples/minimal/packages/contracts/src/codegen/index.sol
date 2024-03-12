@@ -6,3 +6,5 @@ pragma solidity >=0.8.24;
 import { CounterTable } from "./tables/CounterTable.sol";
 import { MessageTable } from "./tables/MessageTable.sol";
 import { Inventory } from "./tables/Inventory.sol";
+import { Buildings, BuildingsData } from "./tables/Buildings.sol";
+import { PlayerDonated, PlayerDonatedData } from "./tables/PlayerDonated.sol";

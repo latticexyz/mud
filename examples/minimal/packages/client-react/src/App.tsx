@@ -31,7 +31,15 @@ export const App = () => {
     <>
       <div>
         Counter: <span>{counter?.value ?? "??"}</span>
-      </div>
+      </div>{" "}
+      <button
+        type="button"
+        onClick={async () => {
+          await worldContract.write.contributeToBuilding([11, [0n, 0n, 0n, 0n, 0n]]);
+        }}
+      >
+        WOO
+      </button>
       <button
         type="button"
         onClick={async () => {
