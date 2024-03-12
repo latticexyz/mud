@@ -32,7 +32,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["key"],
     } as const;
 
-    attest<typeof expected>(table).snap(expected);
+    attest<typeof expected>(table).equals(expected);
   });
 
   it("should expand a single custom type into a key/value schema", () => {
