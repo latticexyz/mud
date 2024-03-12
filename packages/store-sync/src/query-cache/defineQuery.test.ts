@@ -6,10 +6,8 @@ import { Address, keccak256, parseEther, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { testClient } from "../../test/common";
 import { combineLatest, filter, firstValueFrom, map, scan, shareReplay } from "rxjs";
-import { QueryResultSubject } from "./common";
 import { waitForTransaction } from "./test/waitForTransaction";
-import { Has, HasValue, Not, NotValue, defineQuery } from "./queryRECS";
-import { QueryResultSubjectChange } from "./subscribeToQuery";
+import { Entity, EntityChange, Has, HasValue, Not, NotValue, defineQuery } from "./queryRECS";
 
 const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));
 
@@ -23,15 +21,15 @@ describe("defineQuery", async () => {
   it("can get players with a position", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await defineQuery(store, [Has(tables.Position)]);
+    const { update$, matching } = await defineQuery(store, [Has(tables.Position)]);
 
     const latest$ = combineLatest({
-      subjects$: subjects$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubject[])[]),
+      subjects$: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: subjectChanges$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubjectChange[])[]),
+      subjectChanges$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
@@ -111,15 +109,15 @@ describe("defineQuery", async () => {
   it("can get players at position (3, 5)", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await defineQuery(store, [HasValue(tables.Position, { x: 3, y: 5 })]);
+    const { update$, matching } = await defineQuery(store, [HasValue(tables.Position, { x: 3, y: 5 })]);
 
     const latest$ = combineLatest({
-      subjects$: subjects$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubject[])[]),
+      subjects$: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: subjectChanges$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubjectChange[])[]),
+      subjectChanges$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
@@ -220,18 +218,18 @@ describe("defineQuery", async () => {
   it("can get players that are still alive", async () => {
     const { store } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await defineQuery(store, [
+    const { update$, matching } = await defineQuery(store, [
       Has(tables.Position),
       NotValue(tables.Health, { health: 0n }),
     ]);
 
     const latest$ = combineLatest({
-      subjects$: subjects$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubject[])[]),
+      subjects$: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: subjectChanges$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubjectChange[])[]),
+      subjectChanges$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
@@ -265,17 +263,15 @@ describe("defineQuery", async () => {
   it("can get all players in grassland", async () => {
     const { store } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await defineQuery(store, [
-      HasValue(tables.Terrain, { terrainType: 2 as never }),
-    ]);
+    const { update$, matching } = await defineQuery(store, [HasValue(tables.Terrain, { terrainType: 2 as never })]);
 
     const latest$ = combineLatest({
-      subjects$: subjects$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubject[])[]),
+      subjects$: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: subjectChanges$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubjectChange[])[]),
+      subjectChanges$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
@@ -304,15 +300,15 @@ describe("defineQuery", async () => {
   it("can get all players without health (e.g. spectator)", async () => {
     const { store } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await defineQuery(store, [Has(tables.Position), Not(tables.Health)]);
+    const { update$, matching } = await defineQuery(store, [Has(tables.Position), Not(tables.Health)]);
 
     const latest$ = combineLatest({
-      subjects$: subjects$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubject[])[]),
+      subjects$: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: subjectChanges$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubjectChange[])[]),
+      subjectChanges$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
@@ -341,15 +337,15 @@ describe("defineQuery", async () => {
   it("emits new subjects when initial matching set is empty", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await defineQuery(store, [HasValue(tables.Position, { x: 999, y: 999 })]);
+    const { update$, matching } = await defineQuery(store, [HasValue(tables.Position, { x: 999, y: 999 })]);
 
     const latest$ = combineLatest({
-      subjects$: subjects$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubject[])[]),
+      subjects$: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: subjectChanges$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubjectChange[])[]),
+      subjectChanges$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
@@ -403,16 +399,7 @@ describe("defineQuery", async () => {
   it("emits changed subjects when subscribing some time after initial query", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects, subjects$, subjectChanges$ } = await defineQuery(store, [
-      HasValue(tables.Position, { x: 3, y: 5 }),
-    ]);
-
-    expect(subjects).toMatchInlineSnapshot(`
-      [
-        "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-      ]
-    `);
+    const { update$, matching } = await defineQuery(store, [HasValue(tables.Position, { x: 3, y: 5 })]);
 
     waitForTransaction(
       await writeContract(testClient, {
@@ -427,12 +414,12 @@ describe("defineQuery", async () => {
     await fetchLatestLogs();
 
     const latest$ = combineLatest({
-      subjects$: subjects$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubject[])[]),
+      subjects$: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: subjectChanges$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly QueryResultSubjectChange[])[]),
+      subjectChanges$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));

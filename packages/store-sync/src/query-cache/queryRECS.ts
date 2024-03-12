@@ -3,7 +3,7 @@ import { AllTables, QueryCondition, QueryResultSubject, TableSubject } from "./c
 import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
 import { query } from "./query";
 import { subscribeToQuery } from "./subscribeToQuery";
-import { map } from "rxjs";
+import { Observable, map } from "rxjs";
 
 export type Entity = string;
 
@@ -125,10 +125,18 @@ export async function runQuery<config extends StoreConfig, extraTables extends T
   return new Set(entities);
 }
 
+export type EntityChange = {
+  readonly type: "enter" | "exit";
+  readonly subject: Entity;
+};
+
 export async function defineQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
   store: ZustandStore<AllTables<config, extraTables>>,
   fragments: QueryFragment<Table>[],
-): Promise<ReturnType<typeof subscribeToQuery>> {
+): Promise<{
+  update$: Observable<readonly EntityChange[]>;
+  matching: Observable<readonly Entity[]>;
+}> {
   const from = fragments
     .filter(
       (fragment) =>
@@ -145,16 +153,14 @@ export async function defineQuery<config extends StoreConfig, extraTables extend
     .map(fragmentToQueryConditions)
     .flat();
 
-  const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(store, {
+  const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
     from,
     except,
     where,
   });
 
   return {
-    subjects: subjects.map((subject) => queryResultSubjectToEntity(subject)),
-    subjects$: subjects$.pipe(map((subjects) => subjects.map((subject) => queryResultSubjectToEntity(subject)))),
-    subjectChanges$: subjectChanges$.pipe(
+    update$: subjectChanges$.pipe(
       map((subjectChanges) => {
         return subjectChanges.map((subjectChange) => ({
           type: subjectChange.type,
@@ -162,5 +168,6 @@ export async function defineQuery<config extends StoreConfig, extraTables extend
         }));
       }),
     ),
+    matching: subjects$.pipe(map((subjects) => subjects.map((subject) => queryResultSubjectToEntity(subject)))),
   };
 }
