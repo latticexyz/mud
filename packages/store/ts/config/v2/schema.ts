@@ -1,5 +1,6 @@
 import { evaluate } from "@arktype/util";
 import { AbiTypeScope } from "./scope";
+import { keyof } from "./generics";
 
 export type SchemaInput<scope extends AbiTypeScope = AbiTypeScope> = {
   [key: string]: keyof scope["types"];
@@ -18,18 +19,21 @@ export function resolveSchema<schema extends SchemaInput<scope>, scope extends A
   schema: schema,
   scope?: scope,
 ): resolveSchema<schema, scope> {
-  // TODO: runtime validation
   const resolvedScope = scope ?? AbiTypeScope;
   return Object.fromEntries(
-    Object.entries(schema).map(([key, type]) => [
-      key,
-      {
-        // TODO: any way to do this without type casting?
-        type: (resolvedScope.types as scope["types"])[type],
-        internalType: type,
-      },
-    ]),
-  ) as resolveSchema<schema, scope>;
+    Object.entries(schema).map(([key, internalType]) => {
+      if (keyof(internalType, resolvedScope.types)) {
+        return [
+          key,
+          {
+            type: resolvedScope.types[internalType],
+            internalType,
+          },
+        ];
+      }
+      throw new Error(`"${String(internalType)}" is not a valid type in this scope.`);
+    }),
+  ) as unknown as resolveSchema<schema, scope>;
 }
 
 export function isSchemaInput<scope extends AbiTypeScope = AbiTypeScope>(

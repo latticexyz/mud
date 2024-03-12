@@ -19,10 +19,7 @@ describe("resolveSchema", () => {
     } as const;
 
     attest<typeof expected>(resolved)
-      .snap({
-        regular: { type: "uint256", internalType: "uint256" },
-        user: { type: "address", internalType: "CustomType" },
-      })
+      .equals(expected)
       .type.toString.snap(
         '{ readonly regular: { readonly type: "uint256"; readonly internalType: "uint256"; }; readonly user: { readonly type: "address"; readonly internalType: "CustomType"; }; }',
       );
@@ -31,13 +28,15 @@ describe("resolveSchema", () => {
   it("should throw if a type is not part of the scope", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "address" });
     // TODO: test that this fails runtime validation
-    resolveSchema(
-      {
-        regular: "uint256",
-        // @ts-expect-error Type '"NotACustomType"' is not assignable to type 'AbiType | "CustomType"'.
-        user: "NotACustomType",
-      },
-      scope,
-    );
+    attest(() =>
+      resolveSchema(
+        {
+          regular: "uint256",
+          // @ts-expect-error Type '"NotACustomType"' is not assignable to type 'AbiType | "CustomType"'.
+          user: "NotACustomType",
+        },
+        scope,
+      ),
+    ).throws(`"NotACustomType" is not a valid type in this scope.`);
   });
 });
