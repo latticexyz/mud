@@ -1,5 +1,5 @@
 import { ErrorMessage, evaluate } from "@arktype/util";
-import { SchemaInput, resolveSchema } from "./schema";
+import { SchemaInput } from "./schema";
 import { AbiTypeScope } from "./scope";
 import {
   TableShorthandInput,
@@ -7,7 +7,7 @@ import {
   resolveTableShorthand,
   validateTableShorthand,
 } from "./tableShorthand";
-import { TableFullInput, ValidKeys, isTableFullInput, validateTableFull } from "./tableFull";
+import { TableFullInput, ValidKeys, isTableFullInput, resolveTableFullConfig, validateTableFull } from "./tableFull";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.">;
@@ -25,54 +25,6 @@ export type validateTableConfig<input, scope extends AbiTypeScope = AbiTypeScope
     : input extends string
       ? validateTableShorthand<input, scope>
       : validateTableFull<input, scope>;
-
-export type resolveTableFullConfig<
-  input extends TableFullInput<SchemaInput<scope>, scope>,
-  scope extends AbiTypeScope = AbiTypeScope,
-> = evaluate<{
-  readonly primaryKey: Readonly<input["primaryKey"]>;
-  readonly schema: resolveSchema<input["schema"], scope>;
-  readonly keySchema: resolveSchema<
-    {
-      readonly [key in input["primaryKey"][number]]: input["schema"][key];
-    },
-    scope
-  >;
-  readonly valueSchema: resolveSchema<
-    {
-      readonly [key in Exclude<keyof input["schema"], input["primaryKey"][number]>]: input["schema"][key];
-    },
-    scope
-  >;
-}>;
-
-export function resolveTableFullConfig<
-  input extends TableFullInput<SchemaInput<scope>, scope>,
-  scope extends AbiTypeScope = AbiTypeScope,
->(input: input, scope: scope = AbiTypeScope as scope): resolveTableFullConfig<input, scope> {
-  validateTableFull(input, scope);
-
-  return {
-    primaryKey: input["primaryKey"],
-    schema: resolveSchema(input["schema"], scope),
-    keySchema: resolveSchema(
-      Object.fromEntries(
-        Object.entries(input["schema"]).filter(([key]) =>
-          input["primaryKey"].includes(key as input["primaryKey"][number]),
-        ),
-      ),
-      scope,
-    ),
-    valueSchema: resolveSchema(
-      Object.fromEntries(
-        Object.entries(input["schema"]).filter(
-          ([key]) => !input["primaryKey"].includes(key as input["primaryKey"][number]),
-        ),
-      ),
-      scope,
-    ),
-  } as resolveTableFullConfig<input, scope>;
-}
 
 export type resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<
   input extends TableShorthandInput<scope>
