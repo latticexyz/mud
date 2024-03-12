@@ -15,6 +15,7 @@ bytes32 constant NAMESPACE_MASK = bytes32(~bytes14("")) >> (TYPE_BITS);
 
 /**
  * @title WorldResourceIdLib
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice A library for handling World Resource ID encoding and decoding.
  */
 library WorldResourceIdLib {
@@ -48,7 +49,7 @@ library WorldResourceIdLib {
    */
   function toTrimmedString(bytes16 paddedString) internal pure returns (string memory) {
     uint256 length;
-    for (; length < 16; length++) if (Bytes.slice1(paddedString, length) == 0) break;
+    for (; length < 16; length++) if (Bytes.getBytes1(paddedString, length) == 0) break;
     bytes memory packedSelector = abi.encodePacked(paddedString);
     return string(Bytes.setLength(packedSelector, length));
   }
@@ -56,6 +57,7 @@ library WorldResourceIdLib {
 
 /**
  * @title WorldResourceIdInstance
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice A library for handling instances of World Resource IDs.
  */
 library WorldResourceIdInstance {

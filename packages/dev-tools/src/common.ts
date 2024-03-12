@@ -16,6 +16,6 @@ export type DevToolsOptions<config extends StoreConfig = StoreConfig> = {
   worldAbi: Abi;
   write$: Observable<ContractWrite>;
   recsWorld?: RecsWorld;
-  // TODO: figure out why using `Tables` here causes downstream type errors
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   useStore?: ZustandStore<any>;
 };

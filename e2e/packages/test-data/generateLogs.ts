@@ -31,7 +31,7 @@ type WorldContract = GetContractReturnType<
 
 export async function generateLogs(
   rpc: string,
-  transactionHook: (worldContract: WorldContract) => Promise<Hex>
+  transactionHook: (worldContract: WorldContract) => Promise<Hex>,
 ): Promise<RpcLog[]> {
   console.log("deploying world");
   const { stdout, stderr } = await execa("pnpm", ["mud", "deploy", "--rpc", rpc, "--saveDeployment", "false"], {
@@ -69,8 +69,7 @@ export async function generateLogs(
   const worldContract = getContract({
     address: worldAddress,
     abi: IWorldAbi,
-    publicClient,
-    walletClient,
+    client: { public: publicClient, wallet: walletClient },
   });
 
   const lastTx = await transactionHook(worldContract);
@@ -89,7 +88,7 @@ export async function generateLogs(
             encodeEventTopics({
               abi: [event],
               eventName: event.name,
-            })
+            }),
           ),
         ],
         fromBlock: numberToHex(0n),

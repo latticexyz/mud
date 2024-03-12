@@ -26,7 +26,7 @@ export const App = () => {
           worldAbi: networkLayer.network.worldContract.abi,
           write$: networkLayer.network.write$,
           recsWorld: networkLayer.world,
-        })
+        }),
       );
     }
   }, [networkLayer]);

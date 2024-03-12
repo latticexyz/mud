@@ -23,12 +23,14 @@ import { InitModuleAddress } from "./codegen/tables/InitModuleAddress.sol";
 
 import { IModule, IModule } from "./IModule.sol";
 import { IWorldKernel } from "./IWorldKernel.sol";
+import { IWorldEvents } from "./IWorldEvents.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
 
 /**
  * @title World Contract
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This contract is the core "World" contract containing various methods for
  * data manipulation, system calls, and dynamic function selector handling.
  */
@@ -46,11 +48,14 @@ contract World is StoreData, IWorldKernel {
   /// @dev Event emitted when the World contract is created.
   constructor() {
     creator = msg.sender;
-    emit HelloWorld(WORLD_VERSION);
+    emit IWorldEvents.HelloWorld(WORLD_VERSION);
   }
 
   /**
    * @dev Prevents the World contract from calling itself.
+   * If the World is able to call itself via `delegatecall` from a system, the system would have root access to context like internal tables, causing a potential vulnerability.
+   * Ideally this should not happen because all operations to internal tables happen as internal library calls, and all calls to root systems happen as a `delegatecall` to the system.
+   * However, since this is an important invariant, we make it explicit by reverting if `msg.sender` is `address(this)` in all `World` methods.
    */
   modifier prohibitDirectCallback() {
     if (msg.sender == address(this)) {

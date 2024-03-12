@@ -34,8 +34,9 @@ export function isDynamicResolution(value: unknown): value is DynamicResolution 
  * Turn a DynamicResolution object into a ValueWithType based on the provided context
  */
 export function resolveWithContext(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   unresolved: any,
-  context: { systemAddresses?: Record<string, Promise<string>>; tableIds?: Record<string, Uint8Array> }
+  context: { systemAddresses?: Record<string, Promise<string>>; tableIds?: Record<string, Uint8Array> },
 ): ValueWithType {
   if (!isDynamicResolution(unresolved)) return unresolved;
   let resolved: ValueWithType | undefined = undefined;

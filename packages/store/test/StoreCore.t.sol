@@ -15,7 +15,7 @@ import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
-import { Tables, ResourceIds, TablesTableId } from "../src/codegen/index.sol";
+import { Tables, ResourceIds } from "../src/codegen/index.sol";
 import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../src/storeResourceTypes.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
@@ -26,6 +26,7 @@ import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
 import { RevertSubscriber } from "./RevertSubscriber.sol";
 import { EchoSubscriber } from "./EchoSubscriber.sol";
 import { setDynamicDataLengthAtIndex } from "./setDynamicDataLengthAtIndex.sol";
+import { IFieldLayoutErrors } from "../src/IFieldLayoutErrors.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -82,7 +83,7 @@ contract StoreCoreTest is Test, StoreMock {
     keyTuple[0] = ResourceId.unwrap(tableId);
     vm.expectEmit(true, true, true, true);
     emit Store_SetRecord(
-      TablesTableId,
+      Tables._tableId,
       keyTuple,
       Tables.encodeStatic(fieldLayout, keySchema, valueSchema),
       Tables.encodeLengths(abi.encode(keyNames), abi.encode(fieldNames)),
@@ -130,7 +131,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     vm.expectRevert(
       abi.encodeWithSelector(
-        FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields.selector,
+        IFieldLayoutErrors.FieldLayout_TooManyDynamicFields.selector,
         invalidFieldLayout.numDynamicFields(),
         5
       )
@@ -513,8 +514,8 @@ contract StoreCoreTest is Test, StoreMock {
       .getRecord(_data.tableId, keyTuple, _data.fieldLayout);
     assertEq(IStore(this).getFieldLayout(_data.tableId).staticDataLength(), 48);
     assertEq(IStore(this).getValueSchema(_data.tableId).staticDataLength(), 48);
-    assertEq(Bytes.slice16(loadedStaticData, 0), _data.firstDataBytes);
-    assertEq(Bytes.slice32(loadedStaticData, 16), _data.secondDataBytes);
+    assertEq(Bytes.getBytes16(loadedStaticData, 0), _data.firstDataBytes);
+    assertEq(Bytes.getBytes32(loadedStaticData, 16), _data.secondDataBytes);
     assertEq(
       keccak256(SliceLib.getSubslice(loadedStaticData, 0, 48).toBytes()),
       keccak256(abi.encodePacked(_data.firstDataBytes, _data.secondDataBytes))

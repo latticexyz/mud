@@ -83,10 +83,12 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
             ...opts,
             configPath,
             rpc,
+            rpcBatch: false,
             skipBuild: false,
             printConfig: false,
             profile: undefined,
             saveDeployment: true,
+            deployerAddress: undefined,
             worldAddress,
             srcDir,
             salt: "0x",
@@ -105,7 +107,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
           console.log(chalk.gray("\nWaiting for file changes…\n"));
         }
       }),
-      filter(isDefined)
+      filter(isDefined),
     );
 
     deploys$.subscribe();

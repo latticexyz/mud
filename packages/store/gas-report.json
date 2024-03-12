@@ -1,15 +1,21 @@
 [
   {
     "file": "test/Bytes.t.sol",
-    "test": "testSetBytes4Memory",
-    "name": "set bytes4 in bytes memory",
-    "gasUsed": 37
+    "test": "testGetBytes3",
+    "name": "get bytes3 with offset 1",
+    "gasUsed": 13
   },
   {
     "file": "test/Bytes.t.sol",
-    "test": "testSlice32",
-    "name": "slice bytes32 with offset 10",
+    "test": "testGetBytes32",
+    "name": "get bytes32 with offset 10",
     "gasUsed": 13
+  },
+  {
+    "file": "test/Bytes.t.sol",
+    "test": "testSetBytes4Memory",
+    "name": "set bytes4 in bytes memory",
+    "gasUsed": 37
   },
   {
     "file": "test/Callbacks.t.sol",
@@ -21,7 +27,7 @@
     "file": "test/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "Callbacks: get field (warm)",
-    "gasUsed": 2615
+    "gasUsed": 2616
   },
   {
     "file": "test/Callbacks.t.sol",
@@ -147,13 +153,13 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "pass abi encoded bytes to external contract",
-    "gasUsed": 6549
+    "gasUsed": 29493
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "pass custom encoded bytes to external contract",
-    "gasUsed": 1426
+    "gasUsed": 23310
   },
   {
     "file": "test/Gas.t.sol",
@@ -321,7 +327,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 723941
+    "gasUsed": 717787
   },
   {
     "file": "test/Mixed.t.sol",
@@ -675,7 +681,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testDeleteDataOffchainTable",
     "name": "StoreCore: delete record in offchain table",
-    "gasUsed": 4277
+    "gasUsed": 28225
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -711,19 +717,19 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 70986
+    "gasUsed": 98286
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 19248
+    "gasUsed": 52904
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 17197
+    "gasUsed": 47489
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -735,19 +741,19 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 164119
+    "gasUsed": 191643
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 24430
+    "gasUsed": 60374
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 18862
+    "gasUsed": 49266
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -903,7 +909,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetDataOffchainTable",
     "name": "StoreCore: set record in offchain table",
-    "gasUsed": 7681
+    "gasUsed": 32517
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -921,7 +927,7 @@
     "file": "test/StoreHook.t.sol",
     "test": "testCallHook",
     "name": "call an enabled hook",
-    "gasUsed": 15032
+    "gasUsed": 37660
   },
   {
     "file": "test/StoreHook.t.sol",
@@ -1107,7 +1113,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 447721
+    "gasUsed": 443849
   },
   {
     "file": "test/Vector2.t.sol",

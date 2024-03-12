@@ -7,14 +7,15 @@ import { decodeDynamicField } from "@latticexyz/protocol-parser";
 import { logToTable } from "../logToTable";
 
 export async function getTables(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   db: PgDatabase<any>,
-  filters: { address: Hex | null; tableId: Hex | null }[] = []
+  filters: { address: Hex | null; tableId: Hex | null }[] = [],
 ): Promise<Table[]> {
   const conditions = filters.map((filter) =>
     and(
       filter.address != null ? eq(internalTables.recordsTable.address, filter.address) : undefined,
-      filter.tableId != null ? eq(internalTables.recordsTable.key0, filter.tableId) : undefined
-    )
+      filter.tableId != null ? eq(internalTables.recordsTable.key0, filter.tableId) : undefined,
+    ),
   );
 
   const records = await db
@@ -34,7 +35,7 @@ export async function getTables(
           encodedLengths: record.encodedLengths ?? "0x",
           dynamicData: record.dynamicData ?? "0x",
         },
-      } as const)
+      }) as const,
   );
 
   const tables = logs.map(logToTable);

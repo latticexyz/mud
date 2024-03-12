@@ -35,8 +35,8 @@ export async function getResourceAccess({
     await Promise.all(
       keys.map(
         async (key) =>
-          [key, await getTableValue({ client, worldDeploy, table: worldTables.world_ResourceAccess, key })] as const
-      )
+          [key, await getTableValue({ client, worldDeploy, table: worldTables.world_ResourceAccess, key })] as const,
+      ),
     )
   )
     .filter(([, value]) => value.access)

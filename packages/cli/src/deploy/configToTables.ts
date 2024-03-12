@@ -14,12 +14,12 @@ type UserTypes<config extends StoreConfig = StoreConfig> = config["userTypes"];
 
 export type TableKey<
   config extends StoreConfig = StoreConfig,
-  table extends config["tables"][keyof config["tables"]] = config["tables"][keyof config["tables"]]
+  table extends config["tables"][keyof config["tables"]] = config["tables"][keyof config["tables"]],
 > = `${config["namespace"]}_${table["name"]}`;
 
 export type Table<
   config extends StoreConfig = StoreConfig,
-  table extends config["tables"][keyof config["tables"]] = config["tables"][keyof config["tables"]]
+  table extends config["tables"][keyof config["tables"]] = config["tables"][keyof config["tables"]],
 > = {
   readonly namespace: config["namespace"];
   readonly name: table["name"];
@@ -60,9 +60,11 @@ export function configToTables<config extends StoreConfig>(config: config): Tabl
           namespace: config.namespace,
           name: table.name,
         }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         keySchema: resolveUserTypes(table.keySchema, userTypes) as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         valueSchema: resolveUserTypes(table.valueSchema, userTypes) as any,
       } satisfies Table<config, config["tables"][keyof config["tables"]]>,
-    ])
+    ]),
   ) as Tables<config>;
 }

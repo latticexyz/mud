@@ -25,10 +25,10 @@
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
-    "abitype": "0.9.8",
+    "abitype": "1.0.0",
     "debug": "^4.3.4",
     "rxjs": "7.5.5",
-    "viem": "1.14.0"
+    "viem": "2.7.12"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

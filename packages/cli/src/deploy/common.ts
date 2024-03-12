@@ -24,6 +24,7 @@ export const worldAbi = [...IBaseWorldAbi, ...IModuleAbi] as const;
 export const supportedStoreVersions = ["1.0.0-unaudited"];
 export const supportedWorldVersions = ["1.0.0-unaudited"];
 
+// TODO: extend this to include factory+deployer address? so we can reuse the deployer for a world?
 export type WorldDeploy = {
   readonly address: Address;
   readonly worldVersion: string;
@@ -46,11 +47,46 @@ export type WorldFunction = {
   readonly systemFunctionSelector: Hex;
 };
 
+export type LibraryPlaceholder = {
+  /**
+   * Path to library source file, e.g. `src/libraries/SomeLib.sol`
+   */
+  path: string;
+  /**
+   * Library name, e.g. `SomeLib`
+   */
+  name: string;
+  /**
+   * Byte offset of placeholder in bytecode
+   */
+  start: number;
+  /**
+   * Size of placeholder to replace in bytes
+   */
+  length: number;
+};
+
 export type DeterministicContract = {
-  readonly address: Address;
-  readonly bytecode: Hex;
+  readonly prepareDeploy: (
+    deployer: Address,
+    libraries: readonly Library[],
+  ) => {
+    readonly address: Address;
+    readonly bytecode: Hex;
+  };
   readonly deployedBytecodeSize: number;
   readonly abi: Abi;
+};
+
+export type Library = DeterministicContract & {
+  /**
+   * Path to library source file, e.g. `src/libraries/SomeLib.sol`
+   */
+  path: string;
+  /**
+   * Library name, e.g. `SomeLib`
+   */
+  name: string;
 };
 
 export type System = DeterministicContract & {
@@ -59,7 +95,12 @@ export type System = DeterministicContract & {
   readonly systemId: Hex;
   readonly allowAll: boolean;
   readonly allowedAddresses: readonly Hex[];
+  readonly allowedSystemIds: readonly Hex[];
   readonly functions: readonly WorldFunction[];
+};
+
+export type DeployedSystem = Omit<System, "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"> & {
+  address: Address;
 };
 
 export type Module = DeterministicContract & {
@@ -73,4 +114,5 @@ export type Config<config extends ConfigInput> = {
   readonly tables: Tables<config>;
   readonly systems: readonly System[];
   readonly modules: readonly Module[];
+  readonly libraries: readonly Library[];
 };

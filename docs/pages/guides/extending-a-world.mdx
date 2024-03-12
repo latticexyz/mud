@@ -174,7 +174,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    PRIVATE_KEY=0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
 
    # Address for the world we are extending
-   WORLD_ADDRESS=0x6e9474e9c83676b9a71133ff96db43e7aa0a4342
+   WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
    ```
 
 1. Create this script in `script/MessagingExtension.s.sol`.
@@ -187,7 +187,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    import { console } from "forge-std/console.sol";
    import { IBaseWorld } from "@latticexyz/world-modules/src/interfaces/IBaseWorld.sol";
 
-   import { WorldRegistrationSystem } from "@latticexyz/world/src/modules/core/implementations/WorldRegistrationSystem.sol";
+   import { WorldRegistrationSystem } from "@latticexyz/world/src/modules/init/implementations/WorldRegistrationSystem.sol";
 
    // Create resource identifiers (for the namespace and system)
    import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
@@ -253,10 +253,10 @@ The easiest way to create the Solidity code is to use the MUD template:
    Use [IBaseWorld.sol](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/interfaces/IBaseWorld.sol) to get definitions that are common to all `World` contracts.
 
    ```solidity
-   import { WorldRegistrationSystem } from "@latticexyz/world/src/modules/core/implementations/WorldRegistrationSystem.sol";
+   import { WorldRegistrationSystem } from "@latticexyz/world/src/modules/init/implementations/WorldRegistrationSystem.sol";
    ```
 
-   [WorldRegistartionSystem.sol](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol) contains the function definitions necessary to register new namespaces and systems with an existing `World`.
+   [WorldRegistartionSystem.sol](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol) contains the function definitions necessary to register new namespaces and systems with an existing `World`.
 
    ```solidity
    // Create resource identifiers (for the namespace and system)
@@ -352,7 +352,7 @@ The easiest way to create the Solidity code is to use the MUD template:
            world.registerNamespace(namespaceResource);
    ```
 
-   [Register the namespace](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L39-L63).
+   [Register the namespace](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L39-L63).
 
    ```solidity
            StoreSwitch.setStoreAddress(worldAddress);
@@ -404,7 +404,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    cast send $WORLD_ADDRESS --rpc-url http://localhost:8545 --private-key $PRIVATE_KEY "messaging__incrementMessage(string)" "hello"
    ```
 
-   When a function is _not_ in the root namespace, it is accessible as `<namespace>__<function name>` (as long as it is [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L164-L201)).
+   When a function is _not_ in the root namespace, it is accessible as `<namespace>__<function name>` (as long as it is [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L164-L201)).
 
    Here we call our `incrementMessage(string)` with the parameter `hello`.
 

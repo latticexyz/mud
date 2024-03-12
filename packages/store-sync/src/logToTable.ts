@@ -17,7 +17,7 @@ export function logToTable(log: StorageAdapterLog & { eventName: "Store_SetRecor
   const value = decodeValue(
     // TODO: remove cast when we have strong types for user types
     schemasTable.valueSchema as ValueSchema,
-    concatHex([log.args.staticData, log.args.encodedLengths, log.args.dynamicData])
+    concatHex([log.args.staticData, log.args.encodedLengths, log.args.dynamicData]),
   );
 
   // TODO: remove cast when we have strong types for user types

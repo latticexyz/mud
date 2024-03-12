@@ -13,7 +13,7 @@ setup().then(async (result) => {
   root.render(
     <MUDProvider value={result}>
       <App />
-    </MUDProvider>
+    </MUDProvider>,
   );
 
   // https://vitejs.dev/guide/env-and-mode.html

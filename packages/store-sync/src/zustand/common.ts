@@ -11,7 +11,7 @@ export type RawRecord = {
   readonly dynamicData: Hex;
 };
 
-export type TableRecord<table extends Table> = {
+export type TableRecord<table extends Table = Table> = {
   /** Internal unique ID */
   readonly id: string;
   readonly table: table;
