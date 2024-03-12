@@ -2,6 +2,7 @@ import { ZustandStore } from "../zustand";
 import { AllTables, QueryCondition, TableSubject } from "./common";
 import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
 import { query } from "./query";
+import { subscribeToQuery } from "./subscribeToQuery";
 
 export type Entity = string;
 
@@ -117,4 +118,33 @@ export async function runQuery<config extends StoreConfig, extraTables extends T
 
   const entities = result.map((record) => record.join(":"));
   return new Set(entities);
+}
+
+export async function defineQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
+  store: ZustandStore<AllTables<config, extraTables>>,
+  fragments: QueryFragment<Table>[],
+): Promise<ReturnType<typeof subscribeToQuery>> {
+  const from = fragments
+    .filter(
+      (fragment) =>
+        fragment.type === QueryFragmentType.Has ||
+        fragment.type === QueryFragmentType.HasValue ||
+        fragment.type === QueryFragmentType.NotValue,
+    )
+    .map(fragmentToTableSubject);
+
+  const except = fragments.filter((fragment) => fragment.type === QueryFragmentType.Not).map(fragmentToTableSubject);
+
+  const where = fragments
+    .filter((fragment) => fragment.type === QueryFragmentType.HasValue || fragment.type === QueryFragmentType.NotValue)
+    .map(fragmentToQueryConditions)
+    .flat();
+
+  const result = await subscribeToQuery(store, {
+    from,
+    except,
+    where,
+  });
+
+  return result;
 }

@@ -4,7 +4,7 @@ import { Has, HasValue, Not, NotValue, runQuery } from "./queryRECS";
 import { deployMockGame } from "../../test/mockGame";
 import { Address } from "viem";
 
-describe("queryRECS", async () => {
+describe("runQuery", async () => {
   let worldAddress: Address;
   beforeAll(async () => {
     worldAddress = await deployMockGame();
