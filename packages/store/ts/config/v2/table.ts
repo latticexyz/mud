@@ -31,9 +31,11 @@ export type TableFullInput<
   /** Optional table type. Defaults to `table`. */
   type?: TableResourceType;
   /** Table namespace. Only systems within this namespace will have write access to this table. */
-  namespace: string;
+  // TODO: make required?
+  namespace?: string;
   /** Table name. Codegen table libraries use this name. */
-  name: string;
+  // TODO: make required?
+  name?: string;
   /** Optional table ID override. Defaults `resourceToHex({ type, namespace, name })`, which may truncate the namespace and name. */
   tableId?: Hex;
   schema: schema;
@@ -132,7 +134,7 @@ export type resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope>
     ? resolveTableFullConfig<resolveTableShorthand<input, scope>, scope>
     : input extends TableFullInput<SchemaInput<scope>, scope>
       ? resolveTableFullConfig<input, scope>
-      : input
+      : never
 >;
 
 /**

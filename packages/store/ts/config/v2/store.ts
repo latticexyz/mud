@@ -63,3 +63,5 @@ export function resolveStoreConfig<const input>(input: validateStoreConfig<input
   // TODO: runtime implementation
   return {} as never;
 }
+
+export type ResolvedStoreConfig = resolveStoreConfig<StoreConfigInput>;
