@@ -63,7 +63,7 @@ type QueryFragment<T extends Table> =
 function fragmentToTableSubject(fragment: QueryFragment<Table>): TableSubject {
   return {
     tableId: fragment.table.tableId,
-    subject: [Object.keys(fragment.table.keySchema)[0]],
+    subject: Object.keys(fragment.table.keySchema),
   };
 }
 

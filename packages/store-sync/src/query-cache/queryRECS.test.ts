@@ -48,6 +48,17 @@ describe("queryRECS", async () => {
     `);
   });
 
+  it("can get all players in grassland", async () => {
+    const { store } = await createHydratedStore(worldAddress);
+    const result = await queryRECS(store, [HasValue(tables.Terrain, { terrainType: 2 as never })]);
+
+    expect(result).toMatchInlineSnapshot(`
+      [
+        "3:5",
+      ]
+    `);
+  });
+
   it("can get all players without health (e.g. spectator)", async () => {
     const { store } = await createHydratedStore(worldAddress);
     const result = await queryRECS(store, [Has(tables.Position), Not(tables.Health)]);
