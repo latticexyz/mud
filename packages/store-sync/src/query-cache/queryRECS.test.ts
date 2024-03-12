@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { createHydratedStore, tables } from "./test/createHydratedStore";
-import { Has, HasValue, NotValue, queryRECS } from "./queryRECS";
+import { Has, HasValue, Not, NotValue, queryRECS } from "./queryRECS";
 import { deployMockGame } from "../../test/mockGame";
 import { Address } from "viem";
 
@@ -44,6 +44,17 @@ describe("queryRECS", async () => {
       [
         "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
         "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+      ]
+    `);
+  });
+
+  it("can get all players without health (e.g. spectator)", async () => {
+    const { store } = await createHydratedStore(worldAddress);
+    const result = await queryRECS(store, [Has(tables.Position), Not(tables.Health)]);
+
+    expect(result).toMatchInlineSnapshot(`
+      [
+        "0xdBa86119a787422C593ceF119E40887f396024E2",
       ]
     `);
   });

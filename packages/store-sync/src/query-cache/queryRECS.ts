@@ -6,11 +6,17 @@ import { query } from "./query";
 export enum QueryFragmentType {
   Has,
   HasValue,
+  Not,
   NotValue,
 }
 
 type HasQueryFragment<T extends Table> = {
   type: QueryFragmentType.Has;
+  table: T;
+};
+
+type NotQueryFragment<T extends Table> = {
+  type: QueryFragmentType.Not;
   table: T;
 };
 
@@ -30,6 +36,10 @@ export function Has<T extends Table>(table: T): HasQueryFragment<T> {
   return { type: QueryFragmentType.Has, table };
 }
 
+export function Not<T extends Table>(table: T): NotQueryFragment<T> {
+  return { type: QueryFragmentType.Not, table };
+}
+
 export function HasValue<T extends Table>(
   table: T,
   value: SchemaToPrimitives<T["valueSchema"]>,
@@ -44,7 +54,11 @@ export function NotValue<T extends Table>(
   return { type: QueryFragmentType.NotValue, table, value };
 }
 
-type QueryFragment<T extends Table> = HasQueryFragment<T> | HasValueQueryFragment<T> | NotValueQueryFragment<T>;
+type QueryFragment<T extends Table> =
+  | HasQueryFragment<T>
+  | NotQueryFragment<T>
+  | HasValueQueryFragment<T>
+  | NotValueQueryFragment<T>;
 
 function fragmentToTableSubject(fragment: QueryFragment<Table>): TableSubject {
   return {
@@ -75,7 +89,16 @@ export async function queryRECS<config extends StoreConfig, extraTables extends 
   store: ZustandStore<AllTables<config, extraTables>>,
   fragments: QueryFragment<Table>[],
 ): Promise<string[]> {
-  const from = fragments.map(fragmentToTableSubject);
+  const from = fragments
+    .filter(
+      (fragment) =>
+        fragment.type === QueryFragmentType.Has ||
+        fragment.type === QueryFragmentType.HasValue ||
+        fragment.type === QueryFragmentType.NotValue,
+    )
+    .map(fragmentToTableSubject);
+
+  const except = fragments.filter((fragment) => fragment.type === QueryFragmentType.Not).map(fragmentToTableSubject);
 
   const where = fragments
     .filter((fragment) => fragment.type === QueryFragmentType.HasValue || fragment.type === QueryFragmentType.NotValue)
@@ -84,6 +107,7 @@ export async function queryRECS<config extends StoreConfig, extraTables extends 
 
   const result = await query(store, {
     from,
+    except,
     where,
   });
 
