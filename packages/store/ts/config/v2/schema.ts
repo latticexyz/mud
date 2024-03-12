@@ -32,14 +32,12 @@ export function resolveSchema<schema extends SchemaInput<scope>, scope extends A
       }
       throw new Error(`"${String(internalType)}" is not a valid type in this scope.`);
     }),
-  ) as unknown as resolveSchema<schema, scope>;
+  ) as resolveSchema<schema, scope>;
 }
 
 export function isSchemaInput<scope extends AbiTypeScope = AbiTypeScope>(
   input: unknown,
   scope: scope = AbiTypeScope as scope,
 ): input is SchemaInput<scope> {
-  return (
-    typeof input === "object" && input !== null && Object.values(input).every((key) => hasOwnKey(scope.types, key))
-  );
+  return typeof input === "object" && input != null && Object.values(input).every((key) => hasOwnKey(scope.types, key));
 }
