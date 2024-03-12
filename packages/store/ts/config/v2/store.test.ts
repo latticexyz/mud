@@ -3,7 +3,7 @@ import { resolveStoreConfig } from "./store";
 import { attest } from "@arktype/attest";
 
 describe("resolveStoreConfig", () => {
-  it.only("should accept a shorthand store config as input and expand it", () => {
+  it("should accept a shorthand store config as input and expand it", () => {
     const config = resolveStoreConfig({ tables: { Name: "address" } });
     const expected = {
       tables: {
