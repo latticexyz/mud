@@ -18,6 +18,15 @@ export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeSc
   ...getStaticAbiTypeKeys<schema, scope>[],
 ];
 
+function getValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope>(
+  schema: schema,
+  scope: scope = AbiTypeScope as scope,
+) {
+  return Object.entries(schema)
+    .filter(([, internalType]) => keyof(internalType, scope.types) && isStaticAbiType(scope.types[internalType]))
+    .map(([key]) => key);
+}
+
 export function isValidPrimaryKey<schema extends SchemaInput<scope>, scope extends AbiTypeScope>(
   primaryKey: unknown,
   schema: schema,
@@ -31,17 +40,13 @@ export function isValidPrimaryKey<schema extends SchemaInput<scope>, scope exten
   );
 }
 
-export function isTableFullInput<scope extends AbiTypeScope = AbiTypeScope>(
-  input: unknown,
-  scope: scope = AbiTypeScope as scope,
-): input is TableFullInput<SchemaInput<scope>, scope> {
+export function isTableFullInput(input: unknown): input is TableFullInput {
   return (
     typeof input === "object" &&
     input !== null &&
     keyof("schema", input) &&
-    isSchemaInput(input["schema"], scope) &&
     keyof("primaryKey", input) &&
-    isValidPrimaryKey(input["primaryKey"], input["schema"], scope)
+    Array.isArray(input["primaryKey"])
   );
 }
 
@@ -74,6 +79,8 @@ export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeSco
   }
 
   if (!keyof("primaryKey", input) || !isValidPrimaryKey(input["primaryKey"], input["schema"], scope)) {
-    throw new Error("Invalid primary key");
+    throw new Error(
+      `Invalid primary key. Expected (${getValidKeys(input["schema"], scope).join("|")})[], received ${keyof("primaryKey", input) ? `[${input["primaryKey"]}]` : "undefined"}`,
+    );
   }
 }

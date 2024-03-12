@@ -149,7 +149,7 @@ describe("resolveTableConfig", () => {
   it("should throw if the shorthand key is a dynamic ABI type", () => {
     // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
     attest(() => resolveTableConfig({ key: "string", name: "string", age: "uint256" })).throwsAndHasTypeError(
-      "Invalid schema. Expected a `key` field with a static ABI type or an explicit primaryKey overload.",
+      "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
     );
   });
 
@@ -163,9 +163,9 @@ describe("resolveTableConfig", () => {
 
   it("should throw if the shorthand key is neither a custom nor ABI type", () => {
     // @ts-expect-error Argument of type '"NotAnAbiType"' is not assignable to parameter of type 'AbiType'
-    attest(() => resolveTableConfig("NotAnAbiType")).throwsAndHasTypeError(
-      `Argument of type '"NotAnAbiType"' is not assignable to parameter of type 'AbiType'`,
-    );
+    attest(() => resolveTableConfig("NotAnAbiType"))
+      .throws("Invalid ABI type. `NotAnAbiType` not found in scope.")
+      .type.errors(`Argument of type '"NotAnAbiType"' is not assignable to parameter of type 'AbiType'`);
   });
 
   it("should throw if the shorthand doesn't include a key field", () => {
@@ -310,7 +310,9 @@ describe("resolveTableConfig", () => {
         // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'
         primaryKey: ["name"],
       }),
-    ).throwsAndHasTypeError(`Type '"name"' is not assignable to type '"key" | "age"'`);
+    )
+      .throws(`Invalid primary key. Expected (key|age)[], received [name]`)
+      .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 
   it("should throw if the provided key is a dynamic ABI type if user types are provided", () => {
@@ -324,7 +326,9 @@ describe("resolveTableConfig", () => {
         },
         scope,
       ),
-    ).throwsAndHasTypeError(`Type '"name"' is not assignable to type '"key" | "age"'`);
+    )
+      .throws(`Invalid primary key. Expected (key|age)[], received [name]`)
+      .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 
   it("should throw if the provided key is a dynamic custom type", () => {
@@ -338,7 +342,9 @@ describe("resolveTableConfig", () => {
         },
         scope,
       ),
-    ).throwsAndHasTypeError(`Type '"key"' is not assignable to type '"age"'`);
+    )
+      .throws(`Invalid primary key. Expected (age)[], received [key]`)
+      .type.errors(`Type '"key"' is not assignable to type '"age"'`);
   });
 
   it("should throw if the provided key is neither a custom nor ABI type", () => {
@@ -352,6 +358,8 @@ describe("resolveTableConfig", () => {
         },
         scope,
       ),
-    ).throwsAndHasTypeError(`Type '"NotAKey"' is not assignable to type '"key" | "age"'`);
+    )
+      .throws(`Invalid primary key. Expected (key|age)[], received [NotAKey]`)
+      .type.errors(`Type '"NotAKey"' is not assignable to type '"key" | "age"'`);
   });
 });

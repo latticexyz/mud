@@ -12,7 +12,7 @@ export function isTableShorthandInput<scope extends AbiTypeScope = AbiTypeScope>
   input: unknown,
   scope: scope = AbiTypeScope as scope,
 ): input is TableShorthandInput<scope> {
-  return (typeof input === "string" && keyof(input, scope.types)) || isSchemaInput(input, scope);
+  return typeof input === "string" || isSchemaInput(input, scope);
 }
 
 // We don't use `conform` here because the restrictions we're imposing here are not native to typescript

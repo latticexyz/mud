@@ -12,6 +12,7 @@ import { TableFullInput, ValidKeys, isTableFullInput, validateTableFull } from "
 export type NoStaticKeyFieldError =
   ErrorMessage<"Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.">;
 
+// TODO: make this type way more permissive and instead enforce the restrictions on the validation helpers
 export type TableInput<
   schema extends SchemaInput<scope> = SchemaInput,
   scope extends AbiTypeScope = AbiTypeScope,
@@ -93,13 +94,15 @@ export function resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeSc
 ): resolveTableConfig<input, scope> {
   if (isTableShorthandInput(input, scope)) {
     const fullInput = resolveTableShorthand(input as validateTableShorthand<input, scope>, scope);
-    if (isTableFullInput(fullInput, scope)) {
+    if (isTableFullInput(fullInput)) {
+      // @ts-expect-error TODO: remove restrictions from TableInput type to resolve this error
       return resolveTableFullConfig(fullInput, scope) as unknown as resolveTableConfig<input, scope>;
     }
     throw new Error("Resolved shorthand is not a valid full table input");
   }
 
-  if (isTableFullInput(input, scope)) {
+  if (isTableFullInput(input)) {
+    // @ts-expect-error TODO: remove restrictions from TableInput type to resolve this error
     return resolveTableFullConfig(input, scope) as unknown as resolveTableConfig<input, scope>;
   }
 
