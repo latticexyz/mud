@@ -17,16 +17,15 @@ export type resolveSchema<schema extends SchemaInput<scope>, scope extends AbiTy
 
 export function resolveSchema<schema extends SchemaInput<scope>, scope extends AbiTypeScope = AbiTypeScope>(
   schema: schema,
-  scope?: scope,
+  scope: scope = AbiTypeScope as scope,
 ): resolveSchema<schema, scope> {
-  const resolvedScope = scope ?? AbiTypeScope;
   return Object.fromEntries(
     Object.entries(schema).map(([key, internalType]) => {
-      if (keyof(internalType, resolvedScope.types)) {
+      if (keyof(internalType, scope.types)) {
         return [
           key,
           {
-            type: resolvedScope.types[internalType],
+            type: scope.types[internalType],
             internalType,
           },
         ];

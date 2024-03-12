@@ -1,15 +1,7 @@
 import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { resolveTableConfig, resolveTableShorthand, validKeys, validateKeys } from "./table";
+import { resolveTableConfig, resolveTableShorthand, validateKeys } from "./table";
 import { AbiTypeScope, extendScope, getStaticAbiTypeKeys } from "./scope";
-
-describe("validKeys", () => {
-  it("should return a tuple of static keys from a schema and scope", () => {
-    const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
-    const schema = { static: "uint256", dynamic: "string", customStatic: "static", customDynamic: "dynamic" } as const;
-    attest(validKeys(schema, scope)).equals(["static", "customStatic"]);
-  });
-});
 
 describe("validateKeys", () => {
   it("should return a tuple of valid keys", () => {
@@ -72,7 +64,7 @@ describe("resolveTableShorthand", () => {
       .type.toString.snap('{ schema: { key: "bytes32"; value: "address"; }; primaryKey: ["key"]; }');
   });
 
-  it("should expand a single custom into a key/value schema", () => {
+  it("should expand a single custom type into a key/value schema", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
     const table = resolveTableShorthand("CustomType", scope);
 
@@ -126,20 +118,20 @@ describe("resolveTableShorthand", () => {
 
   it("should throw an error if the shorthand doesn't include a key field", () => {
     attest(() =>
-      // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.
+      // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
       resolveTableShorthand({ name: "string", age: "uint256" }),
-    )
-      .throws("Invalid schema. Expected a `key` field with a static ABI type.")
-      .type.errors("Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.");
+    ).throwsAndHasTypeError(
+      "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+    );
   });
 
   it("should throw an error if the shorthand config includes a non-static key field", () => {
     attest(() =>
-      // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.
+      // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
       resolveTableShorthand({ key: "string", name: "string", age: "uint256" }),
-    )
-      .throws("Invalid schema. Expected a `key` field with a static ABI type.")
-      .type.errors("Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.");
+    ).throwsAndHasTypeError(
+      "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+    );
   });
 
   it("should throw an error if an invalid type is passed in", () => {
@@ -166,7 +158,7 @@ describe("resolveTableShorthand", () => {
   it("should throw an error if `key` is not a custom static type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "bytes" });
     attest(() =>
-      // @ts-expect-error "Error: Provide a `key` field with static ABI type or a full config with explicit `primaryKey`."
+      // @ts-expect-error "Error: Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option."
       resolveTableShorthand({ key: "CustomType", name: "string", age: "uint256" }, scope),
     )
       .throws("Invalid schema. Expected a `key` field with a static ABI type.")
@@ -203,7 +195,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["key"],
     } as const;
 
-    attest<typeof expected>(table).snap({});
+    attest<typeof expected>(table).snap(expected);
   });
 
   it("should expand a single custom type into a key/value schema", () => {
@@ -235,7 +227,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["key"],
     } as const;
 
-    attest<typeof expected>(table);
+    attest<typeof expected>(table).equals(expected);
   });
 
   it("should use `key` as single key if it has a static ABI type", () => {
@@ -274,7 +266,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["key"],
     } as const;
 
-    attest<typeof expected>(table);
+    attest<typeof expected>(table).equals(expected);
   });
 
   it("should use `key` as single key if it has a static custom type", () => {
@@ -318,31 +310,31 @@ describe("resolveTableConfig", () => {
   });
 
   it("should throw if the shorthand key is a dynamic ABI type", () => {
-    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.
-    attest(resolveTableConfig({ key: "string", name: "string", age: "uint256" })).type.errors(
-      "Provide a `key` field with static ABI type or a full config with explicit `primaryKey`",
+    // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
+    attest(() => resolveTableConfig({ key: "string", name: "string", age: "uint256" })).throwsAndHasTypeError(
+      "Invalid schema. Expected a `key` field with a static ABI type or an explicit primaryKey overload.",
     );
   });
 
   it("should throw if the shorthand key is a dyamic custom type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "bytes" });
-    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.
-    attest(resolveTableConfig({ key: "CustomType" }, scope)).type.errors(
-      "Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.",
+    // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
+    attest(() => resolveTableConfig({ key: "CustomType" }, scope)).throwsAndHasTypeError(
+      "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
     );
   });
 
   it("should throw if the shorthand key is neither a custom nor ABI type", () => {
     // @ts-expect-error Argument of type '"NotAnAbiType"' is not assignable to parameter of type 'AbiType'
-    attest(resolveTableConfig("NotAnAbiType")).type.errors(
+    attest(() => resolveTableConfig("NotAnAbiType")).throwsAndHasTypeError(
       `Argument of type '"NotAnAbiType"' is not assignable to parameter of type 'AbiType'`,
     );
   });
 
   it("should throw if the shorthand doesn't include a key field", () => {
-    // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.
-    attest(resolveTableConfig({ name: "string", age: "uint256" })).type.errors(
-      "Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.",
+    // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
+    attest(() => resolveTableConfig({ name: "string", age: "uint256" })).throwsAndHasTypeError(
+      "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
     );
   });
 
@@ -367,7 +359,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["age"],
     } as const;
 
-    attest<typeof expected>(table);
+    attest<typeof expected>(table).equals(expected);
   });
 
   it("should return the full config given a full config with two primaryKey", () => {
@@ -391,7 +383,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["age", "key"],
     } as const;
 
-    attest<typeof expected>(table);
+    attest<typeof expected>(table).equals(expected);
   });
 
   it("should return the full config given a config with custom types as values", () => {
@@ -431,7 +423,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["key"],
     } as const;
 
-    attest<typeof expected>(table);
+    attest<typeof expected>(table).equals(expected);
   });
 
   it("should return the full config given a config with custom type as key", () => {
@@ -471,22 +463,22 @@ describe("resolveTableConfig", () => {
       primaryKey: ["key"],
     } as const;
 
-    attest<typeof expected>(table);
+    attest<typeof expected>(table).equals(expected);
   });
 
   it("should throw if the provided key is a dynamic ABI type", () => {
-    attest(
+    attest(() =>
       resolveTableConfig({
         schema: { key: "address", name: "string", age: "uint256" },
         // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'
         primaryKey: ["name"],
       }),
-    ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+    ).throwsAndHasTypeError(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 
   it("should throw if the provided key is a dynamic ABI type if user types are provided", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "string" });
-    attest(
+    attest(() =>
       resolveTableConfig(
         {
           schema: { key: "address", name: "string", age: "uint256" },
@@ -495,12 +487,12 @@ describe("resolveTableConfig", () => {
         },
         scope,
       ),
-    ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+    ).throwsAndHasTypeError(`Type '"name"' is not assignable to type '"key" | "age"'`);
   });
 
   it("should throw if the provided key is a dynamic custom type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "string" });
-    attest(
+    attest(() =>
       resolveTableConfig(
         {
           schema: { key: "CustomType", name: "string", age: "uint256" },
@@ -509,12 +501,12 @@ describe("resolveTableConfig", () => {
         },
         scope,
       ),
-    ).type.errors(`Type '"key"' is not assignable to type '"age"'`);
+    ).throwsAndHasTypeError(`Type '"key"' is not assignable to type '"age"'`);
   });
 
   it("should throw if the provided key is neither a custom nor ABI type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "string" });
-    attest(
+    attest(() =>
       resolveTableConfig(
         {
           schema: { key: "address", name: "string", age: "uint256" },
@@ -523,6 +515,6 @@ describe("resolveTableConfig", () => {
         },
         scope,
       ),
-    ).type.errors(`Type '"NotAKey"' is not assignable to type '"key" | "age"'`);
+    ).throwsAndHasTypeError(`Type '"NotAKey"' is not assignable to type '"key" | "age"'`);
   });
 });

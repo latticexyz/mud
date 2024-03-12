@@ -5,20 +5,24 @@ import { SchemaInput, isSchemaInput, resolveSchema } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 
 export type NoStaticKeyFieldError =
-  ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit `primaryKey`.">;
+  ErrorMessage<"Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.">;
 
 export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = readonly [
   getStaticAbiTypeKeys<schema, scope>,
   ...getStaticAbiTypeKeys<schema, scope>[],
 ];
 
-export function validKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope>(
+export function isValidPrimaryKey<schema extends SchemaInput<scope>, scope extends AbiTypeScope>(
+  primaryKey: unknown,
   schema: schema,
-  scope: scope,
-): ValidKeys<schema, scope> {
-  return Object.entries(schema)
-    .filter(([, internalType]) => isStaticAbiType(scope.types[internalType]))
-    .map(([key]) => key) as unknown as ValidKeys<schema, scope>;
+  scope: scope = AbiTypeScope as scope,
+): primaryKey is ValidKeys<schema, scope> {
+  return (
+    Array.isArray(primaryKey) &&
+    primaryKey.every(
+      (key) => keyof(key, schema) && keyof(schema[key], scope.types) && isStaticAbiType(scope.types[schema[key]]),
+    )
+  );
 }
 
 export type TableInput<
@@ -63,10 +67,12 @@ export function validateTableShorthand<scope extends AbiTypeScope = AbiTypeScope
   }
   if (typeof input === "object" && input !== null) {
     if (isSchemaInput(input, scope)) {
-      if (validKeys(input, scope).find((key) => key === "key")) {
+      if (keyof("key", input) && isStaticAbiType(scope.types[input["key"]])) {
         return;
       }
-      throw new Error(`Invalid schema. Expected a \`key\` field with a static ABI type.`);
+      throw new Error(
+        `Invalid schema. Expected a \`key\` field with a static ABI type or an explicit \`primaryKey\` option.`,
+      );
     }
     throw new Error(`Invalid schema. Are you using invalid types or missing types in your scope?`);
   }
@@ -87,6 +93,13 @@ export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeSco
         evaluate<TableFullInput<input, scope, ["key"]>>
       : never
     : never;
+
+export function isTableShorthandInput<scope extends AbiTypeScope = AbiTypeScope>(
+  input: unknown,
+  scope: scope = AbiTypeScope as scope,
+): input is TableShorthandInput<scope> {
+  return (typeof input === "string" && keyof(input, scope.types)) || isSchemaInput(input, scope);
+}
 
 export function resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope>(
   input: validateTableShorthand<input, scope>,
@@ -114,11 +127,8 @@ export type validateKeys<validKeys extends PropertyKey, keys> = {
   [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
 };
 
-export function validateKeys<validKeys extends PropertyKey, keys = PropertyKey[]>(
-  keys: validateKeys<validKeys, keys>,
-): keys {
-  // TODO: runtime implementation
-  return {} as never;
+export function validateKeys<validKeys extends PropertyKey, keys = PropertyKey[]>(keys: validateKeys<validKeys, keys>) {
+  throw new Error("validateKeys not implemented");
 }
 
 export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> = {
@@ -128,6 +138,23 @@ export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> 
       ? conform<input[key], SchemaInput<scope>>
       : input[key];
 };
+
+export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope>(
+  input: input,
+  scope: scope = AbiTypeScope as scope,
+) {
+  if (typeof input !== "object" || input == null) {
+    throw new Error(`Expected full table config, got ${JSON.stringify(input)}`);
+  }
+
+  if (!keyof("schema", input) || !isSchemaInput(input["schema"], scope)) {
+    throw new Error("Invalid schema input");
+  }
+
+  if (!keyof("primaryKey", input) || !isValidPrimaryKey(input["primaryKey"], input["schema"], scope)) {
+    throw new Error("Invalid primary key");
+  }
+}
 
 export type validateTableConfig<input, scope extends AbiTypeScope = AbiTypeScope> =
   input extends TableShorthandInput<scope>
@@ -156,6 +183,48 @@ export type resolveTableFullConfig<
   >;
 }>;
 
+export function isTableFullInput<scope extends AbiTypeScope = AbiTypeScope>(
+  input: unknown,
+  scope: scope = AbiTypeScope as scope,
+): input is TableFullInput<SchemaInput<scope>, scope> {
+  return (
+    typeof input === "object" &&
+    input !== null &&
+    keyof("schema", input) &&
+    isSchemaInput(input["schema"], scope) &&
+    keyof("primaryKey", input) &&
+    isValidPrimaryKey(input["primaryKey"], input["schema"], scope)
+  );
+}
+
+export function resolveTableFullConfig<
+  input extends TableFullInput<SchemaInput<scope>, scope>,
+  scope extends AbiTypeScope = AbiTypeScope,
+>(input: input, scope: scope = AbiTypeScope as scope): resolveTableFullConfig<input, scope> {
+  validateTableFull(input, scope);
+
+  return {
+    primaryKey: input["primaryKey"],
+    schema: resolveSchema(input["schema"], scope),
+    keySchema: resolveSchema(
+      Object.fromEntries(
+        Object.entries(input["schema"]).filter(([key]) =>
+          input["primaryKey"].includes(key as input["primaryKey"][number]),
+        ),
+      ),
+      scope,
+    ),
+    valueSchema: resolveSchema(
+      Object.fromEntries(
+        Object.entries(input["schema"]).filter(
+          ([key]) => !input["primaryKey"].includes(key as input["primaryKey"][number]),
+        ),
+      ),
+      scope,
+    ),
+  } as resolveTableFullConfig<input, scope>;
+}
+
 export type resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<
   input extends TableShorthandInput<scope>
     ? resolveTableFullConfig<resolveTableShorthand<input, scope>, scope>
@@ -172,8 +241,19 @@ export type resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope>
  */
 export function resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope>(
   input: validateTableConfig<input, scope>,
-  scope?: scope,
+  scope: scope = AbiTypeScope as scope,
 ): resolveTableConfig<input, scope> {
-  // TODO: runtime implementation
-  return {} as never;
+  if (isTableShorthandInput(input, scope)) {
+    const fullInput = resolveTableShorthand(input as validateTableShorthand<input, scope>, scope);
+    if (isTableFullInput(fullInput, scope)) {
+      return resolveTableFullConfig(fullInput, scope) as unknown as resolveTableConfig<input, scope>;
+    }
+    throw new Error("Resolved shorthand is not a valid full table input");
+  }
+
+  if (isTableFullInput(input, scope)) {
+    return resolveTableFullConfig(input, scope) as unknown as resolveTableConfig<input, scope>;
+  }
+
+  throw new Error("Invalid config input");
 }
