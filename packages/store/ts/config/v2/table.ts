@@ -2,6 +2,10 @@ import { ErrorMessage, conform, evaluate } from "@arktype/util";
 import { SchemaInput, resolveSchema } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 import { get } from "./generics";
+import { Hex } from "viem";
+import { ResourceType } from "@latticexyz/common";
+
+type TableResourceType = Extract<ResourceType, "table" | "offchainTable">;
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit primaryKey override.">;
@@ -24,6 +28,14 @@ export type TableFullInput<
   scope extends AbiTypeScope = AbiTypeScope,
   primaryKey extends ValidKeys<schema, scope> = ValidKeys<schema, scope>,
 > = {
+  /** Optional table type. Defaults to `table`. */
+  type?: TableResourceType;
+  /** Table namespace. Only systems within this namespace will have write access to this table. */
+  namespace: string;
+  /** Table name. Codegen table libraries use this name. */
+  name: string;
+  /** Optional table ID override. Defaults `resourceToHex({ type, namespace, name })`, which may truncate the namespace and name. */
+  tableId?: Hex;
   schema: schema;
   primaryKey: primaryKey;
 };
@@ -95,6 +107,10 @@ export type resolveTableFullConfig<
   input extends TableFullInput<SchemaInput<scope>, scope>,
   scope extends AbiTypeScope = AbiTypeScope,
 > = evaluate<{
+  readonly type: TableResourceType; // TODO: stronger type?
+  readonly namespace: string; // TODO: stronger type?
+  readonly name: string; // TODO: stronger type?
+  readonly tableId: Hex;
   readonly primaryKey: Readonly<input["primaryKey"]>;
   readonly schema: resolveSchema<input["schema"], scope>;
   readonly keySchema: resolveSchema<
