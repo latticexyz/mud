@@ -154,6 +154,13 @@ export async function defineQuery<config extends StoreConfig, extraTables extend
   return {
     subjects: subjects.map((subject) => queryResultSubjectToEntity(subject)),
     subjects$: subjects$.pipe(map((subjects) => subjects.map((subject) => queryResultSubjectToEntity(subject)))),
-    subjectChanges$,
+    subjectChanges$: subjectChanges$.pipe(
+      map((subjectChanges) => {
+        return subjectChanges.map((subjectChange) => ({
+          type: subjectChange.type,
+          subject: queryResultSubjectToEntity(subjectChange.subject),
+        }));
+      }),
+    ),
   };
 }
