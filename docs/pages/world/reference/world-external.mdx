@@ -16,7 +16,7 @@ _._
 
 #### storeVersion
 
-Retrieves the version of the store.
+Retrieves the protocol version of the Store.
 
 ```solidity
 function storeVersion() public pure returns (bytes32);
@@ -24,9 +24,9 @@ function storeVersion() public pure returns (bytes32);
 
 **Returns**
 
-| Name     | Type      | Description                                    |
-| -------- | --------- | ---------------------------------------------- |
-| `<none>` | `bytes32` | The current version of the store as a bytes32. |
+| Name     | Type      | Description                        |
+| -------- | --------- | ---------------------------------- |
+| `<none>` | `bytes32` | The protocol version of the Store. |
 
 #### registerTable
 
@@ -718,7 +718,7 @@ so it's ABI should include these errors._
 
 #### worldVersion
 
-Retrieve the version of the World.
+Retrieve the protocol version of the World.
 
 ```solidity
 function worldVersion() external view returns (bytes32);
@@ -726,9 +726,9 @@ function worldVersion() external view returns (bytes32);
 
 **Returns**
 
-| Name     | Type      | Description                          |
-| -------- | --------- | ------------------------------------ |
-| `<none>` | `bytes32` | The version identifier of the World. |
+| Name     | Type      | Description                        |
+| -------- | --------- | ---------------------------------- |
+| `<none>` | `bytes32` | The protocol version of the World. |
 
 #### creator
 
