@@ -1,6 +1,6 @@
 import { evaluate } from "@arktype/util";
 import { AbiTypeScope } from "./scope";
-import { keyof } from "./generics";
+import { hasOwnKey } from "./generics";
 
 export type SchemaInput<scope extends AbiTypeScope = AbiTypeScope> = {
   [key: string]: keyof scope["types"];
@@ -21,7 +21,7 @@ export function resolveSchema<schema extends SchemaInput<scope>, scope extends A
 ): resolveSchema<schema, scope> {
   return Object.fromEntries(
     Object.entries(schema).map(([key, internalType]) => {
-      if (keyof(internalType, scope.types)) {
+      if (hasOwnKey(scope.types, internalType)) {
         return [
           key,
           {
@@ -39,5 +39,7 @@ export function isSchemaInput<scope extends AbiTypeScope = AbiTypeScope>(
   input: unknown,
   scope: scope = AbiTypeScope as scope,
 ): input is SchemaInput<scope> {
-  return typeof input === "object" && input !== null && Object.values(input).every((key) => keyof(key, scope.types));
+  return (
+    typeof input === "object" && input !== null && Object.values(input).every((key) => hasOwnKey(scope.types, key))
+  );
 }

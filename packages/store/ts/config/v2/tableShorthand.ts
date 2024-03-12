@@ -1,6 +1,6 @@
 import { evaluate } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type";
-import { keyof } from "./generics";
+import { hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 import { NoStaticKeyFieldError } from "./table";
@@ -33,14 +33,14 @@ export function validateTableShorthand<scope extends AbiTypeScope = AbiTypeScope
   scope: scope = AbiTypeScope as scope,
 ): asserts input is TableShorthandInput<scope> {
   if (typeof input === "string") {
-    if (keyof(input, scope.types)) {
+    if (hasOwnKey(scope.types, input)) {
       return;
     }
     throw new Error(`Invalid ABI type. \`${input}\` not found in scope.`);
   }
   if (typeof input === "object" && input !== null) {
     if (isSchemaInput(input, scope)) {
-      if (keyof("key", input) && isStaticAbiType(scope.types[input["key"]])) {
+      if (hasOwnKey(input, "key") && isStaticAbiType(scope.types[input["key"]])) {
         return;
       }
       throw new Error(

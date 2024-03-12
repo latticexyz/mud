@@ -1,5 +1,5 @@
 import { conform } from "@arktype/util";
-import { get, keyof } from "./generics";
+import { get, hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 import { isStaticAbiType } from "@latticexyz/schema-type";
@@ -23,7 +23,7 @@ function getValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeSc
   scope: scope = AbiTypeScope as scope,
 ) {
   return Object.entries(schema)
-    .filter(([, internalType]) => keyof(internalType, scope.types) && isStaticAbiType(scope.types[internalType]))
+    .filter(([, internalType]) => hasOwnKey(scope.types, internalType) && isStaticAbiType(scope.types[internalType]))
     .map(([key]) => key);
 }
 
@@ -35,7 +35,8 @@ export function isValidPrimaryKey<schema extends SchemaInput<scope>, scope exten
   return (
     Array.isArray(primaryKey) &&
     primaryKey.every(
-      (key) => keyof(key, schema) && keyof(schema[key], scope.types) && isStaticAbiType(scope.types[schema[key]]),
+      (key) =>
+        hasOwnKey(schema, key) && hasOwnKey(scope.types, schema[key]) && isStaticAbiType(scope.types[schema[key]]),
     )
   );
 }
@@ -44,8 +45,8 @@ export function isTableFullInput(input: unknown): input is TableFullInput {
   return (
     typeof input === "object" &&
     input !== null &&
-    keyof("schema", input) &&
-    keyof("primaryKey", input) &&
+    hasOwnKey(input, "schema") &&
+    hasOwnKey(input, "primaryKey") &&
     Array.isArray(input["primaryKey"])
   );
 }
@@ -70,13 +71,13 @@ export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeSco
     throw new Error(`Expected full table config, got ${JSON.stringify(input)}`);
   }
 
-  if (!keyof("schema", input) || !isSchemaInput(input["schema"], scope)) {
+  if (!hasOwnKey(input, "schema") || !isSchemaInput(input["schema"], scope)) {
     throw new Error("Invalid schema input");
   }
 
-  if (!keyof("primaryKey", input) || !isValidPrimaryKey(input["primaryKey"], input["schema"], scope)) {
+  if (!hasOwnKey(input, "primaryKey") || !isValidPrimaryKey(input["primaryKey"], input["schema"], scope)) {
     throw new Error(
-      `Invalid primary key. Expected (${getValidKeys(input["schema"], scope).join("|")})[], received ${keyof("primaryKey", input) ? `[${input["primaryKey"]}]` : "undefined"}`,
+      `Invalid primary key. Expected (${getValidKeys(input["schema"], scope).join("|")})[], received ${hasOwnKey(input, "primaryKey") ? `[${input["primaryKey"]}]` : "undefined"}`,
     );
   }
 }
