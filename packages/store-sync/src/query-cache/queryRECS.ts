@@ -68,21 +68,23 @@ function fragmentToTableSubject(fragment: QueryFragment<Table>): TableSubject {
 }
 
 function fragmentToQueryConditions(fragment: QueryFragment<Table>): QueryCondition[] {
-  return Object.entries((fragment as HasValueQueryFragment<Table>).value).map(([field, right]) => {
-    if (fragment.type === QueryFragmentType.HasValue) {
-      return {
-        left: { tableId: fragment.table.tableId, field },
-        op: "=",
-        right,
-      };
-    } else {
-      return {
-        left: { tableId: fragment.table.tableId, field },
-        op: "!=",
-        right,
-      };
-    }
-  }) as QueryCondition[];
+  return Object.entries((fragment as HasValueQueryFragment<Table> | NotValueQueryFragment<Table>).value).map(
+    ([field, right]) => {
+      if (fragment.type === QueryFragmentType.HasValue) {
+        return {
+          left: { tableId: fragment.table.tableId, field },
+          op: "=",
+          right,
+        };
+      } else {
+        return {
+          left: { tableId: fragment.table.tableId, field },
+          op: "!=",
+          right,
+        };
+      }
+    },
+  ) as QueryCondition[];
 }
 
 export async function queryRECS<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
