@@ -54,10 +54,6 @@ export type validateKeys<validKeys extends PropertyKey, keys> = {
   [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
 };
 
-export function validateKeys<validKeys extends PropertyKey, keys = PropertyKey[]>(keys: validateKeys<validKeys, keys>) {
-  throw new Error("validateKeys not implemented");
-}
-
 export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> = {
   [key in keyof input]: key extends "primaryKey"
     ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput<scope>>, scope>, input[key]>

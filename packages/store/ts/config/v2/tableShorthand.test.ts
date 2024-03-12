@@ -114,8 +114,8 @@ describe("resolveTableShorthand", () => {
     attest(() =>
       // @ts-expect-error "Error: Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option."
       resolveTableShorthand({ key: "CustomType", name: "string", age: "uint256" }, scope),
-    )
-      .throws("Invalid schema. Expected a `key` field with a static ABI type.")
-      .type.errors(`Provide a \`key\` field with static ABI type or a full config with explicit \`primaryKey\`.`);
+    ).throwsAndHasTypeError(
+      "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+    );
   });
 });

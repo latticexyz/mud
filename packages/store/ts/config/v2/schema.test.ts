@@ -27,7 +27,6 @@ describe("resolveSchema", () => {
 
   it("should throw if a type is not part of the scope", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "address" });
-    // TODO: test that this fails runtime validation
     attest(() =>
       resolveSchema(
         {

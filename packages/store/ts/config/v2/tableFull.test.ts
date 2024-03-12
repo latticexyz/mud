@@ -26,13 +26,6 @@ describe("validateKeys", () => {
     >();
   });
 
-  it("should throw if an invalid key is provided", () => {
-    attest(
-      // @ts-expect-error Type '"dynamic"' is not assignable to type '"static"'.
-      validateKeys<getStaticAbiTypeKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>>(["dynamic"]),
-    ).type.errors(`Type '"dynamic"' is not assignable to type '"static"'.`);
-  });
-
   it("should return a tuple of valid keys with an extended scope", () => {
     const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
 
