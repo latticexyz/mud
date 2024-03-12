@@ -5,9 +5,25 @@
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol)
 
 **Inherits:**
-[IStoreData](/store/reference/store#istoredata), [IStoreRegistration](/store/reference/store#istoreregistration), [IStoreErrors](/store/reference/store#istoreerrors), [IFieldLayoutErrors](/src/IFieldLayoutErrors.sol/interface.IFieldLayoutErrors.md), [IPackedCounterErrors](/src/IPackedCounterErrors.sol/interface.IPackedCounterErrors.md), [ISchemaErrors](/src/ISchemaErrors.sol/interface.ISchemaErrors.md), [ISliceErrors](/src/ISliceErrors.sol/interface.ISliceErrors.md)
+[IStoreRead](/store/reference/store#istoreread), [IStoreWrite](/store/reference/store#istorewrite), [IStoreRegistration](/store/reference/store#istoreregistration), [IStoreErrors](/store/reference/store#istoreerrors), [IFieldLayoutErrors](/src/IFieldLayoutErrors.sol/interface.IFieldLayoutErrors.md), [IPackedCounterErrors](/src/IPackedCounterErrors.sol/interface.IPackedCounterErrors.md), [ISchemaErrors](/src/ISchemaErrors.sol/interface.ISchemaErrors.md), [ISliceErrors](/src/ISliceErrors.sol/interface.ISliceErrors.md)
 
 IStore implements the error interfaces for each library that it uses.
+
+### Functions
+
+#### storeVersion
+
+Returns the version of the Store contract.
+
+```solidity
+function storeVersion() external view returns (bytes32 version);
+```
+
+**Returns**
+
+| Name      | Type      | Description                        |
+| --------- | --------- | ---------------------------------- |
+| `version` | `bytes32` | The version of the Store contract. |
 
 ## IStoreEvents
 
