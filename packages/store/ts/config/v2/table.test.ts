@@ -13,6 +13,7 @@ describe("validateKeys", () => {
 
   it("should return a tuple of valid keys with an extended scope", () => {
     const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
+
     attest<
       ["static", "customStatic"],
       validateKeys<
@@ -34,6 +35,7 @@ describe("validateKeys", () => {
 
   it("should return a tuple of valid keys with an extended scope", () => {
     const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
+
     attest<
       ["static", "customStatic"],
       validateKeys<
@@ -50,6 +52,7 @@ describe("validateKeys", () => {
 describe("resolveTableShorthand", () => {
   it("should expand a single ABI type into a key/value schema", () => {
     const table = resolveTableShorthand("address");
+
     attest<{
       schema: {
         key: "bytes32";
@@ -62,6 +65,7 @@ describe("resolveTableShorthand", () => {
   it("should expand a single custom into a key/value schema", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
     const table = resolveTableShorthand("CustomType", scope);
+
     attest<{
       schema: {
         key: "bytes32";
@@ -88,6 +92,7 @@ describe("resolveTableShorthand", () => {
 
   it("should use `key` as single key if it has a static ABI type", () => {
     const table = resolveTableShorthand({ key: "address", name: "string", age: "uint256" });
+
     attest<{
       schema: {
         key: "address";
@@ -124,6 +129,7 @@ describe("resolveTableShorthand", () => {
   it("should use `key` as single key if it has a static custom type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
     const table = resolveTableShorthand({ key: "CustomType", name: "string", age: "uint256" }, scope);
+
     attest<{
       schema: { key: "CustomType"; name: "string"; age: "uint256" };
       primaryKey: ["key"];
@@ -134,6 +140,7 @@ describe("resolveTableShorthand", () => {
 
   it("should throw an error if `key` is not a custom static type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "bytes" });
+
     // @ts-expect-error "Error: Provide a `key` field with static ABI type or a full config with explicit primaryKey override."
     attest(resolveTableShorthand({ key: "CustomType", name: "string", age: "uint256" }, scope)).type.errors(
       `Provide a \`key\` field with static ABI type or a full config with explicit primaryKey override.`,
@@ -144,136 +151,144 @@ describe("resolveTableShorthand", () => {
 describe("resolveTableConfig", () => {
   it("should expand a single ABI type into a key/value schema", () => {
     const table = resolveTableConfig("address");
-    attest<{
+    const expected = {
       schema: {
         key: {
-          type: "bytes32";
-          internalType: "bytes32";
-        };
+          type: "bytes32",
+          internalType: "bytes32",
+        },
         value: {
-          type: "address";
-          internalType: "address";
-        };
-      };
+          type: "address",
+          internalType: "address",
+        },
+      },
       keySchema: {
         key: {
-          type: "bytes32";
-          internalType: "bytes32";
-        };
-      };
+          type: "bytes32",
+          internalType: "bytes32",
+        },
+      },
       valueSchema: {
         value: {
-          type: "address";
-          internalType: "address";
-        };
-      };
-      primaryKey: ["key"];
-    }>(table);
+          type: "address",
+          internalType: "address",
+        },
+      },
+      primaryKey: ["key"],
+    } as const;
+
+    attest<typeof expected>(table);
   });
 
   it("should expand a single custom type into a key/value schema", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "address" });
     const table = resolveTableConfig("CustomType", scope);
-    attest<{
+    const expected = {
       schema: {
         key: {
-          type: "bytes32";
-          internalType: "bytes32";
-        };
+          type: "bytes32",
+          internalType: "bytes32",
+        },
         value: {
-          type: "address";
-          internalType: "CustomType";
-        };
-      };
+          type: "address",
+          internalType: "CustomType",
+        },
+      },
       keySchema: {
         key: {
-          type: "bytes32";
-          internalType: "bytes32";
-        };
-      };
+          type: "bytes32",
+          internalType: "bytes32",
+        },
+      },
       valueSchema: {
         value: {
-          type: "address";
-          internalType: "CustomType";
-        };
-      };
-      primaryKey: ["key"];
-    }>(table);
+          type: "address",
+          internalType: "CustomType",
+        },
+      },
+      primaryKey: ["key"],
+    } as const;
+
+    attest<typeof expected>(table);
   });
 
   it("should use `key` as single key if it has a static ABI type", () => {
     const table = resolveTableConfig({ key: "address", name: "string", age: "uint256" });
-    attest<{
+    const expected = {
       schema: {
         key: {
-          type: "address";
-          internalType: "address";
-        };
+          type: "address",
+          internalType: "address",
+        },
         name: {
-          type: "string";
-          internalType: "string";
-        };
+          type: "string",
+          internalType: "string",
+        },
         age: {
-          type: "uint256";
-          internalType: "uint256";
-        };
-      };
+          type: "uint256",
+          internalType: "uint256",
+        },
+      },
       keySchema: {
         key: {
-          type: "address";
-          internalType: "address";
-        };
-      };
+          type: "address",
+          internalType: "address",
+        },
+      },
       valueSchema: {
         name: {
-          type: "string";
-          internalType: "string";
-        };
+          type: "string",
+          internalType: "string",
+        },
         age: {
-          type: "uint256";
-          internalType: "uint256";
-        };
-      };
-      primaryKey: ["key"];
-    }>(table);
+          type: "uint256",
+          internalType: "uint256",
+        },
+      },
+      primaryKey: ["key"],
+    } as const;
+
+    attest<typeof expected>(table);
   });
 
   it("should use `key` as single key if it has a static custom type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
     const table = resolveTableConfig({ key: "CustomType", name: "string", age: "uint256" }, scope);
-    attest<{
+    const expected = {
       schema: {
         key: {
-          type: "uint256";
-          internalType: "CustomType";
-        };
+          type: "uint256",
+          internalType: "CustomType",
+        },
         name: {
-          type: "string";
-          internalType: "string";
-        };
+          type: "string",
+          internalType: "string",
+        },
         age: {
-          type: "uint256";
-          internalType: "uint256";
-        };
-      };
+          type: "uint256",
+          internalType: "uint256",
+        },
+      },
       keySchema: {
         key: {
-          type: "uint256";
-          internalType: "CustomType";
-        };
-      };
+          type: "uint256",
+          internalType: "CustomType",
+        },
+      },
       valueSchema: {
         name: {
-          type: "string";
-          internalType: "string";
-        };
+          type: "string",
+          internalType: "string",
+        },
         age: {
-          type: "uint256";
-          internalType: "uint256";
-        };
-      };
-      primaryKey: ["key"];
-    }>(table);
+          type: "uint256",
+          internalType: "uint256",
+        },
+      },
+      primaryKey: ["key"],
+    } as const;
+
+    attest<typeof expected>(table);
   });
 
   it("should throw if the shorthand key is a dynamic ABI type", () => {
@@ -310,21 +325,23 @@ describe("resolveTableConfig", () => {
       schema: { key: "address", name: "string", age: "uint256" },
       primaryKey: ["age"],
     });
-    attest<{
+    const expected = {
       schema: {
-        key: { type: "address"; internalType: "address" };
-        name: { type: "string"; internalType: "string" };
-        age: { type: "uint256"; internalType: "uint256" };
-      };
+        key: { type: "address", internalType: "address" },
+        name: { type: "string", internalType: "string" },
+        age: { type: "uint256", internalType: "uint256" },
+      },
       keySchema: {
-        age: { type: "uint256"; internalType: "uint256" };
-      };
+        age: { type: "uint256", internalType: "uint256" },
+      },
       valueSchema: {
-        key: { type: "address"; internalType: "address" };
-        name: { type: "string"; internalType: "string" };
-      };
-      primaryKey: ["age"];
-    }>(table);
+        key: { type: "address", internalType: "address" },
+        name: { type: "string", internalType: "string" },
+      },
+      primaryKey: ["age"],
+    } as const;
+
+    attest<typeof expected>(table);
   });
 
   it("should return the full config given a full config with two primaryKey", () => {
@@ -332,97 +349,103 @@ describe("resolveTableConfig", () => {
       schema: { key: "address", name: "string", age: "uint256" },
       primaryKey: ["age", "key"],
     });
-    attest<{
+    const expected = {
       schema: {
-        key: { type: "address"; internalType: "address" };
-        name: { type: "string"; internalType: "string" };
-        age: { type: "uint256"; internalType: "uint256" };
-      };
+        key: { type: "address", internalType: "address" },
+        name: { type: "string", internalType: "string" },
+        age: { type: "uint256", internalType: "uint256" },
+      },
       keySchema: {
-        age: { type: "uint256"; internalType: "uint256" };
-        key: { type: "address"; internalType: "address" };
-      };
+        age: { type: "uint256", internalType: "uint256" },
+        key: { type: "address", internalType: "address" },
+      },
       valueSchema: {
-        name: { type: "string"; internalType: "string" };
-      };
-      primaryKey: ["age", "key"];
-    }>(table);
+        name: { type: "string", internalType: "string" },
+      },
+      primaryKey: ["age", "key"],
+    } as const;
+
+    attest<typeof expected>(table);
   });
 
   it("should return the full config given a config with custom types as values", () => {
     const scope = extendScope(AbiTypeScope, { CustomString: "string", CustomNumber: "uint256" });
     const table = resolveTableConfig({ key: "address", name: "CustomString", age: "CustomNumber" }, scope);
-    attest<{
+    const expected = {
       schema: {
         key: {
-          type: "address";
-          internalType: "address";
-        };
+          type: "address",
+          internalType: "address",
+        },
         name: {
-          type: "string";
-          internalType: "CustomString";
-        };
+          type: "string",
+          internalType: "CustomString",
+        },
         age: {
-          type: "uint256";
-          internalType: "CustomNumber";
-        };
-      };
+          type: "uint256",
+          internalType: "CustomNumber",
+        },
+      },
       keySchema: {
         key: {
-          type: "address";
-          internalType: "address";
-        };
-      };
+          type: "address",
+          internalType: "address",
+        },
+      },
       valueSchema: {
         name: {
-          type: "string";
-          internalType: "CustomString";
-        };
+          type: "string",
+          internalType: "CustomString",
+        },
         age: {
-          type: "uint256";
-          internalType: "CustomNumber";
-        };
-      };
-      primaryKey: ["key"];
-    }>(table);
+          type: "uint256",
+          internalType: "CustomNumber",
+        },
+      },
+      primaryKey: ["key"],
+    } as const;
+
+    attest<typeof expected>(table);
   });
 
   it("should return the full config given a config with custom type as key", () => {
     const scope = extendScope(AbiTypeScope, { CustomString: "string", CustomNumber: "uint256" });
     const table = resolveTableConfig({ key: "CustomNumber", name: "CustomString", age: "CustomNumber" }, scope);
-    attest<{
+    const expected = {
       schema: {
         key: {
-          type: "uint256";
-          internalType: "CustomNumber";
-        };
+          type: "uint256",
+          internalType: "CustomNumber",
+        },
         name: {
-          type: "string";
-          internalType: "CustomString";
-        };
+          type: "string",
+          internalType: "CustomString",
+        },
         age: {
-          type: "uint256";
-          internalType: "CustomNumber";
-        };
-      };
+          type: "uint256",
+          internalType: "CustomNumber",
+        },
+      },
       keySchema: {
         key: {
-          type: "uint256";
-          internalType: "CustomNumber";
-        };
-      };
+          type: "uint256",
+          internalType: "CustomNumber",
+        },
+      },
       valueSchema: {
         name: {
-          type: "string";
-          internalType: "CustomString";
-        };
+          type: "string",
+          internalType: "CustomString",
+        },
         age: {
-          type: "uint256";
-          internalType: "CustomNumber";
-        };
-      };
-      primaryKey: ["key"];
-    }>(table);
+          type: "uint256",
+          internalType: "CustomNumber",
+        },
+      },
+      primaryKey: ["key"],
+    } as const;
+
+    attest<typeof expected>(table);
   });
 
   it("should throw if the provided key is a dynamic ABI type", () => {

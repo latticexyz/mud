@@ -46,11 +46,13 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
+    "@arktype/util": "0.0.25",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "abitype": "1.0.0",
+    "arktype": "1.0.29-alpha",
     "viem": "2.7.12",
     "zod": "^3.21.4"
   },
