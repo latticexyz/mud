@@ -6,14 +6,7 @@ import { subscribeToQuery } from "./subscribeToQuery";
 import { Observable, map } from "rxjs";
 import { encodeEntity } from "../recs";
 import { KeySchema, SchemaToPrimitives as SchemaToPrimitivesProtocol } from "@latticexyz/protocol-parser";
-import { Entity } from "@latticexyz/recs";
-
-enum QueryFragmentType {
-  Has,
-  HasValue,
-  Not,
-  NotValue,
-}
+import { Entity, QueryFragmentType, UpdateType } from "@latticexyz/recs";
 
 type HasQueryFragment<T extends Table> = {
   type: QueryFragmentType.Has;
@@ -116,7 +109,7 @@ function fragmentsToWhere(fragments: QueryFragment<Table>[]): QueryCondition[] {
 
 function fragmentToKeySchema(fragment: QueryFragment<Table>): KeySchema {
   const keySchema: KeySchema = {};
-  Object.entries(fragment.table.keySchema).map(([key, value]) => (keySchema[key] = value.type));
+  Object.entries(fragment.table.keySchema).map(([keyName, value]) => (keySchema[keyName] = value.type));
 
   return keySchema;
 }
@@ -154,11 +147,6 @@ export async function runQuery<config extends StoreConfig, extraTables extends T
   const entities = subjectsToEntities(fragments[0], result);
 
   return new Set(entities);
-}
-
-enum UpdateType {
-  Enter,
-  Exit,
 }
 
 type ComponentUpdate = {
