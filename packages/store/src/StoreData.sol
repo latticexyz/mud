@@ -25,8 +25,8 @@ abstract contract StoreData is IStoreData, StoreRead {
   }
 
   /**
-   * @notice Retrieves the version of the store.
-   * @return The current version of the store as a bytes32.
+   * @notice Retrieves the protocol version of the Store.
+   * @return The protocol version of the Store.
    */
   function storeVersion() public pure returns (bytes32) {
     return STORE_VERSION;
