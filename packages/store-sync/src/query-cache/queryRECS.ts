@@ -1,11 +1,11 @@
 import { ZustandStore } from "../zustand";
 import { AllTables, QueryCondition, QueryResultSubject, TableSubject } from "./common";
-import { StoreConfig, Table, Tables } from "@latticexyz/store";
+import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
 import { query } from "./query";
 import { subscribeToQuery } from "./subscribeToQuery";
 import { Observable, map } from "rxjs";
 import { encodeEntity } from "../recs";
-import { KeySchema, SchemaToPrimitives } from "@latticexyz/protocol-parser";
+import { KeySchema, SchemaToPrimitives as SchemaToPrimitivesProtocol } from "@latticexyz/protocol-parser";
 import { Entity } from "@latticexyz/recs";
 
 enum QueryFragmentType {
@@ -121,13 +121,17 @@ function fragmentToKeySchema(fragment: QueryFragment<Table>): KeySchema {
   return keySchema;
 }
 
-function resultToEntities(fragment: QueryFragment<Table>, result: readonly QueryResultSubject[]): Entity[] {
+function subjectToEntity(fragment: QueryFragment<Table>, subject: QueryResultSubject): Entity {
   const keySchema = fragmentToKeySchema(fragment);
 
-  const entities = result.map((subject) => {
-    const key: SchemaToPrimitives<KeySchema> = {};
-    Object.keys(fragment.table.keySchema).map((keyName, i) => (key[keyName] = subject[i]));
-    return encodeEntity(keySchema, key);
+  const key: SchemaToPrimitivesProtocol<KeySchema> = {};
+  Object.keys(fragment.table.keySchema).map((keyName, i) => (key[keyName] = subject[i]));
+  return encodeEntity(keySchema, key);
+}
+
+function subjectsToEntities(fragment: QueryFragment<Table>, subjects: readonly QueryResultSubject[]): Entity[] {
+  const entities = subjects.map((subject) => {
+    return subjectToEntity(fragment, subject);
   });
 
   return entities;
@@ -147,7 +151,7 @@ export async function runQuery<config extends StoreConfig, extraTables extends T
     where,
   });
 
-  const entities = resultToEntities(fragments[0], result);
+  const entities = subjectsToEntities(fragments[0], result);
 
   return new Set(entities);
 }
@@ -185,10 +189,10 @@ export async function defineQuery<config extends StoreConfig, extraTables extend
       map((subjectChanges) => {
         return subjectChanges.map((subjectChange) => ({
           type: subjectChange.type === "enter" ? UpdateType.Enter : UpdateType.Exit,
-          entity: queryResultSubjectToEntity(subjectChange.subject),
+          entity: subjectToEntity(fragments[0], subjectChange.subject),
         }));
       }),
     ),
-    matching: subjects$.pipe(map((subjects) => subjects.map((subject) => queryResultSubjectToEntity(subject)))),
+    matching: subjects$.pipe(map((subjects) => subjectsToEntities(fragments[0], subjects))),
   };
 }

@@ -7,7 +7,8 @@ import { privateKeyToAccount } from "viem/accounts";
 import { testClient } from "../../test/common";
 import { combineLatest, filter, firstValueFrom, map, scan, shareReplay } from "rxjs";
 import { waitForTransaction } from "./test/waitForTransaction";
-import { Entity, EntityChange, Has, HasValue, Not, NotValue, defineQuery } from "./queryRECS";
+import { EntityChange, Has, HasValue, Not, NotValue, defineQuery } from "./queryRECS";
+import { Entity } from "@latticexyz/recs";
 
 const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));
 
@@ -39,29 +40,29 @@ describe("defineQuery", async () => {
         "matching": {
           "count": 1,
           "value": [
-            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            "0xdBa86119a787422C593ceF119E40887f396024E2",
+            "0x0000000000000000000000001d96f2f6bef1202e4ce1ff6dad0c2cb002861d3e",
+            "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
+            "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
+            "0x000000000000000000000000dba86119a787422c593cef119e40887f396024e2",
           ],
         },
         "update$": {
           "count": 1,
           "value": [
             {
-              "entity": "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+              "entity": "0x0000000000000000000000001d96f2f6bef1202e4ce1ff6dad0c2cb002861d3e",
               "type": 0,
             },
             {
-              "entity": "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+              "entity": "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
               "type": 0,
             },
             {
-              "entity": "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+              "entity": "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
               "type": 0,
             },
             {
-              "entity": "0xdBa86119a787422C593ceF119E40887f396024E2",
+              "entity": "0x000000000000000000000000dba86119a787422c593cef119e40887f396024e2",
               "type": 0,
             },
           ],
@@ -86,18 +87,18 @@ describe("defineQuery", async () => {
         "matching": {
           "count": 2,
           "value": [
-            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            "0xdBa86119a787422C593ceF119E40887f396024E2",
-            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+            "0x0000000000000000000000001d96f2f6bef1202e4ce1ff6dad0c2cb002861d3e",
+            "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
+            "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
+            "0x000000000000000000000000dba86119a787422c593cef119e40887f396024e2",
+            "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
           ],
         },
         "update$": {
           "count": 2,
           "value": [
             {
-              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "entity": "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
               "type": 0,
             },
           ],
@@ -127,19 +128,19 @@ describe("defineQuery", async () => {
         "matching": {
           "count": 1,
           "value": [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
+            "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
           ],
         },
         "update$": {
           "count": 1,
           "value": [
             {
-              "entity": "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+              "entity": "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
               "type": 0,
             },
             {
-              "entity": "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+              "entity": "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
               "type": 0,
             },
           ],
@@ -164,16 +165,16 @@ describe("defineQuery", async () => {
         "matching": {
           "count": 2,
           "value": [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+            "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
+            "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
+            "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
           ],
         },
         "update$": {
           "count": 2,
           "value": [
             {
-              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "entity": "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
               "type": 0,
             },
           ],
@@ -198,15 +199,15 @@ describe("defineQuery", async () => {
         "matching": {
           "count": 3,
           "value": [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
+            "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
           ],
         },
         "update$": {
           "count": 3,
           "value": [
             {
-              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "entity": "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
               "type": 1,
             },
           ],
@@ -239,19 +240,19 @@ describe("defineQuery", async () => {
         "matching": {
           "count": 1,
           "value": [
-            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x0000000000000000000000001d96f2f6bef1202e4ce1ff6dad0c2cb002861d3e",
+            "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
           ],
         },
         "update$": {
           "count": 1,
           "value": [
             {
-              "entity": "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+              "entity": "0x0000000000000000000000001d96f2f6bef1202e4ce1ff6dad0c2cb002861d3e",
               "type": 0,
             },
             {
-              "entity": "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+              "entity": "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
               "type": 0,
             },
           ],
@@ -281,14 +282,14 @@ describe("defineQuery", async () => {
         "matching": {
           "count": 1,
           "value": [
-            "3:5",
+            "0x00000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000005",
           ],
         },
         "update$": {
           "count": 1,
           "value": [
             {
-              "entity": "3:5",
+              "entity": "0x00000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000005",
               "type": 0,
             },
           ],
@@ -318,14 +319,14 @@ describe("defineQuery", async () => {
         "matching": {
           "count": 1,
           "value": [
-            "0xdBa86119a787422C593ceF119E40887f396024E2",
+            "0x000000000000000000000000dba86119a787422c593cef119e40887f396024e2",
           ],
         },
         "update$": {
           "count": 1,
           "value": [
             {
-              "entity": "0xdBa86119a787422C593ceF119E40887f396024E2",
+              "entity": "0x000000000000000000000000dba86119a787422c593cef119e40887f396024e2",
               "type": 0,
             },
           ],
@@ -380,14 +381,14 @@ describe("defineQuery", async () => {
         "matching": {
           "count": 2,
           "value": [
-            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+            "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
           ],
         },
         "update$": {
           "count": 2,
           "value": [
             {
-              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "entity": "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
               "type": 0,
             },
           ],
@@ -432,16 +433,16 @@ describe("defineQuery", async () => {
         "matching": {
           "count": 2,
           "value": [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+            "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
+            "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
+            "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
           ],
         },
         "update$": {
           "count": 2,
           "value": [
             {
-              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "entity": "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
               "type": 0,
             },
           ],
@@ -468,15 +469,15 @@ describe("defineQuery", async () => {
         "matching": {
           "count": 3,
           "value": [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
+            "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
           ],
         },
         "update$": {
           "count": 3,
           "value": [
             {
-              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "entity": "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
               "type": 1,
             },
           ],
