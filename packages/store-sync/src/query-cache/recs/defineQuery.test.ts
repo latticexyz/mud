@@ -1,13 +1,13 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createHydratedStore, tables } from "./test/createHydratedStore";
-import { deployMockGame, worldAbi } from "../../test/mockGame";
+import { createHydratedStore, tables } from "../test/createHydratedStore";
+import { deployMockGame, worldAbi } from "../../../test/mockGame";
 import { writeContract } from "viem/actions";
 import { Address, keccak256, parseEther, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { testClient } from "../../test/common";
+import { testClient } from "../../../test/common";
 import { combineLatest, filter, firstValueFrom, map, scan, shareReplay } from "rxjs";
-import { waitForTransaction } from "./test/waitForTransaction";
-import { ComponentUpdate, Has, HasValue, Not, NotValue, defineQuery } from "./recs/Query";
+import { waitForTransaction } from "../test/waitForTransaction";
+import { ComponentUpdate, Has, HasValue, Not, NotValue, defineQuery } from "./Query";
 import { Entity, UpdateType } from "@latticexyz/recs";
 
 const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));
