@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { createHydratedStore, tables } from "../test/createHydratedStore";
-import { Has, HasValue, Not, NotValue, runQuery } from "./queryRECS";
+import { Has, HasValue, Not, NotValue, runQuery } from "./Query";
 import { deployMockGame } from "../../../test/mockGame";
 import { Address } from "viem";
 
