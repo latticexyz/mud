@@ -73,13 +73,13 @@ export type resolveWorldConfig<input> = evaluate<
 >;
 
 export function resolveWorldConfig<const input>(input: validateWorldConfig<input>): resolveWorldConfig<input> {
-  const namespaces = get(input, "namespaces", {});
+  const namespaces = get(input, "namespaces") ?? {};
   const scope = extendedScope(input);
 
   const namespacedTables = Object.fromEntries(
     Object.entries(namespaces)
       .map(([namespaceKey, namespace]) => {
-        const tables = get(namespace, "tables", {});
+        const tables = get(namespace, "tables") ?? {};
         return Object.entries(tables).map(([tableKey, table]) => [`${namespaceKey}__${tableKey}`, table]);
       })
       .flat(),
@@ -88,15 +88,15 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
   const resolvedNamespaces = Object.fromEntries(
     Object.entries(namespaces).map(([namespaceKey, namespace]) => [
       namespaceKey,
-      { tables: resolveStoreTablesConfig(get(namespace, "tables", {}), scope) },
+      { tables: resolveStoreTablesConfig(get(namespace, "tables") ?? {}, scope) },
     ]),
   );
 
   return {
-    tables: resolveStoreTablesConfig({ ...get(input, "tables", {}), ...namespacedTables }, scope),
+    tables: resolveStoreTablesConfig({ ...(get(input, "tables") ?? {}), ...namespacedTables }, scope),
     namespaces: resolvedNamespaces,
-    userTypes: get(input, "userTypes", {}),
-    enums: get(input, "enums", {}),
-    namespace: get(input, "namespace", ""),
-  } as unknown as resolveWorldConfig<input>;
+    userTypes: get(input, "userTypes") ?? {},
+    enums: get(input, "enums") ?? {},
+    namespace: get(input, "namespace") ?? "",
+  } as resolveWorldConfig<input>;
 }

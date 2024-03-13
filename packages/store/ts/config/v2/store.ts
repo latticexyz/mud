@@ -89,7 +89,7 @@ export function scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope>
 export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
 
 export function extendedScope<input>(input: input): extendedScope<input> {
-  return scopeWithEnums(get(input, "enums"), scopeWithUserTypes(get(input, "userTypes", undefined)));
+  return scopeWithEnums(get(input, "enums"), scopeWithUserTypes(get(input, "userTypes")));
 }
 
 export type validateStoreConfig<input> = {

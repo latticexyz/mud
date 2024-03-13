@@ -1,14 +1,9 @@
-export type get<input, key, defaultValue = undefined> = key extends keyof input ? input[key] : defaultValue;
+export type get<input, key> = key extends keyof input ? input[key] : undefined;
 
-export function get<input, key extends PropertyKey, defaultValue = undefined>(
-  input: input,
-  key: key,
-  defaultValue: defaultValue = undefined as defaultValue,
-): get<input, key, defaultValue> {
-  return (typeof input === "object" && input != null && hasOwnKey(input, key) ? input[key] : defaultValue) as get<
+export function get<input, key extends PropertyKey>(input: input, key: key): get<input, key> {
+  return (typeof input === "object" && input != null && hasOwnKey(input, key) ? input[key] : undefined) as get<
     input,
-    key,
-    defaultValue
+    key
   >;
 }
 

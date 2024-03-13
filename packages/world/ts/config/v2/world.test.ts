@@ -101,7 +101,7 @@ describe("resolveWorldConfig", () => {
       namespace: "",
     } as const;
 
-    attest<typeof expected>(config).snap(expected);
+    attest<typeof expected>(config).equals(expected);
   });
 
   it("should resolve namespaced table config with user types and enums", () => {
