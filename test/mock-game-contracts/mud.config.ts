@@ -67,56 +67,51 @@ export const configV2 = resolveStoreConfig({
   },
   tables: {
     Position: {
-      keySchema: {
+      schema: {
         player: "address",
-      },
-      valueSchema: {
         x: "int32",
         y: "int32",
       },
+      primaryKey: ["player"],
     },
     Health: {
-      keySchema: {
+      schema: {
         player: "address",
-      },
-      valueSchema: {
         health: "uint256",
       },
+      primaryKey: ["player"],
     },
     Inventory: {
-      keySchema: {
+      schema: {
         player: "address",
         item: "uint8",
-      },
-      valueSchema: {
         amount: "uint32",
       },
+      primaryKey: ["player", "item"],
     },
     Score: {
-      keySchema: {
+      schema: {
         player: "address",
         game: "uint256",
-      },
-      valueSchema: {
         score: "uint256",
       },
+      primaryKey: ["player", "game"],
     },
     Winner: {
-      keySchema: {
+      schema: {
         game: "uint256",
-      },
-      valueSchema: {
         player: "address",
       },
+      primaryKey: ["game"],
     },
-    Terrain: {
-      keySchema: {
-        x: "int32",
-        y: "int32",
-      },
-      valueSchema: {
-        terrainType: "TerrainType",
-      },
-    },
+    // using `ResolvedTableConfig` downstream doesn't seem to like this table type
+    // Terrain: {
+    //   schema: {
+    //     x: "int32",
+    //     y: "int32",
+    //     terrainType: "TerrainType",
+    //   },
+    //   primaryKey: ["x", "y"],
+    // },
   },
 });

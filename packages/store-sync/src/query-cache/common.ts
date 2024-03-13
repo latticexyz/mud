@@ -1,6 +1,6 @@
 import { ResolvedStoreConfig, ResolvedTableConfig } from "@latticexyz/store/config/v2";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
-import { ComparisonCondition, InCondition } from "./api";
+import { ComparisonCondition, InCondition } from "@latticexyz/query";
 
 export type mapTuple<tuple, mapping> = {
   [key in keyof tuple]: tuple[key] extends keyof mapping ? mapping[tuple[key]] : never;
@@ -9,6 +9,14 @@ export type mapTuple<tuple, mapping> = {
 export type subjectSchemaToPrimitive<tuple> = {
   [key in keyof tuple]: tuple[key] extends SchemaAbiType ? SchemaAbiTypeToPrimitiveType<tuple[key]> : never;
 };
+
+export type TableSubjectItem<table extends ResolvedTableConfig = ResolvedTableConfig> =
+  table["schema"][keyof table["schema"]]["type"];
+
+export type TableSubject<table extends ResolvedTableConfig = ResolvedTableConfig> = readonly [
+  TableSubjectItem<table>,
+  ...TableSubjectItem<table>[],
+];
 
 export type schemaAbiTypes<schema extends Record<string, { readonly type: SchemaAbiType }>> = {
   [key in keyof schema]: schema[key]["type"];

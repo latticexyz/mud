@@ -1,25 +1,19 @@
 import { storeEventsAbi } from "@latticexyz/store";
-import { createStorageAdapter } from "../../zustand/createStorageAdapter";
-import { ZustandStore, createStore } from "../../zustand/createStore";
-import { config, deprecatedConfig } from "../../../test/mockGame";
+import { configV2 as config } from "../../../test/mockGame";
 import { fetchAndStoreLogs } from "../../fetchAndStoreLogs";
 import { testClient } from "../../../test/common";
-import { storeTables, worldTables } from "../../common";
-import { AllTables } from "../common";
 import { Address } from "viem";
 import { getBlock, getBlockNumber } from "viem/actions";
+import { QueryCacheStore, createStore } from "../createStore";
+import { createStorageAdapter } from "../createStorageAdapter";
 
-export const tables = {
-  ...config.tables,
-  ...storeTables,
-  ...worldTables,
-} as unknown as AllTables<typeof deprecatedConfig>;
+export { config };
 
 export async function createHydratedStore(worldAddress: Address): Promise<{
-  store: ZustandStore<typeof tables>;
+  store: QueryCacheStore;
   fetchLatestLogs: () => Promise<bigint>;
 }> {
-  const store = createStore<typeof tables>({ tables });
+  const store = createStore({ tables: Object.values(config.tables) });
   const storageAdapter = createStorageAdapter({ store });
 
   let lastBlockProcessed = (await getBlock(testClient, { blockTag: "earliest" })).number - 1n;

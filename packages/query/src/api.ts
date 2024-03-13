@@ -33,7 +33,6 @@ export type InCondition = {
 
 export type QueryCondition = satisfy<{ readonly op: string }, ComparisonCondition | InCondition>;
 
-// TODO: move this into some "wire" type and then make this more client specific (uses config to validate)
 export type Query = {
   readonly from: readonly TableSubject[];
   readonly except?: readonly TableSubject[];

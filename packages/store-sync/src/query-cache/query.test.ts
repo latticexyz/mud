@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createHydratedStore, tables } from "./test/createHydratedStore";
+import { createHydratedStore, config } from "./test/createHydratedStore";
 import { query } from "./query";
 import { deployMockGame } from "../../test/mockGame";
 import { Address } from "viem";
@@ -12,8 +12,10 @@ describe("query", async () => {
 
   it("can get players with a position", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(store, {
-      from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
+    const result = await query(config, store, {
+      from: {
+        Position: ["player"],
+      },
     });
 
     expect(result).toMatchInlineSnapshot(`
@@ -36,11 +38,13 @@ describe("query", async () => {
 
   it("can get players at position (3, 5)", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(store, {
-      from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
+    const result = await query(config, store, {
+      from: {
+        Position: ["player"],
+      },
       where: [
-        { left: { tableId: tables.Position.tableId, field: "x" }, op: "=", right: 3 },
-        { left: { tableId: tables.Position.tableId, field: "y" }, op: "=", right: 5 },
+        ["Position.x", "=", 3],
+        ["Position.y", "=", 5],
       ],
     });
 
@@ -58,13 +62,15 @@ describe("query", async () => {
 
   it("can get players within the bounds of (-5, -5) and (5, 5)", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(store, {
-      from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
+    const result = await query(config, store, {
+      from: {
+        Position: ["player"],
+      },
       where: [
-        { left: { tableId: tables.Position.tableId, field: "x" }, op: ">=", right: -5 },
-        { left: { tableId: tables.Position.tableId, field: "x" }, op: "<=", right: 5 },
-        { left: { tableId: tables.Position.tableId, field: "y" }, op: ">=", right: -5 },
-        { left: { tableId: tables.Position.tableId, field: "y" }, op: "<=", right: 5 },
+        ["Position.x", ">=", -5],
+        ["Position.x", "<=", 5],
+        ["Position.y", ">=", -5],
+        ["Position.y", "<=", 5],
       ],
     });
 
@@ -85,12 +91,12 @@ describe("query", async () => {
 
   it("can get players that are still alive", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(store, {
-      from: [
-        { tableId: tables.Position.tableId, subject: ["player"] },
-        { tableId: tables.Health.tableId, subject: ["player"] },
-      ],
-      where: [{ left: { tableId: tables.Health.tableId, field: "health" }, op: "!=", right: 0n }],
+    const result = await query(config, store, {
+      from: {
+        Position: ["player"],
+        Health: ["player"],
+      },
+      where: [["Health.health", "!=", 0n]],
     });
 
     expect(result).toMatchInlineSnapshot(`
@@ -107,9 +113,11 @@ describe("query", async () => {
 
   it("can get all players in grassland", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(store, {
-      from: [{ tableId: tables.Terrain.tableId, subject: ["x", "y"] }],
-      where: [{ left: { tableId: tables.Terrain.tableId, field: "terrainType" }, op: "=", right: 2 }],
+    const result = await query(config, store, {
+      from: {
+        Terrain: ["x", "y"],
+      },
+      where: [["Terrain.terrainType", "=", 2]],
     });
 
     expect(result).toMatchInlineSnapshot(`
@@ -124,9 +132,13 @@ describe("query", async () => {
 
   it("can get all players without health (e.g. spectator)", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(store, {
-      from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
-      except: [{ tableId: tables.Health.tableId, subject: ["player"] }],
+    const result = await query(config, store, {
+      from: {
+        Position: ["player"],
+      },
+      except: {
+        Health: ["player"],
+      },
     });
 
     expect(result).toMatchInlineSnapshot(`

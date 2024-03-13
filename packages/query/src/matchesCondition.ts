@@ -1,14 +1,10 @@
-import { Table } from "@latticexyz/store";
-import { TableRecord } from "../zustand/common";
-import { ComparisonCondition, ConditionLiteral, QueryCondition, TableSubject } from "./api";
+import { ResolvedTableConfig } from "@latticexyz/store/config/v2";
+import { ComparisonCondition, ConditionLiteral, QueryCondition } from "./api";
+import { TableRecord } from "./common";
 
-type MatchedSubjectRecord<table extends Table> = TableRecord<table> & {
-  fields: TableRecord<table>["key"] & TableRecord<table>["value"];
-};
-
-type MatchedSubject<table extends Table> = {
-  readonly subject: TableSubject;
-  readonly records: readonly MatchedSubjectRecord<table>[];
+export type MatchedSubject<table extends ResolvedTableConfig = ResolvedTableConfig> = {
+  readonly subject: readonly string[];
+  readonly records: readonly TableRecord<table>[];
 };
 
 const comparisons = {
@@ -20,7 +16,9 @@ const comparisons = {
   "!=": (left, right) => left !== right,
 } as const satisfies Record<ComparisonCondition["op"], (left: ConditionLiteral, right: ConditionLiteral) => boolean>;
 
-export function matchesCondition<table extends Table>(
+// TODO: adapt this to return matching records, not just a boolean
+
+export function matchesCondition<table extends ResolvedTableConfig = ResolvedTableConfig>(
   condition: QueryCondition,
   subject: MatchedSubject<table>,
 ): boolean {
