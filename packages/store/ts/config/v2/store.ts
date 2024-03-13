@@ -8,11 +8,11 @@ import { isSchemaAbiType } from "@latticexyz/schema-type";
 export type UserTypes = Dict<string, AbiType>;
 export type Enums = Dict<string, string[]>;
 
-export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
+export type StoreConfigInput<scope extends AbiTypeScope = AbiTypeScope> = {
   namespace?: string;
-  tables: StoreTablesConfigInput<scopeWithUserTypes<userTypes>>;
-  userTypes?: userTypes;
-  enums?: enums;
+  tables: StoreTablesConfigInput<scope>;
+  userTypes?: UserTypes;
+  enums?: Enums;
 };
 
 export type StoreTablesConfigInput<scope extends AbiTypeScope = AbiTypeScope> = {
@@ -106,9 +106,21 @@ export type resolveEnums<enums> = { readonly [key in keyof enums]: Readonly<enum
 
 export type resolveStoreConfig<input> = evaluate<{
   readonly tables: "tables" extends keyof input ? resolveStoreTablesConfig<input["tables"], extendedScope<input>> : {};
-  readonly userTypes: "userTypes" extends keyof input ? input["userTypes"] : {};
-  readonly enums: "enums" extends keyof input ? resolveEnums<input["enums"]> : {};
-  readonly namespace: "namespace" extends keyof input ? input["namespace"] : "";
+  readonly userTypes: "userTypes" extends keyof input
+    ? undefined extends input["userTypes"]
+      ? UserTypes
+      : input["userTypes"]
+    : UserTypes;
+  readonly enums: "enums" extends keyof input
+    ? undefined extends input["enums"]
+      ? Enums
+      : resolveEnums<input["enums"]>
+    : Enums;
+  readonly namespace: "namespace" extends keyof input
+    ? undefined extends input["namespace"]
+      ? ""
+      : input["namespace"]
+    : "";
 }>;
 
 export function resolveStoreConfig<const input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {
@@ -120,5 +132,5 @@ export function resolveStoreConfig<const input>(input: validateStoreConfig<input
   } as resolveStoreConfig<input>;
 }
 
-// TODO(alvrs): swap with a better fully resolved type
-export type ResolvedStoreConfig = resolveStoreConfig<StoreConfigInput>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ResolvedStoreConfig = resolveStoreConfig<StoreConfigInput<any>>;
