@@ -2,7 +2,7 @@ import { ZustandStore } from "../../zustand";
 import { AllTables, QueryCondition, QueryResultSubject, TableSubject } from "../common";
 import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
 import { query } from "../query";
-import { subscribeToQuery } from "../subscribeToQuery";
+import { QueryResultSubjectChange, subscribeToQuery } from "../subscribeToQuery";
 import { Observable, filter, map } from "rxjs";
 import { encodeEntity } from "../../recs";
 import { KeySchema, SchemaToPrimitives as SchemaToPrimitivesProtocol } from "@latticexyz/protocol-parser";
@@ -154,11 +154,23 @@ export type ComponentUpdate = {
   entity: Entity;
 };
 
+function subjectChangesToUpdate(
+  fragment: QueryFragment<Table>,
+  subjectChanges: readonly QueryResultSubjectChange[],
+): ComponentUpdate & { type: UpdateType } {
+  const subjectChange = subjectChanges[0];
+
+  return {
+    type: subjectChange.type === "enter" ? UpdateType.Enter : UpdateType.Exit,
+    entity: subjectToEntity(fragment, subjectChange.subject),
+  };
+}
+
 export async function defineQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
   store: ZustandStore<AllTables<config, extraTables>>,
   fragments: QueryFragment<Table>[],
 ): Promise<{
-  update$: Observable<(ComponentUpdate & { type: UpdateType })[]>;
+  update$: Observable<ComponentUpdate & { type: UpdateType }>;
   matching: Observable<Entity[]>;
 }> {
   const from = fragmentsToFrom(fragments);
@@ -172,14 +184,7 @@ export async function defineQuery<config extends StoreConfig, extraTables extend
   });
 
   return {
-    update$: subjectChanges$.pipe(
-      map((subjectChanges) => {
-        return subjectChanges.map((subjectChange) => ({
-          type: subjectChange.type === "enter" ? UpdateType.Enter : UpdateType.Exit,
-          entity: subjectToEntity(fragments[0], subjectChange.subject),
-        }));
-      }),
-    ),
+    update$: subjectChanges$.pipe(map((subjectChanges) => subjectChangesToUpdate(fragments[0], subjectChanges))),
     matching: subjects$.pipe(map((subjects) => subjectsToEntities(fragments[0], subjects))),
   };
 }
@@ -189,10 +194,7 @@ export async function defineUpdateQuery<config extends StoreConfig, extraTables 
   fragments: QueryFragment<Table>[],
 ): Promise<Observable<ComponentUpdate & { type: UpdateType }>> {
   const { update$ } = await defineQuery(store, fragments);
-  return update$.pipe(
-    map((updates) => updates[0]),
-    filter((e) => e.type === UpdateType.Update),
-  );
+  return update$.pipe(filter((e) => e.type === UpdateType.Update));
 }
 
 export async function defineEnterQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
@@ -200,10 +202,7 @@ export async function defineEnterQuery<config extends StoreConfig, extraTables e
   fragments: QueryFragment<Table>[],
 ): Promise<Observable<ComponentUpdate & { type: UpdateType }>> {
   const { update$ } = await defineQuery(store, fragments);
-  return update$.pipe(
-    map((updates) => updates[0]),
-    filter((e) => e.type === UpdateType.Enter),
-  );
+  return update$.pipe(filter((e) => e.type === UpdateType.Enter));
 }
 
 export async function defineExitQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
@@ -211,8 +210,5 @@ export async function defineExitQuery<config extends StoreConfig, extraTables ex
   fragments: QueryFragment<Table>[],
 ): Promise<Observable<ComponentUpdate & { type: UpdateType }>> {
   const { update$ } = await defineQuery(store, fragments);
-  return update$.pipe(
-    map((updates) => updates[0]),
-    filter((e) => e.type === UpdateType.Exit),
-  );
+  return update$.pipe(filter((e) => e.type === UpdateType.Exit));
 }
