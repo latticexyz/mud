@@ -552,6 +552,15 @@ importers:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0)
 
+  packages/query:
+    devDependencies:
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
+      vitest:
+        specifier: 0.34.6
+        version: 0.34.6(jsdom@22.1.0)
+
   packages/react:
     dependencies:
       '@latticexyz/recs':
