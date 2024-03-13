@@ -24,19 +24,28 @@ describe("defineQuery", async () => {
     const { update$, matching } = await defineQuery(store, [Has(tables.Position)]);
 
     const latest$ = combineLatest({
-      subjects$: matching.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
+      update$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+      matching: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
       {
-        "subjectChanges$": {
+        "matching": {
+          "count": 1,
+          "value": [
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            "0xdBa86119a787422C593ceF119E40887f396024E2",
+          ],
+        },
+        "update$": {
           "count": 1,
           "value": [
             {
@@ -55,15 +64,6 @@ describe("defineQuery", async () => {
               "entity": "0xdBa86119a787422C593ceF119E40887f396024E2",
               "type": 0,
             },
-          ],
-        },
-        "subjects$": {
-          "count": 1,
-          "value": [
-            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            "0xdBa86119a787422C593ceF119E40887f396024E2",
           ],
         },
       }
@@ -83,16 +83,7 @@ describe("defineQuery", async () => {
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
       {
-        "subjectChanges$": {
-          "count": 2,
-          "value": [
-            {
-              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-              "type": 0,
-            },
-          ],
-        },
-        "subjects$": {
+        "matching": {
           "count": 2,
           "value": [
             "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
@@ -100,6 +91,15 @@ describe("defineQuery", async () => {
             "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
             "0xdBa86119a787422C593ceF119E40887f396024E2",
             "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+          ],
+        },
+        "update$": {
+          "count": 2,
+          "value": [
+            {
+              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "type": 0,
+            },
           ],
         },
       }
@@ -112,19 +112,26 @@ describe("defineQuery", async () => {
     const { update$, matching } = await defineQuery(store, [HasValue(tables.Position, { x: 3, y: 5 })]);
 
     const latest$ = combineLatest({
-      subjects$: matching.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
+      update$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+      matching: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
       {
-        "subjectChanges$": {
+        "matching": {
+          "count": 1,
+          "value": [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
+        },
+        "update$": {
           "count": 1,
           "value": [
             {
@@ -135,13 +142,6 @@ describe("defineQuery", async () => {
               "entity": "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
               "type": 0,
             },
-          ],
-        },
-        "subjects$": {
-          "count": 1,
-          "value": [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
         },
       }
@@ -161,21 +161,21 @@ describe("defineQuery", async () => {
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
       {
-        "subjectChanges$": {
+        "matching": {
+          "count": 2,
+          "value": [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+          ],
+        },
+        "update$": {
           "count": 2,
           "value": [
             {
               "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               "type": 0,
             },
-          ],
-        },
-        "subjects$": {
-          "count": 2,
-          "value": [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
         },
       }
@@ -195,20 +195,20 @@ describe("defineQuery", async () => {
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
       {
-        "subjectChanges$": {
+        "matching": {
+          "count": 3,
+          "value": [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
+        },
+        "update$": {
           "count": 3,
           "value": [
             {
               "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               "type": 1,
             },
-          ],
-        },
-        "subjects$": {
-          "count": 3,
-          "value": [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
         },
       }
@@ -224,19 +224,26 @@ describe("defineQuery", async () => {
     ]);
 
     const latest$ = combineLatest({
-      subjects$: matching.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
+      update$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+      matching: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
       {
-        "subjectChanges$": {
+        "matching": {
+          "count": 1,
+          "value": [
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
+        },
+        "update$": {
           "count": 1,
           "value": [
             {
@@ -249,13 +256,6 @@ describe("defineQuery", async () => {
             },
           ],
         },
-        "subjects$": {
-          "count": 1,
-          "value": [
-            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-          ],
-        },
       }
     `);
   });
@@ -266,31 +266,31 @@ describe("defineQuery", async () => {
     const { update$, matching } = await defineQuery(store, [HasValue(tables.Terrain, { terrainType: 2 as never })]);
 
     const latest$ = combineLatest({
-      subjects$: matching.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
+      update$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+      matching: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
       {
-        "subjectChanges$": {
+        "matching": {
+          "count": 1,
+          "value": [
+            "3:5",
+          ],
+        },
+        "update$": {
           "count": 1,
           "value": [
             {
               "entity": "3:5",
               "type": 0,
             },
-          ],
-        },
-        "subjects$": {
-          "count": 1,
-          "value": [
-            "3:5",
           ],
         },
       }
@@ -303,31 +303,31 @@ describe("defineQuery", async () => {
     const { update$, matching } = await defineQuery(store, [Has(tables.Position), Not(tables.Health)]);
 
     const latest$ = combineLatest({
-      subjects$: matching.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
+      update$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+      matching: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
       {
-        "subjectChanges$": {
+        "matching": {
+          "count": 1,
+          "value": [
+            "0xdBa86119a787422C593ceF119E40887f396024E2",
+          ],
+        },
+        "update$": {
           "count": 1,
           "value": [
             {
               "entity": "0xdBa86119a787422C593ceF119E40887f396024E2",
               "type": 0,
             },
-          ],
-        },
-        "subjects$": {
-          "count": 1,
-          "value": [
-            "0xdBa86119a787422C593ceF119E40887f396024E2",
           ],
         },
       }
@@ -340,23 +340,23 @@ describe("defineQuery", async () => {
     const { update$, matching } = await defineQuery(store, [HasValue(tables.Position, { x: 999, y: 999 })]);
 
     const latest$ = combineLatest({
-      subjects$: matching.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
+      update$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+      matching: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
       {
-        "subjectChanges$": {
+        "matching": {
           "count": 1,
           "value": [],
         },
-        "subjects$": {
+        "update$": {
           "count": 1,
           "value": [],
         },
@@ -377,19 +377,19 @@ describe("defineQuery", async () => {
 
     expect(await firstValueFrom(latest$)).toMatchInlineSnapshot(`
       {
-        "subjectChanges$": {
+        "matching": {
+          "count": 2,
+          "value": [
+            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+          ],
+        },
+        "update$": {
           "count": 2,
           "value": [
             {
               "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               "type": 0,
             },
-          ],
-        },
-        "subjects$": {
-          "count": 2,
-          "value": [
-            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
         },
       }
@@ -414,38 +414,36 @@ describe("defineQuery", async () => {
     await fetchLatestLogs();
 
     const latest$ = combineLatest({
-      subjects$: matching.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
+      update$: update$.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
-      subjectChanges$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+      matching: matching.pipe(
+        scan((values, value) => [...values, value], [] as readonly (readonly Entity[])[]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
     }).pipe(shareReplay(1));
 
     // we expect two emissions for by this point: initial subjects + subjects changed since starting the subscriptions
     expect(
-      await firstValueFrom(
-        latest$.pipe(filter((latest) => latest.subjects$.count === 2 && latest.subjectChanges$.count === 2)),
-      ),
+      await firstValueFrom(latest$.pipe(filter((latest) => latest.matching.count === 2 && latest.update$.count === 2))),
     ).toMatchInlineSnapshot(`
       {
-        "subjectChanges$": {
+        "matching": {
+          "count": 2,
+          "value": [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+          ],
+        },
+        "update$": {
           "count": 2,
           "value": [
             {
               "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               "type": 0,
             },
-          ],
-        },
-        "subjects$": {
-          "count": 2,
-          "value": [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-            "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
           ],
         },
       }
@@ -464,25 +462,23 @@ describe("defineQuery", async () => {
     await fetchLatestLogs();
 
     expect(
-      await firstValueFrom(
-        latest$.pipe(filter((latest) => latest.subjects$.count === 3 && latest.subjectChanges$.count === 3)),
-      ),
+      await firstValueFrom(latest$.pipe(filter((latest) => latest.matching.count === 3 && latest.update$.count === 3))),
     ).toMatchInlineSnapshot(`
       {
-        "subjectChanges$": {
+        "matching": {
+          "count": 3,
+          "value": [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
+        },
+        "update$": {
           "count": 3,
           "value": [
             {
               "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               "type": 1,
             },
-          ],
-        },
-        "subjects$": {
-          "count": 3,
-          "value": [
-            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
           ],
         },
       }
