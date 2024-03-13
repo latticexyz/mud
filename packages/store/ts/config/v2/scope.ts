@@ -7,6 +7,8 @@ export type AbiType = StaticAbiType | DynamicAbiType;
 export const EmptyScope = { types: {} } as const satisfies ScopeOptions;
 export type EmptyScope = typeof EmptyScope;
 
+export type AnyTypeScope = { types: { [key: string]: unknown } };
+
 export type AbiTypeScope = ScopeOptions<{ [t in AbiType]: t }>;
 export const AbiTypeScope = {
   types: Object.fromEntries(schemaAbiTypes.map((abiType) => [abiType, abiType])),

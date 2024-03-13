@@ -1,6 +1,6 @@
 import { attest } from "@arktype/attest";
 import { describe, it } from "vitest";
-import { AbiTypeScope, EmptyScope, ScopeOptions, extendScope, getStaticAbiTypeKeys } from "./scope";
+import { AbiTypeScope, AnyTypeScope, EmptyScope, ScopeOptions, extendScope, getStaticAbiTypeKeys } from "./scope";
 
 describe("extendScope", () => {
   it("should extend the provided scope", () => {
@@ -15,6 +15,11 @@ describe("extendScope", () => {
     ).type.toString.snap(
       '{ types: { static: "uint256"; dynamic: "string"; static2: "uint256"; dynamic2: "string"; }; }',
     );
+  });
+
+  it("should be an extension of the AnyTypeScope", () => {
+    const extendedScope = extendScope(EmptyScope, { static: "uint256", dynamic: "string" });
+    attest<true, typeof extendedScope extends AnyTypeScope ? true : false>();
   });
 });
 
