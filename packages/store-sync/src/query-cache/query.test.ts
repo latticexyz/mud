@@ -19,20 +19,22 @@ describe("query", async () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      [
-        [
-          "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+      {
+        "subjects": [
+          [
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+          ],
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
+          [
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
+          [
+            "0xdBa86119a787422C593ceF119E40887f396024E2",
+          ],
         ],
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-        [
-          "0xdBa86119a787422C593ceF119E40887f396024E2",
-        ],
-      ]
+      }
     `);
   });
 
@@ -49,14 +51,16 @@ describe("query", async () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      [
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+      {
+        "subjects": [
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
+          [
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
         ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-      ]
+      }
     `);
   });
 
@@ -75,17 +79,19 @@ describe("query", async () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      [
-        [
-          "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+      {
+        "subjects": [
+          [
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+          ],
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
+          [
+            "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
         ],
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-        [
-          "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        ],
-      ]
+      }
     `);
   });
 
@@ -100,18 +106,21 @@ describe("query", async () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      [
-        [
-          "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+      {
+        "subjects": [
+          [
+            "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+          ],
+          [
+            "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          ],
         ],
-        [
-          "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        ],
-      ]
+      }
     `);
   });
 
-  it("can get all players in grassland", async () => {
+  // TODO(alvrs): unskip once we add back Terrain table to mock game config
+  it.skip("can get all players in grassland", async () => {
     const { store } = await createHydratedStore(worldAddress);
     const result = await query(store, {
       from: {
@@ -142,11 +151,13 @@ describe("query", async () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      [
-        [
-          "0xdBa86119a787422C593ceF119E40887f396024E2",
+      {
+        "subjects": [
+          [
+            "0xdBa86119a787422C593ceF119E40887f396024E2",
+          ],
         ],
-      ]
+      }
     `);
   });
 });

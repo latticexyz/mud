@@ -20,10 +20,11 @@ export function createStorageAdapter<tables extends Tables>({
     const touchedIds = new Set<string>();
 
     const { tables, rawRecords: previousRawRecords, records: previousRecords } = store.getState();
+    const tableList = Object.values(tables);
     const updatedRawRecords: { [id: string]: RawTableRecord } = {};
 
     for (const log of logs) {
-      const table = tables[log.args.tableId];
+      const table = tableList.find((table) => table.tableId === log.args.tableId);
       if (!table) {
         const { namespace, name } = hexToResource(log.args.tableId);
         debug(

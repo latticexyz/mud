@@ -7,6 +7,7 @@ import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
 import { testClient } from "../../test/common";
 import { getBlockNumber } from "viem/actions";
 import { Address } from "viem";
+import { getTables } from "./getTables";
 
 describe("createStorageAdapter", async () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -16,7 +17,7 @@ describe("createStorageAdapter", async () => {
   });
 
   it("sets component values from logs", async () => {
-    const useStore = createStore({ tables: Object.values(config.tables) });
+    const useStore = createStore({ tables: getTables(config) });
     const storageAdapter = createStorageAdapter({ store: useStore });
 
     console.log("fetching blocks");
@@ -31,6 +32,41 @@ describe("createStorageAdapter", async () => {
       // console.log("got block", block.blockNumber);
     }
 
-    expect(useStore.getState().records.map((record) => record.fields)).toMatchInlineSnapshot();
+    expect(useStore.getState().records.map((record) => record.fields)).toMatchInlineSnapshot(`
+      [
+        {
+          "player": "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+          "x": 1,
+          "y": -1,
+        },
+        {
+          "health": 5n,
+          "player": "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+        },
+        {
+          "player": "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+          "x": 3,
+          "y": 5,
+        },
+        {
+          "health": 5n,
+          "player": "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+        },
+        {
+          "player": "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          "x": 3,
+          "y": 5,
+        },
+        {
+          "health": 0n,
+          "player": "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+        },
+        {
+          "player": "0xdBa86119a787422C593ceF119E40887f396024E2",
+          "x": 100,
+          "y": 100,
+        },
+      ]
+    `);
   });
 });

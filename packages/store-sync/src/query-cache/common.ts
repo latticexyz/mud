@@ -12,8 +12,7 @@ export type subjectSchemaToPrimitive<tuple> = {
 
 export type Tables = ResolvedStoreConfig["tables"];
 
-export type TableSubjectItem<table extends ResolvedTableConfig = ResolvedTableConfig> =
-  table["schema"][keyof table["schema"]]["type"];
+export type TableSubjectItem<table extends ResolvedTableConfig = ResolvedTableConfig> = keyof table["schema"];
 
 export type TableSubject<table extends ResolvedTableConfig = ResolvedTableConfig> = readonly [
   TableSubjectItem<table>,

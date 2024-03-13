@@ -105,6 +105,7 @@ export const configV2 = resolveStoreConfig({
       primaryKey: ["game"],
     },
     // using `ResolvedTableConfig` downstream doesn't seem to like this table type
+    // TODO(alvrs): fix this once fully resolved config+table types are improved
     // Terrain: {
     //   schema: {
     //     x: "int32",
