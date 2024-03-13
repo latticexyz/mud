@@ -21,10 +21,10 @@ export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeSc
 function getValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope>(
   schema: schema,
   scope: scope = AbiTypeScope as scope,
-) {
+): ValidKeys<schema, scope> {
   return Object.entries(schema)
     .filter(([, internalType]) => hasOwnKey(scope.types, internalType) && isStaticAbiType(scope.types[internalType]))
-    .map(([key]) => key);
+    .map(([key]) => key) as unknown as ValidKeys<schema, scope>;
 }
 
 export function isValidPrimaryKey<schema extends SchemaInput<scope>, scope extends AbiTypeScope>(
@@ -66,7 +66,7 @@ export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> 
 export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope>(
   input: input,
   scope: scope = AbiTypeScope as scope,
-) {
+): void {
   if (typeof input !== "object" || input == null) {
     throw new Error(`Expected full table config, got ${JSON.stringify(input)}`);
   }
@@ -78,7 +78,7 @@ export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeSco
   if (!hasOwnKey(input, "primaryKey") || !isValidPrimaryKey(input["primaryKey"], input["schema"], scope)) {
     throw new Error(
       `Invalid primary key. Expected \`(${getValidKeys(input["schema"], scope)
-        .map((item) => `"${item}"`)
+        .map((item) => `"${String(item)}"`)
         .join(" | ")})[]\`, received \`${
         hasOwnKey(input, "primaryKey") && Array.isArray(input.primaryKey)
           ? `[${input.primaryKey.map((item) => `"${item}"`).join(", ")}]`
