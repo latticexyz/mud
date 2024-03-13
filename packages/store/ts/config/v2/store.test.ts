@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 import { resolveStoreConfig } from "./store";
 import { Config } from "./output";
 import { attest } from "@arktype/attest";
-import { Hex } from "viem";
+import { resourceToHex } from "@latticexyz/common";
 
 describe("resolveStoreConfig", () => {
   it("should accept a shorthand store config as input and expand it", () => {
@@ -10,7 +10,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Name: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
           schema: {
             key: {
               type: "bytes32",
@@ -49,7 +49,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Name: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
           schema: {
             key: {
               type: "bytes32",
@@ -88,7 +88,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Example: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
             key: {
               type: "address",
@@ -135,7 +135,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Example: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
             key: {
               type: "address",
@@ -226,7 +226,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Example: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
             key: {
               type: "address",
@@ -281,7 +281,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Example: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
             key: {
               type: "string",
@@ -334,7 +334,7 @@ describe("resolveStoreConfig", () => {
       const expected = {
         tables: {
           Example: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
               key: {
                 type: "address",
@@ -392,7 +392,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         First: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
           schema: {
             firstKey: {
               type: "address",
@@ -426,7 +426,7 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["firstKey", "firstAge"],
         },
         Second: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
           schema: {
             secondKey: {
               type: "address",
@@ -485,7 +485,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         First: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
           schema: {
             firstKey: {
               type: "address",
@@ -519,7 +519,7 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["firstKey", "firstAge"],
         },
         Second: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
           schema: {
             secondKey: {
               type: "address",
@@ -632,7 +632,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Example: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
             key: {
               type: "string",
