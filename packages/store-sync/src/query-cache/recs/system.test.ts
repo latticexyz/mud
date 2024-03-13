@@ -130,7 +130,7 @@ describe("system", async () => {
     const system = vi.fn(() => null);
     await defineSystem(store, [HasValue(tables.Position, { x: 999, y: 999 })], system);
 
-    expect(system).toHaveBeenCalledTimes(1);
+    expect(system).toHaveBeenCalledTimes(0);
 
     waitForTransaction(
       await writeContract(testClient, {
@@ -144,7 +144,7 @@ describe("system", async () => {
     );
     await fetchLatestLogs();
 
-    expect(system).toHaveBeenCalledTimes(2);
+    expect(system).toHaveBeenCalledTimes(1);
     expect(system).toHaveBeenCalledWith({
       entity: "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
       type: 0,

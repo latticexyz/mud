@@ -184,7 +184,10 @@ export async function defineQuery<config extends StoreConfig, extraTables extend
   });
 
   return {
-    update$: subjectChanges$.pipe(map((subjectChanges) => subjectChangesToUpdate(fragments[0], subjectChanges))),
+    update$: subjectChanges$.pipe(
+      filter((subjectChanges) => subjectChanges.length > 0),
+      map((subjectChanges) => subjectChangesToUpdate(fragments[0], subjectChanges)),
+    ),
     matching: subjects$.pipe(map((subjects) => subjectsToEntities(fragments[0], subjects))),
   };
 }
@@ -194,7 +197,7 @@ export async function defineUpdateQuery<config extends StoreConfig, extraTables 
   fragments: QueryFragment<Table>[],
 ): Promise<Observable<ComponentUpdate & { type: UpdateType }>> {
   const { update$ } = await defineQuery(store, fragments);
-  return update$.pipe(filter((e) => e.type === UpdateType.Update));
+  return update$.pipe(filter((update) => update.type === UpdateType.Update));
 }
 
 export async function defineEnterQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
