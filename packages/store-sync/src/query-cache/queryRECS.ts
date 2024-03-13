@@ -113,8 +113,8 @@ function fragmentsToWhere(fragments: QueryFragment<Table>[]): QueryCondition[] {
     .flat();
 }
 
-function queryResultSubjectToEntity(keyTuple: QueryResultSubject): Entity {
-  return keyTuple.join(":");
+function queryResultSubjectToEntity(subject: QueryResultSubject): Entity {
+  return subject.join(":");
 }
 
 export async function runQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
