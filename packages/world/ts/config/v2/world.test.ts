@@ -101,7 +101,7 @@ describe("resolveWorldConfig", () => {
       namespace: "",
     } as const;
 
-    attest<typeof expected>(config);
+    attest<typeof expected>(config).equals(expected);
   });
 
   it("should resolve namespaced table config with user types and enums", () => {
@@ -214,7 +214,7 @@ describe("resolveWorldConfig", () => {
       namespace: "",
     } as const;
 
-    attest<typeof expected>(config);
+    attest<typeof expected>(config).equals(expected);
   });
 
   describe("should have the same output as `resolveWorldConfig` for store config inputs", () => {
@@ -254,7 +254,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof config>(expected);
+      attest<typeof config>(expected).equals(expected);
     });
 
     it("should accept a user type as input and expand it", () => {
@@ -293,7 +293,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("given a schema with a key field with static ABI type, it should use `key` as single key", () => {
@@ -340,7 +340,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("given a schema with a key field with static custom type, it should use `key` as single key", () => {
@@ -387,7 +387,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("throw an error if the shorthand doesn't include a key field", () => {
@@ -478,7 +478,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("should return the full config given a full config with one key and user types", () => {
@@ -533,7 +533,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("should return the full config given a full config with two primaryKey", () => {
@@ -587,7 +587,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("should resolve two tables in the config with different schemas", () => {
@@ -678,7 +678,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("should resolve two tables in the config with different schemas and user types", () => {
@@ -770,11 +770,11 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("should throw if referring to fields of different tables", () => {
-      attest(
+      attest(() =>
         resolveWorldConfig({
           tables: {
             First: {
@@ -788,11 +788,13 @@ describe("resolveWorldConfig", () => {
             },
           },
         }),
-      ).type.errors(`Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'`);
+      )
+        .throws("wrong error")
+        .type.errors(`Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'`);
     });
 
     it("should throw an error if the provided key is not a static field", () => {
-      attest(
+      attest(() =>
         resolveWorldConfig({
           tables: {
             Example: {
@@ -802,7 +804,9 @@ describe("resolveWorldConfig", () => {
             },
           },
         }),
-      ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+      )
+        .throws("wrong error")
+        .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
     });
 
     it("should throw an error if the provided key is not a static field with user types", () => {
@@ -879,13 +883,19 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("should use the root namespace as default namespace", () => {
       const config = resolveWorldConfig({ tables: { Example: {} } });
 
       attest<"">(config.namespace);
+    });
+
+    it("should use pipe through non-default namespaces", () => {
+      const config = resolveWorldConfig({ namespace: "custom" });
+
+      attest<"custom">(config.namespace).equals("custom");
     });
   });
 });
