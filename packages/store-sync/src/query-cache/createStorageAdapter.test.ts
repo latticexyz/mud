@@ -66,6 +66,11 @@ describe("createStorageAdapter", async () => {
           "x": 100,
           "y": 100,
         },
+        {
+          "terrainType": 2,
+          "x": 3,
+          "y": 5,
+        },
       ]
     `);
   });

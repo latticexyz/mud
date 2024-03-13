@@ -490,8 +490,7 @@ describe("subscribeToQuery", async () => {
     `);
   });
 
-  // TODO(alvrs): unskip once we add back Terrain table to mock game config
-  it.skip("can get all players in grassland", async () => {
+  it("can get all players in grassland", async () => {
     const { store } = await createHydratedStore(worldAddress);
 
     const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
