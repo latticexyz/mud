@@ -3,6 +3,7 @@ import { get, hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput, resolveSchema } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 import { isStaticAbiType } from "@latticexyz/schema-type";
+import { Hex } from "viem";
 
 export type TableFullInput<
   schema extends SchemaInput<scope> = SchemaInput,
@@ -92,6 +93,7 @@ export type resolveTableFullConfig<
   input extends TableFullInput<SchemaInput<scope>, scope>,
   scope extends AbiTypeScope = AbiTypeScope,
 > = evaluate<{
+  readonly tableId: Hex;
   readonly primaryKey: Readonly<input["primaryKey"]>;
   readonly schema: resolveSchema<input["schema"], scope>;
   readonly keySchema: resolveSchema<
@@ -115,6 +117,8 @@ export function resolveTableFullConfig<
   validateTableFull(input, scope);
 
   return {
+    // TODO: fill in once we can pipe in namespace+name
+    tableId: "0x" as Hex,
     primaryKey: input["primaryKey"],
     schema: resolveSchema(input["schema"], scope),
     keySchema: resolveSchema(

@@ -119,3 +119,5 @@ export function resolveStoreConfig<const input>(input: validateStoreConfig<input
     namespace: hasOwnKey(input, "namespace") ? input["namespace"] : "",
   } as resolveStoreConfig<input>;
 }
+
+export type ResolvedStoreConfig = resolveStoreConfig<StoreConfigInput>;
