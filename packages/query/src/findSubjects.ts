@@ -64,7 +64,6 @@ export function findSubjects<table extends ResolvedTableConfig>({
       const tableIds = new Set(records.map((record) => record.table.tableId));
       return tableIds.size === fromTableIds.size;
     })
-    // TODO: fix match type
     .filter((match) => (query.where ? query.where.every((condition) => matchesCondition(condition, match)) : true));
 
   const subjects = matchedSubjects.map((match) => match.subject);
