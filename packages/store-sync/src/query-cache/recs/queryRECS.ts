@@ -118,6 +118,7 @@ function subjectToEntity(fragment: QueryFragment<Table>, subject: QueryResultSub
   const keySchema = fragmentToKeySchema(fragment);
 
   const key: SchemaToPrimitivesProtocol<KeySchema> = {};
+  // @ts-expect-error Type 'string' is not assignable to type 'number | bigint | boolean | `0x${string}`'
   Object.keys(fragment.table.keySchema).map((keyName, i) => (key[keyName] = subject[i]));
   return encodeEntity(keySchema, key);
 }
