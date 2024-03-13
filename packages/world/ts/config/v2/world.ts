@@ -11,7 +11,7 @@ import {
   resolveTableConfig,
   AbiTypeScope,
   get,
-} from "@latticexyz/store/config";
+} from "@latticexyz/store/config/v2";
 
 export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = evaluate<
   StoreConfigInput<userTypes, enums> & {
