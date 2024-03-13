@@ -1,6 +1,7 @@
 import { describe, it } from "vitest";
 import { resolveStoreConfig } from "./store";
 import { attest } from "@arktype/attest";
+import { Hex } from "viem";
 
 describe("resolveStoreConfig", () => {
   it("should accept a shorthand store config as input and expand it", () => {
@@ -8,6 +9,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Name: {
+          tableId: "0x" as Hex,
           schema: {
             key: {
               type: "bytes32",
@@ -46,6 +48,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Name: {
+          tableId: "0x" as Hex,
           schema: {
             key: {
               type: "bytes32",
@@ -84,6 +87,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Example: {
+          tableId: "0x" as Hex,
           schema: {
             key: {
               type: "address",
@@ -130,6 +134,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Example: {
+          tableId: "0x" as Hex,
           schema: {
             key: {
               type: "address",
@@ -220,6 +225,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Example: {
+          tableId: "0x" as Hex,
           schema: {
             key: {
               type: "address",
@@ -274,6 +280,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Example: {
+          tableId: "0x" as Hex,
           schema: {
             key: {
               type: "string",
@@ -326,6 +333,7 @@ describe("resolveStoreConfig", () => {
       const expected = {
         tables: {
           Example: {
+            tableId: "0x" as Hex,
             schema: {
               key: {
                 type: "address",
@@ -383,6 +391,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         First: {
+          tableId: "0x" as Hex,
           schema: {
             firstKey: {
               type: "address",
@@ -416,6 +425,7 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["firstKey", "firstAge"],
         },
         Second: {
+          tableId: "0x" as Hex,
           schema: {
             secondKey: {
               type: "address",
@@ -474,6 +484,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         First: {
+          tableId: "0x" as Hex,
           schema: {
             firstKey: {
               type: "address",
@@ -507,6 +518,7 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["firstKey", "firstAge"],
         },
         Second: {
+          tableId: "0x" as Hex,
           schema: {
             secondKey: {
               type: "address",
@@ -619,6 +631,7 @@ describe("resolveStoreConfig", () => {
     const expected = {
       tables: {
         Example: {
+          tableId: "0x" as Hex,
           schema: {
             key: {
               type: "string",

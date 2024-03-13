@@ -30,7 +30,7 @@ export type resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope>
     ? resolveTableFullConfig<resolveTableShorthand<input, scope>, scope>
     : input extends TableFullInput<SchemaInput<scope>, scope>
       ? resolveTableFullConfig<input, scope>
-      : input
+      : never
 >;
 
 /**
@@ -59,3 +59,6 @@ export function resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeSc
 
   throw new Error("Invalid config input");
 }
+
+// TODO(alvrs): swap with a better fully resolved type
+export type ResolvedTableConfig = resolveTableConfig<TableFullInput>;

@@ -2,11 +2,13 @@ import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
 import { resolveTableConfig } from "./table";
 import { AbiTypeScope, extendScope } from "./scope";
+import { Hex } from "viem";
 
 describe("resolveTableConfig", () => {
   it("should expand a single ABI type into a key/value schema", () => {
     const table = resolveTableConfig("address");
     const expected = {
+      tableId: "0x" as Hex,
       schema: {
         key: {
           type: "bytes32",
@@ -39,6 +41,7 @@ describe("resolveTableConfig", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "address" });
     const table = resolveTableConfig("CustomType", scope);
     const expected = {
+      tableId: "0x" as Hex,
       schema: {
         key: {
           type: "bytes32",
@@ -70,6 +73,7 @@ describe("resolveTableConfig", () => {
   it("should use `key` as single key if it has a static ABI type", () => {
     const table = resolveTableConfig({ key: "address", name: "string", age: "uint256" });
     const expected = {
+      tableId: "0x" as Hex,
       schema: {
         key: {
           type: "address",
@@ -110,6 +114,7 @@ describe("resolveTableConfig", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
     const table = resolveTableConfig({ key: "CustomType", name: "string", age: "uint256" }, scope);
     const expected = {
+      tableId: "0x" as Hex,
       schema: {
         key: {
           type: "uint256",
@@ -181,6 +186,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["age"],
     });
     const expected = {
+      tableId: "0x" as Hex,
       schema: {
         key: { type: "address", internalType: "address" },
         name: { type: "string", internalType: "string" },
@@ -205,6 +211,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["age", "key"],
     });
     const expected = {
+      tableId: "0x" as Hex,
       schema: {
         key: { type: "address", internalType: "address" },
         name: { type: "string", internalType: "string" },
@@ -227,6 +234,7 @@ describe("resolveTableConfig", () => {
     const scope = extendScope(AbiTypeScope, { CustomString: "string", CustomNumber: "uint256" });
     const table = resolveTableConfig({ key: "address", name: "CustomString", age: "CustomNumber" }, scope);
     const expected = {
+      tableId: "0x" as Hex,
       schema: {
         key: {
           type: "address",
@@ -267,6 +275,7 @@ describe("resolveTableConfig", () => {
     const scope = extendScope(AbiTypeScope, { CustomString: "string", CustomNumber: "uint256" });
     const table = resolveTableConfig({ key: "CustomNumber", name: "CustomString", age: "CustomNumber" }, scope);
     const expected = {
+      tableId: "0x" as Hex,
       schema: {
         key: {
           type: "uint256",
