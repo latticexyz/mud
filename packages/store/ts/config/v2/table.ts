@@ -63,7 +63,7 @@ export function resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeSc
 
 export type ResolvedTableConfig = {
   readonly tableId: Hex;
-  readonly primaryKey: ReadonlyArray<string>;
+  readonly primaryKey: readonly string[];
   readonly schema: ResolvedSchemaConfig;
   readonly keySchema: ResolvedKeySchemaConfig;
   readonly valueSchema: ResolvedSchemaConfig;

@@ -123,6 +123,6 @@ export function resolveStoreConfig<const input>(input: validateStoreConfig<input
 export type ResolvedStoreConfig = {
   readonly tables: Dict<string, ResolvedTableConfig>;
   readonly userTypes: UserTypes;
-  readonly enums: Dict<string, ReadonlyArray<string>>;
+  readonly enums: Dict<string, readonly string[]>;
   readonly namespace: string;
 };
