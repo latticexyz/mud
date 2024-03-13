@@ -150,3 +150,5 @@ export function resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeSc
   // TODO: runtime implementation
   return {} as never;
 }
+
+export type ResolvedTableConfig = resolveTableConfig<TableFullInput>;

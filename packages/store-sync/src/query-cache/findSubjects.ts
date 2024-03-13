@@ -1,22 +1,22 @@
-import { TableRecord } from "../zustand/common";
-import { Query, QueryResultSubject } from "./common";
-import { Table } from "@latticexyz/store";
+import { Query, QueryResultSubject } from "./api";
 import { groupBy, uniqueBy } from "@latticexyz/common/utils";
 import { encodeAbiParameters } from "viem";
 import { matchesCondition } from "./matchesCondition";
+import { ResolvedTableConfig } from "@latticexyz/store/config/v2";
+import { TableRecord } from "./createStore";
 
 // This assumes upstream has fully validated query
 // This also assumes we have full records, which may not always be the case and we may need some way to request records for a given table subject
 // We don't carry around config types here for ease, they get handled by the wrapping `query` function
 
-type QueryParameters<table extends Table> = {
+type QueryParameters<table extends ResolvedTableConfig> = {
   readonly records: readonly TableRecord<table>[];
   readonly query: Query;
 };
 
 // TODO: make condition types smarter, so condition literal matches the field primitive type
 
-export function findSubjects<table extends Table>({
+export function findSubjects<table extends ResolvedTableConfig>({
   records: initialRecords,
   query,
 }: QueryParameters<table>): readonly QueryResultSubject[] {

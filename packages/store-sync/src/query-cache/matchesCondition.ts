@@ -1,6 +1,6 @@
 import { Table } from "@latticexyz/store";
 import { TableRecord } from "../zustand/common";
-import { ComparisonCondition, ConditionLiteral, QueryCondition, TableSubject } from "./common";
+import { ComparisonCondition, ConditionLiteral, QueryCondition, TableSubject } from "./api";
 
 type MatchedSubjectRecord<table extends Table> = TableRecord<table> & {
   fields: TableRecord<table>["key"] & TableRecord<table>["value"];
