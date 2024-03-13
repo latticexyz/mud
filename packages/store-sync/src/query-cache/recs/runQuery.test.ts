@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createHydratedStore, tables } from "./test/createHydratedStore";
+import { createHydratedStore, tables } from "../test/createHydratedStore";
 import { Has, HasValue, Not, NotValue, runQuery } from "./queryRECS";
-import { deployMockGame } from "../../test/mockGame";
+import { deployMockGame } from "../../../test/mockGame";
 import { Address } from "viem";
 
 describe("runQuery", async () => {

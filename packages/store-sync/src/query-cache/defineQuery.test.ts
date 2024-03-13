@@ -7,7 +7,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { testClient } from "../../test/common";
 import { combineLatest, filter, firstValueFrom, map, scan, shareReplay } from "rxjs";
 import { waitForTransaction } from "./test/waitForTransaction";
-import { EntityChange, Has, HasValue, Not, NotValue, defineQuery } from "./queryRECS";
+import { EntityChange, Has, HasValue, Not, NotValue, defineQuery } from "./recs/queryRECS";
 import { Entity } from "@latticexyz/recs";
 
 const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));

@@ -1,10 +1,10 @@
-import { ZustandStore } from "../zustand";
-import { AllTables, QueryCondition, QueryResultSubject, TableSubject } from "./common";
+import { ZustandStore } from "../../zustand";
+import { AllTables, QueryCondition, QueryResultSubject, TableSubject } from "../common";
 import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
-import { query } from "./query";
-import { subscribeToQuery } from "./subscribeToQuery";
+import { query } from "../query";
+import { subscribeToQuery } from "../subscribeToQuery";
 import { Observable, map } from "rxjs";
-import { encodeEntity } from "../recs";
+import { encodeEntity } from "../../recs";
 import { KeySchema, SchemaToPrimitives as SchemaToPrimitivesProtocol } from "@latticexyz/protocol-parser";
 import { Entity, QueryFragmentType, UpdateType } from "@latticexyz/recs";
 
