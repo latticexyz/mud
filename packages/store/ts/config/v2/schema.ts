@@ -6,6 +6,10 @@ export type SchemaInput<scope extends AnyTypeScope = AnyTypeScope> = {
   [key: string]: keyof scope["types"] & string;
 };
 
+export type validateSchema<schema extends SchemaInput, scope extends AbiTypeScope = AbiTypeScope> = {
+  [key in keyof schema]: schema[key] extends keyof scope["types"] ? schema[key] : keyof scope["types"];
+};
+
 export type ResolvedSchema<
   schema extends SchemaInput<scope> = SchemaInput,
   scope extends AnyTypeScope = AnyTypeScope,
@@ -20,8 +24,8 @@ export type resolveSchema<schema extends SchemaInput<scope>, scope extends AnyTy
   };
 }>;
 
-export function resolveSchema<schema extends SchemaInput<scope>, scope extends AbiTypeScope = AbiTypeScope>(
-  schema: schema,
+export function resolveSchema<const schema extends SchemaInput, scope extends AbiTypeScope = AbiTypeScope>(
+  schema: validateSchema<schema, scope>,
   scope: scope = AbiTypeScope as scope,
 ): resolveSchema<schema, scope> {
   return Object.fromEntries(
