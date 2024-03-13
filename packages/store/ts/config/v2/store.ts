@@ -1,8 +1,8 @@
 import { evaluate, narrow } from "@arktype/util";
 import { get, hasOwnKey } from "./generics";
 import { SchemaInput } from "./schema";
-import { AbiTypeScope, extendScope } from "./scope";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
+import { AbiTypeScope, extendScope } from "./scope";
 import { isSchemaAbiType } from "@latticexyz/schema-type";
 import { UserTypes, Enums } from "./output";
 
