@@ -91,6 +91,28 @@ function fragmentToQueryConditions(fragment: QueryFragment<Table>): QueryConditi
   ) as QueryCondition[];
 }
 
+function fragmentsToFrom(fragments: QueryFragment<Table>[]): TableSubject[] {
+  return fragments
+    .filter(
+      (fragment) =>
+        fragment.type === QueryFragmentType.Has ||
+        fragment.type === QueryFragmentType.HasValue ||
+        fragment.type === QueryFragmentType.NotValue,
+    )
+    .map(fragmentToTableSubject);
+}
+
+function fragmentsToExcept(fragments: QueryFragment<Table>[]): TableSubject[] {
+  return fragments.filter((fragment) => fragment.type === QueryFragmentType.Not).map(fragmentToTableSubject);
+}
+
+function fragmentsToWhere(fragments: QueryFragment<Table>[]): QueryCondition[] {
+  return fragments
+    .filter((fragment) => fragment.type === QueryFragmentType.HasValue || fragment.type === QueryFragmentType.NotValue)
+    .map(fragmentToQueryConditions)
+    .flat();
+}
+
 function queryResultSubjectToEntity(keyTuple: QueryResultSubject): Entity {
   return keyTuple.join(":");
 }
@@ -99,21 +121,9 @@ export async function runQuery<config extends StoreConfig, extraTables extends T
   store: ZustandStore<AllTables<config, extraTables>>,
   fragments: QueryFragment<Table>[],
 ): Promise<Set<Entity>> {
-  const from = fragments
-    .filter(
-      (fragment) =>
-        fragment.type === QueryFragmentType.Has ||
-        fragment.type === QueryFragmentType.HasValue ||
-        fragment.type === QueryFragmentType.NotValue,
-    )
-    .map(fragmentToTableSubject);
-
-  const except = fragments.filter((fragment) => fragment.type === QueryFragmentType.Not).map(fragmentToTableSubject);
-
-  const where = fragments
-    .filter((fragment) => fragment.type === QueryFragmentType.HasValue || fragment.type === QueryFragmentType.NotValue)
-    .map(fragmentToQueryConditions)
-    .flat();
+  const from = fragmentsToFrom(fragments);
+  const except = fragmentsToExcept(fragments);
+  const where = fragmentsToWhere(fragments);
 
   const result = await query(store, {
     from,
@@ -137,21 +147,9 @@ export async function defineQuery<config extends StoreConfig, extraTables extend
   update$: Observable<readonly EntityChange[]>;
   matching: Observable<readonly Entity[]>;
 }> {
-  const from = fragments
-    .filter(
-      (fragment) =>
-        fragment.type === QueryFragmentType.Has ||
-        fragment.type === QueryFragmentType.HasValue ||
-        fragment.type === QueryFragmentType.NotValue,
-    )
-    .map(fragmentToTableSubject);
-
-  const except = fragments.filter((fragment) => fragment.type === QueryFragmentType.Not).map(fragmentToTableSubject);
-
-  const where = fragments
-    .filter((fragment) => fragment.type === QueryFragmentType.HasValue || fragment.type === QueryFragmentType.NotValue)
-    .map(fragmentToQueryConditions)
-    .flat();
+  const from = fragmentsToFrom(fragments);
+  const except = fragmentsToExcept(fragments);
+  const where = fragmentsToWhere(fragments);
 
   const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
     from,
