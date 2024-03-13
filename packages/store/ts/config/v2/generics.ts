@@ -14,3 +14,7 @@ export function hasOwnKey<obj extends object, const key extends PropertyKey>(
   // eslint-disable-next-line no-prototype-builtins
   return typeof object === "object" && object !== null && object.hasOwnProperty(key);
 }
+
+export function isObject<input>(input: input): input is input & object {
+  return input != null && typeof input === "object";
+}
