@@ -1,6 +1,6 @@
 import { Dict, evaluate } from "@arktype/util";
 import { SchemaInput } from "./schema";
-import { StaticAbiType, DynamicAbiType } from "@latticexyz/schema-type";
+import { StaticAbiType, DynamicAbiType, schemaAbiTypes } from "@latticexyz/schema-type";
 
 export type AbiType = StaticAbiType | DynamicAbiType;
 
@@ -8,7 +8,9 @@ export const EmptyScope = { types: {} } as const satisfies ScopeOptions;
 export type EmptyScope = typeof EmptyScope;
 
 export type AbiTypeScope = ScopeOptions<{ [t in AbiType]: t }>;
-export const AbiTypeScope = { types: {} } as AbiTypeScope; // TODO: runtime implementation
+export const AbiTypeScope = {
+  types: Object.fromEntries(schemaAbiTypes.map((abiType) => [abiType, abiType])),
+} as AbiTypeScope;
 
 export type ScopeOptions<types extends Dict<string, AbiType> = Dict<string, AbiType>> = {
   types: types;
@@ -31,6 +33,10 @@ export function extendScope<scope extends ScopeOptions, additionalTypes extends 
   scope: scope,
   additionalTypes: additionalTypes,
 ): extendScope<scope, additionalTypes> {
-  // TODO: runtime implementation
-  return {} as never;
+  return {
+    types: {
+      ...scope.types,
+      ...additionalTypes,
+    },
+  };
 }

@@ -12,6 +12,7 @@
   "exports": {
     ".": "./dist/ts/index.js",
     "./mud.config": "./dist/mud.config.js",
+    "./config/v2": "./dist/ts/config/v2/index.js",
     "./register": "./dist/ts/register/index.js",
     "./node": "./dist/ts/node/index.js",
     "./out/*": "./out/*"
@@ -20,6 +21,9 @@
     "*": {
       "index": [
         "./ts/index.ts"
+      ],
+      "config/v2": [
+        "./ts/config/v2/index.ts"
       ],
       "register": [
         "./ts/register/index.ts"
