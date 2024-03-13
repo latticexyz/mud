@@ -2,7 +2,7 @@ import { Dict, evaluate, narrow } from "@arktype/util";
 import { get, hasOwnKey } from "./generics";
 import { SchemaInput } from "./schema";
 import { AbiType, AbiTypeScope, extendScope } from "./scope";
-import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
+import { ResolvedTableConfig, TableInput, resolveTableConfig, validateTableConfig } from "./table";
 import { isSchemaAbiType } from "@latticexyz/schema-type";
 
 export type UserTypes = Dict<string, AbiType>;
@@ -120,5 +120,9 @@ export function resolveStoreConfig<const input>(input: validateStoreConfig<input
   } as resolveStoreConfig<input>;
 }
 
-// TODO(alvrs): swap with a better fully resolved type
-export type ResolvedStoreConfig = resolveStoreConfig<StoreConfigInput>;
+export type ResolvedStoreConfig = {
+  readonly tables: { readonly [key: string]: ResolvedTableConfig };
+  readonly userTypes: UserTypes;
+  readonly enums: Dict<string, ReadonlyArray<string>>;
+  readonly namespace: string;
+};
