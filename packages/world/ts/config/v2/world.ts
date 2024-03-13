@@ -1,8 +1,5 @@
 import { evaluate, narrow } from "@arktype/util";
 import {
-  get,
-  AbiTypeScope,
-  resolveTableConfig,
   UserTypes,
   Enums,
   StoreConfigInput,
@@ -11,6 +8,9 @@ import {
   resolveStoreTablesConfig,
   extendedScope,
   StoreTablesConfigInput,
+  resolveTableConfig,
+  AbiTypeScope,
+  get,
 } from "@latticexyz/store/config/v2";
 
 export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = evaluate<
