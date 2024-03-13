@@ -101,7 +101,7 @@ describe("resolveWorldConfig", () => {
       namespace: "",
     } as const;
 
-    attest<typeof expected>(config);
+    attest<typeof expected>(config).equals(expected);
   });
 
   it("should resolve namespaced table config with user types and enums", () => {
@@ -214,7 +214,7 @@ describe("resolveWorldConfig", () => {
       namespace: "",
     } as const;
 
-    attest<typeof expected>(config);
+    attest<typeof expected>(config).equals(expected);
   });
 
   describe("should have the same output as `resolveWorldConfig` for store config inputs", () => {
@@ -254,10 +254,10 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof config>(expected);
+      attest<typeof config>(expected).equals(expected);
     });
 
-    it("it should accept a user type as input and expand it", () => {
+    it("should accept a user type as input and expand it", () => {
       const config = resolveWorldConfig({ tables: { Name: "CustomType" }, userTypes: { CustomType: "address" } });
       const expected = {
         tables: {
@@ -293,7 +293,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("given a schema with a key field with static ABI type, it should use `key` as single key", () => {
@@ -340,7 +340,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("given a schema with a key field with static custom type, it should use `key` as single key", () => {
@@ -387,11 +387,11 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("throw an error if the shorthand doesn't include a key field", () => {
-      attest(
+      attest(() =>
         resolveWorldConfig({
           tables: {
             // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
@@ -401,24 +401,30 @@ describe("resolveWorldConfig", () => {
             },
           },
         }),
-      ).type.errors("Provide a `key` field with static ABI type or a full config with explicit primaryKey override.");
+      ).throwsAndHasTypeError(
+        "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+      );
     });
 
     it("throw an error if the shorthand config includes a non-static key field", () => {
       attest(
         // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
-        resolveWorldConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } }),
-      ).type.errors("Provide a `key` field with static ABI type or a full config with explicit primaryKey override.");
+        () => resolveWorldConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } }),
+      ).throwsAndHasTypeError(
+        "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+      );
     });
 
     it("throw an error if the shorthand config includes a non-static user type as key field", () => {
-      attest(
+      attest(() =>
         resolveWorldConfig({
           // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
           tables: { Example: { key: "dynamic", name: "string", age: "uint256" } },
           userTypes: { dynamic: "string", static: "address" },
         }),
-      ).type.errors("Provide a `key` field with static ABI type or a full config with explicit primaryKey override.");
+      ).throwsAndHasTypeError(
+        "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+      );
     });
 
     it("should return the full config given a full config with one key", () => {
@@ -472,7 +478,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("should return the full config given a full config with one key and user types", () => {
@@ -527,10 +533,10 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
-    it("it should return the full config given a full config with two primaryKey", () => {
+    it("should return the full config given a full config with two primaryKey", () => {
       const config = resolveWorldConfig({
         tables: {
           Example: {
@@ -581,7 +587,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("should resolve two tables in the config with different schemas", () => {
@@ -672,7 +678,7 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("should resolve two tables in the config with different schemas and user types", () => {
@@ -764,11 +770,11 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("should throw if referring to fields of different tables", () => {
-      attest(
+      attest(() =>
         resolveWorldConfig({
           tables: {
             First: {
@@ -782,11 +788,13 @@ describe("resolveWorldConfig", () => {
             },
           },
         }),
-      ).type.errors(`Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'`);
+      )
+        .throws('Invalid primary key. Expected `("secondKey" | "secondAge")[]`, received `["firstKey", "secondAge"]`')
+        .type.errors(`Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'`);
     });
 
     it("should throw an error if the provided key is not a static field", () => {
-      attest(
+      attest(() =>
         resolveWorldConfig({
           tables: {
             Example: {
@@ -796,11 +804,13 @@ describe("resolveWorldConfig", () => {
             },
           },
         }),
-      ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+      )
+        .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
+        .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
     });
 
     it("should throw an error if the provided key is not a static field with user types", () => {
-      attest(
+      attest(() =>
         resolveWorldConfig({
           tables: {
             Example: {
@@ -813,7 +823,9 @@ describe("resolveWorldConfig", () => {
             Dynamic: "string",
           },
         }),
-      ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+      )
+        .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
+        .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
     });
 
     it("should return the full config given a full config with enums and user types", () => {
@@ -873,13 +885,19 @@ describe("resolveWorldConfig", () => {
         namespaces: {},
       } as const;
 
-      attest<typeof expected>(config);
+      attest<typeof expected>(config).equals(expected);
     });
 
     it("should use the root namespace as default namespace", () => {
-      const config = resolveWorldConfig({ tables: { Example: {} } });
+      const config = resolveWorldConfig({});
 
       attest<"">(config.namespace);
+    });
+
+    it("should use pipe through non-default namespaces", () => {
+      const config = resolveWorldConfig({ namespace: "custom" });
+
+      attest<"custom">(config.namespace).equals("custom");
     });
   });
 });
