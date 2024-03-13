@@ -52,7 +52,7 @@ export function NotValue<T extends Table>(
   return { type: QueryFragmentType.NotValue, table, value };
 }
 
-type QueryFragment<T extends Table> =
+export type QueryFragment<T extends Table> =
   | HasQueryFragment<T>
   | NotQueryFragment<T>
   | HasValueQueryFragment<T>
@@ -150,18 +150,16 @@ export async function runQuery<config extends StoreConfig, extraTables extends T
   return new Set(entities);
 }
 
-type ComponentUpdate = {
+export type ComponentUpdate = {
   entity: Entity;
 };
-
-export type EntityChange = ComponentUpdate & { type: UpdateType };
 
 export async function defineQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
   store: ZustandStore<AllTables<config, extraTables>>,
   fragments: QueryFragment<Table>[],
 ): Promise<{
-  update$: Observable<readonly EntityChange[]>;
-  matching: Observable<readonly Entity[]>;
+  update$: Observable<(ComponentUpdate & { type: UpdateType })[]>;
+  matching: Observable<Entity[]>;
 }> {
   const from = fragmentsToFrom(fragments);
   const except = fragmentsToExcept(fragments);

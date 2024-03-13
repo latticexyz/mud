@@ -7,8 +7,8 @@ import { privateKeyToAccount } from "viem/accounts";
 import { testClient } from "../../test/common";
 import { combineLatest, filter, firstValueFrom, map, scan, shareReplay } from "rxjs";
 import { waitForTransaction } from "./test/waitForTransaction";
-import { EntityChange, Has, HasValue, Not, NotValue, defineQuery } from "./recs/Query";
-import { Entity } from "@latticexyz/recs";
+import { ComponentUpdate, Has, HasValue, Not, NotValue, defineQuery } from "./recs/Query";
+import { Entity, UpdateType } from "@latticexyz/recs";
 
 const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));
 
@@ -26,7 +26,7 @@ describe("defineQuery", async () => {
 
     const latest$ = combineLatest({
       update$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+        scan((values, value) => [...values, value], [] as readonly (ComponentUpdate & { type: UpdateType })[][]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
       matching: matching.pipe(
@@ -114,7 +114,7 @@ describe("defineQuery", async () => {
 
     const latest$ = combineLatest({
       update$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+        scan((values, value) => [...values, value], [] as readonly (ComponentUpdate & { type: UpdateType })[][]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
       matching: matching.pipe(
@@ -226,7 +226,7 @@ describe("defineQuery", async () => {
 
     const latest$ = combineLatest({
       update$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+        scan((values, value) => [...values, value], [] as readonly (ComponentUpdate & { type: UpdateType })[][]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
       matching: matching.pipe(
@@ -268,7 +268,7 @@ describe("defineQuery", async () => {
 
     const latest$ = combineLatest({
       update$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+        scan((values, value) => [...values, value], [] as readonly (ComponentUpdate & { type: UpdateType })[][]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
       matching: matching.pipe(
@@ -305,7 +305,7 @@ describe("defineQuery", async () => {
 
     const latest$ = combineLatest({
       update$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+        scan((values, value) => [...values, value], [] as readonly (ComponentUpdate & { type: UpdateType })[][]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
       matching: matching.pipe(
@@ -342,7 +342,7 @@ describe("defineQuery", async () => {
 
     const latest$ = combineLatest({
       update$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+        scan((values, value) => [...values, value], [] as readonly (ComponentUpdate & { type: UpdateType })[][]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
       matching: matching.pipe(
@@ -416,7 +416,7 @@ describe("defineQuery", async () => {
 
     const latest$ = combineLatest({
       update$: update$.pipe(
-        scan((values, value) => [...values, value], [] as readonly (readonly EntityChange[])[]),
+        scan((values, value) => [...values, value], [] as readonly (ComponentUpdate & { type: UpdateType })[][]),
         map((values) => ({ count: values.length, value: values.at(-1) })),
       ),
       matching: matching.pipe(
