@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createHydratedStore, config } from "./test/createHydratedStore";
+import { createHydratedStore } from "./test/createHydratedStore";
 import { QueryResultSubjectChange, subscribeToQuery } from "./subscribeToQuery";
 import { deployMockGame, worldAbi } from "../../test/mockGame";
 import { writeContract } from "viem/actions";
@@ -22,7 +22,7 @@ describe("subscribeToQuery", async () => {
   it("can get players with a position", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: {
         Position: ["player"],
       },
@@ -142,7 +142,7 @@ describe("subscribeToQuery", async () => {
   it("can get players at position (3, 5)", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: {
         Position: ["player"],
       },
@@ -281,7 +281,7 @@ describe("subscribeToQuery", async () => {
   it("can get players within the bounds of (-5, -5) and (5, 5)", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: {
         Position: ["player"],
       },
@@ -437,7 +437,7 @@ describe("subscribeToQuery", async () => {
   it("can get players that are still alive", async () => {
     const { store } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: {
         Position: ["player"],
         Health: ["player"],
@@ -493,7 +493,7 @@ describe("subscribeToQuery", async () => {
   it("can get all players in grassland", async () => {
     const { store } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: {
         Terrain: ["x", "y"],
       },
@@ -541,7 +541,7 @@ describe("subscribeToQuery", async () => {
   it("can get all players without health (e.g. spectator)", async () => {
     const { store } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: {
         Position: ["player"],
       },
@@ -589,7 +589,7 @@ describe("subscribeToQuery", async () => {
   it("emits new subjects when initial matching set is empty", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: {
         Position: ["player"],
       },
@@ -663,7 +663,7 @@ describe("subscribeToQuery", async () => {
   it("emits changed subjects when subscribing some time after initial query", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+    const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(store, {
       from: {
         Position: ["player"],
       },

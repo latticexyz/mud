@@ -1,6 +1,6 @@
 import { StoreApi, UseBoundStore, create } from "zustand";
 import { ResolvedTableConfig } from "@latticexyz/store/config/v2";
-import { schemaAbiTypes } from "./common";
+import { Tables, schemaAbiTypes } from "./common";
 import { Hex } from "viem";
 
 export type RawTableRecord<table extends ResolvedTableConfig = ResolvedTableConfig> = {
@@ -22,25 +22,21 @@ export type TableRecord<table extends ResolvedTableConfig = ResolvedTableConfig>
   readonly fields: schemaAbiTypes<table["schema"]>;
 };
 
-export type QueryCacheState<table extends ResolvedTableConfig = ResolvedTableConfig> = {
-  readonly tables: { [tableId: Hex]: table };
-  readonly rawRecords: readonly RawTableRecord<table>[];
-  readonly records: readonly TableRecord<table>[];
+export type QueryCacheState<tables extends Tables = Tables> = {
+  readonly tables: tables;
+  readonly rawRecords: readonly RawTableRecord<tables[keyof tables]>[];
+  readonly records: readonly TableRecord<tables[keyof tables]>[];
 };
 
-export type QueryCacheStore<table extends ResolvedTableConfig = ResolvedTableConfig> = UseBoundStore<
-  StoreApi<QueryCacheState<table>>
->;
+export type QueryCacheStore<tables extends Tables = Tables> = UseBoundStore<StoreApi<QueryCacheState<tables>>>;
 
-export type CreateStoreOptions<table extends ResolvedTableConfig = ResolvedTableConfig> = {
-  tables: readonly table[];
+export type CreateStoreOptions<tables extends Tables = Tables> = {
+  tables: tables;
 };
 
-export function createStore<table extends ResolvedTableConfig = ResolvedTableConfig>(
-  opts: CreateStoreOptions<table>,
-): QueryCacheStore<table> {
-  return create<QueryCacheState<table>>(() => ({
-    tables: Object.fromEntries(opts.tables.map((table) => [table.tableId, table])),
+export function createStore<tables extends Tables>({ tables }: CreateStoreOptions<tables>): QueryCacheStore<tables> {
+  return create<QueryCacheState<tables>>(() => ({
+    tables,
     rawRecords: [],
     records: [],
   }));

@@ -1,5 +1,4 @@
-import { Query } from "./common";
-import { ResolvedStoreConfig } from "@latticexyz/store/config/v2";
+import { Query, Tables } from "./common";
 import { QueryCondition as WireQueryCondition, Query as WireQuery } from "@latticexyz/query";
 import { subjectsToWire } from "./subjectsToWire";
 
@@ -12,8 +11,8 @@ import { subjectsToWire } from "./subjectsToWire";
 //       - can only compare like types?
 //       - `where` tables are in `from`
 
-export function queryToWire<config extends ResolvedStoreConfig, query extends Query<config>>(
-  config: config,
+export function queryToWire<tables extends Tables, query extends Query<tables>>(
+  tables: tables,
   query: query,
 ): WireQuery {
   // TODO: move out validation to its own thing
@@ -24,13 +23,13 @@ export function queryToWire<config extends ResolvedStoreConfig, query extends Qu
     // TODO: translate table field
     const left = leftTableField;
     const [tableName, fieldName] = left.split(".");
-    const table = config.tables[tableName];
+    const table = tables[tableName];
     return { left: { tableId: table.tableId, field: fieldName }, op, right };
   });
 
   return {
-    from: subjectsToWire(config, query.from),
-    except: subjectsToWire(config, query.except ?? {}),
+    from: subjectsToWire(tables, query.from),
+    except: subjectsToWire(tables, query.except ?? {}),
     where,
   };
 }

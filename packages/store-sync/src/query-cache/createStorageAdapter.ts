@@ -4,23 +4,23 @@ import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { size } from "viem";
 import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 import { flattenSchema } from "../flattenSchema";
-import { ResolvedTableConfig } from "@latticexyz/store/config/v2";
 import { getId } from "./getId";
 import debug from "debug";
 import { KeySchema } from "@latticexyz/store";
+import { Tables } from "./common";
 
-export type CreateStorageAdapterOptions<table extends ResolvedTableConfig> = {
-  store: QueryCacheStore<table>;
+export type CreateStorageAdapterOptions<tables extends Tables> = {
+  store: QueryCacheStore<tables>;
 };
 
-export function createStorageAdapter<table extends ResolvedTableConfig>({
+export function createStorageAdapter<tables extends Tables>({
   store,
-}: CreateStorageAdapterOptions<table>): StorageAdapter {
+}: CreateStorageAdapterOptions<tables>): StorageAdapter {
   return async function queryCacheStorageAdapter({ logs }) {
     const touchedIds = new Set<string>();
 
     const { tables, rawRecords: previousRawRecords, records: previousRecords } = store.getState();
-    const updatedRawRecords: { [id: string]: RawTableRecord<table> } = {};
+    const updatedRawRecords: { [id: string]: RawTableRecord } = {};
 
     for (const log of logs) {
       const table = tables[log.args.tableId];
@@ -58,7 +58,7 @@ export function createStorageAdapter<table extends ResolvedTableConfig>({
             staticData: "0x",
             encodedLengths: "0x",
             dynamicData: "0x",
-          } satisfies RawTableRecord<table>);
+          } satisfies RawTableRecord);
         const staticData = spliceHex(previousRecord.staticData, log.args.start, size(log.args.data), log.args.data);
         updatedRawRecords[id] = {
           ...previousRecord,
@@ -76,7 +76,7 @@ export function createStorageAdapter<table extends ResolvedTableConfig>({
             staticData: "0x",
             encodedLengths: "0x",
             dynamicData: "0x",
-          } satisfies RawTableRecord<table>);
+          } satisfies RawTableRecord);
         const encodedLengths = log.args.encodedLengths;
         const dynamicData = spliceHex(previousRecord.dynamicData, log.args.start, log.args.deleteCount, log.args.data);
         updatedRawRecords[id] = {
@@ -94,25 +94,23 @@ export function createStorageAdapter<table extends ResolvedTableConfig>({
 
     if (!touchedIds.size) return;
 
-    const rawRecords: typeof previousRawRecords = [
+    const rawRecords: readonly RawTableRecord[] = [
       ...previousRawRecords.filter((record) => !touchedIds.has(record.id)),
       ...Object.values(updatedRawRecords),
     ];
 
-    const records: typeof previousRecords = [
+    const records: readonly TableRecord[] = [
       ...previousRecords.filter((record) => !touchedIds.has(record.id)),
-      ...Object.values(updatedRawRecords).map((rawRecord): TableRecord<table> => {
+      ...Object.values(updatedRawRecords).map((rawRecord): TableRecord => {
         // TODO: figure out how to define this without casting
-        const key = decodeKey(
-          flattenSchema(rawRecord.table.keySchema as KeySchema),
-          rawRecord.keyTuple,
-        ) as TableRecord<table>["key"];
+        const key = decodeKey(flattenSchema(rawRecord.table.keySchema as KeySchema), rawRecord.keyTuple) as TableRecord<
+          tables[keyof tables]
+        >["key"];
 
         // TODO: figure out how to define this without casting
-        const value = decodeValueArgs(
-          flattenSchema(rawRecord.table.valueSchema),
-          rawRecord,
-        ) as TableRecord<table>["value"];
+        const value = decodeValueArgs(flattenSchema(rawRecord.table.valueSchema), rawRecord) as TableRecord<
+          tables[keyof tables]
+        >["value"];
 
         return {
           table: rawRecord.table,
@@ -124,6 +122,9 @@ export function createStorageAdapter<table extends ResolvedTableConfig>({
       }),
     ];
 
-    store.setState({ rawRecords: Object.values(rawRecords), records });
+    store.setState({
+      rawRecords: rawRecords as readonly RawTableRecord<tables[keyof tables]>[],
+      records: records as readonly TableRecord<tables[keyof tables]>[],
+    });
   };
 }

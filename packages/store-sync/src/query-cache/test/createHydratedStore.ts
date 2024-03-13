@@ -10,10 +10,10 @@ import { createStorageAdapter } from "../createStorageAdapter";
 export { config };
 
 export async function createHydratedStore(worldAddress: Address): Promise<{
-  store: QueryCacheStore;
+  store: QueryCacheStore<(typeof config)["tables"]>;
   fetchLatestLogs: () => Promise<bigint>;
 }> {
-  const store = createStore({ tables: Object.values(config.tables) });
+  const store = createStore({ tables: config.tables });
   const storageAdapter = createStorageAdapter({ store });
 
   let lastBlockProcessed = (await getBlock(testClient, { blockTag: "earliest" })).number - 1n;

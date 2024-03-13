@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createHydratedStore, config } from "./test/createHydratedStore";
+import { createHydratedStore } from "./test/createHydratedStore";
 import { query } from "./query";
 import { deployMockGame } from "../../test/mockGame";
 import { Address } from "viem";
@@ -12,7 +12,7 @@ describe("query", async () => {
 
   it("can get players with a position", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(config, store, {
+    const result = await query(store, {
       from: {
         Position: ["player"],
       },
@@ -38,7 +38,7 @@ describe("query", async () => {
 
   it("can get players at position (3, 5)", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(config, store, {
+    const result = await query(store, {
       from: {
         Position: ["player"],
       },
@@ -62,7 +62,7 @@ describe("query", async () => {
 
   it("can get players within the bounds of (-5, -5) and (5, 5)", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(config, store, {
+    const result = await query(store, {
       from: {
         Position: ["player"],
       },
@@ -91,7 +91,7 @@ describe("query", async () => {
 
   it("can get players that are still alive", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(config, store, {
+    const result = await query(store, {
       from: {
         Position: ["player"],
         Health: ["player"],
@@ -113,7 +113,7 @@ describe("query", async () => {
 
   it("can get all players in grassland", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(config, store, {
+    const result = await query(store, {
       from: {
         Terrain: ["x", "y"],
       },
@@ -132,7 +132,7 @@ describe("query", async () => {
 
   it("can get all players without health (e.g. spectator)", async () => {
     const { store } = await createHydratedStore(worldAddress);
-    const result = await query(config, store, {
+    const result = await query(store, {
       from: {
         Position: ["player"],
       },

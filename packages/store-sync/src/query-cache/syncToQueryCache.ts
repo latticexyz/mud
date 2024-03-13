@@ -21,7 +21,7 @@ export async function syncToQueryCache<config extends ResolvedStoreConfig>({
   startSync = true,
   ...syncOptions
 }: SyncToQueryCacheOptions<config>): Promise<SyncToQueryCacheResult> {
-  const useStore = createStore({ tables: Object.values(config.tables) });
+  const useStore = createStore({ tables: config.tables });
   const storageAdapter = createStorageAdapter({ store: useStore });
 
   const storeSync = await createStoreSync({
