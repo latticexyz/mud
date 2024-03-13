@@ -101,7 +101,7 @@ describe("resolveWorldConfig", () => {
       namespace: "",
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expected>(config).snap(expected);
   });
 
   it("should resolve namespaced table config with user types and enums", () => {
@@ -401,7 +401,7 @@ describe("resolveWorldConfig", () => {
             },
           },
         }),
-      ).type.errors(
+      ).throwsAndHasTypeError(
         "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
       );
     });
@@ -409,20 +409,20 @@ describe("resolveWorldConfig", () => {
     it("throw an error if the shorthand config includes a non-static key field", () => {
       attest(
         // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
-        resolveWorldConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } }),
-      ).type.errors(
+        () => resolveWorldConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } }),
+      ).throwsAndHasTypeError(
         "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
       );
     });
 
     it("throw an error if the shorthand config includes a non-static user type as key field", () => {
-      attest(
+      attest(() =>
         resolveWorldConfig({
           // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
           tables: { Example: { key: "dynamic", name: "string", age: "uint256" } },
           userTypes: { dynamic: "string", static: "address" },
         }),
-      ).type.errors(
+      ).throwsAndHasTypeError(
         "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
       );
     });
@@ -789,7 +789,7 @@ describe("resolveWorldConfig", () => {
           },
         }),
       )
-        .throws("wrong error")
+        .throws('Invalid primary key. Expected `("secondKey" | "secondAge")[]`, received `["firstKey", "secondAge"]`')
         .type.errors(`Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'`);
     });
 
@@ -805,12 +805,12 @@ describe("resolveWorldConfig", () => {
           },
         }),
       )
-        .throws("wrong error")
+        .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
         .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
     });
 
     it("should throw an error if the provided key is not a static field with user types", () => {
-      attest(
+      attest(() =>
         resolveWorldConfig({
           tables: {
             Example: {
@@ -823,7 +823,9 @@ describe("resolveWorldConfig", () => {
             Dynamic: "string",
           },
         }),
-      ).type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+      )
+        .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
+        .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
     });
 
     it("should return the full config given a full config with enums and user types", () => {
@@ -887,7 +889,7 @@ describe("resolveWorldConfig", () => {
     });
 
     it("should use the root namespace as default namespace", () => {
-      const config = resolveWorldConfig({ tables: { Example: {} } });
+      const config = resolveWorldConfig({});
 
       attest<"">(config.namespace);
     });
