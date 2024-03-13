@@ -6,6 +6,7 @@ import { Address } from "viem";
 import { getBlock, getBlockNumber } from "viem/actions";
 import { QueryCacheStore, createStore } from "../createStore";
 import { createStorageAdapter } from "../createStorageAdapter";
+import { resourceToHex } from "@latticexyz/common";
 
 export { config };
 
@@ -13,7 +14,22 @@ export async function createHydratedStore(worldAddress: Address): Promise<{
   store: QueryCacheStore<(typeof config)["tables"]>;
   fetchLatestLogs: () => Promise<bigint>;
 }> {
-  const store = createStore({ tables: config.tables });
+  // TODO(alvrs): table resolver doesn't yet provide `tableId` so we'll inject it for now
+  const tables = Object.fromEntries(
+    Object.entries(config.tables).map(([tableName, table]) => [
+      tableName,
+      {
+        ...table,
+        tableId: resourceToHex({
+          type: "table", // hardcoded for now because table doesn't have a `type` yet
+          namespace: config.namespace, // using config's namespace because table doesn't have `namespace` yet
+          name: tableName, // TODO: replace with `table.name` when available?
+        }),
+      },
+    ]),
+  );
+
+  const store = createStore({ tables: tables as typeof config.tables });
   const storageAdapter = createStorageAdapter({ store });
 
   let lastBlockProcessed = (await getBlock(testClient, { blockTag: "earliest" })).number - 1n;
