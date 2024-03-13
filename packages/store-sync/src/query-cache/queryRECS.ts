@@ -1,11 +1,12 @@
 import { ZustandStore } from "../zustand";
 import { AllTables, QueryCondition, QueryResultSubject, TableSubject } from "./common";
-import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
+import { StoreConfig, Table, Tables } from "@latticexyz/store";
 import { query } from "./query";
 import { subscribeToQuery } from "./subscribeToQuery";
 import { Observable, map } from "rxjs";
-
-export type Entity = string;
+import { encodeEntity } from "../recs";
+import { KeySchema, SchemaToPrimitives } from "@latticexyz/protocol-parser";
+import { Entity } from "@latticexyz/recs";
 
 enum QueryFragmentType {
   Has,
@@ -113,8 +114,23 @@ function fragmentsToWhere(fragments: QueryFragment<Table>[]): QueryCondition[] {
     .flat();
 }
 
-function queryResultSubjectToEntity(subject: QueryResultSubject): Entity {
-  return subject.join(":");
+function fragmentToKeySchema(fragment: QueryFragment<Table>): KeySchema {
+  const keySchema: KeySchema = {};
+  Object.entries(fragment.table.keySchema).map(([key, value]) => (keySchema[key] = value.type));
+
+  return keySchema;
+}
+
+function resultToEntities(fragment: QueryFragment<Table>, result: readonly QueryResultSubject[]): Entity[] {
+  const keySchema = fragmentToKeySchema(fragment);
+
+  const entities = result.map((subject) => {
+    const key: SchemaToPrimitives<KeySchema> = {};
+    Object.keys(fragment.table.keySchema).map((keyName, i) => (key[keyName] = subject[i]));
+    return encodeEntity(keySchema, key);
+  });
+
+  return entities;
 }
 
 export async function runQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
@@ -131,7 +147,8 @@ export async function runQuery<config extends StoreConfig, extraTables extends T
     where,
   });
 
-  const entities = result.map((subject) => queryResultSubjectToEntity(subject));
+  const entities = resultToEntities(fragments[0], result);
+
   return new Set(entities);
 }
 

@@ -16,10 +16,10 @@ describe("runQuery", async () => {
 
     expect(result).toMatchInlineSnapshot(`
       Set {
-        "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-        "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-        "0xdBa86119a787422C593ceF119E40887f396024E2",
+        "0x0000000000000000000000001d96f2f6bef1202e4ce1ff6dad0c2cb002861d3e",
+        "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
+        "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
+        "0x000000000000000000000000dba86119a787422c593cef119e40887f396024e2",
       }
     `);
   });
@@ -30,8 +30,8 @@ describe("runQuery", async () => {
 
     expect(result).toMatchInlineSnapshot(`
       Set {
-        "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-        "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+        "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
+        "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
       }
     `);
   });
@@ -42,8 +42,8 @@ describe("runQuery", async () => {
 
     expect(result).toMatchInlineSnapshot(`
       Set {
-        "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-        "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+        "0x0000000000000000000000001d96f2f6bef1202e4ce1ff6dad0c2cb002861d3e",
+        "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
       }
     `);
   });
@@ -54,7 +54,7 @@ describe("runQuery", async () => {
 
     expect(result).toMatchInlineSnapshot(`
       Set {
-        "3:5",
+        "0x00000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000005",
       }
     `);
   });
@@ -65,7 +65,7 @@ describe("runQuery", async () => {
 
     expect(result).toMatchInlineSnapshot(`
       Set {
-        "0xdBa86119a787422C593ceF119E40887f396024E2",
+        "0x000000000000000000000000dba86119a787422c593cef119e40887f396024e2",
       }
     `);
   });
