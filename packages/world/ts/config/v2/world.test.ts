@@ -1,6 +1,7 @@
 import { describe, it } from "vitest";
 import { resolveWorldConfig } from "./world";
 import { attest } from "@arktype/attest";
+import { Hex } from "viem";
 
 describe("resolveWorldConfig", () => {
   it("should resolve namespaced tables", () => {
@@ -24,6 +25,7 @@ describe("resolveWorldConfig", () => {
     const expected = {
       tables: {
         ExampleNamespace__ExampleTable: {
+          tableId: "0x" as Hex,
           schema: {
             key: {
               type: "address",
@@ -61,6 +63,7 @@ describe("resolveWorldConfig", () => {
         ExampleNamespace: {
           tables: {
             ExampleTable: {
+              tableId: "0x" as Hex,
               schema: {
                 key: {
                   type: "address",
@@ -132,6 +135,7 @@ describe("resolveWorldConfig", () => {
     const expected = {
       tables: {
         ExampleNamespace__ExampleTable: {
+          tableId: "0x" as Hex,
           schema: {
             key: {
               type: "address",
@@ -169,6 +173,7 @@ describe("resolveWorldConfig", () => {
         ExampleNamespace: {
           tables: {
             ExampleTable: {
+              tableId: "0x" as Hex,
               schema: {
                 key: {
                   type: "address",
@@ -223,6 +228,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Name: {
+            tableId: "0x" as Hex,
             schema: {
               key: {
                 type: "bytes32",
@@ -262,6 +268,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Name: {
+            tableId: "0x" as Hex,
             schema: {
               key: {
                 type: "bytes32",
@@ -301,6 +308,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Example: {
+            tableId: "0x" as Hex,
             schema: {
               key: {
                 type: "address",
@@ -348,6 +356,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Example: {
+            tableId: "0x" as Hex,
             schema: {
               key: {
                 type: "address",
@@ -439,6 +448,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Example: {
+            tableId: "0x" as Hex,
             schema: {
               key: {
                 type: "address",
@@ -494,6 +504,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Example: {
+            tableId: "0x" as Hex,
             schema: {
               key: {
                 type: "string",
@@ -548,6 +559,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Example: {
+            tableId: "0x" as Hex,
             schema: {
               key: {
                 type: "address",
@@ -606,6 +618,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           First: {
+            tableId: "0x" as Hex,
             schema: {
               firstKey: {
                 type: "address",
@@ -639,6 +652,7 @@ describe("resolveWorldConfig", () => {
             primaryKey: ["firstKey", "firstAge"],
           },
           Second: {
+            tableId: "0x" as Hex,
             schema: {
               secondKey: {
                 type: "address",
@@ -698,6 +712,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           First: {
+            tableId: "0x" as Hex,
             schema: {
               firstKey: {
                 type: "address",
@@ -731,6 +746,7 @@ describe("resolveWorldConfig", () => {
             primaryKey: ["firstKey", "firstAge"],
           },
           Second: {
+            tableId: "0x" as Hex,
             schema: {
               secondKey: {
                 type: "address",
@@ -844,6 +860,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Example: {
+            tableId: "0x" as Hex,
             schema: {
               key: {
                 type: "string",
