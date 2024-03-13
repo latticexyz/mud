@@ -27,8 +27,8 @@ export type getStaticAbiTypeKeys<
       [key in keyof types]: scope["types"][types[key]] extends StaticAbiType ? key : never;
     }[keyof types];
 
-export type extendScope<scope extends ScopeOptions, additionalTypes extends Dict<string, AbiType>> = evaluate<
-  ScopeOptions<evaluate<scope["types"] & additionalTypes>>
+export type extendScope<scope extends ScopeOptions, additionalTypes extends Dict<string, AbiType>> = ScopeOptions<
+  evaluate<scope["types"] & additionalTypes>
 >;
 
 export function extendScope<scope extends ScopeOptions, additionalTypes extends Dict<string, AbiType>>(
