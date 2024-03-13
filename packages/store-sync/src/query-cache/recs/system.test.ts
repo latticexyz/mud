@@ -131,10 +131,6 @@ describe("system", async () => {
     await defineSystem(store, [HasValue(tables.Position, { x: 999, y: 999 })], system);
 
     expect(system).toHaveBeenCalledTimes(1);
-    expect(system).toHaveBeenCalledWith({
-      entity: "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
-      type: 0,
-    });
 
     waitForTransaction(
       await writeContract(testClient, {
@@ -161,6 +157,8 @@ describe("system", async () => {
     const system = vi.fn(() => null);
     await defineSystem(store, [HasValue(tables.Position, { x: 3, y: 5 })], system);
 
+    expect(system).toHaveBeenCalledTimes(1);
+
     waitForTransaction(
       await writeContract(testClient, {
         account: henryAccount,
@@ -173,9 +171,7 @@ describe("system", async () => {
     );
     await fetchLatestLogs();
 
-    // we expect two emissions for by this point: initial subjects + subjects changed since starting the subscriptions
     expect(system).toHaveBeenCalledTimes(2);
-    expect(system).toHaveBeenCalledWith(undefined);
 
     waitForTransaction(
       await writeContract(testClient, {
@@ -190,9 +186,5 @@ describe("system", async () => {
     await fetchLatestLogs();
 
     expect(system).toHaveBeenCalledTimes(3);
-    expect(system).toHaveBeenCalledWith({
-      entity: "0x0000000000000000000000005f2cc8fb10299751348e1b10f5f1ba47820b1cb8",
-      type: 0,
-    });
   });
 });

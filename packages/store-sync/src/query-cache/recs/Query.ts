@@ -3,7 +3,7 @@ import { AllTables, QueryCondition, QueryResultSubject, TableSubject } from "../
 import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
 import { query } from "../query";
 import { subscribeToQuery } from "../subscribeToQuery";
-import { Observable, map } from "rxjs";
+import { Observable, filter, map } from "rxjs";
 import { encodeEntity } from "../../recs";
 import { KeySchema, SchemaToPrimitives as SchemaToPrimitivesProtocol } from "@latticexyz/protocol-parser";
 import { Entity, QueryFragmentType, UpdateType } from "@latticexyz/recs";
@@ -182,4 +182,37 @@ export async function defineQuery<config extends StoreConfig, extraTables extend
     ),
     matching: subjects$.pipe(map((subjects) => subjectsToEntities(fragments[0], subjects))),
   };
+}
+
+export async function defineUpdateQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
+  store: ZustandStore<AllTables<config, extraTables>>,
+  fragments: QueryFragment<Table>[],
+): Promise<Observable<ComponentUpdate & { type: UpdateType }>> {
+  const { update$ } = await defineQuery(store, fragments);
+  return update$.pipe(
+    map((updates) => updates[0]),
+    filter((e) => e.type === UpdateType.Update),
+  );
+}
+
+export async function defineEnterQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
+  store: ZustandStore<AllTables<config, extraTables>>,
+  fragments: QueryFragment<Table>[],
+): Promise<Observable<ComponentUpdate & { type: UpdateType }>> {
+  const { update$ } = await defineQuery(store, fragments);
+  return update$.pipe(
+    map((updates) => updates[0]),
+    filter((e) => e.type === UpdateType.Enter),
+  );
+}
+
+export async function defineExitQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
+  store: ZustandStore<AllTables<config, extraTables>>,
+  fragments: QueryFragment<Table>[],
+): Promise<Observable<ComponentUpdate & { type: UpdateType }>> {
+  const { update$ } = await defineQuery(store, fragments);
+  return update$.pipe(
+    map((updates) => updates[0]),
+    filter((e) => e.type === UpdateType.Exit),
+  );
 }
