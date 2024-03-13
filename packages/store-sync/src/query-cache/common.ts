@@ -18,6 +18,8 @@ export type TableSubject<table extends ResolvedTableConfig = ResolvedTableConfig
   ...TableSubjectItem<table>[],
 ];
 
+export type configTables<config extends ResolvedStoreConfig> = config["tables"][keyof config["tables"]];
+
 export type schemaAbiTypes<schema extends Record<string, { readonly type: SchemaAbiType }>> = {
   [key in keyof schema]: schema[key]["type"];
 };

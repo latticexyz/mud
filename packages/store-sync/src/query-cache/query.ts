@@ -1,4 +1,4 @@
-import { Query, QueryResult, queryToResultSubject } from "./common";
+import { Query, QueryResult, configTables, queryToResultSubject } from "./common";
 import { ResolvedStoreConfig } from "@latticexyz/store/config/v2";
 import { evaluate } from "@latticexyz/common/type-utils";
 import { QueryCacheStore } from "./createStore";
@@ -9,7 +9,7 @@ import { queryToWire } from "./queryToWire";
 
 export async function query<config extends ResolvedStoreConfig, query extends Query<config>>(
   config: config,
-  store: QueryCacheStore<config["tables"][string]>,
+  store: QueryCacheStore<configTables<config>>,
   query: query,
 ): Promise<evaluate<QueryResult<query, config>>> {
   const result = findSubjects({

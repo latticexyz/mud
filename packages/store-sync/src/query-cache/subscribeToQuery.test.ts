@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createHydratedStore, tables } from "./test/createHydratedStore";
+import { createHydratedStore, config } from "./test/createHydratedStore";
 import { QueryResultSubjectChange, subscribeToQuery } from "./subscribeToQuery";
 import { deployMockGame, worldAbi } from "../../test/mockGame";
 import { writeContract } from "viem/actions";
@@ -7,8 +7,8 @@ import { Address, keccak256, parseEther, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { testClient } from "../../test/common";
 import { combineLatest, filter, firstValueFrom, map, scan, shareReplay } from "rxjs";
-import { QueryResultSubject } from "./common";
 import { waitForTransaction } from "./test/waitForTransaction";
+import { QueryResultSubject } from "@latticexyz/query";
 
 const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));
 
@@ -22,8 +22,10 @@ describe("subscribeToQuery", async () => {
   it("can get players with a position", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
-      from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+      from: {
+        Position: ["player"],
+      },
     });
 
     const latest$ = combineLatest({
@@ -140,11 +142,13 @@ describe("subscribeToQuery", async () => {
   it("can get players at position (3, 5)", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
-      from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+      from: {
+        Position: ["player"],
+      },
       where: [
-        { left: { tableId: tables.Position.tableId, field: "x" }, op: "=", right: 3 },
-        { left: { tableId: tables.Position.tableId, field: "y" }, op: "=", right: 5 },
+        ["Position.x", "=", 3],
+        ["Position.y", "=", 5],
       ],
     });
 
@@ -277,13 +281,15 @@ describe("subscribeToQuery", async () => {
   it("can get players within the bounds of (-5, -5) and (5, 5)", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
-      from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+      from: {
+        Position: ["player"],
+      },
       where: [
-        { left: { tableId: tables.Position.tableId, field: "x" }, op: ">=", right: -5 },
-        { left: { tableId: tables.Position.tableId, field: "x" }, op: "<=", right: 5 },
-        { left: { tableId: tables.Position.tableId, field: "y" }, op: ">=", right: -5 },
-        { left: { tableId: tables.Position.tableId, field: "y" }, op: "<=", right: 5 },
+        ["Position.x", ">=", -5],
+        ["Position.x", "<=", 5],
+        ["Position.y", ">=", -5],
+        ["Position.y", "<=", 5],
       ],
     });
 
@@ -431,12 +437,12 @@ describe("subscribeToQuery", async () => {
   it("can get players that are still alive", async () => {
     const { store } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
-      from: [
-        { tableId: tables.Position.tableId, subject: ["player"] },
-        { tableId: tables.Health.tableId, subject: ["player"] },
-      ],
-      where: [{ left: { tableId: tables.Health.tableId, field: "health" }, op: "!=", right: 0n }],
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+      from: {
+        Position: ["player"],
+        Health: ["player"],
+      },
+      where: [["Health.health", "!=", 0n]],
     });
 
     const latest$ = combineLatest({
@@ -487,9 +493,11 @@ describe("subscribeToQuery", async () => {
   it("can get all players in grassland", async () => {
     const { store } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
-      from: [{ tableId: tables.Terrain.tableId, subject: ["x", "y"] }],
-      where: [{ left: { tableId: tables.Terrain.tableId, field: "terrainType" }, op: "=", right: 2 }],
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+      from: {
+        Terrain: ["x", "y"],
+      },
+      where: [["Terrain.terrainType", "=", 2]],
     });
 
     const latest$ = combineLatest({
@@ -533,9 +541,13 @@ describe("subscribeToQuery", async () => {
   it("can get all players without health (e.g. spectator)", async () => {
     const { store } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
-      from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
-      except: [{ tableId: tables.Health.tableId, subject: ["player"] }],
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+      from: {
+        Position: ["player"],
+      },
+      except: {
+        Health: ["player"],
+      },
     });
 
     const latest$ = combineLatest({
@@ -577,11 +589,13 @@ describe("subscribeToQuery", async () => {
   it("emits new subjects when initial matching set is empty", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
-      from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
+    const { subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+      from: {
+        Position: ["player"],
+      },
       where: [
-        { left: { tableId: tables.Position.tableId, field: "x" }, op: "=", right: 999 },
-        { left: { tableId: tables.Position.tableId, field: "y" }, op: "=", right: 999 },
+        ["Position.x", "=", 999],
+        ["Position.y", "=", 999],
       ],
     });
 
@@ -649,11 +663,13 @@ describe("subscribeToQuery", async () => {
   it("emits changed subjects when subscribing some time after initial query", async () => {
     const { store, fetchLatestLogs } = await createHydratedStore(worldAddress);
 
-    const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(store, {
-      from: [{ tableId: tables.Position.tableId, subject: ["player"] }],
+    const { subjects, subjects$, subjectChanges$ } = await subscribeToQuery(config, store, {
+      from: {
+        Position: ["player"],
+      },
       where: [
-        { left: { tableId: tables.Position.tableId, field: "x" }, op: "=", right: 3 },
-        { left: { tableId: tables.Position.tableId, field: "y" }, op: "=", right: 5 },
+        ["Position.x", "=", 3],
+        ["Position.y", "=", 5],
       ],
     });
 

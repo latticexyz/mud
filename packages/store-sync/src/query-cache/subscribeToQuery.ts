@@ -1,9 +1,10 @@
-import { ZustandStore } from "../zustand";
-import { AllTables, Query, QueryResultSubject } from "./common";
-import { StoreConfig, Tables } from "@latticexyz/store";
-import { findSubjects } from "./findSubjects";
 import { Observable, distinctUntilChanged, map, scan } from "rxjs";
 import isEqual from "fast-deep-equal";
+import { QueryResultSubject, findSubjects } from "@latticexyz/query";
+import { Query, configTables } from "./common";
+import { ResolvedStoreConfig } from "@latticexyz/store/config/v2";
+import { QueryCacheStore } from "./createStore";
+import { queryToWire } from "./queryToWire";
 
 export type QueryResultSubjectChange = {
   // TODO: naming
@@ -15,7 +16,7 @@ export type QueryResultSubjectChange = {
 // TODO: decide if this whole thing is returned in a promise or just `subjects`
 // TODO: return matching records alongside subjects? because the record subset may be smaller than what querying for records with matching subjects
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type SubscribeToQueryResult<query extends Query> = {
+type SubscribeToQueryResult<query extends Query<config>, config extends ResolvedStoreConfig = ResolvedStoreConfig> = {
   /**
    * Set of initial matching subjects for query.
    */
@@ -32,15 +33,17 @@ type SubscribeToQueryResult<query extends Query> = {
   subjectChanges$: Observable<readonly QueryResultSubjectChange[]>;
 };
 
-export async function subscribeToQuery<config extends StoreConfig, extraTables extends Tables | undefined>(
-  store: ZustandStore<AllTables<config, extraTables>>,
-  query: Query,
-): Promise<SubscribeToQueryResult<typeof query>> {
+export async function subscribeToQuery<config extends ResolvedStoreConfig, query extends Query<config>>(
+  config: config,
+  store: QueryCacheStore<configTables<config>>,
+  query: query,
+): Promise<SubscribeToQueryResult<query, config>> {
+  const wireQuery = queryToWire(config, query);
   const initialRecords = store.getState().records;
   const initialSubjects = findSubjects({
     records: Object.values(initialRecords),
-    query,
-  });
+    query: wireQuery,
+  }).subjects;
 
   function createSubjectStream(): Observable<readonly QueryResultSubject[]> {
     return new Observable<readonly QueryResultSubject[]>(function subscribe(subscriber) {
@@ -53,8 +56,8 @@ export async function subscribeToQuery<config extends StoreConfig, extraTables e
         subscriber.next(
           findSubjects({
             records: Object.values(records),
-            query,
-          }),
+            query: wireQuery,
+          }).subjects,
         );
       }
 
@@ -64,8 +67,8 @@ export async function subscribeToQuery<config extends StoreConfig, extraTables e
           subscriber.next(
             findSubjects({
               records: Object.values(state.records),
-              query,
-            }),
+              query: wireQuery,
+            }).subjects,
           );
         }
       });
