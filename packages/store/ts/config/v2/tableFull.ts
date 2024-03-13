@@ -66,7 +66,7 @@ export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> 
 export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope>(
   input: input,
   scope: scope = AbiTypeScope as scope,
-): void {
+): asserts input is TableFullInput<SchemaInput<scope>, scope> & input {
   if (typeof input !== "object" || input == null) {
     throw new Error(`Expected full table config, got ${JSON.stringify(input)}`);
   }
