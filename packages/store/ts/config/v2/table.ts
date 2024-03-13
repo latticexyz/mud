@@ -60,5 +60,5 @@ export function resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeSc
   throw new Error("Invalid config input");
 }
 
-// TODO(alvrs): swap with a better fully resolved type
-export type ResolvedTableConfig = resolveTableConfig<TableFullInput>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ResolvedTableConfig = resolveTableConfig<TableFullInput<SchemaInput<any>, any>>;

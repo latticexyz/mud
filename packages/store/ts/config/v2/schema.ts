@@ -1,5 +1,5 @@
 import { evaluate } from "@arktype/util";
-import { AbiTypeScope } from "./scope";
+import { AbiType, AbiTypeScope } from "./scope";
 import { hasOwnKey } from "./generics";
 
 export type SchemaInput<scope extends AbiTypeScope = AbiTypeScope> = {
@@ -9,7 +9,7 @@ export type SchemaInput<scope extends AbiTypeScope = AbiTypeScope> = {
 export type resolveSchema<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = evaluate<{
   readonly [key in keyof schema]: {
     /** the Solidity primitive ABI type */
-    readonly type: scope["types"][schema[key]];
+    readonly type: scope["types"][schema[key]] & AbiType;
     /** the user defined type or Solidity primitive ABI type */
     readonly internalType: schema[key];
   };
