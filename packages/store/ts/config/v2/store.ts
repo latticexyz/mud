@@ -120,4 +120,5 @@ export function resolveStoreConfig<const input>(input: validateStoreConfig<input
   } as resolveStoreConfig<input>;
 }
 
+// TODO(alvrs): swap with a better fully resolved type
 export type ResolvedStoreConfig = resolveStoreConfig<StoreConfigInput>;

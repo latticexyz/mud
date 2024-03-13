@@ -117,7 +117,7 @@ export function resolveTableFullConfig<
   validateTableFull(input, scope);
 
   return {
-    // TODO: fill in once we can pipe in namespace+name
+    // TODO(alvrs): fill in once we can pipe in namespace+name
     tableId: "0x" as Hex,
     primaryKey: input["primaryKey"],
     schema: resolveSchema(input["schema"], scope),
