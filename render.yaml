@@ -19,6 +19,27 @@ services:
         value: "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377"
       - key: START_BLOCK
         value: 895629
+  
+  - type: worker
+    name: tmp-skystrife-indexer
+    plan: standard
+    region: ohio
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: skystrife-indexer-db
+          property: connectionString
+      - key: RPC_HTTP_URL
+        value: https://rpc.holesky.redstone.xyz
+      - key: DEBUG
+        value: mud:store-sync:createStoreSync
+      - key: STORE_ADDRESS
+        value: "0x281aec03735d23b1b60dd58c4c10fa4c720f1b09"
+      - key: START_BLOCK
+        value: 5502941
 
   - type: web
     name: skystrife-indexer-api
@@ -37,8 +58,30 @@ services:
           property: connectionString
       - key: DEBUG
         value: mud:*
+  
+  - type: web
+    name: tmp-skystrife-indexer-api
+    plan: pro
+    region: ohio
+    runtime: docker
+    domains:
+      - indexer.skystrife.xyz
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    dockerCommand: pnpm tsx bin/postgres-frontend
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tmp-skystrife-indexer-db
+          property: connectionString
+      - key: DEBUG
+        value: mud:*
 
 databases:
   - name: skystrife-indexer-db
+    plan: pro
+    region: ohio
+
+  - name: tmp-skystrife-indexer-db
     plan: pro
     region: ohio
