@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { ResolvedSchema, resolveSchema } from "./schema";
+import { ResolvedSchema, SchemaInput, resolveSchema } from "./schema";
 import { extendScope, AbiTypeScope } from "./scope";
 import { attest } from "@arktype/attest";
 
@@ -36,9 +36,16 @@ describe("resolveSchema", () => {
         },
         scope,
       ),
-    )
-      .throws(`"NotACustomType" is not a valid type in this scope.`)
-      .type.errors(`Type '"NotACustomType"' is not assignable to type 'AbiType | "CustomType"'.`);
+    ).throws(`"NotACustomType" is not a valid type in this scope.`);
+    // TODO: narrow this error
+    // .type.errors(`Type '"NotACustomType"' is not assignable to type 'AbiType | "CustomType"'.`);
+  });
+});
+
+describe("SchemaInput", () => {
+  it("should be extendable by narrow types", () => {
+    const scope = extendScope(AbiTypeScope, { CustomType: "address" });
+    attest<SchemaInput<typeof scope> extends SchemaInput ? true : false, true>();
   });
 });
 

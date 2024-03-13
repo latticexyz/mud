@@ -2,15 +2,15 @@ import { evaluate } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type";
 import { hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput } from "./schema";
-import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
+import { AbiTypeScope, AnyTypeScope, getStaticAbiTypeKeys } from "./scope";
 import { NoStaticKeyFieldError } from "./table";
 import { TableFullInput } from "./tableFull";
 
-export type TableShorthandInput<scope extends AbiTypeScope = AbiTypeScope> = SchemaInput<scope> | keyof scope["types"];
+export type TableShorthandInput<scope extends AnyTypeScope = AnyTypeScope> = SchemaInput<scope> | keyof scope["types"];
 
-export function isTableShorthandInput<scope extends AbiTypeScope = AbiTypeScope>(
+export function isTableShorthandInput<scope extends AnyTypeScope = AbiTypeScope>(
   input: unknown,
-  scope: scope = AbiTypeScope as scope,
+  scope: scope = AbiTypeScope as unknown as scope,
 ): input is TableShorthandInput<scope> {
   return typeof input === "string" || isSchemaInput(input, scope);
 }
@@ -40,7 +40,7 @@ export function validateTableShorthand<scope extends AbiTypeScope = AbiTypeScope
   }
   if (typeof input === "object" && input !== null) {
     if (isSchemaInput(input, scope)) {
-      if (hasOwnKey(input, "key") && isStaticAbiType(scope.types[input["key"]])) {
+      if (hasOwnKey(input, "key") && isStaticAbiType(scope.types[input["key"] as keyof scope["types"]])) {
         return;
       }
       throw new Error(
@@ -52,18 +52,12 @@ export function validateTableShorthand<scope extends AbiTypeScope = AbiTypeScope
   throw new Error(`Invalid table shorthand.`);
 }
 
-export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> = input extends keyof scope["types"]
-  ? evaluate<
-      TableFullInput<
-        { key: "bytes32"; value: input },
-        scope,
-        ["key" & getStaticAbiTypeKeys<{ key: "bytes32"; value: input }, scope>]
-      >
-    >
+export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> = input extends string
+  ? evaluate<TableFullInput<{ key: "bytes32"; value: input }, ["key"]>>
   : input extends SchemaInput<scope>
     ? "key" extends getStaticAbiTypeKeys<input, scope>
       ? // If the shorthand includes a static field called `key`, use it as key
-        evaluate<TableFullInput<input, scope, ["key"]>>
+        evaluate<TableFullInput<input, ["key"]>>
       : never
     : never;
 

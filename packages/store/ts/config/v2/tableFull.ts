@@ -4,11 +4,7 @@ import { SchemaInput, isSchemaInput, resolveSchema } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 import { isStaticAbiType } from "@latticexyz/schema-type";
 
-export type TableFullInput<
-  schema extends SchemaInput<scope> = SchemaInput,
-  scope extends AbiTypeScope = AbiTypeScope,
-  primaryKey extends ValidKeys<schema, scope> = ValidKeys<schema, scope>,
-> = {
+export type TableFullInput<schema extends SchemaInput = SchemaInput, primaryKey extends string[] = string[]> = {
   schema: schema;
   primaryKey: primaryKey;
 };
@@ -66,7 +62,7 @@ export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> 
 export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope>(
   input: input,
   scope: scope = AbiTypeScope as scope,
-): asserts input is TableFullInput<SchemaInput<scope>, scope> & input {
+): asserts input is TableFullInput<SchemaInput<scope>> & input {
   if (typeof input !== "object" || input == null) {
     throw new Error(`Expected full table config, got ${JSON.stringify(input)}`);
   }
@@ -89,7 +85,7 @@ export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeSco
 }
 
 export type resolveTableFullConfig<
-  input extends TableFullInput<SchemaInput<scope>, scope>,
+  input extends TableFullInput<SchemaInput<scope>>,
   scope extends AbiTypeScope = AbiTypeScope,
 > = evaluate<{
   readonly primaryKey: Readonly<input["primaryKey"]>;
@@ -109,7 +105,7 @@ export type resolveTableFullConfig<
 }>;
 
 export function resolveTableFullConfig<
-  input extends TableFullInput<SchemaInput<scope>, scope>,
+  input extends TableFullInput<SchemaInput<scope>>,
   scope extends AbiTypeScope = AbiTypeScope,
 >(input: input, scope: scope = AbiTypeScope as scope): resolveTableFullConfig<input, scope> {
   validateTableFull(input, scope);
@@ -122,7 +118,7 @@ export function resolveTableFullConfig<
         Object.entries(input["schema"]).filter(([key]) =>
           input["primaryKey"].includes(key as input["primaryKey"][number]),
         ),
-      ),
+      ) as SchemaInput<scope>,
       scope,
     ),
     valueSchema: resolveSchema(
@@ -130,7 +126,7 @@ export function resolveTableFullConfig<
         Object.entries(input["schema"]).filter(
           ([key]) => !input["primaryKey"].includes(key as input["primaryKey"][number]),
         ),
-      ),
+      ) as SchemaInput<scope>,
       scope,
     ),
   } as resolveTableFullConfig<input, scope>;

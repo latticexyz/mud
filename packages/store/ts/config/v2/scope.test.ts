@@ -21,6 +21,14 @@ describe("extendScope", () => {
     const extendedScope = extendScope(EmptyScope, { static: "uint256", dynamic: "string" });
     attest<true, typeof extendedScope extends AnyTypeScope ? true : false>();
   });
+
+  it("a function with AnyTypeScope should accept any scope", () => {
+    const extendedScope = extendScope(EmptyScope, { static: "uint256", dynamic: "string" });
+    function test(input: AnyTypeScope) {
+      console.log(input);
+    }
+    test(extendedScope);
+  });
 });
 
 describe("getStaticAbiTypeKeys", () => {
