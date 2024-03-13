@@ -257,7 +257,7 @@ describe("resolveWorldConfig", () => {
       attest<typeof config>(expected);
     });
 
-    it("it should accept a user type as input and expand it", () => {
+    it("should accept a user type as input and expand it", () => {
       const config = resolveWorldConfig({ tables: { Name: "CustomType" }, userTypes: { CustomType: "address" } });
       const expected = {
         tables: {
@@ -391,7 +391,7 @@ describe("resolveWorldConfig", () => {
     });
 
     it("throw an error if the shorthand doesn't include a key field", () => {
-      attest(
+      attest(() =>
         resolveWorldConfig({
           tables: {
             // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
@@ -401,14 +401,18 @@ describe("resolveWorldConfig", () => {
             },
           },
         }),
-      ).type.errors("Provide a `key` field with static ABI type or a full config with explicit primaryKey override.");
+      ).type.errors(
+        "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+      );
     });
 
     it("throw an error if the shorthand config includes a non-static key field", () => {
       attest(
         // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
         resolveWorldConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } }),
-      ).type.errors("Provide a `key` field with static ABI type or a full config with explicit primaryKey override.");
+      ).type.errors(
+        "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+      );
     });
 
     it("throw an error if the shorthand config includes a non-static user type as key field", () => {
@@ -418,7 +422,9 @@ describe("resolveWorldConfig", () => {
           tables: { Example: { key: "dynamic", name: "string", age: "uint256" } },
           userTypes: { dynamic: "string", static: "address" },
         }),
-      ).type.errors("Provide a `key` field with static ABI type or a full config with explicit primaryKey override.");
+      ).type.errors(
+        "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+      );
     });
 
     it("should return the full config given a full config with one key", () => {
@@ -530,7 +536,7 @@ describe("resolveWorldConfig", () => {
       attest<typeof expected>(config);
     });
 
-    it("it should return the full config given a full config with two primaryKey", () => {
+    it("should return the full config given a full config with two primaryKey", () => {
       const config = resolveWorldConfig({
         tables: {
           Example: {
