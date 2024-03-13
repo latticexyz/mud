@@ -10,6 +10,7 @@ import {
   validateStoreTablesConfig,
   resolveStoreTablesConfig,
   extendedScope,
+  StoreTablesConfigInput,
 } from "@latticexyz/store/config/v2";
 
 export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = evaluate<
@@ -72,6 +73,30 @@ export type resolveWorldConfig<input> = evaluate<
 >;
 
 export function resolveWorldConfig<const input>(input: validateWorldConfig<input>): resolveWorldConfig<input> {
-  // TODO: runtime implementation
-  return {} as never;
+  const namespaces = get(input, "namespaces") ?? {};
+  const scope = extendedScope(input);
+
+  const namespacedTables = Object.fromEntries(
+    Object.entries(namespaces)
+      .map(([namespaceKey, namespace]) => {
+        const tables = get(namespace, "tables") ?? {};
+        return Object.entries(tables).map(([tableKey, table]) => [`${namespaceKey}__${tableKey}`, table]);
+      })
+      .flat(),
+  ) as StoreTablesConfigInput<typeof scope>;
+
+  const resolvedNamespaces = Object.fromEntries(
+    Object.entries(namespaces).map(([namespaceKey, namespace]) => [
+      namespaceKey,
+      { tables: resolveStoreTablesConfig(get(namespace, "tables") ?? {}, scope) },
+    ]),
+  );
+
+  return {
+    tables: resolveStoreTablesConfig({ ...(get(input, "tables") ?? {}), ...namespacedTables }, scope),
+    namespaces: resolvedNamespaces,
+    userTypes: get(input, "userTypes") ?? {},
+    enums: get(input, "enums") ?? {},
+    namespace: get(input, "namespace") ?? "",
+  } as resolveWorldConfig<input>;
 }

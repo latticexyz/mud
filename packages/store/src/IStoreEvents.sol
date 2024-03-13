@@ -10,8 +10,8 @@ import { PackedCounter } from "./PackedCounter.sol";
  */
 interface IStoreEvents {
   /**
-   * @notice Emitted when the store is initialized.
-   * @param storeVersion The version of the Store contract.
+   * @notice Emitted when the Store is created.
+   * @param storeVersion The protocol version of the Store.
    */
   event HelloStore(bytes32 indexed storeVersion);
 

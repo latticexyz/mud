@@ -1,8 +1,9 @@
 import { Dict, evaluate, narrow } from "@arktype/util";
-import { get } from "./generics";
+import { get, hasOwnKey } from "./generics";
 import { SchemaInput } from "./schema";
 import { AbiType, AbiTypeScope, extendScope } from "./scope";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
+import { isSchemaAbiType } from "@latticexyz/schema-type";
 
 export type UserTypes = Dict<string, AbiType>;
 export type Enums = Dict<string, string[]>;
@@ -26,11 +27,47 @@ export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiType
   readonly [key in keyof input]: resolveTableConfig<input[key], scope>;
 }>;
 
+export function resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope>(
+  input: input,
+  scope: scope = AbiTypeScope as scope,
+): resolveStoreTablesConfig<input, scope> {
+  if (typeof input !== "object" || input == null) {
+    throw new Error(`Expected tables config, received ${JSON.stringify(input)}`);
+  }
+
+  return Object.fromEntries(
+    Object.entries(input).map(([key, table]) => [key, resolveTableConfig(table, scope)]),
+  ) as resolveStoreTablesConfig<input, scope>;
+}
+
 export type scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTypeScope> = UserTypes extends userTypes
   ? scope
   : userTypes extends UserTypes
     ? extendScope<scope, userTypes>
     : scope;
+
+function isUserTypes(userTypes: unknown): userTypes is UserTypes {
+  return (
+    typeof userTypes === "object" &&
+    userTypes != null &&
+    Object.values(userTypes).every((type) => isSchemaAbiType(type))
+  );
+}
+
+export function scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTypeScope>(
+  userTypes: userTypes,
+  scope: scope = AbiTypeScope as scope,
+): scopeWithUserTypes<userTypes, scope> {
+  return (isUserTypes(userTypes) ? extendScope(scope, userTypes) : scope) as scopeWithUserTypes<userTypes, scope>;
+}
+
+function isEnums(enums: unknown): enums is Enums {
+  return (
+    typeof enums === "object" &&
+    enums != null &&
+    Object.values(enums).every((item) => Array.isArray(item) && item.every((element) => typeof element === "string"))
+  );
+}
 
 export type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = Enums extends enums
   ? scope
@@ -38,7 +75,22 @@ export type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = E
     ? extendScope<scope, { [key in keyof enums]: "uint8" }>
     : scope;
 
+export function scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope>(
+  enums: enums,
+  scope: scope = AbiTypeScope as scope,
+): scopeWithEnums<enums, scope> {
+  if (isEnums(enums)) {
+    const enumScope = Object.fromEntries(Object.keys(enums).map((key) => [key, "uint8" as const]));
+    return extendScope(scope, enumScope) as scopeWithEnums<enums, scope>;
+  }
+  return scope as scopeWithEnums<enums, scope>;
+}
+
 export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
+
+export function extendedScope<input>(input: input): extendedScope<input> {
+  return scopeWithEnums(get(input, "enums"), scopeWithUserTypes(get(input, "userTypes")));
+}
 
 export type validateStoreConfig<input> = {
   [key in keyof input]: key extends "tables"
@@ -60,8 +112,13 @@ export type resolveStoreConfig<input> = evaluate<{
 }>;
 
 export function resolveStoreConfig<const input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {
-  // TODO: runtime implementation
-  return {} as never;
+  return {
+    tables: hasOwnKey(input, "tables") ? resolveStoreTablesConfig(input["tables"], extendedScope(input)) : {},
+    userTypes: hasOwnKey(input, "userTypes") ? input["userTypes"] : {},
+    enums: hasOwnKey(input, "enums") ? input["enums"] : {},
+    namespace: hasOwnKey(input, "namespace") ? input["namespace"] : "",
+  } as resolveStoreConfig<input>;
 }
 
+// TODO(alvrs): swap with a better fully resolved type
 export type ResolvedStoreConfig = resolveStoreConfig<StoreConfigInput>;

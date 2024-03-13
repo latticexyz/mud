@@ -65,8 +65,8 @@ interface IWorldCall {
  */
 interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors, IWorldEvents, IModuleErrors {
   /**
-   * @notice Retrieve the version of the World.
-   * @return The version identifier of the World.
+   * @notice Retrieve the protocol version of the World.
+   * @return The protocol version of the World.
    */
   function worldVersion() external view returns (bytes32);
 
