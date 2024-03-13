@@ -7,7 +7,7 @@ import { Observable, map } from "rxjs";
 
 export type Entity = string;
 
-export enum QueryFragmentType {
+enum QueryFragmentType {
   Has,
   HasValue,
   Not,
@@ -135,10 +135,16 @@ export async function runQuery<config extends StoreConfig, extraTables extends T
   return new Set(entities);
 }
 
-export type EntityChange = {
-  readonly type: "enter" | "exit";
-  readonly subject: Entity;
+enum UpdateType {
+  Enter,
+  Exit,
+}
+
+type ComponentUpdate = {
+  entity: Entity;
 };
+
+export type EntityChange = ComponentUpdate & { type: UpdateType };
 
 export async function defineQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
   store: ZustandStore<AllTables<config, extraTables>>,
@@ -161,8 +167,8 @@ export async function defineQuery<config extends StoreConfig, extraTables extend
     update$: subjectChanges$.pipe(
       map((subjectChanges) => {
         return subjectChanges.map((subjectChange) => ({
-          type: subjectChange.type,
-          subject: queryResultSubjectToEntity(subjectChange.subject),
+          type: subjectChange.type === "enter" ? UpdateType.Enter : UpdateType.Exit,
+          entity: queryResultSubjectToEntity(subjectChange.subject),
         }));
       }),
     ),

@@ -40,20 +40,20 @@ describe("defineQuery", async () => {
           "count": 1,
           "value": [
             {
-              "subject": "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-              "type": "enter",
+              "entity": "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+              "type": 0,
             },
             {
-              "subject": "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-              "type": "enter",
+              "entity": "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+              "type": 0,
             },
             {
-              "subject": "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-              "type": "enter",
+              "entity": "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+              "type": 0,
             },
             {
-              "subject": "0xdBa86119a787422C593ceF119E40887f396024E2",
-              "type": "enter",
+              "entity": "0xdBa86119a787422C593ceF119E40887f396024E2",
+              "type": 0,
             },
           ],
         },
@@ -87,8 +87,8 @@ describe("defineQuery", async () => {
           "count": 2,
           "value": [
             {
-              "subject": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-              "type": "enter",
+              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "type": 0,
             },
           ],
         },
@@ -128,12 +128,12 @@ describe("defineQuery", async () => {
           "count": 1,
           "value": [
             {
-              "subject": "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-              "type": "enter",
+              "entity": "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+              "type": 0,
             },
             {
-              "subject": "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
-              "type": "enter",
+              "entity": "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+              "type": 0,
             },
           ],
         },
@@ -165,8 +165,8 @@ describe("defineQuery", async () => {
           "count": 2,
           "value": [
             {
-              "subject": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-              "type": "enter",
+              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "type": 0,
             },
           ],
         },
@@ -199,8 +199,8 @@ describe("defineQuery", async () => {
           "count": 3,
           "value": [
             {
-              "subject": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-              "type": "exit",
+              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "type": 1,
             },
           ],
         },
@@ -240,12 +240,12 @@ describe("defineQuery", async () => {
           "count": 1,
           "value": [
             {
-              "subject": "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
-              "type": "enter",
+              "entity": "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
+              "type": 0,
             },
             {
-              "subject": "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
-              "type": "enter",
+              "entity": "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+              "type": 0,
             },
           ],
         },
@@ -282,8 +282,8 @@ describe("defineQuery", async () => {
           "count": 1,
           "value": [
             {
-              "subject": "3:5",
-              "type": "enter",
+              "entity": "3:5",
+              "type": 0,
             },
           ],
         },
@@ -319,8 +319,8 @@ describe("defineQuery", async () => {
           "count": 1,
           "value": [
             {
-              "subject": "0xdBa86119a787422C593ceF119E40887f396024E2",
-              "type": "enter",
+              "entity": "0xdBa86119a787422C593ceF119E40887f396024E2",
+              "type": 0,
             },
           ],
         },
@@ -381,8 +381,8 @@ describe("defineQuery", async () => {
           "count": 2,
           "value": [
             {
-              "subject": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-              "type": "enter",
+              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "type": 0,
             },
           ],
         },
@@ -435,8 +435,8 @@ describe("defineQuery", async () => {
           "count": 2,
           "value": [
             {
-              "subject": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-              "type": "enter",
+              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "type": 0,
             },
           ],
         },
@@ -473,8 +473,8 @@ describe("defineQuery", async () => {
           "count": 3,
           "value": [
             {
-              "subject": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
-              "type": "exit",
+              "entity": "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              "type": 1,
             },
           ],
         },
