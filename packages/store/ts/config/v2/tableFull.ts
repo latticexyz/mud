@@ -84,10 +84,7 @@ export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeSco
   }
 }
 
-export type resolveTableFullConfig<
-  input extends TableFullInput<SchemaInput<scope>>,
-  scope extends AbiTypeScope = AbiTypeScope,
-> = evaluate<{
+export type resolveTableFullConfig<input extends TableFullInput, scope extends AbiTypeScope = AbiTypeScope> = evaluate<{
   readonly primaryKey: Readonly<input["primaryKey"]>;
   readonly schema: resolveSchema<input["schema"], scope>;
   readonly keySchema: resolveSchema<
@@ -104,10 +101,10 @@ export type resolveTableFullConfig<
   >;
 }>;
 
-export function resolveTableFullConfig<
-  input extends TableFullInput<SchemaInput<scope>>,
-  scope extends AbiTypeScope = AbiTypeScope,
->(input: input, scope: scope = AbiTypeScope as scope): resolveTableFullConfig<input, scope> {
+export function resolveTableFullConfig<input extends TableFullInput, scope extends AbiTypeScope = AbiTypeScope>(
+  input: input,
+  scope: scope = AbiTypeScope as scope,
+): resolveTableFullConfig<input, scope> {
   validateTableFull(input, scope);
 
   return {

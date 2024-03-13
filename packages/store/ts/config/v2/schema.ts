@@ -2,13 +2,9 @@ import { evaluate } from "@arktype/util";
 import { AbiTypeScope, AnyTypeScope } from "./scope";
 import { hasOwnKey } from "./generics";
 
-export type SchemaInput<scope extends AnyTypeScope = AnyTypeScope> = AnyTypeScope extends scope
-  ? {
-      [key: string]: string;
-    }
-  : {
-      [key: string]: keyof scope["types"] & string;
-    };
+export type SchemaInput<scope extends AnyTypeScope = AnyTypeScope> = {
+  [key: string]: keyof scope["types"] & string;
+};
 
 export type ResolvedSchema<
   schema extends SchemaInput<scope> = SchemaInput,
