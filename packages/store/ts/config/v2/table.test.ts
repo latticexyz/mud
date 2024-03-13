@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { resolveTableConfig } from "./table";
+import { ResolvedTableConfig, resolveTableConfig } from "./table";
 import { AbiTypeScope, extendScope } from "./scope";
 import { Hex } from "viem";
 
@@ -370,5 +370,11 @@ describe("resolveTableConfig", () => {
     )
       .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["NotAKey"]`')
       .type.errors(`Type '"NotAKey"' is not assignable to type '"key" | "age"'`);
+  });
+
+  it("should extend the ResolvedStoreConfig type", () => {
+    const scope = extendScope(AbiTypeScope, { CustomString: "string", CustomNumber: "uint256" });
+    const table = resolveTableConfig({ key: "CustomNumber", name: "CustomString", age: "CustomNumber" }, scope);
+    attest<true, typeof table extends ResolvedTableConfig ? true : false>();
   });
 });
