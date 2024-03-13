@@ -65,7 +65,7 @@ services:
     region: ohio
     runtime: docker
     domains:
-      - indexer.skystrife.xyz
+      - tmp-indexer.skystrife.xyz
     dockerfilePath: ./Dockerfile
     dockerContext: ./
     dockerCommand: pnpm tsx bin/postgres-frontend
