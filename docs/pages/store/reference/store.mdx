@@ -329,33 +329,6 @@ error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fi
 | `deleteCount`      | `uint40` | The number of bytes to delete in the splice operation.     |
 | `fieldLength`      | `uint40` | The field length for the splice operation.                 |
 
-## IStoreData
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreData.sol)
-
-**Inherits:**
-[IStoreRead](/store/reference/store#istoreread), [IStoreWrite](/store/reference/store#istorewrite)
-
-The IStoreData interface includes methods for reading and writing table values.
-
-_These methods are frequently invoked during runtime, so it is essential to prioritize optimizing their gas cost._
-
-### Functions
-
-#### storeVersion
-
-Returns the version of the Store contract.
-
-```solidity
-function storeVersion() external view returns (bytes32 version);
-```
-
-**Returns**
-
-| Name      | Type      | Description                        |
-| --------- | --------- | ---------------------------------- |
-| `version` | `bytes32` | The version of the Store contract. |
-
 ## IStoreRead
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreRead.sol)
