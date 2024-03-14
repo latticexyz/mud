@@ -6,7 +6,7 @@ import { resourceToHex } from "@latticexyz/common";
 import { TABLE_CODEGEN_DEFAULTS, CODEGEN_DEFAULTS } from "@latticexyz/store/config/v2";
 
 describe("resolveWorldConfig", () => {
-  it.only("should resolve namespaced tables", () => {
+  it("should resolve namespaced tables", () => {
     const config = resolveWorldConfig({
       namespaces: {
         ExampleNamespace: {
@@ -180,7 +180,7 @@ describe("resolveWorldConfig", () => {
           primaryKey: ["key"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
         },
       },
@@ -222,7 +222,7 @@ describe("resolveWorldConfig", () => {
               primaryKey: ["key"],
               name: "ExampleTable",
               namespace: "ExampleNamespace",
-              codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+              codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
               type: "table",
             },
           },
@@ -235,6 +235,7 @@ describe("resolveWorldConfig", () => {
       enums: {
         MyEnum: ["First", "Second"],
       },
+      codegen: CODEGEN_DEFAULTS,
       namespace: "",
     } as const;
 
@@ -267,6 +268,28 @@ describe("resolveWorldConfig", () => {
     });
 
     attest<true, typeof config extends Config ? true : false>();
+  });
+
+  it("should not use the global namespace for namespaced tables", () => {
+    const config = resolveWorldConfig({
+      namespace: "namespace",
+      namespaces: {
+        AnotherOne: {
+          tables: {
+            Example: {
+              schema: { key: "address", name: "string", age: "uint256" },
+              primaryKey: ["age"],
+            },
+          },
+        },
+      },
+    });
+
+    attest<"namespace">(config.namespace).equals("namespace");
+    attest<"AnotherOne">(config.tables.AnotherOne__Example.namespace).equals("AnotherOne");
+    attest(config.tables.AnotherOne__Example.tableId).equals(
+      resourceToHex({ type: "table", name: "Example", namespace: "AnotherOne" }),
+    );
   });
 
   describe("should have the same output as `resolveWorldConfig` for store config inputs", () => {
@@ -1052,6 +1075,24 @@ describe("resolveWorldConfig", () => {
         userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
       });
       attest<true, typeof config extends Config ? true : false>();
+    });
+
+    it("should use the global namespace instead for tables", () => {
+      const config = resolveWorldConfig({
+        namespace: "namespace",
+        tables: {
+          Example: {
+            schema: { key: "address", name: "string", age: "uint256" },
+            primaryKey: ["age"],
+          },
+        },
+      });
+
+      attest<"namespace">(config.namespace).equals("namespace");
+      attest<"namespace">(config.tables.Example.namespace).equals("namespace");
+      attest(config.tables.Example.tableId).equals(
+        resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
+      );
     });
   });
 });
