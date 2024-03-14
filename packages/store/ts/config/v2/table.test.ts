@@ -36,7 +36,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["key"],
       name: "",
       namespace: "",
-      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
       type: "table",
     } as const;
 
@@ -73,7 +73,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["key"],
       name: "",
       namespace: "",
-      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
       type: "table",
     } as const;
 
@@ -249,7 +249,7 @@ describe("resolveTableConfig", () => {
       primaryKey: ["age", "key"],
       name: "",
       namespace: "",
-      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
       type: "table",
     } as const;
 
