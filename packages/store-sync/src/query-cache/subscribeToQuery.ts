@@ -1,105 +1,118 @@
-import { Observable, distinctUntilChanged, map, scan } from "rxjs";
-import isEqual from "fast-deep-equal";
-import { QueryResultSubject, findSubjects } from "@latticexyz/query";
-import { Query, Tables } from "./common";
-import { QueryCacheStore } from "./createStore";
+import { Observable } from "rxjs";
+import { SubjectEvent, SubjectRecord, SubjectRecords, findSubjects } from "@latticexyz/query";
+import { Query } from "./common";
+import { QueryCacheStore, extractTables } from "./createStore";
 import { queryToWire } from "./queryToWire";
 
-export type QueryResultSubjectChange = {
-  // TODO: naming
-  //       is enter/exit better than add/remove? what about enter/exit vs entered/exited? in/out?
-  readonly type: "enter" | "exit";
-  readonly subject: QueryResultSubject;
-};
+function getId({ subject, record }: SubjectRecord): string {
+  // TODO: memoize
+  return JSON.stringify([subject, record.primaryKey]);
+}
+
+function flattenSubjectRecords(subjects: readonly SubjectRecords[]): readonly SubjectRecord[] {
+  return subjects.flatMap((subject) =>
+    subject.records.map((record) => ({
+      subject: subject.subject,
+      record,
+    })),
+  );
+}
+
+function subjectEvents(prev: readonly SubjectRecord[], next: readonly SubjectRecord[]): readonly SubjectEvent[] {
+  const prevSet = new Set(prev.map((record) => getId(record)));
+  const nextSet = new Set(next.map((record) => getId(record)));
+
+  const enters = next.filter((record) => !prevSet.has(getId(record)));
+  const exits = prev.filter((record) => !nextSet.has(getId(record)));
+  const changes = next.filter((nextRecord) => {
+    const prevRecord = prev.find((record) => getId(record) === getId(nextRecord));
+    // TODO: improve this so we're not dependent on field order
+    return prevRecord && JSON.stringify(prevRecord.record.fields) !== JSON.stringify(nextRecord.record.fields);
+  });
+
+  return [
+    ...enters.map((record) => ({ ...record, type: "enter" as const })),
+    ...exits.map((record) => ({ ...record, type: "exit" as const })),
+    ...changes.map((record) => ({ ...record, type: "change" as const })),
+  ];
+}
 
 // TODO: decide if this whole thing is returned in a promise or just `subjects`
 // TODO: return matching records alongside subjects? because the record subset may be smaller than what querying for records with matching subjects
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type SubscribeToQueryResult = {
+// TODO: stronger types
+export type SubscribeToQueryResult = {
   /**
    * Set of initial matching subjects for query.
    */
-  subjects: readonly QueryResultSubject[];
-  /**
-   * Stream of matching subjects for query. First emission is the same as `subjects`.
-   */
-  subjects$: Observable<readonly QueryResultSubject[]>;
+  subjects: Promise<readonly SubjectRecords[]>;
   /**
    * Stream of subject changes for query.
    * First emission will be an `enter` for each item in `subjects`, or an empty array if no matches.
-   * Each emission after that will only be the subjects that have changed (have entered or exited the result set).
+   * Each emission after that will only be the subjects that have changed (entered/exited the result set, or the underlying record changed).
    */
-  subjectChanges$: Observable<readonly QueryResultSubjectChange[]>;
+  subjects$: Observable<readonly SubjectEvent[]>;
 };
 
-export async function subscribeToQuery<
-  store extends QueryCacheStore<tables>,
-  query extends Query<tables>,
-  tables extends Tables = store extends QueryCacheStore<infer tables> ? tables : Tables,
->(store: store, query: query): Promise<SubscribeToQueryResult> {
-  const { tables, records: initialRecords } = store.getState();
+export function subscribeToQuery<store extends QueryCacheStore, query extends Query<extractTables<store>>>(
+  store: store,
+  query: query,
+): SubscribeToQueryResult {
+  const { tables, records: initialTableRecords } = store.getState();
   const wireQuery = queryToWire(tables, query);
   const initialSubjects = findSubjects({
-    records: Object.values(initialRecords),
+    records: Object.values(initialTableRecords),
     query: wireQuery,
-  }).subjects;
+  });
 
-  function createSubjectStream(): Observable<readonly QueryResultSubject[]> {
-    return new Observable<readonly QueryResultSubject[]>(function subscribe(subscriber) {
+  function createSubjectStream(): Observable<readonly SubjectEvent[]> {
+    return new Observable<readonly SubjectEvent[]>(function subscribe(subscriber) {
       // return initial results immediately
-      subscriber.next(initialSubjects);
+      const initialRecords: readonly SubjectRecord[] = flattenSubjectRecords(initialSubjects);
+      subscriber.next(subjectEvents([], initialRecords));
+
+      let previousRecords = initialRecords;
 
       // if records have changed between query and subscription, reevaluate
-      const { records } = store.getState();
-      if (records !== initialRecords) {
-        subscriber.next(
+      const { records: tableRecords } = store.getState();
+      if (tableRecords !== initialTableRecords) {
+        const nextSubjectRecords = flattenSubjectRecords(
           findSubjects({
-            records: Object.values(records),
+            records: Object.values(tableRecords),
             query: wireQuery,
-          }).subjects,
+          }),
         );
+        const events = subjectEvents(previousRecords, nextSubjectRecords);
+        if (events.length) {
+          subscriber.next(events);
+          previousRecords = nextSubjectRecords;
+        }
       }
 
       // then listen for changes to records and reevaluate
       const unsub = store.subscribe((state, prevState) => {
         if (state.records !== prevState.records) {
-          subscriber.next(
+          const nextSubjectRecords = flattenSubjectRecords(
             findSubjects({
               records: Object.values(state.records),
               query: wireQuery,
-            }).subjects,
+            }),
           );
+          const events = subjectEvents(previousRecords, nextSubjectRecords);
+          if (events.length) {
+            subscriber.next(events);
+            previousRecords = nextSubjectRecords;
+          }
         }
       });
 
       return () => void unsub();
-    }).pipe(distinctUntilChanged(isEqual));
+    });
   }
 
   const subjects$ = createSubjectStream();
 
-  const subjectChanges$ = createSubjectStream().pipe(
-    scan<readonly QueryResultSubject[], { prev: readonly QueryResultSubject[]; curr: readonly QueryResultSubject[] }>(
-      (acc, curr) => ({ prev: acc.curr, curr }),
-      { prev: [], curr: [] },
-    ),
-    map(({ prev, curr }) => {
-      const prevSet = new Set(prev.map((subject) => JSON.stringify(subject)));
-      const currSet = new Set(curr.map((subject) => JSON.stringify(subject)));
-
-      const enter = curr.filter((subject) => !prevSet.has(JSON.stringify(subject)));
-      const exit = prev.filter((subject) => !currSet.has(JSON.stringify(subject)));
-
-      return [
-        ...enter.map((subject) => ({ type: "enter" as const, subject })),
-        ...exit.map((subject) => ({ type: "exit" as const, subject })),
-      ];
-    }),
-  );
-
   return {
-    subjects: initialSubjects,
+    subjects: new Promise((resolve) => resolve(initialSubjects)),
     subjects$,
-    subjectChanges$,
   };
 }

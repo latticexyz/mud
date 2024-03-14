@@ -1,17 +1,27 @@
 import { evaluate, narrow } from "@arktype/util";
+import { resourceToHex } from "@latticexyz/common";
+import { mapObject } from "@latticexyz/common/utils";
 import {
   UserTypes,
   Enums,
   StoreConfigInput,
   resolveStoreConfig,
-  validateStoreTablesConfig,
   resolveStoreTablesConfig,
   extendedScope,
-  StoreTablesConfigInput,
   resolveTableConfig,
   AbiTypeScope,
   get,
+  isTableShorthandInput,
+  resolveTableShorthand,
+  validateTableShorthand,
+  resolveTableFullConfig,
+  validateStoreTablesConfig,
+  validateTableFull,
+  isObject,
+  hasOwnKey,
+  Table,
 } from "@latticexyz/store/config/v2";
+import { Config } from "./output";
 
 export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = evaluate<
   StoreConfigInput<userTypes, enums> & {
@@ -30,6 +40,22 @@ export type validateNamespaces<input, scope extends AbiTypeScope = AbiTypeScope>
       : input[namespace][key];
   };
 };
+
+function validateNamespaces<scope extends AbiTypeScope = AbiTypeScope>(
+  input: unknown,
+  scope: scope,
+): asserts input is NamespacesInput {
+  if (isObject(input)) {
+    for (const namespace of Object.values(input)) {
+      if (!hasOwnKey(namespace, "tables")) {
+        throw new Error(`Expected namespace config, received ${JSON.stringify(namespace)}`);
+      }
+      validateStoreTablesConfig(namespace.tables, scope);
+    }
+    return;
+  }
+  throw new Error(`Expected namespaces config, received ${JSON.stringify(input)}`);
+}
 
 export type validateWorldConfig<input> = {
   readonly [key in keyof input]: key extends "tables"
@@ -73,27 +99,44 @@ export type resolveWorldConfig<input> = evaluate<
 >;
 
 export function resolveWorldConfig<const input>(input: validateWorldConfig<input>): resolveWorldConfig<input> {
-  const namespaces = get(input, "namespaces") ?? {};
   const scope = extendedScope(input);
 
-  const namespacedTables = Object.fromEntries(
-    Object.entries(namespaces)
-      .map(([namespaceKey, namespace]) => {
-        const tables = get(namespace, "tables") ?? {};
-        return Object.entries(tables).map(([tableKey, table]) => [`${namespaceKey}__${tableKey}`, table]);
-      })
-      .flat(),
-  ) as StoreTablesConfigInput<typeof scope>;
+  const namespaces = get(input, "namespaces") ?? {};
+  validateNamespaces(namespaces, scope);
 
-  const resolvedNamespaces = Object.fromEntries(
-    Object.entries(namespaces).map(([namespaceKey, namespace]) => [
-      namespaceKey,
-      { tables: resolveStoreTablesConfig(get(namespace, "tables") ?? {}, scope) },
-    ]),
-  );
+  const rootTables = get(input, "tables") ?? {};
+  validateStoreTablesConfig(rootTables, scope);
+
+  const resolvedNamespaces = mapObject(namespaces, (namespace, namespaceKey) => ({
+    tables: mapObject(namespace.tables, (table, tableKey) => {
+      const fullInput = isTableShorthandInput(table, scope)
+        ? resolveTableShorthand(table as validateTableShorthand<typeof table, typeof scope>, scope)
+        : table;
+      validateTableFull(fullInput, scope);
+      return resolveTableFullConfig(
+        {
+          ...fullInput,
+          tableId:
+            fullInput.tableId ??
+            resourceToHex({ type: "table", namespace: namespaceKey as string, name: tableKey as string }),
+        },
+        scope,
+      ) as Table;
+    }) as Config["namespaces"][string]["tables"],
+  })) as Config["namespaces"];
+
+  const resolvedNamespacedTables = Object.fromEntries(
+    Object.entries(resolvedNamespaces)
+      .map(([namespaceKey, namespace]) =>
+        Object.entries(namespace.tables).map(([tableKey, table]) => [`${namespaceKey}__${tableKey}`, table]),
+      )
+      .flat(),
+  ) as Config["tables"];
+
+  const resolvedRootTables = resolveStoreTablesConfig(rootTables, scope);
 
   return {
-    tables: resolveStoreTablesConfig({ ...(get(input, "tables") ?? {}), ...namespacedTables }, scope),
+    tables: { ...resolvedRootTables, ...resolvedNamespacedTables },
     namespaces: resolvedNamespaces,
     userTypes: get(input, "userTypes") ?? {},
     enums: get(input, "enums") ?? {},

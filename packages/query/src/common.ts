@@ -1,10 +1,13 @@
-import { Table, Schema } from "@latticexyz/store/config/v2";
+import { StaticPrimitiveType } from "@latticexyz/schema-type";
+import { SchemaToPrimitives } from "@latticexyz/store";
+import { Table } from "@latticexyz/store/config/v2";
+import { Hex } from "viem";
 
-export type schemaAbiTypes<schema extends Schema> = {
-  [key in keyof schema]: schema[key]["type"];
-};
-
-export type TableRecord<table extends Table = Table> = {
+export type TableRecord<table extends Table> = {
   readonly table: table;
-  readonly fields: schemaAbiTypes<table["schema"]>;
+  // TODO: refine to just static types
+  // TODO: add helper to extract primary key of primitive types from table primary key + field values
+  readonly primaryKey: readonly StaticPrimitiveType[];
+  readonly keyTuple: readonly Hex[];
+  readonly fields: SchemaToPrimitives<table["schema"]>;
 };

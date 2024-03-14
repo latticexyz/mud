@@ -41,24 +41,14 @@ type queryConditions<tables extends Tables> = {
   [tableName in keyof tables]: tableConditions<tableName & string, tables[tableName]>;
 }[keyof tables];
 
-export type QuerySubjects<tables extends Tables = Tables> = {
-  readonly [k in keyof tables]?: readonly [keyof tables[k]["schema"], ...(keyof tables[k]["schema"])[]];
-};
-
 export type Query<tables extends Tables = Tables> = {
-  readonly from: QuerySubjects;
-  readonly except?: QuerySubjects;
+  readonly from: {
+    readonly [k in keyof tables]?: readonly [keyof tables[k]["schema"], ...(keyof tables[k]["schema"])[]];
+  };
+  readonly except?: {
+    readonly [k in keyof tables]?: readonly [keyof tables[k]["schema"], ...(keyof tables[k]["schema"])[]];
+  };
   readonly where?: readonly queryConditions<tables>[];
 };
 
-export type tablesFromQuery<query extends Query> = query extends Query<infer tables> ? tables : never;
-
-export type queryToResultSubject<query extends Query, tables extends Tables = tablesFromQuery<query>> = {
-  [table in keyof query["from"]]: table extends keyof tables
-    ? subjectSchemaToPrimitive<mapTuple<query["from"][table], schemaAbiTypes<tables[table]["schema"]>>>
-    : never;
-}[keyof query["from"]];
-
-export type QueryResult<query extends Query> = {
-  readonly subjects: readonly queryToResultSubject<query>[];
-};
+export type extractTables<T> = T extends Query<infer tables> ? tables : never;
