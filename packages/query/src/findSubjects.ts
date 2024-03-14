@@ -49,6 +49,7 @@ export function findSubjects<table extends Table>({
     .map((records) => ({
       subjectId: records[0].subjectId,
       subject: records[0].subject,
+      subjectSchema: records[0].subjectSchema.map((abiType) => abiType.type),
       records,
     }))
     .filter(({ records }) => {
@@ -75,6 +76,7 @@ export function findSubjects<table extends Table>({
 
   const subjects = matchedSubjects.map((match) => ({
     subject: match.subject,
+    subjectSchema: match.subjectSchema,
     records: match.records.map((record) => ({
       tableId: record.table.tableId,
       primaryKey: record.primaryKey,

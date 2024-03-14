@@ -24,6 +24,9 @@ export function queryToWire<tables extends Tables, query extends Query<tables>>(
     const left = leftTableField;
     const [tableName, fieldName] = left.split(".");
     const table = tables[tableName];
+    if (op === "in") {
+      return { left: { tableId: table.tableId, field: fieldName }, op, right };
+    }
     return { left: { tableId: table.tableId, field: fieldName }, op, right };
   });
 
