@@ -25,6 +25,16 @@ export type validateTableConfig<input, scope extends AbiTypeScope = AbiTypeScope
       ? validateTableShorthand<input, scope>
       : validateTableFull<input, scope>;
 
+export function validateTableConfig<scope extends AbiTypeScope = AbiTypeScope>(
+  input: unknown,
+  scope: scope,
+): asserts input is TableInput<SchemaInput<scope>, scope> {
+  if (isTableShorthandInput(input, scope)) {
+    return validateTableShorthand(input, scope);
+  }
+  validateTableFull(input, scope);
+}
+
 export type resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<
   input extends TableShorthandInput<scope>
     ? resolveTableFullConfig<resolveTableShorthand<input, scope>, scope>

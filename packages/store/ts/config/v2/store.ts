@@ -1,5 +1,5 @@
 import { evaluate, narrow } from "@arktype/util";
-import { get, hasOwnKey } from "./generics";
+import { get, hasOwnKey, isObject } from "./generics";
 import { SchemaInput } from "./schema";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
 import { AbiTypeScope, extendScope } from "./scope";
@@ -27,7 +27,13 @@ export function validateStoreTablesConfig<scope extends AbiTypeScope = AbiTypeSc
   input: unknown,
   scope: scope,
 ): asserts input is StoreTablesConfigInput {
-  // TODO
+  if (isObject(input)) {
+    for (const table of Object.values(input)) {
+      validateTableConfig(table, scope);
+    }
+    return;
+  }
+  throw new Error(`Expected store config, received ${JSON.stringify(input)}`);
 }
 
 export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<{

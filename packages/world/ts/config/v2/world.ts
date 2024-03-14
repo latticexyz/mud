@@ -19,6 +19,8 @@ import {
   resolveTableFullConfig,
   validateStoreTablesConfig,
   validateTableFull,
+  isObject,
+  hasOwnKey,
 } from "@latticexyz/store/config/v2";
 
 export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = evaluate<
@@ -39,8 +41,20 @@ export type validateNamespaces<input, scope extends AbiTypeScope = AbiTypeScope>
   };
 };
 
-function validateNamespaces(input: unknown): asserts input is NamespacesInput {
-  // TODO
+function validateNamespaces<scope extends AbiTypeScope = AbiTypeScope>(
+  input: unknown,
+  scope: scope,
+): asserts input is NamespacesInput {
+  if (isObject(input)) {
+    for (const namespace of Object.values(input)) {
+      if (!hasOwnKey(namespace, "tables")) {
+        throw new Error(`Expected namespace config, received ${JSON.stringify(namespace)}`);
+      }
+      validateStoreTablesConfig(namespace.tables, scope);
+    }
+    return;
+  }
+  throw new Error(`Expected namespaces config, received ${JSON.stringify(input)}`);
 }
 
 export type validateWorldConfig<input> = {
@@ -85,10 +99,10 @@ export type resolveWorldConfig<input> = evaluate<
 >;
 
 export function resolveWorldConfig<const input>(input: validateWorldConfig<input>): resolveWorldConfig<input> {
-  const namespaces = get(input, "namespaces") ?? {};
-  validateNamespaces(namespaces);
-
   const scope = extendedScope(input);
+
+  const namespaces = get(input, "namespaces") ?? {};
+  validateNamespaces(namespaces, scope);
 
   const rootTables = get(input, "tables") ?? {};
   validateStoreTablesConfig(rootTables, scope);
