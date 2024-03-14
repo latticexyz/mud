@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 import { resolveWorldConfig } from "./world";
 import { Config } from "./output";
 import { attest } from "@arktype/attest";
-import { Hex } from "viem";
+import { resourceToHex } from "@latticexyz/common";
 
 describe("resolveWorldConfig", () => {
   it("should resolve namespaced tables", () => {
@@ -26,7 +26,7 @@ describe("resolveWorldConfig", () => {
     const expected = {
       tables: {
         ExampleNamespace__ExampleTable: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
           schema: {
             key: {
               type: "address",
@@ -64,7 +64,7 @@ describe("resolveWorldConfig", () => {
         ExampleNamespace: {
           tables: {
             ExampleTable: {
-              tableId: "0x" as Hex,
+              tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
               schema: {
                 key: {
                   type: "address",
@@ -136,7 +136,7 @@ describe("resolveWorldConfig", () => {
     const expected = {
       tables: {
         ExampleNamespace__ExampleTable: {
-          tableId: "0x" as Hex,
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
           schema: {
             key: {
               type: "address",
@@ -174,7 +174,7 @@ describe("resolveWorldConfig", () => {
         ExampleNamespace: {
           tables: {
             ExampleTable: {
-              tableId: "0x" as Hex,
+              tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
               schema: {
                 key: {
                   type: "address",
@@ -258,7 +258,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Name: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
             schema: {
               key: {
                 type: "bytes32",
@@ -298,7 +298,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Name: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
             schema: {
               key: {
                 type: "bytes32",
@@ -338,7 +338,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Example: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
               key: {
                 type: "address",
@@ -386,7 +386,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Example: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
               key: {
                 type: "address",
@@ -478,7 +478,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Example: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
               key: {
                 type: "address",
@@ -534,7 +534,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Example: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
               key: {
                 type: "string",
@@ -589,7 +589,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Example: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
               key: {
                 type: "address",
@@ -648,7 +648,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           First: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
             schema: {
               firstKey: {
                 type: "address",
@@ -682,7 +682,7 @@ describe("resolveWorldConfig", () => {
             primaryKey: ["firstKey", "firstAge"],
           },
           Second: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
             schema: {
               secondKey: {
                 type: "address",
@@ -742,7 +742,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           First: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
             schema: {
               firstKey: {
                 type: "address",
@@ -776,7 +776,7 @@ describe("resolveWorldConfig", () => {
             primaryKey: ["firstKey", "firstAge"],
           },
           Second: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
             schema: {
               secondKey: {
                 type: "address",
@@ -890,7 +890,7 @@ describe("resolveWorldConfig", () => {
       const expected = {
         tables: {
           Example: {
-            tableId: "0x" as Hex,
+            tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
               key: {
                 type: "string",

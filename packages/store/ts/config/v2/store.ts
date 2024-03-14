@@ -1,10 +1,12 @@
 import { evaluate, narrow } from "@arktype/util";
-import { get, hasOwnKey } from "./generics";
+import { get, hasOwnKey, isObject } from "./generics";
 import { SchemaInput } from "./schema";
-import { AbiTypeScope, extendScope } from "./scope";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
+import { AbiTypeScope, extendScope } from "./scope";
 import { isSchemaAbiType } from "@latticexyz/schema-type";
 import { UserTypes, Enums } from "./output";
+import { isTableShorthandInput, resolveTableShorthand, validateTableShorthand } from "./tableShorthand";
+import { resourceToHex } from "@latticexyz/common";
 
 export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
   namespace?: string;
@@ -21,6 +23,19 @@ export type validateStoreTablesConfig<input, scope extends AbiTypeScope = AbiTyp
   [key in keyof input]: validateTableConfig<input[key], scope>;
 };
 
+export function validateStoreTablesConfig<scope extends AbiTypeScope = AbiTypeScope>(
+  input: unknown,
+  scope: scope,
+): asserts input is StoreTablesConfigInput {
+  if (isObject(input)) {
+    for (const table of Object.values(input)) {
+      validateTableConfig(table, scope);
+    }
+    return;
+  }
+  throw new Error(`Expected store config, received ${JSON.stringify(input)}`);
+}
+
 export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<{
   readonly [key in keyof input]: resolveTableConfig<input[key], scope>;
 }>;
@@ -34,7 +49,19 @@ export function resolveStoreTablesConfig<input, scope extends AbiTypeScope = Abi
   }
 
   return Object.fromEntries(
-    Object.entries(input).map(([key, table]) => [key, resolveTableConfig(table, scope)]),
+    Object.entries(input).map(([key, table]) => {
+      const fullInput = isTableShorthandInput(table, scope)
+        ? resolveTableShorthand(table as validateTableShorthand<typeof table, scope>, scope)
+        : table;
+
+      return [
+        key,
+        resolveTableConfig(
+          { ...fullInput, tableId: fullInput.tableId ?? resourceToHex({ type: "table", namespace: "", name: key }) },
+          scope,
+        ),
+      ];
+    }),
   ) as resolveStoreTablesConfig<input, scope>;
 }
 
