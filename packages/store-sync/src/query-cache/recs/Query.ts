@@ -6,6 +6,7 @@ import { KeySchema, SchemaToPrimitives as SchemaToPrimitivesProtocol } from "@la
 import { encodeEntity } from "../../recs";
 import { hexToResource } from "@latticexyz/common";
 import { QuerySubjects } from "../common";
+import { SubjectRecords } from "@latticexyz/query";
 
 type HasQueryFragment<T extends Table> = {
   type: QueryFragmentType.Has;
@@ -68,7 +69,7 @@ function fragmentsToQuerySubjects(fragments: QueryFragment<Table>[]): QuerySubje
   return querySubjects;
 }
 
-function fragmentsToFrom(fragments: QueryFragment<Table>[]): object {
+function fragmentsToFrom(fragments: QueryFragment<Table>[]): QuerySubjects {
   return fragmentsToQuerySubjects(
     fragments.filter(
       (fragment) =>
@@ -79,7 +80,7 @@ function fragmentsToFrom(fragments: QueryFragment<Table>[]): object {
   );
 }
 
-function fragmentsToExcept(fragments: QueryFragment<Table>[]): object {
+function fragmentsToExcept(fragments: QueryFragment<Table>[]): QuerySubjects {
   return fragmentsToQuerySubjects(fragments.filter((fragment) => fragment.type === QueryFragmentType.Not));
 }
 
@@ -109,16 +110,16 @@ function fragmentToKeySchema(fragment: QueryFragment<Table>): KeySchema {
   return keySchema;
 }
 
-function subjectToEntity(fragment: QueryFragment<Table>, subject: any): Entity {
+function subjectToEntity(fragment: QueryFragment<Table>, subject: SubjectRecords): Entity {
   const keySchema = fragmentToKeySchema(fragment);
 
   const key: SchemaToPrimitivesProtocol<KeySchema> = {};
-  Object.keys(fragment.table.keySchema).forEach((keyName, i) => (key[keyName] = subject[i]));
+  Object.keys(fragment.table.keySchema).forEach((keyName, i) => (key[keyName] = subject.subject[i]));
 
   return encodeEntity(keySchema, key);
 }
 
-function subjectsToEntities(fragment: QueryFragment<Table>, subjects: any[]): Entity[] {
+function subjectsToEntities(fragment: QueryFragment<Table>, subjects: readonly SubjectRecords[]): Entity[] {
   const entities = subjects.map((subject) => subjectToEntity(fragment, subject));
 
   return entities;
@@ -131,7 +132,6 @@ export async function runQuery<store extends QueryCacheStore>(
   const from = fragmentsToFrom(fragments);
   const except = fragmentsToExcept(fragments);
   const where = fragmentsToWhere(fragments);
-  console.log(where);
 
   const { subjects } = await query(store, { from, except, where });
 
