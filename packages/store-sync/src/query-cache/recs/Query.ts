@@ -1,12 +1,13 @@
 import { Entity, QueryFragmentType } from "@latticexyz/recs";
 import { QueryCacheStore } from "../createStore";
 import { query } from "../query";
-import { SchemaToPrimitives, Table } from "@latticexyz/store";
+import { SchemaToPrimitives } from "@latticexyz/store";
 import { KeySchema, SchemaToPrimitives as SchemaToPrimitivesProtocol } from "@latticexyz/protocol-parser";
 import { encodeEntity } from "../../recs";
 import { hexToResource } from "@latticexyz/common";
 import { QuerySubjects } from "../common";
 import { SubjectRecords } from "@latticexyz/query";
+import { Table } from "@latticexyz/store/config/v2";
 
 type HasQueryFragment<T extends Table> = {
   type: QueryFragmentType.Has;
