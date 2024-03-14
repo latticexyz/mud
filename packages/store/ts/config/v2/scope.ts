@@ -1,6 +1,7 @@
 import { Dict, evaluate } from "@arktype/util";
 import { SchemaInput } from "./schema";
-import { SchemaAbiType as AbiType, StaticAbiType, schemaAbiTypes } from "@latticexyz/schema-type";
+import { StaticAbiType, schemaAbiTypes } from "@latticexyz/schema-type";
+import { AbiType } from "./output";
 
 export const EmptyScope = { types: {} } as const satisfies ScopeOptions;
 export type EmptyScope = typeof EmptyScope;
