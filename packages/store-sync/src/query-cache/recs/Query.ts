@@ -3,7 +3,7 @@ import { QueryCacheStore } from "../createStore";
 import { query } from "../query";
 import { SchemaToPrimitives } from "@latticexyz/store";
 import { KeySchema, SchemaToPrimitives as SchemaToPrimitivesProtocol } from "@latticexyz/protocol-parser";
-import { encodeEntity } from "../../recs";
+import { encodeEntity, hexKeyTupleToEntity } from "../../recs";
 import { hexToResource } from "@latticexyz/common";
 import { QuerySubjects, Tables, extractTables } from "../common";
 import { SubjectRecords } from "@latticexyz/query";
@@ -67,7 +67,7 @@ function tableToKeyNames(table: Table): string[] {
 
 function tableToKeySchema(table: Table): KeySchema {
   const keySchema: KeySchema = {};
-  Object.entries(table.keySchema)
+  Object.entries(table.schema)
     .filter(([key]) => table.primaryKey.includes(key))
     .forEach(([keyName, value]) => (keySchema[keyName] = value.type));
 
@@ -79,7 +79,7 @@ function fragmentsToQuerySubjects(fragments: QueryFragment<Table>[]): QuerySubje
 
   fragments.forEach((fragment) => {
     const { name } = hexToResource(fragment.table.tableId);
-    querySubjects[name] = tableToKeyNames(fragment.table);
+    querySubjects[name] = fragment.table.primaryKey;
   });
 
   return querySubjects;
@@ -119,23 +119,9 @@ function fragmentsToWhere(fragments: QueryFragment<Table>[]): any[] {
     .flat();
 }
 
-function fragmentToKeySchema(fragment: QueryFragment<Table>): KeySchema {
-  return tableToKeySchema(fragment.table);
-}
-
-function subjectToEntity(fragment: QueryFragment<Table>, subject: SubjectRecords): Entity {
-  const keySchema = fragmentToKeySchema(fragment);
-
-  const key: SchemaToPrimitivesProtocol<KeySchema> = {};
-  tableToKeyNames(fragment.table).forEach((keyName, i) => (key[keyName] = subject.subject[i]));
-
-  return encodeEntity(keySchema, key);
-}
-
-function subjectsToEntities(fragment: QueryFragment<Table>, subjects: readonly SubjectRecords[]): Entity[] {
-  const entities = subjects.map((subject) => subjectToEntity(fragment, subject));
-
-  return entities;
+function subjectToEntity(subject: SubjectRecords): Entity {
+  // ECS uses the entire primary key, so all records for a given subject have the same key tuple
+  return hexKeyTupleToEntity(subject.records[0].keyTuple);
 }
 
 export async function runQuery<store extends QueryCacheStore, fragments extends QueryFragments<extractTables<store>>>(
@@ -148,7 +134,7 @@ export async function runQuery<store extends QueryCacheStore, fragments extends 
 
   const { subjects } = await query(store, { from, except, where });
 
-  const entities = subjectsToEntities(fragments[0], subjects);
+  const entities = subjects.map(subjectToEntity);
 
   return new Set(entities);
 }
