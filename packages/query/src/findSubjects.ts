@@ -40,18 +40,18 @@ export function findSubjects<table extends Table>({
       const subjectFields = targetTables[record.table.tableId];
       const subject = subjectFields.map((field) => record.fields[field]);
       const subjectSchema = subjectFields.map((field) => record.table.schema[field]);
-      const id = encodeAbiParameters(subjectSchema, subject);
+      const subjectId = encodeAbiParameters(subjectSchema, subject);
       return {
         ...record,
         subjectSchema,
         subject,
-        id,
+        subjectId,
       };
     });
 
-  const matchedSubjects = Array.from(groupBy(records, (record) => record.id).values())
+  const matchedSubjects = Array.from(groupBy(records, (record) => record.subjectId).values())
     .map((records) => ({
-      id: records[0].id,
+      subjectId: records[0].subjectId,
       subject: records[0].subject,
       records,
     }))
