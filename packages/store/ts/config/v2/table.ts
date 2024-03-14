@@ -7,7 +7,14 @@ import {
   resolveTableShorthand,
   validateTableShorthand,
 } from "./tableShorthand";
-import { TableFullInput, ValidKeys, isTableFullInput, resolveTableFullConfig, validateTableFull } from "./tableFull";
+import {
+  TableFullInput,
+  ValidKeys,
+  isTableFullInput,
+  resolveTableFullConfig,
+  validateTableFull,
+  tableWithDefaults,
+} from "./tableFull";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.">;
@@ -35,11 +42,15 @@ export function validateTableConfig<scope extends AbiTypeScope = AbiTypeScope>(
   validateTableFull(input, scope);
 }
 
-export type resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<
+export type resolveTableConfig<
+  input,
+  scope extends AbiTypeScope = AbiTypeScope,
+  defaultName extends string = string,
+> = evaluate<
   input extends TableShorthandInput<scope>
-    ? resolveTableFullConfig<resolveTableShorthand<input, scope>, scope>
+    ? resolveTableFullConfig<tableWithDefaults<resolveTableShorthand<input, scope>, defaultName, scope>, scope>
     : input extends TableFullInput<SchemaInput<scope>, scope>
-      ? resolveTableFullConfig<input, scope>
+      ? resolveTableFullConfig<tableWithDefaults<input, defaultName, scope>, scope>
       : never
 >;
 
@@ -49,15 +60,25 @@ export type resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope>
  * - A schema with a `key` field with static ABI type is turned into { schema: INPUT, key: ["key"] }.
  * - A schema without a `key` field is invalid.
  */
-export function resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope>(
+export function resolveTableConfig<
+  input,
+  scope extends AbiTypeScope = AbiTypeScope,
+  // TODO: temporary fix to have access to the default name here.
+  // Will remove once there is a clearer separation between full config and shorthand config
+  defaultName extends string = string,
+>(
   input: validateTableConfig<input, scope>,
   scope: scope = AbiTypeScope as scope,
+  defaultName: defaultName,
 ): resolveTableConfig<input, scope> {
   if (isTableShorthandInput(input, scope)) {
     const fullInput = resolveTableShorthand(input as validateTableShorthand<input, scope>, scope);
     if (isTableFullInput(fullInput)) {
       // @ts-expect-error TODO: the base input type should be more permissive and constraints added via the validate helpers instead
-      return resolveTableFullConfig(fullInput, scope) as unknown as resolveTableConfig<input, scope>;
+      return resolveTableFullConfig(tableWithDefaults(fullInput, defaultName), scope) as unknown as resolveTableConfig<
+        input,
+        scope
+      >;
     }
     throw new Error("Resolved shorthand is not a valid full table input");
   }

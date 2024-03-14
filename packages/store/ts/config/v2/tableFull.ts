@@ -5,7 +5,8 @@ import { get, hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput, resolveSchema } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 import { TableCodegenOptions } from "./output";
-import { TABLE_CODEGEN_DEFAULTS } from "./defaults";
+import { CONFIG_DEFAULTS, TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
+import { resourceToHex } from "@latticexyz/common";
 
 export type TableFullInput<
   schema extends SchemaInput<scope> = SchemaInput,
@@ -121,11 +122,43 @@ export function resolveTableCodegen<options extends Partial<TableCodegenOptions>
   } satisfies TableCodegenOptions as resolveTableCodegen<options>;
 }
 
+export type tableWithDefaults<
+  table extends TableFullInput<SchemaInput<scope>, scope>,
+  defaultName extends string,
+  scope extends AbiTypeScope = AbiTypeScope,
+> = {
+  [key in keyof TableFullInput]-?: key extends keyof table
+    ? table[key]
+    : key extends "name"
+      ? defaultName
+      : key extends "namespace"
+        ? typeof CONFIG_DEFAULTS.namespace
+        : key extends "type"
+          ? typeof TABLE_DEFAULTS.type
+          : table[key];
+};
+
+export function tableWithDefaults<table extends TableFullInput, defaultName extends string>(
+  table: table,
+  defaultName: defaultName,
+): tableWithDefaults<table, defaultName> {
+  return {
+    ...table,
+    tableId: table.tableId ?? resourceToHex({ type: TABLE_DEFAULTS.type, namespace: "", name: defaultName }),
+    name: table.name ?? defaultName,
+    namespace: table.namespace ?? CONFIG_DEFAULTS.namespace,
+    type: table.type ?? TABLE_DEFAULTS.type,
+  } as tableWithDefaults<table, defaultName>;
+}
+
 export type resolveTableFullConfig<
   input extends TableFullInput<SchemaInput<scope>, scope>,
   scope extends AbiTypeScope = AbiTypeScope,
 > = evaluate<{
   readonly tableId: Hex;
+  readonly name: input["name"] extends undefined ? "" : input["name"];
+  readonly namespace: input["namespace"] extends undefined ? "" : input["namespace"];
+  readonly type: input["type"] extends undefined ? "table" : input["type"];
   readonly primaryKey: Readonly<input["primaryKey"]>;
   readonly schema: resolveSchema<input["schema"], scope>;
   readonly keySchema: resolveSchema<
@@ -150,7 +183,11 @@ export function resolveTableFullConfig<
   validateTableFull(input, scope);
 
   return {
+    // TODO: require tableId and name as inputs
     tableId: input.tableId ?? ("0x" as Hex),
+    name: input.name ?? ("" as const),
+    namespace: input.namespace ?? ("" as const),
+    type: input.type ?? ("table" as const),
     primaryKey: input["primaryKey"],
     schema: resolveSchema(input["schema"], scope),
     keySchema: resolveSchema(

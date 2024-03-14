@@ -6,7 +6,6 @@ import { AbiTypeScope, extendScope } from "./scope";
 import { isSchemaAbiType } from "@latticexyz/schema-type";
 import { UserTypes, Enums, CodegenOptions } from "./output";
 import { isTableShorthandInput, resolveTableShorthand, validateTableShorthand } from "./tableShorthand";
-import { resourceToHex } from "@latticexyz/common";
 import { CODEGEN_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
 
 export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
@@ -39,7 +38,8 @@ export function validateStoreTablesConfig<scope extends AbiTypeScope = AbiTypeSc
 }
 
 export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<{
-  readonly [key in keyof input]: resolveTableConfig<input[key], scope>;
+  // TODO: we currently can't apply `tableWithDefaults` here because the config could be a shorthand here
+  readonly [key in keyof input]: resolveTableConfig<input[key], scope, key & string>;
 }>;
 
 export function resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope>(
@@ -56,13 +56,7 @@ export function resolveStoreTablesConfig<input, scope extends AbiTypeScope = Abi
         ? resolveTableShorthand(table as validateTableShorthand<typeof table, scope>, scope)
         : table;
 
-      return [
-        key,
-        resolveTableConfig(
-          { ...fullInput, tableId: fullInput.tableId ?? resourceToHex({ type: "table", namespace: "", name: key }) },
-          scope,
-        ),
-      ];
+      return [key, resolveTableConfig(fullInput, scope, key)];
     }),
   ) as resolveStoreTablesConfig<input, scope>;
 }
