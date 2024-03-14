@@ -1,22 +1,24 @@
-import { mutable } from "@arktype/util";
+import { conform, mutable } from "@arktype/util";
 import { Config, Table } from "./output";
 
-export type configToV1<config extends Config> = {
-  namespace: config["namespace"];
-  enums: mutable<config["enums"], 2>;
-  userTypes: {
-    [key in keyof config["userTypes"]]: {
-      internalType: config["userTypes"][key];
-      // TODO: add to v2 config
-      filePath: string;
-    };
-  };
-  storeImportPath: config["codegen"]["storeImportPath"];
-  userTypesFilename: config["codegen"]["userTypesFilename"];
-  codegenDirectory: config["codegen"]["codegenDirectory"];
-  codegenIndexFilename: config["codegen"]["codegenIndexFilename"];
-  tables: { [key in keyof config["tables"]]: tableToV1<config["tables"][key]> };
-};
+export type configToV1<config> = config extends Config
+  ? {
+      namespace: config["namespace"];
+      enums: mutable<config["enums"], 2>;
+      userTypes: {
+        [key in keyof config["userTypes"]]: {
+          internalType: config["userTypes"][key];
+          // TODO: add to v2 config
+          filePath: string;
+        };
+      };
+      storeImportPath: config["codegen"]["storeImportPath"];
+      userTypesFilename: config["codegen"]["userTypesFilename"];
+      codegenDirectory: config["codegen"]["codegenDirectory"];
+      codegenIndexFilename: config["codegen"]["codegenIndexFilename"];
+      tables: { [key in keyof config["tables"]]: tableToV1<config["tables"][key]> };
+    }
+  : never;
 
 export type tableToV1<table extends Table> = {
   directory: table["codegen"]["directory"];
@@ -29,6 +31,6 @@ export type tableToV1<table extends Table> = {
   name: table["name"];
 };
 
-export function configToV1<config extends Config>(config: config): configToV1<config> {
+export function configToV1<config>(config: conform<config, Config>): configToV1<config> {
   return {} as never;
 }
