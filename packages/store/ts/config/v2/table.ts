@@ -69,7 +69,7 @@ export function resolveTableConfig<
 >(
   input: validateTableConfig<input, scope>,
   scope: scope = AbiTypeScope as scope,
-  defaultName: defaultName,
+  defaultName?: defaultName,
 ): resolveTableConfig<input, scope> {
   if (isTableShorthandInput(input, scope)) {
     const fullInput = resolveTableShorthand(input as validateTableShorthand<input, scope>, scope);
