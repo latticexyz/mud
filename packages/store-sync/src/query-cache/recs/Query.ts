@@ -4,7 +4,7 @@ import { query } from "../query";
 import { SchemaToPrimitives } from "@latticexyz/store";
 import { hexKeyTupleToEntity } from "../../recs";
 import { hexToResource } from "@latticexyz/common";
-import { QuerySubjects, Tables, extractTables } from "../common";
+import { QuerySubjects, Tables, extractTables, queryConditions } from "../common";
 import { SubjectRecords } from "@latticexyz/query";
 import { Table } from "@latticexyz/store/config/v2";
 
@@ -86,7 +86,9 @@ function fragmentsToExcept(fragments: QueryFragment<Table>[]): QuerySubjects {
   return fragmentsToQuerySubjects(fragments.filter((fragment) => fragment.type === QueryFragmentType.Not));
 }
 
-function fragmentToQueryConditions(fragment: QueryFragment<Table>): any[] {
+function fragmentToQueryConditions<tables extends Tables>(
+  fragment: QueryFragment<tables[keyof tables]>,
+): readonly queryConditions<tables>[] {
   return Object.entries((fragment as HasValueQueryFragment<Table> | NotValueQueryFragment<Table>).value).map(
     ([field, right]) => {
       if (fragment.type === QueryFragmentType.HasValue) {
@@ -95,10 +97,12 @@ function fragmentToQueryConditions(fragment: QueryFragment<Table>): any[] {
         return [`${hexToResource(fragment.table.tableId).name}.${field}`, "!=", right];
       }
     },
-  ) as any[];
+  ) as unknown as readonly queryConditions<tables>[];
 }
 
-function fragmentsToWhere(fragments: QueryFragment<Table>[]): any[] {
+function fragmentsToWhere<tables extends Tables>(
+  fragments: QueryFragment<tables[keyof tables]>[],
+): readonly queryConditions<tables>[] {
   return fragments
     .filter((fragment) => fragment.type === QueryFragmentType.HasValue || fragment.type === QueryFragmentType.NotValue)
     .map(fragmentToQueryConditions)

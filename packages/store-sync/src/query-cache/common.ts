@@ -37,7 +37,7 @@ type tableConditions<tableName extends string, table extends Table = Table> = {
       ];
 }[keyof table["schema"]];
 
-type queryConditions<tables extends Tables> = {
+export type queryConditions<tables extends Tables> = {
   [tableName in keyof tables]: tableConditions<tableName & string, tables[tableName]>;
 }[keyof tables];
 
