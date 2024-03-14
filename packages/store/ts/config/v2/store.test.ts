@@ -778,4 +778,22 @@ describe("resolveStoreConfig", () => {
     });
     attest<true, typeof config extends Config ? true : false>();
   });
+
+  it("should use the global namespace instead for tables", () => {
+    const config = resolveStoreConfig({
+      namespace: "namespace",
+      tables: {
+        Example: {
+          schema: { key: "address", name: "string", age: "uint256" },
+          primaryKey: ["age"],
+        },
+      },
+    });
+
+    attest<"namespace">(config.namespace).equals("namespace");
+    attest<"namespace">(config.tables.Example.namespace).equals("namespace");
+    attest(config.tables.Example.tableId).equals(
+      resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
+    );
+  });
 });

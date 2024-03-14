@@ -38,15 +38,26 @@ export function validateStoreTablesConfig<scope extends AbiTypeScope = AbiTypeSc
   throw new Error(`Expected store config, received ${JSON.stringify(input)}`);
 }
 
-export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<{
+export type resolveStoreTablesConfig<
+  input,
+  scope extends AbiTypeScope = AbiTypeScope,
+  defaultNamespace extends string = typeof CONFIG_DEFAULTS.namespace,
+> = evaluate<{
   // TODO: we currently can't apply `tableWithDefaults` here because the config could be a shorthand here
-  readonly [key in keyof input]: resolveTableConfig<input[key], scope, key & string>;
+  readonly [key in keyof input]: resolveTableConfig<input[key], scope, key & string, defaultNamespace>;
 }>;
 
-export function resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope>(
+export function resolveStoreTablesConfig<
+  input,
+  scope extends AbiTypeScope = AbiTypeScope,
+  defaultNamespace extends string = typeof CONFIG_DEFAULTS.namespace,
+>(
   input: input,
   scope: scope = AbiTypeScope as scope,
-): resolveStoreTablesConfig<input, scope> {
+  // TODO: ideally the namespace would be passed in with the table input from higher levels
+  // but this is currently not possible since the table input could be a shorthand
+  defaultNamespace: defaultNamespace = CONFIG_DEFAULTS.namespace as defaultNamespace,
+): resolveStoreTablesConfig<input, scope, defaultNamespace> {
   if (typeof input !== "object" || input == null) {
     throw new Error(`Expected tables config, received ${JSON.stringify(input)}`);
   }
@@ -57,9 +68,9 @@ export function resolveStoreTablesConfig<input, scope extends AbiTypeScope = Abi
         ? resolveTableShorthand(table as validateTableShorthand<typeof table, scope>, scope)
         : table;
 
-      return [key, resolveTableConfig(fullInput, scope, key)];
+      return [key, resolveTableConfig(fullInput, scope, key, defaultNamespace)];
     }),
-  ) as unknown as resolveStoreTablesConfig<input, scope>;
+  ) as unknown as resolveStoreTablesConfig<input, scope, defaultNamespace>;
 }
 
 type extractInternalType<userTypes extends UserTypes> = { [key in keyof userTypes]: userTypes[key]["type"] };

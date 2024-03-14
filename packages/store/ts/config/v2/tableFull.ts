@@ -5,7 +5,7 @@ import { get, hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput, resolveSchema } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 import { TableCodegenOptions } from "./output";
-import { CONFIG_DEFAULTS, TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
+import { TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 import { resourceToHex } from "@latticexyz/common";
 
 export type TableFullInput<
@@ -136,32 +136,38 @@ export function resolveTableCodegen<
 export type tableWithDefaults<
   table extends TableFullInput<SchemaInput<scope>, scope>,
   defaultName extends string,
+  defaultNamespace extends string,
   scope extends AbiTypeScope = AbiTypeScope,
 > = {
   [key in keyof TableFullInput]-?: undefined extends table[key]
     ? key extends "name"
       ? defaultName
       : key extends "namespace"
-        ? typeof CONFIG_DEFAULTS.namespace
+        ? defaultNamespace
         : key extends "type"
           ? typeof TABLE_DEFAULTS.type
           : table[key]
     : table[key];
 };
 
-export function tableWithDefaults<table extends TableFullInput, defaultName extends string>(
+export function tableWithDefaults<
+  table extends TableFullInput,
+  defaultName extends string,
+  defaultNamespace extends string,
+>(
   table: table,
   defaultName: defaultName,
-): tableWithDefaults<table, defaultName> {
+  defaultNamespace: defaultNamespace,
+): tableWithDefaults<table, defaultName, defaultNamespace> {
   return {
     ...table,
     tableId:
       table.tableId ??
       (defaultName ? resourceToHex({ type: TABLE_DEFAULTS.type, namespace: "", name: defaultName }) : undefined),
     name: table.name ?? defaultName,
-    namespace: table.namespace ?? CONFIG_DEFAULTS.namespace,
+    namespace: table.namespace ?? defaultNamespace,
     type: table.type ?? TABLE_DEFAULTS.type,
-  } as tableWithDefaults<table, defaultName>;
+  } as tableWithDefaults<table, defaultName, defaultNamespace>;
 }
 
 export type resolveTableFullConfig<

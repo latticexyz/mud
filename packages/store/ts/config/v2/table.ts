@@ -15,6 +15,7 @@ import {
   validateTableFull,
   tableWithDefaults,
 } from "./tableFull";
+import { CONFIG_DEFAULTS } from "./defaults";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.">;
@@ -46,11 +47,15 @@ export type resolveTableConfig<
   input,
   scope extends AbiTypeScope = AbiTypeScope,
   defaultName extends string = "",
+  defaultNamespace extends string = typeof CONFIG_DEFAULTS.namespace,
 > = evaluate<
   input extends TableShorthandInput<scope>
-    ? resolveTableFullConfig<tableWithDefaults<resolveTableShorthand<input, scope>, defaultName, scope>, scope>
+    ? resolveTableFullConfig<
+        tableWithDefaults<resolveTableShorthand<input, scope>, defaultName, defaultNamespace, scope>,
+        scope
+      >
     : input extends TableFullInput<SchemaInput<scope>, scope>
-      ? resolveTableFullConfig<tableWithDefaults<input, defaultName, scope>, scope>
+      ? resolveTableFullConfig<tableWithDefaults<input, defaultName, defaultNamespace, scope>, scope>
       : never
 >;
 
@@ -66,10 +71,12 @@ export function resolveTableConfig<
   // TODO: temporary fix to have access to the default name here.
   // Will remove once there is a clearer separation between full config and shorthand config
   defaultName extends string = "",
+  defaultNamespace extends string = typeof CONFIG_DEFAULTS.namespace,
 >(
   input: validateTableConfig<input, scope>,
   scope: scope = AbiTypeScope as scope,
   defaultName?: defaultName,
+  defaultNamespace?: defaultNamespace,
 ): resolveTableConfig<input, scope> {
   if (isTableShorthandInput(input, scope)) {
     const fullInput = resolveTableShorthand(input as validateTableShorthand<input, scope>, scope);
