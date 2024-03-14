@@ -85,7 +85,10 @@ export function resolveTableConfig<
 
   if (isTableFullInput(input)) {
     // @ts-expect-error TODO: the base input type should be more permissive and constraints added via the validate helpers instead
-    return resolveTableFullConfig(input, scope) as unknown as resolveTableConfig<input, scope>;
+    return resolveTableFullConfig(tableWithDefaults(input, defaultName), scope) as unknown as resolveTableConfig<
+      input,
+      scope
+    >;
   }
 
   throw new Error("Invalid config input");

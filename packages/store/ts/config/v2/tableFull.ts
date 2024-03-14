@@ -99,15 +99,18 @@ export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeSco
   }
 }
 
-export type resolveTableCodegen<options> = {
-  [key in keyof TableCodegenOptions]-?: key extends keyof options
-    ? undefined extends options[key]
+export type resolveTableCodegen<
+  input extends TableFullInput<SchemaInput<scope>, scope>,
+  scope extends AbiTypeScope = AbiTypeScope,
+> = {
+  [key in keyof TableCodegenOptions]-?: key extends keyof input["codegen"]
+    ? undefined extends input["codegen"][key]
       ? key extends "dataStruct"
         ? boolean
         : key extends keyof typeof TABLE_CODEGEN_DEFAULTS
           ? (typeof TABLE_CODEGEN_DEFAULTS)[key]
           : never
-      : options[key]
+      : input["codegen"][key]
     : // dataStruct isn't narrowed, because its value is conditional on the number of value schema fields
       key extends "dataStruct"
       ? boolean
@@ -116,16 +119,18 @@ export type resolveTableCodegen<options> = {
         : never;
 };
 
-export function resolveTableCodegen<options extends Partial<TableCodegenOptions>>(
-  options: options,
-  schema: SchemaInput,
-): resolveTableCodegen<options> {
+export function resolveTableCodegen<
+  input extends TableFullInput<SchemaInput<scope>, scope>,
+  scope extends AbiTypeScope = AbiTypeScope,
+>(input: input, scope: scope): resolveTableCodegen<input, scope> {
+  const options = input.codegen;
   return {
     directory: get(options, "directory") ?? TABLE_CODEGEN_DEFAULTS.directory,
     tableIdArgument: get(options, "tableIdArgument") ?? TABLE_CODEGEN_DEFAULTS.tableIdArgument,
     storeArgument: get(options, "storeArgument") ?? TABLE_CODEGEN_DEFAULTS.storeArgument,
-    dataStruct: get(options, "dataStruct") ?? Object.keys(schema).length > 1,
-  } satisfies TableCodegenOptions as resolveTableCodegen<options>;
+    // dataStruct is true if there are at least 2 value fields
+    dataStruct: get(options, "dataStruct") ?? Object.keys(input.schema).length - input.primaryKey.length > 1,
+  } satisfies TableCodegenOptions as resolveTableCodegen<input, scope>;
 }
 
 export type tableWithDefaults<
@@ -181,7 +186,7 @@ export type resolveTableFullConfig<
     },
     scope
   >;
-  readonly codegen: resolveTableCodegen<input["codegen"]>;
+  readonly codegen: resolveTableCodegen<input, scope>;
 }>;
 
 export function resolveTableFullConfig<
@@ -214,6 +219,6 @@ export function resolveTableFullConfig<
       ),
       scope,
     ),
-    codegen: resolveTableCodegen(input.codegen ?? {}, input.schema as SchemaInput),
-  } as resolveTableFullConfig<input, scope>;
+    codegen: resolveTableCodegen(input, scope),
+  } as unknown as resolveTableFullConfig<input, scope>;
 }

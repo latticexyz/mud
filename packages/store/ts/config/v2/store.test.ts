@@ -3,6 +3,7 @@ import { resolveStoreConfig } from "./store";
 import { Config } from "./output";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
+import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS } from "./defaults";
 
 describe("resolveStoreConfig", () => {
   it("should accept a shorthand store config as input and expand it", () => {
@@ -34,11 +35,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["key"],
+          name: "Name",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
         },
       },
       userTypes: {},
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -73,11 +79,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["key"],
+          name: "Name",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
         },
       },
       userTypes: { CustomType: "address" },
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -120,11 +131,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["key"],
+          name: "Example",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
         },
       },
       userTypes: {},
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -167,11 +183,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["key"],
+          name: "Example",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
         },
       },
       userTypes: {},
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -258,11 +279,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["age"],
+          name: "Example",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
         },
       },
       userTypes: {},
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -313,11 +339,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["age"],
+          name: "Example",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
         },
       },
       userTypes: { static: "address", dynamic: "string" },
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -366,11 +397,16 @@ describe("resolveStoreConfig", () => {
               },
             },
             primaryKey: ["age", "key"],
+            name: "Example",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+            type: "table",
           },
         },
         userTypes: {},
         enums: {},
         namespace: "",
+        codegen: CODEGEN_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -424,6 +460,10 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["firstKey", "firstAge"],
+          name: "First",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
         },
         Second: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
@@ -458,11 +498,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["secondKey", "secondAge"],
+          name: "Second",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
         },
       },
       userTypes: {},
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -517,6 +562,10 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["firstKey", "firstAge"],
+          name: "First",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
         },
         Second: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
@@ -551,11 +600,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["secondKey", "secondAge"],
+          name: "Second",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
         },
       },
       userTypes: { Static: "address", Dynamic: "string" },
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -664,6 +718,10 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["name"],
+          name: "Example",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
         },
       },
       userTypes: { static: "address", dynamic: "string" },
@@ -671,6 +729,7 @@ describe("resolveStoreConfig", () => {
         ValidNames: ["first", "second"],
       },
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
