@@ -1,15 +1,18 @@
-import { Query, QueryResult } from "./common";
-import { evaluate } from "@latticexyz/common/type-utils";
-import { QueryCacheStore } from "./createStore";
-import { findSubjects } from "@latticexyz/query";
+import { Query } from "./common";
+import { QueryCacheStore, extractTables } from "./createStore";
+import { SubjectRecords, findSubjects } from "@latticexyz/query";
 import { queryToWire } from "./queryToWire";
 
-// TODO: return matching records alongside subjects? because the record subset may be smaller than what querying for records with matching subjects
+// TODO: take in query input type so we can narrow result types
 
-export async function query<store extends QueryCacheStore, query extends Query>(
+export type QueryResult = {
+  subjects: readonly SubjectRecords[];
+};
+
+export async function query<store extends QueryCacheStore, query extends Query<extractTables<store>>>(
   store: store,
   query: query,
-): Promise<evaluate<QueryResult<query>>> {
+): Promise<QueryResult> {
   const { tables, records } = store.getState();
 
   const subjects = findSubjects({
@@ -18,6 +21,6 @@ export async function query<store extends QueryCacheStore, query extends Query>(
   });
 
   return {
-    subjects: subjects as unknown as QueryResult<query>["subjects"],
+    subjects,
   };
 }

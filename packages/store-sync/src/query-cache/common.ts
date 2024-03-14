@@ -52,13 +52,3 @@ export type Query<tables extends Tables = Tables> = {
 };
 
 export type extractTables<T> = T extends Query<infer tables> ? tables : never;
-
-export type queryToResultSubject<query extends Query> = {
-  [table in keyof query["from"]]: table extends keyof extractTables<query>
-    ? subjectSchemaToPrimitive<mapTuple<query["from"][table], schemaAbiTypes<extractTables<query>[table]["schema"]>>>
-    : never;
-}[keyof query["from"]];
-
-export type QueryResult<query extends Query> = {
-  readonly subjects: readonly queryToResultSubject<query>[];
-};

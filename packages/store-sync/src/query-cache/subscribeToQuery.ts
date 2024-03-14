@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
 import { SubjectEvent, SubjectRecord, SubjectRecords, findSubjects } from "@latticexyz/query";
 import { Query } from "./common";
-import { QueryCacheStore } from "./createStore";
+import { QueryCacheStore, extractTables } from "./createStore";
 import { queryToWire } from "./queryToWire";
 
 function getId({ subject, record }: SubjectRecord): string {
@@ -53,7 +53,7 @@ export type SubscribeToQueryResult = {
   subjects$: Observable<readonly SubjectEvent[]>;
 };
 
-export function subscribeToQuery<store extends QueryCacheStore, query extends Query>(
+export function subscribeToQuery<store extends QueryCacheStore, query extends Query<extractTables<store>>>(
   store: store,
   query: query,
 ): SubscribeToQueryResult {

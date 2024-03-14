@@ -1,19 +1,27 @@
 import { StorageAdapter } from "../common";
 import { QueryCacheStore, RawTableRecord, TableRecord } from "./createStore";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
-import { size } from "viem";
+import { Hex, concatHex, size } from "viem";
 import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 import { flattenSchema } from "../flattenSchema";
-import { getId } from "./getId";
 import debug from "debug";
+import { Tables } from "./common";
+
+function getRecordId({ tableId, keyTuple }: { tableId: Hex; keyTuple: readonly Hex[] }): string {
+  return `${tableId}:${concatHex(keyTuple)}`;
+}
 
 export type CreateStorageAdapterOptions<store extends QueryCacheStore> = {
   store: store;
 };
 
+// TS isn't happy when we use the strongly typed store for the function definition so we
+// overload the strongly typed variant here and allow the more generic version in the function.
 export function createStorageAdapter<store extends QueryCacheStore>({
   store,
-}: CreateStorageAdapterOptions<store>): StorageAdapter {
+}: CreateStorageAdapterOptions<store>): StorageAdapter;
+
+export function createStorageAdapter({ store }: CreateStorageAdapterOptions<QueryCacheStore<Tables>>): StorageAdapter {
   return async function queryCacheStorageAdapter({ logs }) {
     const touchedIds = new Set<string>();
 
@@ -33,7 +41,7 @@ export function createStorageAdapter<store extends QueryCacheStore>({
         continue;
       }
 
-      const id = getId(log.args);
+      const id = getRecordId(log.args);
 
       if (log.eventName === "Store_SetRecord") {
         // debug("setting record", { namespace: table.namespace, name: table.name, id, log });
