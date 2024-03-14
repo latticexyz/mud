@@ -3,8 +3,8 @@ import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { Hex } from "viem";
 import { UserTypes } from "./store";
 
-export type ResolvedSchemaConfig = {
-  readonly [key: string]: {
+export type Schema = {
+  readonly [fieldName: string]: {
     /** the Solidity primitive ABI type */
     readonly type: SchemaAbiType;
     /** the user defined type or Solidity primitive ABI type */
@@ -12,8 +12,8 @@ export type ResolvedSchemaConfig = {
   };
 };
 
-export type ResolvedKeySchemaConfig = {
-  readonly [key: string]: {
+export type KeySchema = {
+  readonly [keyName: string]: {
     /** the Solidity primitive ABI type */
     readonly type: StaticAbiType;
     /** the user defined type or Solidity primitive ABI type */
@@ -21,16 +21,18 @@ export type ResolvedKeySchemaConfig = {
   };
 };
 
-export type ResolvedTableConfig = {
+export type Table = {
   readonly tableId: Hex;
   readonly primaryKey: readonly string[];
-  readonly schema: ResolvedSchemaConfig;
-  readonly keySchema: ResolvedKeySchemaConfig;
-  readonly valueSchema: ResolvedSchemaConfig;
+  readonly schema: Schema;
+  /** @deprecated Use `schema` and `primaryKey` */
+  readonly keySchema: KeySchema;
+  /** @deprecated Use `schema` and `primaryKey` */
+  readonly valueSchema: Schema;
 };
 
-export type ResolvedStoreConfig = {
-  readonly tables: Dict<string, ResolvedTableConfig>;
+export type Config = {
+  readonly tables: Dict<string, Table>;
   readonly userTypes: UserTypes;
   readonly enums: Dict<string, readonly [string, ...string[]]>;
   readonly namespace: string;
