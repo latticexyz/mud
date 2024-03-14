@@ -1,8 +1,8 @@
-import { ResolvedTableConfig } from "@latticexyz/store/config/v2";
+import { Table } from "@latticexyz/store/config/v2";
 import { ComparisonCondition, ConditionLiteral, QueryCondition } from "./api";
 import { TableRecord } from "./common";
 
-export type MatchedSubject<table extends ResolvedTableConfig = ResolvedTableConfig> = {
+export type MatchedSubject<table extends Table = Table> = {
   readonly subject: readonly string[];
   readonly records: readonly TableRecord<table>[];
 };
@@ -18,7 +18,7 @@ const comparisons = {
 
 // TODO: adapt this to return matching records, not just a boolean
 
-export function matchesCondition<table extends ResolvedTableConfig = ResolvedTableConfig>(
+export function matchesCondition<table extends Table = Table>(
   condition: QueryCondition,
   subject: MatchedSubject<table>,
 ): boolean {

@@ -1,9 +1,9 @@
 import { resourceToHex } from "@latticexyz/common";
-import { ResolvedStoreConfig } from "@latticexyz/store/config/v2";
+import { Config } from "@latticexyz/store/config/v2";
 
 // TODO(alvrs): table resolver doesn't yet provide `tableId` so we'll use this helper to inject it for now
 
-export function getTables<config extends ResolvedStoreConfig>(config: config): config["tables"] {
+export function getTables<config extends Config>(config: config): config["tables"] {
   const tables = Object.fromEntries(
     Object.entries(config.tables).map(([tableName, table]) => [
       tableName,

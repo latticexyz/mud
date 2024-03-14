@@ -1,4 +1,4 @@
-import { ResolvedStoreConfig, ResolvedTableConfig } from "@latticexyz/store/config/v2";
+import { Config, Table } from "@latticexyz/store/config/v2";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
 import { ComparisonCondition, InCondition } from "@latticexyz/query";
 
@@ -10,11 +10,11 @@ export type subjectSchemaToPrimitive<tuple> = {
   [key in keyof tuple]: tuple[key] extends SchemaAbiType ? SchemaAbiTypeToPrimitiveType<tuple[key]> : never;
 };
 
-export type Tables = ResolvedStoreConfig["tables"];
+export type Tables = Config["tables"];
 
-export type TableSubjectItem<table extends ResolvedTableConfig = ResolvedTableConfig> = keyof table["schema"];
+export type TableSubjectItem<table extends Table = Table> = keyof table["schema"];
 
-export type TableSubject<table extends ResolvedTableConfig = ResolvedTableConfig> = readonly [
+export type TableSubject<table extends Table = Table> = readonly [
   TableSubjectItem<table>,
   ...TableSubjectItem<table>[],
 ];
@@ -23,7 +23,7 @@ export type schemaAbiTypes<schema extends Record<string, { readonly type: Schema
   [key in keyof schema]: schema[key]["type"];
 };
 
-type tableConditions<tableName extends string, table extends ResolvedTableConfig = ResolvedTableConfig> = {
+type tableConditions<tableName extends string, table extends Table = Table> = {
   [field in keyof table["schema"]]:
     | [
         `${tableName}.${field & string}`,
