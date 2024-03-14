@@ -1,4 +1,4 @@
-import { Observable } from "rxjs";
+import { Observable, map, scan } from "rxjs";
 import { SubjectEvent, SubjectRecord, SubjectRecords, findSubjects } from "@latticexyz/query";
 import { Query } from "./common";
 import { QueryCacheStore, extractTables } from "./createStore";
@@ -46,11 +46,16 @@ export type SubscribeToQueryResult = {
    */
   subjects: Promise<readonly SubjectRecords[]>;
   /**
+   * Stream of matching subjects for query.
+   * First emission has the same data as `subjects`, flattened per record.
+   */
+  subjects$: Observable<readonly SubjectRecord[]>;
+  /**
    * Stream of subject changes for query.
    * First emission will be an `enter` for each item in `subjects`, or an empty array if no matches.
    * Each emission after that will only be the subjects that have changed (entered/exited the result set, or the underlying record changed).
    */
-  subjects$: Observable<readonly SubjectEvent[]>;
+  subjectEvents$: Observable<readonly SubjectEvent[]>;
 };
 
 export function subscribeToQuery<store extends QueryCacheStore, query extends Query<extractTables<store>>>(
@@ -64,13 +69,11 @@ export function subscribeToQuery<store extends QueryCacheStore, query extends Qu
     query: wireQuery,
   });
 
-  function createSubjectStream(): Observable<readonly SubjectEvent[]> {
-    return new Observable<readonly SubjectEvent[]>(function subscribe(subscriber) {
+  function createSubjectStream(): Observable<readonly SubjectRecord[]> {
+    return new Observable<readonly SubjectRecord[]>(function subscribe(subscriber) {
       // return initial results immediately
-      const initialRecords: readonly SubjectRecord[] = flattenSubjectRecords(initialSubjects);
-      subscriber.next(subjectEvents([], initialRecords));
-
-      let previousRecords = initialRecords;
+      const initialRecords = flattenSubjectRecords(initialSubjects);
+      subscriber.next(initialRecords);
 
       // if records have changed between query and subscription, reevaluate
       const { records: tableRecords } = store.getState();
@@ -81,11 +84,7 @@ export function subscribeToQuery<store extends QueryCacheStore, query extends Qu
             query: wireQuery,
           }),
         );
-        const events = subjectEvents(previousRecords, nextSubjectRecords);
-        if (events.length) {
-          subscriber.next(events);
-          previousRecords = nextSubjectRecords;
-        }
+        subscriber.next(nextSubjectRecords);
       }
 
       // then listen for changes to records and reevaluate
@@ -97,11 +96,7 @@ export function subscribeToQuery<store extends QueryCacheStore, query extends Qu
               query: wireQuery,
             }),
           );
-          const events = subjectEvents(previousRecords, nextSubjectRecords);
-          if (events.length) {
-            subscriber.next(events);
-            previousRecords = nextSubjectRecords;
-          }
+          subscriber.next(nextSubjectRecords);
         }
       });
 
@@ -111,8 +106,17 @@ export function subscribeToQuery<store extends QueryCacheStore, query extends Qu
 
   const subjects$ = createSubjectStream();
 
+  const subjectEvents$ = createSubjectStream().pipe(
+    scan<readonly SubjectRecord[], { prev: readonly SubjectRecord[]; next: readonly SubjectRecord[] }>(
+      (acc, next) => ({ prev: acc.next, next }),
+      { prev: [], next: [] },
+    ),
+    map(({ prev, next }) => subjectEvents(prev, next)),
+  );
+
   return {
     subjects: new Promise((resolve) => resolve(initialSubjects)),
     subjects$,
+    subjectEvents$,
   };
 }
