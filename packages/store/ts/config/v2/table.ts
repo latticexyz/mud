@@ -45,7 +45,7 @@ export function validateTableConfig<scope extends AbiTypeScope = AbiTypeScope>(
 export type resolveTableConfig<
   input,
   scope extends AbiTypeScope = AbiTypeScope,
-  defaultName extends string = string,
+  defaultName extends string = "",
 > = evaluate<
   input extends TableShorthandInput<scope>
     ? resolveTableFullConfig<tableWithDefaults<resolveTableShorthand<input, scope>, defaultName, scope>, scope>
@@ -65,7 +65,7 @@ export function resolveTableConfig<
   scope extends AbiTypeScope = AbiTypeScope,
   // TODO: temporary fix to have access to the default name here.
   // Will remove once there is a clearer separation between full config and shorthand config
-  defaultName extends string = string,
+  defaultName extends string = "",
 >(
   input: validateTableConfig<input, scope>,
   scope: scope = AbiTypeScope as scope,

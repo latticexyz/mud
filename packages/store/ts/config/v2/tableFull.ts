@@ -100,8 +100,14 @@ export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeSco
 }
 
 export type resolveTableCodegen<options> = {
-  [key in keyof TableCodegenOptions]: key extends keyof options
-    ? options[key]
+  [key in keyof TableCodegenOptions]-?: key extends keyof options
+    ? undefined extends options[key]
+      ? key extends "dataStruct"
+        ? boolean
+        : key extends keyof typeof TABLE_CODEGEN_DEFAULTS
+          ? (typeof TABLE_CODEGEN_DEFAULTS)[key]
+          : never
+      : options[key]
     : // dataStruct isn't narrowed, because its value is conditional on the number of value schema fields
       key extends "dataStruct"
       ? boolean
@@ -127,15 +133,15 @@ export type tableWithDefaults<
   defaultName extends string,
   scope extends AbiTypeScope = AbiTypeScope,
 > = {
-  [key in keyof TableFullInput]-?: key extends keyof table
-    ? table[key]
-    : key extends "name"
+  [key in keyof TableFullInput]-?: undefined extends table[key]
+    ? key extends "name"
       ? defaultName
       : key extends "namespace"
         ? typeof CONFIG_DEFAULTS.namespace
         : key extends "type"
           ? typeof TABLE_DEFAULTS.type
-          : table[key];
+          : table[key]
+    : table[key];
 };
 
 export function tableWithDefaults<table extends TableFullInput, defaultName extends string>(
@@ -144,7 +150,9 @@ export function tableWithDefaults<table extends TableFullInput, defaultName exte
 ): tableWithDefaults<table, defaultName> {
   return {
     ...table,
-    tableId: table.tableId ?? resourceToHex({ type: TABLE_DEFAULTS.type, namespace: "", name: defaultName }),
+    tableId:
+      table.tableId ??
+      (defaultName ? resourceToHex({ type: TABLE_DEFAULTS.type, namespace: "", name: defaultName }) : undefined),
     name: table.name ?? defaultName,
     namespace: table.namespace ?? CONFIG_DEFAULTS.namespace,
     type: table.type ?? TABLE_DEFAULTS.type,
