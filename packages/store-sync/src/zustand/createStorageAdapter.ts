@@ -18,8 +18,6 @@ export function createStorageAdapter<tables extends Tables>({
   store,
 }: CreateStorageAdapterOptions<tables>): StorageAdapter {
   return async function zustandStorageAdapter({ logs }) {
-    // TODO: clean this up so that we do one store write per block
-
     // record id => is deleted
     const touchedIds: Map<string, boolean> = new Map();
 

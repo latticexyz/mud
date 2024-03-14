@@ -62,6 +62,7 @@
     "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
+    "@latticexyz/query": "workspace:*",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",

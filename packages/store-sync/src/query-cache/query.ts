@@ -1,29 +1,24 @@
-import { ZustandStore } from "../zustand";
-import { AllTables, Query, QueryResultSubject } from "./common";
-import { StoreConfig, Tables } from "@latticexyz/store";
-import { findSubjects } from "./findSubjects";
+import { Query, QueryResult, Tables, queryToResultSubject } from "./common";
+import { evaluate } from "@latticexyz/common/type-utils";
+import { QueryCacheStore } from "./createStore";
+import { findSubjects } from "@latticexyz/query";
+import { queryToWire } from "./queryToWire";
 
-// TODO: validate query
-//       - one subject per table
-//       - underlying subject field types match
-//       - only keys as subjects for now?
-//       - subjects and conditions all have valid fields
-//       - can only compare like types?
-//       - `where` tables are in `from`
-
-// TODO: make query smarter/config aware for shorthand
-// TODO: make condition types smarter, so condition literal matches the field primitive type
 // TODO: return matching records alongside subjects? because the record subset may be smaller than what querying for records with matching subjects
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type QueryResult<query extends Query> = readonly QueryResultSubject[];
+export async function query<
+  store extends QueryCacheStore<tables>,
+  query extends Query<tables>,
+  tables extends Tables = store extends QueryCacheStore<infer tables> ? tables : Tables,
+>(store: store, query: query): Promise<evaluate<QueryResult<query, tables>>> {
+  const { tables, records } = store.getState();
 
-export async function query<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
-  store: ZustandStore<AllTables<config, extraTables>>,
-  query: Query,
-): Promise<QueryResult<typeof query>> {
-  const records = Object.values(store.getState().records);
-  const matches = findSubjects({ records, query });
+  const result = findSubjects({
+    records,
+    query: queryToWire(tables, query),
+  });
 
-  return matches;
+  return {
+    subjects: result.subjects as unknown as readonly queryToResultSubject<query, tables>[],
+  };
 }

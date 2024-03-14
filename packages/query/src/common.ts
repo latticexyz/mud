@@ -7,7 +7,7 @@ export type schemaAbiTypes<schema extends Schema> = {
   [key in keyof schema]: schema[key]["type"];
 };
 
-export type TableRecord<table extends ResolvedTableConfig> = {
+export type TableRecord<table extends ResolvedTableConfig = ResolvedTableConfig> = {
   readonly table: table;
   readonly fields: schemaAbiTypes<table["schema"]>;
 };
