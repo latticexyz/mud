@@ -5,6 +5,7 @@ import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
 import { AbiTypeScope, extendScope } from "./scope";
 import { isSchemaAbiType } from "@latticexyz/schema-type";
 import { UserTypes, Enums } from "./output";
+import { isTableShorthandInput, resolveTableShorthand, validateTableShorthand } from "./tableShorthand";
 import { resourceToHex } from "@latticexyz/common";
 
 export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
@@ -36,13 +37,17 @@ export function resolveStoreTablesConfig<input, scope extends AbiTypeScope = Abi
 
   return Object.fromEntries(
     Object.entries(input).map(([key, table]) => {
-      // TODO: separate shorthand config from full config resolver
-      // so we can assume a full config here and add the tableId to the input
-      const tableId = resourceToHex({ type: "table", namespace: "", name: key });
-      const resolvedTable = resolveTableConfig(table, scope);
-      // If the tableId is overridden, keep the overridden tableId
-      const resolvedTableWithTableId = resolvedTable.tableId === "0x" ? { ...resolvedTable, tableId } : resolvedTable;
-      return [key, resolvedTableWithTableId];
+      const fullInput = isTableShorthandInput(table, scope)
+        ? resolveTableShorthand(table as validateTableShorthand<typeof table, scope>, scope)
+        : table;
+
+      return [
+        key,
+        resolveTableConfig(
+          { tableId: resourceToHex({ type: "table", namespace: "", name: key }), ...fullInput },
+          scope,
+        ),
+      ];
     }),
   ) as resolveStoreTablesConfig<input, scope>;
 }
