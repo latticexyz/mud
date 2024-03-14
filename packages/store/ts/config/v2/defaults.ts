@@ -9,7 +9,6 @@ export const TABLE_CODEGEN_DEFAULTS = {
   directory: "tables",
   tableIdArgument: false,
   storeArgument: false,
-  offchainOnly: false,
 } as const;
 
 export const CONFIG_DEFAULTS = {

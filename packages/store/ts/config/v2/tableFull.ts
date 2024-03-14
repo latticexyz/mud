@@ -1,9 +1,11 @@
 import { conform, evaluate } from "@arktype/util";
+import { isStaticAbiType } from "@latticexyz/schema-type";
+import { Hex } from "viem";
 import { get, hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput, resolveSchema } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
-import { isStaticAbiType } from "@latticexyz/schema-type";
-import { Hex } from "viem";
+import { TableCodegenOptions } from "./output";
+import { TABLE_CODEGEN_DEFAULTS } from "./defaults";
 
 export type TableFullInput<
   schema extends SchemaInput<scope> = SchemaInput,
@@ -16,6 +18,7 @@ export type TableFullInput<
   type?: "table" | "offchainTable";
   name?: string;
   namespace?: string;
+  codegen?: Partial<TableCodegenOptions>;
 };
 
 export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = readonly [
@@ -65,7 +68,9 @@ export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> 
     ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput<scope>>, scope>, input[key]>
     : key extends "schema"
       ? conform<input[key], SchemaInput<scope>>
-      : input[key];
+      : key extends keyof TableFullInput
+        ? TableFullInput[key]
+        : input[key];
 };
 
 export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope>(
@@ -93,6 +98,29 @@ export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeSco
   }
 }
 
+export type resolveTableCodegen<options> = {
+  [key in keyof TableCodegenOptions]: key extends keyof options
+    ? options[key]
+    : // dataStruct isn't narrowed, because its value is conditional on the number of value schema fields
+      key extends "dataStruct"
+      ? boolean
+      : key extends keyof typeof TABLE_CODEGEN_DEFAULTS
+        ? (typeof TABLE_CODEGEN_DEFAULTS)[key]
+        : never;
+};
+
+export function resolveTableCodegen<options extends Partial<TableCodegenOptions>>(
+  options: options,
+  schema: SchemaInput,
+): resolveTableCodegen<options> {
+  return {
+    directory: get(options, "directory") ?? TABLE_CODEGEN_DEFAULTS.directory,
+    tableIdArgument: get(options, "tableIdArgument") ?? TABLE_CODEGEN_DEFAULTS.tableIdArgument,
+    storeArgument: get(options, "storeArgument") ?? TABLE_CODEGEN_DEFAULTS.storeArgument,
+    dataStruct: get(options, "dataStruct") ?? Object.keys(schema).length > 1,
+  } satisfies TableCodegenOptions as resolveTableCodegen<options>;
+}
+
 export type resolveTableFullConfig<
   input extends TableFullInput<SchemaInput<scope>, scope>,
   scope extends AbiTypeScope = AbiTypeScope,
@@ -112,6 +140,7 @@ export type resolveTableFullConfig<
     },
     scope
   >;
+  readonly codegen: resolveTableCodegen<input["codegen"]>;
 }>;
 
 export function resolveTableFullConfig<
@@ -140,5 +169,6 @@ export function resolveTableFullConfig<
       ),
       scope,
     ),
+    codegen: resolveTableCodegen(input.codegen ?? {}, input.schema as SchemaInput),
   } as resolveTableFullConfig<input, scope>;
 }
