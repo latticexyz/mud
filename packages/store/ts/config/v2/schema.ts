@@ -1,7 +1,6 @@
 import { evaluate } from "@arktype/util";
-import { AbiType, AbiTypeScope } from "./scope";
+import { AbiTypeScope } from "./scope";
 import { hasOwnKey } from "./generics";
-import { StaticAbiType } from "@latticexyz/schema-type";
 
 export type SchemaInput<scope extends AbiTypeScope = AbiTypeScope> = {
   [key: string]: keyof scope["types"];
@@ -42,21 +41,3 @@ export function isSchemaInput<scope extends AbiTypeScope = AbiTypeScope>(
 ): input is SchemaInput<scope> {
   return typeof input === "object" && input != null && Object.values(input).every((key) => hasOwnKey(scope.types, key));
 }
-
-export type ResolvedSchemaConfig = {
-  readonly [key: string]: {
-    /** the Solidity primitive ABI type */
-    readonly type: AbiType;
-    /** the user defined type or Solidity primitive ABI type */
-    readonly internalType: string;
-  };
-};
-
-export type ResolvedKeySchemaConfig = {
-  readonly [key: string]: {
-    /** the Solidity primitive ABI type */
-    readonly type: StaticAbiType;
-    /** the user defined type or Solidity primitive ABI type */
-    readonly internalType: string;
-  };
-};

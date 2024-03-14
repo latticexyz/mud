@@ -11,8 +11,6 @@ import {
   resolveTableConfig,
   AbiTypeScope,
   get,
-  ResolvedStoreConfig,
-  ResolvedTableConfig,
   isTableShorthandInput,
   resolveTableShorthand,
   validateTableShorthand,
@@ -21,7 +19,9 @@ import {
   validateTableFull,
   isObject,
   hasOwnKey,
+  Table,
 } from "@latticexyz/store/config/v2";
+import { Config } from "./output";
 
 export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = evaluate<
   StoreConfigInput<userTypes, enums> & {
@@ -120,9 +120,9 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
           ...fullInput,
         },
         scope,
-      ) as ResolvedTableConfig;
-    }) as ResolvedWorldConfig["namespaces"][string]["tables"],
-  })) as ResolvedWorldConfig["namespaces"];
+      ) as Table;
+    }) as Config["namespaces"][string]["tables"],
+  })) as Config["namespaces"];
 
   const resolvedNamespacedTables = Object.fromEntries(
     Object.entries(resolvedNamespaces)
@@ -130,7 +130,7 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
         Object.entries(namespace.tables).map(([tableKey, table]) => [`${namespaceKey}__${tableKey}`, table]),
       )
       .flat(),
-  ) as ResolvedWorldConfig["tables"];
+  ) as Config["tables"];
 
   const resolvedRootTables = resolveStoreTablesConfig(rootTables, scope);
 
@@ -142,13 +142,3 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
     namespace: get(input, "namespace") ?? "",
   } as resolveWorldConfig<input>;
 }
-
-export type ResolvedWorldConfig = ResolvedStoreConfig & {
-  readonly namespaces: {
-    readonly [key: string]: {
-      readonly tables: {
-        readonly [key: string]: ResolvedTableConfig;
-      };
-    };
-  };
-};
