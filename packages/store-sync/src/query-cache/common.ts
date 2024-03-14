@@ -41,13 +41,13 @@ type queryConditions<tables extends Tables> = {
   [tableName in keyof tables]: tableConditions<tableName & string, tables[tableName]>;
 }[keyof tables];
 
-export type QuerySubject<tables extends Tables = Tables> = {
+export type QuerySubjects<tables extends Tables = Tables> = {
   readonly [k in keyof tables]?: readonly [keyof tables[k]["schema"], ...(keyof tables[k]["schema"])[]];
 };
 
 export type Query<tables extends Tables = Tables> = {
-  readonly from: QuerySubject;
-  readonly except?: QuerySubject;
+  readonly from: QuerySubjects;
+  readonly except?: QuerySubjects;
   readonly where?: readonly queryConditions<tables>[];
 };
 

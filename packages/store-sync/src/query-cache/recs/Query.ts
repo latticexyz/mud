@@ -5,6 +5,7 @@ import { SchemaToPrimitives, Table } from "@latticexyz/store";
 import { KeySchema, SchemaToPrimitives as SchemaToPrimitivesProtocol } from "@latticexyz/protocol-parser";
 import { encodeEntity } from "../../recs";
 import { hexToResource } from "@latticexyz/common";
+import { QuerySubjects } from "../common";
 
 type HasQueryFragment<T extends Table> = {
   type: QueryFragmentType.Has;
@@ -56,18 +57,19 @@ export type QueryFragment<T extends Table> =
   | HasValueQueryFragment<T>
   | NotValueQueryFragment<T>;
 
-function fragmentsToWoa(fragments: QueryFragment<Table>[]): object {
-  const from: Record<string, string[]> = {};
+function fragmentsToQuerySubjects(fragments: QueryFragment<Table>[]): QuerySubjects {
+  const querySubjects: QuerySubjects = {};
 
   fragments.forEach((fragment) => {
-    from[hexToResource(fragment.table.tableId).name] = Object.keys(fragment.table.keySchema);
+    const { name } = hexToResource(fragment.table.tableId);
+    querySubjects[name] = Object.keys(fragment.table.keySchema);
   });
 
-  return from;
+  return querySubjects;
 }
 
 function fragmentsToFrom(fragments: QueryFragment<Table>[]): object {
-  return fragmentsToWoa(
+  return fragmentsToQuerySubjects(
     fragments.filter(
       (fragment) =>
         fragment.type === QueryFragmentType.Has ||
@@ -78,7 +80,7 @@ function fragmentsToFrom(fragments: QueryFragment<Table>[]): object {
 }
 
 function fragmentsToExcept(fragments: QueryFragment<Table>[]): object {
-  return fragmentsToWoa(fragments.filter((fragment) => fragment.type === QueryFragmentType.Not));
+  return fragmentsToQuerySubjects(fragments.filter((fragment) => fragment.type === QueryFragmentType.Not));
 }
 
 function fragmentToQueryConditions(fragment: QueryFragment<Table>): any[] {
