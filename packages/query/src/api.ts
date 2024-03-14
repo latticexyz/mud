@@ -1,5 +1,5 @@
 import { Hex } from "viem";
-import { StaticPrimitiveType, DynamicPrimitiveType } from "@latticexyz/schema-type";
+import { StaticPrimitiveType, DynamicPrimitiveType, SchemaAbiType } from "@latticexyz/schema-type";
 import { satisfy } from "@latticexyz/common/type-utils";
 import { SchemaToPrimitives } from "@latticexyz/store";
 import { Table } from "@latticexyz/store/config/v2";
@@ -58,15 +58,18 @@ export type ResultRecord = {
 };
 
 export type Subject = readonly PrimitiveType[];
+export type SubjectSchema = readonly SchemaAbiType[];
 
 export type SubjectRecords = {
   readonly subject: Subject;
+  readonly subjectSchema: SubjectSchema;
   readonly records: readonly ResultRecord[];
 };
 
 // TODO: consider flattening this to be more like `ResultRecord & { subject: Subject }`
 export type SubjectRecord = {
   readonly subject: Subject;
+  readonly subjectSchema: SubjectSchema;
   readonly record: ResultRecord;
 };
 

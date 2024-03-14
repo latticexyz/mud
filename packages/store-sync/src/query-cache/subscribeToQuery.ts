@@ -13,6 +13,7 @@ function flattenSubjectRecords(subjects: readonly SubjectRecords[]): readonly Su
   return subjects.flatMap((subject) =>
     subject.records.map((record) => ({
       subject: subject.subject,
+      subjectSchema: subject.subjectSchema,
       record,
     })),
   );
