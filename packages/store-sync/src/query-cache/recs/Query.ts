@@ -2,8 +2,7 @@ import { Entity, QueryFragmentType } from "@latticexyz/recs";
 import { QueryCacheStore } from "../createStore";
 import { query } from "../query";
 import { SchemaToPrimitives } from "@latticexyz/store";
-import { KeySchema, SchemaToPrimitives as SchemaToPrimitivesProtocol } from "@latticexyz/protocol-parser";
-import { encodeEntity, hexKeyTupleToEntity } from "../../recs";
+import { hexKeyTupleToEntity } from "../../recs";
 import { hexToResource } from "@latticexyz/common";
 import { QuerySubjects, Tables, extractTables } from "../common";
 import { SubjectRecords } from "@latticexyz/query";
@@ -59,19 +58,6 @@ export function NotValue<table extends Table>(
   value: SchemaToPrimitives<table["valueSchema"]>,
 ): NotValueQueryFragment<table> {
   return { type: QueryFragmentType.NotValue, table, value };
-}
-
-function tableToKeyNames(table: Table): string[] {
-  return Object.keys(table.schema).filter((key) => table.primaryKey.includes(key));
-}
-
-function tableToKeySchema(table: Table): KeySchema {
-  const keySchema: KeySchema = {};
-  Object.entries(table.schema)
-    .filter(([key]) => table.primaryKey.includes(key))
-    .forEach(([keyName, value]) => (keySchema[keyName] = value.type));
-
-  return keySchema;
 }
 
 function fragmentsToQuerySubjects(fragments: QueryFragment<Table>[]): QuerySubjects {
