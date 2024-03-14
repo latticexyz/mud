@@ -31,6 +31,14 @@ type NotValueQueryFragment<table extends Table> = {
   value: SchemaToPrimitives<table["valueSchema"]>;
 };
 
+type QueryFragment<table extends Table> =
+  | HasQueryFragment<table>
+  | NotQueryFragment<table>
+  | HasValueQueryFragment<table>
+  | NotValueQueryFragment<table>;
+
+type QueryFragments<tables extends Tables> = QueryFragment<tables[keyof tables]>[];
+
 export function Has<table extends Table>(table: table): HasQueryFragment<table> {
   return { type: QueryFragmentType.Has, table };
 }
@@ -53,16 +61,17 @@ export function NotValue<table extends Table>(
   return { type: QueryFragmentType.NotValue, table, value };
 }
 
-export type QueryFragment<table extends Table> =
-  | HasQueryFragment<table>
-  | NotQueryFragment<table>
-  | HasValueQueryFragment<table>
-  | NotValueQueryFragment<table>;
-
-type QueryFragments<tables extends Tables> = QueryFragment<tables[keyof tables]>[];
-
-function tableToKeySchema(table: Table): string[] {
+function tableToKeyNames(table: Table): string[] {
   return Object.keys(table.schema).filter((key) => table.primaryKey.includes(key));
+}
+
+function tableToKeySchema(table: Table): KeySchema {
+  const keySchema: KeySchema = {};
+  Object.entries(table.keySchema)
+    .filter(([key]) => table.primaryKey.includes(key))
+    .forEach(([keyName, value]) => (keySchema[keyName] = value.type));
+
+  return keySchema;
 }
 
 function fragmentsToQuerySubjects(fragments: QueryFragment<Table>[]): QuerySubjects {
@@ -70,7 +79,7 @@ function fragmentsToQuerySubjects(fragments: QueryFragment<Table>[]): QuerySubje
 
   fragments.forEach((fragment) => {
     const { name } = hexToResource(fragment.table.tableId);
-    querySubjects[name] = tableToKeySchema(fragment.table);
+    querySubjects[name] = tableToKeyNames(fragment.table);
   });
 
   return querySubjects;
@@ -111,19 +120,14 @@ function fragmentsToWhere(fragments: QueryFragment<Table>[]): any[] {
 }
 
 function fragmentToKeySchema(fragment: QueryFragment<Table>): KeySchema {
-  const keySchema: KeySchema = {};
-  Object.entries(fragment.table.keySchema)
-    .filter(([key]) => fragment.table.primaryKey.includes(key))
-    .forEach(([keyName, value]) => (keySchema[keyName] = value.type));
-
-  return keySchema;
+  return tableToKeySchema(fragment.table);
 }
 
 function subjectToEntity(fragment: QueryFragment<Table>, subject: SubjectRecords): Entity {
   const keySchema = fragmentToKeySchema(fragment);
 
   const key: SchemaToPrimitivesProtocol<KeySchema> = {};
-  tableToKeySchema(fragment.table).forEach((keyName, i) => (key[keyName] = subject.subject[i]));
+  tableToKeyNames(fragment.table).forEach((keyName, i) => (key[keyName] = subject.subject[i]));
 
   return encodeEntity(keySchema, key);
 }
