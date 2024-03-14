@@ -1,7 +1,9 @@
 import { StoreApi, UseBoundStore, create } from "zustand";
 import { Table } from "@latticexyz/store/config/v2";
-import { Tables, schemaAbiTypes } from "./common";
+import { Tables } from "./common";
 import { Hex } from "viem";
+import { StaticPrimitiveType } from "@latticexyz/schema-type";
+import { SchemaToPrimitives } from "@latticexyz/store";
 
 export type RawTableRecord<table extends Table = Table> = {
   readonly table: table;
@@ -17,9 +19,11 @@ export type TableRecord<table extends Table = Table> = {
   readonly table: table;
   /** @internal Internal unique ID */
   readonly id: string;
-  readonly key: schemaAbiTypes<table["keySchema"]>;
-  readonly value: schemaAbiTypes<table["valueSchema"]>;
-  readonly fields: schemaAbiTypes<table["schema"]>;
+  readonly keyTuple: readonly Hex[];
+  readonly primaryKey: readonly StaticPrimitiveType[];
+  readonly key: SchemaToPrimitives<table["keySchema"]>;
+  readonly value: SchemaToPrimitives<table["valueSchema"]>;
+  readonly fields: SchemaToPrimitives<table["schema"]>;
 };
 
 export type QueryCacheState<tables extends Tables = Tables> = {
@@ -28,7 +32,10 @@ export type QueryCacheState<tables extends Tables = Tables> = {
   readonly records: readonly TableRecord<tables[keyof tables]>[];
 };
 
-export type QueryCacheStore<tables extends Tables = Tables> = UseBoundStore<StoreApi<QueryCacheState<tables>>>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type QueryCacheStore<tables extends Tables = any> = UseBoundStore<StoreApi<QueryCacheState<tables>>>;
+
+export type extractTables<T> = T extends QueryCacheStore<infer tables> ? tables : never;
 
 export type CreateStoreOptions<tables extends Tables = Tables> = {
   tables: tables;

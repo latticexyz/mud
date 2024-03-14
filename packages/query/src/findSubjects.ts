@@ -1,8 +1,8 @@
 import { encodeAbiParameters } from "viem";
 import { Table } from "@latticexyz/store/config/v2";
 import { groupBy, uniqueBy } from "@latticexyz/common/utils";
-import { Query, QueryResultSubject } from "./api";
-import { matchesCondition } from "./matchesCondition";
+import { Query, SubjectRecords } from "./api";
+import { matchRecords } from "./matchRecords";
 import { TableRecord } from "./common";
 
 // This assumes upstream has fully validated query
@@ -14,16 +14,12 @@ export type FindSubjectsParameters<table extends Table> = {
   readonly query: Query;
 };
 
-export type FindSubjectsResult = {
-  readonly subjects: readonly QueryResultSubject[];
-};
-
 // TODO: make condition types smarter? so condition literal matches the field primitive type
 
 export function findSubjects<table extends Table>({
   records: initialRecords,
   query,
-}: FindSubjectsParameters<table>): FindSubjectsResult {
+}: FindSubjectsParameters<table>): readonly SubjectRecords[] {
   const targetTables = Object.fromEntries(
     uniqueBy([...query.from, ...(query.except ?? [])], (subject) => subject.tableId).map((subject) => [
       subject.tableId,
@@ -64,9 +60,28 @@ export function findSubjects<table extends Table>({
       const tableIds = new Set(records.map((record) => record.table.tableId));
       return tableIds.size === fromTableIds.size;
     })
-    .filter((match) => (query.where ? query.where.every((condition) => matchesCondition(condition, match)) : true));
+    .map((match) => {
+      if (!query.where) return match;
 
-  const subjects = matchedSubjects.map((match) => match.subject);
+      let records: readonly TableRecord<table>[] = match.records;
+      for (const condition of query.where) {
+        if (!records.length) break;
+        records = matchRecords(condition, records);
+      }
 
-  return { subjects };
+      return { ...match, records };
+    })
+    .filter((match) => match.records.length > 0);
+
+  const subjects = matchedSubjects.map((match) => ({
+    subject: match.subject,
+    records: match.records.map((record) => ({
+      tableId: record.table.tableId,
+      primaryKey: record.primaryKey,
+      keyTuple: record.keyTuple,
+      fields: record.fields,
+    })),
+  }));
+
+  return subjects;
 }
