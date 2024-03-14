@@ -60,18 +60,21 @@ export function NotValue<table extends Table>(
   return { type: QueryFragmentType.NotValue, table, value };
 }
 
-function fragmentsToQuerySubjects(fragments: QueryFragment<Table>[]): QuerySubjects {
-  const querySubjects: QuerySubjects = {};
-
-  fragments.forEach((fragment) => {
-    const { name } = hexToResource(fragment.table.tableId);
-    querySubjects[name] = fragment.table.primaryKey;
-  });
-
-  return querySubjects;
+function fragmentsToQuerySubjects<tables extends Tables>(
+  fragments: QueryFragment<tables[keyof tables]>[],
+): QuerySubjects<tables> {
+  return Object.fromEntries(
+    fragments.map((fragment) => [
+      // TODO: change this to table.name
+      hexToResource(fragment.table.tableId).name,
+      fragment.table.primaryKey,
+    ]),
+  ) as QuerySubjects<tables>;
 }
 
-function fragmentsToFrom(fragments: QueryFragment<Table>[]): QuerySubjects {
+function fragmentsToFrom<tables extends Tables>(
+  fragments: QueryFragment<tables[keyof tables]>[],
+): QuerySubjects<tables> {
   return fragmentsToQuerySubjects(
     fragments.filter(
       (fragment) =>
@@ -82,7 +85,9 @@ function fragmentsToFrom(fragments: QueryFragment<Table>[]): QuerySubjects {
   );
 }
 
-function fragmentsToExcept(fragments: QueryFragment<Table>[]): QuerySubjects {
+function fragmentsToExcept<tables extends Tables>(
+  fragments: QueryFragment<tables[keyof tables]>[],
+): QuerySubjects<tables> {
   return fragmentsToQuerySubjects(fragments.filter((fragment) => fragment.type === QueryFragmentType.Not));
 }
 
