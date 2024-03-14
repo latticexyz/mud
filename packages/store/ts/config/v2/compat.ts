@@ -8,8 +8,7 @@ export type configToV1<config> = config extends Config
       enums: { [key in keyof config["enums"]]: string[] };
       userTypes: {
         [key in keyof config["userTypes"]]: {
-          internalType: config["userTypes"][key];
-          // TODO: add to v2 config
+          internalType: config["userTypes"][key]["type"];
           filePath: string;
         };
       };
@@ -33,7 +32,11 @@ export type tableToV1<table extends Table> = {
 };
 
 export function configToV1<config>(config: conform<config, Config>): configToV1<config> {
-  const resolvedUserTypes = mapObject(config.userTypes, (userType) => ({ internalType: userType, filePath: "" }));
+  const resolvedUserTypes = mapObject(config.userTypes, ({ type, filePath }) => ({
+    internalType: type,
+    filePath,
+  }));
+
   const resolvedTables = mapObject(config.tables, (table) => ({
     directory: table.codegen.directory,
     dataStruct: table.codegen.dataStruct,
@@ -54,5 +57,5 @@ export function configToV1<config>(config: conform<config, Config>): configToV1<
     codegenDirectory: config.codegen.codegenDirectory,
     codegenIndexFilename: config.codegen.codegenIndexFilename,
     tables: resolvedTables,
-  };
+  } as unknown as configToV1<config>;
 }

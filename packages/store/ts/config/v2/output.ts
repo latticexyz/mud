@@ -8,7 +8,7 @@ import { Hex } from "viem";
 export type AbiType = StaticAbiType | DynamicAbiType;
 
 export type UserTypes = {
-  readonly [userTypeName: string]: AbiType;
+  readonly [userTypeName: string]: { type: AbiType; filePath: string };
 };
 
 export type Enums = {

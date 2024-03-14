@@ -51,7 +51,10 @@ describe("resolveStoreConfig", () => {
   });
 
   it("should accept a user type as input and expand it", () => {
-    const config = resolveStoreConfig({ tables: { Name: "CustomType" }, userTypes: { CustomType: "address" } });
+    const config = resolveStoreConfig({
+      tables: { Name: "CustomType" },
+      userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
+    });
     const expected = {
       tables: {
         Name: {
@@ -85,7 +88,7 @@ describe("resolveStoreConfig", () => {
           type: "table",
         },
       },
-      userTypes: { CustomType: "address" },
+      userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
       enums: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
@@ -228,7 +231,10 @@ describe("resolveStoreConfig", () => {
       resolveStoreConfig({
         // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
         tables: { Example: { key: "dynamic", name: "string", age: "uint256" } },
-        userTypes: { dynamic: "string", static: "address" },
+        userTypes: {
+          dynamic: { type: "string", filePath: "path/to/file" },
+          static: { type: "address", filePath: "path/to/file" },
+        },
       }),
     ).throwsAndHasTypeError(
       "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
@@ -302,7 +308,10 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["age"],
         },
       },
-      userTypes: { static: "address", dynamic: "string" },
+      userTypes: {
+        static: { type: "address", filePath: "path/to/file" },
+        dynamic: { type: "string", filePath: "path/to/file" },
+      },
     });
     const expected = {
       tables: {
@@ -345,7 +354,10 @@ describe("resolveStoreConfig", () => {
           type: "table",
         },
       },
-      userTypes: { static: "address", dynamic: "string" },
+      userTypes: {
+        static: { type: "address", filePath: "path/to/file" },
+        dynamic: { type: "string", filePath: "path/to/file" },
+      },
       enums: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
@@ -525,7 +537,10 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["secondKey", "secondAge"],
         },
       },
-      userTypes: { Static: "address", Dynamic: "string" },
+      userTypes: {
+        Static: { type: "address", filePath: "path/to/file" },
+        Dynamic: { type: "string", filePath: "path/to/file" },
+      },
     });
     const expected = {
       tables: {
@@ -606,7 +621,10 @@ describe("resolveStoreConfig", () => {
           type: "table",
         },
       },
-      userTypes: { Static: "address", Dynamic: "string" },
+      userTypes: {
+        Static: { type: "address", filePath: "path/to/file" },
+        Dynamic: { type: "string", filePath: "path/to/file" },
+      },
       enums: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
@@ -662,7 +680,7 @@ describe("resolveStoreConfig", () => {
           },
         },
         userTypes: {
-          Dynamic: "string",
+          Dynamic: { type: "string", filePath: "path/to/file" },
         },
       }),
     )
@@ -678,7 +696,10 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["name"],
         },
       },
-      userTypes: { static: "address", dynamic: "string" },
+      userTypes: {
+        static: { type: "address", filePath: "path/to/file" },
+        dynamic: { type: "string", filePath: "path/to/file" },
+      },
       enums: {
         ValidNames: ["first", "second"],
       },
@@ -724,7 +745,10 @@ describe("resolveStoreConfig", () => {
           type: "table",
         },
       },
-      userTypes: { static: "address", dynamic: "string" },
+      userTypes: {
+        static: { type: "address", filePath: "path/to/file" },
+        dynamic: { type: "string", filePath: "path/to/file" },
+      },
       enums: {
         ValidNames: ["first", "second"],
       },
@@ -748,7 +772,10 @@ describe("resolveStoreConfig", () => {
   });
 
   it("should extend the output Config type", () => {
-    const config = resolveStoreConfig({ tables: { Name: "CustomType" }, userTypes: { CustomType: "address" } });
+    const config = resolveStoreConfig({
+      tables: { Name: "CustomType" },
+      userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
+    });
     attest<true, typeof config extends Config ? true : false>();
   });
 });

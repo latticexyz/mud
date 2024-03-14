@@ -58,7 +58,7 @@ describe("configToV1", () => {
         TerrainType: ["None", "Ocean", "Grassland", "Desert"],
       },
       userTypes: {
-        CustomAddress: "address",
+        CustomAddress: { type: "address", filePath: "path/to/file" },
       },
       tables: {
         Position: {
@@ -86,6 +86,8 @@ describe("configToV1", () => {
         },
       },
     });
+
+    configV1.userTypes.CustomAddress.filePath;
 
     attest<typeof configV1>(configToV1(configV2)).equals(configV1);
     attest<configToV1<typeof configV2>>(configV1);

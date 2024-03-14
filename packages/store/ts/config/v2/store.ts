@@ -7,6 +7,7 @@ import { isSchemaAbiType } from "@latticexyz/schema-type";
 import { UserTypes, Enums, CodegenOptions } from "./output";
 import { isTableShorthandInput, resolveTableShorthand, validateTableShorthand } from "./tableShorthand";
 import { CODEGEN_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
+import { mapObject } from "@latticexyz/common/utils";
 
 export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
   namespace?: string;
@@ -58,20 +59,26 @@ export function resolveStoreTablesConfig<input, scope extends AbiTypeScope = Abi
 
       return [key, resolveTableConfig(fullInput, scope, key)];
     }),
-  ) as resolveStoreTablesConfig<input, scope>;
+  ) as unknown as resolveStoreTablesConfig<input, scope>;
+}
+
+type extractInternalType<userTypes extends UserTypes> = { [key in keyof userTypes]: userTypes[key]["type"] };
+
+function extractInternalType<userTypes extends UserTypes>(userTypes: userTypes): extractInternalType<userTypes> {
+  return mapObject(userTypes, (userType) => userType.type);
 }
 
 export type scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTypeScope> = UserTypes extends userTypes
   ? scope
   : userTypes extends UserTypes
-    ? extendScope<scope, userTypes>
+    ? extendScope<scope, extractInternalType<userTypes>>
     : scope;
 
 function isUserTypes(userTypes: unknown): userTypes is UserTypes {
   return (
     typeof userTypes === "object" &&
     userTypes != null &&
-    Object.values(userTypes).every((type) => isSchemaAbiType(type))
+    Object.values(userTypes).every((userType) => isSchemaAbiType(userType.type))
   );
 }
 
@@ -79,7 +86,10 @@ export function scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTy
   userTypes: userTypes,
   scope: scope = AbiTypeScope as scope,
 ): scopeWithUserTypes<userTypes, scope> {
-  return (isUserTypes(userTypes) ? extendScope(scope, userTypes) : scope) as scopeWithUserTypes<userTypes, scope>;
+  return (isUserTypes(userTypes) ? extendScope(scope, extractInternalType(userTypes)) : scope) as scopeWithUserTypes<
+    userTypes,
+    scope
+  >;
 }
 
 function isEnums(enums: unknown): enums is Enums {
