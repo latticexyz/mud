@@ -1,5 +1,6 @@
 import { describe, it } from "vitest";
-import { ResolvedSchemaConfig, resolveSchema } from "./schema";
+import { resolveSchema } from "./schema";
+import { ResolvedSchemaConfig } from "./output";
 import { extendScope, AbiTypeScope } from "./scope";
 import { attest } from "@arktype/attest";
 

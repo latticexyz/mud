@@ -1,5 +1,6 @@
 import { describe, it } from "vitest";
-import { ResolvedStoreConfig, resolveStoreConfig } from "./store";
+import { resolveStoreConfig } from "./store";
+import { ResolvedStoreConfig } from "./output";
 import { attest } from "@arktype/attest";
 import { Hex } from "viem";
 

@@ -1,6 +1,7 @@
 import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { ResolvedTableConfig, resolveTableConfig } from "./table";
+import { resolveTableConfig } from "./table";
+import { ResolvedTableConfig } from "./output";
 import { AbiTypeScope, extendScope } from "./scope";
 import { Hex } from "viem";
 

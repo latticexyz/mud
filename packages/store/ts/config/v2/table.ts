@@ -1,5 +1,5 @@
 import { ErrorMessage, evaluate } from "@arktype/util";
-import { ResolvedKeySchemaConfig, ResolvedSchemaConfig, SchemaInput } from "./schema";
+import { SchemaInput } from "./schema";
 import { AbiTypeScope } from "./scope";
 import {
   TableShorthandInput,
@@ -8,7 +8,6 @@ import {
   validateTableShorthand,
 } from "./tableShorthand";
 import { TableFullInput, ValidKeys, isTableFullInput, resolveTableFullConfig, validateTableFull } from "./tableFull";
-import { Hex } from "viem";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.">;
@@ -60,11 +59,3 @@ export function resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeSc
 
   throw new Error("Invalid config input");
 }
-
-export type ResolvedTableConfig = {
-  readonly tableId: Hex;
-  readonly primaryKey: readonly string[];
-  readonly schema: ResolvedSchemaConfig;
-  readonly keySchema: ResolvedKeySchemaConfig;
-  readonly valueSchema: ResolvedSchemaConfig;
-};

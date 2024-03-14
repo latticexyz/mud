@@ -1,9 +1,9 @@
 import { Dict, evaluate, narrow } from "@arktype/util";
 import { get, hasOwnKey } from "./generics";
 import { SchemaInput } from "./schema";
-import { AbiType, AbiTypeScope, extendScope } from "./scope";
-import { ResolvedTableConfig, TableInput, resolveTableConfig, validateTableConfig } from "./table";
-import { isSchemaAbiType } from "@latticexyz/schema-type";
+import { AbiTypeScope, extendScope } from "./scope";
+import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
+import { SchemaAbiType as AbiType, isSchemaAbiType } from "@latticexyz/schema-type";
 
 export type UserTypes = Dict<string, AbiType>;
 export type Enums = Dict<string, string[]>;
@@ -119,10 +119,3 @@ export function resolveStoreConfig<const input>(input: validateStoreConfig<input
     namespace: hasOwnKey(input, "namespace") ? input["namespace"] : "",
   } as resolveStoreConfig<input>;
 }
-
-export type ResolvedStoreConfig = {
-  readonly tables: Dict<string, ResolvedTableConfig>;
-  readonly userTypes: UserTypes;
-  readonly enums: Dict<string, readonly [string, ...string[]]>;
-  readonly namespace: string;
-};
