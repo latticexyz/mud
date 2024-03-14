@@ -57,8 +57,7 @@ export function resolveStoreTablesConfig<input, scope extends AbiTypeScope = Abi
       return [
         key,
         resolveTableConfig(
-          // if a tableId exists on the input, keep that tableId
-          { tableId: resourceToHex({ type: "table", namespace: "", name: key }), ...fullInput },
+          { ...fullInput, tableId: fullInput.tableId ?? resourceToHex({ type: "table", namespace: "", name: key }) },
           scope,
         ),
       ];

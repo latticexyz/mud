@@ -115,9 +115,10 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
       validateTableFull(fullInput, scope);
       return resolveTableFullConfig(
         {
-          // if a tableId exists on the input, keep that tableId
-          tableId: resourceToHex({ type: "table", namespace: namespaceKey as string, name: tableKey as string }),
           ...fullInput,
+          tableId:
+            fullInput.tableId ??
+            resourceToHex({ type: "table", namespace: namespaceKey as string, name: tableKey as string }),
         },
         scope,
       ) as Table;
