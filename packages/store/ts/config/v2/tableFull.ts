@@ -13,6 +13,9 @@ export type TableFullInput<
   schema: schema;
   primaryKey: primaryKey;
   tableId?: Hex;
+  type?: "table" | "offchainTable";
+  name?: string;
+  namespace?: string;
 };
 
 export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = readonly [

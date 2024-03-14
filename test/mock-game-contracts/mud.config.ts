@@ -1,7 +1,7 @@
 import { mudConfig } from "@latticexyz/world/register";
 import { resolveStoreConfig } from "@latticexyz/store/config/v2";
 
-export default mudConfig({
+const config = mudConfig({
   enums: {
     TerrainType: ["None", "Ocean", "Grassland", "Desert"],
   },
@@ -114,3 +114,5 @@ export const configV2 = resolveStoreConfig({
     },
   },
 });
+
+export default config;

@@ -33,14 +33,30 @@ export type KeySchema = {
   };
 };
 
+export type TableCodegenOptions = {
+  readonly directory: string;
+  readonly tableIdArgument: boolean;
+  readonly storeArgument: boolean;
+  readonly dataStruct: boolean;
+};
+
 export type Table = {
   readonly tableId: Hex;
   readonly primaryKey: readonly string[];
   readonly schema: Schema;
-  /** @deprecated Use `schema` and `primaryKey` */
   readonly keySchema: KeySchema;
-  /** @deprecated Use `schema` and `primaryKey` */
   readonly valueSchema: Schema;
+  readonly type: "table" | "offchainTable";
+  readonly name: string;
+  readonly namespace: string;
+  readonly codegen: TableCodegenOptions;
+};
+
+export type CodegenOptions = {
+  readonly storeImportPath: string;
+  readonly userTypesFilename: string;
+  readonly codegenDirectory: string;
+  readonly codegenIndexFilename: string;
 };
 
 export type Config = {
@@ -50,4 +66,5 @@ export type Config = {
   readonly userTypes: UserTypes;
   readonly enums: Enums;
   readonly namespace: string;
+  readonly codegen: CodegenOptions;
 };
