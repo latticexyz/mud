@@ -18,6 +18,7 @@ type NotQueryFragment<table extends Table> = {
   table: table;
 };
 
+// TODO: make these partial values
 type HasValueQueryFragment<table extends Table> = {
   type: QueryFragmentType.HasValue;
   table: table;
