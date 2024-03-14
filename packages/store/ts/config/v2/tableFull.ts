@@ -12,6 +12,7 @@ export type TableFullInput<
 > = {
   schema: schema;
   primaryKey: primaryKey;
+  tableId?: Hex;
 };
 
 export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = readonly [
@@ -117,8 +118,7 @@ export function resolveTableFullConfig<
   validateTableFull(input, scope);
 
   return {
-    // TODO(alvrs): fill in once we can pipe in namespace+name
-    tableId: "0x" as Hex,
+    tableId: input.tableId ?? ("0x" as Hex),
     primaryKey: input["primaryKey"],
     schema: resolveSchema(input["schema"], scope),
     keySchema: resolveSchema(
