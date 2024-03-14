@@ -1,9 +1,9 @@
 import { StoreApi, UseBoundStore, create } from "zustand";
-import { ResolvedTableConfig } from "@latticexyz/store/config/v2";
+import { Table } from "@latticexyz/store/config/v2";
 import { Tables, schemaAbiTypes } from "./common";
 import { Hex } from "viem";
 
-export type RawTableRecord<table extends ResolvedTableConfig = ResolvedTableConfig> = {
+export type RawTableRecord<table extends Table = Table> = {
   readonly table: table;
   /** @internal Internal unique ID */
   readonly id: string;
@@ -13,7 +13,7 @@ export type RawTableRecord<table extends ResolvedTableConfig = ResolvedTableConf
   readonly dynamicData: Hex;
 };
 
-export type TableRecord<table extends ResolvedTableConfig = ResolvedTableConfig> = {
+export type TableRecord<table extends Table = Table> = {
   readonly table: table;
   /** @internal Internal unique ID */
   readonly id: string;
