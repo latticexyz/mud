@@ -27,7 +27,7 @@
     "clean": "rimraf dist",
     "dev": "tsup --watch",
     "prepare": "mkdir -p ./dist && touch ./dist/abi-ts.js",
-    "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests",
+    "test": "vitest --typecheck --run --passWithNoTests",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
@@ -43,7 +43,7 @@
     "@types/node": "^18.15.11",
     "@types/yargs": "^17.0.10",
     "tsup": "^6.7.0",
-    "vitest": "0.34.6"
+    "vitest": "1.3.1"
   },
   "publishConfig": {
     "access": "public"
