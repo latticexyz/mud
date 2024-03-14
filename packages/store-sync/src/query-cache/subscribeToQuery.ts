@@ -21,7 +21,7 @@ type SubscribeToQueryResult<query extends Query> = {
    */
   subjects: readonly QueryResultSubject[];
   /**
-   * Stream of matching subjects for query. First emission is is the same as `subjects`.
+   * Stream of matching subjects for query. First emission is the same as `subjects`.
    */
   subjects$: Observable<readonly QueryResultSubject[]>;
   /**
