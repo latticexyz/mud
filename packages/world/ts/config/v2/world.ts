@@ -1,18 +1,24 @@
 import { evaluate, narrow } from "@arktype/util";
+import { resourceToHex } from "@latticexyz/common";
+import { mapObject } from "@latticexyz/common/utils";
 import {
   UserTypes,
   Enums,
   StoreConfigInput,
   resolveStoreConfig,
-  validateStoreTablesConfig,
   resolveStoreTablesConfig,
   extendedScope,
-  StoreTablesConfigInput,
   resolveTableConfig,
   AbiTypeScope,
   get,
   ResolvedStoreConfig,
   ResolvedTableConfig,
+  isTableShorthandInput,
+  resolveTableShorthand,
+  validateTableShorthand,
+  resolveTableFullConfig,
+  validateStoreTablesConfig,
+  validateTableFull,
 } from "@latticexyz/store/config/v2";
 
 export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = evaluate<
@@ -32,6 +38,10 @@ export type validateNamespaces<input, scope extends AbiTypeScope = AbiTypeScope>
       : input[namespace][key];
   };
 };
+
+function validateNamespaces(input: unknown): asserts input is NamespacesInput {
+  // TODO
+}
 
 export type validateWorldConfig<input> = {
   readonly [key in keyof input]: key extends "tables"
@@ -76,26 +86,41 @@ export type resolveWorldConfig<input> = evaluate<
 
 export function resolveWorldConfig<const input>(input: validateWorldConfig<input>): resolveWorldConfig<input> {
   const namespaces = get(input, "namespaces") ?? {};
+  validateNamespaces(namespaces);
+
   const scope = extendedScope(input);
 
-  const namespacedTables = Object.fromEntries(
-    Object.entries(namespaces)
-      .map(([namespaceKey, namespace]) => {
-        const tables = get(namespace, "tables") ?? {};
-        return Object.entries(tables).map(([tableKey, table]) => [`${namespaceKey}__${tableKey}`, table]);
-      })
-      .flat(),
-  ) as StoreTablesConfigInput<typeof scope>;
+  const rootTables = get(input, "tables") ?? {};
+  validateStoreTablesConfig(rootTables, scope);
 
-  const resolvedNamespaces = Object.fromEntries(
-    Object.entries(namespaces).map(([namespaceKey, namespace]) => [
-      namespaceKey,
-      { tables: resolveStoreTablesConfig(get(namespace, "tables") ?? {}, scope) },
-    ]),
-  );
+  const resolvedNamespaces = mapObject(namespaces, (namespace, namespaceKey) => ({
+    tables: mapObject(namespace.tables, (table, tableKey) => {
+      const fullInput = isTableShorthandInput(table, scope)
+        ? resolveTableShorthand(table as validateTableShorthand<typeof table, typeof scope>, scope)
+        : table;
+      validateTableFull(fullInput, scope);
+      return resolveTableFullConfig(
+        {
+          tableId: resourceToHex({ type: "table", namespace: namespaceKey as string, name: tableKey as string }),
+          ...fullInput,
+        },
+        scope,
+      ) as ResolvedTableConfig;
+    }) as ResolvedWorldConfig["namespaces"][string]["tables"],
+  })) as ResolvedWorldConfig["namespaces"];
+
+  const resolvedNamespacedTables = Object.fromEntries(
+    Object.entries(resolvedNamespaces)
+      .map(([namespaceKey, namespace]) =>
+        Object.entries(namespace.tables).map(([tableKey, table]) => [`${namespaceKey}__${tableKey}`, table]),
+      )
+      .flat(),
+  ) as ResolvedWorldConfig["tables"];
+
+  const resolvedRootTables = resolveStoreTablesConfig(rootTables, scope);
 
   return {
-    tables: resolveStoreTablesConfig({ ...(get(input, "tables") ?? {}), ...namespacedTables }, scope),
+    tables: { ...resolvedRootTables, ...resolvedNamespacedTables },
     namespaces: resolvedNamespaces,
     userTypes: get(input, "userTypes") ?? {},
     enums: get(input, "enums") ?? {},

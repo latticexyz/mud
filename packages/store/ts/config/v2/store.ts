@@ -23,6 +23,13 @@ export type validateStoreTablesConfig<input, scope extends AbiTypeScope = AbiTyp
   [key in keyof input]: validateTableConfig<input[key], scope>;
 };
 
+export function validateStoreTablesConfig<scope extends AbiTypeScope = AbiTypeScope>(
+  input: unknown,
+  scope: scope,
+): asserts input is StoreTablesConfigInput {
+  // TODO
+}
+
 export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<{
   readonly [key in keyof input]: resolveTableConfig<input[key], scope>;
 }>;
