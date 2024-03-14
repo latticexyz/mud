@@ -1,52 +1,34 @@
-import { StoreConfig, Tables, resolveConfig } from "@latticexyz/store";
-import { SyncOptions, SyncResult, storeTables, worldTables } from "../common";
+import { SyncOptions, SyncResult } from "../common";
 import { createStoreSync } from "../createStoreSync";
-import { createStore } from "../zustand/createStore";
-import { createStorageAdapter } from "../zustand/createStorageAdapter";
 import { Address } from "viem";
-import { SyncStep } from "../SyncStep";
-import { AllTables } from "./common";
+import { Config } from "@latticexyz/store/config/v2";
+import { createStore } from "./createStore";
+import { createStorageAdapter } from "./createStorageAdapter";
+import { getTables } from "./getTables";
 
-type SyncToQueryCacheOptions<config extends StoreConfig, extraTables extends Tables | undefined> = SyncOptions & {
+type SyncToQueryCacheOptions<config extends Config> = Omit<SyncOptions, "config"> & {
   // require address for now to keep the data model + retrieval simpler
   address: Address;
   config: config;
-  tables?: extraTables;
   startSync?: boolean;
 };
 
-type SyncToQueryCacheResult<config extends StoreConfig, extraTables extends Tables | undefined> = SyncResult & {
-  tables: AllTables<config, extraTables>;
+type SyncToQueryCacheResult = SyncResult & {
   stopSync: () => void;
 };
 
-export async function syncToQueryCache<config extends StoreConfig, extraTables extends Tables | undefined>({
+export async function syncToQueryCache<config extends Config>({
   config,
-  tables: extraTables,
   startSync = true,
   ...syncOptions
-}: SyncToQueryCacheOptions<config, extraTables>): Promise<SyncToQueryCacheResult<config, extraTables>> {
-  // TODO: migrate this once we redo config to return fully resolved tables (https://github.com/latticexyz/mud/issues/1668)
-  // TODO: move store/world tables into `resolveConfig`
-  const resolvedConfig = resolveConfig(config);
-  const tables = {
-    ...resolvedConfig.tables,
-    ...extraTables,
-    ...storeTables,
-    ...worldTables,
-  } as unknown as AllTables<config, extraTables>;
-
-  const useStore = createStore({ tables });
+}: SyncToQueryCacheOptions<config>): Promise<SyncToQueryCacheResult> {
+  const useStore = createStore({ tables: getTables(config) });
   const storageAdapter = createStorageAdapter({ store: useStore });
 
   const storeSync = await createStoreSync({
     storageAdapter,
     ...syncOptions,
-    onProgress: (syncProgress) => {
-      // already live, no need for more progress updates
-      if (useStore.getState().syncProgress.step === SyncStep.LIVE) return;
-      useStore.setState(() => ({ syncProgress }));
-    },
+    // TODO: sync progress
   });
 
   const sub = startSync ? storeSync.storedBlockLogs$.subscribe() : null;
@@ -56,7 +38,6 @@ export async function syncToQueryCache<config extends StoreConfig, extraTables e
 
   return {
     ...storeSync,
-    tables,
     stopSync,
   };
 }

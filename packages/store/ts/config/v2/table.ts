@@ -59,6 +59,3 @@ export function resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeSc
 
   throw new Error("Invalid config input");
 }
-
-// TODO(alvrs): swap with a better fully resolved type
-export type ResolvedTableConfig = resolveTableConfig<TableFullInput>;

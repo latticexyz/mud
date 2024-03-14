@@ -1,5 +1,6 @@
 import { describe, it } from "vitest";
 import { resolveStoreConfig } from "./store";
+import { Config } from "./output";
 import { attest } from "@arktype/attest";
 import { Hex } from "viem";
 
@@ -685,5 +686,10 @@ describe("resolveStoreConfig", () => {
     const config = resolveStoreConfig({ namespace: "custom" });
 
     attest<"custom">(config.namespace).equals("custom");
+  });
+
+  it("should extend the output Config type", () => {
+    const config = resolveStoreConfig({ tables: { Name: "CustomType" }, userTypes: { CustomType: "address" } });
+    attest<true, typeof config extends Config ? true : false>();
   });
 });
