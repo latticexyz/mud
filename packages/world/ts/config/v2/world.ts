@@ -11,8 +11,6 @@ import {
   resolveTableConfig,
   AbiTypeScope,
   get,
-  ResolvedStoreConfig,
-  ResolvedTableConfig,
 } from "@latticexyz/store/config/v2";
 
 export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = evaluate<
@@ -102,13 +100,3 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
     namespace: get(input, "namespace") ?? "",
   } as resolveWorldConfig<input>;
 }
-
-export type ResolvedWorldConfig = ResolvedStoreConfig & {
-  readonly namespaces: {
-    readonly [key: string]: {
-      readonly tables: {
-        readonly [key: string]: ResolvedTableConfig;
-      };
-    };
-  };
-};

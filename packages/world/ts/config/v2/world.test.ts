@@ -1,5 +1,6 @@
 import { describe, it } from "vitest";
-import { ResolvedWorldConfig, resolveWorldConfig } from "./world";
+import { resolveWorldConfig } from "./world";
+import { Config } from "./output";
 import { attest } from "@arktype/attest";
 import { Hex } from "viem";
 
@@ -222,7 +223,7 @@ describe("resolveWorldConfig", () => {
     attest<typeof expected>(config).equals(expected);
   });
 
-  it("should extend the ResolvedWorldConfig type", () => {
+  it("should extend the output Config type", () => {
     const config = resolveWorldConfig({
       namespaces: {
         ExampleNamespace: {
@@ -248,7 +249,7 @@ describe("resolveWorldConfig", () => {
     });
 
     config.enums.MyEnum;
-    attest<true, typeof config extends ResolvedWorldConfig ? true : false>();
+    attest<true, typeof config extends Config ? true : false>();
   });
 
   describe("should have the same output as `resolveWorldConfig` for store config inputs", () => {
