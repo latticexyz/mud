@@ -62,6 +62,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "enter",
             },
             {
@@ -81,6 +84,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+              ],
+              "subjectSchema": [
+                "address",
               ],
               "type": "enter",
             },
@@ -102,6 +108,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "enter",
             },
             {
@@ -121,6 +130,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0xdBa86119a787422C593ceF119E40887f396024E2",
+              ],
+              "subjectSchema": [
+                "address",
               ],
               "type": "enter",
             },
@@ -147,6 +159,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -165,6 +180,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
             {
@@ -185,6 +203,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -203,6 +224,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0xdBa86119a787422C593ceF119E40887f396024E2",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
@@ -245,6 +269,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "enter",
             },
           ],
@@ -270,6 +297,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -288,6 +318,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
             {
@@ -308,6 +341,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -327,6 +363,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0xdBa86119a787422C593ceF119E40887f396024E2",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -345,6 +384,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
@@ -400,6 +442,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "enter",
             },
             {
@@ -419,6 +464,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+              ],
+              "subjectSchema": [
+                "address",
               ],
               "type": "enter",
             },
@@ -445,6 +493,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -463,6 +514,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
@@ -505,6 +559,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "enter",
             },
           ],
@@ -530,6 +587,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -549,6 +609,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -567,6 +630,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
@@ -609,6 +675,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "exit",
             },
           ],
@@ -634,6 +703,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -652,6 +724,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
@@ -709,6 +784,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "enter",
             },
             {
@@ -729,6 +807,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "enter",
             },
             {
@@ -748,6 +829,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+              ],
+              "subjectSchema": [
+                "address",
               ],
               "type": "enter",
             },
@@ -774,6 +858,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -793,6 +880,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -811,6 +901,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
@@ -853,6 +946,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "enter",
             },
           ],
@@ -878,6 +974,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -896,6 +995,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
             {
@@ -916,6 +1018,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -934,6 +1039,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
@@ -976,6 +1084,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "exit",
             },
           ],
@@ -1001,6 +1112,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -1020,6 +1134,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -1038,6 +1155,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
@@ -1090,6 +1210,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "enter",
             },
             {
@@ -1108,6 +1231,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+              ],
+              "subjectSchema": [
+                "address",
               ],
               "type": "enter",
             },
@@ -1133,6 +1259,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x1D96F2f6BeF1202E4Ce1Ff6Dad0c2CB002861d3e",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -1150,6 +1279,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
@@ -1205,6 +1337,10 @@ describe("subscribeToQuery", async () => {
                 3,
                 5,
               ],
+              "subjectSchema": [
+                "int32",
+                "int32",
+              ],
               "type": "enter",
             },
           ],
@@ -1232,6 +1368,10 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 3,
                 5,
+              ],
+              "subjectSchema": [
+                "int32",
+                "int32",
               ],
             },
           ],
@@ -1286,6 +1426,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0xdBa86119a787422C593ceF119E40887f396024E2",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "enter",
             },
           ],
@@ -1310,6 +1453,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0xdBa86119a787422C593ceF119E40887f396024E2",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
@@ -1390,6 +1536,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "enter",
             },
           ],
@@ -1414,6 +1563,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
@@ -1457,6 +1609,9 @@ describe("subscribeToQuery", async () => {
           "subject": [
             "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
           ],
+          "subjectSchema": [
+            "address",
+          ],
         },
         {
           "records": [
@@ -1477,6 +1632,9 @@ describe("subscribeToQuery", async () => {
           ],
           "subject": [
             "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+          ],
+          "subjectSchema": [
+            "address",
           ],
         },
       ]
@@ -1533,6 +1691,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "enter",
             },
           ],
@@ -1558,6 +1719,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -1577,6 +1741,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -1595,6 +1762,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
@@ -1641,6 +1811,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x5f2cC8fb10299751348e1b10f5F1Ba47820B1cB8",
               ],
+              "subjectSchema": [
+                "address",
+              ],
               "type": "exit",
             },
           ],
@@ -1666,6 +1839,9 @@ describe("subscribeToQuery", async () => {
               "subject": [
                 "0x328809Bc894f92807417D2dAD6b7C998c1aFdac6",
               ],
+              "subjectSchema": [
+                "address",
+              ],
             },
             {
               "record": {
@@ -1684,6 +1860,9 @@ describe("subscribeToQuery", async () => {
               },
               "subject": [
                 "0x078cf0753dd50f7C56F20B3Ae02719EA199BE2eb",
+              ],
+              "subjectSchema": [
+                "address",
               ],
             },
           ],
