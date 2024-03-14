@@ -1,12 +1,10 @@
-import { Dict, evaluate, narrow } from "@arktype/util";
+import { evaluate, narrow } from "@arktype/util";
 import { get, hasOwnKey } from "./generics";
 import { SchemaInput } from "./schema";
 import { AbiTypeScope, extendScope } from "./scope";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
-import { SchemaAbiType as AbiType, isSchemaAbiType } from "@latticexyz/schema-type";
-
-export type UserTypes = Dict<string, AbiType>;
-export type Enums = Dict<string, string[]>;
+import { isSchemaAbiType } from "@latticexyz/schema-type";
+import { UserTypes, Enums } from "./output";
 
 export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
   namespace?: string;

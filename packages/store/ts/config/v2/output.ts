@@ -1,7 +1,13 @@
-import { Dict } from "@arktype/util";
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { Hex } from "viem";
-import { UserTypes } from "./store";
+
+export type UserTypes = {
+  readonly [userTypeName: string]: SchemaAbiType;
+};
+
+export type Enums = {
+  readonly [enumName: string]: readonly [string, ...string[]];
+};
 
 export type Schema = {
   readonly [fieldName: string]: {
@@ -32,8 +38,10 @@ export type Table = {
 };
 
 export type Config = {
-  readonly tables: Dict<string, Table>;
+  readonly tables: {
+    readonly [namespacedTableName: string]: Table;
+  };
   readonly userTypes: UserTypes;
-  readonly enums: Dict<string, readonly [string, ...string[]]>;
+  readonly enums: Enums;
   readonly namespace: string;
 };
