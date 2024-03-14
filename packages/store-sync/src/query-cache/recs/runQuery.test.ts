@@ -1,8 +1,12 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createHydratedStore, tables } from "../test/createHydratedStore";
+import { createHydratedStore } from "../test/createHydratedStore";
 import { Has, HasValue, Not, NotValue, runQuery } from "./Query";
 import { deployMockGame } from "../../../test/mockGame";
 import { Address } from "viem";
+import { configV2 as config } from "../../../test/mockGame";
+import { getTables } from "../getTables";
+
+const tables = getTables(config);
 
 describe("runQuery", async () => {
   let worldAddress: Address;

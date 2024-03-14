@@ -1,12 +1,10 @@
-import { ZustandStore } from "../../zustand";
-import { AllTables, QueryCondition, QueryResultSubject, TableSubject } from "../common";
-import { SchemaToPrimitives, StoreConfig, Table, Tables } from "@latticexyz/store";
+import { Entity, QueryFragmentType } from "@latticexyz/recs";
+import { QueryCacheStore } from "../createStore";
 import { query } from "../query";
-import { QueryResultSubjectChange, subscribeToQuery } from "../subscribeToQuery";
-import { Observable, filter, map } from "rxjs";
-import { encodeEntity } from "../../recs";
+import { SchemaToPrimitives, Table } from "@latticexyz/store";
 import { KeySchema, SchemaToPrimitives as SchemaToPrimitivesProtocol } from "@latticexyz/protocol-parser";
-import { Entity, QueryFragmentType, UpdateType } from "@latticexyz/recs";
+import { encodeEntity } from "../../recs";
+import { hexToResource } from "@latticexyz/common";
 
 type HasQueryFragment<T extends Table> = {
   type: QueryFragmentType.Has;
@@ -58,49 +56,44 @@ export type QueryFragment<T extends Table> =
   | HasValueQueryFragment<T>
   | NotValueQueryFragment<T>;
 
-function fragmentToTableSubject(fragment: QueryFragment<Table>): TableSubject {
-  return {
-    tableId: fragment.table.tableId,
-    subject: Object.keys(fragment.table.keySchema),
-  };
+function fragmentsToWoa(fragments: QueryFragment<Table>[]): object {
+  const from: Record<string, string[]> = {};
+
+  fragments.forEach((fragment) => {
+    from[hexToResource(fragment.table.tableId).name] = Object.keys(fragment.table.keySchema);
+  });
+
+  return from;
 }
 
-function fragmentToQueryConditions(fragment: QueryFragment<Table>): QueryCondition[] {
-  return Object.entries((fragment as HasValueQueryFragment<Table> | NotValueQueryFragment<Table>).value).map(
-    ([field, right]) => {
-      if (fragment.type === QueryFragmentType.HasValue) {
-        return {
-          left: { tableId: fragment.table.tableId, field },
-          op: "=",
-          right,
-        };
-      } else {
-        return {
-          left: { tableId: fragment.table.tableId, field },
-          op: "!=",
-          right,
-        };
-      }
-    },
-  ) as QueryCondition[];
-}
-
-function fragmentsToFrom(fragments: QueryFragment<Table>[]): TableSubject[] {
-  return fragments
-    .filter(
+function fragmentsToFrom(fragments: QueryFragment<Table>[]): object {
+  return fragmentsToWoa(
+    fragments.filter(
       (fragment) =>
         fragment.type === QueryFragmentType.Has ||
         fragment.type === QueryFragmentType.HasValue ||
         fragment.type === QueryFragmentType.NotValue,
-    )
-    .map(fragmentToTableSubject);
+    ),
+  );
 }
 
-function fragmentsToExcept(fragments: QueryFragment<Table>[]): TableSubject[] {
-  return fragments.filter((fragment) => fragment.type === QueryFragmentType.Not).map(fragmentToTableSubject);
+function fragmentsToExcept(fragments: QueryFragment<Table>[]): object {
+  return fragmentsToWoa(fragments.filter((fragment) => fragment.type === QueryFragmentType.Not));
 }
 
-function fragmentsToWhere(fragments: QueryFragment<Table>[]): QueryCondition[] {
+function fragmentToQueryConditions(fragment: QueryFragment<Table>): any[] {
+  return Object.entries((fragment as HasValueQueryFragment<Table> | NotValueQueryFragment<Table>).value).map(
+    ([field, right]) => {
+      if (fragment.type === QueryFragmentType.HasValue) {
+        return [`${hexToResource(fragment.table.tableId).name}.${field}`, "=", right];
+      } else {
+        return [`${hexToResource(fragment.table.tableId).name}.${field}`, "!=", right];
+      }
+    },
+  ) as any[];
+}
+
+function fragmentsToWhere(fragments: QueryFragment<Table>[]): any[] {
   return fragments
     .filter((fragment) => fragment.type === QueryFragmentType.HasValue || fragment.type === QueryFragmentType.NotValue)
     .map(fragmentToQueryConditions)
@@ -109,109 +102,38 @@ function fragmentsToWhere(fragments: QueryFragment<Table>[]): QueryCondition[] {
 
 function fragmentToKeySchema(fragment: QueryFragment<Table>): KeySchema {
   const keySchema: KeySchema = {};
-  Object.entries(fragment.table.keySchema).map(([keyName, value]) => (keySchema[keyName] = value.type));
+  Object.entries(fragment.table.keySchema).forEach(([keyName, value]) => (keySchema[keyName] = value.type));
 
   return keySchema;
 }
 
-function subjectToEntity(fragment: QueryFragment<Table>, subject: QueryResultSubject): Entity {
+function subjectToEntity(fragment: QueryFragment<Table>, subject: any): Entity {
   const keySchema = fragmentToKeySchema(fragment);
 
   const key: SchemaToPrimitivesProtocol<KeySchema> = {};
-  // @ts-expect-error Type 'string' is not assignable to type 'number | bigint | boolean | `0x${string}`'
-  Object.keys(fragment.table.keySchema).map((keyName, i) => (key[keyName] = subject[i]));
+  Object.keys(fragment.table.keySchema).forEach((keyName, i) => (key[keyName] = subject[i]));
+
   return encodeEntity(keySchema, key);
 }
 
-function subjectsToEntities(fragment: QueryFragment<Table>, subjects: readonly QueryResultSubject[]): Entity[] {
-  const entities = subjects.map((subject) => {
-    return subjectToEntity(fragment, subject);
-  });
+function subjectsToEntities(fragment: QueryFragment<Table>, subjects: any[]): Entity[] {
+  const entities = subjects.map((subject) => subjectToEntity(fragment, subject));
 
   return entities;
 }
 
-export async function runQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
-  store: ZustandStore<AllTables<config, extraTables>>,
+export async function runQuery<store extends QueryCacheStore>(
+  store: store,
   fragments: QueryFragment<Table>[],
 ): Promise<Set<Entity>> {
   const from = fragmentsToFrom(fragments);
   const except = fragmentsToExcept(fragments);
   const where = fragmentsToWhere(fragments);
+  console.log(where);
 
-  const result = await query(store, {
-    from,
-    except,
-    where,
-  });
+  const { subjects } = await query(store, { from, except, where });
 
-  const entities = subjectsToEntities(fragments[0], result);
+  const entities = subjectsToEntities(fragments[0], subjects);
 
   return new Set(entities);
-}
-
-export type ComponentUpdate = {
-  entity: Entity;
-};
-
-function subjectChangesToUpdate(
-  fragment: QueryFragment<Table>,
-  subjectChanges: readonly QueryResultSubjectChange[],
-): ComponentUpdate & { type: UpdateType } {
-  const subjectChange = subjectChanges[0];
-
-  return {
-    type: subjectChange.type === "enter" ? UpdateType.Enter : UpdateType.Exit,
-    entity: subjectToEntity(fragment, subjectChange.subject),
-  };
-}
-
-export async function defineQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
-  store: ZustandStore<AllTables<config, extraTables>>,
-  fragments: QueryFragment<Table>[],
-): Promise<{
-  update$: Observable<ComponentUpdate & { type: UpdateType }>;
-  matching: Observable<Entity[]>;
-}> {
-  const from = fragmentsToFrom(fragments);
-  const except = fragmentsToExcept(fragments);
-  const where = fragmentsToWhere(fragments);
-
-  const { subjects$, subjectChanges$ } = await subscribeToQuery(store, {
-    from,
-    except,
-    where,
-  });
-
-  return {
-    update$: subjectChanges$.pipe(
-      filter((subjectChanges) => subjectChanges.length > 0),
-      map((subjectChanges) => subjectChangesToUpdate(fragments[0], subjectChanges)),
-    ),
-    matching: subjects$.pipe(map((subjects) => subjectsToEntities(fragments[0], subjects))),
-  };
-}
-
-export async function defineUpdateQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
-  store: ZustandStore<AllTables<config, extraTables>>,
-  fragments: QueryFragment<Table>[],
-): Promise<Observable<ComponentUpdate & { type: UpdateType }>> {
-  const { update$ } = await defineQuery(store, fragments);
-  return update$.pipe(filter((update) => update.type === UpdateType.Update));
-}
-
-export async function defineEnterQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
-  store: ZustandStore<AllTables<config, extraTables>>,
-  fragments: QueryFragment<Table>[],
-): Promise<Observable<ComponentUpdate & { type: UpdateType }>> {
-  const { update$ } = await defineQuery(store, fragments);
-  return update$.pipe(filter((e) => e.type === UpdateType.Enter));
-}
-
-export async function defineExitQuery<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
-  store: ZustandStore<AllTables<config, extraTables>>,
-  fragments: QueryFragment<Table>[],
-): Promise<Observable<ComponentUpdate & { type: UpdateType }>> {
-  const { update$ } = await defineQuery(store, fragments);
-  return update$.pipe(filter((e) => e.type === UpdateType.Exit));
 }
