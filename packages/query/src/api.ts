@@ -59,22 +59,28 @@ export type ResultRecord = {
 
 export type Subject = readonly PrimitiveType[];
 
-export type ResultSubject = {
-  subject: Subject;
-  records: readonly ResultRecord[];
+export type SubjectRecords = {
+  readonly subject: Subject;
+  readonly records: readonly ResultRecord[];
 };
 
-export type Result = {
-  subjects: readonly ResultSubject[];
+// TODO: consider flattening this to be more like `ResultRecord & { subject: Subject }`
+export type SubjectRecord = {
+  readonly subject: Subject;
+  readonly record: ResultRecord;
 };
 
-export type SubjectEvent = {
+// TODO: for change event, should this include previous record?
+// TODO: use merge helper instead of `&` intersection?
+export type SubjectEvent = SubjectRecord & {
   /**
    * `enter` = a new subject+record pair matched
    * `exit` = a subject+record pair no longer matches
    * `change` = the record oft he subject+record pair changed
    */
   readonly type: "enter" | "exit" | "change";
-  readonly subject: Subject;
-  readonly record: ResultRecord;
+};
+
+export type Result = {
+  readonly subjects: readonly SubjectRecords[];
 };

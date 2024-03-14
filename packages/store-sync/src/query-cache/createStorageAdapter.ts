@@ -6,16 +6,14 @@ import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 import { flattenSchema } from "../flattenSchema";
 import { getId } from "./getId";
 import debug from "debug";
-import { KeySchema } from "@latticexyz/store";
-import { Tables } from "./common";
 
-export type CreateStorageAdapterOptions<tables extends Tables> = {
-  store: QueryCacheStore<tables>;
+export type CreateStorageAdapterOptions<store extends QueryCacheStore> = {
+  store: store;
 };
 
-export function createStorageAdapter<tables extends Tables>({
+export function createStorageAdapter<store extends QueryCacheStore>({
   store,
-}: CreateStorageAdapterOptions<tables>): StorageAdapter {
+}: CreateStorageAdapterOptions<store>): StorageAdapter {
   return async function queryCacheStorageAdapter({ logs }) {
     const touchedIds = new Set<string>();
 
@@ -103,19 +101,15 @@ export function createStorageAdapter<tables extends Tables>({
     const records: readonly TableRecord[] = [
       ...previousRecords.filter((record) => !touchedIds.has(record.id)),
       ...Object.values(updatedRawRecords).map((rawRecord): TableRecord => {
-        // TODO: figure out how to define this without casting
-        const key = decodeKey(flattenSchema(rawRecord.table.keySchema as KeySchema), rawRecord.keyTuple) as TableRecord<
-          tables[keyof tables]
-        >["key"];
-
-        // TODO: figure out how to define this without casting
-        const value = decodeValueArgs(flattenSchema(rawRecord.table.valueSchema), rawRecord) as TableRecord<
-          tables[keyof tables]
-        >["value"];
+        const key = decodeKey(flattenSchema(rawRecord.table.keySchema), rawRecord.keyTuple);
+        const value = decodeValueArgs(flattenSchema(rawRecord.table.valueSchema), rawRecord);
 
         return {
           table: rawRecord.table,
           id: rawRecord.id,
+          keyTuple: rawRecord.keyTuple,
+          // TODO: do something to make sure this stays ordered?
+          primaryKey: Object.values(key),
           key,
           value,
           fields: { ...key, ...value },
@@ -124,8 +118,8 @@ export function createStorageAdapter<tables extends Tables>({
     ];
 
     store.setState({
-      rawRecords: rawRecords as readonly RawTableRecord<tables[keyof tables]>[],
-      records: records as readonly TableRecord<tables[keyof tables]>[],
+      rawRecords,
+      records,
     });
   };
 }

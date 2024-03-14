@@ -1,7 +1,7 @@
 import { encodeAbiParameters } from "viem";
 import { Table } from "@latticexyz/store/config/v2";
 import { groupBy, uniqueBy } from "@latticexyz/common/utils";
-import { Query, Result } from "./api";
+import { Query, SubjectRecords } from "./api";
 import { matchRecords } from "./matchRecords";
 import { TableRecord } from "./common";
 
@@ -19,7 +19,7 @@ export type FindSubjectsParameters<table extends Table> = {
 export function findSubjects<table extends Table>({
   records: initialRecords,
   query,
-}: FindSubjectsParameters<table>): Result {
+}: FindSubjectsParameters<table>): readonly SubjectRecords[] {
   const targetTables = Object.fromEntries(
     uniqueBy([...query.from, ...(query.except ?? [])], (subject) => subject.tableId).map((subject) => [
       subject.tableId,
@@ -83,5 +83,5 @@ export function findSubjects<table extends Table>({
     })),
   }));
 
-  return { subjects };
+  return subjects;
 }
