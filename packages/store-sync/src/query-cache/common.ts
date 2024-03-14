@@ -1,52 +1,62 @@
-import { StoreConfig, Tables, ResolvedStoreConfig } from "@latticexyz/store";
-import { Hex } from "viem";
-import { storeTables, worldTables } from "../common";
-import { StaticPrimitiveType, DynamicPrimitiveType } from "@latticexyz/schema-type";
+import { ResolvedStoreConfig, ResolvedTableConfig } from "@latticexyz/store/config/v2";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { ComparisonCondition, InCondition } from "@latticexyz/query";
 
-// TODO: move to some common utils file/module/package
-export type satisfy<base, t extends base> = t;
-
-// TODO: make this better with new config resolver
-export type AllTables<
-  config extends StoreConfig,
-  extraTables extends Tables | undefined = undefined,
-> = ResolvedStoreConfig<config>["tables"] &
-  (extraTables extends Tables ? extraTables : Record<never, never>) &
-  typeof storeTables &
-  typeof worldTables;
-
-export type TableField = {
-  readonly tableId: Hex;
-  readonly field: string;
+export type mapTuple<tuple, mapping> = {
+  [key in keyof tuple]: tuple[key] extends keyof mapping ? mapping[tuple[key]] : never;
 };
 
-export type TableSubject = {
-  readonly tableId: Hex;
-  readonly subject: readonly string[];
+export type subjectSchemaToPrimitive<tuple> = {
+  [key in keyof tuple]: tuple[key] extends SchemaAbiType ? SchemaAbiTypeToPrimitiveType<tuple[key]> : never;
 };
 
-export type ConditionLiteral = boolean | number | bigint | string;
+export type Tables = ResolvedStoreConfig["tables"];
 
-export type ComparisonCondition = {
-  readonly left: TableField;
-  readonly op: "<" | "<=" | "=" | ">" | ">=" | "!=";
-  // TODO: add support for TableField
-  readonly right: ConditionLiteral;
+export type TableSubjectItem<table extends ResolvedTableConfig = ResolvedTableConfig> = keyof table["schema"];
+
+export type TableSubject<table extends ResolvedTableConfig = ResolvedTableConfig> = readonly [
+  TableSubjectItem<table>,
+  ...TableSubjectItem<table>[],
+];
+
+export type schemaAbiTypes<schema extends Record<string, { readonly type: SchemaAbiType }>> = {
+  [key in keyof schema]: schema[key]["type"];
 };
 
-export type InCondition = {
-  readonly left: TableField;
-  readonly op: "in";
-  readonly right: readonly ConditionLiteral[];
+type tableConditions<tableName extends string, table extends ResolvedTableConfig = ResolvedTableConfig> = {
+  [field in keyof table["schema"]]:
+    | [
+        `${tableName}.${field & string}`,
+        ComparisonCondition["op"],
+        SchemaAbiTypeToPrimitiveType<table["schema"][field]["type"]>,
+      ]
+    | [
+        `${tableName}.${field & string}`,
+        InCondition["op"],
+        readonly SchemaAbiTypeToPrimitiveType<table["schema"][field]["type"]>[],
+      ];
+}[keyof table["schema"]];
+
+type queryConditions<tables extends Tables> = {
+  [tableName in keyof tables]: tableConditions<tableName & string, tables[tableName]>;
+}[keyof tables];
+
+export type Query<tables extends Tables = Tables> = {
+  readonly from: {
+    readonly [k in keyof tables]?: readonly [keyof tables[k]["schema"], ...(keyof tables[k]["schema"])[]];
+  };
+  readonly except?: {
+    readonly [k in keyof tables]?: readonly [keyof tables[k]["schema"], ...(keyof tables[k]["schema"])[]];
+  };
+  readonly where?: readonly queryConditions<tables>[];
 };
 
-export type QueryCondition = satisfy<{ readonly op: string }, ComparisonCondition | InCondition>;
+export type queryToResultSubject<query extends Query<tables>, tables extends Tables> = {
+  [table in keyof query["from"]]: table extends keyof tables
+    ? subjectSchemaToPrimitive<mapTuple<query["from"][table], schemaAbiTypes<tables[table]["schema"]>>>
+    : never;
+}[keyof query["from"]];
 
-// TODO: move this into some "wire" type and then make this more client specific (uses config to validate)
-export type Query = {
-  readonly from: readonly TableSubject[];
-  readonly except?: readonly TableSubject[];
-  readonly where?: readonly QueryCondition[];
+export type QueryResult<query extends Query<tables>, tables extends Tables = Tables> = {
+  readonly subjects: readonly queryToResultSubject<query, tables>[];
 };
-
-export type QueryResultSubject = readonly (StaticPrimitiveType | DynamicPrimitiveType)[];
