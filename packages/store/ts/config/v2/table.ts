@@ -81,21 +81,21 @@ export function resolveTableConfig<
   if (isTableShorthandInput(input, scope)) {
     const fullInput = resolveTableShorthand(input as validateTableShorthand<input, scope>, scope);
     if (isTableFullInput(fullInput)) {
-      // @ts-expect-error TODO: the base input type should be more permissive and constraints added via the validate helpers instead
-      return resolveTableFullConfig(tableWithDefaults(fullInput, defaultName), scope) as unknown as resolveTableConfig<
-        input,
-        scope
-      >;
+      return resolveTableFullConfig(
+        // @ts-expect-error TODO: the base input type should be more permissive and constraints added via the validate helpers instead
+        tableWithDefaults(fullInput, defaultName, defaultNamespace),
+        scope,
+      ) as unknown as resolveTableConfig<input, scope>;
     }
     throw new Error("Resolved shorthand is not a valid full table input");
   }
 
   if (isTableFullInput(input)) {
-    // @ts-expect-error TODO: the base input type should be more permissive and constraints added via the validate helpers instead
-    return resolveTableFullConfig(tableWithDefaults(input, defaultName), scope) as unknown as resolveTableConfig<
-      input,
-      scope
-    >;
+    return resolveTableFullConfig(
+      // @ts-expect-error TODO: the base input type should be more permissive and constraints added via the validate helpers instead
+      tableWithDefaults(input, defaultName, defaultNamespace),
+      scope,
+    ) as unknown as resolveTableConfig<input, scope>;
   }
 
   throw new Error("Invalid config input");

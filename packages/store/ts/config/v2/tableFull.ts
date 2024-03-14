@@ -163,7 +163,9 @@ export function tableWithDefaults<
     ...table,
     tableId:
       table.tableId ??
-      (defaultName ? resourceToHex({ type: TABLE_DEFAULTS.type, namespace: "", name: defaultName }) : undefined),
+      (defaultName
+        ? resourceToHex({ type: TABLE_DEFAULTS.type, namespace: defaultNamespace, name: defaultName })
+        : undefined),
     name: table.name ?? defaultName,
     namespace: table.namespace ?? defaultNamespace,
     type: table.type ?? TABLE_DEFAULTS.type,

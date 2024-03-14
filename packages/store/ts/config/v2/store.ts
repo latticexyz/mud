@@ -159,7 +159,9 @@ export function resolveCodegen<options>(options: options): resolveCodegen<option
 }
 
 export type resolveStoreConfig<input> = evaluate<{
-  readonly tables: "tables" extends keyof input ? resolveStoreTablesConfig<input["tables"], extendedScope<input>> : {};
+  readonly tables: "tables" extends keyof input
+    ? resolveStoreTablesConfig<input["tables"], extendedScope<input>, get<input, "namespace"> & string>
+    : {};
   readonly userTypes: "userTypes" extends keyof input ? input["userTypes"] : {};
   readonly enums: "enums" extends keyof input ? resolveEnums<input["enums"]> : {};
   readonly namespace: "namespace" extends keyof input ? input["namespace"] : (typeof CONFIG_DEFAULTS)["namespace"];
@@ -168,7 +170,7 @@ export type resolveStoreConfig<input> = evaluate<{
 
 export function resolveStoreConfig<const input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {
   return {
-    tables: resolveStoreTablesConfig(get(input, "tables") ?? {}, extendedScope(input)),
+    tables: resolveStoreTablesConfig(get(input, "tables") ?? {}, extendedScope(input), get(input, "namespace")),
     userTypes: get(input, "userTypes") ?? {},
     enums: get(input, "enums") ?? {},
     namespace: get(input, "namespace") ?? CONFIG_DEFAULTS["namespace"],
