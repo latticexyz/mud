@@ -1,18 +1,20 @@
 import { evaluate, narrow } from "@arktype/util";
-import { get, hasOwnKey, isObject } from "./generics";
+import { get, isObject } from "./generics";
 import { SchemaInput } from "./schema";
 import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
 import { AbiTypeScope, extendScope } from "./scope";
 import { isSchemaAbiType } from "@latticexyz/schema-type";
-import { UserTypes, Enums } from "./output";
+import { UserTypes, Enums, CodegenOptions } from "./output";
 import { isTableShorthandInput, resolveTableShorthand, validateTableShorthand } from "./tableShorthand";
 import { resourceToHex } from "@latticexyz/common";
+import { CODEGEN_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
 
 export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
   namespace?: string;
   tables: StoreTablesConfigInput<scopeWithUserTypes<userTypes>>;
   userTypes?: userTypes;
   enums?: enums;
+  codegen?: Partial<CodegenOptions>;
 };
 
 export type StoreTablesConfigInput<scope extends AbiTypeScope = AbiTypeScope> = {
@@ -124,23 +126,37 @@ export type validateStoreConfig<input> = {
       ? UserTypes
       : key extends "enums"
         ? narrow<input[key]>
-        : input[key];
+        : key extends keyof StoreConfigInput
+          ? StoreConfigInput[key]
+          : input[key];
 };
 
 export type resolveEnums<enums> = { readonly [key in keyof enums]: Readonly<enums[key]> };
+
+export type resolveCodegen<options> = {
+  [key in keyof CodegenOptions]: key extends keyof options ? options[key] : (typeof CODEGEN_DEFAULTS)[key];
+};
+
+export function resolveCodegen<options>(options: options): resolveCodegen<options> {
+  return Object.fromEntries(
+    Object.entries(CODEGEN_DEFAULTS).map(([key, defaultValue]) => [key, get(options, key) ?? defaultValue]),
+  ) as resolveCodegen<options>;
+}
 
 export type resolveStoreConfig<input> = evaluate<{
   readonly tables: "tables" extends keyof input ? resolveStoreTablesConfig<input["tables"], extendedScope<input>> : {};
   readonly userTypes: "userTypes" extends keyof input ? input["userTypes"] : {};
   readonly enums: "enums" extends keyof input ? resolveEnums<input["enums"]> : {};
-  readonly namespace: "namespace" extends keyof input ? input["namespace"] : "";
+  readonly namespace: "namespace" extends keyof input ? input["namespace"] : (typeof CONFIG_DEFAULTS)["namespace"];
+  readonly codegen: "codegen" extends keyof input ? resolveCodegen<input["codegen"]> : resolveCodegen<{}>;
 }>;
 
 export function resolveStoreConfig<const input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {
   return {
-    tables: hasOwnKey(input, "tables") ? resolveStoreTablesConfig(input["tables"], extendedScope(input)) : {},
-    userTypes: hasOwnKey(input, "userTypes") ? input["userTypes"] : {},
-    enums: hasOwnKey(input, "enums") ? input["enums"] : {},
-    namespace: hasOwnKey(input, "namespace") ? input["namespace"] : "",
+    tables: resolveStoreTablesConfig(get(input, "tables") ?? {}, extendedScope(input)),
+    userTypes: get(input, "userTypes") ?? {},
+    enums: get(input, "enums") ?? {},
+    namespace: get(input, "namespace") ?? CONFIG_DEFAULTS["namespace"],
+    codegen: resolveCodegen(get(input, "codegen")),
   } as resolveStoreConfig<input>;
 }
