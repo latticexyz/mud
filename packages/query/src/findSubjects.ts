@@ -1,5 +1,5 @@
 import { encodeAbiParameters } from "viem";
-import { ResolvedTableConfig } from "@latticexyz/store/config/v2";
+import { Table } from "@latticexyz/store/config/v2";
 import { groupBy, uniqueBy } from "@latticexyz/common/utils";
 import { Query, QueryResultSubject } from "./api";
 import { matchesCondition } from "./matchesCondition";
@@ -9,7 +9,7 @@ import { TableRecord } from "./common";
 // This also assumes we have full records, which may not always be the case and we may need some way to request records for a given table subject
 // We don't carry around config types here for ease, they get handled by the wrapping `query` function
 
-export type FindSubjectsParameters<table extends ResolvedTableConfig> = {
+export type FindSubjectsParameters<table extends Table> = {
   readonly records: readonly TableRecord<table>[];
   readonly query: Query;
 };
@@ -20,7 +20,7 @@ export type FindSubjectsResult = {
 
 // TODO: make condition types smarter? so condition literal matches the field primitive type
 
-export function findSubjects<table extends ResolvedTableConfig>({
+export function findSubjects<table extends Table>({
   records: initialRecords,
   query,
 }: FindSubjectsParameters<table>): FindSubjectsResult {
