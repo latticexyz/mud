@@ -1,10 +1,8 @@
-import { evaluate, narrow } from "@arktype/util";
+import { conform, evaluate, narrow } from "@arktype/util";
 import { resourceToHex } from "@latticexyz/common";
 import { mapObject } from "@latticexyz/common/utils";
 import {
   UserTypes,
-  Enums,
-  StoreConfigInput,
   resolveStoreConfig,
   resolveStoreTablesConfig,
   extendedScope,
@@ -20,19 +18,11 @@ import {
   isObject,
   hasOwnKey,
   Table,
-  resolveCodegen,
+  resolveCodegen as resolveStoreCodegen,
 } from "@latticexyz/store/config/v2";
 import { Config } from "./output";
-
-export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = evaluate<
-  StoreConfigInput<userTypes, enums> & {
-    namespaces?: NamespacesInput;
-  }
->;
-
-export type NamespacesInput = { [namespace: string]: NamespaceInput };
-
-export type NamespaceInput = Pick<StoreConfigInput, "tables">;
+import { NamespacesInput, WorldConfigInput } from "./input";
+import { WORLD_DEFAULTS } from "../defaults";
 
 export type validateNamespaces<input, scope extends AbiTypeScope = AbiTypeScope> = {
   [namespace in keyof input]: {
@@ -67,7 +57,9 @@ export type validateWorldConfig<input> = {
         ? narrow<input[key]>
         : key extends "namespaces"
           ? validateNamespaces<input[key], extendedScope<input>>
-          : input[key];
+          : key extends keyof WorldConfigInput
+            ? conform<input[key], WorldConfigInput[key]>
+            : input[key];
 };
 
 export type namespacedTableKeys<input> = "namespaces" extends keyof input
@@ -76,6 +68,48 @@ export type namespacedTableKeys<input> = "namespaces" extends keyof input
         string}`
     : never
   : never;
+
+export type resolveDeploymentConfig<input> = {
+  readonly worldContractName: "worldContractName" extends keyof input
+    ? input["worldContractName"]
+    : typeof WORLD_DEFAULTS.worldContractName;
+  readonly postDeployScript: "postDeployScript" extends keyof input
+    ? input["postDeployScript"]
+    : typeof WORLD_DEFAULTS.postDeployScript;
+  readonly deploysDirectory: "deploysDirectory" extends keyof input
+    ? input["deploysDirectory"]
+    : typeof WORLD_DEFAULTS.deploysDirectory;
+  readonly worldsFile: "worldsFile" extends keyof input ? input["worldsFile"] : typeof WORLD_DEFAULTS.worldsFile;
+};
+
+export function resolveDeploymentConfig<input>(input: input): resolveDeploymentConfig<input> {
+  return {
+    worldContractName: get(input, "worldContractName") ?? WORLD_DEFAULTS.worldContractName,
+    postDeployScript: get(input, "postDeployScript") ?? WORLD_DEFAULTS.postDeployScript,
+    deploysDirectory: get(input, "deploysDirectory") ?? WORLD_DEFAULTS.deploysDirectory,
+    worldsFile: get(input, "worldsFile") ?? WORLD_DEFAULTS.worldsFile,
+  } as resolveDeploymentConfig<input>;
+}
+
+export type resolveCodegenConfig<input> = {
+  readonly worldInterfaceName: "worldInterfaceName" extends keyof input
+    ? input["worldInterfaceName"]
+    : typeof WORLD_DEFAULTS.worldInterfaceName;
+  readonly worldgenDirectory: "worldgenDirectory" extends keyof input
+    ? input["worldgenDirectory"]
+    : typeof WORLD_DEFAULTS.worldgenDirectory;
+  readonly worldImportPath: "worldImportPath" extends keyof input
+    ? input["worldImportPath"]
+    : typeof WORLD_DEFAULTS.worldImportPath;
+};
+
+export function resolveCodegenConfig<input>(input: input): resolveCodegenConfig<input> {
+  return {
+    worldInterfaceName: get(input, "worldInterfaceName") ?? WORLD_DEFAULTS.worldInterfaceName,
+    worldgenDirectory: get(input, "worldgenDirectory") ?? WORLD_DEFAULTS.worldgenDirectory,
+    worldImportPath: get(input, "worldImportPath") ?? WORLD_DEFAULTS.worldImportPath,
+  } as resolveCodegenConfig<input>;
+}
 
 export type resolveWorldConfig<input> = evaluate<
   resolveStoreConfig<input> & {
@@ -102,6 +136,13 @@ export type resolveWorldConfig<input> = evaluate<
           };
         }
       : {};
+    readonly systems: "systems" extends keyof input ? input["systems"] : typeof WORLD_DEFAULTS.systems;
+    readonly excludeSystems: "excludeSystems" extends keyof input
+      ? input["excludeSystems"]
+      : typeof WORLD_DEFAULTS.excludeSystems;
+    readonly modules: "modules" extends keyof input ? input["modules"] : typeof WORLD_DEFAULTS.modules;
+    readonly deployment: resolveDeploymentConfig<"deployment" extends keyof input ? input["deployment"] : {}>;
+    readonly codegen: resolveCodegenConfig<"codegen" extends keyof input ? input["codegen"] : {}>;
   }
 >;
 
@@ -151,6 +192,7 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
     userTypes: get(input, "userTypes") ?? {},
     enums: get(input, "enums") ?? {},
     namespace,
-    codegen: resolveCodegen(get(input, "codegen")),
+    codegen: { ...resolveStoreCodegen(get(input, "codegen")), ...resolveCodegenConfig(get(input, "codegen")) },
+    deployment: resolveDeploymentConfig(get(input, "deployment")),
   } as resolveWorldConfig<input>;
 }
