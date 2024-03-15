@@ -22,18 +22,11 @@ export type SystemConfigInput = {
    * - For non-root systems, the World function selectors will be <namespace>__<function>.
    */
   registerFunctionSelectors?: boolean;
-} & (
-  | {
-      /** If openAccess is true, any address can call the system */
-      openAccess?: true;
-    }
-  | {
-      /** If openAccess is false, only the addresses or systems in `access` can call the system */
-      openAccess: false;
-      /** An array of addresses or system names that can access the system */
-      accessList: string[];
-    }
-);
+  /** If openAccess is true, any address can call the system */
+  openAccess?: true;
+  /** An array of addresses or system names that can access the system */
+  accessList?: string[];
+};
 
 export type SystemsConfigInput = { [key: string]: SystemConfigInput };
 
@@ -70,7 +63,7 @@ export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums exte
      * The key is the system name (capitalized).
      * The value is a SystemConfig object.
      */
-    systems?: SystemConfigInput;
+    systems?: SystemsConfigInput;
     /** Systems to exclude from automatic deployment */
     excludeSystems?: string[];
     /** Modules to in the World */

@@ -1,5 +1,5 @@
 export const SYSTEM_DEFAULTS = {
-  registerFunctionSelector: true,
+  registerFunctionSelectors: true,
   openAccess: true,
   accessList: [] as string[],
 } as const;

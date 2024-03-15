@@ -20,9 +20,9 @@ import {
   Table,
   resolveCodegen as resolveStoreCodegen,
 } from "@latticexyz/store/config/v2";
-import { Config } from "./output";
-import { NamespacesInput, WorldConfigInput } from "./input";
-import { DEPLOYMENT_DEFAULTS, CODEGEN_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
+import { Config, SystemConfig } from "./output";
+import { NamespacesInput, SystemsConfigInput, WorldConfigInput } from "./input";
+import { DEPLOYMENT_DEFAULTS, CODEGEN_DEFAULTS, CONFIG_DEFAULTS, SYSTEM_DEFAULTS } from "./defaults";
 
 export type validateNamespaces<input, scope extends AbiTypeScope = AbiTypeScope> = {
   [namespace in keyof input]: {
@@ -111,6 +111,36 @@ export function resolveCodegenConfig<input>(input: input): resolveCodegenConfig<
   } as resolveCodegenConfig<input>;
 }
 
+export type resolveSystemsConfig<systems extends SystemsConfigInput> = {
+  [system in keyof systems]: {
+    name: systems[system]["name"];
+    registerFunctionSelectors: systems[system]["registerFunctionSelectors"] extends undefined
+      ? typeof SYSTEM_DEFAULTS.registerFunctionSelectors
+      : systems[system]["registerFunctionSelectors"];
+    openAccess: systems[system]["openAccess"] extends undefined
+      ? typeof SYSTEM_DEFAULTS.openAccess
+      : systems[system]["openAccess"];
+    accessList: systems[system]["accessList"] extends undefined
+      ? typeof SYSTEM_DEFAULTS.accessList
+      : systems[system]["accessList"];
+  };
+};
+
+export function resolveSystemsConfig<systems extends SystemsConfigInput>(
+  systems: systems,
+): resolveSystemsConfig<systems> {
+  return mapObject(
+    systems,
+    (system) =>
+      ({
+        name: system.name,
+        registerFunctionSelectors: system.registerFunctionSelectors ?? SYSTEM_DEFAULTS.registerFunctionSelectors,
+        openAccess: system.openAccess ?? SYSTEM_DEFAULTS.openAccess,
+        accessList: system.accessList ?? SYSTEM_DEFAULTS.accessList,
+      }) as SystemConfig,
+  );
+}
+
 export type resolveWorldConfig<input> = evaluate<
   resolveStoreConfig<input> & {
     readonly tables: "namespaces" extends keyof input
@@ -194,7 +224,7 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
     namespace,
     codegen: { ...resolveStoreCodegen(get(input, "codegen")), ...resolveCodegenConfig(get(input, "codegen")) },
     deployment: resolveDeploymentConfig(get(input, "deployment")),
-    systems: get(input, "systems") ?? CONFIG_DEFAULTS.systems,
+    systems: resolveSystemsConfig(get(input, "systems") ?? CONFIG_DEFAULTS.systems),
     excludeSystems: get(input, "excludeSystems") ?? CONFIG_DEFAULTS.excludeSystems,
     modules: get(input, "modules") ?? CONFIG_DEFAULTS.modules,
   } as unknown as resolveWorldConfig<input>;
