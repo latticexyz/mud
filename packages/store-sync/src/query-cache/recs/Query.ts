@@ -18,17 +18,16 @@ type NotQueryFragment<table extends Table> = {
   table: table;
 };
 
-// TODO: make these partial values
 type HasValueQueryFragment<table extends Table> = {
   type: QueryFragmentType.HasValue;
   table: table;
-  value: SchemaToPrimitives<table["valueSchema"]>;
+  value: Partial<SchemaToPrimitives<table["schema"]>>;
 };
 
 type NotValueQueryFragment<table extends Table> = {
   type: QueryFragmentType.NotValue;
   table: table;
-  value: SchemaToPrimitives<table["valueSchema"]>;
+  value: Partial<SchemaToPrimitives<table["schema"]>>;
 };
 
 type QueryFragment<table extends Table> =
