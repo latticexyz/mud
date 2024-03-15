@@ -28,6 +28,6 @@ export type Table = {
   readonly name: string;
   readonly namespace: string;
   readonly tableId: Hex;
-  readonly primaryKey: readonly string[];
   readonly schema: Schema;
+  readonly key: readonly string[];
 };

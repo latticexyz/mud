@@ -6,7 +6,7 @@ import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
 import { TableFullInput } from "./tableFull";
 
 export type NoStaticKeyFieldError =
-  ErrorMessage<"Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.">;
+  ErrorMessage<"Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.">;
 
 export type TableShorthandInput<scope extends AbiTypeScope = AbiTypeScope> = SchemaInput<scope> | keyof scope["types"];
 
@@ -45,9 +45,7 @@ export function validateTableShorthand<scope extends AbiTypeScope = AbiTypeScope
       if (hasOwnKey(input, "id") && isStaticAbiType(scope.types[input["id"]])) {
         return;
       }
-      throw new Error(
-        `Invalid schema. Expected an \`id\` field with a static ABI type or an explicit \`primaryKey\` option.`,
-      );
+      throw new Error(`Invalid schema. Expected an \`id\` field with a static ABI type or an explicit \`key\` option.`);
     }
     throw new Error(`Invalid schema. Are you using invalid types or missing types in your scope?`);
   }
@@ -64,7 +62,7 @@ export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeSco
     >
   : input extends SchemaInput<scope>
     ? "id" extends getStaticAbiTypeKeys<input, scope>
-      ? // If the shorthand includes a static field called `id`, use it as `primaryKey`
+      ? // If the shorthand includes a static field called `id`, use it as `key`
         evaluate<TableFullInput<input, scope, ["id"]>>
       : never
     : never;
@@ -78,7 +76,7 @@ export function resolveTableShorthand<input, scope extends AbiTypeScope = AbiTyp
   if (isSchemaInput(input, scope)) {
     return {
       schema: input,
-      primaryKey: ["id"],
+      key: ["id"],
     } as resolveTableShorthand<input, scope>;
   }
 
@@ -87,6 +85,6 @@ export function resolveTableShorthand<input, scope extends AbiTypeScope = AbiTyp
       id: "bytes32",
       value: input,
     },
-    primaryKey: ["id"],
+    key: ["id"],
   } as resolveTableShorthand<input, scope>;
 }

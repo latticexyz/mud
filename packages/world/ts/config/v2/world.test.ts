@@ -17,7 +17,7 @@ describe("resolveWorldConfig", () => {
                 value: "uint256",
                 dynamic: "string",
               },
-              primaryKey: ["id"],
+              key: ["id"],
             },
           },
         },
@@ -58,7 +58,7 @@ describe("resolveWorldConfig", () => {
               internalType: "string",
             },
           },
-          primaryKey: ["id"],
+          key: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -100,7 +100,7 @@ describe("resolveWorldConfig", () => {
                   internalType: "string",
                 },
               },
-              primaryKey: ["id"],
+              key: ["id"],
               name: "ExampleTable",
               namespace: "ExampleNamespace",
               codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -129,7 +129,7 @@ describe("resolveWorldConfig", () => {
                 value: "MyEnum",
                 dynamic: "Dynamic",
               },
-              primaryKey: ["id"],
+              key: ["id"],
             },
           },
         },
@@ -177,7 +177,7 @@ describe("resolveWorldConfig", () => {
               internalType: "Dynamic",
             },
           },
-          primaryKey: ["id"],
+          key: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -219,7 +219,7 @@ describe("resolveWorldConfig", () => {
                   internalType: "Dynamic",
                 },
               },
-              primaryKey: ["id"],
+              key: ["id"],
               name: "ExampleTable",
               namespace: "ExampleNamespace",
               codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -253,7 +253,7 @@ describe("resolveWorldConfig", () => {
                 value: "MyEnum",
                 dynamic: "Dynamic",
               },
-              primaryKey: ["id"],
+              key: ["id"],
             },
           },
         },
@@ -278,7 +278,7 @@ describe("resolveWorldConfig", () => {
           tables: {
             Example: {
               schema: { id: "address", name: "string", age: "uint256" },
-              primaryKey: ["age"],
+              key: ["age"],
             },
           },
         },
@@ -321,7 +321,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "address",
               },
             },
-            primaryKey: ["id"],
+            key: ["id"],
             name: "Name",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -370,7 +370,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "CustomType",
               },
             },
-            primaryKey: ["id"],
+            key: ["id"],
             name: "Name",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -423,7 +423,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "uint256",
               },
             },
-            primaryKey: ["id"],
+            key: ["id"],
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -476,7 +476,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "uint256",
               },
             },
-            primaryKey: ["id"],
+            key: ["id"],
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -497,7 +497,7 @@ describe("resolveWorldConfig", () => {
       attest(() =>
         resolveWorldConfig({
           tables: {
-            // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
+            // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
             Example: {
               name: "string",
               age: "uint256",
@@ -505,23 +505,23 @@ describe("resolveWorldConfig", () => {
           },
         }),
       ).throwsAndHasTypeError(
-        "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
+        "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
       );
     });
 
     it("throw an error if the shorthand config includes a non-static key field", () => {
       attest(() =>
-        // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
+        // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
         resolveWorldConfig({ tables: { Example: { id: "string", name: "string", age: "uint256" } } }),
       ).throwsAndHasTypeError(
-        "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
+        "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
       );
     });
 
     it("throw an error if the shorthand config includes a non-static user type as key field", () => {
       attest(() =>
         resolveWorldConfig({
-          // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
+          // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
           tables: { Example: { id: "dynamic", name: "string", age: "uint256" } },
           userTypes: {
             dynamic: { type: "string", filePath: "path/to/file" },
@@ -529,7 +529,7 @@ describe("resolveWorldConfig", () => {
           },
         }),
       ).throwsAndHasTypeError(
-        "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
+        "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
       );
     });
 
@@ -538,7 +538,7 @@ describe("resolveWorldConfig", () => {
         tables: {
           Example: {
             schema: { id: "address", name: "string", age: "uint256" },
-            primaryKey: ["age"],
+            key: ["age"],
           },
         },
       });
@@ -576,7 +576,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "string",
               },
             },
-            primaryKey: ["age"],
+            key: ["age"],
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -598,7 +598,7 @@ describe("resolveWorldConfig", () => {
         tables: {
           Example: {
             schema: { id: "dynamic", name: "string", age: "static" },
-            primaryKey: ["age"],
+            key: ["age"],
           },
         },
         userTypes: {
@@ -640,7 +640,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "string",
               },
             },
-            primaryKey: ["age"],
+            key: ["age"],
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -659,12 +659,12 @@ describe("resolveWorldConfig", () => {
 
       attest<typeof expected>(config).equals(expected);
     }),
-      it("should return the full config given a full config with two primaryKey", () => {
+      it("should return the full config given a full config with two key", () => {
         const config = resolveWorldConfig({
           tables: {
             Example: {
               schema: { id: "address", name: "string", age: "uint256" },
-              primaryKey: ["age", "id"],
+              key: ["age", "id"],
             },
           },
         });
@@ -702,7 +702,7 @@ describe("resolveWorldConfig", () => {
                   internalType: "string",
                 },
               },
-              primaryKey: ["age", "id"],
+              key: ["age", "id"],
               name: "Example",
               namespace: "",
               codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -724,11 +724,11 @@ describe("resolveWorldConfig", () => {
         tables: {
           First: {
             schema: { firstKey: "address", firstName: "string", firstAge: "uint256" },
-            primaryKey: ["firstKey", "firstAge"],
+            key: ["firstKey", "firstAge"],
           },
           Second: {
             schema: { secondKey: "address", secondName: "string", secondAge: "uint256" },
-            primaryKey: ["secondKey", "secondAge"],
+            key: ["secondKey", "secondAge"],
           },
         },
       });
@@ -766,7 +766,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "string",
               },
             },
-            primaryKey: ["firstKey", "firstAge"],
+            key: ["firstKey", "firstAge"],
             name: "First",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -804,7 +804,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "string",
               },
             },
-            primaryKey: ["secondKey", "secondAge"],
+            key: ["secondKey", "secondAge"],
             name: "Second",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -826,11 +826,11 @@ describe("resolveWorldConfig", () => {
         tables: {
           First: {
             schema: { firstKey: "Static", firstName: "Dynamic", firstAge: "uint256" },
-            primaryKey: ["firstKey", "firstAge"],
+            key: ["firstKey", "firstAge"],
           },
           Second: {
             schema: { secondKey: "Static", secondName: "Dynamic", secondAge: "uint256" },
-            primaryKey: ["secondKey", "secondAge"],
+            key: ["secondKey", "secondAge"],
           },
         },
         userTypes: {
@@ -872,7 +872,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "Dynamic",
               },
             },
-            primaryKey: ["firstKey", "firstAge"],
+            key: ["firstKey", "firstAge"],
             name: "First",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -910,7 +910,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "Dynamic",
               },
             },
-            primaryKey: ["secondKey", "secondAge"],
+            key: ["secondKey", "secondAge"],
             name: "Second",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -936,17 +936,17 @@ describe("resolveWorldConfig", () => {
           tables: {
             First: {
               schema: { firstKey: "address", firstName: "string", firstAge: "uint256" },
-              primaryKey: ["firstKey", "firstAge"],
+              key: ["firstKey", "firstAge"],
             },
             Second: {
               schema: { secondKey: "address", secondName: "string", secondAge: "uint256" },
               // @ts-expect-error Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'
-              primaryKey: ["firstKey", "secondAge"],
+              key: ["firstKey", "secondAge"],
             },
           },
         }),
       )
-        .throws('Invalid primary key. Expected `("secondKey" | "secondAge")[]`, received `["firstKey", "secondAge"]`')
+        .throws('Invalid key. Expected `("secondKey" | "secondAge")[]`, received `["firstKey", "secondAge"]`')
         .type.errors(`Type '"firstKey"' is not assignable to type '"secondKey" | "secondAge"'`);
     });
 
@@ -957,12 +957,12 @@ describe("resolveWorldConfig", () => {
             Example: {
               schema: { id: "address", name: "string", age: "uint256" },
               // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'.
-              primaryKey: ["name"],
+              key: ["name"],
             },
           },
         }),
       )
-        .throws('Invalid primary key. Expected `("id" | "age")[]`, received `["name"]`')
+        .throws('Invalid key. Expected `("id" | "age")[]`, received `["name"]`')
         .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
     });
 
@@ -973,7 +973,7 @@ describe("resolveWorldConfig", () => {
             Example: {
               schema: { id: "address", name: "Dynamic", age: "uint256" },
               // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'.
-              primaryKey: ["name"],
+              key: ["name"],
             },
           },
           userTypes: {
@@ -981,7 +981,7 @@ describe("resolveWorldConfig", () => {
           },
         }),
       )
-        .throws('Invalid primary key. Expected `("id" | "age")[]`, received `["name"]`')
+        .throws('Invalid key. Expected `("id" | "age")[]`, received `["name"]`')
         .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
     });
 
@@ -990,7 +990,7 @@ describe("resolveWorldConfig", () => {
         tables: {
           Example: {
             schema: { id: "dynamic", name: "ValidNames", age: "static" },
-            primaryKey: ["name"],
+            key: ["name"],
           },
         },
         userTypes: {
@@ -1035,7 +1035,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "dynamic",
               },
             },
-            primaryKey: ["name"],
+            key: ["name"],
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -1083,7 +1083,7 @@ describe("resolveWorldConfig", () => {
         tables: {
           Example: {
             schema: { id: "address", name: "string", age: "uint256" },
-            primaryKey: ["age"],
+            key: ["age"],
           },
         },
       });
