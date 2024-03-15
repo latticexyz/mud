@@ -20,7 +20,7 @@ import {
   Table,
   resolveCodegen as resolveStoreCodegen,
 } from "@latticexyz/store/config/v2";
-import { Config, SystemConfig } from "./output";
+import { Config } from "./output";
 import { NamespacesInput, SystemsConfigInput, WorldConfigInput } from "./input";
 import { DEPLOYMENT_DEFAULTS, CODEGEN_DEFAULTS, CONFIG_DEFAULTS, SYSTEM_DEFAULTS } from "./defaults";
 
@@ -113,14 +113,14 @@ export function resolveCodegenConfig<input>(input: input): resolveCodegenConfig<
 
 export type resolveSystemsConfig<systems extends SystemsConfigInput> = {
   [system in keyof systems]: {
-    name: systems[system]["name"];
-    registerFunctionSelectors: systems[system]["registerFunctionSelectors"] extends undefined
+    readonly name: systems[system]["name"];
+    readonly registerFunctionSelectors: systems[system]["registerFunctionSelectors"] extends undefined
       ? typeof SYSTEM_DEFAULTS.registerFunctionSelectors
       : systems[system]["registerFunctionSelectors"];
-    openAccess: systems[system]["openAccess"] extends undefined
+    readonly openAccess: systems[system]["openAccess"] extends undefined
       ? typeof SYSTEM_DEFAULTS.openAccess
       : systems[system]["openAccess"];
-    accessList: systems[system]["accessList"] extends undefined
+    readonly accessList: systems[system]["accessList"] extends undefined
       ? typeof SYSTEM_DEFAULTS.accessList
       : systems[system]["accessList"];
   };
@@ -137,7 +137,7 @@ export function resolveSystemsConfig<systems extends SystemsConfigInput>(
         registerFunctionSelectors: system.registerFunctionSelectors ?? SYSTEM_DEFAULTS.registerFunctionSelectors,
         openAccess: system.openAccess ?? SYSTEM_DEFAULTS.openAccess,
         accessList: system.accessList ?? SYSTEM_DEFAULTS.accessList,
-      }) as SystemConfig,
+      }) as resolveSystemsConfig<systems>[keyof systems],
   );
 }
 

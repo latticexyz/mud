@@ -31,8 +31,6 @@ export type SystemConfigInput = {
 export type SystemsConfigInput = { [key: string]: SystemConfigInput };
 
 export type DeploymentConfigInput = {
-  /** The name of the World contract to deploy. If no name is provided, a vanilla World is deployed */
-  worldContractName?: string;
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
