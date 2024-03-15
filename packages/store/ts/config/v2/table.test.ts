@@ -230,7 +230,7 @@ describe("resolveTableConfig", () => {
   it("should return the full config given a full config with two primaryKey", () => {
     const table = resolveTableConfig({
       schema: { id: "address", name: "string", age: "uint256" },
-      primaryKey: ["age", "key"],
+      primaryKey: ["age", "id"],
     });
     const expected = {
       tableId: "0x" as Hex,
@@ -246,7 +246,7 @@ describe("resolveTableConfig", () => {
       valueSchema: {
         name: { type: "string", internalType: "string" },
       },
-      primaryKey: ["age", "key"],
+      primaryKey: ["age", "id"],
       name: "",
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -350,12 +350,12 @@ describe("resolveTableConfig", () => {
     attest(() =>
       resolveTableConfig({
         schema: { id: "address", name: "string", age: "uint256" },
-        // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'
+        // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'
         primaryKey: ["name"],
       }),
     )
-      .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
-      .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+      .throws('Invalid primary key. Expected `("id" | "age")[]`, received `["name"]`')
+      .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
   });
 
   it("should throw if the provided key is a dynamic ABI type if user types are provided", () => {
@@ -364,14 +364,14 @@ describe("resolveTableConfig", () => {
       resolveTableConfig(
         {
           schema: { id: "address", name: "string", age: "uint256" },
-          // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'
+          // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'
           primaryKey: ["name"],
         },
         scope,
       ),
     )
-      .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
-      .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+      .throws('Invalid primary key. Expected `("id" | "age")[]`, received `["name"]`')
+      .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
   });
 
   it("should throw if the provided key is a dynamic custom type", () => {
@@ -380,14 +380,14 @@ describe("resolveTableConfig", () => {
       resolveTableConfig(
         {
           schema: { id: "CustomType", name: "string", age: "uint256" },
-          // @ts-expect-error Type '"key"' is not assignable to type '"age"'
+          // @ts-expect-error Type '"id"' is not assignable to type '"age"'
           primaryKey: ["id"],
         },
         scope,
       ),
     )
       .throws('Invalid primary key. Expected `("age")[]`, received `["id"]`')
-      .type.errors(`Type '"key"' is not assignable to type '"age"'`);
+      .type.errors(`Type '"id"' is not assignable to type '"age"'`);
   });
 
   it("should throw if the provided key is neither a custom nor ABI type", () => {
@@ -396,14 +396,14 @@ describe("resolveTableConfig", () => {
       resolveTableConfig(
         {
           schema: { id: "address", name: "string", age: "uint256" },
-          // @ts-expect-error Type '"NotAKey"' is not assignable to type '"key" | "age"'
+          // @ts-expect-error Type '"NotAKey"' is not assignable to type '"id" | "age"'
           primaryKey: ["NotAKey"],
         },
         scope,
       ),
     )
-      .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["NotAKey"]`')
-      .type.errors(`Type '"NotAKey"' is not assignable to type '"key" | "age"'`);
+      .throws('Invalid primary key. Expected `("id" | "age")[]`, received `["NotAKey"]`')
+      .type.errors(`Type '"NotAKey"' is not assignable to type '"id" | "age"'`);
   });
 
   it("should extend the output Table type", () => {

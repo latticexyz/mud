@@ -664,7 +664,7 @@ describe("resolveWorldConfig", () => {
           tables: {
             Example: {
               schema: { id: "address", name: "string", age: "uint256" },
-              primaryKey: ["age", "key"],
+              primaryKey: ["age", "id"],
             },
           },
         });
@@ -702,7 +702,7 @@ describe("resolveWorldConfig", () => {
                   internalType: "string",
                 },
               },
-              primaryKey: ["age", "key"],
+              primaryKey: ["age", "id"],
               name: "Example",
               namespace: "",
               codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -956,14 +956,14 @@ describe("resolveWorldConfig", () => {
           tables: {
             Example: {
               schema: { id: "address", name: "string", age: "uint256" },
-              // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'.
+              // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'.
               primaryKey: ["name"],
             },
           },
         }),
       )
-        .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
-        .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+        .throws('Invalid primary key. Expected `("id" | "age")[]`, received `["name"]`')
+        .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
     });
 
     it("should throw an error if the provided key is not a static field with user types", () => {
@@ -972,7 +972,7 @@ describe("resolveWorldConfig", () => {
           tables: {
             Example: {
               schema: { id: "address", name: "Dynamic", age: "uint256" },
-              // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'.
+              // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'.
               primaryKey: ["name"],
             },
           },
@@ -981,8 +981,8 @@ describe("resolveWorldConfig", () => {
           },
         }),
       )
-        .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
-        .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+        .throws('Invalid primary key. Expected `("id" | "age")[]`, received `["name"]`')
+        .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
     });
 
     it("should return the full config given a full config with enums and user types", () => {
