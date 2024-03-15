@@ -94,15 +94,14 @@ function fragmentsToExcept<tables extends Tables>(
 function fragmentToQueryConditions<tables extends Tables>(
   fragment: QueryFragment<tables[keyof tables]>,
 ): readonly queryConditions<tables>[] {
-  return Object.entries((fragment as HasValueQueryFragment<Table> | NotValueQueryFragment<Table>).value).map(
-    ([field, right]) => {
-      if (fragment.type === QueryFragmentType.HasValue) {
-        return [`${hexToResource(fragment.table.tableId).name}.${field}`, "=", right];
-      } else {
-        return [`${hexToResource(fragment.table.tableId).name}.${field}`, "!=", right];
-      }
-    },
-  ) as unknown as readonly queryConditions<tables>[];
+  const { value } = fragment as HasValueQueryFragment<Table> | NotValueQueryFragment<Table>;
+  return Object.entries(value).map(([field, right]) => {
+    if (fragment.type === QueryFragmentType.HasValue) {
+      return [`${hexToResource(fragment.table.tableId).name}.${field}`, "=", right];
+    } else {
+      return [`${hexToResource(fragment.table.tableId).name}.${field}`, "!=", right];
+    }
+  }) as unknown as readonly queryConditions<tables>[];
 }
 
 function fragmentsToWhere<tables extends Tables>(
