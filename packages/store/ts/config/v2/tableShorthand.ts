@@ -1,10 +1,12 @@
-import { evaluate } from "@arktype/util";
+import { ErrorMessage, evaluate } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type";
 import { hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
-import { NoStaticKeyFieldError } from "./table";
 import { TableFullInput } from "./tableFull";
+
+export type NoStaticKeyFieldError =
+  ErrorMessage<"Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.">;
 
 export type TableShorthandInput<scope extends AbiTypeScope = AbiTypeScope> = SchemaInput<scope> | keyof scope["types"];
 

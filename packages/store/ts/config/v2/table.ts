@@ -1,4 +1,4 @@
-import { ErrorMessage, evaluate } from "@arktype/util";
+import { evaluate } from "@arktype/util";
 import { SchemaInput } from "./schema";
 import { AbiTypeScope } from "./scope";
 import {
@@ -16,9 +16,6 @@ import {
   tableWithDefaults,
 } from "./tableFull";
 import { CONFIG_DEFAULTS } from "./defaults";
-
-export type NoStaticKeyFieldError =
-  ErrorMessage<"Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.">;
 
 export type TableInput<
   schema extends SchemaInput<scope> = SchemaInput,
