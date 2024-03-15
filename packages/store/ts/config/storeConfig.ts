@@ -23,7 +23,7 @@ import {
 } from "@latticexyz/config/library";
 import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 import { UserType } from "@latticexyz/common/codegen";
-import { SchemaAbiType, isSchemaAbiType, schemaAbiTypes } from "@latticexyz/schema-type";
+import { SchemaAbiType, isSchemaAbiType, schemaAbiTypes } from "@latticexyz/schema-type/internal";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;

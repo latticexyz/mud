@@ -1,5 +1,5 @@
 import { Hex } from "viem";
-import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
+import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type/internal";
 import { ResourceType } from "@latticexyz/common";
 import { satisfy } from "@latticexyz/common/type-utils";
 

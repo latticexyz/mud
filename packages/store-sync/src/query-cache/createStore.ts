@@ -2,7 +2,7 @@ import { StoreApi, UseBoundStore, create } from "zustand";
 import { Table } from "@latticexyz/store/config/v2";
 import { Tables } from "./common";
 import { Hex } from "viem";
-import { StaticPrimitiveType } from "@latticexyz/schema-type";
+import { StaticPrimitiveType } from "@latticexyz/schema-type/internal";
 import { SchemaToPrimitives } from "@latticexyz/store";
 
 export type RawTableRecord<table extends Table = Table> = {

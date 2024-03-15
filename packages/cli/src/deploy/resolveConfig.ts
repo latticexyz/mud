@@ -4,7 +4,7 @@ import { Config, ConfigInput, Library, Module, System, WorldFunction } from "./c
 import { resourceToHex } from "@latticexyz/common";
 import { resolveWithContext } from "@latticexyz/config/library";
 import { encodeField } from "@latticexyz/protocol-parser/internal";
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
 import { Hex, hexToBytes, bytesToHex, toFunctionSelector, toFunctionSignature } from "viem";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { defaultModuleContracts } from "../utils/defaultModuleContracts";

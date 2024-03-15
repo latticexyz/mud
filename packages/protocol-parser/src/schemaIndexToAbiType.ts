@@ -1,4 +1,4 @@
-import { SchemaAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import { Schema } from "./common";
 
 export function schemaIndexToAbiType(schema: Schema, schemaIndex: number): SchemaAbiType {
