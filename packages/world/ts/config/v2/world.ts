@@ -22,7 +22,7 @@ import {
 } from "@latticexyz/store/config/v2";
 import { Config } from "./output";
 import { NamespacesInput, WorldConfigInput } from "./input";
-import { WORLD_DEFAULTS } from "../defaults";
+import { DEPLOYMENT_DEFAULTS, CODEGEN_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
 
 export type validateNamespaces<input, scope extends AbiTypeScope = AbiTypeScope> = {
   [namespace in keyof input]: {
@@ -72,42 +72,42 @@ export type namespacedTableKeys<input> = "namespaces" extends keyof input
 export type resolveDeploymentConfig<input> = {
   readonly worldContractName: "worldContractName" extends keyof input
     ? input["worldContractName"]
-    : typeof WORLD_DEFAULTS.worldContractName;
+    : typeof DEPLOYMENT_DEFAULTS.worldContractName;
   readonly postDeployScript: "postDeployScript" extends keyof input
     ? input["postDeployScript"]
-    : typeof WORLD_DEFAULTS.postDeployScript;
+    : typeof DEPLOYMENT_DEFAULTS.postDeployScript;
   readonly deploysDirectory: "deploysDirectory" extends keyof input
     ? input["deploysDirectory"]
-    : typeof WORLD_DEFAULTS.deploysDirectory;
-  readonly worldsFile: "worldsFile" extends keyof input ? input["worldsFile"] : typeof WORLD_DEFAULTS.worldsFile;
+    : typeof DEPLOYMENT_DEFAULTS.deploysDirectory;
+  readonly worldsFile: "worldsFile" extends keyof input ? input["worldsFile"] : typeof DEPLOYMENT_DEFAULTS.worldsFile;
 };
 
 export function resolveDeploymentConfig<input>(input: input): resolveDeploymentConfig<input> {
   return {
-    worldContractName: get(input, "worldContractName") ?? WORLD_DEFAULTS.worldContractName,
-    postDeployScript: get(input, "postDeployScript") ?? WORLD_DEFAULTS.postDeployScript,
-    deploysDirectory: get(input, "deploysDirectory") ?? WORLD_DEFAULTS.deploysDirectory,
-    worldsFile: get(input, "worldsFile") ?? WORLD_DEFAULTS.worldsFile,
+    worldContractName: get(input, "worldContractName") ?? DEPLOYMENT_DEFAULTS.worldContractName,
+    postDeployScript: get(input, "postDeployScript") ?? DEPLOYMENT_DEFAULTS.postDeployScript,
+    deploysDirectory: get(input, "deploysDirectory") ?? DEPLOYMENT_DEFAULTS.deploysDirectory,
+    worldsFile: get(input, "worldsFile") ?? DEPLOYMENT_DEFAULTS.worldsFile,
   } as resolveDeploymentConfig<input>;
 }
 
 export type resolveCodegenConfig<input> = {
   readonly worldInterfaceName: "worldInterfaceName" extends keyof input
     ? input["worldInterfaceName"]
-    : typeof WORLD_DEFAULTS.worldInterfaceName;
+    : typeof CODEGEN_DEFAULTS.worldInterfaceName;
   readonly worldgenDirectory: "worldgenDirectory" extends keyof input
     ? input["worldgenDirectory"]
-    : typeof WORLD_DEFAULTS.worldgenDirectory;
+    : typeof CODEGEN_DEFAULTS.worldgenDirectory;
   readonly worldImportPath: "worldImportPath" extends keyof input
     ? input["worldImportPath"]
-    : typeof WORLD_DEFAULTS.worldImportPath;
+    : typeof CODEGEN_DEFAULTS.worldImportPath;
 };
 
 export function resolveCodegenConfig<input>(input: input): resolveCodegenConfig<input> {
   return {
-    worldInterfaceName: get(input, "worldInterfaceName") ?? WORLD_DEFAULTS.worldInterfaceName,
-    worldgenDirectory: get(input, "worldgenDirectory") ?? WORLD_DEFAULTS.worldgenDirectory,
-    worldImportPath: get(input, "worldImportPath") ?? WORLD_DEFAULTS.worldImportPath,
+    worldInterfaceName: get(input, "worldInterfaceName") ?? CODEGEN_DEFAULTS.worldInterfaceName,
+    worldgenDirectory: get(input, "worldgenDirectory") ?? CODEGEN_DEFAULTS.worldgenDirectory,
+    worldImportPath: get(input, "worldImportPath") ?? CODEGEN_DEFAULTS.worldImportPath,
   } as resolveCodegenConfig<input>;
 }
 
@@ -136,11 +136,11 @@ export type resolveWorldConfig<input> = evaluate<
           };
         }
       : {};
-    readonly systems: "systems" extends keyof input ? input["systems"] : typeof WORLD_DEFAULTS.systems;
+    readonly systems: "systems" extends keyof input ? input["systems"] : typeof CONFIG_DEFAULTS.systems;
     readonly excludeSystems: "excludeSystems" extends keyof input
       ? input["excludeSystems"]
-      : typeof WORLD_DEFAULTS.excludeSystems;
-    readonly modules: "modules" extends keyof input ? input["modules"] : typeof WORLD_DEFAULTS.modules;
+      : typeof CONFIG_DEFAULTS.excludeSystems;
+    readonly modules: "modules" extends keyof input ? input["modules"] : typeof CONFIG_DEFAULTS.modules;
     readonly deployment: resolveDeploymentConfig<"deployment" extends keyof input ? input["deployment"] : {}>;
     readonly codegen: resolveCodegenConfig<"codegen" extends keyof input ? input["codegen"] : {}>;
   }
@@ -194,5 +194,5 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
     namespace,
     codegen: { ...resolveStoreCodegen(get(input, "codegen")), ...resolveCodegenConfig(get(input, "codegen")) },
     deployment: resolveDeploymentConfig(get(input, "deployment")),
-  } as resolveWorldConfig<input>;
+  } as unknown as resolveWorldConfig<input>;
 }

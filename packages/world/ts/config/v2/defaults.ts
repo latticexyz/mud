@@ -4,15 +4,21 @@ export const SYSTEM_DEFAULTS = {
   accessList: [] as string[],
 } as const;
 
-export const WORLD_DEFAULTS = {
-  worldContractName: undefined,
+export const CODEGEN_DEFAULTS = {
   worldInterfaceName: "IWorld",
-  systems: {},
-  excludeSystems: [] as string[],
+  worldgenDirectory: "world",
+  worldImportPath: "@latticexyz/world/src/",
+} as const;
+
+export const DEPLOYMENT_DEFAULTS = {
+  worldContractName: undefined,
   postDeployScript: "PostDeploy",
   deploysDirectory: "./deploys",
   worldsFile: "./worlds.json",
-  worldgenDirectory: "world",
-  worldImportPath: "@latticexyz/world/src/",
+} as const;
+
+export const CONFIG_DEFAULTS = {
+  systems: {},
+  excludeSystems: [] as string[],
   modules: [],
 } as const;
