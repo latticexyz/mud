@@ -1,7 +1,7 @@
 import { type Hex } from "viem";
 
 import { type ExpandMUDUserConfig } from "@latticexyz/store/register";
-import { type MUDCoreUserConfig } from "@latticexyz/config";
+import { type MUDCoreUserConfig } from "@latticexyz/config/library";
 
 import { resourceToHex } from "@latticexyz/common";
 

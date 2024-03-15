@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DynamicResolution, ValueWithType } from "@latticexyz/config";
+import { DynamicResolution, ValueWithType } from "@latticexyz/config/library";
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { zWorldConfig } from "./worldConfig";
 import { SYSTEM_DEFAULTS } from "./defaults";

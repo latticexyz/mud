@@ -2,7 +2,7 @@ import path from "path";
 import { resolveWorldConfig } from "@latticexyz/world";
 import { Config, ConfigInput, Library, Module, System, WorldFunction } from "./common";
 import { resourceToHex } from "@latticexyz/common";
-import { resolveWithContext } from "@latticexyz/config";
+import { resolveWithContext } from "@latticexyz/config/library";
 import { encodeField } from "@latticexyz/protocol-parser";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
 import { Hex, hexToBytes, bytesToHex, toFunctionSelector, toFunctionSignature } from "viem";
