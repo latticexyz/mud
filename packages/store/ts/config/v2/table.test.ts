@@ -4,6 +4,7 @@ import { resolveTableConfig } from "./table";
 import { Table } from "./output";
 import { AbiTypeScope, extendScope } from "./scope";
 import { Hex } from "viem";
+import { TABLE_CODEGEN_DEFAULTS } from "./defaults";
 
 describe("resolveTableConfig", () => {
   it("should expand a single ABI type into a key/value schema", () => {
@@ -33,6 +34,10 @@ describe("resolveTableConfig", () => {
         },
       },
       primaryKey: ["key"],
+      name: "",
+      namespace: "",
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+      type: "table",
     } as const;
 
     attest<typeof expected>(table).equals(expected);
@@ -66,6 +71,10 @@ describe("resolveTableConfig", () => {
         },
       },
       primaryKey: ["key"],
+      name: "",
+      namespace: "",
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+      type: "table",
     } as const;
 
     attest<typeof expected>(table).equals(expected);
@@ -106,6 +115,10 @@ describe("resolveTableConfig", () => {
         },
       },
       primaryKey: ["key"],
+      name: "",
+      namespace: "",
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+      type: "table",
     } as const;
 
     attest<typeof expected>(table).equals(expected);
@@ -147,6 +160,10 @@ describe("resolveTableConfig", () => {
         },
       },
       primaryKey: ["key"],
+      name: "",
+      namespace: "",
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+      type: "table",
     } as const;
 
     attest<typeof expected>(table);
@@ -201,6 +218,10 @@ describe("resolveTableConfig", () => {
         name: { type: "string", internalType: "string" },
       },
       primaryKey: ["age"],
+      name: "",
+      namespace: "",
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+      type: "table",
     } as const;
 
     attest<typeof expected>(table).equals(expected);
@@ -226,6 +247,10 @@ describe("resolveTableConfig", () => {
         name: { type: "string", internalType: "string" },
       },
       primaryKey: ["age", "key"],
+      name: "",
+      namespace: "",
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+      type: "table",
     } as const;
 
     attest<typeof expected>(table).equals(expected);
@@ -267,6 +292,10 @@ describe("resolveTableConfig", () => {
         },
       },
       primaryKey: ["key"],
+      name: "",
+      namespace: "",
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+      type: "table",
     } as const;
 
     attest<typeof expected>(table).equals(expected);
@@ -308,6 +337,10 @@ describe("resolveTableConfig", () => {
         },
       },
       primaryKey: ["key"],
+      name: "",
+      namespace: "",
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+      type: "table",
     } as const;
 
     attest<typeof expected>(table).equals(expected);

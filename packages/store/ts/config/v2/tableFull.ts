@@ -1,9 +1,12 @@
 import { conform, evaluate } from "@arktype/util";
+import { isStaticAbiType } from "@latticexyz/schema-type";
+import { Hex } from "viem";
 import { get, hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput, resolveSchema } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
-import { isStaticAbiType } from "@latticexyz/schema-type";
-import { Hex } from "viem";
+import { TableCodegenOptions } from "./output";
+import { TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
+import { resourceToHex } from "@latticexyz/common";
 
 export type TableFullInput<
   schema extends SchemaInput<scope> = SchemaInput,
@@ -13,6 +16,10 @@ export type TableFullInput<
   schema: schema;
   primaryKey: primaryKey;
   tableId?: Hex;
+  type?: "table" | "offchainTable";
+  name?: string;
+  namespace?: string;
+  codegen?: Partial<TableCodegenOptions>;
 };
 
 export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = readonly [
@@ -62,7 +69,9 @@ export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> 
     ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput<scope>>, scope>, input[key]>
     : key extends "schema"
       ? conform<input[key], SchemaInput<scope>>
-      : input[key];
+      : key extends keyof TableFullInput
+        ? TableFullInput[key]
+        : input[key];
 };
 
 export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope>(
@@ -90,11 +99,87 @@ export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeSco
   }
 }
 
+export type resolveTableCodegen<
+  input extends TableFullInput<SchemaInput<scope>, scope>,
+  scope extends AbiTypeScope = AbiTypeScope,
+> = {
+  [key in keyof TableCodegenOptions]-?: key extends keyof input["codegen"]
+    ? undefined extends input["codegen"][key]
+      ? key extends "dataStruct"
+        ? boolean
+        : key extends keyof typeof TABLE_CODEGEN_DEFAULTS
+          ? (typeof TABLE_CODEGEN_DEFAULTS)[key]
+          : never
+      : input["codegen"][key]
+    : // dataStruct isn't narrowed, because its value is conditional on the number of value schema fields
+      key extends "dataStruct"
+      ? boolean
+      : key extends keyof typeof TABLE_CODEGEN_DEFAULTS
+        ? (typeof TABLE_CODEGEN_DEFAULTS)[key]
+        : never;
+};
+
+export function resolveTableCodegen<
+  input extends TableFullInput<SchemaInput<scope>, scope>,
+  scope extends AbiTypeScope = AbiTypeScope,
+>(input: input, scope: scope): resolveTableCodegen<input, scope> {
+  const options = input.codegen;
+  return {
+    directory: get(options, "directory") ?? TABLE_CODEGEN_DEFAULTS.directory,
+    tableIdArgument: get(options, "tableIdArgument") ?? TABLE_CODEGEN_DEFAULTS.tableIdArgument,
+    storeArgument: get(options, "storeArgument") ?? TABLE_CODEGEN_DEFAULTS.storeArgument,
+    // dataStruct is true if there are at least 2 value fields
+    dataStruct: get(options, "dataStruct") ?? Object.keys(input.schema).length - input.primaryKey.length > 1,
+  } satisfies TableCodegenOptions as resolveTableCodegen<input, scope>;
+}
+
+export type tableWithDefaults<
+  table extends TableFullInput<SchemaInput<scope>, scope>,
+  defaultName extends string,
+  defaultNamespace extends string,
+  scope extends AbiTypeScope = AbiTypeScope,
+> = {
+  [key in keyof TableFullInput]-?: undefined extends table[key]
+    ? key extends "name"
+      ? defaultName
+      : key extends "namespace"
+        ? defaultNamespace
+        : key extends "type"
+          ? typeof TABLE_DEFAULTS.type
+          : table[key]
+    : table[key];
+};
+
+export function tableWithDefaults<
+  table extends TableFullInput,
+  defaultName extends string,
+  defaultNamespace extends string,
+>(
+  table: table,
+  defaultName: defaultName,
+  defaultNamespace: defaultNamespace,
+): tableWithDefaults<table, defaultName, defaultNamespace> {
+  return {
+    ...table,
+    tableId:
+      table.tableId ??
+      (defaultName
+        ? resourceToHex({ type: TABLE_DEFAULTS.type, namespace: defaultNamespace, name: defaultName })
+        : undefined),
+    name: table.name ?? defaultName,
+    namespace: table.namespace ?? defaultNamespace,
+    type: table.type ?? TABLE_DEFAULTS.type,
+  } as tableWithDefaults<table, defaultName, defaultNamespace>;
+}
+
 export type resolveTableFullConfig<
   input extends TableFullInput<SchemaInput<scope>, scope>,
   scope extends AbiTypeScope = AbiTypeScope,
 > = evaluate<{
   readonly tableId: Hex;
+  readonly name: input["name"] extends undefined ? "" : input["name"];
+  readonly namespace: input["namespace"] extends undefined ? "" : input["namespace"];
+  readonly type: input["type"] extends undefined ? "table" : input["type"];
   readonly primaryKey: Readonly<input["primaryKey"]>;
   readonly schema: resolveSchema<input["schema"], scope>;
   readonly keySchema: resolveSchema<
@@ -109,6 +194,7 @@ export type resolveTableFullConfig<
     },
     scope
   >;
+  readonly codegen: resolveTableCodegen<input, scope>;
 }>;
 
 export function resolveTableFullConfig<
@@ -118,7 +204,11 @@ export function resolveTableFullConfig<
   validateTableFull(input, scope);
 
   return {
+    // TODO: require tableId and name as inputs
     tableId: input.tableId ?? ("0x" as Hex),
+    name: input.name ?? ("" as const),
+    namespace: input.namespace ?? ("" as const),
+    type: input.type ?? ("table" as const),
     primaryKey: input["primaryKey"],
     schema: resolveSchema(input["schema"], scope),
     keySchema: resolveSchema(
@@ -137,5 +227,6 @@ export function resolveTableFullConfig<
       ),
       scope,
     ),
-  } as resolveTableFullConfig<input, scope>;
+    codegen: resolveTableCodegen(input, scope),
+  } as unknown as resolveTableFullConfig<input, scope>;
 }

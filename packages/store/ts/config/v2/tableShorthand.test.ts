@@ -13,11 +13,13 @@ describe("resolveTableShorthand", () => {
         value: "address";
       };
       primaryKey: ["key"];
-    }>(table)
-      .snap({ schema: { key: "bytes32", value: "address" }, primaryKey: ["key"] })
-      .type.toString.snap(
-        '{ schema: { key: "bytes32"; value: "address"; }; primaryKey: ["key"]; tableId?: `0x${string}` | undefined; }',
-      );
+    }>(table).equals({
+      schema: {
+        key: "bytes32",
+        value: "address",
+      },
+      primaryKey: ["key"],
+    });
   });
 
   it("should expand a single custom type into a key/value schema", () => {
@@ -30,11 +32,13 @@ describe("resolveTableShorthand", () => {
         value: "CustomType";
       };
       primaryKey: ["key"];
-    }>(table)
-      .snap({ schema: { key: "bytes32", value: "CustomType" }, primaryKey: ["key"] })
-      .type.toString.snap(
-        '{ schema: { key: "bytes32"; value: "CustomType"; }; primaryKey: ["key"]; tableId?: `0x${string}` | undefined; }',
-      );
+    }>(table).equals({
+      schema: {
+        key: "bytes32",
+        value: "CustomType",
+      },
+      primaryKey: ["key"],
+    });
   });
 
   it("should throw if the provided shorthand is not an ABI type and no user types are provided", () => {
@@ -69,11 +73,14 @@ describe("resolveTableShorthand", () => {
         age: "uint256";
       };
       primaryKey: ["key"];
-    }>(table)
-      .snap({ schema: { key: "address", name: "string", age: "uint256" }, primaryKey: ["key"] })
-      .type.toString.snap(
-        '{ schema: { key: "address"; name: "string"; age: "uint256"; }; primaryKey: ["key"]; tableId?: `0x${string}` | undefined; }',
-      );
+    }>(table).equals({
+      schema: {
+        key: "address",
+        name: "string",
+        age: "uint256",
+      },
+      primaryKey: ["key"],
+    });
   });
 
   it("should throw an error if the shorthand doesn't include a key field", () => {
@@ -110,11 +117,10 @@ describe("resolveTableShorthand", () => {
     attest<{
       schema: { key: "CustomType"; name: "string"; age: "uint256" };
       primaryKey: ["key"];
-    }>(table)
-      .snap({ schema: { key: "CustomType", name: "string", age: "uint256" }, primaryKey: ["key"] })
-      .type.toString.snap(
-        '{ schema: { key: "CustomType"; name: "string"; age: "uint256"; }; primaryKey: ["key"]; tableId?: `0x${string}` | undefined; }',
-      );
+    }>(table).equals({
+      schema: { key: "CustomType", name: "string", age: "uint256" },
+      primaryKey: ["key"],
+    });
   });
 
   it("should throw an error if `key` is not a custom static type", () => {
