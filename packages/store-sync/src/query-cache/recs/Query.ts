@@ -48,14 +48,14 @@ export function Not<table extends Table>(table: table): NotQueryFragment<table> 
 
 export function HasValue<table extends Table>(
   table: table,
-  value: SchemaToPrimitives<table["valueSchema"]>,
+  value: Partial<SchemaToPrimitives<table["schema"]>>,
 ): HasValueQueryFragment<table> {
   return { type: QueryFragmentType.HasValue, table, value };
 }
 
 export function NotValue<table extends Table>(
   table: table,
-  value: SchemaToPrimitives<table["valueSchema"]>,
+  value: Partial<SchemaToPrimitives<table["schema"]>>,
 ): NotValueQueryFragment<table> {
   return { type: QueryFragmentType.NotValue, table, value };
 }
