@@ -32,6 +32,7 @@ export function isDynamicResolution(value: unknown): value is DynamicResolution 
 
 /**
  * Turn a DynamicResolution object into a ValueWithType based on the provided context
+ * @deprecated
  */
 export function resolveWithContext(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
