@@ -194,5 +194,8 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
     namespace,
     codegen: { ...resolveStoreCodegen(get(input, "codegen")), ...resolveCodegenConfig(get(input, "codegen")) },
     deployment: resolveDeploymentConfig(get(input, "deployment")),
+    systems: get(input, "systems") ?? CONFIG_DEFAULTS.systems,
+    excludeSystems: get(input, "excludeSystems") ?? CONFIG_DEFAULTS.excludeSystems,
+    modules: get(input, "modules") ?? CONFIG_DEFAULTS.modules,
   } as unknown as resolveWorldConfig<input>;
 }
