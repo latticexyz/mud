@@ -1,7 +1,7 @@
 import { getAddress } from "viem";
 import { PgDatabase } from "drizzle-orm/pg-core";
 import { TableWithRecords, isTableRegistrationLog, logToTable, storeTables } from "@latticexyz/store-sync";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { QueryAdapter } from "@latticexyz/store-sync/trpc-indexer";
 import { debug } from "../../debug";
 import { getLogs } from "./getLogs";

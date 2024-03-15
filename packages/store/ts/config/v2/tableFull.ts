@@ -1,5 +1,5 @@
 import { conform, evaluate } from "@arktype/util";
-import { isStaticAbiType } from "@latticexyz/schema-type";
+import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { get, hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput, resolveSchema } from "./schema";

@@ -2,7 +2,7 @@ import { StorageAdapter } from "../common";
 import { QueryCacheStore, RawTableRecord, TableRecord } from "./createStore";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { Hex, concatHex, size } from "viem";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { flattenSchema } from "../flattenSchema";
 import debug from "debug";
 import { Tables } from "./common";

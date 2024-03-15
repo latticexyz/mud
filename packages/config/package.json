@@ -11,6 +11,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
+    "./internal": "./dist/internal.js",
     "./library": "./dist/deprecated/library.js",
     "./register": "./dist/deprecated/register.js",
     "./node": "./dist/deprecated/node.js"
@@ -18,7 +19,10 @@
   "typesVersions": {
     "*": {
       "index": [
-        "./src/index.ts"
+        "./src/exports/index.ts"
+      ],
+      "internal": [
+        "./src/exports/internal.ts"
       ],
       "library": [
         "./src/deprecated/library/index.ts"

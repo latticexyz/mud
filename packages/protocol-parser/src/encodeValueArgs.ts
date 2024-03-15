@@ -5,7 +5,7 @@ import {
   isDynamicAbiType,
   StaticAbiType,
   DynamicAbiType,
-} from "@latticexyz/schema-type";
+} from "@latticexyz/schema-type/internal";
 import { concatHex } from "viem";
 import { encodeField } from "./encodeField";
 import { SchemaToPrimitives, ValueArgs, ValueSchema } from "./common";

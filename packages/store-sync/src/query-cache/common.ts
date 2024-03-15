@@ -1,5 +1,5 @@
 import { Config, Table } from "@latticexyz/store/config/v2";
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
 import { ComparisonCondition, InCondition } from "@latticexyz/query";
 
 export type mapTuple<tuple, mapping> = {

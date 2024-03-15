@@ -1,5 +1,5 @@
 import { ErrorMessage, evaluate } from "@arktype/util";
-import { isStaticAbiType } from "@latticexyz/schema-type";
+import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";

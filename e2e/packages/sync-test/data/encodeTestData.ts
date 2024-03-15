@@ -1,5 +1,5 @@
 import { mapObject } from "@latticexyz/utils";
-import { encodeKey, encodeValueArgs, valueSchemaToFieldLayoutHex } from "@latticexyz/protocol-parser";
+import { encodeKey, encodeValueArgs, valueSchemaToFieldLayoutHex } from "@latticexyz/protocol-parser/internal";
 import { Data, EncodedData } from "./types";
 import config from "../../contracts/mud.config";
 

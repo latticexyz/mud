@@ -1,5 +1,5 @@
 import { Hex } from "viem";
-import { StaticPrimitiveType, DynamicPrimitiveType, SchemaAbiType } from "@latticexyz/schema-type";
+import { StaticPrimitiveType, DynamicPrimitiveType, SchemaAbiType } from "@latticexyz/schema-type/internal";
 import { satisfy } from "@latticexyz/common/type-utils";
 import { SchemaToPrimitives } from "@latticexyz/store";
 import { Table } from "@latticexyz/store/config/v2";

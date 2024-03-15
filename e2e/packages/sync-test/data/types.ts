@@ -1,5 +1,5 @@
 // Note: this expects the config to not use shortcuts but the full definitions for table schemas
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
 import config from "../../contracts/mud.config";
 import { Hex } from "viem";
 type SchemaToPrimitive<Schema> =

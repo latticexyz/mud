@@ -1,4 +1,4 @@
-import { StaticPrimitiveType } from "@latticexyz/schema-type";
+import { StaticPrimitiveType } from "@latticexyz/schema-type/internal";
 import { SchemaToPrimitives } from "@latticexyz/store";
 import { Table } from "@latticexyz/store/config/v2";
 import { Hex } from "viem";

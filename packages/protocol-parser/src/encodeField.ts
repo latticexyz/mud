@@ -1,4 +1,4 @@
-import { SchemaAbiType, arrayAbiTypeToStaticAbiType, isArrayAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType, arrayAbiTypeToStaticAbiType, isArrayAbiType } from "@latticexyz/schema-type/internal";
 import { AbiParameterToPrimitiveType } from "abitype";
 import { Hex, encodePacked } from "viem";
 

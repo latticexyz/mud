@@ -10,16 +10,20 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/typescript/index.js",
-    "./deprecated": "./dist/typescript/deprecated/index.js"
+    ".": "./dist/index.js",
+    "./internal": "./dist/internal.js",
+    "./deprecated": "./dist/deprecated.js"
   },
   "typesVersions": {
     "*": {
       "index": [
-        "./src/typescript/index.ts"
+        "./src/typescript/exports/index.ts"
+      ],
+      "internal": [
+        "./src/typescript/exports/internal.ts"
       ],
       "deprecated": [
-        "./src/typescript/deprecated/index.ts"
+        "./src/typescript/exports/deprecated.ts"
       ]
     }
   },
