@@ -1,5 +1,7 @@
 import { Hex } from "viem";
 import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
+import { ResourceType } from "@latticexyz/common";
+import { satisfy } from "@latticexyz/common/type-utils";
 
 /**
  * Common output types of a MUD config. We use these types as inputs for libraries.
@@ -22,7 +24,7 @@ export type Schema = {
 };
 
 export type Table = {
-  readonly type: "table" | "offchainTable";
+  readonly type: satisfy<ResourceType, "table" | "offchainTable">;
   readonly name: string;
   readonly namespace: string;
   readonly tableId: Hex;
