@@ -23,13 +23,11 @@ export type Schema = {
   };
 };
 
-export type TableKey<schema extends Schema = Schema> = readonly (keyof schema)[];
-
-export type Table<schema extends Schema = Schema> = {
+export type Table = {
   readonly type: satisfy<ResourceType, "table" | "offchainTable">;
   readonly name: string;
   readonly namespace: string;
   readonly tableId: Hex;
-  readonly primaryKey: TableKey<schema>;
-  readonly schema: schema;
+  readonly primaryKey: readonly string[];
+  readonly schema: Schema;
 };
