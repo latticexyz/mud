@@ -12,13 +12,13 @@ describe("resolveTableShorthand", () => {
         id: "bytes32";
         value: "address";
       };
-      primaryKey: ["id"];
+      key: ["id"];
     }>(table).equals({
       schema: {
         id: "bytes32",
         value: "address",
       },
-      primaryKey: ["id"],
+      key: ["id"],
     });
   });
 
@@ -31,13 +31,13 @@ describe("resolveTableShorthand", () => {
         id: "bytes32";
         value: "CustomType";
       };
-      primaryKey: ["id"];
+      key: ["id"];
     }>(table).equals({
       schema: {
         id: "bytes32",
         value: "CustomType",
       },
-      primaryKey: ["id"],
+      key: ["id"],
     });
   });
 
@@ -72,32 +72,32 @@ describe("resolveTableShorthand", () => {
         name: "string";
         age: "uint256";
       };
-      primaryKey: ["id"];
+      key: ["id"];
     }>(table).equals({
       schema: {
         id: "address",
         name: "string",
         age: "uint256",
       },
-      primaryKey: ["id"],
+      key: ["id"],
     });
   });
 
   it("should throw an error if the shorthand doesn't include an `id` field", () => {
     attest(() =>
-      // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
+      // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
       resolveTableShorthand({ name: "string", age: "uint256" }),
     ).throwsAndHasTypeError(
-      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
+      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
     );
   });
 
   it("should throw an error if the shorthand config includes a non-static `id` field", () => {
     attest(() =>
-      // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
+      // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
       resolveTableShorthand({ id: "string", name: "string", age: "uint256" }),
     ).throwsAndHasTypeError(
-      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
+      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
     );
   });
 
@@ -116,20 +116,20 @@ describe("resolveTableShorthand", () => {
 
     attest<{
       schema: { id: "CustomType"; name: "string"; age: "uint256" };
-      primaryKey: ["id"];
+      key: ["id"];
     }>(table).equals({
       schema: { id: "CustomType", name: "string", age: "uint256" },
-      primaryKey: ["id"],
+      key: ["id"],
     });
   });
 
   it("should throw an error if `id` is not a custom static type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "bytes" });
     attest(() =>
-      // @ts-expect-error "Error: Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option."
+      // @ts-expect-error "Error: Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option."
       resolveTableShorthand({ id: "CustomType", name: "string", age: "uint256" }, scope),
     ).throwsAndHasTypeError(
-      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
+      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
     );
   });
 });

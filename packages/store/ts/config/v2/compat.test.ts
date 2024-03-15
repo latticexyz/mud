@@ -67,14 +67,14 @@ describe("configToV1", () => {
             x: "int32",
             y: "int32",
           },
-          primaryKey: ["player"],
+          key: ["player"],
         },
         Health: {
           schema: {
             player: "CustomAddress",
             health: "uint256",
           },
-          primaryKey: ["player"],
+          key: ["player"],
         },
         Terrain: {
           schema: {
@@ -82,7 +82,7 @@ describe("configToV1", () => {
             y: "int32",
             terrainType: "TerrainType",
           },
-          primaryKey: ["x", "y"],
+          key: ["x", "y"],
         },
       },
     });

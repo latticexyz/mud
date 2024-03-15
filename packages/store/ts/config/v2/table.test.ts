@@ -33,7 +33,7 @@ describe("resolveTableConfig", () => {
           internalType: "address",
         },
       },
-      primaryKey: ["id"],
+      key: ["id"],
       name: "",
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -70,7 +70,7 @@ describe("resolveTableConfig", () => {
           internalType: "CustomType",
         },
       },
-      primaryKey: ["id"],
+      key: ["id"],
       name: "",
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -114,7 +114,7 @@ describe("resolveTableConfig", () => {
           internalType: "uint256",
         },
       },
-      primaryKey: ["id"],
+      key: ["id"],
       name: "",
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -159,7 +159,7 @@ describe("resolveTableConfig", () => {
           internalType: "uint256",
         },
       },
-      primaryKey: ["id"],
+      key: ["id"],
       name: "",
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -170,17 +170,17 @@ describe("resolveTableConfig", () => {
   });
 
   it("should throw if the shorthand key is a dynamic ABI type", () => {
-    // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
+    // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
     attest(() => resolveTableConfig({ id: "string", name: "string", age: "uint256" })).throwsAndHasTypeError(
-      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
+      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
     );
   });
 
   it("should throw if the shorthand key is a dyamic custom type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "bytes" });
-    // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
+    // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
     attest(() => resolveTableConfig({ id: "CustomType" }, scope)).throwsAndHasTypeError(
-      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
+      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
     );
   });
 
@@ -192,16 +192,16 @@ describe("resolveTableConfig", () => {
   });
 
   it("should throw if the shorthand doesn't include a key field", () => {
-    // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
+    // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
     attest(() => resolveTableConfig({ name: "string", age: "uint256" })).throwsAndHasTypeError(
-      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
+      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
     );
   });
 
   it("should return the full config given a full config with one key", () => {
     const table = resolveTableConfig({
       schema: { id: "address", name: "string", age: "uint256" },
-      primaryKey: ["age"],
+      key: ["age"],
     });
     const expected = {
       tableId: "0x" as Hex,
@@ -217,7 +217,7 @@ describe("resolveTableConfig", () => {
         id: { type: "address", internalType: "address" },
         name: { type: "string", internalType: "string" },
       },
-      primaryKey: ["age"],
+      key: ["age"],
       name: "",
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -227,10 +227,10 @@ describe("resolveTableConfig", () => {
     attest<typeof expected>(table).equals(expected);
   });
 
-  it("should return the full config given a full config with two primaryKey", () => {
+  it("should return the full config given a full config with two key", () => {
     const table = resolveTableConfig({
       schema: { id: "address", name: "string", age: "uint256" },
-      primaryKey: ["age", "id"],
+      key: ["age", "id"],
     });
     const expected = {
       tableId: "0x" as Hex,
@@ -246,7 +246,7 @@ describe("resolveTableConfig", () => {
       valueSchema: {
         name: { type: "string", internalType: "string" },
       },
-      primaryKey: ["age", "id"],
+      key: ["age", "id"],
       name: "",
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -291,7 +291,7 @@ describe("resolveTableConfig", () => {
           internalType: "CustomNumber",
         },
       },
-      primaryKey: ["id"],
+      key: ["id"],
       name: "",
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -336,7 +336,7 @@ describe("resolveTableConfig", () => {
           internalType: "CustomNumber",
         },
       },
-      primaryKey: ["id"],
+      key: ["id"],
       name: "",
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -351,10 +351,10 @@ describe("resolveTableConfig", () => {
       resolveTableConfig({
         schema: { id: "address", name: "string", age: "uint256" },
         // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'
-        primaryKey: ["name"],
+        key: ["name"],
       }),
     )
-      .throws('Invalid primary key. Expected `("id" | "age")[]`, received `["name"]`')
+      .throws('Invalid key. Expected `("id" | "age")[]`, received `["name"]`')
       .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
   });
 
@@ -365,12 +365,12 @@ describe("resolveTableConfig", () => {
         {
           schema: { id: "address", name: "string", age: "uint256" },
           // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'
-          primaryKey: ["name"],
+          key: ["name"],
         },
         scope,
       ),
     )
-      .throws('Invalid primary key. Expected `("id" | "age")[]`, received `["name"]`')
+      .throws('Invalid key. Expected `("id" | "age")[]`, received `["name"]`')
       .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
   });
 
@@ -381,12 +381,12 @@ describe("resolveTableConfig", () => {
         {
           schema: { id: "CustomType", name: "string", age: "uint256" },
           // @ts-expect-error Type '"id"' is not assignable to type '"age"'
-          primaryKey: ["id"],
+          key: ["id"],
         },
         scope,
       ),
     )
-      .throws('Invalid primary key. Expected `("age")[]`, received `["id"]`')
+      .throws('Invalid key. Expected `("age")[]`, received `["id"]`')
       .type.errors(`Type '"id"' is not assignable to type '"age"'`);
   });
 
@@ -397,12 +397,12 @@ describe("resolveTableConfig", () => {
         {
           schema: { id: "address", name: "string", age: "uint256" },
           // @ts-expect-error Type '"NotAKey"' is not assignable to type '"id" | "age"'
-          primaryKey: ["NotAKey"],
+          key: ["NotAKey"],
         },
         scope,
       ),
     )
-      .throws('Invalid primary key. Expected `("id" | "age")[]`, received `["NotAKey"]`')
+      .throws('Invalid key. Expected `("id" | "age")[]`, received `["NotAKey"]`')
       .type.errors(`Type '"NotAKey"' is not assignable to type '"id" | "age"'`);
   });
 
