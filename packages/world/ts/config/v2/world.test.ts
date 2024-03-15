@@ -13,11 +13,11 @@ describe("resolveWorldConfig", () => {
           tables: {
             ExampleTable: {
               schema: {
-                key: "address",
+                id: "address",
                 value: "uint256",
                 dynamic: "string",
               },
-              primaryKey: ["key"],
+              primaryKey: ["id"],
             },
           },
         },
@@ -29,7 +29,7 @@ describe("resolveWorldConfig", () => {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
           schema: {
-            key: {
+            id: {
               type: "address",
               internalType: "address",
             },
@@ -43,7 +43,7 @@ describe("resolveWorldConfig", () => {
             },
           },
           keySchema: {
-            key: {
+            id: {
               type: "address",
               internalType: "address",
             },
@@ -58,7 +58,7 @@ describe("resolveWorldConfig", () => {
               internalType: "string",
             },
           },
-          primaryKey: ["key"],
+          primaryKey: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -71,7 +71,7 @@ describe("resolveWorldConfig", () => {
             ExampleTable: {
               tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
               schema: {
-                key: {
+                id: {
                   type: "address",
                   internalType: "address",
                 },
@@ -85,7 +85,7 @@ describe("resolveWorldConfig", () => {
                 },
               },
               keySchema: {
-                key: {
+                id: {
                   type: "address",
                   internalType: "address",
                 },
@@ -100,7 +100,7 @@ describe("resolveWorldConfig", () => {
                   internalType: "string",
                 },
               },
-              primaryKey: ["key"],
+              primaryKey: ["id"],
               name: "ExampleTable",
               namespace: "ExampleNamespace",
               codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -125,11 +125,11 @@ describe("resolveWorldConfig", () => {
           tables: {
             ExampleTable: {
               schema: {
-                key: "Static",
+                id: "Static",
                 value: "MyEnum",
                 dynamic: "Dynamic",
               },
-              primaryKey: ["key"],
+              primaryKey: ["id"],
             },
           },
         },
@@ -148,7 +148,7 @@ describe("resolveWorldConfig", () => {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
           schema: {
-            key: {
+            id: {
               type: "address",
               internalType: "Static",
             },
@@ -162,7 +162,7 @@ describe("resolveWorldConfig", () => {
             },
           },
           keySchema: {
-            key: {
+            id: {
               type: "address",
               internalType: "Static",
             },
@@ -177,7 +177,7 @@ describe("resolveWorldConfig", () => {
               internalType: "Dynamic",
             },
           },
-          primaryKey: ["key"],
+          primaryKey: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -190,7 +190,7 @@ describe("resolveWorldConfig", () => {
             ExampleTable: {
               tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
               schema: {
-                key: {
+                id: {
                   type: "address",
                   internalType: "Static",
                 },
@@ -204,7 +204,7 @@ describe("resolveWorldConfig", () => {
                 },
               },
               keySchema: {
-                key: {
+                id: {
                   type: "address",
                   internalType: "Static",
                 },
@@ -219,7 +219,7 @@ describe("resolveWorldConfig", () => {
                   internalType: "Dynamic",
                 },
               },
-              primaryKey: ["key"],
+              primaryKey: ["id"],
               name: "ExampleTable",
               namespace: "ExampleNamespace",
               codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -249,11 +249,11 @@ describe("resolveWorldConfig", () => {
           tables: {
             ExampleTable: {
               schema: {
-                key: "Static",
+                id: "Static",
                 value: "MyEnum",
                 dynamic: "Dynamic",
               },
-              primaryKey: ["key"],
+              primaryKey: ["id"],
             },
           },
         },
@@ -277,7 +277,7 @@ describe("resolveWorldConfig", () => {
         AnotherOne: {
           tables: {
             Example: {
-              schema: { key: "address", name: "string", age: "uint256" },
+              schema: { id: "address", name: "string", age: "uint256" },
               primaryKey: ["age"],
             },
           },
@@ -300,7 +300,7 @@ describe("resolveWorldConfig", () => {
           Name: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
             schema: {
-              key: {
+              id: {
                 type: "bytes32",
                 internalType: "bytes32",
               },
@@ -310,7 +310,7 @@ describe("resolveWorldConfig", () => {
               },
             },
             keySchema: {
-              key: {
+              id: {
                 type: "bytes32",
                 internalType: "bytes32",
               },
@@ -321,7 +321,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "address",
               },
             },
-            primaryKey: ["key"],
+            primaryKey: ["id"],
             name: "Name",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -349,7 +349,7 @@ describe("resolveWorldConfig", () => {
           Name: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
             schema: {
-              key: {
+              id: {
                 type: "bytes32",
                 internalType: "bytes32",
               },
@@ -359,7 +359,7 @@ describe("resolveWorldConfig", () => {
               },
             },
             keySchema: {
-              key: {
+              id: {
                 type: "bytes32",
                 internalType: "bytes32",
               },
@@ -370,7 +370,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "CustomType",
               },
             },
-            primaryKey: ["key"],
+            primaryKey: ["id"],
             name: "Name",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -387,14 +387,14 @@ describe("resolveWorldConfig", () => {
       attest<typeof expected>(config).equals(expected);
     });
 
-    it("given a schema with a key field with static ABI type, it should use `key` as single key", () => {
-      const config = resolveWorldConfig({ tables: { Example: { key: "address", name: "string", age: "uint256" } } });
+    it("given a schema with a key field with static ABI type, it should use `id` as single key", () => {
+      const config = resolveWorldConfig({ tables: { Example: { id: "address", name: "string", age: "uint256" } } });
       const expected = {
         tables: {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
-              key: {
+              id: {
                 type: "address",
                 internalType: "address",
               },
@@ -408,7 +408,7 @@ describe("resolveWorldConfig", () => {
               },
             },
             keySchema: {
-              key: {
+              id: {
                 type: "address",
                 internalType: "address",
               },
@@ -423,7 +423,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "uint256",
               },
             },
-            primaryKey: ["key"],
+            primaryKey: ["id"],
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -440,14 +440,14 @@ describe("resolveWorldConfig", () => {
       attest<typeof expected>(config).equals(expected);
     });
 
-    it("given a schema with a key field with static custom type, it should use `key` as single key", () => {
-      const config = resolveWorldConfig({ tables: { Example: { key: "address", name: "string", age: "uint256" } } });
+    it("given a schema with a key field with static custom type, it should use `id` as single key", () => {
+      const config = resolveWorldConfig({ tables: { Example: { id: "address", name: "string", age: "uint256" } } });
       const expected = {
         tables: {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
-              key: {
+              id: {
                 type: "address",
                 internalType: "address",
               },
@@ -461,7 +461,7 @@ describe("resolveWorldConfig", () => {
               },
             },
             keySchema: {
-              key: {
+              id: {
                 type: "address",
                 internalType: "address",
               },
@@ -476,7 +476,7 @@ describe("resolveWorldConfig", () => {
                 internalType: "uint256",
               },
             },
-            primaryKey: ["key"],
+            primaryKey: ["id"],
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -497,7 +497,7 @@ describe("resolveWorldConfig", () => {
       attest(() =>
         resolveWorldConfig({
           tables: {
-            // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
+            // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
             Example: {
               name: "string",
               age: "uint256",
@@ -505,31 +505,31 @@ describe("resolveWorldConfig", () => {
           },
         }),
       ).throwsAndHasTypeError(
-        "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+        "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
       );
     });
 
     it("throw an error if the shorthand config includes a non-static key field", () => {
       attest(() =>
-        // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
-        resolveWorldConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } }),
+        // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
+        resolveWorldConfig({ tables: { Example: { id: "string", name: "string", age: "uint256" } } }),
       ).throwsAndHasTypeError(
-        "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+        "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
       );
     });
 
     it("throw an error if the shorthand config includes a non-static user type as key field", () => {
       attest(() =>
         resolveWorldConfig({
-          // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
-          tables: { Example: { key: "dynamic", name: "string", age: "uint256" } },
+          // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
+          tables: { Example: { id: "dynamic", name: "string", age: "uint256" } },
           userTypes: {
             dynamic: { type: "string", filePath: "path/to/file" },
             static: { type: "address", filePath: "path/to/file" },
           },
         }),
       ).throwsAndHasTypeError(
-        "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+        "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
       );
     });
 
@@ -537,7 +537,7 @@ describe("resolveWorldConfig", () => {
       const config = resolveWorldConfig({
         tables: {
           Example: {
-            schema: { key: "address", name: "string", age: "uint256" },
+            schema: { id: "address", name: "string", age: "uint256" },
             primaryKey: ["age"],
           },
         },
@@ -547,7 +547,7 @@ describe("resolveWorldConfig", () => {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
-              key: {
+              id: {
                 type: "address",
                 internalType: "address",
               },
@@ -567,7 +567,7 @@ describe("resolveWorldConfig", () => {
               },
             },
             valueSchema: {
-              key: {
+              id: {
                 type: "address",
                 internalType: "address",
               },
@@ -597,7 +597,7 @@ describe("resolveWorldConfig", () => {
       const config = resolveWorldConfig({
         tables: {
           Example: {
-            schema: { key: "dynamic", name: "string", age: "static" },
+            schema: { id: "dynamic", name: "string", age: "static" },
             primaryKey: ["age"],
           },
         },
@@ -611,7 +611,7 @@ describe("resolveWorldConfig", () => {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
-              key: {
+              id: {
                 type: "string",
                 internalType: "dynamic",
               },
@@ -631,7 +631,7 @@ describe("resolveWorldConfig", () => {
               },
             },
             valueSchema: {
-              key: {
+              id: {
                 type: "string",
                 internalType: "dynamic",
               },
@@ -663,8 +663,8 @@ describe("resolveWorldConfig", () => {
         const config = resolveWorldConfig({
           tables: {
             Example: {
-              schema: { key: "address", name: "string", age: "uint256" },
-              primaryKey: ["age", "key"],
+              schema: { id: "address", name: "string", age: "uint256" },
+              primaryKey: ["age", "id"],
             },
           },
         });
@@ -673,7 +673,7 @@ describe("resolveWorldConfig", () => {
             Example: {
               tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
               schema: {
-                key: {
+                id: {
                   type: "address",
                   internalType: "address",
                 },
@@ -691,7 +691,7 @@ describe("resolveWorldConfig", () => {
                   type: "uint256",
                   internalType: "uint256",
                 },
-                key: {
+                id: {
                   type: "address",
                   internalType: "address",
                 },
@@ -702,7 +702,7 @@ describe("resolveWorldConfig", () => {
                   internalType: "string",
                 },
               },
-              primaryKey: ["age", "key"],
+              primaryKey: ["age", "id"],
               name: "Example",
               namespace: "",
               codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -955,15 +955,15 @@ describe("resolveWorldConfig", () => {
         resolveWorldConfig({
           tables: {
             Example: {
-              schema: { key: "address", name: "string", age: "uint256" },
-              // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'.
+              schema: { id: "address", name: "string", age: "uint256" },
+              // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'.
               primaryKey: ["name"],
             },
           },
         }),
       )
-        .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
-        .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+        .throws('Invalid primary key. Expected `("id" | "age")[]`, received `["name"]`')
+        .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
     });
 
     it("should throw an error if the provided key is not a static field with user types", () => {
@@ -971,8 +971,8 @@ describe("resolveWorldConfig", () => {
         resolveWorldConfig({
           tables: {
             Example: {
-              schema: { key: "address", name: "Dynamic", age: "uint256" },
-              // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'.
+              schema: { id: "address", name: "Dynamic", age: "uint256" },
+              // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'.
               primaryKey: ["name"],
             },
           },
@@ -981,15 +981,15 @@ describe("resolveWorldConfig", () => {
           },
         }),
       )
-        .throws('Invalid primary key. Expected `("key" | "age")[]`, received `["name"]`')
-        .type.errors(`Type '"name"' is not assignable to type '"key" | "age"'`);
+        .throws('Invalid primary key. Expected `("id" | "age")[]`, received `["name"]`')
+        .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
     });
 
     it("should return the full config given a full config with enums and user types", () => {
       const config = resolveWorldConfig({
         tables: {
           Example: {
-            schema: { key: "dynamic", name: "ValidNames", age: "static" },
+            schema: { id: "dynamic", name: "ValidNames", age: "static" },
             primaryKey: ["name"],
           },
         },
@@ -1006,7 +1006,7 @@ describe("resolveWorldConfig", () => {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
-              key: {
+              id: {
                 type: "string",
                 internalType: "dynamic",
               },
@@ -1030,7 +1030,7 @@ describe("resolveWorldConfig", () => {
                 type: "address",
                 internalType: "static",
               },
-              key: {
+              id: {
                 type: "string",
                 internalType: "dynamic",
               },
@@ -1082,7 +1082,7 @@ describe("resolveWorldConfig", () => {
         namespace: "namespace",
         tables: {
           Example: {
-            schema: { key: "address", name: "string", age: "uint256" },
+            schema: { id: "address", name: "string", age: "uint256" },
             primaryKey: ["age"],
           },
         },

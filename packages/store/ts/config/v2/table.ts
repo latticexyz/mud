@@ -1,4 +1,4 @@
-import { ErrorMessage, evaluate } from "@arktype/util";
+import { evaluate } from "@arktype/util";
 import { SchemaInput } from "./schema";
 import { AbiTypeScope } from "./scope";
 import {
@@ -16,9 +16,6 @@ import {
   tableWithDefaults,
 } from "./tableFull";
 import { CONFIG_DEFAULTS } from "./defaults";
-
-export type NoStaticKeyFieldError =
-  ErrorMessage<"Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.">;
 
 export type TableInput<
   schema extends SchemaInput<scope> = SchemaInput,
@@ -61,9 +58,9 @@ export type resolveTableConfig<
 
 /**
  * If a shorthand table config is passed we expand it with sane defaults:
- * - A single ABI type is turned into { schema: { key: "bytes32", value: INPUT }, key: ["key"] }.
- * - A schema with a `key` field with static ABI type is turned into { schema: INPUT, key: ["key"] }.
- * - A schema without a `key` field is invalid.
+ * - A single ABI type is turned into { schema: { id: "bytes32", value: INPUT }, primaryKey: ["id"] }.
+ * - A schema with a `id` field with static ABI type is turned into { schema: INPUT, primaryKey: ["id"] }.
+ * - A schema without a `id` field is invalid.
  */
 export function resolveTableConfig<
   input,
