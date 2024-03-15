@@ -97,7 +97,7 @@ export type resolveWorldConfig<input> = evaluate<
             readonly tables: resolveStoreTablesConfig<
               get<input["namespaces"][namespaceKey], "tables">,
               extendedScope<input>,
-              namespaceKey
+              namespaceKey & string
             >;
           };
         }
