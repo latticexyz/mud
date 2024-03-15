@@ -1,4 +1,4 @@
-import { AbiType, StaticAbiType, Schema, Table as BaseTable } from "@latticexyz/config";
+import { AbiType, StaticAbiType, Schema, Table as BaseTable } from "@latticexyz/config/library";
 
 export type { AbiType, Schema };
 

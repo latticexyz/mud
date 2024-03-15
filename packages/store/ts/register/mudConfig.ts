@@ -1,4 +1,4 @@
-import { mudCoreConfig, MUDCoreUserConfig } from "@latticexyz/config";
+import { mudCoreConfig, MUDCoreUserConfig } from "@latticexyz/config/library";
 import { ExtractUserTypes, StringForUnion } from "@latticexyz/common/type-utils";
 import { MUDUserConfig } from "..";
 import { ExpandMUDUserConfig } from "./typeExtensions";

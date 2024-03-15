@@ -1,4 +1,4 @@
-import { extendMUDCoreConfig, fromZodErrorCustom } from "@latticexyz/config";
+import { extendMUDCoreConfig, fromZodErrorCustom } from "@latticexyz/config/library";
 import { ZodError } from "zod";
 import { zPluginWorldConfig } from "../config/worldConfig";
 
