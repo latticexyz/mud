@@ -10,20 +10,24 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/library/index.js",
-    "./register": "./dist/register/index.js",
-    "./node": "./dist/node/index.js"
+    ".": "./dist/index.js",
+    "./library": "./dist/deprecated/library.js",
+    "./register": "./dist/deprecated/register.js",
+    "./node": "./dist/deprecated/node.js"
   },
   "typesVersions": {
     "*": {
       "index": [
-        "./src/library/index.ts"
+        "./src/index.ts"
+      ],
+      "library": [
+        "./src/deprecated/library/index.ts"
       ],
       "register": [
-        "./src/register/index.ts"
+        "./src/deprecated/register/index.ts"
       ],
       "node": [
-        "./src/node/index.ts"
+        "./src/deprecated/node/index.ts"
       ]
     }
   },
