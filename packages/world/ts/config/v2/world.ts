@@ -20,6 +20,7 @@ import {
   isObject,
   hasOwnKey,
   Table,
+  resolveCodegen,
 } from "@latticexyz/store/config/v2";
 import { Config } from "./output";
 
@@ -83,15 +84,21 @@ export type resolveWorldConfig<input> = evaluate<
           readonly [key in namespacedTableKeys<input>]: key extends `${infer namespace}__${infer table}`
             ? resolveTableConfig<
                 get<get<get<get<input, "namespaces">, namespace>, "tables">, table>,
-                extendedScope<input>
+                extendedScope<input>,
+                table,
+                namespace
               >
             : never;
         }
       : {};
     readonly namespaces: "namespaces" extends keyof input
       ? {
-          [key in keyof input["namespaces"]]: {
-            readonly tables: resolveStoreTablesConfig<get<input["namespaces"][key], "tables">, extendedScope<input>>;
+          [namespaceKey in keyof input["namespaces"]]: {
+            readonly tables: resolveStoreTablesConfig<
+              get<input["namespaces"][namespaceKey], "tables">,
+              extendedScope<input>,
+              namespaceKey & string
+            >;
           };
         }
       : {};
@@ -100,6 +107,7 @@ export type resolveWorldConfig<input> = evaluate<
 
 export function resolveWorldConfig<const input>(input: validateWorldConfig<input>): resolveWorldConfig<input> {
   const scope = extendedScope(input);
+  const namespace = get(input, "namespace") ?? "";
 
   const namespaces = get(input, "namespaces") ?? {};
   validateNamespaces(namespaces, scope);
@@ -119,6 +127,8 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
           tableId:
             fullInput.tableId ??
             resourceToHex({ type: "table", namespace: namespaceKey as string, name: tableKey as string }),
+          name: fullInput.name ?? (tableKey as string),
+          namespace: fullInput.namespace ?? (namespaceKey as string),
         },
         scope,
       ) as Table;
@@ -133,13 +143,14 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
       .flat(),
   ) as Config["tables"];
 
-  const resolvedRootTables = resolveStoreTablesConfig(rootTables, scope);
+  const resolvedRootTables = resolveStoreTablesConfig(rootTables, scope, namespace as string);
 
   return {
     tables: { ...resolvedRootTables, ...resolvedNamespacedTables },
     namespaces: resolvedNamespaces,
     userTypes: get(input, "userTypes") ?? {},
     enums: get(input, "enums") ?? {},
-    namespace: get(input, "namespace") ?? "",
+    namespace,
+    codegen: resolveCodegen(get(input, "codegen")),
   } as resolveWorldConfig<input>;
 }

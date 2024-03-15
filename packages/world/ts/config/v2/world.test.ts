@@ -3,6 +3,7 @@ import { resolveWorldConfig } from "./world";
 import { Config } from "./output";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
+import { TABLE_CODEGEN_DEFAULTS, CODEGEN_DEFAULTS } from "@latticexyz/store/config/v2";
 
 describe("resolveWorldConfig", () => {
   it("should resolve namespaced tables", () => {
@@ -58,6 +59,10 @@ describe("resolveWorldConfig", () => {
             },
           },
           primaryKey: ["key"],
+          name: "ExampleTable",
+          namespace: "ExampleNamespace",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
         },
       },
       namespaces: {
@@ -96,12 +101,17 @@ describe("resolveWorldConfig", () => {
                 },
               },
               primaryKey: ["key"],
+              name: "ExampleTable",
+              namespace: "ExampleNamespace",
+              codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+              type: "table",
             },
           },
         },
       },
       userTypes: {},
       enums: {},
+      codegen: CODEGEN_DEFAULTS,
       namespace: "",
     } as const;
 
@@ -125,8 +135,8 @@ describe("resolveWorldConfig", () => {
         },
       },
       userTypes: {
-        Static: "address",
-        Dynamic: "string",
+        Static: { type: "address", filePath: "path/to/file" },
+        Dynamic: { type: "string", filePath: "path/to/file" },
       },
       enums: {
         MyEnum: ["First", "Second"],
@@ -168,6 +178,10 @@ describe("resolveWorldConfig", () => {
             },
           },
           primaryKey: ["key"],
+          name: "ExampleTable",
+          namespace: "ExampleNamespace",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
         },
       },
       namespaces: {
@@ -206,17 +220,22 @@ describe("resolveWorldConfig", () => {
                 },
               },
               primaryKey: ["key"],
+              name: "ExampleTable",
+              namespace: "ExampleNamespace",
+              codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+              type: "table",
             },
           },
         },
       },
       userTypes: {
-        Static: "address",
-        Dynamic: "string",
+        Static: { type: "address", filePath: "path/to/file" },
+        Dynamic: { type: "string", filePath: "path/to/file" },
       },
       enums: {
         MyEnum: ["First", "Second"],
       },
+      codegen: CODEGEN_DEFAULTS,
       namespace: "",
     } as const;
 
@@ -240,16 +259,37 @@ describe("resolveWorldConfig", () => {
         },
       },
       userTypes: {
-        Static: "address",
-        Dynamic: "string",
+        Static: { type: "address", filePath: "path/to/file" },
+        Dynamic: { type: "string", filePath: "path/to/file" },
       },
       enums: {
         MyEnum: ["First", "Second"],
       },
     });
 
-    config.enums.MyEnum;
     attest<true, typeof config extends Config ? true : false>();
+  });
+
+  it("should not use the global namespace for namespaced tables", () => {
+    const config = resolveWorldConfig({
+      namespace: "namespace",
+      namespaces: {
+        AnotherOne: {
+          tables: {
+            Example: {
+              schema: { key: "address", name: "string", age: "uint256" },
+              primaryKey: ["age"],
+            },
+          },
+        },
+      },
+    });
+
+    attest<"namespace">(config.namespace).equals("namespace");
+    attest<"AnotherOne">(config.tables.AnotherOne__Example.namespace).equals("AnotherOne");
+    attest(config.tables.AnotherOne__Example.tableId).equals(
+      resourceToHex({ type: "table", name: "Example", namespace: "AnotherOne" }),
+    );
   });
 
   describe("should have the same output as `resolveWorldConfig` for store config inputs", () => {
@@ -282,19 +322,28 @@ describe("resolveWorldConfig", () => {
               },
             },
             primaryKey: ["key"],
+            name: "Name",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+            type: "table",
           },
         },
         userTypes: {},
         enums: {},
         namespace: "",
+        codegen: CODEGEN_DEFAULTS,
         namespaces: {},
       } as const;
 
-      attest<typeof config>(expected).equals(expected);
+      attest<typeof expected>(config).equals(expected);
+      attest<typeof config>(expected);
     });
 
     it("should accept a user type as input and expand it", () => {
-      const config = resolveWorldConfig({ tables: { Name: "CustomType" }, userTypes: { CustomType: "address" } });
+      const config = resolveWorldConfig({
+        tables: { Name: "CustomType" },
+        userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
+      });
       const expected = {
         tables: {
           Name: {
@@ -322,11 +371,16 @@ describe("resolveWorldConfig", () => {
               },
             },
             primaryKey: ["key"],
+            name: "Name",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+            type: "table",
           },
         },
-        userTypes: { CustomType: "address" },
+        userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
         enums: {},
         namespace: "",
+        codegen: CODEGEN_DEFAULTS,
         namespaces: {},
       } as const;
 
@@ -370,11 +424,16 @@ describe("resolveWorldConfig", () => {
               },
             },
             primaryKey: ["key"],
+            name: "Example",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+            type: "table",
           },
         },
         userTypes: {},
         enums: {},
         namespace: "",
+        codegen: CODEGEN_DEFAULTS,
         namespaces: {},
       } as const;
 
@@ -418,11 +477,16 @@ describe("resolveWorldConfig", () => {
               },
             },
             primaryKey: ["key"],
+            name: "Example",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+            type: "table",
           },
         },
         userTypes: {},
         enums: {},
         namespace: "",
+        codegen: CODEGEN_DEFAULTS,
         namespaces: {},
       } as const;
 
@@ -433,7 +497,7 @@ describe("resolveWorldConfig", () => {
       attest(() =>
         resolveWorldConfig({
           tables: {
-            // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
+            // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
             Example: {
               name: "string",
               age: "uint256",
@@ -446,9 +510,9 @@ describe("resolveWorldConfig", () => {
     });
 
     it("throw an error if the shorthand config includes a non-static key field", () => {
-      attest(
-        // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
-        () => resolveWorldConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } }),
+      attest(() =>
+        // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
+        resolveWorldConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } }),
       ).throwsAndHasTypeError(
         "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
       );
@@ -457,9 +521,12 @@ describe("resolveWorldConfig", () => {
     it("throw an error if the shorthand config includes a non-static user type as key field", () => {
       attest(() =>
         resolveWorldConfig({
-          // @ts-expect-error Provide a `key` field with static ABI type or a full config with explicit primaryKey override.
+          // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
           tables: { Example: { key: "dynamic", name: "string", age: "uint256" } },
-          userTypes: { dynamic: "string", static: "address" },
+          userTypes: {
+            dynamic: { type: "string", filePath: "path/to/file" },
+            static: { type: "address", filePath: "path/to/file" },
+          },
         }),
       ).throwsAndHasTypeError(
         "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
@@ -510,11 +577,16 @@ describe("resolveWorldConfig", () => {
               },
             },
             primaryKey: ["age"],
+            name: "Example",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+            type: "table",
           },
         },
         userTypes: {},
         enums: {},
         namespace: "",
+        codegen: CODEGEN_DEFAULTS,
         namespaces: {},
       } as const;
 
@@ -529,7 +601,10 @@ describe("resolveWorldConfig", () => {
             primaryKey: ["age"],
           },
         },
-        userTypes: { static: "address", dynamic: "string" },
+        userTypes: {
+          static: { type: "address", filePath: "path/to/file" },
+          dynamic: { type: "string", filePath: "path/to/file" },
+        },
       });
       const expected = {
         tables: {
@@ -566,71 +641,83 @@ describe("resolveWorldConfig", () => {
               },
             },
             primaryKey: ["age"],
+            name: "Example",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+            type: "table",
           },
         },
-        userTypes: { static: "address", dynamic: "string" },
+        userTypes: {
+          static: { type: "address", filePath: "path/to/file" },
+          dynamic: { type: "string", filePath: "path/to/file" },
+        },
         enums: {},
         namespace: "",
+        codegen: CODEGEN_DEFAULTS,
         namespaces: {},
       } as const;
 
       attest<typeof expected>(config).equals(expected);
-    });
-
-    it("should return the full config given a full config with two primaryKey", () => {
-      const config = resolveWorldConfig({
-        tables: {
-          Example: {
-            schema: { key: "address", name: "string", age: "uint256" },
-            primaryKey: ["age", "key"],
+    }),
+      it("should return the full config given a full config with two primaryKey", () => {
+        const config = resolveWorldConfig({
+          tables: {
+            Example: {
+              schema: { key: "address", name: "string", age: "uint256" },
+              primaryKey: ["age", "key"],
+            },
           },
-        },
+        });
+        const expected = {
+          tables: {
+            Example: {
+              tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
+              schema: {
+                key: {
+                  type: "address",
+                  internalType: "address",
+                },
+                name: {
+                  type: "string",
+                  internalType: "string",
+                },
+                age: {
+                  type: "uint256",
+                  internalType: "uint256",
+                },
+              },
+              keySchema: {
+                age: {
+                  type: "uint256",
+                  internalType: "uint256",
+                },
+                key: {
+                  type: "address",
+                  internalType: "address",
+                },
+              },
+              valueSchema: {
+                name: {
+                  type: "string",
+                  internalType: "string",
+                },
+              },
+              primaryKey: ["age", "key"],
+              name: "Example",
+              namespace: "",
+              codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+              type: "table",
+            },
+          },
+          userTypes: {},
+          enums: {},
+          namespace: "",
+          codegen: CODEGEN_DEFAULTS,
+          namespaces: {},
+        } as const;
+
+        attest<typeof expected>(config).equals(expected);
       });
-      const expected = {
-        tables: {
-          Example: {
-            tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
-            schema: {
-              key: {
-                type: "address",
-                internalType: "address",
-              },
-              name: {
-                type: "string",
-                internalType: "string",
-              },
-              age: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-            },
-            keySchema: {
-              age: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-              key: {
-                type: "address",
-                internalType: "address",
-              },
-            },
-            valueSchema: {
-              name: {
-                type: "string",
-                internalType: "string",
-              },
-            },
-            primaryKey: ["age", "key"],
-          },
-        },
-        userTypes: {},
-        enums: {},
-        namespace: "",
-        namespaces: {},
-      } as const;
-
-      attest<typeof expected>(config).equals(expected);
-    });
 
     it("should resolve two tables in the config with different schemas", () => {
       const config = resolveWorldConfig({
@@ -680,6 +767,10 @@ describe("resolveWorldConfig", () => {
               },
             },
             primaryKey: ["firstKey", "firstAge"],
+            name: "First",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+            type: "table",
           },
           Second: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
@@ -714,11 +805,16 @@ describe("resolveWorldConfig", () => {
               },
             },
             primaryKey: ["secondKey", "secondAge"],
+            name: "Second",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+            type: "table",
           },
         },
         userTypes: {},
         enums: {},
         namespace: "",
+        codegen: CODEGEN_DEFAULTS,
         namespaces: {},
       } as const;
 
@@ -737,7 +833,10 @@ describe("resolveWorldConfig", () => {
             primaryKey: ["secondKey", "secondAge"],
           },
         },
-        userTypes: { Static: "address", Dynamic: "string" },
+        userTypes: {
+          Static: { type: "address", filePath: "path/to/file" },
+          Dynamic: { type: "string", filePath: "path/to/file" },
+        },
       });
       const expected = {
         tables: {
@@ -774,6 +873,10 @@ describe("resolveWorldConfig", () => {
               },
             },
             primaryKey: ["firstKey", "firstAge"],
+            name: "First",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+            type: "table",
           },
           Second: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
@@ -808,11 +911,19 @@ describe("resolveWorldConfig", () => {
               },
             },
             primaryKey: ["secondKey", "secondAge"],
+            name: "Second",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+            type: "table",
           },
         },
-        userTypes: { Static: "address", Dynamic: "string" },
+        userTypes: {
+          Static: { type: "address", filePath: "path/to/file" },
+          Dynamic: { type: "string", filePath: "path/to/file" },
+        },
         enums: {},
         namespace: "",
+        codegen: CODEGEN_DEFAULTS,
         namespaces: {},
       } as const;
 
@@ -866,7 +977,7 @@ describe("resolveWorldConfig", () => {
             },
           },
           userTypes: {
-            Dynamic: "string",
+            Dynamic: { type: "string", filePath: "path/to/file" },
           },
         }),
       )
@@ -882,7 +993,10 @@ describe("resolveWorldConfig", () => {
             primaryKey: ["name"],
           },
         },
-        userTypes: { static: "address", dynamic: "string" },
+        userTypes: {
+          static: { type: "address", filePath: "path/to/file" },
+          dynamic: { type: "string", filePath: "path/to/file" },
+        },
         enums: {
           ValidNames: ["first", "second"],
         },
@@ -922,13 +1036,21 @@ describe("resolveWorldConfig", () => {
               },
             },
             primaryKey: ["name"],
+            name: "Example",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+            type: "table",
           },
         },
-        userTypes: { static: "address", dynamic: "string" },
+        userTypes: {
+          static: { type: "address", filePath: "path/to/file" },
+          dynamic: { type: "string", filePath: "path/to/file" },
+        },
         enums: {
           ValidNames: ["first", "second"],
         },
         namespace: "",
+        codegen: CODEGEN_DEFAULTS,
         namespaces: {},
       } as const;
 
@@ -938,13 +1060,39 @@ describe("resolveWorldConfig", () => {
     it("should use the root namespace as default namespace", () => {
       const config = resolveWorldConfig({});
 
-      attest<"">(config.namespace);
+      attest<"">(config.namespace).equals("");
     });
 
     it("should use pipe through non-default namespaces", () => {
       const config = resolveWorldConfig({ namespace: "custom" });
 
       attest<"custom">(config.namespace).equals("custom");
+    });
+
+    it("should extend the output Config type", () => {
+      const config = resolveWorldConfig({
+        tables: { Name: "CustomType" },
+        userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
+      });
+      attest<true, typeof config extends Config ? true : false>();
+    });
+
+    it("should use the global namespace instead for tables", () => {
+      const config = resolveWorldConfig({
+        namespace: "namespace",
+        tables: {
+          Example: {
+            schema: { key: "address", name: "string", age: "uint256" },
+            primaryKey: ["age"],
+          },
+        },
+      });
+
+      attest<"namespace">(config.namespace).equals("namespace");
+      attest<"namespace">(config.tables.Example.namespace).equals("namespace");
+      attest(config.tables.Example.tableId).equals(
+        resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
+      );
     });
   });
 });

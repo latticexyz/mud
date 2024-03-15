@@ -22,6 +22,9 @@ export type Schema = {
 };
 
 export type Table = {
+  readonly type: "table" | "offchainTable";
+  readonly name: string;
+  readonly namespace: string;
   readonly tableId: Hex;
   readonly primaryKey: readonly string[];
   readonly schema: Schema;

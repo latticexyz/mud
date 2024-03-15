@@ -3,7 +3,7 @@ import { AbiType, StaticAbiType, Schema, Table as BaseTable } from "@latticexyz/
 export type { AbiType, Schema };
 
 export type UserTypes = {
-  readonly [userTypeName: string]: AbiType;
+  readonly [userTypeName: string]: { type: AbiType; filePath: string };
 };
 
 export type Enums = {
@@ -19,11 +19,24 @@ export type KeySchema = {
   };
 };
 
+export type TableCodegenOptions = {
+  readonly directory: string;
+  readonly tableIdArgument: boolean;
+  readonly storeArgument: boolean;
+  readonly dataStruct: boolean;
+};
+
 export type Table = BaseTable & {
-  /** @deprecated Use `schema` and `primaryKey` */
   readonly keySchema: KeySchema;
-  /** @deprecated Use `schema` and `primaryKey` */
   readonly valueSchema: Schema;
+  readonly codegen: TableCodegenOptions;
+};
+
+export type CodegenOptions = {
+  readonly storeImportPath: string;
+  readonly userTypesFilename: string;
+  readonly codegenDirectory: string;
+  readonly codegenIndexFilename: string;
 };
 
 export type Config = {
@@ -33,4 +46,5 @@ export type Config = {
   readonly userTypes: UserTypes;
   readonly enums: Enums;
   readonly namespace: string;
+  readonly codegen: CodegenOptions;
 };

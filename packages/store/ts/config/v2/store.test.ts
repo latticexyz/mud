@@ -3,6 +3,7 @@ import { resolveStoreConfig } from "./store";
 import { Config } from "./output";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
+import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS } from "./defaults";
 
 describe("resolveStoreConfig", () => {
   it("should accept a shorthand store config as input and expand it", () => {
@@ -34,18 +35,26 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["key"],
+          name: "Name",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
         },
       },
       userTypes: {},
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
   });
 
   it("should accept a user type as input and expand it", () => {
-    const config = resolveStoreConfig({ tables: { Name: "CustomType" }, userTypes: { CustomType: "address" } });
+    const config = resolveStoreConfig({
+      tables: { Name: "CustomType" },
+      userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
+    });
     const expected = {
       tables: {
         Name: {
@@ -73,11 +82,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["key"],
+          name: "Name",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
         },
       },
-      userTypes: { CustomType: "address" },
+      userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -120,11 +134,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["key"],
+          name: "Example",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
         },
       },
       userTypes: {},
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -167,11 +186,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["key"],
+          name: "Example",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
         },
       },
       userTypes: {},
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -207,7 +231,10 @@ describe("resolveStoreConfig", () => {
       resolveStoreConfig({
         // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
         tables: { Example: { key: "dynamic", name: "string", age: "uint256" } },
-        userTypes: { dynamic: "string", static: "address" },
+        userTypes: {
+          dynamic: { type: "string", filePath: "path/to/file" },
+          static: { type: "address", filePath: "path/to/file" },
+        },
       }),
     ).throwsAndHasTypeError(
       "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
@@ -258,11 +285,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["age"],
+          name: "Example",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
         },
       },
       userTypes: {},
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -276,7 +308,10 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["age"],
         },
       },
-      userTypes: { static: "address", dynamic: "string" },
+      userTypes: {
+        static: { type: "address", filePath: "path/to/file" },
+        dynamic: { type: "string", filePath: "path/to/file" },
+      },
     });
     const expected = {
       tables: {
@@ -313,11 +348,19 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["age"],
+          name: "Example",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
         },
       },
-      userTypes: { static: "address", dynamic: "string" },
+      userTypes: {
+        static: { type: "address", filePath: "path/to/file" },
+        dynamic: { type: "string", filePath: "path/to/file" },
+      },
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -366,11 +409,16 @@ describe("resolveStoreConfig", () => {
               },
             },
             primaryKey: ["age", "key"],
+            name: "Example",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+            type: "table",
           },
         },
         userTypes: {},
         enums: {},
         namespace: "",
+        codegen: CODEGEN_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -424,6 +472,10 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["firstKey", "firstAge"],
+          name: "First",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
         },
         Second: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
@@ -458,11 +510,16 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["secondKey", "secondAge"],
+          name: "Second",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
         },
       },
       userTypes: {},
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -480,7 +537,10 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["secondKey", "secondAge"],
         },
       },
-      userTypes: { Static: "address", Dynamic: "string" },
+      userTypes: {
+        Static: { type: "address", filePath: "path/to/file" },
+        Dynamic: { type: "string", filePath: "path/to/file" },
+      },
     });
     const expected = {
       tables: {
@@ -517,6 +577,10 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["firstKey", "firstAge"],
+          name: "First",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
         },
         Second: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
@@ -551,11 +615,19 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["secondKey", "secondAge"],
+          name: "Second",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
         },
       },
-      userTypes: { Static: "address", Dynamic: "string" },
+      userTypes: {
+        Static: { type: "address", filePath: "path/to/file" },
+        Dynamic: { type: "string", filePath: "path/to/file" },
+      },
       enums: {},
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -608,7 +680,7 @@ describe("resolveStoreConfig", () => {
           },
         },
         userTypes: {
-          Dynamic: "string",
+          Dynamic: { type: "string", filePath: "path/to/file" },
         },
       }),
     )
@@ -624,7 +696,10 @@ describe("resolveStoreConfig", () => {
           primaryKey: ["name"],
         },
       },
-      userTypes: { static: "address", dynamic: "string" },
+      userTypes: {
+        static: { type: "address", filePath: "path/to/file" },
+        dynamic: { type: "string", filePath: "path/to/file" },
+      },
       enums: {
         ValidNames: ["first", "second"],
       },
@@ -664,13 +739,21 @@ describe("resolveStoreConfig", () => {
             },
           },
           primaryKey: ["name"],
+          name: "Example",
+          namespace: "",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
         },
       },
-      userTypes: { static: "address", dynamic: "string" },
+      userTypes: {
+        static: { type: "address", filePath: "path/to/file" },
+        dynamic: { type: "string", filePath: "path/to/file" },
+      },
       enums: {
         ValidNames: ["first", "second"],
       },
       namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -689,7 +772,28 @@ describe("resolveStoreConfig", () => {
   });
 
   it("should extend the output Config type", () => {
-    const config = resolveStoreConfig({ tables: { Name: "CustomType" }, userTypes: { CustomType: "address" } });
+    const config = resolveStoreConfig({
+      tables: { Name: "CustomType" },
+      userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
+    });
     attest<true, typeof config extends Config ? true : false>();
+  });
+
+  it("should use the global namespace instead for tables", () => {
+    const config = resolveStoreConfig({
+      namespace: "namespace",
+      tables: {
+        Example: {
+          schema: { key: "address", name: "string", age: "uint256" },
+          primaryKey: ["age"],
+        },
+      },
+    });
+
+    attest<"namespace">(config.namespace).equals("namespace");
+    attest<"namespace">(config.tables.Example.namespace).equals("namespace");
+    attest(config.tables.Example.tableId).equals(
+      resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
+    );
   });
 });
