@@ -13,7 +13,7 @@ describe("resolveStoreConfig", () => {
         Name: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
           schema: {
-            key: {
+            id: {
               type: "bytes32",
               internalType: "bytes32",
             },
@@ -23,7 +23,7 @@ describe("resolveStoreConfig", () => {
             },
           },
           keySchema: {
-            key: {
+            id: {
               type: "bytes32",
               internalType: "bytes32",
             },
@@ -34,7 +34,7 @@ describe("resolveStoreConfig", () => {
               internalType: "address",
             },
           },
-          primaryKey: ["key"],
+          primaryKey: ["id"],
           name: "Name",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -60,7 +60,7 @@ describe("resolveStoreConfig", () => {
         Name: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
           schema: {
-            key: {
+            id: {
               type: "bytes32",
               internalType: "bytes32",
             },
@@ -70,7 +70,7 @@ describe("resolveStoreConfig", () => {
             },
           },
           keySchema: {
-            key: {
+            id: {
               type: "bytes32",
               internalType: "bytes32",
             },
@@ -81,7 +81,7 @@ describe("resolveStoreConfig", () => {
               internalType: "CustomType",
             },
           },
-          primaryKey: ["key"],
+          primaryKey: ["id"],
           name: "Name",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -97,14 +97,14 @@ describe("resolveStoreConfig", () => {
     attest<typeof expected>(config).equals(expected);
   });
 
-  it("given a schema with a key field with static ABI type, it should use `key` as single key", () => {
-    const config = resolveStoreConfig({ tables: { Example: { key: "address", name: "string", age: "uint256" } } });
+  it("given a schema with a key field with static ABI type, it should use `id` as single key", () => {
+    const config = resolveStoreConfig({ tables: { Example: { id: "address", name: "string", age: "uint256" } } });
     const expected = {
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
-            key: {
+            id: {
               type: "address",
               internalType: "address",
             },
@@ -118,7 +118,7 @@ describe("resolveStoreConfig", () => {
             },
           },
           keySchema: {
-            key: {
+            id: {
               type: "address",
               internalType: "address",
             },
@@ -133,7 +133,7 @@ describe("resolveStoreConfig", () => {
               internalType: "uint256",
             },
           },
-          primaryKey: ["key"],
+          primaryKey: ["id"],
           name: "Example",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -149,14 +149,14 @@ describe("resolveStoreConfig", () => {
     attest<typeof expected>(config).equals(expected);
   });
 
-  it("given a schema with a key field with static custom type, it should use `key` as single key", () => {
-    const config = resolveStoreConfig({ tables: { Example: { key: "address", name: "string", age: "uint256" } } });
+  it("given a schema with a key field with static custom type, it should use `id` as single key", () => {
+    const config = resolveStoreConfig({ tables: { Example: { id: "address", name: "string", age: "uint256" } } });
     const expected = {
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
-            key: {
+            id: {
               type: "address",
               internalType: "address",
             },
@@ -170,7 +170,7 @@ describe("resolveStoreConfig", () => {
             },
           },
           keySchema: {
-            key: {
+            id: {
               type: "address",
               internalType: "address",
             },
@@ -185,7 +185,7 @@ describe("resolveStoreConfig", () => {
               internalType: "uint256",
             },
           },
-          primaryKey: ["key"],
+          primaryKey: ["id"],
           name: "Example",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -205,7 +205,7 @@ describe("resolveStoreConfig", () => {
     attest(() =>
       resolveStoreConfig({
         tables: {
-          // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
+          // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
           Example: {
             name: "string",
             age: "uint256",
@@ -213,31 +213,31 @@ describe("resolveStoreConfig", () => {
         },
       }),
     ).throwsAndHasTypeError(
-      "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
     );
   });
 
   it("throw an error if the shorthand config includes a non-static key field", () => {
     attest(() =>
-      // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
-      resolveStoreConfig({ tables: { Example: { key: "string", name: "string", age: "uint256" } } }),
+      // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
+      resolveStoreConfig({ tables: { Example: { id: "string", name: "string", age: "uint256" } } }),
     ).throwsAndHasTypeError(
-      "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
     );
   });
 
   it("throw an error if the shorthand config includes a non-static user type as key field", () => {
     attest(() =>
       resolveStoreConfig({
-        // @ts-expect-error Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.
-        tables: { Example: { key: "dynamic", name: "string", age: "uint256" } },
+        // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.
+        tables: { Example: { id: "dynamic", name: "string", age: "uint256" } },
         userTypes: {
           dynamic: { type: "string", filePath: "path/to/file" },
           static: { type: "address", filePath: "path/to/file" },
         },
       }),
     ).throwsAndHasTypeError(
-      "Invalid schema. Expected a `key` field with a static ABI type or an explicit `primaryKey` option.",
+      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `primaryKey` option.",
     );
   });
 
@@ -245,7 +245,7 @@ describe("resolveStoreConfig", () => {
     const config = resolveStoreConfig({
       tables: {
         Example: {
-          schema: { key: "address", name: "string", age: "uint256" },
+          schema: { id: "address", name: "string", age: "uint256" },
           primaryKey: ["age"],
         },
       },
@@ -255,7 +255,7 @@ describe("resolveStoreConfig", () => {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
-            key: {
+            id: {
               type: "address",
               internalType: "address",
             },
@@ -275,7 +275,7 @@ describe("resolveStoreConfig", () => {
             },
           },
           valueSchema: {
-            key: {
+            id: {
               type: "address",
               internalType: "address",
             },
@@ -304,7 +304,7 @@ describe("resolveStoreConfig", () => {
     const config = resolveStoreConfig({
       tables: {
         Example: {
-          schema: { key: "dynamic", name: "string", age: "static" },
+          schema: { id: "dynamic", name: "string", age: "static" },
           primaryKey: ["age"],
         },
       },
@@ -318,7 +318,7 @@ describe("resolveStoreConfig", () => {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
-            key: {
+            id: {
               type: "string",
               internalType: "dynamic",
             },
@@ -338,7 +338,7 @@ describe("resolveStoreConfig", () => {
             },
           },
           valueSchema: {
-            key: {
+            id: {
               type: "string",
               internalType: "dynamic",
             },
@@ -369,7 +369,7 @@ describe("resolveStoreConfig", () => {
       const config = resolveStoreConfig({
         tables: {
           Example: {
-            schema: { key: "address", name: "string", age: "uint256" },
+            schema: { id: "address", name: "string", age: "uint256" },
             primaryKey: ["age", "key"],
           },
         },
@@ -379,7 +379,7 @@ describe("resolveStoreConfig", () => {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
-              key: {
+              id: {
                 type: "address",
                 internalType: "address",
               },
@@ -397,7 +397,7 @@ describe("resolveStoreConfig", () => {
                 type: "uint256",
                 internalType: "uint256",
               },
-              key: {
+              id: {
                 type: "address",
                 internalType: "address",
               },
@@ -658,7 +658,7 @@ describe("resolveStoreConfig", () => {
       resolveStoreConfig({
         tables: {
           Example: {
-            schema: { key: "address", name: "string", age: "uint256" },
+            schema: { id: "address", name: "string", age: "uint256" },
             // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'.
             primaryKey: ["name"],
           },
@@ -674,7 +674,7 @@ describe("resolveStoreConfig", () => {
       resolveStoreConfig({
         tables: {
           Example: {
-            schema: { key: "address", name: "Dynamic", age: "uint256" },
+            schema: { id: "address", name: "Dynamic", age: "uint256" },
             // @ts-expect-error Type '"name"' is not assignable to type '"key" | "age"'.
             primaryKey: ["name"],
           },
@@ -692,7 +692,7 @@ describe("resolveStoreConfig", () => {
     const config = resolveStoreConfig({
       tables: {
         Example: {
-          schema: { key: "dynamic", name: "ValidNames", age: "static" },
+          schema: { id: "dynamic", name: "ValidNames", age: "static" },
           primaryKey: ["name"],
         },
       },
@@ -709,7 +709,7 @@ describe("resolveStoreConfig", () => {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
-            key: {
+            id: {
               type: "string",
               internalType: "dynamic",
             },
@@ -733,7 +733,7 @@ describe("resolveStoreConfig", () => {
               type: "address",
               internalType: "static",
             },
-            key: {
+            id: {
               type: "string",
               internalType: "dynamic",
             },
@@ -784,7 +784,7 @@ describe("resolveStoreConfig", () => {
       namespace: "namespace",
       tables: {
         Example: {
-          schema: { key: "address", name: "string", age: "uint256" },
+          schema: { id: "address", name: "string", age: "uint256" },
           primaryKey: ["age"],
         },
       },

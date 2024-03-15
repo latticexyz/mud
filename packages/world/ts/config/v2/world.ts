@@ -30,7 +30,7 @@ export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums exte
   }
 >;
 
-export type NamespacesInput = { [key: string]: NamespaceInput };
+export type NamespacesInput = { [namespace: string]: NamespaceInput };
 
 export type NamespaceInput = Pick<StoreConfigInput, "tables">;
 
