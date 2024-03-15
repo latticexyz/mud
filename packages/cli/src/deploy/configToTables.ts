@@ -1,5 +1,5 @@
 import { resourceToHex } from "@latticexyz/common";
-import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { StoreConfig, resolveUserTypes } from "@latticexyz/store";
 import { Hex } from "viem";
