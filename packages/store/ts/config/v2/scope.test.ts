@@ -1,10 +1,10 @@
 import { attest } from "@arktype/attest";
 import { describe, it } from "vitest";
-import { AbiTypeScope, EmptyScope, ScopeOptions, extendScope, getStaticAbiTypeKeys } from "./scope";
+import { AbiTypeScope, Scope, ScopeOptions, extendScope, getStaticAbiTypeKeys } from "./scope";
 
 describe("extendScope", () => {
   it("should extend the provided scope", () => {
-    const extendedScope = extendScope(EmptyScope, { static: "uint256", dynamic: "string" });
+    const extendedScope = extendScope(Scope, { static: "uint256", dynamic: "string" });
     attest<ScopeOptions<{ static: "uint256"; dynamic: "string" }>>(extendedScope).type.toString.snap(
       '{ types: { static: "uint256"; dynamic: "string"; }; }',
     );

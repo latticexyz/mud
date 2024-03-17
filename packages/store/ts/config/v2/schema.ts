@@ -1,15 +1,15 @@
 import { conform, evaluate } from "@arktype/util";
-import { AbiTypeScope } from "./scope";
+import { AbiTypeScope, Scope } from "./scope";
 import { hasOwnKey, isObject } from "./generics";
 import { SchemaInput } from "./input";
 
-export type validateSchema<schema, scope extends AbiTypeScope = AbiTypeScope> = {
+export type validateSchema<schema, scope extends Scope = AbiTypeScope> = {
   [key in keyof schema]: conform<schema[key], keyof scope["types"]>;
 };
 
-export function validateSchema<scope extends AbiTypeScope = AbiTypeScope>(
+export function validateSchema<scope extends Scope = AbiTypeScope>(
   schema: unknown,
-  scope: scope = AbiTypeScope as scope,
+  scope: scope = AbiTypeScope as unknown as scope,
 ): asserts schema is SchemaInput {
   if (!isObject(schema)) {
     throw new Error(`Expected schema, received ${JSON.stringify(schema)}`);
@@ -22,7 +22,7 @@ export function validateSchema<scope extends AbiTypeScope = AbiTypeScope>(
   }
 }
 
-export type resolveSchema<schema, scope extends AbiTypeScope> = evaluate<{
+export type resolveSchema<schema, scope extends Scope> = evaluate<{
   readonly [key in keyof schema]: {
     /** the Solidity primitive ABI type */
     readonly type: scope["types"][schema[key] & keyof scope["types"]];
@@ -31,9 +31,9 @@ export type resolveSchema<schema, scope extends AbiTypeScope> = evaluate<{
   };
 }>;
 
-export function resolveSchema<schema, scope extends AbiTypeScope = AbiTypeScope>(
+export function resolveSchema<schema, scope extends Scope = AbiTypeScope>(
   schema: schema,
-  scope: scope = AbiTypeScope as scope,
+  scope: scope = AbiTypeScope as unknown as scope,
 ): resolveSchema<schema, scope> {
   validateSchema(schema, scope);
 
@@ -45,7 +45,7 @@ export function resolveSchema<schema, scope extends AbiTypeScope = AbiTypeScope>
         internalType,
       },
     ]),
-  ) as resolveSchema<schema, scope>;
+  ) as unknown as resolveSchema<schema, scope>;
 }
 
 export function defineSchema<schema, scope extends AbiTypeScope = AbiTypeScope>(
