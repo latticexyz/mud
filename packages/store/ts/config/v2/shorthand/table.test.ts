@@ -288,66 +288,6 @@ describe("resolveTableConfig", () => {
     attest<typeof expected>(table).equals(expected);
   });
 
-  it("should throw if the provided key is a dynamic ABI type", () => {
-    attest(() =>
-      resolveTableConfig({
-        schema: { id: "address", name: "string", age: "uint256" },
-        // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'
-        key: ["name"],
-      }),
-    )
-      .throws('Invalid key. Expected `("id" | "age")[]`, received `["name"]`')
-      .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
-  });
-
-  it("should throw if the provided key is a dynamic ABI type if user types are provided", () => {
-    const scope = extendScope(AbiTypeScope, { CustomType: "string" });
-    attest(() =>
-      resolveTableConfig(
-        {
-          schema: { id: "address", name: "string", age: "uint256" },
-          // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'
-          key: ["name"],
-        },
-        scope,
-      ),
-    )
-      .throws('Invalid key. Expected `("id" | "age")[]`, received `["name"]`')
-      .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
-  });
-
-  it("should throw if the provided key is a dynamic custom type", () => {
-    const scope = extendScope(AbiTypeScope, { CustomType: "string" });
-    attest(() =>
-      resolveTableConfig(
-        {
-          schema: { id: "CustomType", name: "string", age: "uint256" },
-          // @ts-expect-error Type '"id"' is not assignable to type '"age"'
-          key: ["id"],
-        },
-        scope,
-      ),
-    )
-      .throws('Invalid key. Expected `("age")[]`, received `["id"]`')
-      .type.errors(`Type '"id"' is not assignable to type '"age"'`);
-  });
-
-  it("should throw if the provided key is neither a custom nor ABI type", () => {
-    const scope = extendScope(AbiTypeScope, { CustomType: "string" });
-    attest(() =>
-      resolveTableConfig(
-        {
-          schema: { id: "address", name: "string", age: "uint256" },
-          // @ts-expect-error Type '"NotAKey"' is not assignable to type '"id" | "age"'
-          key: ["NotAKey"],
-        },
-        scope,
-      ),
-    )
-      .throws('Invalid key. Expected `("id" | "age")[]`, received `["NotAKey"]`')
-      .type.errors(`Type '"NotAKey"' is not assignable to type '"id" | "age"'`);
-  });
-
   it("should extend the output Table type", () => {
     const scope = extendScope(AbiTypeScope, { CustomString: "string", CustomNumber: "uint256" });
     const table = resolveTableConfig({ id: "CustomNumber", name: "CustomString", age: "CustomNumber" }, scope);

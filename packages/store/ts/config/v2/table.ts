@@ -176,35 +176,35 @@ export function tableWithDefaults<
   } as tableWithDefaults<table, defaultName, defaultNamespace>;
 }
 
-export type resolveTable<
-  input extends TableInput<SchemaInput<scope>, scope>,
-  scope extends AbiTypeScope = AbiTypeScope,
-> = evaluate<{
-  readonly tableId: Hex;
-  readonly name: input["name"];
-  readonly namespace: undefined extends input["namespace"] ? typeof TABLE_DEFAULTS.namespace : input["namespace"];
-  readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
-  readonly key: Readonly<input["key"]>;
-  readonly schema: resolveSchema<input["schema"], scope>;
-  readonly keySchema: resolveSchema<
-    {
-      readonly [key in input["key"][number]]: input["schema"][key];
-    },
-    scope
-  >;
-  readonly valueSchema: resolveSchema<
-    {
-      readonly [key in Exclude<keyof input["schema"], input["key"][number]>]: input["schema"][key];
-    },
-    scope
-  >;
-  readonly codegen: resolveTableCodegen<input, scope>;
-}>;
+export type resolveTable<input, scope extends AbiTypeScope = AbiTypeScope> =
+  input extends TableInput<SchemaInput<scope>, scope>
+    ? evaluate<{
+        readonly tableId: Hex;
+        readonly name: input["name"];
+        readonly namespace: undefined extends input["namespace"] ? typeof TABLE_DEFAULTS.namespace : input["namespace"];
+        readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
+        readonly key: Readonly<input["key"]>;
+        readonly schema: resolveSchema<input["schema"], scope>;
+        readonly keySchema: resolveSchema<
+          {
+            readonly [key in input["key"][number]]: input["schema"][key];
+          },
+          scope
+        >;
+        readonly valueSchema: resolveSchema<
+          {
+            readonly [key in Exclude<keyof input["schema"], input["key"][number]>]: input["schema"][key];
+          },
+          scope
+        >;
+        readonly codegen: resolveTableCodegen<input, scope>;
+      }>
+    : never;
 
-export function resolveTable<
-  input extends TableInput<SchemaInput<scope>, scope>,
-  scope extends AbiTypeScope = AbiTypeScope,
->(input: validateTable<input>, scope: scope = AbiTypeScope as scope): resolveTable<input, scope> {
+export function resolveTable<input, scope extends AbiTypeScope = AbiTypeScope>(
+  input: validateTable<input, scope>,
+  scope: scope = AbiTypeScope as scope,
+): resolveTable<input, scope> {
   validateTable(input, scope);
 
   const name = input.name;

@@ -1,11 +1,10 @@
 import { evaluate, narrow } from "@arktype/util";
-import { get, isObject } from "./generics";
+import { get, isObject, mergeIfUndefined } from "./generics";
 import { SchemaInput } from "./schema";
-import { TableInput, resolveTable, validateTableConfig } from "./shorthand/table";
+import { TableInput, resolveTable, validateTable } from "./table";
 import { AbiTypeScope, extendScope } from "./scope";
 import { isSchemaAbiType } from "@latticexyz/schema-type/internal";
 import { UserTypes, Enums, CodegenOptions } from "./output";
-import { isTableShorthandInput, resolveTableShorthand, validateTableShorthand } from "./shorthand/tableShorthand";
 import { CODEGEN_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
 import { mapObject } from "@latticexyz/common/utils";
 
@@ -22,7 +21,7 @@ export type StoreTablesConfigInput<scope extends AbiTypeScope = AbiTypeScope> = 
 };
 
 export type validateStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = {
-  [key in keyof input]: validateTableConfig<input[key], scope>;
+  [key in keyof input]: validateTable<input[key], scope>;
 };
 
 export function validateStoreTablesConfig<scope extends AbiTypeScope = AbiTypeScope>(
@@ -31,46 +30,30 @@ export function validateStoreTablesConfig<scope extends AbiTypeScope = AbiTypeSc
 ): asserts input is StoreTablesConfigInput {
   if (isObject(input)) {
     for (const table of Object.values(input)) {
-      validateTableConfig(table, scope);
+      validateTable(table, scope);
     }
     return;
   }
   throw new Error(`Expected store config, received ${JSON.stringify(input)}`);
 }
 
-export type resolveStoreTablesConfig<
-  input,
-  scope extends AbiTypeScope = AbiTypeScope,
-  defaultNamespace extends string = typeof CONFIG_DEFAULTS.namespace,
-> = evaluate<{
-  // TODO: we currently can't apply `tableWithDefaults` here because the config could be a shorthand here
-  readonly [key in keyof input]: resolveTable<input[key], scope, key & string, defaultNamespace>;
+export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<{
+  readonly [key in keyof input]: resolveTable<mergeIfUndefined<input[key], { name: key }>, scope>;
 }>;
 
-export function resolveStoreTablesConfig<
-  input,
-  scope extends AbiTypeScope = AbiTypeScope,
-  defaultNamespace extends string = typeof CONFIG_DEFAULTS.namespace,
->(
+export function resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope>(
   input: input,
   scope: scope = AbiTypeScope as scope,
-  // TODO: ideally the namespace would be passed in with the table input from higher levels
-  // but this is currently not possible since the table input could be a shorthand
-  defaultNamespace: defaultNamespace = CONFIG_DEFAULTS.namespace as defaultNamespace,
-): resolveStoreTablesConfig<input, scope, defaultNamespace> {
+): resolveStoreTablesConfig<input, scope> {
   if (typeof input !== "object" || input == null) {
     throw new Error(`Expected tables config, received ${JSON.stringify(input)}`);
   }
 
   return Object.fromEntries(
     Object.entries(input).map(([key, table]) => {
-      const fullInput = isTableShorthandInput(table, scope)
-        ? resolveTableShorthand(table as validateTableShorthand<typeof table, scope>, scope)
-        : table;
-
-      return [key, resolveTableConfig(fullInput, scope, key, defaultNamespace)];
+      return [key, resolveTable(mergeIfUndefined(table, { name: key }), scope)];
     }),
-  ) as unknown as resolveStoreTablesConfig<input, scope, defaultNamespace>;
+  ) as unknown as resolveStoreTablesConfig<input, scope>;
 }
 
 type extractInternalType<userTypes extends UserTypes> = { [key in keyof userTypes]: userTypes[key]["type"] };
@@ -146,6 +129,10 @@ export type validateStoreConfig<input> = {
           : input[key];
 };
 
+export function validateStoreConfig(input: unknown): asserts input is StoreConfigInput {
+  // TODO
+}
+
 export type resolveEnums<enums> = { readonly [key in keyof enums]: Readonly<enums[key]> };
 
 export type resolveCodegen<options> = {
@@ -160,7 +147,15 @@ export function resolveCodegen<options>(options: options): resolveCodegen<option
 
 export type resolveStoreConfig<input> = evaluate<{
   readonly tables: "tables" extends keyof input
-    ? resolveStoreTablesConfig<input["tables"], extendedScope<input>, get<input, "namespace"> & string>
+    ? resolveStoreTablesConfig<
+        {
+          [key in keyof input["tables"]]: mergeIfUndefined<
+            input["tables"][key],
+            { namespace: get<input, "namespace"> }
+          >;
+        },
+        extendedScope<input>
+      >
     : {};
   readonly userTypes: "userTypes" extends keyof input ? input["userTypes"] : {};
   readonly enums: "enums" extends keyof input ? resolveEnums<input["enums"]> : {};
@@ -169,11 +164,16 @@ export type resolveStoreConfig<input> = evaluate<{
 }>;
 
 export function resolveStoreConfig<const input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {
+  validateStoreConfig(input);
+
   return {
-    tables: resolveStoreTablesConfig(get(input, "tables") ?? {}, extendedScope(input), get(input, "namespace")),
-    userTypes: get(input, "userTypes") ?? {},
-    enums: get(input, "enums") ?? {},
-    namespace: get(input, "namespace") ?? CONFIG_DEFAULTS["namespace"],
-    codegen: resolveCodegen(get(input, "codegen")),
-  } as resolveStoreConfig<input>;
+    tables: resolveStoreTablesConfig(
+      mapObject(input.tables ?? {}, (table) => mergeIfUndefined(table, { namespace: input.namespace })),
+      extendedScope(input),
+    ),
+    userTypes: input.userTypes ?? {},
+    enums: input.enums ?? {},
+    namespace: input.namespace ?? CONFIG_DEFAULTS["namespace"],
+    codegen: resolveCodegen(input.codegen),
+  } as unknown as resolveStoreConfig<input>;
 }
