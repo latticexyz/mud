@@ -1,4 +1,4 @@
-import { ErrorMessage, conform, evaluate, narrow } from "@arktype/util";
+import { ErrorMessage, conform, narrow } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { get, hasOwnKey } from "./generics";
@@ -119,7 +119,7 @@ export function resolveTableCodegen<input extends TableInput>(input: input): res
 }
 
 export type resolveTable<input, scope extends Scope = Scope> = input extends TableInput
-  ? evaluate<{
+  ? {
       readonly tableId: Hex;
       readonly name: input["name"];
       readonly namespace: undefined extends input["namespace"] ? typeof TABLE_DEFAULTS.namespace : input["namespace"];
@@ -139,7 +139,7 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
         scope
       >;
       readonly codegen: resolveTableCodegen<input>;
-    }>
+    }
   : never;
 
 export function resolveTable<input, scope extends Scope = AbiTypeScope>(
