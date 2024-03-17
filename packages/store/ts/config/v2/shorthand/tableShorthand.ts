@@ -1,9 +1,9 @@
 import { ErrorMessage, evaluate } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
-import { hasOwnKey } from "./generics";
-import { SchemaInput, isSchemaInput } from "./schema";
-import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
-import { TableFullInput } from "./tableFull";
+import { hasOwnKey } from "../generics";
+import { SchemaInput, isSchemaInput } from "../schema";
+import { AbiTypeScope, getStaticAbiTypeKeys } from "../scope";
+import { TableFullInput } from "../table";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.">;

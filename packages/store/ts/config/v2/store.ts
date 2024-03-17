@@ -1,11 +1,11 @@
 import { evaluate, narrow } from "@arktype/util";
 import { get, isObject } from "./generics";
 import { SchemaInput } from "./schema";
-import { TableInput, resolveTableConfig, validateTableConfig } from "./table";
+import { TableInput, resolveTableConfig, validateTableConfig } from "./shorthand/table";
 import { AbiTypeScope, extendScope } from "./scope";
 import { isSchemaAbiType } from "@latticexyz/schema-type/internal";
 import { UserTypes, Enums, CodegenOptions } from "./output";
-import { isTableShorthandInput, resolveTableShorthand, validateTableShorthand } from "./tableShorthand";
+import { isTableShorthandInput, resolveTableShorthand, validateTableShorthand } from "./shorthand/tableShorthand";
 import { CODEGEN_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
 import { mapObject } from "@latticexyz/common/utils";
 
