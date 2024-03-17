@@ -338,67 +338,68 @@ describe("resolveWorldConfig", () => {
       } as const;
 
       attest<typeof expected>(config).equals(expected);
-    }),
-      it("should return the full config given a full config with two key", () => {
-        const config = resolveWorldConfig({
-          tables: {
-            Example: {
-              schema: { id: "address", name: "string", age: "uint256" },
-              key: ["age", "id"],
-            },
-          },
-        });
-        const expected = {
-          tables: {
-            Example: {
-              tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
-              schema: {
-                id: {
-                  type: "address",
-                  internalType: "address",
-                },
-                name: {
-                  type: "string",
-                  internalType: "string",
-                },
-                age: {
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-              },
-              keySchema: {
-                age: {
-                  type: "uint256",
-                  internalType: "uint256",
-                },
-                id: {
-                  type: "address",
-                  internalType: "address",
-                },
-              },
-              valueSchema: {
-                name: {
-                  type: "string",
-                  internalType: "string",
-                },
-              },
-              key: ["age", "id"],
-              name: "Example",
-              namespace: "",
-              codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-              type: "table",
-            },
-          },
-          userTypes: {},
-          enums: {},
-          namespace: "",
-          codegen: CODEGEN_DEFAULTS,
-          deployment: DEPLOYMENT_DEFAULTS,
-          ...CONFIG_DEFAULTS,
-        } as const;
+    });
 
-        attest<typeof expected>(config).equals(expected);
+    it("should return the full config given a full config with two key", () => {
+      const config = resolveWorldConfig({
+        tables: {
+          Example: {
+            schema: { id: "address", name: "string", age: "uint256" },
+            key: ["age", "id"],
+          },
+        },
       });
+      const expected = {
+        tables: {
+          Example: {
+            tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
+            schema: {
+              id: {
+                type: "address",
+                internalType: "address",
+              },
+              name: {
+                type: "string",
+                internalType: "string",
+              },
+              age: {
+                type: "uint256",
+                internalType: "uint256",
+              },
+            },
+            keySchema: {
+              age: {
+                type: "uint256",
+                internalType: "uint256",
+              },
+              id: {
+                type: "address",
+                internalType: "address",
+              },
+            },
+            valueSchema: {
+              name: {
+                type: "string",
+                internalType: "string",
+              },
+            },
+            key: ["age", "id"],
+            name: "Example",
+            namespace: "",
+            codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+            type: "table",
+          },
+        },
+        userTypes: {},
+        enums: {},
+        namespace: "",
+        codegen: CODEGEN_DEFAULTS,
+        deployment: DEPLOYMENT_DEFAULTS,
+        ...CONFIG_DEFAULTS,
+      } as const;
+
+      attest<typeof expected>(config).equals(expected);
+    });
 
     it("should resolve two tables in the config with different schemas", () => {
       const config = resolveWorldConfig({

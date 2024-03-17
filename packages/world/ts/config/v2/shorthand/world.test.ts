@@ -7,7 +7,151 @@ import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, DEPLOYMENT_DEFAULTS, CONFIG
 const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS };
 
 describe("resolveWorldWithShorthands", () => {
-  it.todo("should resolve a shorthand config in a namespace");
+  it("should resolve namespaced shorthand table config with user types and enums", () => {
+    const config = resolveWorldWithShorthands({
+      namespaces: {
+        ExampleNamespace: {
+          tables: {
+            ExampleTable: "Static",
+          },
+        },
+      },
+      userTypes: {
+        Static: { type: "address", filePath: "path/to/file" },
+        Dynamic: { type: "string", filePath: "path/to/file" },
+      },
+      enums: {
+        MyEnum: ["First", "Second"],
+      },
+    });
+
+    const expected = {
+      tables: {
+        ExampleNamespace__ExampleTable: {
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
+          schema: {
+            id: {
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+            value: {
+              type: "address",
+              internalType: "Static",
+            },
+          },
+          keySchema: {
+            id: {
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+          },
+          valueSchema: {
+            value: {
+              type: "address",
+              internalType: "Static",
+            },
+          },
+          key: ["id"],
+          name: "ExampleTable",
+          namespace: "ExampleNamespace",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
+        },
+      },
+      userTypes: {
+        Static: { type: "address", filePath: "path/to/file" as string },
+        Dynamic: { type: "string", filePath: "path/to/file" as string },
+      },
+      enums: {
+        MyEnum: ["First", "Second"],
+      },
+      codegen: CODEGEN_DEFAULTS,
+      namespace: "",
+      deployment: DEPLOYMENT_DEFAULTS,
+      ...CONFIG_DEFAULTS,
+    } as const;
+
+    attest<typeof expected>(config).equals(expected);
+  });
+
+  it("should resolve namespaced shorthand schema table config with user types and enums", () => {
+    const config = resolveWorldWithShorthands({
+      namespaces: {
+        ExampleNamespace: {
+          tables: {
+            ExampleTable: {
+              id: "Static",
+              value: "MyEnum",
+              dynamic: "Dynamic",
+            },
+          },
+        },
+      },
+      userTypes: {
+        Static: { type: "address", filePath: "path/to/file" },
+        Dynamic: { type: "string", filePath: "path/to/file" },
+      },
+      enums: {
+        MyEnum: ["First", "Second"],
+      },
+    });
+
+    const expected = {
+      tables: {
+        ExampleNamespace__ExampleTable: {
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
+          schema: {
+            id: {
+              type: "address",
+              internalType: "Static",
+            },
+            value: {
+              type: "uint8",
+              internalType: "MyEnum",
+            },
+            dynamic: {
+              type: "string",
+              internalType: "Dynamic",
+            },
+          },
+          keySchema: {
+            id: {
+              type: "address",
+              internalType: "Static",
+            },
+          },
+          valueSchema: {
+            value: {
+              type: "uint8",
+              internalType: "MyEnum",
+            },
+            dynamic: {
+              type: "string",
+              internalType: "Dynamic",
+            },
+          },
+          key: ["id"],
+          name: "ExampleTable",
+          namespace: "ExampleNamespace",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
+        },
+      },
+      userTypes: {
+        Static: { type: "address", filePath: "path/to/file" as string },
+        Dynamic: { type: "string", filePath: "path/to/file" as string },
+      },
+      enums: {
+        MyEnum: ["First", "Second"],
+      },
+      codegen: CODEGEN_DEFAULTS,
+      namespace: "",
+      deployment: DEPLOYMENT_DEFAULTS,
+      ...CONFIG_DEFAULTS,
+    } as const;
+
+    attest<typeof expected>(config).equals(expected);
+  });
 
   it("should accept a shorthand store config as input and expand it", () => {
     const config = resolveWorldWithShorthands({ tables: { Name: "address" } });

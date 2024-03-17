@@ -1,16 +1,16 @@
 import {
+  AbiTypeScope,
   Enums,
   StoreConfigInputWithShorthands,
   UserTypes,
   extendedScope,
   isTableShorthandInput,
-  mergeIfUndefined,
-  resolveIfTableShorthand,
   resolveTableShorthand,
+  resolveTablesWithShorthands,
+  validateStoreWithShorthandsTables,
   validateTableShorthand,
-  validateTableShorthandOrFull,
 } from "@latticexyz/store/config/v2";
-import { resolveWorldConfig, validateWorldConfig } from "../world";
+import { resolveWorldConfig, validateNamespaces, validateWorldConfig } from "../world";
 import { WorldConfigInput } from "../input";
 import { mapObject } from "@latticexyz/common/utils";
 
@@ -22,26 +22,37 @@ export type WorldConfigInputWithShorthands<userTypes extends UserTypes = UserTyp
 
 export type resolveWorldWithShorthands<input> = resolveWorldConfig<{
   [key in keyof input]: key extends "tables"
-    ? {
-        [tableKey in keyof input[key]]: mergeIfUndefined<
-          resolveIfTableShorthand<input[key][tableKey], extendedScope<input>>,
-          { name: tableKey }
-        >;
-      }
-    : input[key];
+    ? resolveTablesWithShorthands<input[key], extendedScope<input>>
+    : key extends "namespaces"
+      ? {
+          [namespaceKey in keyof input[key]]: {
+            [namespaceProp in keyof input[key][namespaceKey]]: namespaceProp extends "tables"
+              ? resolveTablesWithShorthands<input[key][namespaceKey][namespaceProp], extendedScope<input>>
+              : input[key][namespaceKey][namespaceProp];
+          };
+        }
+      : input[key];
 }>;
 
 export type validateWorldWithShorthands<input> = {
   [key in keyof input]: key extends "tables"
-    ? {
-        [tableKey in keyof input[key]]: validateTableShorthandOrFull<input[key][tableKey], extendedScope<input>>;
-      }
-    : validateWorldConfig<input>[key];
+    ? validateStoreWithShorthandsTables<input[key], extendedScope<input>>
+    : key extends "namespaces"
+      ? validateNamespacesWithShorthands<input[key], extendedScope<input>>
+      : validateWorldConfig<input>[key];
 };
 
 function validateWorldWithShorthands(input: unknown): asserts input is WorldConfigInputWithShorthands {
   //
 }
+
+export type validateNamespacesWithShorthands<input, scope extends AbiTypeScope = AbiTypeScope> = {
+  [namespace in keyof input]: {
+    [key in keyof input[namespace]]: key extends "tables"
+      ? validateStoreWithShorthandsTables<input[namespace][key], scope>
+      : validateNamespaces<input[namespace], scope>[key];
+  };
+};
 
 export function resolveWorldWithShorthands<input>(
   input: validateWorldWithShorthands<input>,
@@ -49,12 +60,21 @@ export function resolveWorldWithShorthands<input>(
   validateWorldWithShorthands(input);
 
   const scope = extendedScope(input);
-  const tables = mapObject(input.tables, (table) => {
+  const tables = mapObject(input.tables ?? {}, (table) => {
     return isTableShorthandInput(table, scope)
       ? resolveTableShorthand(table as validateTableShorthand<typeof table, typeof scope>, scope)
       : table;
   });
-  const fullConfig = { ...input, tables };
+  const namespaces = mapObject(input.namespaces ?? {}, (namespace) => ({
+    ...namespace,
+    tables: mapObject(namespace.tables ?? {}, (table) => {
+      return isTableShorthandInput(table, scope)
+        ? resolveTableShorthand(table as validateTableShorthand<typeof table, typeof scope>, scope)
+        : table;
+    }),
+  }));
+
+  const fullConfig = { ...input, tables, namespaces };
 
   return resolveWorldConfig(
     fullConfig as validateWorldConfig<typeof fullConfig>,
