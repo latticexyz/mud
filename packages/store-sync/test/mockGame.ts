@@ -4,6 +4,7 @@ import mudConfig from "mock-game-contracts/mud.config";
 import { resolveConfig } from "@latticexyz/store";
 import { Hex, isHex } from "viem";
 import worldAbi from "mock-game-contracts/out/IWorld.sol/IWorld.abi.json";
+import { minePending } from "./minePending";
 
 export { configV2 } from "mock-game-contracts/mud.config";
 export const deprecatedConfig = mudConfig;
@@ -34,6 +35,8 @@ export async function deployMockGame(): Promise<Hex> {
     throw new Error("world address not found in output, did the deploy fail?");
   }
   console.log("deployed mock game", worldAddress);
+
+  await minePending();
 
   return worldAddress;
 }
