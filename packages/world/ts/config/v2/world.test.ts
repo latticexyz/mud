@@ -3,7 +3,9 @@ import { resolveWorldConfig } from "./world";
 import { Config } from "./output";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
-import { TABLE_CODEGEN_DEFAULTS, CODEGEN_DEFAULTS } from "@latticexyz/store/config/v2";
+import { TABLE_CODEGEN_DEFAULTS, CODEGEN_DEFAULTS as STORE_CODEGEN_DEFAULTS } from "@latticexyz/store/config/v2";
+import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, DEPLOYMENT_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
+const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS };
 
 describe("resolveWorldConfig", () => {
   it("should resolve namespaced tables", () => {
@@ -113,6 +115,8 @@ describe("resolveWorldConfig", () => {
       enums: {},
       codegen: CODEGEN_DEFAULTS,
       namespace: "",
+      deployment: DEPLOYMENT_DEFAULTS,
+      ...CONFIG_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -237,6 +241,8 @@ describe("resolveWorldConfig", () => {
       },
       codegen: CODEGEN_DEFAULTS,
       namespace: "",
+      deployment: DEPLOYMENT_DEFAULTS,
+      ...CONFIG_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -333,6 +339,8 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         codegen: CODEGEN_DEFAULTS,
         namespaces: {},
+        deployment: DEPLOYMENT_DEFAULTS,
+        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -382,6 +390,8 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         codegen: CODEGEN_DEFAULTS,
         namespaces: {},
+        deployment: DEPLOYMENT_DEFAULTS,
+        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -435,6 +445,8 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         codegen: CODEGEN_DEFAULTS,
         namespaces: {},
+        deployment: DEPLOYMENT_DEFAULTS,
+        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -488,6 +500,8 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         codegen: CODEGEN_DEFAULTS,
         namespaces: {},
+        deployment: DEPLOYMENT_DEFAULTS,
+        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -588,6 +602,8 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         codegen: CODEGEN_DEFAULTS,
         namespaces: {},
+        deployment: DEPLOYMENT_DEFAULTS,
+        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -655,6 +671,8 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         codegen: CODEGEN_DEFAULTS,
         namespaces: {},
+        deployment: DEPLOYMENT_DEFAULTS,
+        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -714,6 +732,8 @@ describe("resolveWorldConfig", () => {
           namespace: "",
           codegen: CODEGEN_DEFAULTS,
           namespaces: {},
+          deployment: DEPLOYMENT_DEFAULTS,
+          ...CONFIG_DEFAULTS,
         } as const;
 
         attest<typeof expected>(config).equals(expected);
@@ -816,6 +836,8 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         codegen: CODEGEN_DEFAULTS,
         namespaces: {},
+        deployment: DEPLOYMENT_DEFAULTS,
+        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -925,6 +947,8 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         codegen: CODEGEN_DEFAULTS,
         namespaces: {},
+        deployment: DEPLOYMENT_DEFAULTS,
+        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -1052,6 +1076,8 @@ describe("resolveWorldConfig", () => {
         namespace: "",
         codegen: CODEGEN_DEFAULTS,
         namespaces: {},
+        deployment: DEPLOYMENT_DEFAULTS,
+        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);

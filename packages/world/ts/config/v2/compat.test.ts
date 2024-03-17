@@ -1,19 +1,22 @@
 import { describe, it } from "vitest";
-import { resolveStoreConfig } from "./store";
 import { attest } from "@arktype/attest";
-import { StoreConfig as StoreConfigV1 } from "../storeConfig";
-import { mudConfig } from "../../register";
-import { configToV1 } from "./compat";
+import { WorldConfig as WorldConfigV1 } from "../types";
+import { StoreConfig as StoreConfigV1 } from "@latticexyz/store/config";
 import { Config } from "./output";
+import { configToV1 } from "./compat";
+import { mudConfig } from "../../register";
+import { resolveWorldConfig } from "./world";
 
 describe("configToV1", () => {
   it("should transform the broad v2 output to the broad v1 output", () => {
-    attest<StoreConfigV1, configToV1<Config>>();
-    attest<configToV1<Config>, StoreConfigV1>();
+    // Making the `worldContractName` prop required here since it is required on the output of `mudConfig`
+    attest<WorldConfigV1 & StoreConfigV1 & { worldContractName: string | undefined }, configToV1<Config>>();
+    attest<configToV1<Config>, WorldConfigV1 & StoreConfigV1 & { worldContractName: string | undefined }>();
   });
 
   it("should transform a v2 store config output to the v1 config output", () => {
     const configV1 = mudConfig({
+      worldContractName: undefined,
       enums: {
         TerrainType: ["None", "Ocean", "Grassland", "Desert"],
       },
@@ -51,9 +54,9 @@ describe("configToV1", () => {
           },
         },
       },
-    }) satisfies StoreConfigV1;
+    }) satisfies StoreConfigV1 & WorldConfigV1;
 
-    const configV2 = resolveStoreConfig({
+    const configV2 = resolveWorldConfig({
       enums: {
         TerrainType: ["None", "Ocean", "Grassland", "Desert"],
       },
