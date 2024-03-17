@@ -1,16 +1,16 @@
 import { describe, it } from "vitest";
-import { resolveWorldConfig } from "../world";
+import { resolveWorldWithShorthands } from "./world";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { TABLE_CODEGEN_DEFAULTS, CODEGEN_DEFAULTS as STORE_CODEGEN_DEFAULTS } from "@latticexyz/store/config/v2";
 import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, DEPLOYMENT_DEFAULTS, CONFIG_DEFAULTS } from "../defaults";
 const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS };
 
-describe("resolveWorldConfig", () => {
+describe("resolveWorldWithShorthands", () => {
   it.todo("should resolve a shorthand config in a namespace");
 
   it("should accept a shorthand store config as input and expand it", () => {
-    const config = resolveWorldConfig({ tables: { Name: "address" } });
+    const config = resolveWorldWithShorthands({ tables: { Name: "address" } });
     const expected = {
       tables: {
         Name: {
@@ -48,7 +48,6 @@ describe("resolveWorldConfig", () => {
       enums: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
-      namespaces: {},
       deployment: DEPLOYMENT_DEFAULTS,
       ...CONFIG_DEFAULTS,
     } as const;
@@ -58,7 +57,7 @@ describe("resolveWorldConfig", () => {
   });
 
   it("should accept a user type as input and expand it", () => {
-    const config = resolveWorldConfig({
+    const config = resolveWorldWithShorthands({
       tables: { Name: "CustomType" },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
     });
@@ -95,11 +94,10 @@ describe("resolveWorldConfig", () => {
           type: "table",
         },
       },
-      userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
+      userTypes: { CustomType: { type: "address", filePath: "path/to/file" as string } },
       enums: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
-      namespaces: {},
       deployment: DEPLOYMENT_DEFAULTS,
       ...CONFIG_DEFAULTS,
     } as const;
@@ -108,7 +106,9 @@ describe("resolveWorldConfig", () => {
   });
 
   it("given a schema with a key field with static ABI type, it should use `id` as single key", () => {
-    const config = resolveWorldConfig({ tables: { Example: { id: "address", name: "string", age: "uint256" } } });
+    const config = resolveWorldWithShorthands({
+      tables: { Example: { id: "address", name: "string", age: "uint256" } },
+    });
     const expected = {
       tables: {
         Example: {
@@ -154,7 +154,6 @@ describe("resolveWorldConfig", () => {
       enums: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
-      namespaces: {},
       deployment: DEPLOYMENT_DEFAULTS,
       ...CONFIG_DEFAULTS,
     } as const;
@@ -163,7 +162,9 @@ describe("resolveWorldConfig", () => {
   });
 
   it("given a schema with a key field with static custom type, it should use `id` as single key", () => {
-    const config = resolveWorldConfig({ tables: { Example: { id: "address", name: "string", age: "uint256" } } });
+    const config = resolveWorldWithShorthands({
+      tables: { Example: { id: "address", name: "string", age: "uint256" } },
+    });
     const expected = {
       tables: {
         Example: {
@@ -209,7 +210,6 @@ describe("resolveWorldConfig", () => {
       enums: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
-      namespaces: {},
       deployment: DEPLOYMENT_DEFAULTS,
       ...CONFIG_DEFAULTS,
     } as const;
@@ -219,7 +219,7 @@ describe("resolveWorldConfig", () => {
 
   it("throw an error if the shorthand doesn't include a key field", () => {
     attest(() =>
-      resolveWorldConfig({
+      resolveWorldWithShorthands({
         tables: {
           // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
           Example: {
@@ -236,7 +236,7 @@ describe("resolveWorldConfig", () => {
   it("throw an error if the shorthand config includes a non-static key field", () => {
     attest(() =>
       // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
-      resolveWorldConfig({ tables: { Example: { id: "string", name: "string", age: "uint256" } } }),
+      resolveWorldWithShorthands({ tables: { Example: { id: "string", name: "string", age: "uint256" } } }),
     ).throwsAndHasTypeError(
       "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
     );
@@ -244,7 +244,7 @@ describe("resolveWorldConfig", () => {
 
   it("throw an error if the shorthand config includes a non-static user type as key field", () => {
     attest(() =>
-      resolveWorldConfig({
+      resolveWorldWithShorthands({
         // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
         tables: { Example: { id: "dynamic", name: "string", age: "uint256" } },
         userTypes: {

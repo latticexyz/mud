@@ -2,6 +2,7 @@ export * from "./generics";
 export * from "./scope";
 export * from "./schema";
 export * from "./shorthand/table";
+export * from "./shorthand/store";
 export * from "./table";
 export * from "./store";
 export * from "./output";

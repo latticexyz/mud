@@ -51,14 +51,14 @@ export function validateStoreWithShorthands(input: unknown): asserts input is St
   }
 }
 
-type resolveIfShorthand<input, scope extends AbiTypeScope = AbiTypeScope> =
+export type resolveIfTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> =
   input extends TableShorthandInput<scope> ? resolveTableShorthand<input, scope> : input;
 
 export type resolveStoreWithShorthands<input> = resolveStoreConfig<{
   [key in keyof input]: key extends "tables"
     ? {
         [tableKey in keyof input[key]]: mergeIfUndefined<
-          resolveIfShorthand<input[key][tableKey], extendedScope<input>>,
+          resolveIfTableShorthand<input[key][tableKey], extendedScope<input>>,
           { name: tableKey }
         >;
       }
