@@ -1,5 +1,6 @@
 import { Observable, map, scan } from "rxjs";
-import { SubjectEvent, SubjectRecord, SubjectRecords, findSubjects } from "@latticexyz/query";
+import { SubjectEvent, SubjectRecord, SubjectRecords } from "@latticexyz/query";
+import { findSubjects } from "@latticexyz/query/internal";
 import { Query } from "./common";
 import { QueryCacheStore, extractTables } from "./createStore";
 import { queryToWire } from "./queryToWire";
