@@ -1,5 +1,5 @@
 import { evaluate, narrow } from "@arktype/util";
-import { get, isObject, mergeIfUndefined } from "./generics";
+import { get, hasOwnKey, isObject, mergeIfUndefined } from "./generics";
 import { SchemaInput } from "./schema";
 import { TableInput, resolveTable, validateTable } from "./table";
 import { AbiTypeScope, extendScope } from "./scope";
@@ -130,7 +130,12 @@ export type validateStoreConfig<input> = {
 };
 
 export function validateStoreConfig(input: unknown): asserts input is StoreConfigInput {
-  // TODO
+  const scope = extendedScope(input);
+  if (hasOwnKey(input, "tables") && isObject(input.tables)) {
+    for (const key of Object.keys(input.tables)) {
+      validateTable(get(input.tables, key), scope);
+    }
+  }
 }
 
 export type resolveEnums<enums> = { readonly [key in keyof enums]: Readonly<enums[key]> };
