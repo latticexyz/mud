@@ -30,26 +30,35 @@ export type validateTableShorthandOrFull<input, scope extends AbiTypeScope = Abi
       ? validateTableShorthand<input, scope>
       : validateTable<input, scope>;
 
-export type validateStoreWithShorthandsTables<input, scope extends AbiTypeScope = AbiTypeScope> = {
+export type validateTablesWithShorthands<input, scope extends AbiTypeScope = AbiTypeScope> = {
   [key in keyof input]: validateTableShorthandOrFull<input[key], scope>;
 };
 
+export function validateTablesWithShorthands<scope extends AbiTypeScope = AbiTypeScope>(
+  input: unknown,
+  scope: scope,
+): asserts input is StoreConfigInputWithShorthands["tables"] {
+  if (isObject(input)) {
+    for (const key of Object.keys(input)) {
+      if (isTableShorthandInput(get(input, key), scope)) {
+        validateTableShorthand(get(input, key), scope);
+      } else {
+        validateTable(get(input, key), scope);
+      }
+    }
+  }
+}
+
 export type validateStoreWithShorthands<input> = {
   [key in keyof input]: key extends "tables"
-    ? validateStoreWithShorthandsTables<input[key], extendedScope<input>>
+    ? validateTablesWithShorthands<input[key], extendedScope<input>>
     : validateStoreConfig<input>[key];
 };
 
 export function validateStoreWithShorthands(input: unknown): asserts input is StoreConfigInputWithShorthands {
   const scope = extendedScope(input);
   if (hasOwnKey(input, "tables") && isObject(input.tables)) {
-    for (const key of Object.keys(input.tables)) {
-      if (isTableShorthandInput(get(input.tables, key), scope)) {
-        validateTableShorthand(get(input.tables, key), scope);
-      } else {
-        validateTable(get(input.tables, key), scope);
-      }
-    }
+    validateTablesWithShorthands(input.tables, scope);
   }
 }
 

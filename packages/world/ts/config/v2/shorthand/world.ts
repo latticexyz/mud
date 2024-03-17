@@ -4,10 +4,13 @@ import {
   StoreConfigInputWithShorthands,
   UserTypes,
   extendedScope,
+  get,
+  hasOwnKey,
+  isObject,
   isTableShorthandInput,
   resolveTableShorthand,
   resolveTablesWithShorthands,
-  validateStoreWithShorthandsTables,
+  validateTablesWithShorthands,
   validateTableShorthand,
 } from "@latticexyz/store/config/v2";
 import { resolveWorldConfig, validateNamespaces, validateWorldConfig } from "../world";
@@ -36,20 +39,29 @@ export type resolveWorldWithShorthands<input> = resolveWorldConfig<{
 
 export type validateWorldWithShorthands<input> = {
   [key in keyof input]: key extends "tables"
-    ? validateStoreWithShorthandsTables<input[key], extendedScope<input>>
+    ? validateTablesWithShorthands<input[key], extendedScope<input>>
     : key extends "namespaces"
       ? validateNamespacesWithShorthands<input[key], extendedScope<input>>
       : validateWorldConfig<input>[key];
 };
 
 function validateWorldWithShorthands(input: unknown): asserts input is WorldConfigInputWithShorthands {
-  //
+  const scope = extendedScope(input);
+  if (hasOwnKey(input, "tables")) {
+    validateTablesWithShorthands(input.tables, scope);
+  }
+
+  if (hasOwnKey(input, "namespaces") && isObject(input.namespaces)) {
+    for (const namespaceKey of Object.keys(input.namespaces)) {
+      validateTablesWithShorthands(get(get(input.namespaces, namespaceKey), "tables") ?? {}, scope);
+    }
+  }
 }
 
 export type validateNamespacesWithShorthands<input, scope extends AbiTypeScope = AbiTypeScope> = {
   [namespace in keyof input]: {
     [key in keyof input[namespace]]: key extends "tables"
-      ? validateStoreWithShorthandsTables<input[namespace][key], scope>
+      ? validateTablesWithShorthands<input[namespace][key], scope>
       : validateNamespaces<input[namespace], scope>[key];
   };
 };
