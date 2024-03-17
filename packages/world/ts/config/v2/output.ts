@@ -1,4 +1,4 @@
-import { Config as StoreConfig, Table } from "@latticexyz/store/config/v2";
+import { Config as StoreConfig } from "@latticexyz/store/config/v2";
 import { ModuleConfig } from "./input";
 
 export type SystemConfig = {
@@ -44,13 +44,6 @@ export type CodegenConfig = {
 };
 
 export type Config = StoreConfig & {
-  readonly namespaces: {
-    readonly [namespace: string]: {
-      readonly tables: {
-        readonly [tableName: string]: Table;
-      };
-    };
-  };
   readonly systems: SystemsConfig;
   /** Systems to exclude from automatic deployment */
   readonly excludeSystems: readonly string[];

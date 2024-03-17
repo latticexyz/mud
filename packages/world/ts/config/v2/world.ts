@@ -1,24 +1,19 @@
 import { conform, evaluate, narrow } from "@arktype/util";
-import { resourceToHex } from "@latticexyz/common";
 import { mapObject } from "@latticexyz/common/utils";
 import {
   UserTypes,
   resolveStoreConfig,
   resolveStoreTablesConfig,
   extendedScope,
-  resolveTableConfig,
   AbiTypeScope,
   get,
-  isTableShorthandInput,
-  resolveTableShorthand,
-  validateTableShorthand,
-  resolveTableFullConfig,
+  resolveTable,
   validateStoreTablesConfig,
-  validateTableFull,
+  validateTable,
   isObject,
   hasOwnKey,
-  Table,
   resolveCodegen as resolveStoreCodegen,
+  mergeIfUndefined,
 } from "@latticexyz/store/config/v2";
 import { Config } from "./output";
 import { NamespacesInput, SystemsConfigInput, WorldConfigInput } from "./input";
@@ -146,24 +141,14 @@ export type resolveWorldConfig<input> = evaluate<
     readonly tables: "namespaces" extends keyof input
       ? {
           readonly [key in namespacedTableKeys<input>]: key extends `${infer namespace}__${infer table}`
-            ? resolveTableConfig<
-                get<get<get<get<input, "namespaces">, namespace>, "tables">, table>,
-                extendedScope<input>,
-                table,
-                namespace
+            ? resolveTable<
+                mergeIfUndefined<
+                  get<get<get<get<input, "namespaces">, namespace>, "tables">, table>,
+                  { name: table; namespace: namespace }
+                >,
+                extendedScope<input>
               >
             : never;
-        }
-      : {};
-    readonly namespaces: "namespaces" extends keyof input
-      ? {
-          [namespaceKey in keyof input["namespaces"]]: {
-            readonly tables: resolveStoreTablesConfig<
-              get<input["namespaces"][namespaceKey], "tables">,
-              extendedScope<input>,
-              namespaceKey & string
-            >;
-          };
         }
       : {};
     readonly systems: "systems" extends keyof input ? input["systems"] : typeof CONFIG_DEFAULTS.systems;
@@ -186,39 +171,27 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
   const rootTables = get(input, "tables") ?? {};
   validateStoreTablesConfig(rootTables, scope);
 
-  const resolvedNamespaces = mapObject(namespaces, (namespace, namespaceKey) => ({
-    tables: mapObject(namespace.tables, (table, tableKey) => {
-      const fullInput = isTableShorthandInput(table, scope)
-        ? resolveTableShorthand(table as validateTableShorthand<typeof table, typeof scope>, scope)
-        : table;
-      validateTableFull(fullInput, scope);
-      return resolveTableFullConfig(
-        {
-          ...fullInput,
-          tableId:
-            fullInput.tableId ??
-            resourceToHex({ type: "table", namespace: namespaceKey as string, name: tableKey as string }),
-          name: fullInput.name ?? (tableKey as string),
-          namespace: fullInput.namespace ?? (namespaceKey as string),
-        },
-        scope,
-      ) as Table;
-    }) as Config["namespaces"][string]["tables"],
-  })) as Config["namespaces"];
-
   const resolvedNamespacedTables = Object.fromEntries(
-    Object.entries(resolvedNamespaces)
+    Object.entries(namespaces)
       .map(([namespaceKey, namespace]) =>
-        Object.entries(namespace.tables).map(([tableKey, table]) => [`${namespaceKey}__${tableKey}`, table]),
+        Object.entries(namespace.tables).map(([tableKey, table]) => {
+          validateTable(table, scope);
+          return [
+            `${namespaceKey}__${tableKey}`,
+            resolveTable(mergeIfUndefined(table, { namespace: namespaceKey, name: tableKey }), scope),
+          ];
+        }),
       )
       .flat(),
   ) as Config["tables"];
 
-  const resolvedRootTables = resolveStoreTablesConfig(rootTables, scope, namespace as string);
+  const resolvedRootTables = resolveStoreTablesConfig(
+    mapObject(rootTables, (table) => mergeIfUndefined(table, { namespace })),
+    scope,
+  );
 
   return {
     tables: { ...resolvedRootTables, ...resolvedNamespacedTables },
-    namespaces: resolvedNamespaces,
     userTypes: get(input, "userTypes") ?? {},
     enums: get(input, "enums") ?? {},
     namespace,

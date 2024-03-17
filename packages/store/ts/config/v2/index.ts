@@ -3,7 +3,6 @@ export * from "./scope";
 export * from "./schema";
 export * from "./shorthand/tableShorthand";
 export * from "./table";
-export * from "./shorthand/table";
 export * from "./store";
 export * from "./output";
 export * from "./defaults";
