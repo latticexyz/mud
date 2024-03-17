@@ -568,4 +568,18 @@ describe("resolveStoreConfig", () => {
       resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
     );
   });
+
+  it("should throw if a string is passed in as schema", () => {
+    // @ts-expect-error Invalid table config
+    attest(() => resolveStoreConfig({ tables: { Invalid: "uint256" } }))
+      .throws('Expected full table config, got `"uint256"`')
+      .type.errors("Expected full table config");
+  });
+
+  it("should show a type error if an invalid schema is passed in", () => {
+    // @ts-expect-error Key `invalidKey` does not exist in TableInput
+    attest(() => resolveStoreConfig({ tables: { Invalid: { invalidKey: 1 } } })).type.errors(
+      "Key `invalidKey` does not exist in TableInput",
+    );
+  });
 });

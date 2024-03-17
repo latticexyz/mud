@@ -1,4 +1,4 @@
-import { conform, evaluate, narrow } from "@arktype/util";
+import { ErrorMessage, conform, evaluate, narrow } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { get, hasOwnKey } from "./generics";
@@ -73,7 +73,7 @@ export type validateTable<input, scope extends AbiTypeScope = AbiTypeScope> = {
         ? narrow<input[key]>
         : key extends keyof TableInput
           ? TableInput[key]
-          : input[key];
+          : ErrorMessage<`Key \`${key & string}\` does not exist in TableInput`>;
 };
 
 export function validateTable<input, scope extends AbiTypeScope = AbiTypeScope>(
@@ -81,7 +81,7 @@ export function validateTable<input, scope extends AbiTypeScope = AbiTypeScope>(
   scope: scope = AbiTypeScope as scope,
 ): asserts input is TableInput<SchemaInput<scope>, scope> & input {
   if (typeof input !== "object" || input == null) {
-    throw new Error(`Expected full table config, got ${JSON.stringify(input)}`);
+    throw new Error(`Expected full table config, got \`${JSON.stringify(input)}\``);
   }
 
   if (!hasOwnKey(input, "schema") || !isSchemaInput(input["schema"], scope)) {
@@ -201,6 +201,9 @@ export type resolveTable<input, scope extends AbiTypeScope = AbiTypeScope> =
       }>
     : never;
 
+/**
+ * Resolve table is used internally and doesn't validate the input
+ */
 export function resolveTable<input, scope extends AbiTypeScope = AbiTypeScope>(
   input: validateTable<input, scope>,
   scope: scope = AbiTypeScope as scope,
@@ -221,13 +224,13 @@ export function resolveTable<input, scope extends AbiTypeScope = AbiTypeScope>(
     schema: resolveSchema(input.schema, scope),
     keySchema: resolveSchema(
       Object.fromEntries(
-        Object.entries(input.schema).filter(([key]) => input.key.includes(key as input["key"][number])),
+        Object.entries(input.schema).filter(([key]) => input.key.includes(key as (typeof input.key)[number])),
       ),
       scope,
     ),
     valueSchema: resolveSchema(
       Object.fromEntries(
-        Object.entries(input.schema).filter(([key]) => !input.key.includes(key as input["key"][number])),
+        Object.entries(input.schema).filter(([key]) => !input.key.includes(key as (typeof input.key)[number])),
       ),
       scope,
     ),
