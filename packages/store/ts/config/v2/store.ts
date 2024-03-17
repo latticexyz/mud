@@ -10,7 +10,7 @@ import { mapObject } from "@latticexyz/common/utils";
 
 export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
   namespace?: string;
-  tables: StoreTablesConfigInput<scopeWithUserTypes<userTypes>>;
+  tables: StoreTablesConfigInput<scopeWithEnums<enums, scopeWithUserTypes<userTypes>>>;
   userTypes?: userTypes;
   enums?: enums;
   codegen?: Partial<CodegenOptions>;

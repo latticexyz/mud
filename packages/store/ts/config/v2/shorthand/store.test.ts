@@ -3,6 +3,7 @@ import { resolveStoreWithShorthands } from "./store";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS } from "../defaults";
+import { resolveStoreConfig } from "../store";
 
 describe("resolveStoreWithShorthands", () => {
   it("should accept a shorthand store config as input and expand it", () => {
@@ -94,6 +95,7 @@ describe("resolveStoreWithShorthands", () => {
     } as const;
 
     attest<typeof expected>(config).equals(expected);
+    attest<typeof config>(expected);
   });
 
   it("given a schema with a key field with static ABI type, it should use `id` as single key", () => {
@@ -204,7 +206,28 @@ describe("resolveStoreWithShorthands", () => {
     attest<typeof expected>(config).equals(expected);
   });
 
-  it("throw an error if the shorthand doesn't include a key field", () => {
+  it("should pass through full table config inputs", () => {
+    const config = resolveStoreWithShorthands({
+      tables: {
+        Example: {
+          schema: { id: "address", name: "string", age: "uint256" },
+          key: ["age", "id"],
+        },
+      },
+    });
+    const expected = resolveStoreConfig({
+      tables: {
+        Example: {
+          schema: { id: "address", name: "string", age: "uint256" },
+          key: ["age", "id"],
+        },
+      },
+    });
+
+    attest<typeof expected>(config).equals(expected);
+  });
+
+  it("should throw if the shorthand doesn't include a key field", () => {
     attest(() =>
       resolveStoreWithShorthands({
         tables: {
@@ -220,7 +243,7 @@ describe("resolveStoreWithShorthands", () => {
     );
   });
 
-  it("throw an error if the shorthand config includes a non-static key field", () => {
+  it("should throw if the shorthand config includes a non-static key field", () => {
     attest(() =>
       // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
       resolveStoreWithShorthands({ tables: { Example: { id: "string", name: "string", age: "uint256" } } }),
@@ -229,7 +252,7 @@ describe("resolveStoreWithShorthands", () => {
     );
   });
 
-  it("throw an error if the shorthand config includes a non-static user type as key field", () => {
+  it("should throw if the shorthand config includes a non-static user type as key field", () => {
     attest(() =>
       resolveStoreWithShorthands({
         // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
@@ -242,5 +265,12 @@ describe("resolveStoreWithShorthands", () => {
     ).throwsAndHasTypeError(
       "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
     );
+  });
+
+  it("should throw if the shorthand key is neither a custom nor ABI type", () => {
+    // @ts-expect-error Type '"NotAnAbiType"' is not assignable to type 'AbiType'
+    attest(() => resolveStoreWithShorthands({ tables: { Invalid: "NotAnAbiType" } }))
+      .throws("Invalid ABI type. `NotAnAbiType` not found in scope.")
+      .type.errors(`Type '"NotAnAbiType"' is not assignable to type 'AbiType'`);
   });
 });
