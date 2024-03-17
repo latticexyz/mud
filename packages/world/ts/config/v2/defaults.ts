@@ -11,7 +11,7 @@ export const CODEGEN_DEFAULTS = {
 } as const;
 
 export const DEPLOYMENT_DEFAULTS = {
-  worldContractName: undefined,
+  customWorldContract: undefined,
   postDeployScript: "PostDeploy",
   deploysDirectory: "./deploys",
   worldsFile: "./worlds.json",

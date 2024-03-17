@@ -62,7 +62,7 @@ export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums exte
      * The value is a SystemConfig object.
      */
     systems?: SystemsConfigInput;
-    /** Systems to exclude from automatic deployment */
+    /** System names to exclude from automatic deployment */
     excludeSystems?: string[];
     /** Modules to in the World */
     modules?: ModuleConfig[];

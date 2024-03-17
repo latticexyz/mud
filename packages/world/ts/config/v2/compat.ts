@@ -31,7 +31,7 @@ export type configToV1<config> = config extends Config
       systems: systemsToV1<config["systems"]>;
       excludeSystems: mutable<config["excludeSystems"]>;
       modules: modulesToV1<config["modules"]>;
-      worldContractName: config["deployment"]["worldContractName"];
+      worldContractName: config["deployment"]["customWorldContract"];
       postDeployScript: config["deployment"]["postDeployScript"];
       deploysDirectory: config["deployment"]["deploysDirectory"];
       worldsFile: config["deployment"]["worldsFile"];
@@ -46,7 +46,7 @@ export function configToV1<config>(config: conform<config, Config>): configToV1<
     systems: systemsToV1(config.systems),
     excludeSystems: config.excludeSystems,
     modules: modulesToV1(config.modules),
-    worldContractName: config.deployment.worldContractName,
+    worldContractName: config.deployment.customWorldContract,
     postDeployScript: config.deployment.postDeployScript,
     deploysDirectory: config.deployment.deploysDirectory,
     worldsFile: config.deployment.worldsFile,

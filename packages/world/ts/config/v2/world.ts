@@ -70,9 +70,9 @@ export type namespacedTableKeys<input> = "namespaces" extends keyof input
   : never;
 
 export type resolveDeploymentConfig<input> = {
-  readonly worldContractName: "worldContractName" extends keyof input
-    ? input["worldContractName"]
-    : typeof DEPLOYMENT_DEFAULTS.worldContractName;
+  readonly customWorldContract: "customWorldContract" extends keyof input
+    ? input["customWorldContract"]
+    : typeof DEPLOYMENT_DEFAULTS.customWorldContract;
   readonly postDeployScript: "postDeployScript" extends keyof input
     ? input["postDeployScript"]
     : typeof DEPLOYMENT_DEFAULTS.postDeployScript;
@@ -84,7 +84,7 @@ export type resolveDeploymentConfig<input> = {
 
 export function resolveDeploymentConfig<input>(input: input): resolveDeploymentConfig<input> {
   return {
-    worldContractName: get(input, "worldContractName") ?? DEPLOYMENT_DEFAULTS.worldContractName,
+    customWorldContract: get(input, "customWorldContract") ?? DEPLOYMENT_DEFAULTS.customWorldContract,
     postDeployScript: get(input, "postDeployScript") ?? DEPLOYMENT_DEFAULTS.postDeployScript,
     deploysDirectory: get(input, "deploysDirectory") ?? DEPLOYMENT_DEFAULTS.deploysDirectory,
     worldsFile: get(input, "worldsFile") ?? DEPLOYMENT_DEFAULTS.worldsFile,

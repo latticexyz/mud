@@ -2,8 +2,8 @@ import { Config as StoreConfig, Table } from "@latticexyz/store/config/v2";
 import { ModuleConfig } from "./input";
 
 export type SystemConfig = {
-  /** The full resource selector consists of namespace and name */
-  readonly name: string | undefined;
+  /** The name of the system contract. Becomes part of the `systemId`. */
+  readonly name: string;
   /**
    * Register function selectors for the system in the World.
    * Defaults to true.
@@ -21,8 +21,8 @@ export type SystemConfig = {
 export type SystemsConfig = { readonly [key: string]: SystemConfig };
 
 export type DeploymentConfig = {
-  /** The name of the World contract to deploy. If no name is provided, a vanilla World is deployed */
-  readonly worldContractName: string | undefined;
+  /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed */
+  readonly customWorldContract: string | undefined;
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
