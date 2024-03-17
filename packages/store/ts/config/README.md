@@ -1,5 +1,7 @@
 # Config conventions
 
+These are the types and functions that should be placed in a file called `x.ts`
+
 ```ts
 /**
  * validateX returns input if the input is valid and expected type otherwise.
@@ -35,3 +37,8 @@ function resolveX<const x extends X>(x: x): resolveX<x> {
   //
 }
 ```
+
+There are two files that fall out of this patten: `input.ts` and `output.ts`:
+
+- `input.ts` includes the flattened input types. They are supposed to be broad and not include all constraints. The stronger constraints are implemented in the `validateX` helpers.
+- `output.ts` includes the flattened output types. They are supposed to be broad so downstream consumers can use them as input types for working with the config, and strongly typed config outputs will be assignable to them.
