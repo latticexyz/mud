@@ -1,7 +1,7 @@
 import { evaluate, narrow } from "@arktype/util";
 import { get, isObject } from "./generics";
 import { SchemaInput } from "./schema";
-import { TableInput, resolveTableConfig, validateTableConfig } from "./shorthand/table";
+import { TableInput, resolveTable, validateTableConfig } from "./shorthand/table";
 import { AbiTypeScope, extendScope } from "./scope";
 import { isSchemaAbiType } from "@latticexyz/schema-type/internal";
 import { UserTypes, Enums, CodegenOptions } from "./output";
@@ -44,7 +44,7 @@ export type resolveStoreTablesConfig<
   defaultNamespace extends string = typeof CONFIG_DEFAULTS.namespace,
 > = evaluate<{
   // TODO: we currently can't apply `tableWithDefaults` here because the config could be a shorthand here
-  readonly [key in keyof input]: resolveTableConfig<input[key], scope, key & string, defaultNamespace>;
+  readonly [key in keyof input]: resolveTable<input[key], scope, key & string, defaultNamespace>;
 }>;
 
 export function resolveStoreTablesConfig<

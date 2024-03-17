@@ -198,64 +198,6 @@ describe("resolveTableConfig", () => {
     );
   });
 
-  it("should return the full config given a full config with one key", () => {
-    const table = resolveTableConfig({
-      schema: { id: "address", name: "string", age: "uint256" },
-      key: ["age"],
-    });
-    const expected = {
-      tableId: "0x" as Hex,
-      schema: {
-        id: { type: "address", internalType: "address" },
-        name: { type: "string", internalType: "string" },
-        age: { type: "uint256", internalType: "uint256" },
-      },
-      keySchema: {
-        age: { type: "uint256", internalType: "uint256" },
-      },
-      valueSchema: {
-        id: { type: "address", internalType: "address" },
-        name: { type: "string", internalType: "string" },
-      },
-      key: ["age"],
-      name: "",
-      namespace: "",
-      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-      type: "table",
-    } as const;
-
-    attest<typeof expected>(table).equals(expected);
-  });
-
-  it("should return the full config given a full config with two key", () => {
-    const table = resolveTableConfig({
-      schema: { id: "address", name: "string", age: "uint256" },
-      key: ["age", "id"],
-    });
-    const expected = {
-      tableId: "0x" as Hex,
-      schema: {
-        id: { type: "address", internalType: "address" },
-        name: { type: "string", internalType: "string" },
-        age: { type: "uint256", internalType: "uint256" },
-      },
-      keySchema: {
-        age: { type: "uint256", internalType: "uint256" },
-        id: { type: "address", internalType: "address" },
-      },
-      valueSchema: {
-        name: { type: "string", internalType: "string" },
-      },
-      key: ["age", "id"],
-      name: "",
-      namespace: "",
-      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-      type: "table",
-    } as const;
-
-    attest<typeof expected>(table).equals(expected);
-  });
-
   it("should return the full config given a config with custom types as values", () => {
     const scope = extendScope(AbiTypeScope, { CustomString: "string", CustomNumber: "uint256" });
     const table = resolveTableConfig({ id: "address", name: "CustomString", age: "CustomNumber" }, scope);

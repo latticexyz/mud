@@ -8,11 +8,11 @@ import {
   validateTableShorthand,
 } from "./tableShorthand";
 import {
-  TableFullInput,
+  TableInput as TableFullInput,
   ValidKeys,
-  isTableFullInput,
-  resolveTableFullConfig,
-  validateTableFull,
+  isTableInput as isTableFullInput,
+  resolveTable as resolveTableFullConfig,
+  validateTable as validateTableFull,
   tableWithDefaults,
 } from "../table";
 import { CONFIG_DEFAULTS } from "../defaults";

@@ -1,7 +1,7 @@
 import { attest } from "@arktype/attest";
 import { describe, it } from "vitest";
 import { getStaticAbiTypeKeys, AbiTypeScope, extendScope } from "./scope";
-import { resolveTableFullConfig, validateKeys } from "./table";
+import { resolveTable, validateKeys } from "./table";
 import { Hex } from "viem";
 import { TABLE_CODEGEN_DEFAULTS } from "./defaults";
 
@@ -44,9 +44,9 @@ describe("validateKeys", () => {
   });
 });
 
-describe("resolveTableFullConfig", () => {
+describe("resolveTable", () => {
   it("should return the full config given a full config with one key", () => {
-    const table = resolveTableFullConfig({
+    const table = resolveTable({
       schema: { id: "address", name: "string", age: "uint256" },
       key: ["age"],
       name: "",
@@ -77,7 +77,7 @@ describe("resolveTableFullConfig", () => {
   });
 
   it("should return the full config given a full config with two key", () => {
-    const table = resolveTableFullConfig({
+    const table = resolveTable({
       schema: { id: "address", name: "string", age: "uint256" },
       key: ["age", "id"],
       name: "",

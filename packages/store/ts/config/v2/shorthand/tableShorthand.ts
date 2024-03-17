@@ -3,7 +3,7 @@ import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { hasOwnKey } from "../generics";
 import { SchemaInput, isSchemaInput } from "../schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "../scope";
-import { TableFullInput } from "../table";
+import { TableInput } from "../table";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.">;
@@ -54,7 +54,7 @@ export function validateTableShorthand<scope extends AbiTypeScope = AbiTypeScope
 
 export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> = input extends keyof scope["types"]
   ? evaluate<
-      TableFullInput<
+      TableInput<
         { id: "bytes32"; value: input },
         scope,
         ["id" & getStaticAbiTypeKeys<{ id: "bytes32"; value: input }, scope>]
@@ -63,7 +63,7 @@ export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeSco
   : input extends SchemaInput<scope>
     ? "id" extends getStaticAbiTypeKeys<input, scope>
       ? // If the shorthand includes a static field called `id`, use it as `key`
-        evaluate<TableFullInput<input, scope, ["id"]>>
+        evaluate<TableInput<input, scope, ["id"]>>
       : never
     : never;
 
