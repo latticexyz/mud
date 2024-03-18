@@ -1,7 +1,7 @@
 import { PgColumnBuilderBase, PgTableWithColumns, pgSchema } from "drizzle-orm/pg-core";
 import { Address } from "viem";
 import { snakeCase } from "change-case";
-import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser/internal";
 import { asBigInt, asHex } from "../postgres/columnTypes";
 import { transformSchemaName } from "../postgres/transformSchemaName";
 import { buildColumn } from "./buildColumn";

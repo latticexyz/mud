@@ -1,5 +1,5 @@
 import { TableSubject, Tables } from "./common";
-import { TableSubject as WireTableSubject } from "@latticexyz/query";
+import { QuerySubject } from "@latticexyz/query";
 
 // TODO: validate
 //       - all subject types match
@@ -10,7 +10,7 @@ export function subjectsToWire<tables extends Tables>(
   subjects: {
     [tableName in keyof tables]?: TableSubject<tables[tableName]>;
   },
-): readonly WireTableSubject[] {
+): readonly QuerySubject[] {
   // TODO: validate `tables` contains all tables used `subjects` map
   // TODO: validate that subject field names exist in table schema
   return Object.entries(subjects).map(([tableName, subject]) => ({

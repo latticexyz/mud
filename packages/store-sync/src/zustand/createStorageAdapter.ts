@@ -6,7 +6,7 @@ import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { debug } from "./debug";
 import { getId } from "./getId";
 import { size } from "viem";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { flattenSchema } from "../flattenSchema";
 import { isDefined } from "@latticexyz/common/utils";
 

@@ -1,5 +1,5 @@
 import { Config, Table } from "@latticexyz/store/config/v2";
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
 import { ComparisonCondition, InCondition } from "@latticexyz/query";
 
 export type mapTuple<tuple, mapping> = {
@@ -51,12 +51,4 @@ export type Query<tables extends Tables = Tables> = {
   readonly where?: readonly queryConditions<tables>[];
 };
 
-export type queryToResultSubject<query extends Query<tables>, tables extends Tables> = {
-  [table in keyof query["from"]]: table extends keyof tables
-    ? subjectSchemaToPrimitive<mapTuple<query["from"][table], schemaAbiTypes<tables[table]["schema"]>>>
-    : never;
-}[keyof query["from"]];
-
-export type QueryResult<query extends Query<tables>, tables extends Tables = Tables> = {
-  readonly subjects: readonly queryToResultSubject<query, tables>[];
-};
+export type extractTables<T> = T extends Query<infer tables> ? tables : never;

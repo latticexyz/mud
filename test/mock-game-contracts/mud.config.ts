@@ -72,14 +72,14 @@ export const configV2 = resolveStoreConfig({
         x: "int32",
         y: "int32",
       },
-      primaryKey: ["player"],
+      key: ["player"],
     },
     Health: {
       schema: {
         player: "address",
         health: "uint256",
       },
-      primaryKey: ["player"],
+      key: ["player"],
     },
     Inventory: {
       schema: {
@@ -87,7 +87,7 @@ export const configV2 = resolveStoreConfig({
         item: "uint8",
         amount: "uint32",
       },
-      primaryKey: ["player", "item"],
+      key: ["player", "item"],
     },
     Score: {
       schema: {
@@ -95,14 +95,14 @@ export const configV2 = resolveStoreConfig({
         game: "uint256",
         score: "uint256",
       },
-      primaryKey: ["player", "game"],
+      key: ["player", "game"],
     },
     Winner: {
       schema: {
         game: "uint256",
         player: "address",
       },
-      primaryKey: ["game"],
+      key: ["game"],
     },
     Terrain: {
       schema: {
@@ -110,7 +110,7 @@ export const configV2 = resolveStoreConfig({
         y: "int32",
         terrainType: "TerrainType",
       },
-      primaryKey: ["x", "y"],
+      key: ["x", "y"],
     },
   },
 });

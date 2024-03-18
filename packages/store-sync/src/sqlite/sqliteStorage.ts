@@ -13,7 +13,7 @@ import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
 

@@ -2,7 +2,7 @@ import { Address, Block, Hex, Log, PublicClient } from "viem";
 import { StoreConfig, StoreEventsAbiItem, StoreEventsAbi, resolveConfig } from "@latticexyz/store";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
-import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser";
+import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser/internal";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { flattenSchema } from "./flattenSchema";

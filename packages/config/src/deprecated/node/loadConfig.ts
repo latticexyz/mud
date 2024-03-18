@@ -9,9 +9,12 @@ import os from "os";
 // TODO: explore using https://www.npmjs.com/package/ts-import instead
 
 // In order of preference files are checked
+/** @deprecated */
 const configFiles = ["mud.config.js", "mud.config.mjs", "mud.config.ts", "mud.config.mts"];
+/** @deprecated */
 const TEMP_CONFIG = "mud.config.temp.mjs";
 
+/** @deprecated */
 export async function loadConfig(configPath?: string): Promise<unknown> {
   configPath = await resolveConfigPath(configPath);
   try {
@@ -36,6 +39,7 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
   }
 }
 
+/** @deprecated */
 export async function resolveConfigPath(configPath: string | undefined, toFileURL?: boolean) {
   if (configPath === undefined) {
     configPath = await getUserConfigPath();
@@ -51,6 +55,7 @@ export async function resolveConfigPath(configPath: string | undefined, toFileUR
   return toFileURL && os.platform() === "win32" ? pathToFileURL(configPath).href : configPath;
 }
 
+/** @deprecated */
 async function getUserConfigPath() {
   const tsConfigPath = await findUp(configFiles);
   if (tsConfigPath === undefined) {

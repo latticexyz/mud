@@ -9,4 +9,10 @@ export default defineConfig({
     teardownTimeout: 500,
     hookTimeout: 15000,
   },
+  server: {
+    watch: {
+      // we build+import this file in test setup, which causes vitest to restart in a loop unless we ignore it here
+      ignored: ["**/test/mock-game-contracts/out/IWorld.sol/IWorld.abi.json"],
+    },
+  },
 });
