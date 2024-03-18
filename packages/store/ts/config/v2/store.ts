@@ -1,35 +1,23 @@
 import { ErrorMessage, evaluate, narrow } from "@arktype/util";
 import { get, hasOwnKey, isObject, mergeIfUndefined } from "./generics";
-import { SchemaInput } from "./schema";
-import { TableInput, resolveTable, validateTable } from "./table";
-import { AbiTypeScope, extendScope } from "./scope";
+import { resolveTable, validateTable } from "./table";
+import { AbiTypeScope, Scope, extendScope } from "./scope";
 import { isSchemaAbiType } from "@latticexyz/schema-type/internal";
 import { UserTypes, Enums, CodegenOptions } from "./output";
 import { CODEGEN_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
 import { mapObject } from "@latticexyz/common/utils";
+import { StoreInput, TablesInput } from "./input";
 
-export type StoreConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = {
-  namespace?: string;
-  tables: StoreTablesConfigInput<scopeWithEnums<enums, scopeWithUserTypes<userTypes>>>;
-  userTypes?: userTypes;
-  enums?: enums;
-  codegen?: Partial<CodegenOptions>;
-};
-
-export type StoreTablesConfigInput<scope extends AbiTypeScope = AbiTypeScope> = {
-  [key: string]: TableInput<SchemaInput<scope>, scope>;
-};
-
-export type validateStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = {
-  [key in keyof input]: input[key] extends object
-    ? validateTable<input[key], scope>
+export type validateTables<tables, scope extends Scope = AbiTypeScope> = {
+  [key in keyof tables]: tables[key] extends object
+    ? validateTable<tables[key], scope>
     : ErrorMessage<`Expected full table config.`>;
 };
 
-export function validateStoreTablesConfig<scope extends AbiTypeScope = AbiTypeScope>(
+export function validateTables<scope extends Scope = AbiTypeScope>(
   input: unknown,
   scope: scope,
-): asserts input is StoreTablesConfigInput {
+): asserts input is TablesInput {
   if (isObject(input)) {
     for (const table of Object.values(input)) {
       validateTable(table, scope);
@@ -39,25 +27,25 @@ export function validateStoreTablesConfig<scope extends AbiTypeScope = AbiTypeSc
   throw new Error(`Expected store config, received ${JSON.stringify(input)}`);
 }
 
-export type resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<{
-  readonly [key in keyof input]: resolveTable<mergeIfUndefined<input[key], { name: key }>, scope>;
+export type resolveTables<tables, scope extends Scope = AbiTypeScope> = evaluate<{
+  readonly [key in keyof tables]: resolveTable<mergeIfUndefined<tables[key], { name: key }>, scope>;
 }>;
 
-export function resolveStoreTablesConfig<input, scope extends AbiTypeScope = AbiTypeScope>(
-  input: input,
-  scope: scope = AbiTypeScope as scope,
-): resolveStoreTablesConfig<input, scope> {
-  validateStoreTablesConfig(input, scope);
+export function resolveTables<tables, scope extends Scope = AbiTypeScope>(
+  tables: tables,
+  scope: scope = AbiTypeScope as unknown as scope,
+): resolveTables<tables, scope> {
+  validateTables(tables, scope);
 
-  if (typeof input !== "object" || input == null) {
-    throw new Error(`Expected tables config, received ${JSON.stringify(input)}`);
+  if (!isObject(tables)) {
+    throw new Error(`Expected tables config, received ${JSON.stringify(tables)}`);
   }
 
   return Object.fromEntries(
-    Object.entries(input).map(([key, table]) => {
-      return [key, resolveTable(mergeIfUndefined(table, { name: key }) as validateTable<input, scope>, scope)];
+    Object.entries(tables).map(([key, table]) => {
+      return [key, resolveTable(mergeIfUndefined(table, { name: key }) as validateTable<typeof table, scope>, scope)];
     }),
-  ) as unknown as resolveStoreTablesConfig<input, scope>;
+  ) as unknown as resolveTables<tables, scope>;
 }
 
 type extractInternalType<userTypes extends UserTypes> = { [key in keyof userTypes]: userTypes[key]["type"] };
@@ -121,68 +109,68 @@ export function extendedScope<input>(input: input): extendedScope<input> {
   return scopeWithEnums(get(input, "enums"), scopeWithUserTypes(get(input, "userTypes")));
 }
 
-export type validateStoreConfig<input> = {
-  [key in keyof input]: key extends "tables"
-    ? validateStoreTablesConfig<input[key], extendedScope<input>>
+export type validateStore<store> = {
+  [key in keyof store]: key extends "tables"
+    ? validateTables<store[key], extendedScope<store>>
     : key extends "userTypes"
       ? UserTypes
       : key extends "enums"
-        ? narrow<input[key]>
-        : key extends keyof StoreConfigInput
-          ? StoreConfigInput[key]
+        ? narrow<store[key]>
+        : key extends keyof StoreInput
+          ? StoreInput[key]
           : never;
 };
 
-export function validateStoreConfig(input: unknown): asserts input is StoreConfigInput {
-  const scope = extendedScope(input);
-  if (hasOwnKey(input, "tables") && isObject(input.tables)) {
-    for (const key of Object.keys(input.tables)) {
-      validateTable(get(input.tables, key), scope);
+export function validateStore(store: unknown): asserts store is StoreInput {
+  const scope = extendedScope(store);
+  if (hasOwnKey(store, "tables") && isObject(store.tables)) {
+    for (const key of Object.keys(store.tables)) {
+      validateTable(get(store.tables, key), scope);
     }
   }
 }
 
 export type resolveEnums<enums> = { readonly [key in keyof enums]: Readonly<enums[key]> };
 
-export type resolveCodegen<options> = {
-  [key in keyof CodegenOptions]: key extends keyof options ? options[key] : (typeof CODEGEN_DEFAULTS)[key];
+export type resolveCodegen<codegen> = {
+  [key in keyof CodegenOptions]: key extends keyof codegen ? codegen[key] : (typeof CODEGEN_DEFAULTS)[key];
 };
 
-export function resolveCodegen<options>(options: options): resolveCodegen<options> {
+export function resolveCodegen<codegen>(codegen: codegen): resolveCodegen<codegen> {
   return Object.fromEntries(
-    Object.entries(CODEGEN_DEFAULTS).map(([key, defaultValue]) => [key, get(options, key) ?? defaultValue]),
-  ) as resolveCodegen<options>;
+    Object.entries(CODEGEN_DEFAULTS).map(([key, defaultValue]) => [key, get(codegen, key) ?? defaultValue]),
+  ) as resolveCodegen<codegen>;
 }
 
-export type resolveStoreConfig<input> = evaluate<{
-  readonly tables: "tables" extends keyof input
-    ? resolveStoreTablesConfig<
+export type resolveStore<store> = evaluate<{
+  readonly tables: "tables" extends keyof store
+    ? resolveTables<
         {
-          [key in keyof input["tables"]]: mergeIfUndefined<
-            input["tables"][key],
-            { namespace: get<input, "namespace"> }
+          [key in keyof store["tables"]]: mergeIfUndefined<
+            store["tables"][key],
+            { namespace: get<store, "namespace"> }
           >;
         },
-        extendedScope<input>
+        extendedScope<store>
       >
     : {};
-  readonly userTypes: "userTypes" extends keyof input ? input["userTypes"] : {};
-  readonly enums: "enums" extends keyof input ? resolveEnums<input["enums"]> : {};
-  readonly namespace: "namespace" extends keyof input ? input["namespace"] : (typeof CONFIG_DEFAULTS)["namespace"];
-  readonly codegen: "codegen" extends keyof input ? resolveCodegen<input["codegen"]> : resolveCodegen<{}>;
+  readonly userTypes: "userTypes" extends keyof store ? store["userTypes"] : {};
+  readonly enums: "enums" extends keyof store ? resolveEnums<store["enums"]> : {};
+  readonly namespace: "namespace" extends keyof store ? store["namespace"] : (typeof CONFIG_DEFAULTS)["namespace"];
+  readonly codegen: "codegen" extends keyof store ? resolveCodegen<store["codegen"]> : resolveCodegen<{}>;
 }>;
 
-export function resolveStoreConfig<const input>(input: validateStoreConfig<input>): resolveStoreConfig<input> {
-  validateStoreConfig(input);
+export function resolveStore<const store>(store: validateStore<store>): resolveStore<store> {
+  validateStore(store);
 
   return {
-    tables: resolveStoreTablesConfig(
-      mapObject(input.tables ?? {}, (table) => mergeIfUndefined(table, { namespace: input.namespace })),
-      extendedScope(input),
+    tables: resolveTables(
+      mapObject(store.tables ?? {}, (table) => mergeIfUndefined(table, { namespace: store.namespace })),
+      extendedScope(store),
     ),
-    userTypes: input.userTypes ?? {},
-    enums: input.enums ?? {},
-    namespace: input.namespace ?? CONFIG_DEFAULTS["namespace"],
-    codegen: resolveCodegen(input.codegen),
-  } as unknown as resolveStoreConfig<input>;
+    userTypes: store.userTypes ?? {},
+    enums: store.enums ?? {},
+    namespace: store.namespace ?? CONFIG_DEFAULTS["namespace"],
+    codegen: resolveCodegen(store.codegen),
+  } as unknown as resolveStore<store>;
 }

@@ -1,16 +1,28 @@
 import { Hex } from "viem";
-import { TableCodegenOptions } from "./output";
+import { CodegenOptions, Enums, TableCodegenOptions, UserTypes } from "./output";
 
 export type SchemaInput = {
-  [key: string]: string;
+  readonly [key: string]: string;
 };
 
 export type TableInput = {
-  schema: SchemaInput;
-  key: string[];
-  tableId?: Hex;
-  name: string;
-  namespace?: string;
-  type?: "table" | "offchainTable";
-  codegen?: Partial<TableCodegenOptions>;
+  readonly schema: SchemaInput;
+  readonly key: readonly string[];
+  readonly tableId?: Hex;
+  readonly name: string;
+  readonly namespace?: string;
+  readonly type?: "table" | "offchainTable";
+  readonly codegen?: Partial<TableCodegenOptions>;
+};
+
+export type TablesInput = {
+  readonly [key: string]: TableInput;
+};
+
+export type StoreInput = {
+  readonly namespace?: string;
+  readonly tables: TablesInput;
+  readonly userTypes?: UserTypes;
+  readonly enums?: Enums;
+  readonly codegen?: Partial<CodegenOptions>;
 };
