@@ -3,13 +3,13 @@ import { defineStore } from "./store";
 import { attest } from "@arktype/attest";
 import { StoreConfig as StoreConfigV1 } from "../storeConfig";
 import { mudConfig } from "../../register";
-import { configToV1 } from "./compat";
-import { Config } from "./output";
+import { storeToV1 } from "./compat";
+import { Store } from "./output";
 
 describe("configToV1", () => {
   it("should transform the broad v2 output to the broad v1 output", () => {
-    attest<StoreConfigV1, configToV1<Config>>();
-    attest<configToV1<Config>, StoreConfigV1>();
+    attest<StoreConfigV1, storeToV1<Store>>();
+    attest<storeToV1<Store>, StoreConfigV1>();
   });
 
   it("should transform a v2 store config output to the v1 config output", () => {
@@ -87,7 +87,7 @@ describe("configToV1", () => {
       },
     });
 
-    attest<typeof configV1>(configToV1(configV2)).equals(configV1);
-    attest<configToV1<typeof configV2>>(configV1);
+    attest<typeof configV1>(storeToV1(configV2)).equals(configV1);
+    attest<storeToV1<typeof configV2>>(configV1);
   });
 });
