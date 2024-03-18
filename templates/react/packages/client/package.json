@@ -27,7 +27,7 @@
     "react-dom": "^18.2.0",
     "rxjs": "7.5.5",
     "viem": "2.7.12",
-    "wagmi": "2.5.7"
+    "wagmi": "2.5.10"
   },
   "devDependencies": {
     "@types/react": "18.2.22",

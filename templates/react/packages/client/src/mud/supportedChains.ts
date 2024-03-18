@@ -17,12 +17,4 @@ import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains"
  * See https://mud.dev/tutorials/minimal/deploy#run-the-user-interface
  * for instructions on how to add networks.
  */
-export const supportedChains: MUDChain[] = [
-  {
-    ...mudFoundry,
-    // Uses a placeholder explorer URL as a workaround for a Wagmi issue.
-    // Details at: https://github.com/latticexyz/mud/pull/2330
-    blockExplorers: { default: { name: "", url: "https://example.com" } },
-  },
-  latticeTestnet,
-];
+export const supportedChains: MUDChain[] = [mudFoundry, latticeTestnet];
