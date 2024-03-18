@@ -1,12 +1,11 @@
 import { evaluate, narrow } from "@arktype/util";
-import { get, hasOwnKey, isObject, mergeIfUndefined } from "./generics";
-import { validateTable } from "./table";
+import { get, hasOwnKey, mergeIfUndefined } from "./generics";
 import { UserTypes } from "./output";
 import { CONFIG_DEFAULTS } from "./defaults";
 import { mapObject } from "@latticexyz/common/utils";
 import { StoreInput } from "./input";
 import { resolveTables, validateTables } from "./tables";
-import { scopeWithUserTypes } from "./userTypes";
+import { scopeWithUserTypes, validateUserTypes } from "./userTypes";
 import { resolveEnums, scopeWithEnums } from "./enums";
 import { resolveCodegen } from "./codegen";
 
@@ -30,10 +29,12 @@ export type validateStore<store> = {
 
 export function validateStore(store: unknown): asserts store is StoreInput {
   const scope = extendedScope(store);
-  if (hasOwnKey(store, "tables") && isObject(store.tables)) {
-    for (const key of Object.keys(store.tables)) {
-      validateTable(get(store.tables, key), scope);
-    }
+  if (hasOwnKey(store, "tables")) {
+    validateTables(store.tables, scope);
+  }
+
+  if (hasOwnKey(store, "userTypes")) {
+    validateUserTypes(store.userTypes);
   }
 }
 
