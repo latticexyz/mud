@@ -17,12 +17,12 @@ const walletClient = createWalletClient({
     data: ENTRY_POINT_CREATE_CALL,
   });
 
-  console.log("entryPointHash deployed", entryPointHash);
+  console.log("EntryPoint deployed", entryPointHash);
 
   const simpleAccountFactoryHash = await walletClient.sendTransaction({
     to: DETERMINISTIC_DEPLOYER,
     data: SIMPLE_ACCOUNT_FACTORY_CREATE_CALL,
   });
 
-  console.log("simpleAccountFactory deployed", simpleAccountFactoryHash);
+  console.log("SimpleAccountFactory deployed", simpleAccountFactoryHash);
 })();
