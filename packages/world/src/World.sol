@@ -33,6 +33,9 @@ import { Balances } from "./codegen/tables/Balances.sol";
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This contract is the core "World" contract containing various methods for
  * data manipulation, system calls, and dynamic function selector handling.
+ *
+ * Note World unfortunately cannot inherit Store because some Store methods are
+ * registered via modules instead of directly on this contract.
  */
 contract World is StoreData, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
