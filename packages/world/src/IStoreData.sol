@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { IStoreRead } from "./IStoreRead.sol";
-import { IStoreWrite } from "./IStoreWrite.sol";
+import { IStoreRead } from "@latticexyz/store/src/IStoreRead.sol";
+import { IStoreWrite } from "@latticexyz/store/src/IStoreWrite.sol";
 
 /**
  * @title IStoreData
