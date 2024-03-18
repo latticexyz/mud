@@ -1,5 +1,5 @@
 import { evaluate } from "@arktype/util";
-import { StoreInput } from "@latticexyz/store/config/v2";
+import { StoreInput, StoreWithShorthandsInput } from "@latticexyz/store/config/v2";
 import { Module } from "./output";
 
 export type SystemInput = {
@@ -66,4 +66,8 @@ export type WorldInput = evaluate<
 
 export type NamespacesInput = { [key: string]: NamespaceInput };
 
-export type NamespaceInput = Pick<StoreConfigInput, "tables">;
+export type NamespaceInput = Pick<StoreInput, "tables">;
+
+/******** Variations with shorthands ********/
+
+export type WorldWithShorthandsInput = Omit<WorldInput, "tables"> & Pick<StoreWithShorthandsInput, "tables">;

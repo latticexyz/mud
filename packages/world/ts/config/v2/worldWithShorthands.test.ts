@@ -1,14 +1,14 @@
 import { describe, it } from "vitest";
-import { resolveWorldWithShorthands } from "./world";
+import { defineWorldWithShorthands } from "./worldWithShorthands";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { TABLE_CODEGEN_DEFAULTS, CODEGEN_DEFAULTS as STORE_CODEGEN_DEFAULTS } from "@latticexyz/store/config/v2";
-import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, DEPLOYMENT_DEFAULTS, CONFIG_DEFAULTS } from "../defaults";
+import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
 const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS };
 
-describe("resolveWorldWithShorthands", () => {
+describe("defineWorldWithShorthands", () => {
   it("should resolve namespaced shorthand table config with user types and enums", () => {
-    const config = resolveWorldWithShorthands({
+    const config = defineWorldWithShorthands({
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -26,6 +26,8 @@ describe("resolveWorldWithShorthands", () => {
     });
 
     const expected = {
+      ...CONFIG_DEFAULTS,
+      codegen: CODEGEN_DEFAULTS,
       tables: {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
@@ -65,17 +67,14 @@ describe("resolveWorldWithShorthands", () => {
       enums: {
         MyEnum: ["First", "Second"],
       },
-      codegen: CODEGEN_DEFAULTS,
       namespace: "",
-      deployment: DEPLOYMENT_DEFAULTS,
-      ...CONFIG_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
   });
 
   it("should resolve namespaced shorthand schema table config with user types and enums", () => {
-    const config = resolveWorldWithShorthands({
+    const config = defineWorldWithShorthands({
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -97,6 +96,8 @@ describe("resolveWorldWithShorthands", () => {
     });
 
     const expected = {
+      ...CONFIG_DEFAULTS,
+      codegen: CODEGEN_DEFAULTS,
       tables: {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
@@ -144,18 +145,18 @@ describe("resolveWorldWithShorthands", () => {
       enums: {
         MyEnum: ["First", "Second"],
       },
-      codegen: CODEGEN_DEFAULTS,
       namespace: "",
-      deployment: DEPLOYMENT_DEFAULTS,
-      ...CONFIG_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
   });
 
   it("should accept a shorthand store config as input and expand it", () => {
-    const config = resolveWorldWithShorthands({ tables: { Name: "address" } });
+    const config = defineWorldWithShorthands({ tables: { Name: "address" } });
+
     const expected = {
+      ...CONFIG_DEFAULTS,
+      codegen: CODEGEN_DEFAULTS,
       tables: {
         Name: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
@@ -191,9 +192,6 @@ describe("resolveWorldWithShorthands", () => {
       userTypes: {},
       enums: {},
       namespace: "",
-      codegen: CODEGEN_DEFAULTS,
-      deployment: DEPLOYMENT_DEFAULTS,
-      ...CONFIG_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -201,11 +199,13 @@ describe("resolveWorldWithShorthands", () => {
   });
 
   it("should accept a user type as input and expand it", () => {
-    const config = resolveWorldWithShorthands({
+    const config = defineWorldWithShorthands({
       tables: { Name: "CustomType" },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
     });
     const expected = {
+      ...CONFIG_DEFAULTS,
+      codegen: CODEGEN_DEFAULTS,
       tables: {
         Name: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
@@ -241,19 +241,18 @@ describe("resolveWorldWithShorthands", () => {
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" as string } },
       enums: {},
       namespace: "",
-      codegen: CODEGEN_DEFAULTS,
-      deployment: DEPLOYMENT_DEFAULTS,
-      ...CONFIG_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
   });
 
   it("given a schema with a key field with static ABI type, it should use `id` as single key", () => {
-    const config = resolveWorldWithShorthands({
+    const config = defineWorldWithShorthands({
       tables: { Example: { id: "address", name: "string", age: "uint256" } },
     });
     const expected = {
+      ...CONFIG_DEFAULTS,
+      codegen: CODEGEN_DEFAULTS,
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -297,19 +296,18 @@ describe("resolveWorldWithShorthands", () => {
       userTypes: {},
       enums: {},
       namespace: "",
-      codegen: CODEGEN_DEFAULTS,
-      deployment: DEPLOYMENT_DEFAULTS,
-      ...CONFIG_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
   });
 
   it("given a schema with a key field with static custom type, it should use `id` as single key", () => {
-    const config = resolveWorldWithShorthands({
+    const config = defineWorldWithShorthands({
       tables: { Example: { id: "address", name: "string", age: "uint256" } },
     });
     const expected = {
+      ...CONFIG_DEFAULTS,
+      codegen: CODEGEN_DEFAULTS,
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -353,9 +351,6 @@ describe("resolveWorldWithShorthands", () => {
       userTypes: {},
       enums: {},
       namespace: "",
-      codegen: CODEGEN_DEFAULTS,
-      deployment: DEPLOYMENT_DEFAULTS,
-      ...CONFIG_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -363,7 +358,7 @@ describe("resolveWorldWithShorthands", () => {
 
   it("throw an error if the shorthand doesn't include a key field", () => {
     attest(() =>
-      resolveWorldWithShorthands({
+      defineWorldWithShorthands({
         tables: {
           // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
           Example: {
@@ -380,7 +375,7 @@ describe("resolveWorldWithShorthands", () => {
   it("throw an error if the shorthand config includes a non-static key field", () => {
     attest(() =>
       // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
-      resolveWorldWithShorthands({ tables: { Example: { id: "string", name: "string", age: "uint256" } } }),
+      defineWorldWithShorthands({ tables: { Example: { id: "string", name: "string", age: "uint256" } } }),
     ).throwsAndHasTypeError(
       "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
     );
@@ -388,7 +383,7 @@ describe("resolveWorldWithShorthands", () => {
 
   it("throw an error if the shorthand config includes a non-static user type as key field", () => {
     attest(() =>
-      resolveWorldWithShorthands({
+      defineWorldWithShorthands({
         // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
         tables: { Example: { id: "dynamic", name: "string", age: "uint256" } },
         userTypes: {
