@@ -5,3 +5,6 @@ export * from "./tableShorthand";
 export * from "./tableFull";
 export * from "./table";
 export * from "./store";
+export * from "./output";
+export * from "./defaults";
+export * from "./compat";

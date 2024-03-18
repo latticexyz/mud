@@ -2,7 +2,7 @@ import { readFileSync } from "fs";
 import path from "path";
 import { SolidityUserDefinedType, extractUserTypes } from "./extractUserTypes";
 import { MUDError } from "../../errors";
-import { SchemaAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 
 export type UserType = {
   filePath: string;

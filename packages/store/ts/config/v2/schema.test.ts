@@ -1,5 +1,6 @@
 import { describe, it } from "vitest";
 import { resolveSchema } from "./schema";
+import { Schema } from "./output";
 import { extendScope, AbiTypeScope } from "./scope";
 import { attest } from "@arktype/attest";
 
@@ -39,5 +40,11 @@ describe("resolveSchema", () => {
     )
       .throws(`"NotACustomType" is not a valid type in this scope.`)
       .type.errors(`Type '"NotACustomType"' is not assignable to type 'AbiType | "CustomType"'.`);
+  });
+
+  it("should extend the output Schema type", () => {
+    const scope = extendScope(AbiTypeScope, { CustomType: "address" });
+    const resolved = resolveSchema({ regular: "uint256", user: "CustomType" }, scope);
+    attest<true, typeof resolved extends Schema ? true : false>();
   });
 });

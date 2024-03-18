@@ -1,4 +1,4 @@
-import { UnrecognizedSystemErrorFactory } from "@latticexyz/config";
+import { UnrecognizedSystemErrorFactory } from "@latticexyz/config/library";
 import { StoreConfig } from "@latticexyz/store";
 import { SystemConfig, WorldConfig } from "./types";
 

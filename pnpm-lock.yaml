@@ -552,6 +552,28 @@ importers:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0)
 
+  packages/query:
+    dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../schema-type
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      viem:
+        specifier: 2.7.12
+        version: 2.7.12(typescript@5.4.2)(zod@3.21.4)
+    devDependencies:
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
+      vitest:
+        specifier: 0.34.6
+        version: 0.34.6(jsdom@22.1.0)
+
   packages/react:
     dependencies:
       '@latticexyz/recs':
@@ -902,6 +924,9 @@ importers:
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
+      '@latticexyz/query':
+        specifier: workspace:*
+        version: link:../query
       '@latticexyz/recs':
         specifier: workspace:*
         version: link:../recs

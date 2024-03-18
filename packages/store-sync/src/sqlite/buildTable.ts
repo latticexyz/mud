@@ -2,7 +2,7 @@ import { SQLiteColumnBuilderBase, SQLiteTableWithColumns, sqliteTable } from "dr
 import { buildColumn } from "./buildColumn";
 import { Address } from "viem";
 import { getTableName } from "./getTableName";
-import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser/internal";
 import { snakeCase } from "change-case";
 
 export const metaColumns = {

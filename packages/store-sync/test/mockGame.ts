@@ -5,6 +5,7 @@ import { resolveConfig } from "@latticexyz/store";
 import { Hex, isHex } from "viem";
 import worldAbi from "mock-game-contracts/out/IWorld.sol/IWorld.abi.json";
 
+export { configV2 } from "mock-game-contracts/mud.config";
 export const deprecatedConfig = mudConfig;
 export const config = resolveConfig(mudConfig);
 export { worldAbi };

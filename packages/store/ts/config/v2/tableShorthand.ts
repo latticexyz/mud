@@ -1,10 +1,12 @@
-import { evaluate } from "@arktype/util";
-import { isStaticAbiType } from "@latticexyz/schema-type";
+import { ErrorMessage, evaluate } from "@arktype/util";
+import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
-import { NoStaticKeyFieldError } from "./table";
 import { TableFullInput } from "./tableFull";
+
+export type NoStaticKeyFieldError =
+  ErrorMessage<"Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.">;
 
 export type TableShorthandInput<scope extends AbiTypeScope = AbiTypeScope> = SchemaInput<scope> | keyof scope["types"];
 
@@ -18,8 +20,8 @@ export function isTableShorthandInput<scope extends AbiTypeScope = AbiTypeScope>
 // We don't use `conform` here because the restrictions we're imposing here are not native to typescript
 export type validateTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> =
   input extends SchemaInput<scope>
-    ? // If a shorthand schema is provided, require it to have a static key field
-      "key" extends getStaticAbiTypeKeys<input, scope>
+    ? // If a shorthand schema is provided, require it to have a static `id` field
+      "id" extends getStaticAbiTypeKeys<input, scope>
       ? input
       : NoStaticKeyFieldError
     : input extends keyof scope["types"]
@@ -40,12 +42,10 @@ export function validateTableShorthand<scope extends AbiTypeScope = AbiTypeScope
   }
   if (typeof input === "object" && input !== null) {
     if (isSchemaInput(input, scope)) {
-      if (hasOwnKey(input, "key") && isStaticAbiType(scope.types[input["key"]])) {
+      if (hasOwnKey(input, "id") && isStaticAbiType(scope.types[input["id"]])) {
         return;
       }
-      throw new Error(
-        `Invalid schema. Expected a \`key\` field with a static ABI type or an explicit \`primaryKey\` option.`,
-      );
+      throw new Error(`Invalid schema. Expected an \`id\` field with a static ABI type or an explicit \`key\` option.`);
     }
     throw new Error(`Invalid schema. Are you using invalid types or missing types in your scope?`);
   }
@@ -55,15 +55,15 @@ export function validateTableShorthand<scope extends AbiTypeScope = AbiTypeScope
 export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> = input extends keyof scope["types"]
   ? evaluate<
       TableFullInput<
-        { key: "bytes32"; value: input },
+        { id: "bytes32"; value: input },
         scope,
-        ["key" & getStaticAbiTypeKeys<{ key: "bytes32"; value: input }, scope>]
+        ["id" & getStaticAbiTypeKeys<{ id: "bytes32"; value: input }, scope>]
       >
     >
   : input extends SchemaInput<scope>
-    ? "key" extends getStaticAbiTypeKeys<input, scope>
-      ? // If the shorthand includes a static field called `key`, use it as key
-        evaluate<TableFullInput<input, scope, ["key"]>>
+    ? "id" extends getStaticAbiTypeKeys<input, scope>
+      ? // If the shorthand includes a static field called `id`, use it as `key`
+        evaluate<TableFullInput<input, scope, ["id"]>>
       : never
     : never;
 
@@ -76,15 +76,15 @@ export function resolveTableShorthand<input, scope extends AbiTypeScope = AbiTyp
   if (isSchemaInput(input, scope)) {
     return {
       schema: input,
-      primaryKey: ["key"],
+      key: ["id"],
     } as resolveTableShorthand<input, scope>;
   }
 
   return {
     schema: {
-      key: "bytes32",
+      id: "bytes32",
       value: input,
     },
-    primaryKey: ["key"],
+    key: ["id"],
   } as resolveTableShorthand<input, scope>;
 }

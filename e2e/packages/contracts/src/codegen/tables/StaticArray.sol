@@ -135,33 +135,11 @@ library StaticArray {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint256_3(value)));
   }
 
-  /**
-   * @notice Get the length of value.
-   */
-  function lengthValue() internal pure returns (uint256) {
-    return 3;
-  }
+  // The length of value
+  uint256 constant lengthValue = 3;
 
-  /**
-   * @notice Get the length of value.
-   */
-  function _lengthValue() internal pure returns (uint256) {
-    return 3;
-  }
-
-  /**
-   * @notice Get the length of value.
-   */
-  function length() internal pure returns (uint256) {
-    return 3;
-  }
-
-  /**
-   * @notice Get the length of value.
-   */
-  function _length() internal pure returns (uint256) {
-    return 3;
-  }
+  // The length of value
+  uint256 constant length = 3;
 
   /**
    * @notice Get an item of value.

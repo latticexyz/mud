@@ -1,5 +1,5 @@
 import { concatHex } from "viem";
-import { isStaticAbiType } from "@latticexyz/schema-type";
+import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { SchemaToPrimitives, ValueArgs, ValueSchema } from "./common";
 import { decodeValue } from "./decodeValue";
 import { staticDataLength } from "./staticDataLength";

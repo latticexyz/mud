@@ -1,29 +1,26 @@
-import { ZustandStore } from "../zustand";
-import { AllTables, Query, QueryResultSubject } from "./common";
-import { StoreConfig, Tables } from "@latticexyz/store";
-import { findSubjects } from "./findSubjects";
+import { Query } from "./common";
+import { QueryCacheStore, extractTables } from "./createStore";
+import { SubjectRecords, findSubjects } from "@latticexyz/query";
+import { queryToWire } from "./queryToWire";
 
-// TODO: validate query
-//       - one subject per table
-//       - underlying subject field types match
-//       - only keys as subjects for now?
-//       - subjects and conditions all have valid fields
-//       - can only compare like types?
-//       - `where` tables are in `from`
+// TODO: take in query input type so we can narrow result types
 
-// TODO: make query smarter/config aware for shorthand
-// TODO: make condition types smarter, so condition literal matches the field primitive type
-// TODO: return matching records alongside subjects? because the record subset may be smaller than what querying for records with matching subjects
+export type QueryResult = {
+  subjects: readonly SubjectRecords[];
+};
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type QueryResult<query extends Query> = readonly QueryResultSubject[];
+export async function query<store extends QueryCacheStore, query extends Query<extractTables<store>>>(
+  store: store,
+  query: query,
+): Promise<QueryResult> {
+  const { tables, records } = store.getState();
 
-export async function query<config extends StoreConfig, extraTables extends Tables | undefined = undefined>(
-  store: ZustandStore<AllTables<config, extraTables>>,
-  query: Query,
-): Promise<QueryResult<typeof query>> {
-  const records = Object.values(store.getState().records);
-  const matches = findSubjects({ records, query });
+  const subjects = findSubjects({
+    records,
+    query: queryToWire(tables, query),
+  });
 
-  return matches;
+  return {
+    subjects,
+  };
 }

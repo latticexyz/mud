@@ -1,16 +1,25 @@
 import { conform, evaluate } from "@arktype/util";
+import { isStaticAbiType } from "@latticexyz/schema-type/internal";
+import { Hex } from "viem";
 import { get, hasOwnKey } from "./generics";
 import { SchemaInput, isSchemaInput, resolveSchema } from "./schema";
 import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
-import { isStaticAbiType } from "@latticexyz/schema-type";
+import { TableCodegenOptions } from "./output";
+import { TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
+import { resourceToHex } from "@latticexyz/common";
 
 export type TableFullInput<
   schema extends SchemaInput<scope> = SchemaInput,
   scope extends AbiTypeScope = AbiTypeScope,
-  primaryKey extends ValidKeys<schema, scope> = ValidKeys<schema, scope>,
+  key extends ValidKeys<schema, scope> = ValidKeys<schema, scope>,
 > = {
   schema: schema;
-  primaryKey: primaryKey;
+  key: key;
+  tableId?: Hex;
+  type?: "table" | "offchainTable";
+  name?: string;
+  namespace?: string;
+  codegen?: Partial<TableCodegenOptions>;
 };
 
 export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = readonly [
@@ -28,13 +37,13 @@ function getValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeSc
 }
 
 export function isValidPrimaryKey<schema extends SchemaInput<scope>, scope extends AbiTypeScope>(
-  primaryKey: unknown,
+  key: unknown,
   schema: schema,
   scope: scope = AbiTypeScope as scope,
-): primaryKey is ValidKeys<schema, scope> {
+): key is ValidKeys<schema, scope> {
   return (
-    Array.isArray(primaryKey) &&
-    primaryKey.every(
+    Array.isArray(key) &&
+    key.every(
       (key) =>
         hasOwnKey(schema, key) && hasOwnKey(scope.types, schema[key]) && isStaticAbiType(scope.types[schema[key]]),
     )
@@ -46,8 +55,8 @@ export function isTableFullInput(input: unknown): input is TableFullInput {
     typeof input === "object" &&
     input !== null &&
     hasOwnKey(input, "schema") &&
-    hasOwnKey(input, "primaryKey") &&
-    Array.isArray(input["primaryKey"])
+    hasOwnKey(input, "key") &&
+    Array.isArray(input["key"])
   );
 }
 
@@ -56,11 +65,13 @@ export type validateKeys<validKeys extends PropertyKey, keys> = {
 };
 
 export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> = {
-  [key in keyof input]: key extends "primaryKey"
+  [key in keyof input]: key extends "key"
     ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput<scope>>, scope>, input[key]>
     : key extends "schema"
       ? conform<input[key], SchemaInput<scope>>
-      : input[key];
+      : key extends keyof TableFullInput
+        ? TableFullInput[key]
+        : input[key];
 };
 
 export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope>(
@@ -75,37 +86,115 @@ export function validateTableFull<input, scope extends AbiTypeScope = AbiTypeSco
     throw new Error("Invalid schema input");
   }
 
-  if (!hasOwnKey(input, "primaryKey") || !isValidPrimaryKey(input["primaryKey"], input["schema"], scope)) {
+  if (!hasOwnKey(input, "key") || !isValidPrimaryKey(input["key"], input["schema"], scope)) {
     throw new Error(
-      `Invalid primary key. Expected \`(${getValidKeys(input["schema"], scope)
+      `Invalid key. Expected \`(${getValidKeys(input["schema"], scope)
         .map((item) => `"${String(item)}"`)
         .join(" | ")})[]\`, received \`${
-        hasOwnKey(input, "primaryKey") && Array.isArray(input.primaryKey)
-          ? `[${input.primaryKey.map((item) => `"${item}"`).join(", ")}]`
+        hasOwnKey(input, "key") && Array.isArray(input.key)
+          ? `[${input.key.map((item) => `"${item}"`).join(", ")}]`
           : "undefined"
       }\``,
     );
   }
 }
 
+export type resolveTableCodegen<
+  input extends TableFullInput<SchemaInput<scope>, scope>,
+  scope extends AbiTypeScope = AbiTypeScope,
+> = {
+  [key in keyof TableCodegenOptions]-?: key extends keyof input["codegen"]
+    ? undefined extends input["codegen"][key]
+      ? key extends "dataStruct"
+        ? boolean
+        : key extends keyof typeof TABLE_CODEGEN_DEFAULTS
+          ? (typeof TABLE_CODEGEN_DEFAULTS)[key]
+          : never
+      : input["codegen"][key]
+    : // dataStruct isn't narrowed, because its value is conditional on the number of value schema fields
+      key extends "dataStruct"
+      ? boolean
+      : key extends keyof typeof TABLE_CODEGEN_DEFAULTS
+        ? (typeof TABLE_CODEGEN_DEFAULTS)[key]
+        : never;
+};
+
+export function resolveTableCodegen<
+  input extends TableFullInput<SchemaInput<scope>, scope>,
+  scope extends AbiTypeScope = AbiTypeScope,
+>(input: input, scope: scope): resolveTableCodegen<input, scope> {
+  const options = input.codegen;
+  return {
+    directory: get(options, "directory") ?? TABLE_CODEGEN_DEFAULTS.directory,
+    tableIdArgument: get(options, "tableIdArgument") ?? TABLE_CODEGEN_DEFAULTS.tableIdArgument,
+    storeArgument: get(options, "storeArgument") ?? TABLE_CODEGEN_DEFAULTS.storeArgument,
+    // dataStruct is true if there are at least 2 value fields
+    dataStruct: get(options, "dataStruct") ?? Object.keys(input.schema).length - input.key.length > 1,
+  } satisfies TableCodegenOptions as resolveTableCodegen<input, scope>;
+}
+
+export type tableWithDefaults<
+  table extends TableFullInput<SchemaInput<scope>, scope>,
+  defaultName extends string,
+  defaultNamespace extends string,
+  scope extends AbiTypeScope = AbiTypeScope,
+> = {
+  [key in keyof TableFullInput]-?: undefined extends table[key]
+    ? key extends "name"
+      ? defaultName
+      : key extends "namespace"
+        ? defaultNamespace
+        : key extends "type"
+          ? typeof TABLE_DEFAULTS.type
+          : table[key]
+    : table[key];
+};
+
+export function tableWithDefaults<
+  table extends TableFullInput,
+  defaultName extends string,
+  defaultNamespace extends string,
+>(
+  table: table,
+  defaultName: defaultName,
+  defaultNamespace: defaultNamespace,
+): tableWithDefaults<table, defaultName, defaultNamespace> {
+  return {
+    ...table,
+    tableId:
+      table.tableId ??
+      (defaultName
+        ? resourceToHex({ type: TABLE_DEFAULTS.type, namespace: defaultNamespace, name: defaultName })
+        : undefined),
+    name: table.name ?? defaultName,
+    namespace: table.namespace ?? defaultNamespace,
+    type: table.type ?? TABLE_DEFAULTS.type,
+  } as tableWithDefaults<table, defaultName, defaultNamespace>;
+}
+
 export type resolveTableFullConfig<
   input extends TableFullInput<SchemaInput<scope>, scope>,
   scope extends AbiTypeScope = AbiTypeScope,
 > = evaluate<{
-  readonly primaryKey: Readonly<input["primaryKey"]>;
+  readonly tableId: Hex;
+  readonly name: input["name"] extends undefined ? "" : input["name"];
+  readonly namespace: input["namespace"] extends undefined ? "" : input["namespace"];
+  readonly type: input["type"] extends undefined ? "table" : input["type"];
+  readonly key: Readonly<input["key"]>;
   readonly schema: resolveSchema<input["schema"], scope>;
   readonly keySchema: resolveSchema<
     {
-      readonly [key in input["primaryKey"][number]]: input["schema"][key];
+      readonly [key in input["key"][number]]: input["schema"][key];
     },
     scope
   >;
   readonly valueSchema: resolveSchema<
     {
-      readonly [key in Exclude<keyof input["schema"], input["primaryKey"][number]>]: input["schema"][key];
+      readonly [key in Exclude<keyof input["schema"], input["key"][number]>]: input["schema"][key];
     },
     scope
   >;
+  readonly codegen: resolveTableCodegen<input, scope>;
 }>;
 
 export function resolveTableFullConfig<
@@ -115,23 +204,25 @@ export function resolveTableFullConfig<
   validateTableFull(input, scope);
 
   return {
-    primaryKey: input["primaryKey"],
+    // TODO: require tableId and name as inputs
+    tableId: input.tableId ?? ("0x" as Hex),
+    name: input.name ?? ("" as const),
+    namespace: input.namespace ?? ("" as const),
+    type: input.type ?? ("table" as const),
+    key: input["key"],
     schema: resolveSchema(input["schema"], scope),
     keySchema: resolveSchema(
       Object.fromEntries(
-        Object.entries(input["schema"]).filter(([key]) =>
-          input["primaryKey"].includes(key as input["primaryKey"][number]),
-        ),
+        Object.entries(input["schema"]).filter(([key]) => input["key"].includes(key as input["key"][number])),
       ),
       scope,
     ),
     valueSchema: resolveSchema(
       Object.fromEntries(
-        Object.entries(input["schema"]).filter(
-          ([key]) => !input["primaryKey"].includes(key as input["primaryKey"][number]),
-        ),
+        Object.entries(input["schema"]).filter(([key]) => !input["key"].includes(key as input["key"][number])),
       ),
       scope,
     ),
-  } as resolveTableFullConfig<input, scope>;
+    codegen: resolveTableCodegen(input, scope),
+  } as unknown as resolveTableFullConfig<input, scope>;
 }
