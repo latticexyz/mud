@@ -1,4 +1,5 @@
 import { CODEGEN_DEFAULTS } from "./defaults";
+import { get } from "./generics";
 import { CodegenOptions } from "./output";
 
 export type resolveCodegen<codegen> = {

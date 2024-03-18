@@ -1,10 +1,11 @@
 import { ErrorMessage, conform } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
-import { hasOwnKey, isObject } from "./generics";
+import { get, hasOwnKey, isObject, mergeIfUndefined } from "./generics";
 import { isSchemaInput } from "./schema";
 import { AbiTypeScope, Scope, getStaticAbiTypeKeys } from "./scope";
-import { SchemaInput, ScopedSchemaInput } from "./input";
-import { TableShorthandInput } from "./shorthand/input";
+import { SchemaInput, ScopedSchemaInput, TablesWithShorthandsInput } from "./input";
+import { TableShorthandInput } from "./input";
+import { validateTable } from "./table";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.">;
@@ -15,6 +16,10 @@ export function isTableShorthandInput(shorthand: unknown): shorthand is TableSho
     (isObject(shorthand) && Object.values(shorthand).every((value) => typeof value === "string"))
   );
 }
+
+export type validateTableWithShorthand<table, scope extends Scope = AbiTypeScope> = table extends TableShorthandInput
+  ? validateTableShorthand<table, scope>
+  : validateTable<table, scope>;
 
 // We don't use `conform` here because the restrictions we're imposing here are not native to typescript
 export type validateTableShorthand<input, scope extends Scope = AbiTypeScope> = input extends SchemaInput
@@ -66,7 +71,7 @@ export type resolveTableShorthand<
     : never;
 
 export function resolveTableShorthand<shorthand, scope extends Scope = AbiTypeScope>(
-  shorthand: validateTableShorthand<shorthand, scope>,
+  shorthand: shorthand,
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTableShorthand<shorthand, scope> {
   validateTableShorthand(shorthand, scope);
@@ -85,4 +90,42 @@ export function resolveTableShorthand<shorthand, scope extends Scope = AbiTypeSc
     },
     key: ["id"],
   } as unknown as resolveTableShorthand<shorthand, scope>;
+}
+
+export function defineTableShorthand<shorthand, scope extends Scope = AbiTypeScope>(
+  shorthand: validateTableShorthand<shorthand, scope>,
+  scope: scope = AbiTypeScope as unknown as scope,
+): resolveTableShorthand<shorthand, scope> {
+  return resolveTableShorthand(shorthand, scope) as resolveTableShorthand<shorthand, scope>;
+}
+
+/**
+ * If a shorthand is provided, it is resolved to a full config.
+ * If a full config is provided, it is passed through.
+ */
+export type resolveTableWithShorthand<table, scope extends Scope = AbiTypeScope> = table extends TableShorthandInput
+  ? resolveTableShorthand<table, scope>
+  : table;
+
+export type resolveTablesWithShorthands<input, scope extends AbiTypeScope = AbiTypeScope> = {
+  [key in keyof input]: mergeIfUndefined<resolveTableWithShorthand<input[key], scope>, { name: key }>;
+};
+
+export type validateTablesWithShorthands<tables, scope extends Scope = AbiTypeScope> = {
+  [key in keyof tables]: validateTableWithShorthand<tables[key], scope>;
+};
+
+export function validateTablesWithShorthands<scope extends Scope = AbiTypeScope>(
+  tables: unknown,
+  scope: scope,
+): asserts tables is TablesWithShorthandsInput {
+  if (isObject(tables)) {
+    for (const key of Object.keys(tables)) {
+      if (isTableShorthandInput(get(tables, key))) {
+        validateTableShorthand(get(tables, key), scope);
+      } else {
+        validateTable(get(tables, key), scope);
+      }
+    }
+  }
 }

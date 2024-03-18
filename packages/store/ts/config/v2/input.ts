@@ -31,3 +31,13 @@ export type StoreInput = {
   readonly enums?: Enums;
   readonly codegen?: Partial<CodegenOptions>;
 };
+
+/******** Variations with shorthands ********/
+
+export type TableShorthandInput = SchemaInput | string;
+
+export type TablesWithShorthandsInput = {
+  [key: string]: TableInput | TableShorthandInput;
+};
+
+export type StoreWithShorthandsInput = Omit<StoreInput, "tables"> & { tables: TablesWithShorthandsInput };

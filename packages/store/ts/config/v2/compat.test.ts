@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { resolveStoreConfig } from "./store";
+import { defineStore } from "./store";
 import { attest } from "@arktype/attest";
 import { StoreConfig as StoreConfigV1 } from "../storeConfig";
 import { mudConfig } from "../../register";
@@ -53,7 +53,7 @@ describe("configToV1", () => {
       },
     }) satisfies StoreConfigV1;
 
-    const configV2 = resolveStoreConfig({
+    const configV2 = defineStore({
       enums: {
         TerrainType: ["None", "Ocean", "Grassland", "Desert"],
       },
