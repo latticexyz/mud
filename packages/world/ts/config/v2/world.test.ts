@@ -5,7 +5,7 @@ import { resourceToHex } from "@latticexyz/common";
 import { TABLE_CODEGEN_DEFAULTS, CODEGEN_DEFAULTS as STORE_CODEGEN_DEFAULTS } from "@latticexyz/store/config/v2";
 import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, DEPLOYMENT_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
 import { World } from "./output";
-const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS };
+const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS } as const;
 
 describe("defineWorld", () => {
   it("should resolve namespaced tables", () => {
@@ -27,6 +27,8 @@ describe("defineWorld", () => {
     });
 
     const expected = {
+      ...CONFIG_DEFAULTS,
+      codegen: CODEGEN_DEFAULTS,
       tables: {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
@@ -69,10 +71,7 @@ describe("defineWorld", () => {
       },
       userTypes: {},
       enums: {},
-      codegen: CODEGEN_DEFAULTS,
       namespace: "",
-      deployment: DEPLOYMENT_DEFAULTS,
-      ...CONFIG_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -104,6 +103,8 @@ describe("defineWorld", () => {
     });
 
     const expected = {
+      ...CONFIG_DEFAULTS,
+      codegen: CODEGEN_DEFAULTS,
       tables: {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
@@ -151,10 +152,7 @@ describe("defineWorld", () => {
       enums: {
         MyEnum: ["First", "Second"],
       },
-      codegen: CODEGEN_DEFAULTS,
       namespace: "",
-      deployment: DEPLOYMENT_DEFAULTS,
-      ...CONFIG_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -220,7 +218,10 @@ describe("defineWorld", () => {
           },
         },
       });
+
       const expected = {
+        ...CONFIG_DEFAULTS,
+        codegen: CODEGEN_DEFAULTS,
         tables: {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -264,9 +265,6 @@ describe("defineWorld", () => {
         userTypes: {},
         enums: {},
         namespace: "",
-        codegen: CODEGEN_DEFAULTS,
-        deployment: DEPLOYMENT_DEFAULTS,
-        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -286,6 +284,8 @@ describe("defineWorld", () => {
         },
       });
       const expected = {
+        ...CONFIG_DEFAULTS,
+        codegen: CODEGEN_DEFAULTS,
         tables: {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -332,9 +332,6 @@ describe("defineWorld", () => {
         },
         enums: {},
         namespace: "",
-        codegen: CODEGEN_DEFAULTS,
-        deployment: DEPLOYMENT_DEFAULTS,
-        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -350,6 +347,8 @@ describe("defineWorld", () => {
         },
       });
       const expected = {
+        ...CONFIG_DEFAULTS,
+        codegen: CODEGEN_DEFAULTS,
         tables: {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -393,9 +392,7 @@ describe("defineWorld", () => {
         userTypes: {},
         enums: {},
         namespace: "",
-        codegen: CODEGEN_DEFAULTS,
         deployment: DEPLOYMENT_DEFAULTS,
-        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -415,6 +412,8 @@ describe("defineWorld", () => {
         },
       });
       const expected = {
+        ...CONFIG_DEFAULTS,
+        codegen: CODEGEN_DEFAULTS,
         tables: {
           First: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
@@ -496,9 +495,6 @@ describe("defineWorld", () => {
         userTypes: {},
         enums: {},
         namespace: "",
-        codegen: CODEGEN_DEFAULTS,
-        deployment: DEPLOYMENT_DEFAULTS,
-        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -523,6 +519,8 @@ describe("defineWorld", () => {
       });
 
       const expected = {
+        ...CONFIG_DEFAULTS,
+        codegen: CODEGEN_DEFAULTS,
         tables: {
           First: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
@@ -607,9 +605,6 @@ describe("defineWorld", () => {
         },
         enums: {},
         namespace: "",
-        codegen: CODEGEN_DEFAULTS,
-        deployment: DEPLOYMENT_DEFAULTS,
-        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -687,6 +682,8 @@ describe("defineWorld", () => {
         },
       });
       const expected = {
+        ...CONFIG_DEFAULTS,
+        codegen: CODEGEN_DEFAULTS,
         tables: {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -735,12 +732,10 @@ describe("defineWorld", () => {
           ValidNames: ["first", "second"],
         },
         namespace: "",
-        codegen: CODEGEN_DEFAULTS,
-        deployment: DEPLOYMENT_DEFAULTS,
-        ...CONFIG_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
+      attest<typeof config>(expected).equals(expected);
     });
 
     it("should use the root namespace as default namespace", () => {
