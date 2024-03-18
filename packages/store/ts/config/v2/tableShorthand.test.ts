@@ -1,7 +1,7 @@
 import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { AbiTypeScope, extendScope } from "../scope";
-import { resolveTableShorthand } from "./table";
+import { AbiTypeScope, extendScope } from "./scope";
+import { resolveTableShorthand } from "./tableShorthand";
 
 describe("resolveTableShorthand", () => {
   it("should expand a single ABI type into a id/value schema", () => {

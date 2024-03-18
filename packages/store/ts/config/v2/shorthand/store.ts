@@ -9,7 +9,12 @@ import {
   scopeWithUserTypes,
 } from "../store";
 import { TableInput, validateTable } from "../table";
-import { TableShorthandInput, isTableShorthandInput, resolveTableShorthand, validateTableShorthand } from "./table";
+import {
+  TableShorthandInput,
+  isTableShorthandInput,
+  resolveTableShorthand,
+  validateTableShorthand,
+} from "../tableShorthand";
 import { Enums, UserTypes } from "../output";
 import { SchemaInput } from "../schema";
 import { get, hasOwnKey, isObject, mergeIfUndefined } from "../generics";

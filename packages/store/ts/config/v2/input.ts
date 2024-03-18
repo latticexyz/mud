@@ -1,8 +1,13 @@
 import { Hex } from "viem";
 import { CodegenOptions, Enums, TableCodegenOptions, UserTypes } from "./output";
+import { Scope } from "./scope";
 
 export type SchemaInput = {
   readonly [key: string]: string;
+};
+
+export type ScopedSchemaInput<scope extends Scope> = {
+  readonly [key: string]: keyof scope["types"];
 };
 
 export type TableInput = {

@@ -55,10 +55,9 @@ export function defineSchema<schema, scope extends AbiTypeScope = AbiTypeScope>(
   return resolveSchema(schema, scope) as resolveSchema<schema, scope>;
 }
 
-/** @deprecated */
-export function isSchemaInput<scope extends AbiTypeScope = AbiTypeScope>(
+export function isSchemaInput<scope extends Scope = AbiTypeScope>(
   input: unknown,
-  scope: scope = AbiTypeScope as scope,
+  scope: scope = AbiTypeScope as unknown as scope,
 ): input is SchemaInput {
   return typeof input === "object" && input != null && Object.values(input).every((key) => hasOwnKey(scope.types, key));
 }
