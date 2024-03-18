@@ -17,13 +17,12 @@ _._
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/Store.sol)
 
 **Inherits:**
-[StoreWrite](/src/StoreWrite.sol/abstract.StoreWrite.md), [StoreRead](/store/reference/store-core#storeread)
+[IStore](/src/IStore.sol/interface.IStore.md), [StoreWrite](/src/StoreWrite.sol/abstract.StoreWrite.md), [StoreRead](/store/reference/store-core#storeread)
 
 This contract integrates the core storage functionalities and provides an interface for data storage.
 
 _This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
-but not write methods.
-Note that `Store` does not implement `IStore`, because we want `IWorldKernel` to inherit `IStore` but it does not implement all the Store methods._
+but not write methods._
 
 ### Functions
 
