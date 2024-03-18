@@ -9,7 +9,7 @@ pragma solidity >=0.8.24;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface ILibWrapperSystem {
-  function callLib() external pure returns (string memory);
+  function callLib() external pure returns (string memory _parameter0);
 
-  function callFreeFunc() external pure returns (string memory);
+  function callFreeFunc() external pure returns (string memory _parameter0);
 }

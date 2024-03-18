@@ -6,6 +6,7 @@ import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorldInterface } from "./renderWorldInterface";
 import { resolveWorldConfig } from "../../config/resolveWorldConfig";
 import { WorldConfig } from "../../config/types";
+import { renderSystemLibrary } from "./renderSystemLibrary";
 
 export async function worldgen(
   config: StoreConfig & WorldConfig,
@@ -41,17 +42,49 @@ export async function worldgen(
         };
       }
     });
+
     const systemInterfaceName = `I${system.basename}`;
-    const output = renderSystemInterface({
-      name: systemInterfaceName,
-      functionPrefix: config.namespace === "" ? "" : `${config.namespace}__`,
-      functions,
-      errors,
-      imports,
-    });
-    // write to file
-    const fullOutputPath = path.join(worldgenBaseDirectory, systemInterfaceName + ".sol");
-    await formatAndWriteSolidity(output, fullOutputPath, "Generated system interface");
+    const fullInterfaceOutputPath = path.join(worldgenBaseDirectory, systemInterfaceName + ".sol");
+    const systemLibraryName = `${system.basename}Lib`;
+    const fullLibraryOutputPath = path.join(worldgenBaseDirectory, systemLibraryName + ".sol");
+
+    {
+      // render interface
+      const output = renderSystemInterface({
+        name: systemInterfaceName,
+        functionPrefix: config.namespace === "" ? "" : `${config.namespace}__`,
+        functions,
+        errors,
+        imports,
+      });
+      // write interface to file
+      await formatAndWriteSolidity(output, fullInterfaceOutputPath, "Generated system interface");
+    }
+
+    {
+      // import interface into the library
+      const importsWithInterface = [
+        ...imports,
+        {
+          symbol: systemInterfaceName,
+          fromPath: fullInterfaceOutputPath,
+          usedInPath: worldgenBaseDirectory,
+        },
+      ];
+
+      // render library
+      const output = renderSystemLibrary({
+        systemName: system.basename.slice(0, 16),
+        interfaceName: systemInterfaceName,
+        libraryName: systemLibraryName,
+        namespace: config.namespace,
+        functions,
+        imports: importsWithInterface,
+        worldImportPath: config.worldImportPath,
+      });
+      // write library to file
+      await formatAndWriteSolidity(output, fullLibraryOutputPath, "Generated system library");
+    }
 
     // prepare imports for IWorld
     systemInterfaceImports.push({

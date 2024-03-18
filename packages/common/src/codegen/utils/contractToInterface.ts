@@ -9,14 +9,20 @@ import { MUDError } from "../../errors";
 
 export interface ContractInterfaceFunction {
   name: string;
-  parameters: string[];
+  parameters: ParsedParameter[];
   stateMutability: string;
-  returnParameters: string[];
+  returnParameters: ParsedParameter[];
 }
 
 export interface ContractInterfaceError {
   name: string;
-  parameters: string[];
+  parameters: ParsedParameter[];
+}
+
+export interface ParsedParameter {
+  name: string;
+  typeName: string;
+  typedNameWithLocation: string;
 }
 
 interface SymbolImport {
@@ -70,9 +76,12 @@ export function contractToInterface(
         if (visibility === "external" || visibility === "public") {
           functions.push({
             name: name === null ? "" : name,
-            parameters: parameters.map(parseParameter),
+            parameters: parameters.map((variableDeclaration, index) => parseParameter(variableDeclaration, index)),
             stateMutability: stateMutability || "",
-            returnParameters: returnParameters === null ? [] : returnParameters.map(parseParameter),
+            returnParameters:
+              returnParameters === null
+                ? []
+                : returnParameters.map((variableDeclaration, index) => parseParameter(variableDeclaration, index)),
           });
 
           for (const { typeName } of parameters.concat(returnParameters ?? [])) {
@@ -90,7 +99,7 @@ export function contractToInterface(
     CustomErrorDefinition({ name, parameters }) {
       errors.push({
         name,
-        parameters: parameters.map(parseParameter),
+        parameters: parameters.map((variableDeclaration, index) => parseParameter(variableDeclaration, index)),
       });
 
       for (const parameter of parameters) {
@@ -121,7 +130,8 @@ function findContractNode(ast: SourceUnit, contractName: string): ContractDefini
   return contract;
 }
 
-function parseParameter({ name, typeName, storageLocation }: VariableDeclaration): string {
+function parseParameter({ name, typeName, storageLocation }: VariableDeclaration, index: number): ParsedParameter {
+  name = name == null ? `_parameter${index}` : name;
   let typedNameWithLocation = "";
 
   const { name: flattenedTypeName, stateMutability } = flattenTypeName(typeName);
@@ -135,12 +145,10 @@ function parseParameter({ name, typeName, storageLocation }: VariableDeclaration
   if (storageLocation !== null) {
     typedNameWithLocation += ` ${storageLocation}`;
   }
-  // optional variable name
-  if (name !== null) {
-    typedNameWithLocation += ` ${name}`;
-  }
+  // variable name
+  typedNameWithLocation += ` ${name}`;
 
-  return typedNameWithLocation;
+  return { name, typeName: flattenedTypeName, typedNameWithLocation };
 }
 
 function flattenTypeName(typeName: TypeName | null): { name: string; stateMutability: string | null } {

@@ -14,6 +14,17 @@ export interface RenderSystemInterfaceOptions {
   errors: ContractInterfaceError[];
 }
 
+export interface RenderSystemLibraryOptions {
+  /** List of symbols to import, and their file paths */
+  imports: ImportDatum[];
+  systemName: string;
+  interfaceName: string;
+  libraryName: string;
+  namespace: string;
+  functions: ContractInterfaceFunction[];
+  worldImportPath: string;
+}
+
 export interface RenderWorldOptions {
   /** List of symbols to import, and their file paths */
   imports: RelativeImportDatum[];
