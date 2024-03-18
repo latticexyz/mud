@@ -2,111 +2,115 @@ import { conform, evaluate, narrow } from "@arktype/util";
 import { mapObject } from "@latticexyz/common/utils";
 import {
   UserTypes,
-  resolveStoreConfig,
-  resolveStoreTablesConfig,
   extendedScope,
   AbiTypeScope,
   get,
   resolveTable,
-  validateStoreTablesConfig,
   validateTable,
   isObject,
   hasOwnKey,
   resolveCodegen as resolveStoreCodegen,
   mergeIfUndefined,
+  Scope,
+  validateTables,
+  resolveStore,
+  resolveTables,
 } from "@latticexyz/store/config/v2";
-import { Config } from "./output";
-import { NamespacesInput, SystemsConfigInput, WorldConfigInput } from "./input";
+import { NamespacesInput, SystemsInput, WorldInput } from "./input";
 import { DEPLOYMENT_DEFAULTS, CODEGEN_DEFAULTS, CONFIG_DEFAULTS, SYSTEM_DEFAULTS } from "./defaults";
+import { Tables } from "@latticexyz/store";
 
-export type validateNamespaces<input, scope extends AbiTypeScope = AbiTypeScope> = {
-  [namespace in keyof input]: {
-    [key in keyof input[namespace]]: key extends "tables"
-      ? validateStoreTablesConfig<input[namespace][key], scope>
-      : input[namespace][key];
+export type validateNamespaces<namespaces, scope extends Scope = AbiTypeScope> = {
+  [namespace in keyof namespaces]: {
+    [key in keyof namespaces[namespace]]: key extends "tables"
+      ? validateTables<namespaces[namespace][key], scope>
+      : namespaces[namespace][key];
   };
 };
 
-function validateNamespaces<scope extends AbiTypeScope = AbiTypeScope>(
-  input: unknown,
+export function validateNamespaces<scope extends Scope = AbiTypeScope>(
+  namespaces: unknown,
   scope: scope,
-): asserts input is NamespacesInput {
-  if (isObject(input)) {
-    for (const namespace of Object.values(input)) {
+): asserts namespaces is NamespacesInput {
+  if (isObject(namespaces)) {
+    for (const namespace of Object.values(namespaces)) {
       if (!hasOwnKey(namespace, "tables")) {
         throw new Error(`Expected namespace config, received ${JSON.stringify(namespace)}`);
       }
-      validateStoreTablesConfig(namespace.tables, scope);
+      validateTables(namespace.tables, scope);
     }
     return;
   }
-  throw new Error(`Expected namespaces config, received ${JSON.stringify(input)}`);
+  throw new Error(`Expected namespaces config, received ${JSON.stringify(namespaces)}`);
 }
 
-export type validateWorldConfig<input> = {
-  readonly [key in keyof input]: key extends "tables"
-    ? validateStoreTablesConfig<input[key], extendedScope<input>>
+export type validateWorld<world> = {
+  readonly [key in keyof world]: key extends "tables"
+    ? validateTables<world[key], extendedScope<world>>
     : key extends "userTypes"
       ? UserTypes
       : key extends "enums"
-        ? narrow<input[key]>
+        ? narrow<world[key]>
         : key extends "namespaces"
-          ? validateNamespaces<input[key], extendedScope<input>>
-          : key extends keyof WorldConfigInput
-            ? conform<input[key], WorldConfigInput[key]>
-            : input[key];
+          ? validateNamespaces<world[key], extendedScope<world>>
+          : key extends keyof WorldInput
+            ? conform<world[key], WorldInput[key]>
+            : world[key];
 };
 
-export type namespacedTableKeys<input> = "namespaces" extends keyof input
-  ? "tables" extends keyof input["namespaces"][keyof input["namespaces"]]
-    ? `${keyof input["namespaces"] & string}__${keyof input["namespaces"][keyof input["namespaces"]]["tables"] &
+export type namespacedTableKeys<world> = "namespaces" extends keyof world
+  ? "tables" extends keyof world["namespaces"][keyof world["namespaces"]]
+    ? `${keyof world["namespaces"] & string}__${keyof world["namespaces"][keyof world["namespaces"]]["tables"] &
         string}`
     : never
   : never;
 
-export type resolveDeploymentConfig<input> = {
-  readonly customWorldContract: "customWorldContract" extends keyof input
-    ? input["customWorldContract"]
+// TODO: can we use mergeIfUndefined here?
+export type resolveDeployment<deployment> = {
+  readonly customWorldContract: "customWorldContract" extends keyof deployment
+    ? deployment["customWorldContract"]
     : typeof DEPLOYMENT_DEFAULTS.customWorldContract;
-  readonly postDeployScript: "postDeployScript" extends keyof input
-    ? input["postDeployScript"]
+  readonly postDeployScript: "postDeployScript" extends keyof deployment
+    ? deployment["postDeployScript"]
     : typeof DEPLOYMENT_DEFAULTS.postDeployScript;
-  readonly deploysDirectory: "deploysDirectory" extends keyof input
-    ? input["deploysDirectory"]
+  readonly deploysDirectory: "deploysDirectory" extends keyof deployment
+    ? deployment["deploysDirectory"]
     : typeof DEPLOYMENT_DEFAULTS.deploysDirectory;
-  readonly worldsFile: "worldsFile" extends keyof input ? input["worldsFile"] : typeof DEPLOYMENT_DEFAULTS.worldsFile;
+  readonly worldsFile: "worldsFile" extends keyof deployment
+    ? deployment["worldsFile"]
+    : typeof DEPLOYMENT_DEFAULTS.worldsFile;
 };
 
-export function resolveDeploymentConfig<input>(input: input): resolveDeploymentConfig<input> {
+export function resolveDeployment<deployment>(deployment: deployment): resolveDeployment<deployment> {
   return {
-    customWorldContract: get(input, "customWorldContract") ?? DEPLOYMENT_DEFAULTS.customWorldContract,
-    postDeployScript: get(input, "postDeployScript") ?? DEPLOYMENT_DEFAULTS.postDeployScript,
-    deploysDirectory: get(input, "deploysDirectory") ?? DEPLOYMENT_DEFAULTS.deploysDirectory,
-    worldsFile: get(input, "worldsFile") ?? DEPLOYMENT_DEFAULTS.worldsFile,
-  } as resolveDeploymentConfig<input>;
+    customWorldContract: get(deployment, "customWorldContract") ?? DEPLOYMENT_DEFAULTS.customWorldContract,
+    postDeployScript: get(deployment, "postDeployScript") ?? DEPLOYMENT_DEFAULTS.postDeployScript,
+    deploysDirectory: get(deployment, "deploysDirectory") ?? DEPLOYMENT_DEFAULTS.deploysDirectory,
+    worldsFile: get(deployment, "worldsFile") ?? DEPLOYMENT_DEFAULTS.worldsFile,
+  } as resolveDeployment<deployment>;
 }
 
-export type resolveCodegenConfig<input> = {
-  readonly worldInterfaceName: "worldInterfaceName" extends keyof input
-    ? input["worldInterfaceName"]
+export type resolveCodegen<codegen> = {
+  readonly worldInterfaceName: "worldInterfaceName" extends keyof codegen
+    ? codegen["worldInterfaceName"]
     : typeof CODEGEN_DEFAULTS.worldInterfaceName;
-  readonly worldgenDirectory: "worldgenDirectory" extends keyof input
-    ? input["worldgenDirectory"]
+  readonly worldgenDirectory: "worldgenDirectory" extends keyof codegen
+    ? codegen["worldgenDirectory"]
     : typeof CODEGEN_DEFAULTS.worldgenDirectory;
-  readonly worldImportPath: "worldImportPath" extends keyof input
-    ? input["worldImportPath"]
+  readonly worldImportPath: "worldImportPath" extends keyof codegen
+    ? codegen["worldImportPath"]
     : typeof CODEGEN_DEFAULTS.worldImportPath;
 };
 
-export function resolveCodegenConfig<input>(input: input): resolveCodegenConfig<input> {
+export function resolveCodegen<codegen>(codegen: codegen): resolveCodegen<codegen> {
   return {
-    worldInterfaceName: get(input, "worldInterfaceName") ?? CODEGEN_DEFAULTS.worldInterfaceName,
-    worldgenDirectory: get(input, "worldgenDirectory") ?? CODEGEN_DEFAULTS.worldgenDirectory,
-    worldImportPath: get(input, "worldImportPath") ?? CODEGEN_DEFAULTS.worldImportPath,
-  } as resolveCodegenConfig<input>;
+    worldInterfaceName: get(codegen, "worldInterfaceName") ?? CODEGEN_DEFAULTS.worldInterfaceName,
+    worldgenDirectory: get(codegen, "worldgenDirectory") ?? CODEGEN_DEFAULTS.worldgenDirectory,
+    worldImportPath: get(codegen, "worldImportPath") ?? CODEGEN_DEFAULTS.worldImportPath,
+  } as resolveCodegen<codegen>;
 }
 
-export type resolveSystemsConfig<systems extends SystemsConfigInput> = {
+export type resolveSystems<systems extends SystemsInput> = {
   [system in keyof systems]: {
     readonly name: systems[system]["name"];
     readonly registerFunctionSelectors: systems[system]["registerFunctionSelectors"] extends undefined
@@ -121,9 +125,7 @@ export type resolveSystemsConfig<systems extends SystemsConfigInput> = {
   };
 };
 
-export function resolveSystemsConfig<systems extends SystemsConfigInput>(
-  systems: systems,
-): resolveSystemsConfig<systems> {
+export function resolveSystems<systems extends SystemsInput>(systems: systems): resolveSystems<systems> {
   return mapObject(
     systems,
     (system) =>
@@ -132,44 +134,44 @@ export function resolveSystemsConfig<systems extends SystemsConfigInput>(
         registerFunctionSelectors: system.registerFunctionSelectors ?? SYSTEM_DEFAULTS.registerFunctionSelectors,
         openAccess: system.openAccess ?? SYSTEM_DEFAULTS.openAccess,
         accessList: system.accessList ?? SYSTEM_DEFAULTS.accessList,
-      }) as resolveSystemsConfig<systems>[keyof systems],
+      }) as resolveSystems<systems>[keyof systems],
   );
 }
 
-export type resolveWorldConfig<input> = evaluate<
-  resolveStoreConfig<input> & {
-    readonly tables: "namespaces" extends keyof input
+export type resolveWorld<world> = evaluate<
+  resolveStore<world> & {
+    readonly tables: "namespaces" extends keyof world
       ? {
-          readonly [key in namespacedTableKeys<input>]: key extends `${infer namespace}__${infer table}`
+          readonly [key in namespacedTableKeys<world>]: key extends `${infer namespace}__${infer table}`
             ? resolveTable<
                 mergeIfUndefined<
-                  get<get<get<get<input, "namespaces">, namespace>, "tables">, table>,
+                  get<get<get<get<world, "namespaces">, namespace>, "tables">, table>,
                   { name: table; namespace: namespace }
                 >,
-                extendedScope<input>
+                extendedScope<world>
               >
             : never;
         }
       : {};
-    readonly systems: "systems" extends keyof input ? input["systems"] : typeof CONFIG_DEFAULTS.systems;
-    readonly excludeSystems: "excludeSystems" extends keyof input
-      ? input["excludeSystems"]
+    readonly systems: "systems" extends keyof world ? world["systems"] : typeof CONFIG_DEFAULTS.systems;
+    readonly excludeSystems: "excludeSystems" extends keyof world
+      ? world["excludeSystems"]
       : typeof CONFIG_DEFAULTS.excludeSystems;
-    readonly modules: "modules" extends keyof input ? input["modules"] : typeof CONFIG_DEFAULTS.modules;
-    readonly deployment: resolveDeploymentConfig<"deployment" extends keyof input ? input["deployment"] : {}>;
-    readonly codegen: resolveCodegenConfig<"codegen" extends keyof input ? input["codegen"] : {}>;
+    readonly modules: "modules" extends keyof world ? world["modules"] : typeof CONFIG_DEFAULTS.modules;
+    readonly deployment: resolveDeployment<"deployment" extends keyof world ? world["deployment"] : {}>;
+    readonly codegen: resolveCodegen<"codegen" extends keyof world ? world["codegen"] : {}>;
   }
 >;
 
-export function resolveWorldConfig<const input>(input: validateWorldConfig<input>): resolveWorldConfig<input> {
-  const scope = extendedScope(input);
-  const namespace = get(input, "namespace") ?? "";
+export function resolveWorld<const world>(world: world): resolveWorld<world> {
+  const scope = extendedScope(world);
+  const namespace = get(world, "namespace") ?? "";
 
-  const namespaces = get(input, "namespaces") ?? {};
+  const namespaces = get(world, "namespaces") ?? {};
   validateNamespaces(namespaces, scope);
 
-  const rootTables = get(input, "tables") ?? {};
-  validateStoreTablesConfig(rootTables, scope);
+  const rootTables = get(world, "tables") ?? {};
+  validateTables(rootTables, scope);
 
   const resolvedNamespacedTables = Object.fromEntries(
     Object.entries(namespaces)
@@ -183,22 +185,26 @@ export function resolveWorldConfig<const input>(input: validateWorldConfig<input
         }),
       )
       .flat(),
-  ) as Config["tables"];
+  ) as Tables;
 
-  const resolvedRootTables = resolveStoreTablesConfig(
+  const resolvedRootTables = resolveTables(
     mapObject(rootTables, (table) => mergeIfUndefined(table, { namespace })),
     scope,
   );
 
   return {
     tables: { ...resolvedRootTables, ...resolvedNamespacedTables },
-    userTypes: get(input, "userTypes") ?? {},
-    enums: get(input, "enums") ?? {},
+    userTypes: get(world, "userTypes") ?? {},
+    enums: get(world, "enums") ?? {},
     namespace,
-    codegen: { ...resolveStoreCodegen(get(input, "codegen")), ...resolveCodegenConfig(get(input, "codegen")) },
-    deployment: resolveDeploymentConfig(get(input, "deployment")),
-    systems: resolveSystemsConfig(get(input, "systems") ?? CONFIG_DEFAULTS.systems),
-    excludeSystems: get(input, "excludeSystems") ?? CONFIG_DEFAULTS.excludeSystems,
-    modules: get(input, "modules") ?? CONFIG_DEFAULTS.modules,
-  } as unknown as resolveWorldConfig<input>;
+    codegen: { ...resolveStoreCodegen(get(world, "codegen")), ...resolveCodegen(get(world, "codegen")) },
+    deployment: resolveDeployment(get(world, "deployment")),
+    systems: resolveSystems(get(world, "systems") ?? CONFIG_DEFAULTS.systems),
+    excludeSystems: get(world, "excludeSystems") ?? CONFIG_DEFAULTS.excludeSystems,
+    modules: get(world, "modules") ?? CONFIG_DEFAULTS.modules,
+  } as unknown as resolveWorld<world>;
+}
+
+export function defineWorld<const world>(world: validateWorld<world>): resolveWorld<world> {
+  return resolveWorld(world) as unknown as resolveWorld<world>;
 }

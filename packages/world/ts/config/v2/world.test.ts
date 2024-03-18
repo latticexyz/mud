@@ -1,15 +1,15 @@
 import { describe, it } from "vitest";
-import { resolveWorldConfig } from "./world";
-import { Config } from "./output";
+import { defineWorld } from "./world";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { TABLE_CODEGEN_DEFAULTS, CODEGEN_DEFAULTS as STORE_CODEGEN_DEFAULTS } from "@latticexyz/store/config/v2";
 import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, DEPLOYMENT_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
+import { World } from "./output";
 const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS };
 
-describe("resolveWorldConfig", () => {
+describe("defineWorld", () => {
   it("should resolve namespaced tables", () => {
-    const config = resolveWorldConfig({
+    const config = defineWorld({
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -79,7 +79,7 @@ describe("resolveWorldConfig", () => {
   });
 
   it("should resolve namespaced table config with user types and enums", () => {
-    const config = resolveWorldConfig({
+    const config = defineWorld({
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -160,8 +160,8 @@ describe("resolveWorldConfig", () => {
     attest<typeof expected>(config).equals(expected);
   });
 
-  it("should extend the output Config type", () => {
-    const config = resolveWorldConfig({
+  it("should extend the output World type", () => {
+    const config = defineWorld({
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -185,11 +185,11 @@ describe("resolveWorldConfig", () => {
       },
     });
 
-    attest<true, typeof config extends Config ? true : false>();
+    attest<true, typeof config extends World ? true : false>();
   });
 
   it("should not use the global namespace for namespaced tables", () => {
-    const config = resolveWorldConfig({
+    const config = defineWorld({
       namespace: "namespace",
       namespaces: {
         AnotherOne: {
@@ -210,9 +210,9 @@ describe("resolveWorldConfig", () => {
     );
   });
 
-  describe("should have the same output as `resolveWorldConfig` for store config inputs", () => {
+  describe("should have the same output as `defineWorld` for store config inputs", () => {
     it("should return the full config given a full config with one key", () => {
-      const config = resolveWorldConfig({
+      const config = defineWorld({
         tables: {
           Example: {
             schema: { id: "address", name: "string", age: "uint256" },
@@ -273,7 +273,7 @@ describe("resolveWorldConfig", () => {
     });
 
     it("should return the full config given a full config with one key and user types", () => {
-      const config = resolveWorldConfig({
+      const config = defineWorld({
         tables: {
           Example: {
             schema: { id: "dynamic", name: "string", age: "static" },
@@ -341,7 +341,7 @@ describe("resolveWorldConfig", () => {
     });
 
     it("should return the full config given a full config with two key", () => {
-      const config = resolveWorldConfig({
+      const config = defineWorld({
         tables: {
           Example: {
             schema: { id: "address", name: "string", age: "uint256" },
@@ -402,7 +402,7 @@ describe("resolveWorldConfig", () => {
     });
 
     it("should resolve two tables in the config with different schemas", () => {
-      const config = resolveWorldConfig({
+      const config = defineWorld({
         tables: {
           First: {
             schema: { firstKey: "address", firstName: "string", firstAge: "uint256" },
@@ -505,7 +505,7 @@ describe("resolveWorldConfig", () => {
     });
 
     it("should resolve two tables in the config with different schemas and user types", () => {
-      const config = resolveWorldConfig({
+      const config = defineWorld({
         tables: {
           First: {
             schema: { firstKey: "Static", firstName: "Dynamic", firstAge: "uint256" },
@@ -617,7 +617,7 @@ describe("resolveWorldConfig", () => {
 
     it("should throw if referring to fields of different tables", () => {
       attest(() =>
-        resolveWorldConfig({
+        defineWorld({
           tables: {
             First: {
               schema: { firstKey: "address", firstName: "string", firstAge: "uint256" },
@@ -637,7 +637,7 @@ describe("resolveWorldConfig", () => {
 
     it("should throw an error if the provided key is not a static field", () => {
       attest(() =>
-        resolveWorldConfig({
+        defineWorld({
           tables: {
             Example: {
               schema: { id: "address", name: "string", age: "uint256" },
@@ -653,7 +653,7 @@ describe("resolveWorldConfig", () => {
 
     it("should throw an error if the provided key is not a static field with user types", () => {
       attest(() =>
-        resolveWorldConfig({
+        defineWorld({
           tables: {
             Example: {
               schema: { id: "address", name: "Dynamic", age: "uint256" },
@@ -671,7 +671,7 @@ describe("resolveWorldConfig", () => {
     });
 
     it("should return the full config given a full config with enums and user types", () => {
-      const config = resolveWorldConfig({
+      const config = defineWorld({
         tables: {
           Example: {
             schema: { id: "dynamic", name: "ValidNames", age: "static" },
@@ -744,28 +744,28 @@ describe("resolveWorldConfig", () => {
     });
 
     it("should use the root namespace as default namespace", () => {
-      const config = resolveWorldConfig({});
+      const config = defineWorld({});
 
       attest<"">(config.namespace).equals("");
     });
 
     it("should use pipe through non-default namespaces", () => {
-      const config = resolveWorldConfig({ namespace: "custom" });
+      const config = defineWorld({ namespace: "custom" });
 
       attest<"custom">(config.namespace).equals("custom");
     });
 
-    it("should extend the output Config type", () => {
-      const config = resolveWorldConfig({
+    it("should extend the output World type", () => {
+      const config = defineWorld({
         tables: { Name: { schema: { key: "CustomType" }, key: ["key"] } },
         userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
       });
 
-      attest<true, typeof config extends Config ? true : false>();
+      attest<true, typeof config extends World ? true : false>();
     });
 
     it("should use the global namespace instead for tables", () => {
-      const config = resolveWorldConfig({
+      const config = defineWorld({
         namespace: "namespace",
         tables: {
           Example: {

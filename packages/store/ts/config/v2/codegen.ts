@@ -1,9 +1,9 @@
 import { CODEGEN_DEFAULTS } from "./defaults";
 import { get } from "./generics";
-import { CodegenOptions } from "./output";
+import { Codegen } from "./output";
 
 export type resolveCodegen<codegen> = {
-  [key in keyof CodegenOptions]: key extends keyof codegen ? codegen[key] : (typeof CODEGEN_DEFAULTS)[key];
+  [key in keyof Codegen]: key extends keyof codegen ? codegen[key] : (typeof CODEGEN_DEFAULTS)[key];
 };
 
 export function resolveCodegen<codegen>(codegen: codegen): resolveCodegen<codegen> {

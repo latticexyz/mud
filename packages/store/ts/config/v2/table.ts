@@ -4,7 +4,7 @@ import { Hex } from "viem";
 import { get, hasOwnKey } from "./generics";
 import { resolveSchema, validateSchema } from "./schema";
 import { AbiTypeScope, Scope, getStaticAbiTypeKeys } from "./scope";
-import { TableCodegenOptions } from "./output";
+import { TableCodegen } from "./output";
 import { TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 import { resourceToHex } from "@latticexyz/common";
 import { SchemaInput, TableInput } from "./input";
@@ -91,7 +91,7 @@ export function validateTable<input, scope extends Scope = AbiTypeScope>(
 }
 
 export type resolveTableCodegen<input extends TableInput> = {
-  [key in keyof TableCodegenOptions]-?: key extends keyof input["codegen"]
+  [key in keyof TableCodegen]-?: key extends keyof input["codegen"]
     ? undefined extends input["codegen"][key]
       ? key extends "dataStruct"
         ? boolean
@@ -115,7 +115,7 @@ export function resolveTableCodegen<input extends TableInput>(input: input): res
     storeArgument: get(options, "storeArgument") ?? TABLE_CODEGEN_DEFAULTS.storeArgument,
     // dataStruct is true if there are at least 2 value fields
     dataStruct: get(options, "dataStruct") ?? Object.keys(input.schema).length - input.key.length > 1,
-  } satisfies TableCodegenOptions as resolveTableCodegen<input>;
+  } satisfies TableCodegen as resolveTableCodegen<input>;
 }
 
 export type resolveTable<input, scope extends Scope = Scope> = input extends TableInput

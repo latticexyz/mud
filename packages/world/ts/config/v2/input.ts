@@ -1,17 +1,8 @@
 import { evaluate } from "@arktype/util";
-import { UserTypes, Enums, StoreConfigInput } from "@latticexyz/store/config/v2";
-import { DynamicResolution, ValueWithType } from "./dynamicResolution";
+import { StoreInput } from "@latticexyz/store/config/v2";
+import { Module } from "./output";
 
-export type ModuleConfig = {
-  /** The name of the module */
-  name: string;
-  /** Should this module be installed as a root module? */
-  root?: boolean;
-  /** Arguments to be passed to the module's install method */
-  args?: (ValueWithType | DynamicResolution)[];
-};
-
-export type SystemConfigInput = {
+export type SystemInput = {
   /** The full resource selector consists of namespace and name */
   name?: string;
   /**
@@ -28,9 +19,9 @@ export type SystemConfigInput = {
   accessList?: string[];
 };
 
-export type SystemsConfigInput = { [key: string]: SystemConfigInput };
+export type SystemsInput = { [key: string]: SystemInput };
 
-export type DeploymentConfigInput = {
+export type DeploymentInput = {
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
@@ -42,7 +33,7 @@ export type DeploymentConfigInput = {
   worldsFile?: string;
 };
 
-export type CodegenConfigInput = {
+export type CodegenInput = {
   /** The name of the World interface to generate. (Default `IWorld`) */
   worldInterfaceName?: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
@@ -51,8 +42,8 @@ export type CodegenConfigInput = {
   worldImportPath?: string;
 };
 
-export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums extends Enums = Enums> = evaluate<
-  StoreConfigInput<userTypes, enums> & {
+export type WorldInput = evaluate<
+  StoreInput & {
     namespaces?: NamespacesInput;
     /**
      * Contracts named *System will be deployed by default
@@ -61,15 +52,15 @@ export type WorldConfigInput<userTypes extends UserTypes = UserTypes, enums exte
      * The key is the system name (capitalized).
      * The value is a SystemConfig object.
      */
-    systems?: SystemsConfigInput;
+    systems?: SystemsInput;
     /** System names to exclude from automatic deployment */
     excludeSystems?: string[];
     /** Modules to in the World */
-    modules?: ModuleConfig[];
+    modules?: Module[];
     /** Deployment config */
-    deployment?: DeploymentConfigInput;
+    deployment?: DeploymentInput;
     /** Codegen config */
-    codegen?: CodegenConfigInput;
+    codegen?: CodegenInput;
   }
 >;
 
