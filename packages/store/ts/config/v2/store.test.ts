@@ -487,4 +487,20 @@ describe("defineStore", () => {
       }),
     ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
   });
+
+  it("should throw if a string is provided as schema input", () => {
+    attest(() =>
+      defineStore({
+        tables: {
+          Example: {
+            // @ts-expect-error Type 'string' is not assignable to type 'SchemaInput'
+            schema: "uint256",
+            key: ["id"],
+          },
+        },
+      }),
+    )
+      .throws(`Expected schema, received "uint256"`)
+      .type.errors("Type 'string' is not assignable to type 'SchemaInput'");
+  });
 });

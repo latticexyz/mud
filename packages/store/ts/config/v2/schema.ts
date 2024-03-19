@@ -4,11 +4,13 @@ import { hasOwnKey, isObject } from "./generics";
 import { SchemaInput } from "./input";
 import { FixedArrayAbiType, fixedArrayToArray, isFixedArrayAbiType } from "@latticexyz/schema-type/internal";
 
-export type validateSchema<schema, scope extends Scope = AbiTypeScope> = {
-  [key in keyof schema]: schema[key] extends FixedArrayAbiType
-    ? schema[key]
-    : conform<schema[key], keyof scope["types"]>;
-};
+export type validateSchema<schema, scope extends Scope = AbiTypeScope> = schema extends SchemaInput
+  ? {
+      [key in keyof schema]: schema[key] extends FixedArrayAbiType
+        ? schema[key]
+        : conform<schema[key], keyof scope["types"]>;
+    }
+  : SchemaInput;
 
 export function validateSchema<scope extends Scope = AbiTypeScope>(
   schema: unknown,
