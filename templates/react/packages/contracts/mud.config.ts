@@ -1,9 +1,10 @@
-import { mudConfig } from "@latticexyz/world/register";
+import { defineWorld } from "@latticexyz/world/config/v2";
 
-export default mudConfig({
+export default defineWorld({
   tables: {
     Tasks: {
-      valueSchema: {
+      schema: {
+        id: "bytes32",
         createdAt: "uint256",
         completedAt: "uint256",
         description: "string",
