@@ -1,6 +1,6 @@
-import { Callout } from "nextra/components";
 import { CollapseCode } from "../../components/CollapseCode";
 import Illustration from "./world-table-illustration.mdx";
+import TableImmutable from "./table-immutable.mdx";
 
 # Tables
 
@@ -21,12 +21,7 @@ When a `System` reads or writes storage via [table libraries](/store/table-libra
 
 <Illustration />
 
-<Callout type="warning" emoji="⚠️">
-  Once a table is created its schema is *immutable*.
-  If you need to add fields to an existing table, create a new table with the same key schema and the new fields in the value schema, and retrieve from both tables to get the complete value.
-  If you need to delete fields, just have your code ignore them.
-
-</Callout>
+<TableImmutable />
 
 ## Code samples
 
