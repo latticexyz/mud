@@ -20,7 +20,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 library SystemboundDelegations {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "SystemboundDeleg", typeId: RESOURCE_TABLE });`
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "SystemboundDelegations", typeId: RESOURCE_TABLE });`
   ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000053797374656d626f756e6444656c6567);
 
   FieldLayout constant _fieldLayout =

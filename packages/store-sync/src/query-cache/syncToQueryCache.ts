@@ -4,9 +4,9 @@ import { Address } from "viem";
 import { Store as StoreConfig } from "@latticexyz/store/config/v2";
 import { createStore } from "./createStore";
 import { createStorageAdapter } from "./createStorageAdapter";
-import { getTables } from "./getTables";
 
-type SyncToQueryCacheOptions<config extends StoreConfig> = SyncOptions<config> & {
+type SyncToQueryCacheOptions<config extends StoreConfig> = Omit<SyncOptions<config>, "config"> & {
+  config: config;
   // require address for now to keep the data model + retrieval simpler
   address: Address;
   startSync?: boolean;
@@ -21,7 +21,7 @@ export async function syncToQueryCache<config extends StoreConfig>({
   startSync = true,
   ...syncOptions
 }: SyncToQueryCacheOptions<config>): Promise<SyncToQueryCacheResult> {
-  const useStore = createStore({ tables: getTables(config) });
+  const useStore = createStore({ tables: config.tables });
   const storageAdapter = createStorageAdapter({ store: useStore });
 
   const storeSync = await createStoreSync({

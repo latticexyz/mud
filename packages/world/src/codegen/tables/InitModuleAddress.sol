@@ -17,7 +17,7 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 library InitModuleAddress {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "InitModuleAddres", typeId: RESOURCE_TABLE });`
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "InitModuleAddress", typeId: RESOURCE_TABLE });`
   ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c64000000000000000000496e69744d6f64756c65416464726573);
 
   FieldLayout constant _fieldLayout =

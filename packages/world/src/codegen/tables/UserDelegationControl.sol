@@ -20,7 +20,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 library UserDelegationControl {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "UserDelegationCo", typeId: RESOURCE_TABLE });`
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "UserDelegationControl", typeId: RESOURCE_TABLE });`
   ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c640000000000000000005573657244656c65676174696f6e436f);
 
   FieldLayout constant _fieldLayout =
