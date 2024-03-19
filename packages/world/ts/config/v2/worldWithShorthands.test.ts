@@ -41,18 +41,6 @@ describe("defineWorldWithShorthands", () => {
               internalType: "Static",
             },
           },
-          keySchema: {
-            id: {
-              type: "bytes32",
-              internalType: "bytes32",
-            },
-          },
-          valueSchema: {
-            value: {
-              type: "address",
-              internalType: "Static",
-            },
-          },
           key: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
@@ -115,22 +103,6 @@ describe("defineWorldWithShorthands", () => {
               internalType: "Dynamic",
             },
           },
-          keySchema: {
-            id: {
-              type: "address",
-              internalType: "Static",
-            },
-          },
-          valueSchema: {
-            value: {
-              type: "uint8",
-              internalType: "MyEnum",
-            },
-            dynamic: {
-              type: "string",
-              internalType: "Dynamic",
-            },
-          },
           key: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
@@ -170,18 +142,6 @@ describe("defineWorldWithShorthands", () => {
               internalType: "address",
             },
           },
-          keySchema: {
-            id: {
-              type: "bytes32",
-              internalType: "bytes32",
-            },
-          },
-          valueSchema: {
-            value: {
-              type: "address",
-              internalType: "address",
-            },
-          },
           key: ["id"],
           name: "Name",
           namespace: "",
@@ -214,18 +174,6 @@ describe("defineWorldWithShorthands", () => {
               type: "bytes32",
               internalType: "bytes32",
             },
-            value: {
-              type: "address",
-              internalType: "CustomType",
-            },
-          },
-          keySchema: {
-            id: {
-              type: "bytes32",
-              internalType: "bytes32",
-            },
-          },
-          valueSchema: {
             value: {
               type: "address",
               internalType: "CustomType",
@@ -270,22 +218,6 @@ describe("defineWorldWithShorthands", () => {
               internalType: "uint256",
             },
           },
-          keySchema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-          },
-          valueSchema: {
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-            age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
           key: ["id"],
           name: "Example",
           namespace: "",
@@ -316,22 +248,6 @@ describe("defineWorldWithShorthands", () => {
               type: "address",
               internalType: "address",
             },
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-            age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          keySchema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-          },
-          valueSchema: {
             name: {
               type: "string",
               internalType: "string",

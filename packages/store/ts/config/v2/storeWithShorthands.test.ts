@@ -22,18 +22,6 @@ describe("defineStoreWithShorthands", () => {
               internalType: "address",
             },
           },
-          keySchema: {
-            id: {
-              type: "bytes32",
-              internalType: "bytes32",
-            },
-          },
-          valueSchema: {
-            value: {
-              type: "address",
-              internalType: "address",
-            },
-          },
           key: ["id"],
           name: "Name",
           namespace: "",
@@ -64,18 +52,6 @@ describe("defineStoreWithShorthands", () => {
               type: "bytes32",
               internalType: "bytes32",
             },
-            value: {
-              type: "address",
-              internalType: "CustomType",
-            },
-          },
-          keySchema: {
-            id: {
-              type: "bytes32",
-              internalType: "bytes32",
-            },
-          },
-          valueSchema: {
             value: {
               type: "address",
               internalType: "CustomType",
@@ -120,22 +96,6 @@ describe("defineStoreWithShorthands", () => {
               internalType: "uint256",
             },
           },
-          keySchema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-          },
-          valueSchema: {
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-            age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
           key: ["id"],
           name: "Example",
           namespace: "",
@@ -166,22 +126,6 @@ describe("defineStoreWithShorthands", () => {
               type: "address",
               internalType: "address",
             },
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-            age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          keySchema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-          },
-          valueSchema: {
             name: {
               type: "string",
               internalType: "string",

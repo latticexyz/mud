@@ -8,6 +8,7 @@ import { TableCodegen } from "./output";
 import { TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 import { resourceToHex } from "@latticexyz/common";
 import { SchemaInput, TableInput } from "./input";
+import { Table } from "@latticexyz/config";
 
 export type ValidKeys<schema extends SchemaInput, scope extends Scope> = readonly [
   getStaticAbiTypeKeys<schema, scope>,
@@ -128,18 +129,6 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
       readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
       readonly key: Readonly<input["key"]>;
       readonly schema: resolveSchema<input["schema"], scope>;
-      readonly keySchema: resolveSchema<
-        {
-          readonly [key in input["key"][number]]: input["schema"][key];
-        },
-        scope
-      >;
-      readonly valueSchema: resolveSchema<
-        {
-          readonly [key in Exclude<keyof input["schema"], input["key"][number]>]: input["schema"][key];
-        },
-        scope
-      >;
       readonly codegen: resolveTableCodegen<input>;
     }
   : never;
@@ -160,18 +149,6 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
     type,
     key: input.key,
     schema: resolveSchema(input.schema, scope),
-    keySchema: resolveSchema(
-      Object.fromEntries(
-        Object.entries(input.schema).filter(([key]) => input.key.includes(key as (typeof input.key)[number])),
-      ),
-      scope,
-    ),
-    valueSchema: resolveSchema(
-      Object.fromEntries(
-        Object.entries(input.schema).filter(([key]) => !input.key.includes(key as (typeof input.key)[number])),
-      ),
-      scope,
-    ),
     codegen: resolveTableCodegen(input),
   } as unknown as resolveTable<input, scope>;
 }
@@ -182,4 +159,22 @@ export function defineTable<input, scope extends Scope = AbiTypeScope>(
 ): resolveTable<input, scope> {
   validateTable(input, scope);
   return resolveTable(input, scope) as resolveTable<input, scope>;
+}
+
+export type getKeySchema<table extends Table> = {
+  [fieldName in table["key"][number]]: table["schema"][fieldName];
+};
+
+export function getKeySchema<table extends Table>(table: table): getKeySchema<table> {
+  return Object.fromEntries(table.key.map((fieldName) => [fieldName, table.schema[fieldName]])) as getKeySchema<table>;
+}
+
+export type getValueSchema<table extends Table> = {
+  [fieldName in Exclude<keyof table["schema"], table["key"][number]>]: table["schema"][fieldName];
+};
+
+export function getValueSchema<table extends Table>(table: table): getValueSchema<table> {
+  return Object.fromEntries(
+    Object.entries(table.schema).filter(([fieldName]) => !table.key.includes(fieldName)),
+  ) as getValueSchema<table>;
 }
