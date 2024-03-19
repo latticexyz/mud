@@ -5,9 +5,9 @@ export default {
     title: "What is MUD?",
     theme: { breadcrumb: false },
   },
-  "quickstart": {
-    "title": "Quickstart",
-    "href": "/templates/typescript/getting-started"
+  quickstart: {
+    title: "Get started",
+    theme: { breadcrumb: false },
   },
   protocol: {
     title: "Protocol",
