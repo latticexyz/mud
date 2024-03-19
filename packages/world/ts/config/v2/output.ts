@@ -1,5 +1,6 @@
 import { Store } from "@latticexyz/store/config/v2";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
+import { evaluate } from "@arktype/util";
 
 export type Module = {
   /** The name of the module */
@@ -52,14 +53,16 @@ export type Codegen = {
   readonly worldImportPath: string;
 };
 
-export type World = Store & {
-  readonly systems: Systems;
-  /** Systems to exclude from automatic deployment */
-  readonly excludeSystems: readonly string[];
-  /** Modules to in the World */
-  readonly modules: readonly Module[];
-  /** Deployment config */
-  readonly deployment: Deployment;
-  /** Codegen config */
-  readonly codegen: Codegen;
-};
+export type World = evaluate<
+  Store & {
+    readonly systems: Systems;
+    /** Systems to exclude from automatic deployment */
+    readonly excludeSystems: readonly string[];
+    /** Modules to in the World */
+    readonly modules: readonly Module[];
+    /** Deployment config */
+    readonly deployment: Deployment;
+    /** Codegen config */
+    readonly codegen: Codegen;
+  }
+>;

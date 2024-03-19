@@ -2,8 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { tablegen } from "@latticexyz/store/codegen";
 import { worldgen } from "@latticexyz/world/node";
-import { StoreConfig } from "@latticexyz/store";
-import { WorldConfig } from "@latticexyz/world";
+import { World as WorldConfig, worldToV1 } from "@latticexyz/world/config/v2";
 import { forge, getForgeConfig, getRemappings } from "@latticexyz/common/foundry";
 import { getExistingContracts } from "./utils/getExistingContracts";
 import { debug as parentDebug } from "./debug";
@@ -14,14 +13,15 @@ const debug = parentDebug.extend("runDeploy");
 type BuildOptions = {
   foundryProfile?: string;
   srcDir: string;
-  config: StoreConfig & WorldConfig;
+  config: WorldConfig;
 };
 
 export async function build({
-  config,
+  config: configV2,
   srcDir,
   foundryProfile = process.env.FOUNDRY_PROFILE,
 }: BuildOptions): Promise<void> {
+  const config = worldToV1(configV2);
   const outPath = path.join(srcDir, config.codegenDirectory);
   const remappings = await getRemappings(foundryProfile);
   await Promise.all([tablegen(config, outPath, remappings), worldgen(config, getExistingContracts(srcDir), outPath)]);
