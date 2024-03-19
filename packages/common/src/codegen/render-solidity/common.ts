@@ -9,6 +9,7 @@ import {
 } from "./types";
 import { posixPath } from "../utils";
 import { resourceToHex } from "../../resourceToHex";
+import { hexToResource } from "../../hexToResource";
 
 /**
  * Common header for all codegenerated solidity files
@@ -212,15 +213,18 @@ export function renderTableId({
   name,
   offchainOnly,
 }: Pick<StaticResourceData, "namespace" | "name" | "offchainOnly">): string {
+  const tableId = resourceToHex({
+    type: offchainOnly ? "offchainTable" : "table",
+    namespace,
+    name,
+  });
+  // turn table ID back into arguments that would be valid in `WorldResourceIdLib.encode` (like truncated names)
+  const resource = hexToResource(tableId);
   return `
     // Hex below is the result of \`WorldResourceIdLib.encode({ namespace: ${JSON.stringify(
-      namespace,
-    )}, name: ${JSON.stringify(name)}, typeId: ${offchainOnly ? "RESOURCE_OFFCHAIN_TABLE" : "RESOURCE_TABLE"} });\`
-    ResourceId constant _tableId = ResourceId.wrap(${resourceToHex({
-      type: offchainOnly ? "offchainTable" : "table",
-      namespace,
-      name,
-    })});
+      resource.namespace,
+    )}, name: ${JSON.stringify(resource.name)}, typeId: ${offchainOnly ? "RESOURCE_OFFCHAIN_TABLE" : "RESOURCE_TABLE"} });\`
+    ResourceId constant _tableId = ResourceId.wrap(${tableId});
   `;
 }
 
