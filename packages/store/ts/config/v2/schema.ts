@@ -23,7 +23,9 @@ function fixedArrayToStaticAbiType<fixedArray extends FixedArrayAbiType>(
 }
 
 export type validateSchema<schema, scope extends Scope = AbiTypeScope> = {
-  [key in keyof schema]: conform<schema[key], keyof scope["types"] | FixedArrayAbiType>;
+  [key in keyof schema]: schema[key] extends FixedArrayAbiType
+    ? schema[key]
+    : conform<schema[key], keyof scope["types"]>;
 };
 
 export function validateSchema<scope extends Scope = AbiTypeScope>(
