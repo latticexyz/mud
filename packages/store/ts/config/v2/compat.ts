@@ -5,7 +5,7 @@ import { getKeySchema, getValueSchema } from "./table";
 
 export type storeToV1<store> = store extends Store
   ? {
-      namespace: string;
+      namespace: store["namespace"] extends "" ? "" : string;
       enums: { [key in keyof store["enums"]]: string[] };
       userTypes: {
         [key in keyof store["userTypes"]]: {
