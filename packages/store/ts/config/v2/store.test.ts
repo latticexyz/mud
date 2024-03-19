@@ -1,6 +1,5 @@
 import { describe, it } from "vitest";
 import { defineStore } from "./store";
-import { Config } from "./output";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS } from "./defaults";
@@ -563,8 +562,9 @@ describe("defineStore", () => {
     });
 
     attest<"namespace">(config.namespace).equals("namespace");
-    attest<"namespace">(config.tables.Example.namespace).equals("namespace");
-    attest(config.tables.Example.tableId).equals(
+    attest<"namespace">(config.tables.namespace__Example.namespace).equals("namespace");
+    attest<"Example">(config.tables.namespace__Example.name).equals("Example");
+    attest(config.tables.namespace__Example.tableId).equals(
       resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
     );
   });

@@ -2,12 +2,12 @@ import { evaluate, narrow } from "@arktype/util";
 import { get, hasOwnKey, mergeIfUndefined } from "./generics";
 import { UserTypes } from "./output";
 import { CONFIG_DEFAULTS } from "./defaults";
-import { mapObject } from "@latticexyz/common/utils";
 import { StoreInput } from "./input";
 import { resolveTables, validateTables } from "./tables";
 import { scopeWithUserTypes, validateUserTypes } from "./userTypes";
 import { resolveEnums, scopeWithEnums } from "./enums";
 import { resolveCodegen } from "./codegen";
+import { namespacedTableKeys } from "./namespaces";
 
 export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
 
@@ -42,10 +42,9 @@ export type resolveStore<store> = evaluate<{
   readonly tables: "tables" extends keyof store
     ? resolveTables<
         {
-          [key in keyof store["tables"]]: mergeIfUndefined<
-            store["tables"][key],
-            { namespace: get<store, "namespace"> }
-          >;
+          [key in namespacedTableKeys<store>]: key extends `${string}__${infer table}`
+            ? mergeIfUndefined<get<get<store, "tables">, table>, { namespace: get<store, "namespace">; name: table }>
+            : mergeIfUndefined<get<get<store, "tables">, key>, { namespace: get<store, "namespace">; name: key }>;
         },
         extendedScope<store>
       >
@@ -61,7 +60,12 @@ export function resolveStore<const store>(store: store): resolveStore<store> {
 
   return {
     tables: resolveTables(
-      mapObject(store.tables ?? {}, (table) => mergeIfUndefined(table, { namespace: store.namespace })),
+      Object.fromEntries(
+        Object.entries(store.tables ?? {}).map(([tableKey, table]) => {
+          const key = store.namespace ? `${store.namespace}__${tableKey}` : tableKey;
+          return [key, mergeIfUndefined(table, { namespace: store.namespace, name: tableKey })];
+        }),
+      ),
       extendedScope(store),
     ),
     userTypes: store.userTypes ?? {},
@@ -72,5 +76,5 @@ export function resolveStore<const store>(store: store): resolveStore<store> {
 }
 
 export function defineStore<const store>(store: validateStore<store>): resolveStore<store> {
-  return resolveStore(store) as resolveStore<store>;
+  return resolveStore(store) as unknown as resolveStore<store>;
 }
