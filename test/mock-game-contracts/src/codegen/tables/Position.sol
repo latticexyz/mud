@@ -16,20 +16,22 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-// Import user types
-import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+struct PositionData {
+  int32 x;
+  int32 y;
+}
 
-library FunctionSelectors {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "FunctionSelector", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c6400000000000000000046756e6374696f6e53656c6563746f72);
+library Position {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Position", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x74620000000000000000000000000000506f736974696f6e0000000000000000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0024020020040000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0008020004040000000000000000000000000000000000000000000000000000);
 
-  // Hex-encoded key schema of (bytes4)
-  Schema constant _keySchema = Schema.wrap(0x0004010043000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (bytes32, bytes4)
-  Schema constant _valueSchema = Schema.wrap(0x002402005f430000000000000000000000000000000000000000000000000000);
+  // Hex-encoded key schema of (address)
+  Schema constant _keySchema = Schema.wrap(0x0014010061000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (int32, int32)
+  Schema constant _valueSchema = Schema.wrap(0x0008020023230000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -37,7 +39,7 @@ library FunctionSelectors {
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
-    keyNames[0] = "worldFunctionSelector";
+    keyNames[0] = "player";
   }
 
   /**
@@ -46,8 +48,8 @@ library FunctionSelectors {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](2);
-    fieldNames[0] = "systemId";
-    fieldNames[1] = "systemFunctionSelector";
+    fieldNames[0] = "x";
+    fieldNames[1] = "y";
   }
 
   /**
@@ -65,101 +67,95 @@ library FunctionSelectors {
   }
 
   /**
-   * @notice Get systemId.
+   * @notice Get x.
    */
-  function getSystemId(bytes4 worldFunctionSelector) internal view returns (ResourceId systemId) {
+  function getX(address player) internal view returns (int32 x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return ResourceId.wrap(bytes32(_blob));
+    return (int32(uint32(bytes4(_blob))));
   }
 
   /**
-   * @notice Get systemId.
+   * @notice Get x.
    */
-  function _getSystemId(bytes4 worldFunctionSelector) internal view returns (ResourceId systemId) {
+  function _getX(address player) internal view returns (int32 x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return ResourceId.wrap(bytes32(_blob));
+    return (int32(uint32(bytes4(_blob))));
   }
 
   /**
-   * @notice Set systemId.
+   * @notice Set x.
    */
-  function setSystemId(bytes4 worldFunctionSelector, ResourceId systemId) internal {
+  function setX(address player, int32 x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((x)), _fieldLayout);
   }
 
   /**
-   * @notice Set systemId.
+   * @notice Set x.
    */
-  function _setSystemId(bytes4 worldFunctionSelector, ResourceId systemId) internal {
+  function _setX(address player, int32 x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((x)), _fieldLayout);
   }
 
   /**
-   * @notice Get systemFunctionSelector.
+   * @notice Get y.
    */
-  function getSystemFunctionSelector(
-    bytes4 worldFunctionSelector
-  ) internal view returns (bytes4 systemFunctionSelector) {
+  function getY(address player) internal view returns (int32 y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (bytes4(_blob));
+    return (int32(uint32(bytes4(_blob))));
   }
 
   /**
-   * @notice Get systemFunctionSelector.
+   * @notice Get y.
    */
-  function _getSystemFunctionSelector(
-    bytes4 worldFunctionSelector
-  ) internal view returns (bytes4 systemFunctionSelector) {
+  function _getY(address player) internal view returns (int32 y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (bytes4(_blob));
+    return (int32(uint32(bytes4(_blob))));
   }
 
   /**
-   * @notice Set systemFunctionSelector.
+   * @notice Set y.
    */
-  function setSystemFunctionSelector(bytes4 worldFunctionSelector, bytes4 systemFunctionSelector) internal {
+  function setY(address player, int32 y) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((systemFunctionSelector)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((y)), _fieldLayout);
   }
 
   /**
-   * @notice Set systemFunctionSelector.
+   * @notice Set y.
    */
-  function _setSystemFunctionSelector(bytes4 worldFunctionSelector, bytes4 systemFunctionSelector) internal {
+  function _setY(address player, int32 y) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((systemFunctionSelector)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((y)), _fieldLayout);
   }
 
   /**
    * @notice Get the full data.
    */
-  function get(
-    bytes4 worldFunctionSelector
-  ) internal view returns (ResourceId systemId, bytes4 systemFunctionSelector) {
+  function get(address player) internal view returns (PositionData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
@@ -172,11 +168,9 @@ library FunctionSelectors {
   /**
    * @notice Get the full data.
    */
-  function _get(
-    bytes4 worldFunctionSelector
-  ) internal view returns (ResourceId systemId, bytes4 systemFunctionSelector) {
+  function _get(address player) internal view returns (PositionData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
@@ -189,14 +183,14 @@ library FunctionSelectors {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(bytes4 worldFunctionSelector, ResourceId systemId, bytes4 systemFunctionSelector) internal {
-    bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
+  function set(address player, int32 x, int32 y) internal {
+    bytes memory _staticData = encodeStatic(x, y);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -204,14 +198,44 @@ library FunctionSelectors {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(bytes4 worldFunctionSelector, ResourceId systemId, bytes4 systemFunctionSelector) internal {
-    bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
+  function _set(address player, int32 x, int32 y) internal {
+    bytes memory _staticData = encodeStatic(x, y);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function set(address player, PositionData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.x, _table.y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function _set(address player, PositionData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.x, _table.y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -219,10 +243,10 @@ library FunctionSelectors {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (ResourceId systemId, bytes4 systemFunctionSelector) {
-    systemId = ResourceId.wrap(Bytes.getBytes32(_blob, 0));
+  function decodeStatic(bytes memory _blob) internal pure returns (int32 x, int32 y) {
+    x = (int32(uint32(Bytes.getBytes4(_blob, 0))));
 
-    systemFunctionSelector = (Bytes.getBytes4(_blob, 32));
+    y = (int32(uint32(Bytes.getBytes4(_blob, 4))));
   }
 
   /**
@@ -235,16 +259,16 @@ library FunctionSelectors {
     bytes memory _staticData,
     PackedCounter,
     bytes memory
-  ) internal pure returns (ResourceId systemId, bytes4 systemFunctionSelector) {
-    (systemId, systemFunctionSelector) = decodeStatic(_staticData);
+  ) internal pure returns (PositionData memory _table) {
+    (_table.x, _table.y) = decodeStatic(_staticData);
   }
 
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(bytes4 worldFunctionSelector) internal {
+  function deleteRecord(address player) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -252,9 +276,9 @@ library FunctionSelectors {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(bytes4 worldFunctionSelector) internal {
+  function _deleteRecord(address player) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -263,8 +287,8 @@ library FunctionSelectors {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(ResourceId systemId, bytes4 systemFunctionSelector) internal pure returns (bytes memory) {
-    return abi.encodePacked(systemId, systemFunctionSelector);
+  function encodeStatic(int32 x, int32 y) internal pure returns (bytes memory) {
+    return abi.encodePacked(x, y);
   }
 
   /**
@@ -273,11 +297,8 @@ library FunctionSelectors {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(
-    ResourceId systemId,
-    bytes4 systemFunctionSelector
-  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
+  function encode(int32 x, int32 y) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+    bytes memory _staticData = encodeStatic(x, y);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -288,9 +309,9 @@ library FunctionSelectors {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple(bytes4 worldFunctionSelector) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(address player) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(worldFunctionSelector);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     return _keyTuple;
   }

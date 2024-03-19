@@ -16,20 +16,17 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-// Import user types
-import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-
-library NamespaceDelegationControl {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "NamespaceDelegat", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x7462776f726c640000000000000000004e616d65737061636544656c65676174);
+library Health {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Health", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000004865616c746800000000000000000000);
 
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0020010020000000000000000000000000000000000000000000000000000000);
 
-  // Hex-encoded key schema of (bytes32)
-  Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (bytes32)
-  Schema constant _valueSchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded key schema of (address)
+  Schema constant _keySchema = Schema.wrap(0x0014010061000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint256)
+  Schema constant _valueSchema = Schema.wrap(0x002001001f000000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -37,7 +34,7 @@ library NamespaceDelegationControl {
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
-    keyNames[0] = "namespaceId";
+    keyNames[0] = "player";
   }
 
   /**
@@ -46,7 +43,7 @@ library NamespaceDelegationControl {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
-    fieldNames[0] = "delegationControlId";
+    fieldNames[0] = "health";
   }
 
   /**
@@ -64,119 +61,95 @@ library NamespaceDelegationControl {
   }
 
   /**
-   * @notice Get delegationControlId.
+   * @notice Get health.
    */
-  function getDelegationControlId(ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
+  function getHealth(address player) internal view returns (uint256 health) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return ResourceId.wrap(bytes32(_blob));
+    return (uint256(bytes32(_blob)));
   }
 
   /**
-   * @notice Get delegationControlId.
+   * @notice Get health.
    */
-  function _getDelegationControlId(ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
+  function _getHealth(address player) internal view returns (uint256 health) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return ResourceId.wrap(bytes32(_blob));
+    return (uint256(bytes32(_blob)));
   }
 
   /**
-   * @notice Get delegationControlId.
+   * @notice Get health.
    */
-  function get(ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
+  function get(address player) internal view returns (uint256 health) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return ResourceId.wrap(bytes32(_blob));
+    return (uint256(bytes32(_blob)));
   }
 
   /**
-   * @notice Get delegationControlId.
+   * @notice Get health.
    */
-  function _get(ResourceId namespaceId) internal view returns (ResourceId delegationControlId) {
+  function _get(address player) internal view returns (uint256 health) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return ResourceId.wrap(bytes32(_blob));
+    return (uint256(bytes32(_blob)));
   }
 
   /**
-   * @notice Set delegationControlId.
+   * @notice Set health.
    */
-  function setDelegationControlId(ResourceId namespaceId, ResourceId delegationControlId) internal {
+  function setHealth(address player, uint256 health) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
-    StoreSwitch.setStaticField(
-      _tableId,
-      _keyTuple,
-      0,
-      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
-      _fieldLayout
-    );
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((health)), _fieldLayout);
   }
 
   /**
-   * @notice Set delegationControlId.
+   * @notice Set health.
    */
-  function _setDelegationControlId(ResourceId namespaceId, ResourceId delegationControlId) internal {
+  function _setHealth(address player, uint256 health) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
-    StoreCore.setStaticField(
-      _tableId,
-      _keyTuple,
-      0,
-      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
-      _fieldLayout
-    );
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((health)), _fieldLayout);
   }
 
   /**
-   * @notice Set delegationControlId.
+   * @notice Set health.
    */
-  function set(ResourceId namespaceId, ResourceId delegationControlId) internal {
+  function set(address player, uint256 health) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
-    StoreSwitch.setStaticField(
-      _tableId,
-      _keyTuple,
-      0,
-      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
-      _fieldLayout
-    );
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((health)), _fieldLayout);
   }
 
   /**
-   * @notice Set delegationControlId.
+   * @notice Set health.
    */
-  function _set(ResourceId namespaceId, ResourceId delegationControlId) internal {
+  function _set(address player, uint256 health) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
-    StoreCore.setStaticField(
-      _tableId,
-      _keyTuple,
-      0,
-      abi.encodePacked(ResourceId.unwrap(delegationControlId)),
-      _fieldLayout
-    );
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((health)), _fieldLayout);
   }
 
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(ResourceId namespaceId) internal {
+  function deleteRecord(address player) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -184,9 +157,9 @@ library NamespaceDelegationControl {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(ResourceId namespaceId) internal {
+  function _deleteRecord(address player) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -195,8 +168,8 @@ library NamespaceDelegationControl {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(ResourceId delegationControlId) internal pure returns (bytes memory) {
-    return abi.encodePacked(delegationControlId);
+  function encodeStatic(uint256 health) internal pure returns (bytes memory) {
+    return abi.encodePacked(health);
   }
 
   /**
@@ -205,8 +178,8 @@ library NamespaceDelegationControl {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(ResourceId delegationControlId) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(delegationControlId);
+  function encode(uint256 health) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+    bytes memory _staticData = encodeStatic(health);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
@@ -217,9 +190,9 @@ library NamespaceDelegationControl {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple(ResourceId namespaceId) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(address player) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = ResourceId.unwrap(namespaceId);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     return _keyTuple;
   }

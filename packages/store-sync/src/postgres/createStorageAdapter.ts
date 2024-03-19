@@ -92,7 +92,7 @@ export async function createStorageAdapter<config extends StoreConfig = StoreCon
           const previousStaticData = previousValue?.staticData ?? "0x";
           const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
 
-          debug("upcserting record via splice static", {
+          debug("upserting record via splice static", {
             address: log.address,
             tableId: log.args.tableId,
             keyTuple: log.args.keyTuple,
