@@ -1,17 +1,47 @@
 import { StaticAbiType } from "./schemaAbiTypes";
+import { isStaticAbiType } from "./staticAbiTypes";
 
-const arrayAbiTypePattern = /\[\]$/;
+export type ArrayAbiType = `${StaticAbiType}[]`;
+export type FixedArrayAbiType = `${StaticAbiType}[${number}]`;
 
-export type ArrayAbiTypeToStaticAbiType<T extends string> = T extends `${infer StaticAbiType}[]`
+const arrayPattern = /\[\]$/;
+const fixedArrayPattern = /\[\d+\]$/;
+
+export function isArrayAbiType(abiType: unknown): abiType is ArrayAbiType {
+  return (
+    typeof abiType === "string" && arrayPattern.test(abiType) && isStaticAbiType(abiType.replace(arrayPattern, ""))
+  );
+}
+
+export function isFixedArrayAbiType(abiType: unknown): abiType is FixedArrayAbiType {
+  return (
+    typeof abiType === "string" &&
+    fixedArrayPattern.test(abiType) &&
+    isStaticAbiType(abiType.replace(fixedArrayPattern, ""))
+  );
+}
+export type arrayToStaticAbiType<abiType extends string> = abiType extends `${infer StaticAbiType}[]`
   ? StaticAbiType
   : never;
 
-export function isArrayAbiType<T extends `${StaticAbiType}[]`>(abiType: string): abiType is T {
-  return arrayAbiTypePattern.test(abiType);
+export type fixedArrayToStaticAbiType<abiType extends string> = abiType extends `${infer StaticAbiType}[${number}]`
+  ? StaticAbiType
+  : never;
+
+export function arrayToStaticAbiType<abiType extends ArrayAbiType>(abiType: abiType): arrayToStaticAbiType<abiType> {
+  return abiType.replace(arrayPattern, "") as arrayToStaticAbiType<abiType>;
 }
 
-export function arrayAbiTypeToStaticAbiType<T extends `${StaticAbiType}[]`>(
-  abiType: T,
-): ArrayAbiTypeToStaticAbiType<T> {
-  return abiType.replace(arrayAbiTypePattern, "") as ArrayAbiTypeToStaticAbiType<T>;
+export function fixedArrayToStaticAbiType<abiType extends FixedArrayAbiType>(
+  abiType: abiType,
+): fixedArrayToStaticAbiType<abiType> {
+  return abiType.replace(fixedArrayPattern, "") as fixedArrayToStaticAbiType<abiType>;
+}
+
+export type fixedArrayToArray<abiType extends FixedArrayAbiType> = abiType extends `${infer staticAbiType}[${number}]`
+  ? `${staticAbiType}[]`
+  : never;
+
+export function fixedArrayToArray<abiType extends FixedArrayAbiType>(abiType: abiType): fixedArrayToArray<abiType> {
+  return abiType.replace(fixedArrayPattern, "[]") as fixedArrayToArray<abiType>;
 }
