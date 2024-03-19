@@ -70,16 +70,9 @@ export type resolveWorld<world> = evaluate<
     >
 >;
 
-export function resolveWorld<const world>(world: world): resolveWorld<world> {
-  validateWorld(world);
-
+export function resolveWorld<const world extends WorldInput>(world: world): resolveWorld<world> {
   const scope = extendedScope(world);
-
-  const namespaces = get(world, "namespaces") ?? {};
-  validateNamespaces(namespaces, scope);
-
-  const rootTables = get(world, "tables") ?? {};
-  validateTables(rootTables, scope);
+  const namespaces = world.namespaces ?? {};
 
   const resolvedNamespacedTables = Object.fromEntries(
     Object.entries(namespaces)
@@ -112,5 +105,6 @@ export function resolveWorld<const world>(world: world): resolveWorld<world> {
 }
 
 export function defineWorld<const world>(world: validateWorld<world>): resolveWorld<world> {
+  validateWorld(world);
   return resolveWorld(world) as unknown as resolveWorld<world>;
 }

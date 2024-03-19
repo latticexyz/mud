@@ -58,9 +58,9 @@ export type validateNamespacesWithShorthands<namespaces, scope extends Scope = A
   };
 };
 
-export function resolveWorldWithShorthands<world>(world: world): resolveWorldWithShorthands<world> {
-  validateWorldWithShorthands(world);
-
+export function resolveWorldWithShorthands<world extends WorldWithShorthandsInput>(
+  world: world,
+): resolveWorldWithShorthands<world> {
   const scope = extendedScope(world);
   const tables = mapObject(world.tables ?? {}, (table) => {
     return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
@@ -73,6 +73,7 @@ export function resolveWorldWithShorthands<world>(world: world): resolveWorldWit
   }));
 
   const fullConfig = { ...world, tables, namespaces };
+  validateWorld(fullConfig);
 
   return resolveWorld(fullConfig) as unknown as resolveWorldWithShorthands<world>;
 }
@@ -80,5 +81,6 @@ export function resolveWorldWithShorthands<world>(world: world): resolveWorldWit
 export function defineWorldWithShorthands<world>(
   world: validateWorldWithShorthands<world>,
 ): resolveWorldWithShorthands<world> {
-  return resolveWorldWithShorthands(world) as resolveWorldWithShorthands<world>;
+  validateWorldWithShorthands(world);
+  return resolveWorldWithShorthands(world) as unknown as resolveWorldWithShorthands<world>;
 }
