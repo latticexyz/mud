@@ -24,7 +24,10 @@ export async function build({
   const config = worldToV1(configV2);
   const outPath = path.join(srcDir, config.codegenDirectory);
   const remappings = await getRemappings(foundryProfile);
-  await Promise.all([tablegen(config, outPath, remappings), worldgen(config, getExistingContracts(srcDir), outPath)]);
+  await Promise.all([
+    tablegen(configV2, outPath, remappings),
+    worldgen(configV2, getExistingContracts(srcDir), outPath),
+  ]);
 
   // TODO remove when https://github.com/foundry-rs/foundry/issues/6241 is resolved
   const forgeConfig = await getForgeConfig(foundryProfile);
