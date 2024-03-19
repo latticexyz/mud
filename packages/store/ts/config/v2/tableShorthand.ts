@@ -1,5 +1,5 @@
 import { ErrorMessage, conform } from "@arktype/util";
-import { isStaticAbiType } from "@latticexyz/schema-type/internal";
+import { FixedArrayAbiType, isFixedArrayAbiType, isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { get, hasOwnKey, isObject, mergeIfUndefined } from "./generics";
 import { isSchemaInput } from "./schema";
 import { AbiTypeScope, Scope, getStaticAbiTypeKeys } from "./scope";
@@ -28,20 +28,23 @@ export type validateTableShorthand<input, scope extends Scope = AbiTypeScope> = 
     ? // Require all values to be valid types in this scope
       conform<input, ScopedSchemaInput<scope>>
     : NoStaticKeyFieldError
-  : // If a valid type from the scope is provided, accept it
-    input extends keyof scope["types"]
+  : // If a fixed array type is provided, accept it
+    input extends FixedArrayAbiType
     ? input
-    : // If the input is not a valid shorthand, return the expected type
-      input extends string
-      ? keyof scope["types"]
-      : ScopedSchemaInput<scope>;
+    : // If a valid type from the scope is provided, accept it
+      input extends keyof scope["types"]
+      ? input
+      : // If the input is not a valid shorthand, return the expected type
+        input extends string
+        ? keyof scope["types"]
+        : ScopedSchemaInput<scope>;
 
 export function validateTableShorthand<scope extends Scope = AbiTypeScope>(
   shorthand: unknown,
   scope: scope = AbiTypeScope as unknown as scope,
 ): asserts shorthand is TableShorthandInput {
   if (typeof shorthand === "string") {
-    if (hasOwnKey(scope.types, shorthand)) {
+    if (isFixedArrayAbiType(shorthand) || hasOwnKey(scope.types, shorthand)) {
       return;
     }
     throw new Error(`Invalid ABI type. \`${shorthand}\` not found in scope.`);
@@ -58,17 +61,16 @@ export function validateTableShorthand<scope extends Scope = AbiTypeScope>(
   throw new Error(`Invalid table shorthand.`);
 }
 
-export type resolveTableShorthand<
-  shorthand,
-  scope extends Scope = AbiTypeScope,
-> = shorthand extends keyof scope["types"]
+export type resolveTableShorthand<shorthand, scope extends Scope = AbiTypeScope> = shorthand extends FixedArrayAbiType
   ? { schema: { id: "bytes32"; value: shorthand }; key: ["id"] }
-  : shorthand extends SchemaInput
-    ? "id" extends getStaticAbiTypeKeys<shorthand, scope>
-      ? // If the shorthand includes a static field called `id`, use it as `key`
-        { schema: shorthand; key: ["id"] }
-      : never
-    : never;
+  : shorthand extends keyof scope["types"]
+    ? { schema: { id: "bytes32"; value: shorthand }; key: ["id"] }
+    : shorthand extends SchemaInput
+      ? "id" extends getStaticAbiTypeKeys<shorthand, scope>
+        ? // If the shorthand includes a static field called `id`, use it as `key`
+          { schema: shorthand; key: ["id"] }
+        : never
+      : never;
 
 export function resolveTableShorthand<shorthand, scope extends Scope = AbiTypeScope>(
   shorthand: shorthand,

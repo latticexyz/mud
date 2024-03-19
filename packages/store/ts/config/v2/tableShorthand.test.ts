@@ -22,6 +22,24 @@ describe("defineTableShorthand", () => {
     });
   });
 
+  it("should expand a fixed array ABI type into a id/value schema", () => {
+    const table = defineTableShorthand("address[4]");
+
+    attest<{
+      schema: {
+        id: "bytes32";
+        value: "address[4]";
+      };
+      key: ["id"];
+    }>(table).equals({
+      schema: {
+        id: "bytes32",
+        value: "address[4]",
+      },
+      key: ["id"],
+    });
+  });
+
   it("should expand a single custom type into a id/value schema", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
     const table = defineTableShorthand("CustomType", scope);

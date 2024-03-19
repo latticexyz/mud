@@ -47,4 +47,18 @@ describe("resolveSchema", () => {
     const resolved = defineSchema({ regular: "uint256", user: "CustomType" }, scope);
     attest<true, typeof resolved extends Schema ? true : false>();
   });
+
+  it("should map user types to their primitive type", () => {
+    const resolved = defineSchema({ coordinate: "int32[2]" });
+    const expected = {
+      coordinate: {
+        type: "int32[]",
+        internalType: "int32[2]",
+      },
+    } as const;
+
+    attest<typeof expected>(resolved)
+      .equals(expected)
+      .type.toString.snap('{ readonly coordinate: { readonly type: "int32[]"; readonly internalType: "int32[2]"; }; }');
+  });
 });
