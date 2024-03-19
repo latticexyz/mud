@@ -12,6 +12,7 @@ export const TABLE_CODEGEN_DEFAULTS = {
 } as const;
 
 export const TABLE_DEFAULTS = {
+  namespace: "",
   type: "table",
 } as const;
 
