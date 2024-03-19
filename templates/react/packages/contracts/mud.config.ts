@@ -9,6 +9,7 @@ export default defineWorld({
         completedAt: "uint256",
         description: "string",
       },
+      key: ["id"],
     },
   },
 });

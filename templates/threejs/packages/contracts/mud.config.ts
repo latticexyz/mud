@@ -9,6 +9,7 @@ export default defineWorld({
         y: "int32",
         z: "int32",
       },
+      key: ["id"],
     },
   },
 });
