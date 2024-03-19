@@ -21,12 +21,12 @@ export type TableInput = {
 };
 
 export type TablesInput = {
-  readonly [key: string]: TableInput;
+  readonly [key: string]: Omit<TableInput, "namespace" | "name">;
 };
 
 export type StoreInput = {
   readonly namespace?: string;
-  readonly tables: Omit<TablesInput, "name" | "namespace">;
+  readonly tables: TablesInput;
   readonly userTypes?: UserTypes;
   readonly enums?: Enums;
   readonly codegen?: Partial<Codegen>;

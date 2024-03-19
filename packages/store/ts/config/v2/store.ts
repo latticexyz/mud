@@ -7,7 +7,6 @@ import { resolveTables, validateTables } from "./tables";
 import { scopeWithUserTypes, validateUserTypes } from "./userTypes";
 import { resolveEnums, scopeWithEnums } from "./enums";
 import { resolveCodegen } from "./codegen";
-import { namespacedTableKeys } from "./namespaces";
 
 export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
 
@@ -38,13 +37,20 @@ export function validateStore(store: unknown): asserts store is StoreInput {
   }
 }
 
+type keyPrefix<store> = "namespace" extends keyof store
+  ? store["namespace"] extends ""
+    ? ""
+    : `${store["namespace"] & string}__`
+  : "";
+
 export type resolveStore<store> = evaluate<{
   readonly tables: "tables" extends keyof store
     ? resolveTables<
         {
-          [key in namespacedTableKeys<store>]: key extends `${string}__${infer table}`
-            ? mergeIfUndefined<get<get<store, "tables">, table>, { namespace: get<store, "namespace">; name: table }>
-            : mergeIfUndefined<get<get<store, "tables">, key>, { namespace: get<store, "namespace">; name: key }>;
+          [tableKey in keyof store["tables"] & string as `${keyPrefix<store>}${tableKey}`]: mergeIfUndefined<
+            store["tables"][tableKey],
+            { namespace: get<store, "namespace">; name: tableKey }
+          >;
         },
         extendedScope<store>
       >
