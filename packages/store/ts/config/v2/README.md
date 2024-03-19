@@ -10,30 +10,33 @@ These are the types and functions that should be placed in a file called `x.ts`
 type validateX<x> = { [key in keyof x]: x[key] extends Expected ? x[key] : Expected };
 
 /**
- * resolveX expects a valid input type and maps it to the resolved output type
- */
-type resolveX<x> = x extends X ? { [key in keyof x]: Resolved } : never;
-
-/**
- * validateX function throws a runtime error if x is not X
+ * validateX function throws a runtime error if x is not X and has a type assertion
  */
 function validateX(x: unknonw): asserts x is X {
   //
 }
 
 /**
- * defineX function validates the input and calls resolveX to resolve it.
+ * resolveX expects a valid input type and maps it to the resolved output type
+ */
+type resolveX<x> = x extends X ? { [key in keyof x]: Resolved } : never;
+
+/**
+ * defineX function validates the input types and calls resolveX to resolve it.
+ * Note: the runtime validation happens in `resolveX`.
+ * This is to take advantage of the type assertion in the function body.
  */
 function defineX<const x>(x: validateX<x>): resolveX<x> {
-  validateX(x);
   return resolveX(x);
 }
 
 /**
- * resolveX function does not validate but expect a valid input.
+ * resolveX function does not validate the input type, but validates the runtime types.
+ * (This is to take advantage of the type assertion in the function body).
  * This function is used by defineX and other higher level resolution functions.
  */
 function resolveX<const x extends X>(x: x): resolveX<x> {
+  validateX(x);
   //
 }
 ```
