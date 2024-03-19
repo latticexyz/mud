@@ -129,18 +129,6 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
       readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
       readonly key: Readonly<input["key"]>;
       readonly schema: resolveSchema<input["schema"], scope>;
-      readonly keySchema: resolveSchema<
-        {
-          readonly [key in input["key"][number]]: input["schema"][key];
-        },
-        scope
-      >;
-      readonly valueSchema: resolveSchema<
-        {
-          readonly [key in Exclude<keyof input["schema"], input["key"][number]>]: input["schema"][key];
-        },
-        scope
-      >;
       readonly codegen: resolveTableCodegen<input>;
     }
   : never;
@@ -161,18 +149,6 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
     type,
     key: input.key,
     schema: resolveSchema(input.schema, scope),
-    keySchema: resolveSchema(
-      Object.fromEntries(
-        Object.entries(input.schema).filter(([key]) => input.key.includes(key as (typeof input.key)[number])),
-      ),
-      scope,
-    ),
-    valueSchema: resolveSchema(
-      Object.fromEntries(
-        Object.entries(input.schema).filter(([key]) => !input.key.includes(key as (typeof input.key)[number])),
-      ),
-      scope,
-    ),
     codegen: resolveTableCodegen(input),
   } as unknown as resolveTable<input, scope>;
 }

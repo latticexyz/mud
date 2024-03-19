@@ -46,22 +46,6 @@ describe("defineWorld", () => {
               internalType: "string",
             },
           },
-          keySchema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-          },
-          valueSchema: {
-            value: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-            dynamic: {
-              type: "string",
-              internalType: "string",
-            },
-          },
           key: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
@@ -113,22 +97,6 @@ describe("defineWorld", () => {
               type: "address",
               internalType: "Static",
             },
-            value: {
-              type: "uint8",
-              internalType: "MyEnum",
-            },
-            dynamic: {
-              type: "string",
-              internalType: "Dynamic",
-            },
-          },
-          keySchema: {
-            id: {
-              type: "address",
-              internalType: "Static",
-            },
-          },
-          valueSchema: {
             value: {
               type: "uint8",
               internalType: "MyEnum",
@@ -239,22 +207,6 @@ describe("defineWorld", () => {
                 internalType: "uint256",
               },
             },
-            keySchema: {
-              age: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-            },
-            valueSchema: {
-              id: {
-                type: "address",
-                internalType: "address",
-              },
-              name: {
-                type: "string",
-                internalType: "string",
-              },
-            },
             key: ["age"],
             name: "Example",
             namespace: "",
@@ -303,22 +255,6 @@ describe("defineWorld", () => {
                 internalType: "static",
               },
             },
-            keySchema: {
-              age: {
-                type: "address",
-                internalType: "static",
-              },
-            },
-            valueSchema: {
-              id: {
-                type: "string",
-                internalType: "dynamic",
-              },
-              name: {
-                type: "string",
-                internalType: "string",
-              },
-            },
             key: ["age"],
             name: "Example",
             namespace: "",
@@ -364,22 +300,6 @@ describe("defineWorld", () => {
               age: {
                 type: "uint256",
                 internalType: "uint256",
-              },
-            },
-            keySchema: {
-              age: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-              id: {
-                type: "address",
-                internalType: "address",
-              },
-            },
-            valueSchema: {
-              name: {
-                type: "string",
-                internalType: "string",
               },
             },
             key: ["age", "id"],
@@ -431,22 +351,6 @@ describe("defineWorld", () => {
                 internalType: "uint256",
               },
             },
-            keySchema: {
-              firstKey: {
-                type: "address",
-                internalType: "address",
-              },
-              firstAge: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-            },
-            valueSchema: {
-              firstName: {
-                type: "string",
-                internalType: "string",
-              },
-            },
             key: ["firstKey", "firstAge"],
             name: "First",
             namespace: "",
@@ -467,22 +371,6 @@ describe("defineWorld", () => {
               secondAge: {
                 type: "uint256",
                 internalType: "uint256",
-              },
-            },
-            keySchema: {
-              secondKey: {
-                type: "address",
-                internalType: "address",
-              },
-              secondAge: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-            },
-            valueSchema: {
-              secondName: {
-                type: "string",
-                internalType: "string",
               },
             },
             key: ["secondKey", "secondAge"],
@@ -538,22 +426,6 @@ describe("defineWorld", () => {
                 internalType: "uint256",
               },
             },
-            keySchema: {
-              firstKey: {
-                type: "address",
-                internalType: "Static",
-              },
-              firstAge: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-            },
-            valueSchema: {
-              firstName: {
-                type: "string",
-                internalType: "Dynamic",
-              },
-            },
             key: ["firstKey", "firstAge"],
             name: "First",
             namespace: "",
@@ -574,22 +446,6 @@ describe("defineWorld", () => {
               secondAge: {
                 type: "uint256",
                 internalType: "uint256",
-              },
-            },
-            keySchema: {
-              secondKey: {
-                type: "address",
-                internalType: "Static",
-              },
-              secondAge: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-            },
-            valueSchema: {
-              secondName: {
-                type: "string",
-                internalType: "Dynamic",
               },
             },
             key: ["secondKey", "secondAge"],
@@ -699,22 +555,6 @@ describe("defineWorld", () => {
               age: {
                 type: "address",
                 internalType: "static",
-              },
-            },
-            keySchema: {
-              name: {
-                type: "uint8",
-                internalType: "ValidNames",
-              },
-            },
-            valueSchema: {
-              age: {
-                type: "address",
-                internalType: "static",
-              },
-              id: {
-                type: "string",
-                internalType: "dynamic",
               },
             },
             key: ["name"],

@@ -59,13 +59,6 @@ describe("resolveTable", () => {
         name: { type: "string", internalType: "string" },
         age: { type: "uint256", internalType: "uint256" },
       },
-      keySchema: {
-        age: { type: "uint256", internalType: "uint256" },
-      },
-      valueSchema: {
-        id: { type: "address", internalType: "address" },
-        name: { type: "string", internalType: "string" },
-      },
       key: ["age"],
       name: "",
       namespace: "",
@@ -88,13 +81,6 @@ describe("resolveTable", () => {
         id: { type: "address", internalType: "address" },
         name: { type: "string", internalType: "string" },
         age: { type: "uint256", internalType: "uint256" },
-      },
-      keySchema: {
-        age: { type: "uint256", internalType: "uint256" },
-        id: { type: "address", internalType: "address" },
-      },
-      valueSchema: {
-        name: { type: "string", internalType: "string" },
       },
       key: ["age", "id"],
       name: "",
@@ -124,13 +110,6 @@ describe("resolveTable", () => {
         id: { type: "address", internalType: "Static" },
         name: { type: "string", internalType: "Dynamic" },
         age: { type: "uint256", internalType: "uint256" },
-      },
-      keySchema: {
-        age: { type: "uint256", internalType: "uint256" },
-      },
-      valueSchema: {
-        id: { type: "address", internalType: "Static" },
-        name: { type: "string", internalType: "Dynamic" },
       },
       key: ["age"],
       name: "",
