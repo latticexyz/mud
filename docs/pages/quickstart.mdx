@@ -96,6 +96,9 @@ To run any of the TypeScript templates:
      kill `sudo netstat -anpe | grep 8545 | grep LISTEN | awk '{print $9}' | sed 's/\/anvil//'`
      ```
 
+     Alternatively, a different Ethereum client such as [Geth](https://geth.ethereum.org/) or [Reth](https://paradigmxyz.github.io/reth/intro.html) might be running.
+     As those can be production clients, it is best not to develop on a machine that runs them.
+
    - `[vite] Internal server error: Failed to resolve import "contracts/out/IWorld.sol/IWorld.abi.json" from "src/mud/setupNetwork.ts"`
 
      Ignore it.
