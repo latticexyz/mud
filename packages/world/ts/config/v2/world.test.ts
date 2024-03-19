@@ -771,8 +771,8 @@ describe("defineWorld", () => {
       });
 
       attest<"namespace">(config.namespace).equals("namespace");
-      attest<"namespace">(config.tables.Example.namespace).equals("namespace");
-      attest(config.tables.Example.tableId).equals(
+      attest<"namespace">(config.tables.namespace__Example.namespace).equals("namespace");
+      attest(config.tables.namespace__Example.tableId).equals(
         resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
       );
     });
@@ -785,11 +785,26 @@ describe("defineWorld", () => {
         Example: {
           schema: { id: "address" },
           key: ["id"],
-          name: "CustomName",
         },
       },
     });
 
-    attest<"CustomNamespace__CustomName", keyof typeof config.tables>();
+    attest<"CustomNamespace__Example", keyof typeof config.tables>();
+  });
+
+  it("should throw if trying to override namespace or name in the store/namespace config", () => {
+    const config = defineWorld({
+      namespace: "CustomNamespace",
+      tables: {
+        Example: {
+          schema: { id: "address" },
+          key: ["id"],
+          name: "NotAllowed",
+          namespace: "NotAllowed",
+        },
+      },
+    });
+
+    attest<"CustomNamespace__Example", keyof typeof config.tables>();
   });
 });

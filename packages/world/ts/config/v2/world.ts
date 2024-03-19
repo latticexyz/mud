@@ -1,16 +1,13 @@
 import { conform, evaluate, narrow } from "@arktype/util";
-import { mapObject } from "@latticexyz/common/utils";
 import {
   UserTypes,
   extendedScope,
   get,
   resolveTable,
   validateTable,
-  resolveCodegen as resolveStoreCodegen,
   mergeIfUndefined,
   validateTables,
   resolveStore,
-  resolveTables,
   Store,
   hasOwnKey,
   validateStore,
@@ -77,7 +74,6 @@ export function resolveWorld<const world>(world: world): resolveWorld<world> {
   validateWorld(world);
 
   const scope = extendedScope(world);
-  const namespace = get(world, "namespace") ?? "";
 
   const namespaces = get(world, "namespaces") ?? {};
   validateNamespaces(namespaces, scope);
@@ -99,18 +95,13 @@ export function resolveWorld<const world>(world: world): resolveWorld<world> {
       .flat(),
   ) as Tables;
 
-  const resolvedRootTables = resolveTables(
-    mapObject(rootTables, (table) => mergeIfUndefined(table, { namespace })),
-    scope,
-  );
+  const resolvedStore = resolveStore(world);
 
   return mergeIfUndefined(
     {
-      tables: { ...resolvedRootTables, ...resolvedNamespacedTables },
-      userTypes: world.userTypes ?? {},
-      enums: world.enums ?? {},
-      namespace,
-      codegen: mergeIfUndefined(resolveStoreCodegen(world.codegen), resolveCodegen(world.codegen)),
+      ...resolvedStore,
+      tables: { ...resolvedStore.tables, ...resolvedNamespacedTables },
+      codegen: mergeIfUndefined(resolvedStore.codegen, resolveCodegen(world.codegen)),
       deployment: resolveDeployment(world.deployment),
       systems: resolveSystems(world.systems ?? CONFIG_DEFAULTS.systems),
       excludeSystems: get(world, "excludeSystems"),
