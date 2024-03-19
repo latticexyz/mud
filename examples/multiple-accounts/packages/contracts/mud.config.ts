@@ -1,16 +1,11 @@
-import { mudConfig } from "@latticexyz/world/register";
+import { defineWorld } from "@latticexyz/world/config/v2";
 
-export default mudConfig({
+export default defineWorld({
   namespace: "LastCall",
   tables: {
     LastCall: {
-      keySchema: {
-        caller: "address",
-      },
-      valueSchema: {
-        callTime: "uint256",
-        sender: "address",
-      },
+      schema: { caller: "address", callTime: "uint256", sender: "address" },
+      key: ["caller"],
     },
   },
 });
