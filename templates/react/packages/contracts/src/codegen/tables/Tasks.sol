@@ -408,9 +408,9 @@ library Tasks {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (uint256 createdAt, uint256 completedAt) {
-    createdAt = (uint256(Bytes.slice32(_blob, 0)));
+    createdAt = (uint256(Bytes.getBytes32(_blob, 0)));
 
-    completedAt = (uint256(Bytes.slice32(_blob, 32)));
+    completedAt = (uint256(Bytes.getBytes32(_blob, 32)));
   }
 
   /**

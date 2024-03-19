@@ -63,12 +63,12 @@ export async function writeContract<
     return result.request as unknown as WriteContractParameters<abi, functionName, args, chain, account, chainOverride>;
   }
 
-  const preparedWrite = await prepareWrite();
-
   return nonceManager.mempoolQueue.add(
     () =>
       pRetry(
         async () => {
+          const preparedWrite = await prepareWrite();
+
           if (!nonceManager.hasNonce()) {
             await nonceManager.resetNonce();
           }

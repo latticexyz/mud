@@ -3,7 +3,7 @@ import { Resource } from "./common";
 import { ResourceType, resourceTypes } from "./resourceTypes";
 import { resourceTypeIds } from "./resourceToHex";
 import { ReverseMap } from "./type-utils/common";
-import { resourceToLabel } from "./resourceLabel";
+import { resourceToLabel } from "./resourceToLabel";
 
 const resourceTypeIdToType = Object.fromEntries(
   Object.entries(resourceTypeIds).map(([key, value]) => [value, key]),

@@ -1,6 +1,5 @@
 import { useEntityQuery } from "@latticexyz/react";
 import { Component, Has, getComponentValueStrict, Type } from "@latticexyz/recs";
-import { decodeEntity } from "@latticexyz/store-sync/recs";
 import { serialize } from "../serialize";
 
 // TODO: use react-table or similar for better perf with lots of logs

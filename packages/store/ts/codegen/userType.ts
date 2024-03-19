@@ -4,7 +4,7 @@ import {
   SchemaType,
   SchemaTypeToAbiType,
 } from "@latticexyz/schema-type/deprecated";
-import { parseStaticArray } from "@latticexyz/config";
+import { parseStaticArray } from "@latticexyz/config/library";
 import { ImportDatum, RenderType, SolidityUserDefinedType } from "@latticexyz/common/codegen";
 import { StoreConfig } from "../config";
 

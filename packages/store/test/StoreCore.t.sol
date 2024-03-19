@@ -514,8 +514,8 @@ contract StoreCoreTest is Test, StoreMock {
       .getRecord(_data.tableId, keyTuple, _data.fieldLayout);
     assertEq(IStore(this).getFieldLayout(_data.tableId).staticDataLength(), 48);
     assertEq(IStore(this).getValueSchema(_data.tableId).staticDataLength(), 48);
-    assertEq(Bytes.slice16(loadedStaticData, 0), _data.firstDataBytes);
-    assertEq(Bytes.slice32(loadedStaticData, 16), _data.secondDataBytes);
+    assertEq(Bytes.getBytes16(loadedStaticData, 0), _data.firstDataBytes);
+    assertEq(Bytes.getBytes32(loadedStaticData, 16), _data.secondDataBytes);
     assertEq(
       keccak256(SliceLib.getSubslice(loadedStaticData, 0, 48).toBytes()),
       keccak256(abi.encodePacked(_data.firstDataBytes, _data.secondDataBytes))

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mudConfig } from "../../register/mudConfig";
 import { resolveConfig } from "./resolveConfig";
-import { MUDCoreContext } from "@latticexyz/config";
+import { MUDCoreContext } from "@latticexyz/config/library";
 import { resourceToHex } from "@latticexyz/common";
 MUDCoreContext.createContext();
 

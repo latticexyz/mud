@@ -11,6 +11,7 @@ const mockTransport: Transport = () =>
   createTransport({
     key: "mock",
     name: "Mock Transport",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     request: mockedTransportRequest as any,
     type: "mock",
   });
@@ -25,7 +26,7 @@ describe("blockRangeToLogs", () => {
   });
 
   it("processes block ranges in order", async () => {
-    const requests: any[] = [];
+    const requests: unknown[] = [];
     mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
       requests.push(params);
       if (method !== "eth_getLogs") throw new Error("not implemented");
