@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { DefaultLogger, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { Hex, RpcLog, createPublicClient, decodeEventLog, formatLog, http } from "viem";
@@ -21,7 +21,7 @@ const blocks = groupLogsByBlockNumber(
       topics: log.topics as [Hex, ...Hex[]],
       strict: true,
     });
-    return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
+    return formatLog(log as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
   }),
 );
 
@@ -53,7 +53,7 @@ describe("createStorageAdapter", async () => {
         {
           "blockNumber": 21n,
           "chainId": 31337,
-          "version": "0.0.6",
+          "version": "0.0.7",
         },
       ]
     `);

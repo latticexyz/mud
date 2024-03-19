@@ -12,7 +12,7 @@ export function useRecords<table extends Table>(table: table): TableRecord<table
     useStore.getState().getRecords(table),
   );
   useEffect(() => {
-    return useStore.subscribe((state) => {
+    return useStore.subscribe(() => {
       const nextRecords = useStore.getState().getRecords(table);
       if (nextRecords !== records) {
         setRecords(nextRecords);

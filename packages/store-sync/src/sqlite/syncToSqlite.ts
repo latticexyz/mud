@@ -10,6 +10,7 @@ type SyncToSqliteOptions<TConfig extends StoreConfig = StoreConfig> = SyncOption
    *
    * [0]: https://orm.drizzle.team/docs/installation-and-db-connection/sqlite/better-sqlite3
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   database: BaseSQLiteDatabase<"sync", any>;
   startSync?: boolean;
 };

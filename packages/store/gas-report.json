@@ -1,15 +1,21 @@
 [
   {
     "file": "test/Bytes.t.sol",
-    "test": "testSetBytes4Memory",
-    "name": "set bytes4 in bytes memory",
-    "gasUsed": 37
+    "test": "testGetBytes3",
+    "name": "get bytes3 with offset 1",
+    "gasUsed": 13
   },
   {
     "file": "test/Bytes.t.sol",
-    "test": "testSlice32",
-    "name": "slice bytes32 with offset 10",
+    "test": "testGetBytes32",
+    "name": "get bytes32 with offset 10",
     "gasUsed": 13
+  },
+  {
+    "file": "test/Bytes.t.sol",
+    "test": "testSetBytes4Memory",
+    "name": "set bytes4 in bytes memory",
+    "gasUsed": 37
   },
   {
     "file": "test/Callbacks.t.sol",

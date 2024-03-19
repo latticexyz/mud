@@ -4,7 +4,7 @@ import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, s
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
-import { decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { Hex, size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";

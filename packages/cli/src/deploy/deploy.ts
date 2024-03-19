@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Client, Hex, Transport, getAddress } from "viem";
+import { Account, Address, Chain, Client, Hex, Transport } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
@@ -12,7 +12,6 @@ import { Table } from "./configToTables";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
 import { resourceToLabel } from "@latticexyz/common";
-import { uniqueBy } from "@latticexyz/common/utils";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
@@ -55,13 +54,18 @@ export async function deploy<configInput extends ConfigInput>({
     client,
     deployerAddress,
     contracts: [
-      ...uniqueBy(config.systems, (system) => getAddress(system.getAddress(deployerAddress))).map((system) => ({
-        bytecode: system.bytecode,
+      ...config.libraries.map((library) => ({
+        bytecode: library.prepareDeploy(deployerAddress, config.libraries).bytecode,
+        deployedBytecodeSize: library.deployedBytecodeSize,
+        label: `${library.path}:${library.name} library`,
+      })),
+      ...config.systems.map((system) => ({
+        bytecode: system.prepareDeploy(deployerAddress, config.libraries).bytecode,
         deployedBytecodeSize: system.deployedBytecodeSize,
         label: `${resourceToLabel(system)} system`,
       })),
-      ...uniqueBy(config.modules, (mod) => getAddress(mod.getAddress(deployerAddress))).map((mod) => ({
-        bytecode: mod.bytecode,
+      ...config.modules.map((mod) => ({
+        bytecode: mod.prepareDeploy(deployerAddress, config.libraries).bytecode,
         deployedBytecodeSize: mod.deployedBytecodeSize,
         label: `${mod.name} module`,
       })),
@@ -98,6 +102,7 @@ export async function deploy<configInput extends ConfigInput>({
   const systemTxs = await ensureSystems({
     client,
     deployerAddress,
+    libraries: config.libraries,
     worldDeploy,
     systems: config.systems,
   });
@@ -109,6 +114,7 @@ export async function deploy<configInput extends ConfigInput>({
   const moduleTxs = await ensureModules({
     client,
     deployerAddress,
+    libraries: config.libraries,
     worldDeploy,
     modules: config.modules,
   });

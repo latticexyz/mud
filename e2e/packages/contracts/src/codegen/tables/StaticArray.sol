@@ -62,106 +62,84 @@ library StaticArray {
   /**
    * @notice Get value.
    */
-  function getValue() internal view returns (uint256[2] memory value) {
+  function getValue() internal view returns (uint256[3] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
-    return toStaticArray_uint256_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
+    return toStaticArray_uint256_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
   }
 
   /**
    * @notice Get value.
    */
-  function _getValue() internal view returns (uint256[2] memory value) {
+  function _getValue() internal view returns (uint256[3] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
-    return toStaticArray_uint256_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
+    return toStaticArray_uint256_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
   }
 
   /**
    * @notice Get value.
    */
-  function get() internal view returns (uint256[2] memory value) {
+  function get() internal view returns (uint256[3] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
-    return toStaticArray_uint256_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
+    return toStaticArray_uint256_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
   }
 
   /**
    * @notice Get value.
    */
-  function _get() internal view returns (uint256[2] memory value) {
+  function _get() internal view returns (uint256[3] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
-    return toStaticArray_uint256_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
+    return toStaticArray_uint256_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
   }
 
   /**
    * @notice Set value.
    */
-  function setValue(uint256[2] memory value) internal {
+  function setValue(uint256[3] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint256_2(value)));
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint256_3(value)));
   }
 
   /**
    * @notice Set value.
    */
-  function _setValue(uint256[2] memory value) internal {
+  function _setValue(uint256[3] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint256_2(value)));
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint256_3(value)));
   }
 
   /**
    * @notice Set value.
    */
-  function set(uint256[2] memory value) internal {
+  function set(uint256[3] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint256_2(value)));
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint256_3(value)));
   }
 
   /**
    * @notice Set value.
    */
-  function _set(uint256[2] memory value) internal {
+  function _set(uint256[3] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint256_2(value)));
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint256_3(value)));
   }
 
-  /**
-   * @notice Get the length of value.
-   */
-  function lengthValue() internal pure returns (uint256) {
-    return 2;
-  }
+  // The length of value
+  uint256 constant lengthValue = 3;
 
-  /**
-   * @notice Get the length of value.
-   */
-  function _lengthValue() internal pure returns (uint256) {
-    return 2;
-  }
-
-  /**
-   * @notice Get the length of value.
-   */
-  function length() internal pure returns (uint256) {
-    return 2;
-  }
-
-  /**
-   * @notice Get the length of value.
-   */
-  function _length() internal pure returns (uint256) {
-    return 2;
-  }
+  // The length of value
+  uint256 constant length = 3;
 
   /**
    * @notice Get an item of value.
@@ -285,7 +263,7 @@ library StaticArray {
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(uint256[2] memory value) internal pure returns (PackedCounter _encodedLengths) {
+  function encodeLengths(uint256[3] memory value) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
       _encodedLengths = PackedCounterLib.pack(value.length * 32);
@@ -296,8 +274,8 @@ library StaticArray {
    * @notice Tightly pack dynamic (variable length) data using this table's schema.
    * @return The dynamic data, encoded into a sequence of bytes.
    */
-  function encodeDynamic(uint256[2] memory value) internal pure returns (bytes memory) {
-    return abi.encodePacked(EncodeArray.encode(fromStaticArray_uint256_2(value)));
+  function encodeDynamic(uint256[3] memory value) internal pure returns (bytes memory) {
+    return abi.encodePacked(EncodeArray.encode(fromStaticArray_uint256_3(value)));
   }
 
   /**
@@ -306,7 +284,7 @@ library StaticArray {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(uint256[2] memory value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(uint256[3] memory value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData;
     PackedCounter _encodedLengths = encodeLengths(value);
     bytes memory _dynamicData = encodeDynamic(value);
@@ -333,8 +311,8 @@ library StaticArray {
  * @param _value The dynamic array to cast.
  * @return _result The static array.
  */
-function toStaticArray_uint256_2(uint256[] memory _value) pure returns (uint256[2] memory _result) {
-  if (_value.length < 2) {
+function toStaticArray_uint256_3(uint256[] memory _value) pure returns (uint256[3] memory _result) {
+  if (_value.length < 3) {
     // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
     return _result;
   } else {
@@ -352,13 +330,13 @@ function toStaticArray_uint256_2(uint256[] memory _value) pure returns (uint256[
  * @param _value The static array to copy.
  * @return _result The dynamic array.
  */
-function fromStaticArray_uint256_2(uint256[2] memory _value) pure returns (uint256[] memory _result) {
-  _result = new uint256[](2);
+function fromStaticArray_uint256_3(uint256[3] memory _value) pure returns (uint256[] memory _result) {
+  _result = new uint256[](3);
   uint256 fromPointer;
   uint256 toPointer;
   assembly {
     fromPointer := _value
     toPointer := add(_result, 0x20)
   }
-  Memory.copy(fromPointer, toPointer, 64);
+  Memory.copy(fromPointer, toPointer, 96);
 }

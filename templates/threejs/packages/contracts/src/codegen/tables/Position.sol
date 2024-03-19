@@ -288,11 +288,11 @@ library Position {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (int32 x, int32 y, int32 z) {
-    x = (int32(uint32(Bytes.slice4(_blob, 0))));
+    x = (int32(uint32(Bytes.getBytes4(_blob, 0))));
 
-    y = (int32(uint32(Bytes.slice4(_blob, 4))));
+    y = (int32(uint32(Bytes.getBytes4(_blob, 4))));
 
-    z = (int32(uint32(Bytes.slice4(_blob, 8))));
+    z = (int32(uint32(Bytes.getBytes4(_blob, 8))));
   }
 
   /**

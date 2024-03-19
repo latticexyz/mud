@@ -244,9 +244,9 @@ library Vector2 {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (uint32 x, uint32 y) {
-    x = (uint32(Bytes.slice4(_blob, 0)));
+    x = (uint32(Bytes.getBytes4(_blob, 0)));
 
-    y = (uint32(Bytes.slice4(_blob, 4)));
+    y = (uint32(Bytes.getBytes4(_blob, 4)));
   }
 
   /**

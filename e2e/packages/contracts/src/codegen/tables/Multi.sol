@@ -289,9 +289,9 @@ library Multi {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (int256 num, bool value) {
-    num = (int256(uint256(Bytes.slice32(_blob, 0))));
+    num = (int256(uint256(Bytes.getBytes32(_blob, 0))));
 
-    value = (_toBool(uint8(Bytes.slice1(_blob, 32))));
+    value = (_toBool(uint8(Bytes.getBytes1(_blob, 32))));
   }
 
   /**

@@ -12,7 +12,7 @@ import chalk from "chalk";
 import { MUDError } from "@latticexyz/common/errors";
 import { resolveConfig } from "./deploy/resolveConfig";
 import { getChainId } from "viem/actions";
-import { postDeploy } from "./utils/utils/postDeploy";
+import { postDeploy } from "./utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 
@@ -99,6 +99,7 @@ in your contracts directory to use the default anvil private key.`,
     }),
     account: privateKeyToAccount(privateKey),
   });
+
   console.log("Deploying from", client.account.address);
 
   const startTime = Date.now();

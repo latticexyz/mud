@@ -23,6 +23,7 @@ const blocks = groupLogsByBlockNumber(
       topics: log.topics as [Hex, ...Hex[]],
       strict: true,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
   }),
 );
@@ -66,7 +67,7 @@ describe("sqliteStorage", async () => {
           "chainId": 31337,
           "lastError": null,
           "lastUpdatedBlockNumber": 21n,
-          "schemaVersion": 1,
+          "schemaVersion": 2,
         },
       ]
     `);
@@ -75,13 +76,13 @@ describe("sqliteStorage", async () => {
       [
         {
           "address": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2",
-          "id": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2____NumberList",
+          "id": "0x7c78d585f136d7247f9dea68f60ce8a2d3f311e2____number_list",
           "keySchema": {},
           "lastError": null,
           "lastUpdatedBlockNumber": 21n,
           "name": "NumberList",
           "namespace": "",
-          "schemaVersion": 1,
+          "schemaVersion": 2,
           "tableId": "0x746200000000000000000000000000004e756d6265724c697374000000000000",
           "valueSchema": {
             "value": "uint32[]",
@@ -95,13 +96,13 @@ describe("sqliteStorage", async () => {
       [
         {
           "address": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2",
-          "id": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2____NumberList",
+          "id": "0x7c78d585f136d7247f9dea68f60ce8a2d3f311e2____number_list",
           "keySchema": {},
           "lastError": null,
           "lastUpdatedBlockNumber": 21n,
           "name": "NumberList",
           "namespace": "",
-          "schemaVersion": 1,
+          "schemaVersion": 2,
           "tableId": "0x746200000000000000000000000000004e756d6265724c697374000000000000",
           "valueSchema": {
             "value": "uint32[]",
