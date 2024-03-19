@@ -18,9 +18,7 @@ export type storeToV1<store> = store extends Store
       codegenDirectory: store["codegen"]["codegenDirectory"];
       codegenIndexFilename: store["codegen"]["codegenIndexFilename"];
       tables: {
-        [key in keyof store["tables"] as key extends `${string}__${infer tableKey}` ? tableKey : key]: tableToV1<
-          store["tables"][key]
-        >;
+        [key in keyof store["tables"] as store["tables"][key]["name"]]: tableToV1<store["tables"][key]>;
       };
     }
   : never;
