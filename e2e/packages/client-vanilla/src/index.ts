@@ -6,6 +6,7 @@ const {
   network: { components, latestBlock$, worldContract, waitForTransaction },
 } = await setup();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const _window = window as any;
 _window.worldContract = worldContract;
 _window.waitForTransaction = waitForTransaction;

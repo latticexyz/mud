@@ -3,11 +3,8 @@
  * for changes in the World state (using the System contracts).
  */
 
-import { Hex } from "viem";
-import { SetupNetworkResult } from "./setupNetwork";
-
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
-export function createSystemCalls({ tables, useStore, worldContract, waitForTransaction }: SetupNetworkResult) {
+export function createSystemCalls() {
   return {};
 }

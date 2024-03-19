@@ -5,7 +5,7 @@ import {
   DynamicAbiTypeToPrimitiveType,
   arrayAbiTypeToStaticAbiType,
   staticAbiTypeToByteLength,
-} from "@latticexyz/schema-type";
+} from "@latticexyz/schema-type/internal";
 import { decodeStaticField } from "./decodeStaticField";
 import { InvalidHexLengthError, InvalidHexLengthForArrayFieldError } from "./errors";
 

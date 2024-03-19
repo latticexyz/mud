@@ -1,4 +1,4 @@
-import { StaticPrimitiveType, DynamicPrimitiveType } from "@latticexyz/schema-type";
+import { StaticPrimitiveType, DynamicPrimitiveType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { encodeField } from "./encodeField";
 import { Schema } from "./common";

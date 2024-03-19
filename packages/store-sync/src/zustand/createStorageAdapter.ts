@@ -1,12 +1,12 @@
 import { Tables } from "@latticexyz/store";
 import { StorageAdapter } from "../common";
-import { RawRecord } from "./common";
+import { RawRecord, TableRecord } from "./common";
 import { ZustandStore } from "./createStore";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { debug } from "./debug";
 import { getId } from "./getId";
 import { size } from "viem";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { flattenSchema } from "../flattenSchema";
 import { isDefined } from "@latticexyz/common/utils";
 
@@ -17,9 +17,7 @@ export type CreateStorageAdapterOptions<tables extends Tables> = {
 export function createStorageAdapter<tables extends Tables>({
   store,
 }: CreateStorageAdapterOptions<tables>): StorageAdapter {
-  return async function zustandStorageAdapter({ blockNumber, logs }) {
-    // TODO: clean this up so that we do one store write per block
-
+  return async function zustandStorageAdapter({ logs }) {
     // record id => is deleted
     const touchedIds: Map<string, boolean> = new Map();
 
@@ -141,7 +139,7 @@ export function createStorageAdapter<tables extends Tables>({
                 keyTuple: rawRecord.keyTuple,
                 key: decodeKey(flattenSchema(table.keySchema), rawRecord.keyTuple),
                 value: decodeValueArgs(flattenSchema(table.valueSchema), rawRecord),
-              },
+              } satisfies TableRecord,
             ];
           })
           .filter(isDefined),

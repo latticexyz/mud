@@ -1,4 +1,4 @@
-import { isStaticAbiType } from "@latticexyz/schema-type";
+import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { SchemaToPrimitives, KeySchema } from "./common";
 import { encodeKeyTuple } from "./encodeKeyTuple";

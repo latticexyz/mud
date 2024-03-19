@@ -22,6 +22,10 @@ export async function ensureContract({
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly deployerAddress: Hex;
 } & Contract): Promise<readonly Hex[]> {
+  if (bytecode.includes("__$")) {
+    throw new Error(`Found unlinked public library in ${label} bytecode`);
+  }
+
   const address = getCreate2Address({ from: deployerAddress, salt, bytecode });
 
   const contractCode = await getBytecode(client, { address, blockTag: "pending" });

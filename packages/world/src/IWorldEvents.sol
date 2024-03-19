@@ -13,8 +13,8 @@ import { ResourceId } from "./WorldResourceId.sol";
  */
 interface IWorldEvents {
   /**
-   * @dev Emitted upon successful World initialization.
-   * @param worldVersion The version of the World being initialized.
+   * @notice Emitted when the World is created.
+   * @param worldVersion The protocol version of the World.
    */
   event HelloWorld(bytes32 indexed worldVersion);
 }
