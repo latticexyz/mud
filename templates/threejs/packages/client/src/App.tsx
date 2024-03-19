@@ -8,83 +8,53 @@ import { useKeyboardMovement } from "./useKeyboardMovement";
 const Plane = () => {
   return (
     <>
-      {/* eslint-disable-next-line react/no-unknown-property */}
       <mesh position={[0, -1, 0]}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <boxGeometry args={[20, 0.1, 20]} />
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <meshStandardMaterial color="#000" opacity="0.9" transparent />
       </mesh>
 
-      {/* eslint-disable-next-line react/no-unknown-property */}
       <mesh position={[0, 3, -10]}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <boxGeometry args={[20, 5, 0.1]} />
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <meshStandardMaterial color="#F00" opacity="0.5" transparent />
       </mesh>
 
-      {/* eslint-disable-next-line react/no-unknown-property */}
       <mesh position={[10, 3, 0]}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <boxGeometry args={[0.1, 5, 20]} />
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <meshStandardMaterial color="#0F0" opacity="0.5" transparent />
       </mesh>
 
-      {/* eslint-disable-next-line react/no-unknown-property */}
       <mesh position={[5, 2, 0]}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <sphereGeometry args={[2, 10, 10]} />
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <meshStandardMaterial color="#FF0" opacity="0.8" transparent />
       </mesh>
 
-      {/* eslint-disable-next-line react/no-unknown-property */}
       <mesh position={[0, 2, 5]}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <sphereGeometry args={[2, 10, 10]} />
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <meshStandardMaterial color="#FF0" opacity="0.8" transparent />
       </mesh>
 
-      {/* eslint-disable-next-line react/no-unknown-property */}
       <mesh position={[-5, 2, 0]}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <sphereGeometry args={[2, 10, 10]} />
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <meshStandardMaterial color="#FF0" opacity="0.8" transparent />
       </mesh>
 
-      {/* eslint-disable-next-line react/no-unknown-property */}
       <mesh position={[0, 2, -5]}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <sphereGeometry args={[2, 10, 10]} />
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <meshStandardMaterial color="#FF0" opacity="0.8" transparent />
       </mesh>
 
-      {/* eslint-disable-next-line react/no-unknown-property */}
       <mesh position={[5, 2, -5]}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <sphereGeometry args={[1, 10, 10]} />
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <meshStandardMaterial color="#008" opacity="0.8" transparent />
       </mesh>
 
-      {/* eslint-disable-next-line react/no-unknown-property */}
       <mesh position={[5, 2, 5]}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <sphereGeometry args={[1, 10, 10]} />
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <meshStandardMaterial color="#008" opacity="0.8" transparent />
       </mesh>
 
-      {/* eslint-disable-next-line react/no-unknown-property */}
       <mesh position={[-5, 2, -5]}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <sphereGeometry args={[1, 10, 10]} />
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <meshStandardMaterial color="#008" opacity="0.8" transparent />
       </mesh>
     </>
