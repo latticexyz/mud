@@ -42,6 +42,15 @@ describe("createStorageAdapter", async () => {
             "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
           ],
           "table": {
+            "codegen": {
+              "dataStruct": true,
+              "directory": "tables",
+              "storeArgument": false,
+              "tableIdArgument": false,
+            },
+            "key": [
+              "player",
+            ],
             "keySchema": {
               "player": {
                 "internalType": "address",
@@ -50,7 +59,22 @@ describe("createStorageAdapter", async () => {
             },
             "name": "Position",
             "namespace": "",
+            "schema": {
+              "player": {
+                "internalType": "address",
+                "type": "address",
+              },
+              "x": {
+                "internalType": "int32",
+                "type": "int32",
+              },
+              "y": {
+                "internalType": "int32",
+                "type": "int32",
+              },
+            },
             "tableId": "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
+            "type": "table",
             "valueSchema": {
               "x": {
                 "internalType": "int32",
@@ -76,6 +100,15 @@ describe("createStorageAdapter", async () => {
             "0x0000000000000000000000001d96f2f6bef1202e4ce1ff6dad0c2cb002861d3e",
           ],
           "table": {
+            "codegen": {
+              "dataStruct": true,
+              "directory": "tables",
+              "storeArgument": false,
+              "tableIdArgument": false,
+            },
+            "key": [
+              "player",
+            ],
             "keySchema": {
               "player": {
                 "internalType": "address",
@@ -84,7 +117,22 @@ describe("createStorageAdapter", async () => {
             },
             "name": "Position",
             "namespace": "",
+            "schema": {
+              "player": {
+                "internalType": "address",
+                "type": "address",
+              },
+              "x": {
+                "internalType": "int32",
+                "type": "int32",
+              },
+              "y": {
+                "internalType": "int32",
+                "type": "int32",
+              },
+            },
             "tableId": "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
+            "type": "table",
             "valueSchema": {
               "x": {
                 "internalType": "int32",
@@ -110,6 +158,15 @@ describe("createStorageAdapter", async () => {
             "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
           ],
           "table": {
+            "codegen": {
+              "dataStruct": true,
+              "directory": "tables",
+              "storeArgument": false,
+              "tableIdArgument": false,
+            },
+            "key": [
+              "player",
+            ],
             "keySchema": {
               "player": {
                 "internalType": "address",
@@ -118,7 +175,22 @@ describe("createStorageAdapter", async () => {
             },
             "name": "Position",
             "namespace": "",
+            "schema": {
+              "player": {
+                "internalType": "address",
+                "type": "address",
+              },
+              "x": {
+                "internalType": "int32",
+                "type": "int32",
+              },
+              "y": {
+                "internalType": "int32",
+                "type": "int32",
+              },
+            },
             "tableId": "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
+            "type": "table",
             "valueSchema": {
               "x": {
                 "internalType": "int32",
@@ -144,6 +216,15 @@ describe("createStorageAdapter", async () => {
             "0x000000000000000000000000dba86119a787422c593cef119e40887f396024e2",
           ],
           "table": {
+            "codegen": {
+              "dataStruct": true,
+              "directory": "tables",
+              "storeArgument": false,
+              "tableIdArgument": false,
+            },
+            "key": [
+              "player",
+            ],
             "keySchema": {
               "player": {
                 "internalType": "address",
@@ -152,7 +233,22 @@ describe("createStorageAdapter", async () => {
             },
             "name": "Position",
             "namespace": "",
+            "schema": {
+              "player": {
+                "internalType": "address",
+                "type": "address",
+              },
+              "x": {
+                "internalType": "int32",
+                "type": "int32",
+              },
+              "y": {
+                "internalType": "int32",
+                "type": "int32",
+              },
+            },
             "tableId": "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
+            "type": "table",
             "valueSchema": {
               "x": {
                 "internalType": "int32",
