@@ -4,12 +4,11 @@ export default defineWorld({
   tables: {
     Tasks: {
       schema: {
-        key: "bytes32",
+        id: "bytes32",
         createdAt: "uint256",
         completedAt: "uint256",
         description: "string",
       },
-      key: ["key"],
     },
   },
 });
