@@ -17,12 +17,14 @@ export default defineWorld({
       schema: {
         value: "uint32",
       },
+      key: [],
       codegen: { storeArgument: true },
     },
     MessageTable: {
       schema: {
         value: "string",
       },
+      key: [],
       type: "offchainTable",
     },
     Inventory: {
