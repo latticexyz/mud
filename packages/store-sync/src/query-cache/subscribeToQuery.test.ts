@@ -7,7 +7,7 @@ import { Address, keccak256, parseEther, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { testClient } from "../../test/common";
 import { combineLatest, filter, firstValueFrom, map, scan, shareReplay } from "rxjs";
-import { waitForTransaction } from "./test/waitForTransaction";
+import { waitForTransaction } from "../../test/waitForTransaction";
 import { SubjectEvent, SubjectRecord } from "@latticexyz/query";
 
 const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));
