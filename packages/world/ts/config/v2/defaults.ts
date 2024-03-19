@@ -19,6 +19,9 @@ export const DEPLOYMENT_DEFAULTS = {
 
 export const CONFIG_DEFAULTS = {
   systems: {},
+  tables: {},
   excludeSystems: [] as string[],
   modules: [],
+  codegen: CODEGEN_DEFAULTS,
+  deployment: DEPLOYMENT_DEFAULTS,
 } as const;
