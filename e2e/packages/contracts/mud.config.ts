@@ -44,7 +44,9 @@ export default defineWorld({
       key: ["zone", "x", "y"],
     },
     StaticArray: {
-      schema: "uint256[3]",
+      schema: {
+        value: "uint256[3]",
+      },
       key: [],
     },
   },
