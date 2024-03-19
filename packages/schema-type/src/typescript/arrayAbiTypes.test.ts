@@ -18,9 +18,19 @@ describe("isArrayAbiType", () => {
   });
 
   it("should narrow the ABI type", () => {
-    const abiType = "uint8[]" as string;
+    const abiType = "uint8[]";
     if (isArrayAbiType(abiType)) {
-      expectTypeOf(abiType).toEqualTypeOf<ArrayAbiType>();
+      expectTypeOf<typeof abiType>().toMatchTypeOf<ArrayAbiType>();
+      expectTypeOf<typeof abiType>().toEqualTypeOf<"uint8[]">();
+    } else {
+      expect.fail();
+    }
+  });
+
+  it("should narrow an unknown", () => {
+    const abiType = "uint8[]" as unknown;
+    if (isArrayAbiType(abiType)) {
+      expectTypeOf<typeof abiType>().toEqualTypeOf<ArrayAbiType>();
     } else {
       expect.fail();
     }
@@ -38,9 +48,19 @@ describe("isFixedArrayAbiType", () => {
   });
 
   it("should narrow the ABI type", () => {
-    const abiType = "uint8[4]" as string;
+    const abiType = "uint8[4]";
     if (isFixedArrayAbiType(abiType)) {
-      expectTypeOf(abiType).toEqualTypeOf<FixedArrayAbiType>();
+      expectTypeOf<typeof abiType>().toMatchTypeOf<FixedArrayAbiType>();
+      expectTypeOf<typeof abiType>().toEqualTypeOf<"uint8[4]">();
+    } else {
+      expect.fail();
+    }
+  });
+
+  it("should narrow an unknown", () => {
+    const abiType = "uint8[4]" as unknown;
+    if (isFixedArrayAbiType(abiType)) {
+      expectTypeOf<typeof abiType>().toEqualTypeOf<FixedArrayAbiType>();
     } else {
       expect.fail();
     }

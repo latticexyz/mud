@@ -7,13 +7,13 @@ export type FixedArrayAbiType = `${StaticAbiType}[${number}]`;
 const arrayPattern = /\[\]$/;
 const fixedArrayPattern = /\[\d+\]$/;
 
-export function isArrayAbiType(abiType: unknown): abiType is typeof abiType & ArrayAbiType {
+export function isArrayAbiType(abiType: unknown): abiType is ArrayAbiType {
   return (
     typeof abiType === "string" && arrayPattern.test(abiType) && isStaticAbiType(abiType.replace(arrayPattern, ""))
   );
 }
 
-export function isFixedArrayAbiType(abiType: unknown): abiType is typeof abiType & FixedArrayAbiType {
+export function isFixedArrayAbiType(abiType: unknown): abiType is FixedArrayAbiType {
   return (
     typeof abiType === "string" &&
     fixedArrayPattern.test(abiType) &&
