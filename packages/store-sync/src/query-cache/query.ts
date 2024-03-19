@@ -1,6 +1,7 @@
 import { Query } from "./common";
 import { QueryCacheStore, extractTables } from "./createStore";
-import { SubjectRecords, findSubjects } from "@latticexyz/query";
+import { SubjectRecords } from "@latticexyz/query";
+import { findSubjects } from "@latticexyz/query/internal";
 import { queryToWire } from "./queryToWire";
 
 // TODO: take in query input type so we can narrow result types
