@@ -14,5 +14,5 @@ interface ICustomErrorsSystem {
   error TestError1();
   error TestError2(Position position, uint256 value, string name, bool flag);
 
-  function stub(uint256 arg) external pure returns (uint256);
+  function stub(uint256 arg) external pure returns (uint256 _parameter0);
 }
