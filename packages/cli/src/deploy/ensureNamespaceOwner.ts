@@ -1,5 +1,5 @@
 import { Account, Chain, Client, Hex, Transport, getAddress } from "viem";
-import { WorldDeploy, worldAbi, worldTables } from "./common";
+import { WorldDeploy, worldAbi, worldConfig } from "./common";
 import { hexToResource, resourceToHex, writeContract } from "@latticexyz/common";
 import { getResourceIds } from "./getResourceIds";
 import { getTableValue } from "./getTableValue";
@@ -35,7 +35,7 @@ export async function ensureNamespaceOwner({
       const { owner } = await getTableValue({
         client,
         worldDeploy,
-        table: worldTables.world_NamespaceOwner,
+        table: worldConfig.tables.world__NamespaceOwner,
         key: { namespaceId: resourceToHex({ type: "namespace", namespace, name: "" }) },
       });
       return [namespace, owner];

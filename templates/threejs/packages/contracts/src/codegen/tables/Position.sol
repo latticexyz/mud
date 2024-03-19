@@ -40,7 +40,7 @@ library Position {
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
-    keyNames[0] = "key";
+    keyNames[0] = "id";
   }
 
   /**
@@ -71,9 +71,9 @@ library Position {
   /**
    * @notice Get x.
    */
-  function getX(bytes32 key) internal view returns (int32 x) {
+  function getX(bytes32 id) internal view returns (int32 x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (int32(uint32(bytes4(_blob))));
@@ -82,9 +82,9 @@ library Position {
   /**
    * @notice Get x.
    */
-  function _getX(bytes32 key) internal view returns (int32 x) {
+  function _getX(bytes32 id) internal view returns (int32 x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (int32(uint32(bytes4(_blob))));
@@ -93,9 +93,9 @@ library Position {
   /**
    * @notice Set x.
    */
-  function setX(bytes32 key, int32 x) internal {
+  function setX(bytes32 id, int32 x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((x)), _fieldLayout);
   }
@@ -103,9 +103,9 @@ library Position {
   /**
    * @notice Set x.
    */
-  function _setX(bytes32 key, int32 x) internal {
+  function _setX(bytes32 id, int32 x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((x)), _fieldLayout);
   }
@@ -113,9 +113,9 @@ library Position {
   /**
    * @notice Get y.
    */
-  function getY(bytes32 key) internal view returns (int32 y) {
+  function getY(bytes32 id) internal view returns (int32 y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (int32(uint32(bytes4(_blob))));
@@ -124,9 +124,9 @@ library Position {
   /**
    * @notice Get y.
    */
-  function _getY(bytes32 key) internal view returns (int32 y) {
+  function _getY(bytes32 id) internal view returns (int32 y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (int32(uint32(bytes4(_blob))));
@@ -135,9 +135,9 @@ library Position {
   /**
    * @notice Set y.
    */
-  function setY(bytes32 key, int32 y) internal {
+  function setY(bytes32 id, int32 y) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((y)), _fieldLayout);
   }
@@ -145,9 +145,9 @@ library Position {
   /**
    * @notice Set y.
    */
-  function _setY(bytes32 key, int32 y) internal {
+  function _setY(bytes32 id, int32 y) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((y)), _fieldLayout);
   }
@@ -155,9 +155,9 @@ library Position {
   /**
    * @notice Get z.
    */
-  function getZ(bytes32 key) internal view returns (int32 z) {
+  function getZ(bytes32 id) internal view returns (int32 z) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
     return (int32(uint32(bytes4(_blob))));
@@ -166,9 +166,9 @@ library Position {
   /**
    * @notice Get z.
    */
-  function _getZ(bytes32 key) internal view returns (int32 z) {
+  function _getZ(bytes32 id) internal view returns (int32 z) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
     return (int32(uint32(bytes4(_blob))));
@@ -177,9 +177,9 @@ library Position {
   /**
    * @notice Set z.
    */
-  function setZ(bytes32 key, int32 z) internal {
+  function setZ(bytes32 id, int32 z) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((z)), _fieldLayout);
   }
@@ -187,9 +187,9 @@ library Position {
   /**
    * @notice Set z.
    */
-  function _setZ(bytes32 key, int32 z) internal {
+  function _setZ(bytes32 id, int32 z) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((z)), _fieldLayout);
   }
@@ -197,9 +197,9 @@ library Position {
   /**
    * @notice Get the full data.
    */
-  function get(bytes32 key) internal view returns (PositionData memory _table) {
+  function get(bytes32 id) internal view returns (PositionData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
@@ -212,9 +212,9 @@ library Position {
   /**
    * @notice Get the full data.
    */
-  function _get(bytes32 key) internal view returns (PositionData memory _table) {
+  function _get(bytes32 id) internal view returns (PositionData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
@@ -227,14 +227,14 @@ library Position {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(bytes32 key, int32 x, int32 y, int32 z) internal {
+  function set(bytes32 id, int32 x, int32 y, int32 z) internal {
     bytes memory _staticData = encodeStatic(x, y, z);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -242,14 +242,14 @@ library Position {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(bytes32 key, int32 x, int32 y, int32 z) internal {
+  function _set(bytes32 id, int32 x, int32 y, int32 z) internal {
     bytes memory _staticData = encodeStatic(x, y, z);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -257,14 +257,14 @@ library Position {
   /**
    * @notice Set the full data using the data struct.
    */
-  function set(bytes32 key, PositionData memory _table) internal {
+  function set(bytes32 id, PositionData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.x, _table.y, _table.z);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -272,14 +272,14 @@ library Position {
   /**
    * @notice Set the full data using the data struct.
    */
-  function _set(bytes32 key, PositionData memory _table) internal {
+  function _set(bytes32 id, PositionData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.x, _table.y, _table.z);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -312,9 +312,9 @@ library Position {
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(bytes32 key) internal {
+  function deleteRecord(bytes32 id) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -322,9 +322,9 @@ library Position {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(bytes32 key) internal {
+  function _deleteRecord(bytes32 id) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -355,9 +355,9 @@ library Position {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(bytes32 id) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = id;
 
     return _keyTuple;
   }

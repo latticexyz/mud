@@ -35,14 +35,14 @@ export function createSystemCalls(
     await waitForTransaction(tx);
   };
 
-  const toggleTask = async (key: Hex) => {
-    const isComplete = (useStore.getState().getValue(tables.Tasks, { key })?.completedAt ?? 0n) > 0n;
-    const tx = isComplete ? await worldContract.write.resetTask([key]) : await worldContract.write.completeTask([key]);
+  const toggleTask = async (id: Hex) => {
+    const isComplete = (useStore.getState().getValue(tables.Tasks, { id })?.completedAt ?? 0n) > 0n;
+    const tx = isComplete ? await worldContract.write.resetTask([id]) : await worldContract.write.completeTask([id]);
     await waitForTransaction(tx);
   };
 
-  const deleteTask = async (key: Hex) => {
-    const tx = await worldContract.write.deleteTask([key]);
+  const deleteTask = async (id: Hex) => {
+    const tx = await worldContract.write.deleteTask([id]);
     await waitForTransaction(tx);
   };
 

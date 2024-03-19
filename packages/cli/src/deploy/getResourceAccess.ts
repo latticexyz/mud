@@ -1,10 +1,11 @@
 import { Client, parseAbiItem, Hex, Address, getAddress } from "viem";
-import { WorldDeploy, worldTables } from "./common";
+import { WorldDeploy, worldConfig } from "./common";
 import { debug } from "./debug";
 import { storeSpliceStaticDataEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
 import { decodeKey } from "@latticexyz/protocol-parser/internal";
 import { getTableValue } from "./getTableValue";
+import { flattenSchema } from "./flattenSchema";
 
 export async function getResourceAccess({
   client,
@@ -26,16 +27,21 @@ export async function getResourceAccess({
     // our usage of `ResourceAccess._set(...)` emits a splice instead of set record
     // TODO: https://github.com/latticexyz/mud/issues/479
     event: parseAbiItem(storeSpliceStaticDataEvent),
-    args: { tableId: worldTables.world_ResourceAccess.tableId },
+    args: { tableId: worldConfig.tables.world__ResourceAccess.tableId },
   });
 
-  const keys = logs.map((log) => decodeKey(worldTables.world_ResourceAccess.keySchema, log.args.keyTuple));
+  const keys = logs.map((log) =>
+    decodeKey(flattenSchema(worldConfig.tables.world__ResourceAccess.keySchema), log.args.keyTuple),
+  );
 
   const access = (
     await Promise.all(
       keys.map(
         async (key) =>
-          [key, await getTableValue({ client, worldDeploy, table: worldTables.world_ResourceAccess, key })] as const,
+          [
+            key,
+            await getTableValue({ client, worldDeploy, table: worldConfig.tables.world__ResourceAccess, key }),
+          ] as const,
       ),
     )
   )

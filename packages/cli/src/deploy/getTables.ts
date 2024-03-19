@@ -1,11 +1,13 @@
 import { Client, parseAbiItem, decodeAbiParameters, parseAbiParameters } from "viem";
 import { Table } from "./configToTables";
 import { hexToResource } from "@latticexyz/common";
-import { WorldDeploy, storeTables } from "./common";
+import storeConfig from "@latticexyz/store/mud.config";
+import { WorldDeploy } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
 import { KeySchema, ValueSchema, decodeKey, decodeValueArgs, hexToSchema } from "@latticexyz/protocol-parser/internal";
+import { flattenSchema } from "./flattenSchema";
 
 export async function getTables({
   client,
@@ -27,14 +29,14 @@ export async function getTables({
     toBlock: worldDeploy.stateBlock,
     address: worldDeploy.address,
     event: parseAbiItem(storeSetRecordEvent),
-    args: { tableId: storeTables.store_Tables.tableId },
+    args: { tableId: storeConfig.tables.store__Tables.tableId },
   });
 
   // TODO: combine with store-sync logToTable and export from somewhere
   const tables = logs.map((log) => {
-    const { tableId } = decodeKey(storeTables.store_Tables.keySchema, log.args.keyTuple);
+    const { tableId } = decodeKey(flattenSchema(storeConfig.tables.store__Tables.keySchema), log.args.keyTuple);
     const { namespace, name } = hexToResource(tableId);
-    const value = decodeValueArgs(storeTables.store_Tables.valueSchema, log.args);
+    const value = decodeValueArgs(flattenSchema(storeConfig.tables.store__Tables.valueSchema), log.args);
 
     // TODO: migrate to better helper
     const keySchemaFields = hexToSchema(value.keySchema);

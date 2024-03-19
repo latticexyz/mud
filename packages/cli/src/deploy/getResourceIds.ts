@@ -1,7 +1,8 @@
 import { Client, parseAbiItem, Hex } from "viem";
 import { getLogs } from "viem/actions";
 import { storeSpliceStaticDataEvent } from "@latticexyz/store";
-import { WorldDeploy, storeTables } from "./common";
+import storeConfig from "@latticexyz/store/mud.config";
+import { WorldDeploy } from "./common";
 import { debug } from "./debug";
 
 export async function getResourceIds({
@@ -21,7 +22,7 @@ export async function getResourceIds({
     fromBlock: worldDeploy.deployBlock,
     toBlock: worldDeploy.stateBlock,
     event: parseAbiItem(storeSpliceStaticDataEvent),
-    args: { tableId: storeTables.store_ResourceIds.tableId },
+    args: { tableId: storeConfig.tables.store__ResourceIds.tableId },
   });
 
   const resourceIds = logs.map((log) => log.args.keyTuple[0]);

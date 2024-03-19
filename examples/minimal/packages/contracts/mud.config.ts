@@ -21,11 +21,11 @@ export default defineWorld({
       codegen: { storeArgument: true },
     },
     MessageTable: {
+      type: "offchainTable",
       schema: {
         value: "string",
       },
       key: [],
-      type: "offchainTable",
     },
     Inventory: {
       schema: {

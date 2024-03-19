@@ -1,11 +1,12 @@
 import { Client, toFunctionSelector, parseAbiItem } from "viem";
-import { WorldDeploy, WorldFunction, worldTables } from "./common";
+import { WorldDeploy, WorldFunction, worldConfig } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
 import { decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { getTableValue } from "./getTableValue";
 import { hexToResource } from "@latticexyz/common";
+import { flattenSchema } from "./flattenSchema";
 
 export async function getFunctions({
   client,
@@ -22,11 +23,11 @@ export async function getFunctions({
     toBlock: worldDeploy.stateBlock,
     address: worldDeploy.address,
     event: parseAbiItem(storeSetRecordEvent),
-    args: { tableId: worldTables.world_FunctionSignatures.tableId },
+    args: { tableId: worldConfig.tables.world__FunctionSignatures.tableId },
   });
 
   const signatures = logs.map((log) => {
-    const value = decodeValueArgs(worldTables.world_FunctionSignatures.valueSchema, log.args);
+    const value = decodeValueArgs(flattenSchema(worldConfig.tables.world__FunctionSignatures.valueSchema), log.args);
     return value.functionSignature;
   });
   debug("found", signatures.length, "function signatures for", worldDeploy.address);
@@ -38,7 +39,7 @@ export async function getFunctions({
       const { systemId, systemFunctionSelector } = await getTableValue({
         client,
         worldDeploy,
-        table: worldTables.world_FunctionSelectors,
+        table: worldConfig.tables.world__FunctionSelectors,
         key: { worldFunctionSelector: selector },
       });
       const { namespace, name } = hexToResource(systemId);

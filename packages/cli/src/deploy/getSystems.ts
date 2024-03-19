@@ -1,4 +1,4 @@
-import { DeployedSystem, WorldDeploy, worldTables } from "./common";
+import { DeployedSystem, WorldDeploy, worldConfig } from "./common";
 import { Client } from "viem";
 import { getResourceIds } from "./getResourceIds";
 import { hexToResource, resourceToLabel } from "@latticexyz/common";
@@ -27,7 +27,7 @@ export async function getSystems({
       const { system: address, publicAccess } = await getTableValue({
         client,
         worldDeploy,
-        table: worldTables.world_Systems,
+        table: worldConfig.tables.world__Systems,
         key: { systemId: system.resourceId },
       });
       const systemFunctions = functions.filter((func) => func.systemId === system.resourceId);
