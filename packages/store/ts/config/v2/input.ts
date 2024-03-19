@@ -26,7 +26,7 @@ export type TablesInput = {
 
 export type StoreInput = {
   readonly namespace?: string;
-  readonly tables: TablesInput;
+  readonly tables: Omit<TablesInput, "name" | "namespace">;
   readonly userTypes?: UserTypes;
   readonly enums?: Enums;
   readonly codegen?: Partial<Codegen>;

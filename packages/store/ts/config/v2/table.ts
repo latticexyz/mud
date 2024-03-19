@@ -41,13 +41,21 @@ export type validateKeys<validKeys extends PropertyKey, keys> = {
   [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
 };
 
-export type validateTable<input, scope extends Scope = AbiTypeScope> = {
+export type ValidateTableOptions = { inStoreContext: boolean };
+
+export type validateTable<
+  input,
+  scope extends Scope = AbiTypeScope,
+  options extends ValidateTableOptions = { inStoreContext: false },
+> = {
   [key in keyof input]: key extends "key"
     ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput>, scope>, input[key]>
     : key extends "schema"
       ? validateSchema<input[key], scope>
       : key extends "name" | "namespace"
-        ? narrow<input[key]>
+        ? options["inStoreContext"] extends true
+          ? ErrorMessage<"Overrides of `name` and `namespace` are not allowed for tables in a store config">
+          : narrow<input[key]>
         : key extends keyof TableInput
           ? TableInput[key]
           : ErrorMessage<`Key \`${key & string}\` does not exist in TableInput`>;
@@ -56,6 +64,7 @@ export type validateTable<input, scope extends Scope = AbiTypeScope> = {
 export function validateTable<input, scope extends Scope = AbiTypeScope>(
   input: input,
   scope: scope = AbiTypeScope as unknown as scope,
+  options: ValidateTableOptions = { inStoreContext: false },
 ): asserts input is TableInput & input {
   if (typeof input !== "object" || input == null) {
     throw new Error(`Expected full table config, got \`${JSON.stringify(input)}\``);
@@ -76,6 +85,10 @@ export function validateTable<input, scope extends Scope = AbiTypeScope>(
           : "undefined"
       }\``,
     );
+  }
+
+  if ((options.inStoreContext && hasOwnKey(input, "name")) || hasOwnKey(input, "namespace")) {
+    throw new Error("Overrides of `name` and `namespace` are not allowed for tables in a store config.");
   }
 }
 
@@ -131,12 +144,10 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
     }
   : never;
 
-export function resolveTable<input, scope extends Scope = AbiTypeScope>(
+export function resolveTable<input extends TableInput, scope extends Scope = AbiTypeScope>(
   input: input,
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTable<input, scope> {
-  validateTable(input, scope);
-
   const name = input.name;
   const type = input.type ?? TABLE_DEFAULTS.type;
   const namespace = input.namespace ?? TABLE_DEFAULTS.namespace;
@@ -169,5 +180,6 @@ export function defineTable<input, scope extends Scope = AbiTypeScope>(
   input: validateTable<input, scope>,
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTable<input, scope> {
+  validateTable(input, scope);
   return resolveTable(input, scope) as resolveTable<input, scope>;
 }

@@ -55,9 +55,7 @@ export type resolveStore<store> = evaluate<{
   readonly codegen: "codegen" extends keyof store ? resolveCodegen<store["codegen"]> : resolveCodegen<{}>;
 }>;
 
-export function resolveStore<const store>(store: store): resolveStore<store> {
-  validateStore(store);
-
+export function resolveStore<const store extends StoreInput>(store: store): resolveStore<store> {
   return {
     tables: resolveTables(
       Object.fromEntries(
@@ -76,5 +74,6 @@ export function resolveStore<const store>(store: store): resolveStore<store> {
 }
 
 export function defineStore<const store>(store: validateStore<store>): resolveStore<store> {
+  validateStore(store);
   return resolveStore(store) as unknown as resolveStore<store>;
 }

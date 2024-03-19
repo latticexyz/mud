@@ -6,7 +6,7 @@ import { validateTable, resolveTable } from "./table";
 
 export type validateTables<tables, scope extends Scope = AbiTypeScope> = {
   [key in keyof tables]: tables[key] extends object
-    ? validateTable<tables[key], scope>
+    ? validateTable<tables[key], scope, { inStoreContext: true }>
     : ErrorMessage<`Expected full table config.`>;
 };
 
@@ -16,7 +16,7 @@ export function validateTables<scope extends Scope = AbiTypeScope>(
 ): asserts input is TablesInput {
   if (isObject(input)) {
     for (const table of Object.values(input)) {
-      validateTable(table, scope);
+      validateTable(table, scope, { inStoreContext: true });
     }
     return;
   }
@@ -27,12 +27,10 @@ export type resolveTables<tables, scope extends Scope = AbiTypeScope> = evaluate
   readonly [key in keyof tables]: resolveTable<mergeIfUndefined<tables[key], { name: key }>, scope>;
 }>;
 
-export function resolveTables<tables, scope extends Scope = AbiTypeScope>(
+export function resolveTables<tables extends TablesInput, scope extends Scope = AbiTypeScope>(
   tables: tables,
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTables<tables, scope> {
-  validateTables(tables, scope);
-
   if (!isObject(tables)) {
     throw new Error(`Expected tables config, received ${JSON.stringify(tables)}`);
   }

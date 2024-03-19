@@ -799,7 +799,9 @@ describe("defineWorld", () => {
         Example: {
           schema: { id: "address" },
           key: ["id"],
+          // @ts-expect-error Name override not allowed in store context
           name: "NotAllowed",
+          // @ts-expect-error Namespace override not allowed in store context
           namespace: "NotAllowed",
         },
       },
