@@ -27,8 +27,6 @@ export type TableCodegen = {
 };
 
 export type Table = BaseTable & {
-  readonly keySchema: KeySchema;
-  readonly valueSchema: Schema;
   readonly codegen: TableCodegen;
 };
 

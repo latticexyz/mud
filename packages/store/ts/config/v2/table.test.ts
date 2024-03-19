@@ -1,7 +1,7 @@
 import { attest } from "@arktype/attest";
 import { describe, it } from "vitest";
 import { getStaticAbiTypeKeys, AbiTypeScope, extendScope } from "./scope";
-import { validateKeys, defineTable } from "./table";
+import { validateKeys, defineTable, getKeySchema, getValueSchema } from "./table";
 import { TABLE_CODEGEN_DEFAULTS } from "./defaults";
 import { resourceToHex } from "@latticexyz/common";
 
@@ -204,5 +204,55 @@ describe("resolveTable", () => {
     )
       .throws('Invalid key. Expected `("id" | "age")[]`, received `["NotAKey"]`')
       .type.errors(`Type '"NotAKey"' is not assignable to type '"id" | "age"'`);
+  });
+});
+
+describe("getKeySchema", () => {
+  it("should return the fields of the schema that are part of the key", () => {
+    const scope = extendScope(AbiTypeScope, { Static: "address", Dynamic: "string" });
+    const table = defineTable(
+      {
+        schema: { id: "Static", name: "Dynamic", age: "uint256" },
+        key: ["age"],
+        name: "",
+      },
+      scope,
+    );
+
+    const expected = {
+      age: {
+        type: "uint256",
+        internalType: "uint256",
+      },
+    } as const;
+
+    attest<typeof expected>(getKeySchema(table)).equals(expected);
+  });
+});
+
+describe("getValueSchema", () => {
+  it("should return the fields of the schema that are not part of the key", () => {
+    const scope = extendScope(AbiTypeScope, { Static: "address", Dynamic: "string" });
+    const table = defineTable(
+      {
+        schema: { id: "Static", name: "Dynamic", age: "uint256" },
+        key: ["age"],
+        name: "",
+      },
+      scope,
+    );
+
+    const expected = {
+      id: {
+        type: "address",
+        internalType: "Static",
+      },
+      name: {
+        type: "string",
+        internalType: "Dynamic",
+      },
+    } as const;
+
+    attest<typeof expected>(getValueSchema(table)).equals(expected);
   });
 });
