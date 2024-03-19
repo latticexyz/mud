@@ -17,14 +17,6 @@ const config = defineStore({
     TestTypeBool: { filePath: "./contracts/src/types.sol", type: "bool" },
     TestTypeUint128: { filePath: "./contracts/src/types.sol", type: "uint128" },
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
-    // TODO: remove these once new config supports fixed-length arrays
-    // "bytes32[1]": { type: "bytes32[]" },
-    // "int32[2]": { type: "int32[]" },
-    // "uint128[3]": { type: "uint128[]" },
-    // "address[4]": { type: "address[]" },
-    // "bool[5]": { type: "bool[]" },
-    // "uint32[2]": { type: "uint32[]" },
-    // "uint32[1]": { type: "uint32[]" },
   },
   tables: {
     Statics: {
@@ -47,11 +39,11 @@ const config = defineStore({
     Dynamics1: {
       schema: {
         key: "bytes32",
-        // staticB32: "bytes32[1]",
-        // staticI32: "int32[2]",
-        // staticU128: "uint128[3]",
-        // staticAddrs: "address[4]",
-        // staticBools: "bool[5]",
+        staticB32: "bytes32[1]",
+        staticI32: "int32[2]",
+        staticU128: "uint128[3]",
+        staticAddrs: "address[4]",
+        staticBools: "bool[5]",
       },
       key: ["key"],
     },
@@ -67,9 +59,9 @@ const config = defineStore({
     Singleton: {
       schema: {
         v1: "int256",
-        // v2: "uint32[2]",
-        // v3: "uint32[2]",
-        // v4: "uint32[1]",
+        v2: "uint32[2]",
+        v3: "uint32[2]",
+        v4: "uint32[1]",
       },
       key: [],
       codegen: { dataStruct: false },
