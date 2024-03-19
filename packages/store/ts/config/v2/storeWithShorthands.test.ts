@@ -156,6 +156,7 @@ describe("defineStoreWithShorthands", () => {
     const config = defineStoreWithShorthands({
       tables: { Example: { id: "address", name: "string", age: "uint256" } },
     });
+
     const expected = {
       tables: {
         Example: {

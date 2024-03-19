@@ -21,7 +21,7 @@ export type TableInput = {
 };
 
 export type TablesInput = {
-  readonly [key: string]: TableInput;
+  readonly [key: string]: Omit<TableInput, "namespace" | "name">;
 };
 
 export type StoreInput = {
