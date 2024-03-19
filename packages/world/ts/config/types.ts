@@ -5,6 +5,7 @@ import { zWorldConfig } from "./worldConfig";
 import { SYSTEM_DEFAULTS } from "./defaults";
 
 // zod doesn't preserve doc comments
+/** @deprecated */
 export type SystemUserConfig = {
   /** The full resource selector consists of namespace and name */
   name?: string;
@@ -29,6 +30,7 @@ export type SystemUserConfig = {
     }
 );
 
+/** @deprecated */
 export interface ExpandSystemConfig<T extends SystemUserConfig, SystemName extends string>
   extends OrDefaults<
     T,
@@ -41,12 +43,15 @@ export interface ExpandSystemConfig<T extends SystemUserConfig, SystemName exten
   accessList: T extends { accessList: string[] } ? T["accessList"] : typeof SYSTEM_DEFAULTS.accessList;
 }
 
+/** @deprecated */
 export type SystemsUserConfig = Record<string, SystemUserConfig>;
 
+/** @deprecated */
 export type ExpandSystemsConfig<T extends SystemsUserConfig> = {
   [SystemName in keyof T]: ExpandSystemConfig<T[SystemName], SystemName extends string ? SystemName : never>;
 };
 
+/** @deprecated */
 export type ModuleConfig = {
   /** The name of the module */
   name: string;
@@ -57,6 +62,7 @@ export type ModuleConfig = {
 };
 
 // zod doesn't preserve doc comments
+/** @deprecated */
 export interface WorldUserConfig {
   /** The name of the World contract to deploy. If no name is provided, a vanilla World is deployed */
   worldContractName?: string;
@@ -89,5 +95,7 @@ export interface WorldUserConfig {
   modules?: ModuleConfig[];
 }
 
+/** @deprecated */
 export type WorldConfig = z.output<typeof zWorldConfig>;
+/** @deprecated */
 export type SystemConfig = WorldConfig["systems"][string];

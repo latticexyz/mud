@@ -1,7 +1,7 @@
 import { PublicClient, encodePacked, size } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
-import { StoreConfig } from "@latticexyz/store";
+import { Store as StoreConfig } from "@latticexyz/store/config/v2";
 import { debug } from "./debug";
 import { tables } from "./tables";
 import { spliceHex } from "@latticexyz/common";
@@ -17,13 +17,13 @@ export type PostgresStorageAdapter = {
   cleanUp: () => Promise<void>;
 };
 
-export async function createStorageAdapter<TConfig extends StoreConfig = StoreConfig>({
+export async function createStorageAdapter<config extends StoreConfig = StoreConfig>({
   database,
   publicClient,
 }: {
   database: PgDatabase<QueryResultHKT>;
   publicClient: PublicClient;
-  config?: TConfig;
+  config?: config;
 }): Promise<PostgresStorageAdapter> {
   const cleanUp: (() => Promise<void>)[] = [];
 
@@ -92,7 +92,7 @@ export async function createStorageAdapter<TConfig extends StoreConfig = StoreCo
           const previousStaticData = previousValue?.staticData ?? "0x";
           const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
 
-          debug("upserting record via splice static", {
+          debug("upcserting record via splice static", {
             address: log.address,
             tableId: log.args.tableId,
             keyTuple: log.args.keyTuple,

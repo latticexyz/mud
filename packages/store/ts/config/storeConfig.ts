@@ -35,6 +35,7 @@ const zUserTypeName = zObjectName;
 // (user types are refined later, based on the appropriate config options)
 const zFieldData = z.string();
 
+/** @deprecated */
 export type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray | UserTypes;
 
 // Primary keys allow only static types
@@ -42,6 +43,7 @@ export type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray 
 const zKeyElementSchema = z.string();
 const zKeySchema = z.record(zKeyName, zKeyElementSchema).default(TABLE_DEFAULTS.keySchema);
 
+/** @deprecated */
 type KeySchema<StaticUserTypes extends StringForUnion> = StaticAbiType | StaticUserTypes;
 
 /************************************************************************
@@ -50,12 +52,16 @@ type KeySchema<StaticUserTypes extends StringForUnion> = StaticAbiType | StaticU
  *
  ************************************************************************/
 
+/** @deprecated */
 export type FullSchemaConfig<UserTypes extends StringForUnion = StringForUnion> = Record<string, FieldData<UserTypes>>;
+/** @deprecated */
 export type ShorthandSchemaConfig<UserTypes extends StringForUnion = StringForUnion> = FieldData<UserTypes>;
+/** @deprecated */
 export type SchemaConfig<UserTypes extends StringForUnion = StringForUnion> =
   | FullSchemaConfig<UserTypes>
   | ShorthandSchemaConfig<UserTypes>;
 
+/** @deprecated */
 export type ExpandSchemaConfig<TSchemaConfig extends SchemaConfig<string>> =
   TSchemaConfig extends ShorthandSchemaConfig<string> ? { value: TSchemaConfig } : TSchemaConfig;
 
@@ -71,6 +77,7 @@ const zShorthandSchemaConfig = zFieldData.transform((fieldData) => {
 
 export const zSchemaConfig = zFullSchemaConfig.or(zShorthandSchemaConfig);
 
+/** @deprecated */
 type ResolvedSchema<
   TSchema extends Record<string, string>,
   TUserTypes extends Record<string, Pick<UserType, "internalType">>,
@@ -107,6 +114,7 @@ export function resolveUserTypes<
  *
  ************************************************************************/
 
+/** @deprecated */
 export interface TableConfig<
   UserTypes extends StringForUnion = StringForUnion,
   StaticUserTypes extends StringForUnion = StringForUnion,
@@ -134,6 +142,7 @@ export interface TableConfig<
   valueSchema: SchemaConfig<UserTypes>;
 }
 
+/** @deprecated */
 export type FullTableConfig<
   UserTypes extends StringForUnion = StringForUnion,
   StaticUserTypes extends StringForUnion = StringForUnion,
@@ -141,6 +150,7 @@ export type FullTableConfig<
   valueSchema: FullSchemaConfig<UserTypes>;
 };
 
+/** @deprecated */
 export interface ExpandTableConfig<T extends TableConfig<string, string>, TableName extends string>
   extends OrDefaults<
     T,
@@ -195,6 +205,7 @@ export const zTableConfig = zFullTableConfig.or(zShorthandTableConfig);
  *
  ************************************************************************/
 
+/** @deprecated */
 export type TablesConfig<
   UserTypes extends StringForUnion = StringForUnion,
   StaticUserTypes extends StringForUnion = StringForUnion,
@@ -211,11 +222,13 @@ export const zTablesConfig = z.record(zTableName, zTableConfig).transform((table
   return tables as Record<string, RequireKeys<(typeof tables)[string], "name">>;
 });
 
+/** @deprecated */
 export type FullTablesConfig<
   UserTypes extends StringForUnion = StringForUnion,
   StaticUserTypes extends StringForUnion = StringForUnion,
 > = Record<string, FullTableConfig<UserTypes, StaticUserTypes>>;
 
+/** @deprecated */
 export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
   [TableName in keyof T]: T[TableName] extends FieldData<string>
     ? ExpandTableConfig<{ valueSchema: { value: T[TableName] } }, TableName extends string ? TableName : never>
@@ -232,6 +245,7 @@ export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
  *
  ************************************************************************/
 
+/** @deprecated */
 export type EnumsConfig<EnumNames extends StringForUnion> = never extends EnumNames
   ? {
       /**
@@ -259,6 +273,7 @@ export type EnumsConfig<EnumNames extends StringForUnion> = never extends EnumNa
         enums: Record<EnumNames, string[]>;
       };
 
+/** @deprecated */
 export type FullEnumsConfig<EnumNames extends StringForUnion> = {
   enums: Record<EnumNames, string[]>;
 };
@@ -273,6 +288,7 @@ export const zEnumsConfig = z.object({
  *
  ************************************************************************/
 
+/** @deprecated */
 export type UserTypesConfig<UserTypeNames extends StringForUnion = StringForUnion> = never extends UserTypeNames
   ? {
       /**
@@ -368,7 +384,9 @@ const StoreConfigUnrefined = z
 // finally validate global conditions
 export const zStoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
 
+/** @deprecated */
 export type StoreUserConfig = z.input<typeof zStoreConfig>;
+/** @deprecated */
 export type StoreConfig = z.output<typeof zStoreConfig>;
 
 // Catchall preserves other plugins' options

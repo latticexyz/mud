@@ -1,15 +1,14 @@
 import { SyncOptions, SyncResult } from "../common";
 import { createStoreSync } from "../createStoreSync";
 import { Address } from "viem";
-import { Config } from "@latticexyz/store/config/v2";
+import { Store as StoreConfig } from "@latticexyz/store/config/v2";
 import { createStore } from "./createStore";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { getTables } from "./getTables";
 
-type SyncToQueryCacheOptions<config extends Config> = Omit<SyncOptions, "config"> & {
+type SyncToQueryCacheOptions<config extends StoreConfig> = SyncOptions<config> & {
   // require address for now to keep the data model + retrieval simpler
   address: Address;
-  config: config;
   startSync?: boolean;
 };
 
@@ -17,7 +16,7 @@ type SyncToQueryCacheResult = SyncResult & {
   stopSync: () => void;
 };
 
-export async function syncToQueryCache<config extends Config>({
+export async function syncToQueryCache<config extends StoreConfig>({
   config,
   startSync = true,
   ...syncOptions

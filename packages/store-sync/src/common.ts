@@ -1,5 +1,6 @@
 import { Address, Block, Hex, Log, PublicClient } from "viem";
-import { StoreConfig, StoreEventsAbiItem, StoreEventsAbi, resolveConfig } from "@latticexyz/store";
+import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
+import { Store as StoreConfig } from "@latticexyz/store/config/v2";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
 import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser/internal";
@@ -7,10 +8,8 @@ import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { flattenSchema } from "./flattenSchema";
 
-/** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
-export const storeTables = resolveConfig(storeConfig).tables;
-/** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
-export const worldTables = resolveConfig(worldConfig).tables;
+export const storeTables = storeConfig.tables;
+export const worldTables = worldConfig.tables;
 
 export const internalTableIds = [...Object.values(storeTables), ...Object.values(worldTables)].map(
   (table) => table.tableId,
@@ -54,11 +53,11 @@ export type SyncFilter = {
   key1?: Hex;
 };
 
-export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
+export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   /**
    * MUD config
    */
-  config?: TConfig;
+  config?: config;
   /**
    * [viem `PublicClient`][0] used for fetching logs from the RPC.
    *

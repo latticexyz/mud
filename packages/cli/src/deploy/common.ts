@@ -6,6 +6,7 @@ import IModuleAbi from "@latticexyz/world-modules/out/IModule.sol/IModule.abi.js
 import { Tables, configToTables } from "./configToTables";
 import { StoreConfig, helloStoreEvent } from "@latticexyz/store";
 import { WorldConfig, helloWorldEvent } from "@latticexyz/world";
+import { storeToV1 } from "@latticexyz/store/config/v2";
 
 export const salt = padHex("0x", { size: 32 });
 
@@ -13,8 +14,8 @@ export const salt = padHex("0x", { size: 32 });
 export const contractSizeLimit = parseInt("6000", 16);
 
 // TODO: add `as const` to mud config so these get more strongly typed (blocked by current config parsing not using readonly)
-export const storeTables = configToTables(storeConfig);
-export const worldTables = configToTables(worldConfig);
+export const storeTables = configToTables(storeToV1(storeConfig));
+export const worldTables = configToTables(storeToV1(worldConfig));
 
 export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
 
