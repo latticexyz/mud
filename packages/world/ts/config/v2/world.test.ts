@@ -777,4 +777,19 @@ describe("defineWorld", () => {
       );
     });
   });
+
+  it("should use the custom name and namespace as table index", () => {
+    const config = defineWorld({
+      namespace: "CustomNamespace",
+      tables: {
+        Example: {
+          schema: { id: "address" },
+          key: ["id"],
+          name: "CustomName",
+        },
+      },
+    });
+
+    attest<"CustomNamespace__CustomName", keyof typeof config.tables>();
+  });
 });

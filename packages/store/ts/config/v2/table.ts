@@ -37,17 +37,6 @@ export function isValidPrimaryKey<schema extends SchemaInput, scope extends Scop
   );
 }
 
-/** @deprecated */
-export function isTableInput(input: unknown): input is TableInput {
-  return (
-    typeof input === "object" &&
-    input !== null &&
-    hasOwnKey(input, "schema") &&
-    hasOwnKey(input, "key") &&
-    Array.isArray(input["key"])
-  );
-}
-
 export type validateKeys<validKeys extends PropertyKey, keys> = {
   [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
 };

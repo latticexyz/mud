@@ -22,15 +22,6 @@ function validateX(x: unknonw): asserts x is X {
 type resolveX<x> = x extends X ? { [key in keyof x]: Resolved } : never;
 
 /**
- * defineX function validates the input types and calls resolveX to resolve it.
- * Note: the runtime validation happens in `resolveX`.
- * This is to take advantage of the type assertion in the function body.
- */
-function defineX<const x>(x: validateX<x>): resolveX<x> {
-  return resolveX(x);
-}
-
-/**
  * resolveX function does not validate the input type, but validates the runtime types.
  * (This is to take advantage of the type assertion in the function body).
  * This function is used by defineX and other higher level resolution functions.
@@ -38,6 +29,15 @@ function defineX<const x>(x: validateX<x>): resolveX<x> {
 function resolveX<const x extends X>(x: x): resolveX<x> {
   validateX(x);
   //
+}
+
+/**
+ * defineX function validates the input types and calls resolveX to resolve it.
+ * Note: the runtime validation happens in `resolveX`.
+ * This is to take advantage of the type assertion in the function body.
+ */
+function defineX<const x>(x: validateX<x>): resolveX<x> {
+  return resolveX(x);
 }
 ```
 
