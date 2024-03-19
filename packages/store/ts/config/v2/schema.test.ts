@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { resolveSchema } from "./schema";
+import { defineSchema } from "./schema";
 import { Schema } from "./output";
 import { extendScope, AbiTypeScope } from "./scope";
 import { attest } from "@arktype/attest";
@@ -7,7 +7,7 @@ import { attest } from "@arktype/attest";
 describe("resolveSchema", () => {
   it("should map user types to their primitive type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "address" });
-    const resolved = resolveSchema({ regular: "uint256", user: "CustomType" }, scope);
+    const resolved = defineSchema({ regular: "uint256", user: "CustomType" }, scope);
     const expected = {
       regular: {
         type: "uint256",
@@ -29,7 +29,7 @@ describe("resolveSchema", () => {
   it("should throw if a type is not part of the scope", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "address" });
     attest(() =>
-      resolveSchema(
+      defineSchema(
         {
           regular: "uint256",
           // @ts-expect-error Type '"NotACustomType"' is not assignable to type 'AbiType | "CustomType"'.
@@ -44,7 +44,7 @@ describe("resolveSchema", () => {
 
   it("should extend the output Schema type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "address" });
-    const resolved = resolveSchema({ regular: "uint256", user: "CustomType" }, scope);
+    const resolved = defineSchema({ regular: "uint256", user: "CustomType" }, scope);
     attest<true, typeof resolved extends Schema ? true : false>();
   });
 });

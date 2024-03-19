@@ -1,7 +1,7 @@
 import { attest } from "@arktype/attest";
 import { describe, it } from "vitest";
 import { getStaticAbiTypeKeys, AbiTypeScope, extendScope } from "./scope";
-import { resolveTable, validateKeys } from "./table";
+import { validateKeys, defineTable } from "./table";
 import { TABLE_CODEGEN_DEFAULTS } from "./defaults";
 import { resourceToHex } from "@latticexyz/common";
 
@@ -46,7 +46,7 @@ describe("validateKeys", () => {
 
 describe("resolveTable", () => {
   it("should return the full config given a full config with one key", () => {
-    const table = resolveTable({
+    const table = defineTable({
       schema: { id: "address", name: "string", age: "uint256" },
       key: ["age"],
       name: "",
@@ -77,7 +77,7 @@ describe("resolveTable", () => {
   });
 
   it("should return the full config given a full config with two key", () => {
-    const table = resolveTable({
+    const table = defineTable({
       schema: { id: "address", name: "string", age: "uint256" },
       key: ["age", "id"],
       name: "",
@@ -109,7 +109,7 @@ describe("resolveTable", () => {
   it("should return the full config given a full config with custom type", () => {
     const scope = extendScope(AbiTypeScope, { Static: "address", Dynamic: "string" });
 
-    const table = resolveTable(
+    const table = defineTable(
       {
         schema: { id: "Static", name: "Dynamic", age: "uint256" },
         key: ["age"],
@@ -144,7 +144,7 @@ describe("resolveTable", () => {
 
   it("should throw if the provided key is a dynamic ABI type", () => {
     attest(() =>
-      resolveTable({
+      defineTable({
         schema: { id: "address", name: "string", age: "uint256" },
         // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'
         key: ["name"],
@@ -158,7 +158,7 @@ describe("resolveTable", () => {
   it("should throw if the provided key is a dynamic ABI type if user types are provided", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "string" });
     attest(() =>
-      resolveTable(
+      defineTable(
         {
           schema: { id: "address", name: "string", age: "uint256" },
           // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'
@@ -175,7 +175,7 @@ describe("resolveTable", () => {
   it("should throw if the provided key is a dynamic custom type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "string" });
     attest(() =>
-      resolveTable(
+      defineTable(
         {
           schema: { id: "CustomType", name: "string", age: "uint256" },
           // @ts-expect-error Type '"id"' is not assignable to type '"age"'
@@ -192,7 +192,7 @@ describe("resolveTable", () => {
   it("should throw if the provided key is neither a custom nor ABI type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "string" });
     attest(() =>
-      resolveTable(
+      defineTable(
         {
           schema: { id: "address", name: "string", age: "uint256" },
           // @ts-expect-error Type '"NotAKey"' is not assignable to type '"id" | "age"'

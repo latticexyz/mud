@@ -1,13 +1,13 @@
 import { describe, it } from "vitest";
-import { resolveStoreConfig } from "./store";
+import { defineStore } from "./store";
 import { Config } from "./output";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS } from "./defaults";
 
-describe("resolveStoreConfig", () => {
+describe("defineStore", () => {
   it("should return the full config given a full config with one key", () => {
-    const config = resolveStoreConfig({
+    const config = defineStore({
       tables: {
         Example: {
           schema: { id: "address", name: "string", age: "uint256" },
@@ -67,7 +67,7 @@ describe("resolveStoreConfig", () => {
   });
 
   it("should return the full config given a full config with one key and user types", () => {
-    const config = resolveStoreConfig({
+    const config = defineStore({
       tables: {
         Example: {
           schema: { id: "dynamic", name: "string", age: "static" },
@@ -134,7 +134,7 @@ describe("resolveStoreConfig", () => {
   });
 
   it("should return the full config given a full config with two key", () => {
-    const config = resolveStoreConfig({
+    const config = defineStore({
       tables: {
         Example: {
           schema: { id: "address", name: "string", age: "uint256" },
@@ -194,7 +194,7 @@ describe("resolveStoreConfig", () => {
   });
 
   it("should resolve two tables in the config with different schemas", () => {
-    const config = resolveStoreConfig({
+    const config = defineStore({
       tables: {
         First: {
           schema: { firstKey: "address", firstName: "string", firstAge: "uint256" },
@@ -296,7 +296,7 @@ describe("resolveStoreConfig", () => {
   });
 
   it("should resolve two tables in the config with different schemas and user types", () => {
-    const config = resolveStoreConfig({
+    const config = defineStore({
       tables: {
         First: {
           schema: { firstKey: "Static", firstName: "Dynamic", firstAge: "uint256" },
@@ -406,7 +406,7 @@ describe("resolveStoreConfig", () => {
 
   it("should throw if referring to fields of different tables", () => {
     attest(() =>
-      resolveStoreConfig({
+      defineStore({
         tables: {
           First: {
             schema: { firstKey: "address", firstName: "string", firstAge: "uint256" },
@@ -426,7 +426,7 @@ describe("resolveStoreConfig", () => {
 
   it("should throw an error if the provided key is not a static field", () => {
     attest(() =>
-      resolveStoreConfig({
+      defineStore({
         tables: {
           Example: {
             schema: { id: "address", name: "string", age: "uint256" },
@@ -442,7 +442,7 @@ describe("resolveStoreConfig", () => {
 
   it("should throw an error if the provided key is not a static field with user types", () => {
     attest(() =>
-      resolveStoreConfig({
+      defineStore({
         tables: {
           Example: {
             schema: { id: "address", name: "Dynamic", age: "uint256" },
@@ -460,7 +460,7 @@ describe("resolveStoreConfig", () => {
   });
 
   it("should return the full config given a full config with enums and user types", () => {
-    const config = resolveStoreConfig({
+    const config = defineStore({
       tables: {
         Example: {
           schema: { id: "dynamic", name: "ValidNames", age: "static" },
@@ -531,19 +531,19 @@ describe("resolveStoreConfig", () => {
   });
 
   it("should use the root namespace as default namespace", () => {
-    const config = resolveStoreConfig({});
+    const config = defineStore({});
 
     attest<"">(config.namespace).equals("");
   });
 
   it("should use pipe through non-default namespaces", () => {
-    const config = resolveStoreConfig({ namespace: "custom" });
+    const config = defineStore({ namespace: "custom" });
 
     attest<"custom">(config.namespace).equals("custom");
   });
 
   it("should extend the output Config type", () => {
-    const config = resolveStoreConfig({
+    const config = defineStore({
       tables: { Name: { schema: { id: "address" }, key: ["id"] } },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
     });
@@ -552,7 +552,7 @@ describe("resolveStoreConfig", () => {
   });
 
   it("should use the global namespace instead for tables", () => {
-    const config = resolveStoreConfig({
+    const config = defineStore({
       namespace: "namespace",
       tables: {
         Example: {
@@ -571,14 +571,14 @@ describe("resolveStoreConfig", () => {
 
   it("should throw if a string is passed in as schema", () => {
     // @ts-expect-error Invalid table config
-    attest(() => resolveStoreConfig({ tables: { Invalid: "uint256" } }))
+    attest(() => defineStore({ tables: { Invalid: "uint256" } }))
       .throws('Expected full table config, got `"uint256"`')
       .type.errors("Expected full table config");
   });
 
   it("should show a type error if an invalid schema is passed in", () => {
     // @ts-expect-error Key `invalidKey` does not exist in TableInput
-    attest(() => resolveStoreConfig({ tables: { Invalid: { invalidKey: 1 } } })).type.errors(
+    attest(() => defineStore({ tables: { Invalid: { invalidKey: 1 } } })).type.errors(
       "Key `invalidKey` does not exist in TableInput",
     );
   });
