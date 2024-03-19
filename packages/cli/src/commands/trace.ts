@@ -18,7 +18,7 @@ import { World as WorldConfig, worldToV1 } from "@latticexyz/world/config/v2";
 const systemsTableId = resourceToHex({
   type: "system",
   namespace: worldConfig.namespace,
-  name: worldConfig.tables.Systems.name,
+  name: worldConfig.tables.world__Systems.name,
 });
 
 type Options = {

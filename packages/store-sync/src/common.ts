@@ -121,10 +121,10 @@ export type StorageAdapterLog = Partial<StoreEventsLog> & UnionPick<StoreEventsL
 export type StorageAdapterBlock = { blockNumber: BlockLogs["blockNumber"]; logs: readonly StorageAdapterLog[] };
 export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
 
-export const schemasTableId = storeTables.Tables.tableId;
+export const schemasTableId = storeTables.store__Tables.tableId;
 export const schemasTable = {
-  ...storeTables.Tables,
+  ...storeTables.store__Tables,
   // TODO: remove once we've got everything using the new Table shape
-  keySchema: flattenSchema(storeTables.Tables.keySchema),
-  valueSchema: flattenSchema(storeTables.Tables.valueSchema),
+  keySchema: flattenSchema(storeTables.store__Tables.keySchema),
+  valueSchema: flattenSchema(storeTables.store__Tables.valueSchema),
 };

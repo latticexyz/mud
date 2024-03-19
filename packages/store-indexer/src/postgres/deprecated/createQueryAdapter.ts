@@ -25,7 +25,7 @@ export async function createQueryAdapter(database: PgDatabase<any>): Promise<Que
       const { blockNumber, logs } = await getLogs(database, {
         ...opts,
         // make sure we're always retrieving `store.Tables` table, so we can decode table values
-        filters: filters.length > 0 ? [...filters, { tableId: storeTables.Tables.tableId }] : [],
+        filters: filters.length > 0 ? [...filters, { tableId: storeTables.store__Tables.tableId }] : [],
       });
 
       const tables = logs.filter(isTableRegistrationLog).map(logToTable);

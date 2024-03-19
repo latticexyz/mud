@@ -27,7 +27,8 @@ export function apiRoutes(database: Sql): Middleware {
     }
 
     try {
-      options.filters = options.filters.length > 0 ? [...options.filters, { tableId: storeTables.Tables.tableId }] : [];
+      options.filters =
+        options.filters.length > 0 ? [...options.filters, { tableId: storeTables.store__Tables.tableId }] : [];
       const records = await queryLogs(database, options ?? {}).execute();
       benchmark("query records");
       const logs = records.map(recordToLog);

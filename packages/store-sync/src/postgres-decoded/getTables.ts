@@ -21,7 +21,7 @@ export async function getTables(
   const records = await db
     .select()
     .from(internalTables.recordsTable)
-    .where(and(eq(internalTables.recordsTable.tableId, storeTables.Tables.tableId), or(...conditions)));
+    .where(and(eq(internalTables.recordsTable.tableId, storeTables.store__Tables.tableId), or(...conditions)));
 
   const logs = records.map(
     (record) =>

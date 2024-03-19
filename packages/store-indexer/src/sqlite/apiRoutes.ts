@@ -28,7 +28,8 @@ export function apiRoutes(database: BaseSQLiteDatabase<"sync", any>): Middleware
     }
 
     try {
-      options.filters = options.filters.length > 0 ? [...options.filters, { tableId: storeTables.Tables.tableId }] : [];
+      options.filters =
+        options.filters.length > 0 ? [...options.filters, { tableId: storeTables.store__Tables.tableId }] : [];
       benchmark("parse config");
       const { blockNumber, tables } = getTablesWithRecords(database, options);
       benchmark("query tables with records");

@@ -9,11 +9,11 @@ describe("tableToLog", () => {
     expect(
       tableToLog({
         address: "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
-        tableId: storeTables.Tables.tableId,
-        namespace: storeTables.Tables.namespace,
-        name: storeTables.Tables.name,
-        keySchema: flattenSchema(storeTables.Tables.keySchema),
-        valueSchema: flattenSchema(storeTables.Tables.valueSchema),
+        tableId: storeTables.store__Tables.tableId,
+        namespace: storeTables.store__Tables.namespace,
+        name: storeTables.store__Tables.name,
+        keySchema: flattenSchema(storeTables.store__Tables.keySchema),
+        valueSchema: flattenSchema(storeTables.store__Tables.valueSchema),
       }),
     ).toMatchInlineSnapshot(`
       {

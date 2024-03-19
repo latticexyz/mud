@@ -17,9 +17,9 @@ export function tableToLog(table: Table): StorageAdapterLog & { eventName: "Stor
     eventName: "Store_SetRecord",
     address: table.address,
     args: {
-      tableId: storeTables.Tables.tableId,
-      keyTuple: encodeKey(flattenSchema(storeTables.Tables.keySchema), { tableId: table.tableId }),
-      ...encodeValueArgs(flattenSchema(storeTables.Tables.valueSchema), {
+      tableId: storeTables.store__Tables.tableId,
+      keyTuple: encodeKey(flattenSchema(storeTables.store__Tables.keySchema), { tableId: table.tableId }),
+      ...encodeValueArgs(flattenSchema(storeTables.store__Tables.valueSchema), {
         fieldLayout: valueSchemaToFieldLayoutHex(table.valueSchema),
         keySchema: keySchemaToHex(table.keySchema),
         valueSchema: valueSchemaToHex(table.valueSchema),
