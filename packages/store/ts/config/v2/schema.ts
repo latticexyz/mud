@@ -2,7 +2,7 @@ import { conform, evaluate } from "@arktype/util";
 import { AbiTypeScope, Scope } from "./scope";
 import { hasOwnKey, isObject } from "./generics";
 import { SchemaInput } from "./input";
-import { FixedArrayAbiType, fixedArrayToStaticAbiType, isFixedArrayAbiType } from "./fixedArray";
+import { FixedArrayAbiType, fixedArrayToArray, isFixedArrayAbiType } from "@latticexyz/schema-type/internal";
 
 export type validateSchema<schema, scope extends Scope = AbiTypeScope> = {
   [key in keyof schema]: schema[key] extends FixedArrayAbiType
@@ -29,7 +29,7 @@ export type resolveSchema<schema, scope extends Scope> = evaluate<{
   readonly [key in keyof schema]: {
     /** the Solidity primitive ABI type */
     readonly type: schema[key] extends FixedArrayAbiType
-      ? `${fixedArrayToStaticAbiType<schema[key]>}[]`
+      ? fixedArrayToArray<schema[key]>
       : scope["types"][schema[key] & keyof scope["types"]];
     /** the user defined type or Solidity primitive ABI type */
     readonly internalType: schema[key];
@@ -47,7 +47,7 @@ export function resolveSchema<schema, scope extends Scope = AbiTypeScope>(
       key,
       {
         type: isFixedArrayAbiType(internalType)
-          ? `${fixedArrayToStaticAbiType(internalType)}[]`
+          ? fixedArrayToArray(internalType)
           : scope.types[internalType as keyof typeof scope.types],
         internalType,
       },
