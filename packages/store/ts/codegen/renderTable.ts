@@ -14,7 +14,7 @@ import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
 import { renderDeleteRecordMethods, renderRecordData, renderRecordMethods } from "./record";
 import { renderFieldLayout } from "./renderFieldLayout";
 import { RenderTableOptions } from "./types";
-import { KeySchema, ValueSchema, keySchemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser";
+import { KeySchema, ValueSchema, keySchemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser/internal";
 
 /**
  * Renders Solidity code for a MUD table library, using the specified options

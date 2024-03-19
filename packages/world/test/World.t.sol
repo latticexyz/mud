@@ -31,6 +31,7 @@ import { WorldContextProviderLib, IWorldContextConsumer } from "../src/WorldCont
 import { SystemHook } from "../src/SystemHook.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
 import { Module, IModule } from "../src/Module.sol";
+import { IWorldEvents } from "../src/IWorldEvents.sol";
 
 import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
@@ -162,7 +163,6 @@ contract RevertSystemHook is SystemHook {
 contract WorldTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
 
-  event HelloWorld(bytes32 indexed worldVersion);
   event HookCalled(bytes data);
   event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);
@@ -200,7 +200,7 @@ contract WorldTest is Test, GasReporter {
     InitModule initModule = createInitModule();
 
     vm.expectEmit(true, true, true, true);
-    emit HelloWorld(WORLD_VERSION);
+    emit IWorldEvents.HelloWorld(WORLD_VERSION);
     IBaseWorld newWorld = IBaseWorld(address(new World()));
     StoreSwitch.setStoreAddress(address(newWorld));
 
@@ -1646,7 +1646,7 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(systemId, system, true);
 
     string memory worldFunc = "testSelector()";
-    bytes4 sysFunc = WorldTestSystem.msgSender.selector;
+    string memory sysFunc = "msgSender()";
 
     // Expect an error when trying to register a root function selector from an account without access
     _expectAccessDenied(address(0x01), "", "", RESOURCE_NAMESPACE);
@@ -1675,7 +1675,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
 
     // Register a function selector to the error function
-    functionSelector = world.registerRootFunctionSelector(systemId, "err(string)", WorldTestSystem.err.selector);
+    functionSelector = world.registerRootFunctionSelector(systemId, "err(string)", "err(string)");
 
     // Expect errors to be passed through
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
@@ -1712,7 +1712,7 @@ contract WorldTest is Test, GasReporter {
 
     world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(systemId, "receiveEther()", WorldTestSystem.receiveEther.selector);
+    world.registerRootFunctionSelector(systemId, "receiveEther()", "receiveEther()");
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1739,7 +1739,7 @@ contract WorldTest is Test, GasReporter {
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(systemId, "msgSender()", WorldTestSystem.msgSender.selector);
+    world.registerRootFunctionSelector(systemId, "msgSender()", "msgSender()");
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1766,7 +1766,7 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(systemId, "systemFallback()", bytes4(""));
+    world.registerRootFunctionSelector(systemId, "systemFallback()", "");
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1792,7 +1792,7 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(systemId, "systemFallback()", bytes4(""));
+    world.registerRootFunctionSelector(systemId, "systemFallback()", "");
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1818,7 +1818,7 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(systemId, "receiveEther()", WorldTestSystem.receiveEther.selector);
+    world.registerRootFunctionSelector(systemId, "receiveEther()", "receiveEther()");
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");

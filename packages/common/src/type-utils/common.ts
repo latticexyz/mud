@@ -18,8 +18,11 @@ export type OrDefaults<T extends object, Defaults> = {
   [key in keyof Defaults]: key extends keyof T ? OrDefault<T[key], Defaults[key]> : Defaults[key];
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type UnionOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type UnionKeys<T> = T extends any ? keyof T : never;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type UnionPick<T, K extends UnionKeys<T>> = T extends any ? Pick<T, Extract<K, keyof T>> : never;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

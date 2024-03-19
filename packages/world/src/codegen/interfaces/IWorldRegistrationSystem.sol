@@ -29,7 +29,7 @@ interface IWorldRegistrationSystem {
   function registerRootFunctionSelector(
     ResourceId systemId,
     string memory worldFunctionSignature,
-    bytes4 systemFunctionSelector
+    string memory systemFunctionSignature
   ) external returns (bytes4 worldFunctionSelector);
 
   function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData) external;

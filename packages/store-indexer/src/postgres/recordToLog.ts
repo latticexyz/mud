@@ -1,5 +1,5 @@
 import { StorageAdapterLog } from "@latticexyz/store-sync";
-import { decodeDynamicField } from "@latticexyz/protocol-parser";
+import { decodeDynamicField } from "@latticexyz/protocol-parser/internal";
 import { RecordData } from "./common";
 
 export function recordToLog(

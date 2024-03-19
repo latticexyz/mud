@@ -1,6 +1,6 @@
 import { resourceToHex } from "@latticexyz/common";
-import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
-import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser/internal";
+import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type/internal";
 import { StoreConfig, resolveUserTypes } from "@latticexyz/store";
 import { Hex } from "viem";
 
@@ -60,7 +60,9 @@ export function configToTables<config extends StoreConfig>(config: config): Tabl
           namespace: config.namespace,
           name: table.name,
         }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         keySchema: resolveUserTypes(table.keySchema, userTypes) as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         valueSchema: resolveUserTypes(table.valueSchema, userTypes) as any,
       } satisfies Table<config, config["tables"][keyof config["tables"]]>,
     ]),

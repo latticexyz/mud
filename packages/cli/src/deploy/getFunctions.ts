@@ -3,7 +3,7 @@ import { WorldDeploy, WorldFunction, worldTables } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
-import { decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { getTableValue } from "./getTableValue";
 import { hexToResource } from "@latticexyz/common";
 
@@ -39,7 +39,7 @@ export async function getFunctions({
         client,
         worldDeploy,
         table: worldTables.world_FunctionSelectors,
-        key: { functionSelector: selector },
+        key: { worldFunctionSelector: selector },
       });
       const { namespace, name } = hexToResource(systemId);
       // TODO: find away around undoing contract logic (https://github.com/latticexyz/mud/issues/1708)

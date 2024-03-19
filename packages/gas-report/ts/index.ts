@@ -114,12 +114,13 @@ async function runGasReport(options: Options): Promise<GasReport> {
       console.log("Done reading stdin");
     } else {
       // Run the default test command to capture the logs
-      const child = execa("forge", ["test", "-vvv"], {
+      const child = execa("forge", ["test", "-vvv", "--isolate"], {
         stdio: ["inherit", "pipe", "inherit"],
         env: { GAS_REPORTER_ENABLED: "true" },
       });
       logs = (await child).stdout;
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.log(error.stdout ?? error);
     console.log(chalk.red("\n-----------\nError while running the gas report (see above)"));

@@ -1,5 +1,5 @@
 import { hexToResource } from "@latticexyz/common";
-import { hexToSchema, decodeValue } from "@latticexyz/protocol-parser";
+import { hexToSchema, decodeValue } from "@latticexyz/protocol-parser/internal";
 import { concatHex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { StorageAdapterLog, schemasTable } from "../common";
 import { Table } from "@latticexyz/store";

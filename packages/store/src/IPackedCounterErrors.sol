@@ -9,5 +9,9 @@ pragma solidity >=0.8.24;
  * This ensures that all possible errors are included in the IStore ABI for proper decoding in the frontend.
  */
 interface IPackedCounterErrors {
+  /**
+   * @notice Error raised when the provided packed counter has an invalid length.
+   * @param length The length of the packed coutner.
+   */
   error PackedCounter_InvalidLength(uint256 length);
 }

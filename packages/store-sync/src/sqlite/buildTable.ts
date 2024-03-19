@@ -2,7 +2,8 @@ import { SQLiteColumnBuilderBase, SQLiteTableWithColumns, sqliteTable } from "dr
 import { buildColumn } from "./buildColumn";
 import { Address } from "viem";
 import { getTableName } from "./getTableName";
-import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser/internal";
+import { snakeCase } from "change-case";
 
 export const metaColumns = {
   __key: buildColumn("__key", "bytes").primaryKey(),
@@ -20,12 +21,15 @@ type SQLiteTableFromSchema<TKeySchema extends KeySchema, TValueSchema extends Va
   schema: string | undefined;
   columns: {
     // TODO: figure out column types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [metaColumn in keyof typeof metaColumns]: any;
   } & {
     // TODO: figure out column types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [keyColumn in keyof TKeySchema]: any;
   } & {
     // TODO: figure out column types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [valueColumn in keyof TValueSchema]: any;
   };
 }>;
@@ -53,11 +57,11 @@ export function buildTable<TKeySchema extends KeySchema, TValueSchema extends Va
   const tableName = getTableName(address, namespace, name);
 
   const keyColumns = Object.fromEntries(
-    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(name, type).notNull()]),
+    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()]),
   );
 
   const valueColumns = Object.fromEntries(
-    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(name, type).notNull()]),
+    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()]),
   );
 
   // TODO: unique constraint on key columns?

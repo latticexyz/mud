@@ -10,6 +10,7 @@ type SyncToPostgresOptions<TConfig extends StoreConfig = StoreConfig> = SyncOpti
    *
    * [0]: https://orm.drizzle.team/docs/installation-and-db-connection/postgresql/postgresjs
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   database: PgDatabase<any>;
   startSync?: boolean;
 };
