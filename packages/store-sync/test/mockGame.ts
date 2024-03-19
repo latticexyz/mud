@@ -4,10 +4,9 @@ import mudConfig from "mock-game-contracts/mud.config";
 import { resolveConfig } from "@latticexyz/store";
 import { Hex, isHex } from "viem";
 import worldAbi from "mock-game-contracts/out/IWorld.sol/IWorld.abi.json";
+import { worldToV1 } from "@latticexyz/world/config/v2";
 
-export { configV2 } from "mock-game-contracts/mud.config";
-export const deprecatedConfig = mudConfig;
-export const config = resolveConfig(mudConfig);
+export const config = resolveConfig(worldToV1(mudConfig));
 export { worldAbi };
 
 export async function deployMockGame(): Promise<Hex> {
