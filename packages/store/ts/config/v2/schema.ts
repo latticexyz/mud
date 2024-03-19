@@ -36,12 +36,10 @@ export type resolveSchema<schema, scope extends Scope> = evaluate<{
   };
 }>;
 
-export function resolveSchema<schema, scope extends Scope = AbiTypeScope>(
+export function resolveSchema<schema extends SchemaInput, scope extends Scope = AbiTypeScope>(
   schema: schema,
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveSchema<schema, scope> {
-  validateSchema(schema, scope);
-
   return Object.fromEntries(
     Object.entries(schema).map(([key, internalType]) => [
       key,
@@ -59,6 +57,7 @@ export function defineSchema<schema, scope extends AbiTypeScope = AbiTypeScope>(
   schema: validateSchema<schema, scope>,
   scope: scope = AbiTypeScope as scope,
 ): resolveSchema<schema, scope> {
+  validateSchema(schema, scope);
   return resolveSchema(schema, scope) as resolveSchema<schema, scope>;
 }
 

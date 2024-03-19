@@ -1,9 +1,9 @@
 import { describe, it } from "vitest";
 import { defineStore } from "./store";
-import { Config } from "./output";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS } from "./defaults";
+import { Store } from "./output";
 
 describe("defineStore", () => {
   it("should return the full config given a full config with one key", () => {
@@ -548,7 +548,7 @@ describe("defineStore", () => {
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
     });
 
-    attest<true, typeof config extends Config ? true : false>();
+    attest<true, typeof config extends Store ? true : false>();
   });
 
   it("should use the global namespace instead for tables", () => {
@@ -563,8 +563,9 @@ describe("defineStore", () => {
     });
 
     attest<"namespace">(config.namespace).equals("namespace");
-    attest<"namespace">(config.tables.Example.namespace).equals("namespace");
-    attest(config.tables.Example.tableId).equals(
+    attest<"namespace">(config.tables.namespace__Example.namespace).equals("namespace");
+    attest<"Example">(config.tables.namespace__Example.name).equals("Example");
+    attest(config.tables.namespace__Example.tableId).equals(
       resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
     );
   });
@@ -581,5 +582,37 @@ describe("defineStore", () => {
     attest(() => defineStore({ tables: { Invalid: { invalidKey: 1 } } })).type.errors(
       "Key `invalidKey` does not exist in TableInput",
     );
+  });
+
+  it("should throw if name is overridden in the store context", () => {
+    attest(() =>
+      defineStore({
+        namespace: "CustomNamespace",
+        tables: {
+          Example: {
+            schema: { id: "address" },
+            key: ["id"],
+            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
+            name: "NotAllowed",
+          },
+        },
+      }),
+    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+  });
+
+  it("should throw if namespace is overridden in the store context", () => {
+    attest(() =>
+      defineStore({
+        namespace: "CustomNamespace",
+        tables: {
+          Example: {
+            schema: { id: "address" },
+            key: ["id"],
+            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
+            namespace: "NotAllowed",
+          },
+        },
+      }),
+    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
   });
 });
