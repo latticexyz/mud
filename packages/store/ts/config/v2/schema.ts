@@ -2,25 +2,7 @@ import { conform, evaluate } from "@arktype/util";
 import { AbiTypeScope, Scope } from "./scope";
 import { hasOwnKey, isObject } from "./generics";
 import { SchemaInput } from "./input";
-import { StaticAbiType, isStaticAbiType } from "@latticexyz/schema-type/internal";
-
-type FixedArrayAbiType = `${StaticAbiType}[${number}]`;
-
-const fixedArrayAbiTypePattern = /^(\w+)(\[\d+\])$/;
-
-function isFixedArrayAbiType(internalType: string): internalType is FixedArrayAbiType {
-  const [, staticAbiType] = internalType.match(fixedArrayAbiTypePattern) ?? [];
-  return isStaticAbiType(staticAbiType);
-}
-
-type fixedArrayToStaticAbiType<fixedArray extends FixedArrayAbiType> =
-  fixedArray extends `${infer staticAbiType}[${number}]` ? staticAbiType : never;
-
-function fixedArrayToStaticAbiType<fixedArray extends FixedArrayAbiType>(
-  fixedArray: fixedArray,
-): fixedArrayToStaticAbiType<fixedArray> {
-  return fixedArray.replace(fixedArrayAbiTypePattern, "$1") as fixedArrayToStaticAbiType<fixedArray>;
-}
+import { FixedArrayAbiType, fixedArrayToStaticAbiType, isFixedArrayAbiType } from "./fixedArray";
 
 export type validateSchema<schema, scope extends Scope = AbiTypeScope> = {
   [key in keyof schema]: schema[key] extends FixedArrayAbiType
@@ -37,8 +19,8 @@ export function validateSchema<scope extends Scope = AbiTypeScope>(
   }
 
   for (const internalType of Object.values(schema)) {
-    if (hasOwnKey(scope.types, internalType)) continue;
     if (isFixedArrayAbiType(internalType)) continue;
+    if (hasOwnKey(scope.types, internalType)) continue;
     throw new Error(`"${String(internalType)}" is not a valid type in this scope.`);
   }
 }
@@ -46,11 +28,9 @@ export function validateSchema<scope extends Scope = AbiTypeScope>(
 export type resolveSchema<schema, scope extends Scope> = evaluate<{
   readonly [key in keyof schema]: {
     /** the Solidity primitive ABI type */
-    readonly type: schema[key] extends keyof scope["types"]
-      ? scope["types"][schema[key]]
-      : schema[key] extends FixedArrayAbiType
-        ? `${fixedArrayToStaticAbiType<schema[key]>}[]`
-        : never;
+    readonly type: schema[key] extends FixedArrayAbiType
+      ? `${fixedArrayToStaticAbiType<schema[key]>}[]`
+      : scope["types"][schema[key] & keyof scope["types"]];
     /** the user defined type or Solidity primitive ABI type */
     readonly internalType: schema[key];
   };
@@ -66,12 +46,9 @@ export function resolveSchema<schema, scope extends Scope = AbiTypeScope>(
     Object.entries(schema).map(([key, internalType]) => [
       key,
       {
-        type: hasOwnKey(scope.types, internalType)
-          ? scope.types[internalType]
-          : isFixedArrayAbiType(internalType)
-            ? `${fixedArrayToStaticAbiType(internalType)}[]`
-            : // TODO: error instead of defaulting to input type?
-              internalType,
+        type: isFixedArrayAbiType(internalType)
+          ? `${fixedArrayToStaticAbiType(internalType)}[]`
+          : scope.types[internalType as keyof typeof scope.types],
         internalType,
       },
     ]),
@@ -92,6 +69,6 @@ export function isSchemaInput<scope extends Scope = AbiTypeScope>(
   return (
     typeof input === "object" &&
     input != null &&
-    Object.values(input).every((fieldType) => hasOwnKey(scope.types, fieldType) || isFixedArrayAbiType(fieldType))
+    Object.values(input).every((fieldType) => isFixedArrayAbiType(fieldType) || hasOwnKey(scope.types, fieldType))
   );
 }
