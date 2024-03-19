@@ -2,10 +2,10 @@
 pragma solidity >=0.8.24;
 
 /**
- * @title World version
+ * @title World protocol version
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- * @notice Contains a constant representing the version of the World.
+ * @notice Contains a constant representing the version of the World protocol.
  */
 
-/// @dev Identifier for the current World version.
-bytes32 constant WORLD_VERSION = "1.0.0-unaudited";
+/// @dev Identifier for the current World protocol version.
+bytes32 constant WORLD_VERSION = "2.0.0";

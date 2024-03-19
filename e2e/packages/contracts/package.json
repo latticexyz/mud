@@ -21,7 +21,7 @@
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
     "prettier": "3.2.5",
     "rimraf": "^3.0.2",
-    "typescript": "5.1.6",
+    "typescript": "5.4.2",
     "vite": "^4.2.1",
     "vitest": "0.34.6"
   }

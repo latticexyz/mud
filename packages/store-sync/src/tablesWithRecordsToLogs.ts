@@ -1,5 +1,5 @@
 import { StorageAdapterLog, TableWithRecords } from "./common";
-import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
+import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { tableToLog } from "./tableToLog";
 
 /**

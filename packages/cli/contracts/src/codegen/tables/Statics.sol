@@ -620,17 +620,17 @@ library Statics {
   function decodeStatic(
     bytes memory _blob
   ) internal pure returns (uint256 v1, int32 v2, bytes16 v3, address v4, bool v5, Enum1 v6) {
-    v1 = (uint256(Bytes.slice32(_blob, 0)));
+    v1 = (uint256(Bytes.getBytes32(_blob, 0)));
 
-    v2 = (int32(uint32(Bytes.slice4(_blob, 32))));
+    v2 = (int32(uint32(Bytes.getBytes4(_blob, 32))));
 
-    v3 = (Bytes.slice16(_blob, 36));
+    v3 = (Bytes.getBytes16(_blob, 36));
 
-    v4 = (address(Bytes.slice20(_blob, 52)));
+    v4 = (address(Bytes.getBytes20(_blob, 52)));
 
-    v5 = (_toBool(uint8(Bytes.slice1(_blob, 72))));
+    v5 = (_toBool(uint8(Bytes.getBytes1(_blob, 72))));
 
-    v6 = Enum1(uint8(Bytes.slice1(_blob, 73)));
+    v6 = Enum1(uint8(Bytes.getBytes1(_blob, 73)));
   }
 
   /**

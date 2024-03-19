@@ -5,6 +5,7 @@ import { STORE_VERSION } from "./version.sol";
 import { IStoreData } from "./IStoreData.sol";
 import { StoreRead } from "./StoreRead.sol";
 import { StoreCore } from "./StoreCore.sol";
+import { IStoreEvents } from "./IStoreEvents.sol";
 
 /**
  * @title Store Data Contract
@@ -20,12 +21,12 @@ abstract contract StoreData is IStoreData, StoreRead {
    */
   constructor() {
     StoreCore.initialize();
-    emit HelloStore(STORE_VERSION);
+    emit IStoreEvents.HelloStore(STORE_VERSION);
   }
 
   /**
-   * @notice Retrieves the version of the store.
-   * @return The current version of the store as a bytes32.
+   * @notice Retrieves the protocol version of the Store.
+   * @return The protocol version of the Store.
    */
   function storeVersion() public pure returns (bytes32) {
     return STORE_VERSION;

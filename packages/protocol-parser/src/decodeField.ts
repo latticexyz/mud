@@ -1,5 +1,5 @@
 import { Hex } from "viem";
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, isDynamicAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, isDynamicAbiType } from "@latticexyz/schema-type/internal";
 import { decodeDynamicField } from "./decodeDynamicField";
 import { decodeStaticField } from "./decodeStaticField";
 
