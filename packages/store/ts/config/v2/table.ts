@@ -199,6 +199,6 @@ export type getValueSchema<table extends Table> = {
 
 export function getValueSchema<table extends Table>(table: table): getValueSchema<table> {
   return Object.fromEntries(
-    Object.entries(table.schema).filter(([fieldName]) => table.key.includes(fieldName)),
+    Object.entries(table.schema).filter(([fieldName]) => !table.key.includes(fieldName)),
   ) as getValueSchema<table>;
 }
