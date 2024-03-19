@@ -28,7 +28,8 @@ export type validateTableShorthand<input, scope extends Scope = AbiTypeScope> = 
     ? // Require all values to be valid types in this scope
       conform<input, ScopedSchemaInput<scope>>
     : NoStaticKeyFieldError
-  : input extends FixedArrayAbiType
+  : // If a fixed array type is provided, accept it
+    input extends FixedArrayAbiType
     ? input
     : // If a valid type from the scope is provided, accept it
       input extends keyof scope["types"]
