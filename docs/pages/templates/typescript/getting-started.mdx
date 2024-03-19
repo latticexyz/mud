@@ -1,3 +1,5 @@
+import { Callout } from "nextra/components";
+
 # Getting started
 
 In most cases the easiest way to get started is to use
@@ -104,6 +106,28 @@ To run any of the TypeScript templates:
 
      This error happens when `anvil` isn't up yet.
      If it persists, check the `contracts` package.
+
+   <Callout type="info" emoji="ⓘ">
+
+   If nothing else works, the problem may be with [`mprocs`](https://github.com/pvolok/mprocs).
+   We can bypass `mprocs` by running two separate command line windows.
+
+   1. In the first command line window run these commands to start the client:
+
+      ```sh copy
+      cd packages/client
+      pnpm dev
+      ```
+
+   1. In the second command line window run these commands to compile the contracts and start `anvil`:
+
+      ```sh copy
+      cd packages/contracts
+      forge || export PATH=$PATH:~/.foundry/bin;
+      pnpm dev
+      ```
+
+   </Callout>
 
    </details>
 
