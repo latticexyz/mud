@@ -792,21 +792,72 @@ describe("defineWorld", () => {
     attest<"CustomNamespace__Example", keyof typeof config.tables>();
   });
 
-  it("should throw if trying to override namespace or name in the store/namespace config", () => {
-    const config = defineWorld({
-      namespace: "CustomNamespace",
-      tables: {
-        Example: {
-          schema: { id: "address" },
-          key: ["id"],
-          // @ts-expect-error Name override not allowed in store context
-          name: "NotAllowed",
-          // @ts-expect-error Namespace override not allowed in store context
-          namespace: "NotAllowed",
+  it("should throw if namespace is overridden in top level tables", () => {
+    attest(() =>
+      defineWorld({
+        namespace: "CustomNamespace",
+        tables: {
+          Example: {
+            schema: { id: "address" },
+            key: ["id"],
+            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
+            namespace: "NotAllowed",
+          },
         },
-      },
-    });
+      }),
+    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+  });
 
-    attest<"CustomNamespace__Example", keyof typeof config.tables>();
+  it("should throw if name is overridden in top level tables", () => {
+    attest(() =>
+      defineWorld({
+        tables: {
+          Example: {
+            schema: { id: "address" },
+            key: ["id"],
+            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
+            name: "NotAllowed",
+          },
+        },
+      }),
+    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+  });
+
+  it("should throw if name is overridden in namespaced tables", () => {
+    attest(() =>
+      defineWorld({
+        namespaces: {
+          MyNamespace: {
+            tables: {
+              Example: {
+                schema: { id: "address" },
+                key: ["id"],
+                // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
+                name: "NotAllowed",
+              },
+            },
+          },
+        },
+      }),
+    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+  });
+
+  it("should throw if namespace is overridden in namespaced tables", () => {
+    attest(() =>
+      defineWorld({
+        namespaces: {
+          MyNamespace: {
+            tables: {
+              Example: {
+                schema: { id: "address" },
+                key: ["id"],
+                // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
+                namespace: "NotAllowed",
+              },
+            },
+          },
+        },
+      }),
+    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
   });
 });

@@ -8,7 +8,6 @@ import {
   resolveTableShorthand,
   resolveTablesWithShorthands,
   validateTablesWithShorthands,
-  validateTableShorthand,
   Scope,
 } from "@latticexyz/store/config/v2";
 import { mapObject } from "@latticexyz/common/utils";
@@ -64,16 +63,12 @@ export function resolveWorldWithShorthands<world>(world: world): resolveWorldWit
 
   const scope = extendedScope(world);
   const tables = mapObject(world.tables ?? {}, (table) => {
-    return isTableShorthandInput(table)
-      ? resolveTableShorthand(table as validateTableShorthand<typeof table, typeof scope>, scope)
-      : table;
+    return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
   });
   const namespaces = mapObject(world.namespaces ?? {}, (namespace) => ({
     ...namespace,
     tables: mapObject(namespace.tables ?? {}, (table) => {
-      return isTableShorthandInput(table)
-        ? resolveTableShorthand(table as validateTableShorthand<typeof table, typeof scope>, scope)
-        : table;
+      return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
     }),
   }));
 

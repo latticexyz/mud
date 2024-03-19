@@ -37,7 +37,7 @@ export function resolveTables<tables extends TablesInput, scope extends Scope = 
 
   return Object.fromEntries(
     Object.entries(tables).map(([key, table]) => {
-      return [key, resolveTable(mergeIfUndefined(table, { name: key }) as validateTable<typeof table, scope>, scope)];
+      return [key, resolveTable(mergeIfUndefined(table, { name: key }), scope)];
     }),
   ) as unknown as resolveTables<tables, scope>;
 }

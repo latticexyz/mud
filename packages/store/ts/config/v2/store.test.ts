@@ -584,7 +584,7 @@ describe("defineStore", () => {
     );
   });
 
-  it("should throw if name is overridden in the store/namespace config", () => {
+  it("should throw if name is overridden in the store context", () => {
     attest(() =>
       defineStore({
         namespace: "CustomNamespace",
@@ -600,7 +600,7 @@ describe("defineStore", () => {
     ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
   });
 
-  it("should throw if namespace is overridden in the store/namespace config", () => {
+  it("should throw if namespace is overridden in the store context", () => {
     attest(() =>
       defineStore({
         namespace: "CustomNamespace",
