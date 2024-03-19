@@ -21,12 +21,12 @@ library Singleton {
   ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000053696e676c65746f6e00000000000000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0020010320000000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0020010020000000000000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of ()
   Schema constant _keySchema = Schema.wrap(0x0000000000000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (int256, uint32[], uint32[], uint32[])
-  Schema constant _valueSchema = Schema.wrap(0x002001033f656565000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (int256)
+  Schema constant _valueSchema = Schema.wrap(0x002001003f000000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -41,11 +41,8 @@ library Singleton {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](4);
+    fieldNames = new string[](1);
     fieldNames[0] = "v1";
-    fieldNames[1] = "v2";
-    fieldNames[2] = "v3";
-    fieldNames[3] = "v4";
   }
 
   /**
@@ -83,6 +80,26 @@ library Singleton {
   }
 
   /**
+   * @notice Get v1.
+   */
+  function get() internal view returns (int256 v1) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (int256(uint256(bytes32(_blob))));
+  }
+
+  /**
+   * @notice Get v1.
+   */
+  function _get() internal view returns (int256 v1) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (int256(uint256(bytes32(_blob))));
+  }
+
+  /**
    * @notice Set v1.
    */
   function setV1(int256 v1) internal {
@@ -101,382 +118,21 @@ library Singleton {
   }
 
   /**
-   * @notice Get v2.
+   * @notice Set v1.
    */
-  function getV2() internal view returns (uint32[2] memory v2) {
+  function set(int256 v1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
-    return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
   }
 
   /**
-   * @notice Get v2.
+   * @notice Set v1.
    */
-  function _getV2() internal view returns (uint32[2] memory v2) {
+  function _set(int256 v1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
-    return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
-  }
-
-  /**
-   * @notice Set v2.
-   */
-  function setV2(uint32[2] memory v2) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint32_2(v2)));
-  }
-
-  /**
-   * @notice Set v2.
-   */
-  function _setV2(uint32[2] memory v2) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_uint32_2(v2)));
-  }
-
-  // The length of v2
-  uint256 constant lengthV2 = 2;
-
-  /**
-   * @notice Get an item of v2.
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function getItemV2(uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
-      return (uint32(bytes4(_blob)));
-    }
-  }
-
-  /**
-   * @notice Get an item of v2.
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function _getItemV2(uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
-      return (uint32(bytes4(_blob)));
-    }
-  }
-
-  /**
-   * @notice Update an element of v2 at `_index`.
-   */
-  function updateV2(uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
-   * @notice Update an element of v2 at `_index`.
-   */
-  function _updateV2(uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 4), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
-   * @notice Get v3.
-   */
-  function getV3() internal view returns (uint32[2] memory v3) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
-    return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
-  }
-
-  /**
-   * @notice Get v3.
-   */
-  function _getV3() internal view returns (uint32[2] memory v3) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
-    return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
-  }
-
-  /**
-   * @notice Set v3.
-   */
-  function setV3(uint32[2] memory v3) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_uint32_2(v3)));
-  }
-
-  /**
-   * @notice Set v3.
-   */
-  function _setV3(uint32[2] memory v3) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_uint32_2(v3)));
-  }
-
-  // The length of v3
-  uint256 constant lengthV3 = 2;
-
-  /**
-   * @notice Get an item of v3.
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function getItemV3(uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
-      return (uint32(bytes4(_blob)));
-    }
-  }
-
-  /**
-   * @notice Get an item of v3.
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function _getItemV3(uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
-      return (uint32(bytes4(_blob)));
-    }
-  }
-
-  /**
-   * @notice Update an element of v3 at `_index`.
-   */
-  function updateV3(uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 4), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
-   * @notice Update an element of v3 at `_index`.
-   */
-  function _updateV3(uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      StoreCore.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 4), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
-   * @notice Get v4.
-   */
-  function getV4() internal view returns (uint32[1] memory v4) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 2);
-    return toStaticArray_uint32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
-  }
-
-  /**
-   * @notice Get v4.
-   */
-  function _getV4() internal view returns (uint32[1] memory v4) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 2);
-    return toStaticArray_uint32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
-  }
-
-  /**
-   * @notice Set v4.
-   */
-  function setV4(uint32[1] memory v4) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreSwitch.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint32_1(v4)));
-  }
-
-  /**
-   * @notice Set v4.
-   */
-  function _setV4(uint32[1] memory v4) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreCore.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint32_1(v4)));
-  }
-
-  // The length of v4
-  uint256 constant lengthV4 = 1;
-
-  /**
-   * @notice Get an item of v4.
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function getItemV4(uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 4, (_index + 1) * 4);
-      return (uint32(bytes4(_blob)));
-    }
-  }
-
-  /**
-   * @notice Get an item of v4.
-   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
-   */
-  function _getItemV4(uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 4, (_index + 1) * 4);
-      return (uint32(bytes4(_blob)));
-    }
-  }
-
-  /**
-   * @notice Update an element of v4 at `_index`.
-   */
-  function updateV4(uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 4), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
-   * @notice Update an element of v4 at `_index`.
-   */
-  function _updateV4(uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    unchecked {
-      bytes memory _encoded = abi.encodePacked((_element));
-      StoreCore.spliceDynamicData(_tableId, _keyTuple, 2, uint40(_index * 4), uint40(_encoded.length), _encoded);
-    }
-  }
-
-  /**
-   * @notice Get the full data.
-   */
-  function get() internal view returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
-      _tableId,
-      _keyTuple,
-      _fieldLayout
-    );
-    return decode(_staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
-   * @notice Get the full data.
-   */
-  function _get() internal view returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
-      _tableId,
-      _keyTuple,
-      _fieldLayout
-    );
-    return decode(_staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
-   * @notice Set the full data using individual values.
-   */
-  function set(int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) internal {
-    bytes memory _staticData = encodeStatic(v1);
-
-    PackedCounter _encodedLengths = encodeLengths(v2, v3, v4);
-    bytes memory _dynamicData = encodeDynamic(v2, v3, v4);
-
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
-  }
-
-  /**
-   * @notice Set the full data using individual values.
-   */
-  function _set(int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) internal {
-    bytes memory _staticData = encodeStatic(v1);
-
-    PackedCounter _encodedLengths = encodeLengths(v2, v3, v4);
-    bytes memory _dynamicData = encodeDynamic(v2, v3, v4);
-
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
-  }
-
-  /**
-   * @notice Decode the tightly packed blob of static data using this table's field layout.
-   */
-  function decodeStatic(bytes memory _blob) internal pure returns (int256 v1) {
-    v1 = (int256(uint256(Bytes.getBytes32(_blob, 0))));
-  }
-
-  /**
-   * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
-   */
-  function decodeDynamic(
-    PackedCounter _encodedLengths,
-    bytes memory _blob
-  ) internal pure returns (uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
-    uint256 _start;
-    uint256 _end;
-    unchecked {
-      _end = _encodedLengths.atIndex(0);
-    }
-    v2 = toStaticArray_uint32_2(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
-
-    _start = _end;
-    unchecked {
-      _end += _encodedLengths.atIndex(1);
-    }
-    v3 = toStaticArray_uint32_2(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
-
-    _start = _end;
-    unchecked {
-      _end += _encodedLengths.atIndex(2);
-    }
-    v4 = toStaticArray_uint32_1(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
-  }
-
-  /**
-   * @notice Decode the tightly packed blobs using this table's field layout.
-   * @param _staticData Tightly packed static fields.
-   * @param _encodedLengths Encoded lengths of dynamic fields.
-   * @param _dynamicData Tightly packed dynamic fields.
-   */
-  function decode(
-    bytes memory _staticData,
-    PackedCounter _encodedLengths,
-    bytes memory _dynamicData
-  ) internal pure returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
-    (v1) = decodeStatic(_staticData);
-
-    (v2, v3, v4) = decodeDynamic(_encodedLengths, _dynamicData);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
   }
 
   /**
@@ -506,53 +162,16 @@ library Singleton {
   }
 
   /**
-   * @notice Tightly pack dynamic data lengths using this table's schema.
-   * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
-   */
-  function encodeLengths(
-    uint32[2] memory v2,
-    uint32[2] memory v3,
-    uint32[1] memory v4
-  ) internal pure returns (PackedCounter _encodedLengths) {
-    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
-    unchecked {
-      _encodedLengths = PackedCounterLib.pack(v2.length * 4, v3.length * 4, v4.length * 4);
-    }
-  }
-
-  /**
-   * @notice Tightly pack dynamic (variable length) data using this table's schema.
-   * @return The dynamic data, encoded into a sequence of bytes.
-   */
-  function encodeDynamic(
-    uint32[2] memory v2,
-    uint32[2] memory v3,
-    uint32[1] memory v4
-  ) internal pure returns (bytes memory) {
-    return
-      abi.encodePacked(
-        EncodeArray.encode(fromStaticArray_uint32_2(v2)),
-        EncodeArray.encode(fromStaticArray_uint32_2(v3)),
-        EncodeArray.encode(fromStaticArray_uint32_1(v4))
-      );
-  }
-
-  /**
    * @notice Encode all of a record's fields.
    * @return The static (fixed length) data, encoded into a sequence of bytes.
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(
-    int256 v1,
-    uint32[2] memory v2,
-    uint32[2] memory v3,
-    uint32[1] memory v4
-  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(int256 v1) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(v1);
 
-    PackedCounter _encodedLengths = encodeLengths(v2, v3, v4);
-    bytes memory _dynamicData = encodeDynamic(v2, v3, v4);
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     return (_staticData, _encodedLengths, _dynamicData);
   }
@@ -565,82 +184,4 @@ library Singleton {
 
     return _keyTuple;
   }
-}
-
-/**
- * @notice Cast a dynamic array to a static array.
- * @dev In memory static arrays are just dynamic arrays without the 32 length bytes,
- * so this function moves the pointer to the first element of the dynamic array.
- * If the length of the dynamic array is smaller than the static length,
- * the function returns an uninitialized array to avoid memory corruption.
- * @param _value The dynamic array to cast.
- * @return _result The static array.
- */
-function toStaticArray_uint32_2(uint32[] memory _value) pure returns (uint32[2] memory _result) {
-  if (_value.length < 2) {
-    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
-    return _result;
-  } else {
-    // in memory static arrays are just dynamic arrays without the 32 length bytes
-    // (without the length check this could lead to memory corruption)
-    assembly {
-      _result := add(_value, 0x20)
-    }
-  }
-}
-
-/**
- * @notice Cast a dynamic array to a static array.
- * @dev In memory static arrays are just dynamic arrays without the 32 length bytes,
- * so this function moves the pointer to the first element of the dynamic array.
- * If the length of the dynamic array is smaller than the static length,
- * the function returns an uninitialized array to avoid memory corruption.
- * @param _value The dynamic array to cast.
- * @return _result The static array.
- */
-function toStaticArray_uint32_1(uint32[] memory _value) pure returns (uint32[1] memory _result) {
-  if (_value.length < 1) {
-    // return an uninitialized array if the length is smaller than the fixed length to avoid memory corruption
-    return _result;
-  } else {
-    // in memory static arrays are just dynamic arrays without the 32 length bytes
-    // (without the length check this could lead to memory corruption)
-    assembly {
-      _result := add(_value, 0x20)
-    }
-  }
-}
-
-/**
- * @notice Copy a static array to a dynamic array.
- * @dev Static arrays don't have a length prefix, so this function copies the memory from the static array to a new dynamic array.
- * @param _value The static array to copy.
- * @return _result The dynamic array.
- */
-function fromStaticArray_uint32_2(uint32[2] memory _value) pure returns (uint32[] memory _result) {
-  _result = new uint32[](2);
-  uint256 fromPointer;
-  uint256 toPointer;
-  assembly {
-    fromPointer := _value
-    toPointer := add(_result, 0x20)
-  }
-  Memory.copy(fromPointer, toPointer, 64);
-}
-
-/**
- * @notice Copy a static array to a dynamic array.
- * @dev Static arrays don't have a length prefix, so this function copies the memory from the static array to a new dynamic array.
- * @param _value The static array to copy.
- * @return _result The dynamic array.
- */
-function fromStaticArray_uint32_1(uint32[1] memory _value) pure returns (uint32[] memory _result) {
-  _result = new uint32[](1);
-  uint256 fromPointer;
-  uint256 toPointer;
-  assembly {
-    fromPointer := _value
-    toPointer := add(_result, 0x20)
-  }
-  Memory.copy(fromPointer, toPointer, 32);
 }

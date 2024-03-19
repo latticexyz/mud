@@ -17,7 +17,7 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 library FunctionSignatures {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "FunctionSignatur", typeId: RESOURCE_OFFCHAIN_TABLE });`
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "FunctionSignatures", typeId: RESOURCE_OFFCHAIN_TABLE });`
   ResourceId constant _tableId = ResourceId.wrap(0x6f74776f726c6400000000000000000046756e6374696f6e5369676e61747572);
 
   FieldLayout constant _fieldLayout =
