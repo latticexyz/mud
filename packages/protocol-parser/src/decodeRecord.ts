@@ -3,7 +3,7 @@ import {
   DynamicPrimitiveType,
   staticAbiTypeToByteLength,
   dynamicAbiTypeToDefaultValue,
-} from "@latticexyz/schema-type";
+} from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { Schema } from "./common";
 import { decodeDynamicField } from "./decodeDynamicField";

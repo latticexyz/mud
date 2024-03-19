@@ -2,7 +2,7 @@ import { SchemaToPrimitives, Table, Tables } from "@latticexyz/store";
 import { StoreApi, UseBoundStore, create } from "zustand";
 import { RawRecord, TableRecord } from "./common";
 import { Hex } from "viem";
-import { encodeKey } from "@latticexyz/protocol-parser";
+import { encodeKey } from "@latticexyz/protocol-parser/internal";
 import { flattenSchema } from "../flattenSchema";
 import { getId } from "./getId";
 import { SyncStep } from "../SyncStep";

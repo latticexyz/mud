@@ -62,6 +62,7 @@
     "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
+    "@latticexyz/query": "workspace:*",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
@@ -91,6 +92,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+  }
 }

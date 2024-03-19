@@ -1,6 +1,6 @@
 import { Hex } from "viem";
 import { ValueSchema } from "./common";
-import { isDynamicAbiType, isStaticAbiType, staticAbiTypeToByteLength } from "@latticexyz/schema-type";
+import { isDynamicAbiType, isStaticAbiType, staticAbiTypeToByteLength } from "@latticexyz/schema-type/internal";
 
 // TODO: add tests once we have corresponding tests for FieldLayout.sol (bytes32 -> FieldLayout and vice versa)
 export function valueSchemaToFieldLayoutHex(valueSchema: ValueSchema): Hex {

@@ -3,7 +3,7 @@ import { WorldDeploy, WorldFunction, worldTables } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
-import { decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { getTableValue } from "./getTableValue";
 import { hexToResource } from "@latticexyz/common";
 

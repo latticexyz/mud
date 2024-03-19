@@ -7,7 +7,7 @@ import { debug } from "./debug";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { tables as internalTables } from "../postgres/tables";
 import { createStorageAdapter as createBytesStorageAdapter } from "../postgres/createStorageAdapter";
 import { setupTables } from "../postgres/setupTables";

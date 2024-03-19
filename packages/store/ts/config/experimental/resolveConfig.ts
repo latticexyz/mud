@@ -3,7 +3,7 @@ import { StoreConfig, TableConfig, UserTypesConfig } from "../storeConfig";
 import { UserType } from "@latticexyz/common/codegen";
 import { mapObject } from "@latticexyz/common/utils";
 import { resourceToHex } from "@latticexyz/common";
-import { SchemaAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 
 /**
  * @internal Internal only

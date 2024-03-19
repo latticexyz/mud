@@ -1,25 +1,25 @@
-import { TableRecord } from "../zustand/common";
-import { Query, QueryResultSubject } from "./common";
-import { Table } from "@latticexyz/store";
-import { groupBy, uniqueBy } from "@latticexyz/common/utils";
 import { encodeAbiParameters } from "viem";
-import { matchesCondition } from "./matchesCondition";
+import { Table } from "@latticexyz/store/config/v2";
+import { groupBy, uniqueBy } from "@latticexyz/common/utils";
+import { Query, SubjectRecords } from "./api";
+import { matchRecords } from "./matchRecords";
+import { TableRecord } from "./common";
 
 // This assumes upstream has fully validated query
 // This also assumes we have full records, which may not always be the case and we may need some way to request records for a given table subject
 // We don't carry around config types here for ease, they get handled by the wrapping `query` function
 
-type QueryParameters<table extends Table> = {
+export type FindSubjectsParameters<table extends Table> = {
   readonly records: readonly TableRecord<table>[];
   readonly query: Query;
 };
 
-// TODO: make condition types smarter, so condition literal matches the field primitive type
+// TODO: make condition types smarter? so condition literal matches the field primitive type
 
 export function findSubjects<table extends Table>({
   records: initialRecords,
   query,
-}: QueryParameters<table>): readonly QueryResultSubject[] {
+}: FindSubjectsParameters<table>): readonly SubjectRecords[] {
   const targetTables = Object.fromEntries(
     uniqueBy([...query.from, ...(query.except ?? [])], (subject) => subject.tableId).map((subject) => [
       subject.tableId,
@@ -34,25 +34,22 @@ export function findSubjects<table extends Table>({
     .filter((record) => targetTables[record.table.tableId])
     .map((record) => {
       const subjectFields = targetTables[record.table.tableId];
-      const schema = { ...record.table.keySchema, ...record.table.valueSchema };
-      const fields = { ...record.key, ...record.value };
-      const subject = subjectFields.map((field) => fields[field]);
-      const subjectSchema = subjectFields.map((field) => schema[field]);
-      const id = encodeAbiParameters(subjectSchema, subject);
+      const subject = subjectFields.map((field) => record.fields[field]);
+      const subjectSchema = subjectFields.map((field) => record.table.schema[field]);
+      const subjectId = encodeAbiParameters(subjectSchema, subject);
       return {
         ...record,
-        schema,
-        fields,
         subjectSchema,
         subject,
-        id,
+        subjectId,
       };
     });
 
-  const matchedSubjects = Array.from(groupBy(records, (record) => record.id).values())
+  const matchedSubjects = Array.from(groupBy(records, (record) => record.subjectId).values())
     .map((records) => ({
-      id: records[0].id,
+      subjectId: records[0].subjectId,
       subject: records[0].subject,
+      subjectSchema: records[0].subjectSchema.map((abiType) => abiType.type),
       records,
     }))
     .filter(({ records }) => {
@@ -64,7 +61,29 @@ export function findSubjects<table extends Table>({
       const tableIds = new Set(records.map((record) => record.table.tableId));
       return tableIds.size === fromTableIds.size;
     })
-    .filter((match) => (query.where ? query.where.every((condition) => matchesCondition(condition, match)) : true));
+    .map((match) => {
+      if (!query.where) return match;
 
-  return matchedSubjects.map((match) => match.subject);
+      let records: readonly TableRecord<table>[] = match.records;
+      for (const condition of query.where) {
+        if (!records.length) break;
+        records = matchRecords(condition, records);
+      }
+
+      return { ...match, records };
+    })
+    .filter((match) => match.records.length > 0);
+
+  const subjects = matchedSubjects.map((match) => ({
+    subject: match.subject,
+    subjectSchema: match.subjectSchema,
+    records: match.records.map((record) => ({
+      tableId: record.table.tableId,
+      primaryKey: record.primaryKey,
+      keyTuple: record.keyTuple,
+      fields: record.fields,
+    })),
+  }));
+
+  return subjects;
 }

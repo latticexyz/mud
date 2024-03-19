@@ -1,9 +1,12 @@
 import { ZodIssueCode, RefinementCtx } from "zod";
 import { isAddress } from "viem";
 
+/** @deprecated */
 export const STORE_NAME_MAX_LENGTH = 16;
+/** @deprecated */
 export const STORE_NAMESPACE_MAX_LENGTH = 14;
 
+/** @deprecated */
 export function validateName(name: string, ctx: RefinementCtx) {
   if (!/^\w+$/.test(name)) {
     ctx.addIssue({
@@ -13,6 +16,7 @@ export function validateName(name: string, ctx: RefinementCtx) {
   }
 }
 
+/** @deprecated */
 export function validateCapitalizedName(name: string, ctx: RefinementCtx) {
   validateName(name, ctx);
 
@@ -24,6 +28,7 @@ export function validateCapitalizedName(name: string, ctx: RefinementCtx) {
   }
 }
 
+/** @deprecated */
 export function validateUncapitalizedName(name: string, ctx: RefinementCtx) {
   validateName(name, ctx);
 
@@ -35,7 +40,10 @@ export function validateUncapitalizedName(name: string, ctx: RefinementCtx) {
   }
 }
 
-// validates only the enum array, not the names of enum members
+/**
+ * validates only the enum array, not the names of enum members
+ * @deprecated
+ */
 export function validateEnum(members: string[], ctx: RefinementCtx) {
   if (members.length === 0) {
     ctx.addIssue({
@@ -59,6 +67,7 @@ export function validateEnum(members: string[], ctx: RefinementCtx) {
   }
 }
 
+/** @deprecated */
 function _factoryForValidateRoute(requireNonEmpty: boolean, requireSingleLevel: boolean) {
   return (route: string, ctx: RefinementCtx) => {
     if (route === "") {
@@ -113,12 +122,16 @@ function _factoryForValidateRoute(requireNonEmpty: boolean, requireSingleLevel: 
   };
 }
 
+/** @deprecated */
 export const validateRoute = _factoryForValidateRoute(true, false);
 
+/** @deprecated */
 export const validateBaseRoute = _factoryForValidateRoute(false, false);
 
+/** @deprecated */
 export const validateSingleLevelRoute = _factoryForValidateRoute(true, true);
 
+/** @deprecated */
 export function validateEthereumAddress(address: string, ctx: RefinementCtx) {
   if (!isAddress(address)) {
     ctx.addIssue({
@@ -128,6 +141,7 @@ export function validateEthereumAddress(address: string, ctx: RefinementCtx) {
   }
 }
 
+/** @deprecated */
 export function getDuplicates<T>(array: T[]) {
   const checked = new Set<T>();
   const duplicates = new Set<T>();
@@ -140,6 +154,7 @@ export function getDuplicates<T>(array: T[]) {
   return [...duplicates];
 }
 
+/** @deprecated */
 export function validateNamespace(name: string, ctx: RefinementCtx) {
   if (name.length > STORE_NAMESPACE_MAX_LENGTH) {
     ctx.addIssue({
@@ -155,7 +170,10 @@ export function validateNamespace(name: string, ctx: RefinementCtx) {
   }
 }
 
-/** Returns null if the type does not look like a static array, otherwise element and length data */
+/**
+ * Returns null if the type does not look like a static array, otherwise element and length data
+ * @deprecated
+ */
 export function parseStaticArray(abiType: string) {
   const matches = abiType.match(/^(\w+)\[(\d+)\]$/);
   if (!matches) return null;

@@ -1,15 +1,6 @@
-import { Table } from "@latticexyz/store";
-import { TableRecord } from "../zustand/common";
-import { ComparisonCondition, ConditionLiteral, QueryCondition, TableSubject } from "./common";
-
-type MatchedSubjectRecord<table extends Table> = TableRecord<table> & {
-  fields: TableRecord<table>["key"] & TableRecord<table>["value"];
-};
-
-type MatchedSubject<table extends Table> = {
-  readonly subject: TableSubject;
-  readonly records: readonly MatchedSubjectRecord<table>[];
-};
+import { Table } from "@latticexyz/store/config/v2";
+import { ComparisonCondition, ConditionLiteral, QueryCondition } from "./api";
+import { TableRecord } from "./common";
 
 const comparisons = {
   "<": (left, right) => left < right,
@@ -20,10 +11,10 @@ const comparisons = {
   "!=": (left, right) => left !== right,
 } as const satisfies Record<ComparisonCondition["op"], (left: ConditionLiteral, right: ConditionLiteral) => boolean>;
 
-export function matchesCondition<table extends Table>(
+export function matchRecords<table extends Table = Table>(
   condition: QueryCondition,
-  subject: MatchedSubject<table>,
-): boolean {
+  records: readonly TableRecord<table>[],
+): readonly TableRecord<table>[] {
   switch (condition.op) {
     case "<":
     case "<=":
@@ -31,13 +22,13 @@ export function matchesCondition<table extends Table>(
     case ">":
     case ">=":
     case "!=":
-      return subject.records.some(
+      return records.filter(
         (record) =>
           record.table.tableId === condition.left.tableId &&
           comparisons[condition.op](record.fields[condition.left.field], condition.right),
       );
     case "in":
-      return subject.records.some(
+      return records.filter(
         (record) =>
           record.table.tableId === condition.left.tableId &&
           condition.right.includes(record.fields[condition.left.field]),
