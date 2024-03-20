@@ -1,6 +1,7 @@
 import { conform, mutable } from "@arktype/util";
 import { Module, World, Systems } from "./output";
-import { storeToV1, Store } from "@latticexyz/store/config/v2";
+import { Store } from "@latticexyz/store";
+import { storeToV1 } from "@latticexyz/store/config/v2";
 
 type modulesToV1<modules extends readonly Module[]> = mutable<{
   [key in keyof modules]: Required<modules[key]>;

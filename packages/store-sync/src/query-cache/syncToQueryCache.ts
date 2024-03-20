@@ -1,7 +1,7 @@
 import { SyncOptions, SyncResult } from "../common";
 import { createStoreSync } from "../createStoreSync";
 import { Address } from "viem";
-import { Store } from "@latticexyz/store/config/v2";
+import { Store } from "@latticexyz/store";
 import { createStore } from "./createStore";
 import { createStorageAdapter } from "./createStorageAdapter";
 

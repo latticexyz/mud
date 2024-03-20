@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import { loadConfig } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
 import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { resolveWorldConfig } from "@latticexyz/world";
+import { resolveWorldConfig } from "@latticexyz/world/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import worldConfig from "@latticexyz/world/mud.config";
 import { resourceToHex } from "@latticexyz/common";

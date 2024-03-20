@@ -15,7 +15,7 @@ import {
 } from "@latticexyz/store/config/v2";
 import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS } from "./defaults";
-import { Tables } from "@latticexyz/store";
+import { Tables } from "@latticexyz/store/internal";
 import { resolveSystems } from "./systems";
 import { resolveNamespacedTables, validateNamespaces } from "./namespaces";
 import { resolveCodegen } from "./codegen";

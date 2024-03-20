@@ -1,6 +1,6 @@
 import path from "path";
 import { tablegen } from "@latticexyz/store/codegen";
-import { defineStore } from "@latticexyz/store/config/v2";
+import { defineStore } from "@latticexyz/store";
 import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
 
 // This config is used only for tests.

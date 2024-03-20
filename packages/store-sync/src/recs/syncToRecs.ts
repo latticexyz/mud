@@ -1,5 +1,6 @@
-import { Table, ResolvedStoreConfig, resolveConfig } from "@latticexyz/store";
-import { Store as StoreConfig, storeToV1 } from "@latticexyz/store/config/v2";
+import { Table, ResolvedStoreConfig, resolveConfig } from "@latticexyz/store/internal";
+import { Store as StoreConfig } from "@latticexyz/store";
+import { storeToV1 } from "@latticexyz/store/config/v2";
 import { Component as RecsComponent, World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { SyncOptions, SyncResult } from "../common";
 import { RecsStorageAdapter, recsStorage } from "./recsStorage";

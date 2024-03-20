@@ -3,7 +3,7 @@ import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
 import { buildTable } from "./buildTable";
-import { Store as StoreConfig } from "@latticexyz/store/config/v2";
+import { Store as StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { getTableName } from "./getTableName";
 import { chainState, mudStoreTables } from "./internalTables";

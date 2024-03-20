@@ -1,4 +1,4 @@
-import { Store as StoreConfig } from "@latticexyz/store/config/v2";
+import { Store as StoreConfig } from "@latticexyz/store";
 import { PgDatabase } from "drizzle-orm/pg-core";
 import { SyncOptions, SyncResult } from "../common";
 import { createStorageAdapter } from "./createStorageAdapter";

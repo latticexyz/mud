@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
+    "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "viem": "2.7.12"

@@ -4,8 +4,10 @@ import worldConfig from "@latticexyz/world/mud.config";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import IModuleAbi from "@latticexyz/world-modules/out/IModule.sol/IModule.abi.json" assert { type: "json" };
 import { Tables, configToTables } from "./configToTables";
-import { StoreConfig, helloStoreEvent } from "@latticexyz/store";
-import { WorldConfig, helloWorldEvent } from "@latticexyz/world";
+import { helloStoreEvent } from "@latticexyz/store";
+import { StoreConfig } from "@latticexyz/store/internal";
+import { helloWorldEvent } from "@latticexyz/world";
+import { WorldConfig } from "@latticexyz/world/internal";
 import { storeToV1 } from "@latticexyz/store/config/v2";
 import { worldToV1 } from "@latticexyz/world/config/v2";
 

@@ -1,4 +1,4 @@
-import { Table, resolveConfig } from "@latticexyz/store";
+import { Table, resolveConfig } from "@latticexyz/store/internal";
 import { debug } from "./debug";
 import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, setComponent } from "@latticexyz/recs";
 import { defineInternalComponents } from "./defineInternalComponents";
