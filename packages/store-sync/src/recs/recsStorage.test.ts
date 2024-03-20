@@ -8,8 +8,9 @@ import { StoreEventsLog } from "../common";
 import { singletonEntity } from "./singletonEntity";
 import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
 import { resolveConfig, storeEventsAbi } from "@latticexyz/store";
+import { worldToV1 } from "@latticexyz/world/config/v2";
 
-const tables = resolveConfig(mudConfig).tables;
+const tables = resolveConfig(worldToV1(mudConfig)).tables;
 
 // TODO: make test-data a proper package and export this
 const blocks = groupLogsByBlockNumber(
