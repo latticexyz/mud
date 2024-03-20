@@ -108,5 +108,8 @@ interface IWorldErrors {
    */
   error World_CallbackNotAllowed(bytes4 functionSelector);
 
-  error World_InvalidSignature();
+  /**
+   * @dev Mismatched signature.
+   */
+  error World_InvalidSigner(address delegator, address delegatee);
 }

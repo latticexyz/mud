@@ -32,15 +32,7 @@ import { requireNamespace } from "../../../requireNamespace.sol";
 import { requireValidNamespace } from "../../../requireValidNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
-
-function getMessageHash(
-  address delegatee,
-  ResourceId delegationControlId,
-  bytes memory initCallData,
-  uint256 nonce
-) pure returns (bytes32) {
-  return keccak256(abi.encode(delegatee, delegationControlId, initCallData, nonce));
-}
+import { getMessageHash } from "./permit.sol";
 
 function registerDelegationHelper(
   address delegator,
@@ -313,9 +305,11 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
   ) public onlyDelegatecall {
     uint256 nonce = UserDelegationNonces.get(delegator);
     bytes32 hash = getMessageHash(delegatee, delegationControlId, initCallData, nonce);
+
     // If the message was not signed by the delegator or is invalid, revert
-    if (ecrecover(hash, v, r, s) != delegator) {
-      revert World_InvalidSignature();
+    address signer = ecrecover(hash, v, r, s);
+    if (signer != delegator) {
+      revert World_InvalidSigner(delegator, delegatee);
     }
 
     UserDelegationNonces.set(delegator, nonce + 1);

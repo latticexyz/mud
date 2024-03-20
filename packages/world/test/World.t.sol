@@ -1204,7 +1204,7 @@ contract WorldTest is Test, GasReporter {
     world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Attempt to register a limited delegation using an old signature
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InvalidSignature.selector));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InvalidSigner.selector, delegator, delegatee));
     world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, v, r, s);
 
     // Expect a revert when attempting to perform a call via callFrom after a delegation was unregistered

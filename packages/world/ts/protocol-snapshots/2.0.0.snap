@@ -22,6 +22,7 @@
   "error World_InvalidNamespace(bytes14 namespace)",
   "error World_InvalidResourceId(bytes32 resourceId, string resourceIdString)",
   "error World_InvalidResourceType(bytes2 expected, bytes32 resourceId, string resourceIdString)",
+  "error World_InvalidSigner(address delegator, address delegatee)",
   "error World_ResourceAlreadyExists(bytes32 resourceId, string resourceIdString)",
   "error World_ResourceNotFound(bytes32 resourceId, string resourceIdString)",
   "error World_SystemAlreadyExists(address system)",
