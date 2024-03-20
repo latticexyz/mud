@@ -211,6 +211,19 @@ describe("resolveTable", () => {
       .type.errors("Type 'string' is not assignable to type 'string[]'");
   });
 
+  it("should throw if a string is provided as schema", () => {
+    attest(() =>
+      defineTable({
+        // @ts-expect-error Type 'string' is not assignable to type 'SchemaInput'.
+        schema: "uint256",
+        key: [],
+        name: "",
+      }),
+    )
+      .throws('Error: Expected schema, received "uint256"')
+      .type.errors("Type 'string' is not assignable to type 'SchemaInput'.");
+  });
+
   it("should throw if an unknown key is provided", () => {
     attest(() =>
       defineTable({
