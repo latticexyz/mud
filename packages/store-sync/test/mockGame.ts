@@ -1,13 +1,13 @@
 import { execa } from "execa";
 import { anvilRpcUrl } from "./common";
-import mudConfig from "mock-game-contracts/mud.config";
+import configV2 from "mock-game-contracts/mud.config";
 import { resolveConfig } from "@latticexyz/store";
 import { Hex, isHex } from "viem";
 import worldAbi from "mock-game-contracts/out/IWorld.sol/IWorld.abi.json";
+import { storeToV1 } from "@latticexyz/store/config/v2";
 
-export { configV2 } from "mock-game-contracts/mud.config";
-export const deprecatedConfig = mudConfig;
-export const config = resolveConfig(mudConfig);
+export { configV2 };
+export const config = resolveConfig(storeToV1(configV2));
 export { worldAbi };
 
 export async function deployMockGame(): Promise<Hex> {
