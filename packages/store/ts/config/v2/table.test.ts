@@ -125,6 +125,19 @@ describe("resolveTable", () => {
     attest<typeof expected>(table).equals(expected);
   });
 
+  it("should pass through deploy config", () => {
+    const table = defineTable({
+      schema: { id: "address" },
+      key: ["id"],
+      name: "",
+      deploy: { disable: true },
+    });
+
+    const expected = { disable: true } as const;
+
+    attest<typeof expected>(table.deploy).equals(expected);
+  });
+
   it("should throw if the provided key is a dynamic ABI type", () => {
     attest(() =>
       defineTable({
