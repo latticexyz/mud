@@ -9,8 +9,9 @@ import { RecsStorageAdapter, recsStorage } from "../src/recs";
 import { sqliteStorage } from "../src/sqlite";
 import { ZustandStore, createStorageAdapter, createStore } from "../src/zustand";
 import { StorageAdapter } from "../src";
+import { worldToV1 } from "@latticexyz/world/config/v2";
 
-export const tables = resolveConfig(mudConfig).tables;
+export const tables = resolveConfig(worldToV1(mudConfig)).tables;
 
 export function createRecsStorage(): RecsStorageAdapter<typeof tables> {
   return recsStorage({ world: createWorld(), tables });
