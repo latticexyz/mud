@@ -1,9 +1,10 @@
 import { StoreApi, UseBoundStore, create } from "zustand";
-import { Table, getKeySchema, getValueSchema } from "@latticexyz/store/config/v2";
+import { Table } from "@latticexyz/store/config/v2";
 import { Tables } from "./common";
 import { Hex } from "viem";
 import { StaticPrimitiveType } from "@latticexyz/schema-type/internal";
 import { SchemaToPrimitives } from "@latticexyz/store";
+import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser";
 
 export type RawTableRecord<table extends Table = Table> = {
   readonly table: table;
