@@ -185,6 +185,56 @@ describe("resolveTable", () => {
       .throws('Invalid key. Expected `("id" | "age")[]`, received `["NotAKey"]`')
       .type.errors(`Type '"NotAKey"' is not assignable to type '"id" | "age"'`);
   });
+
+  it("should throw if no key is provided", () => {
+    attest(() =>
+      // @ts-expect-error Property 'key' is missing in type
+      defineTable({
+        schema: { id: "address" },
+        name: "",
+      }),
+    )
+      .throws('Invalid key. Expected `("id")[]`, received `undefined')
+      .type.errors("Property 'key' is missing in type");
+  });
+
+  it("should throw if a string is provided as key", () => {
+    attest(() =>
+      defineTable({
+        schema: { id: "address" },
+        // @ts-expect-error Type 'string' is not assignable to type 'string[]'
+        key: "",
+        name: "",
+      }),
+    )
+      .throws('Invalid key. Expected `("id")[]`, received ``')
+      .type.errors("Type 'string' is not assignable to type 'string[]'");
+  });
+
+  it("should throw if a string is provided as schema", () => {
+    attest(() =>
+      defineTable({
+        // @ts-expect-error Type 'string' is not assignable to type 'SchemaInput'.
+        schema: "uint256",
+        key: [],
+        name: "",
+      }),
+    )
+      .throws('Error: Expected schema, received "uint256"')
+      .type.errors("Type 'string' is not assignable to type 'SchemaInput'.");
+  });
+
+  it("should throw if an unknown key is provided", () => {
+    attest(() =>
+      defineTable({
+        schema: { id: "address" },
+        key: ["id"],
+        name: "",
+        // @ts-expect-error Key `keySchema` does not exist in TableInput
+        keySchema: { id: "address" },
+      }),
+    ).type.errors("Key `keySchema` does not exist in TableInput ");
+  });
 });
 
 // TODO: move tests to protocol parser after we add arktype

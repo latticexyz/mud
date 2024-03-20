@@ -1,4 +1,4 @@
-import { ErrorMessage, conform, narrow } from "@arktype/util";
+import { ErrorMessage, conform, narrow, requiredKeyOf } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { get, hasOwnKey } from "./generics";
@@ -37,9 +37,11 @@ export function isValidPrimaryKey<schema extends SchemaInput, scope extends Scop
   );
 }
 
-export type validateKeys<validKeys extends PropertyKey, keys> = {
-  [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
-};
+export type validateKeys<validKeys extends PropertyKey, keys> = keys extends string[]
+  ? {
+      [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
+    }
+  : string[];
 
 export type ValidateTableOptions = { inStoreContext: boolean };
 
@@ -48,14 +50,21 @@ export type validateTable<
   scope extends Scope = AbiTypeScope,
   options extends ValidateTableOptions = { inStoreContext: false },
 > = {
-  [key in keyof input]: key extends "key"
-    ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput>, scope>, input[key]>
+  [key in
+    | keyof input
+    | Exclude<
+        requiredKeyOf<TableInput>,
+        options["inStoreContext"] extends true ? "name" | "namespace" : ""
+      >]: key extends "key"
+    ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput>, scope>, get<input, key>>
     : key extends "schema"
-      ? validateSchema<input[key], scope>
+      ? validateSchema<get<input, key>, scope>
       : key extends "name" | "namespace"
         ? options["inStoreContext"] extends true
           ? ErrorMessage<"Overrides of `name` and `namespace` are not allowed for tables in a store config">
-          : narrow<input[key]>
+          : key extends keyof input
+            ? narrow<input[key]>
+            : never
         : key extends keyof TableInput
           ? TableInput[key]
           : ErrorMessage<`Key \`${key & string}\` does not exist in TableInput`>;
@@ -82,7 +91,7 @@ export function validateTable<input, scope extends Scope = AbiTypeScope>(
         .join(" | ")})[]\`, received \`${
         hasOwnKey(input, "key") && Array.isArray(input.key)
           ? `[${input.key.map((item) => `"${item}"`).join(", ")}]`
-          : "undefined"
+          : String(get(input, "key"))
       }\``,
     );
   }
