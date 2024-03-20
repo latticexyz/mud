@@ -31,8 +31,8 @@ export function getTableOptions(
   const storeImportPath = config.storeImportPath;
 
   const options = [];
-  for (const key of Object.keys(config.tables)) {
-    const tableData = config.tables[key];
+  for (const tableName of Object.keys(config.tables)) {
+    const tableData = config.tables[tableName];
 
     // struct adds methods to get/set all values at once
     const withStruct = tableData.dataStruct;
@@ -50,7 +50,7 @@ export function getTableOptions(
       const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config, solidityUserTypes);
       if (importDatum) imports.push(importDatum);
 
-      if (renderType.isDynamic) throw new Error(`Parsing error: found dynamic key ${name} in table ${tableData.name}`);
+      if (renderType.isDynamic) throw new Error(`Parsing error: found dynamic key ${name} in table ${tableName}`);
 
       const keyTuple: RenderKeyTuple = {
         ...renderType,
@@ -90,12 +90,12 @@ export function getTableOptions(
         };
 
     options.push({
-      outputPath: path.join(tableData.directory, `${tableData.name}.sol`),
-      tableName: tableData.name,
+      outputPath: path.join(tableData.directory, `${tableName}.sol`),
+      tableName,
       renderOptions: {
         imports,
-        libraryName: tableData.name,
-        structName: withStruct ? tableData.name + "Data" : undefined,
+        libraryName: tableName,
+        structName: withStruct ? tableName + "Data" : undefined,
         staticResourceData,
         storeImportPath,
         keyTuple,
