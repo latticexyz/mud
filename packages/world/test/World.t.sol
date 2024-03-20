@@ -1181,9 +1181,10 @@ contract WorldTest is Test, GasReporter {
 
     bytes32 hash = getMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), 0);
     (uint8 v, bytes32 r, bytes32 s) = vm.sign(delegatorPk, hash);
+    bytes memory signature = abi.encodePacked(r, s, v);
 
     startGasReport("register an unlimited delegation with signature");
-    world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, v, r, s);
+    world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, signature);
     endGasReport();
 
     // Call a system from the delegatee on behalf of the delegator
@@ -1205,7 +1206,7 @@ contract WorldTest is Test, GasReporter {
 
     // Attempt to register a limited delegation using an old signature
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InvalidSigner.selector, delegator, delegatee));
-    world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, v, r, s);
+    world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, signature);
 
     // Expect a revert when attempting to perform a call via callFrom after a delegation was unregistered
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
@@ -1215,8 +1216,9 @@ contract WorldTest is Test, GasReporter {
     // Register a limited delegation using a new signature
     hash = getMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), 1);
     (v, r, s) = vm.sign(delegatorPk, hash);
+    signature = abi.encodePacked(r, s, v);
 
-    world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, v, r, s);
+    world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, signature);
 
     // Call a system from the delegatee on behalf of the delegator
     vm.prank(delegatee);

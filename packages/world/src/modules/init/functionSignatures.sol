@@ -55,7 +55,7 @@ function getFunctionSignaturesRegistration() pure returns (string[15] memory) {
     "registerFunctionSelector(bytes32,string)",
     "registerRootFunctionSelector(bytes32,string,string)",
     "registerDelegation(address,bytes32,bytes)",
-    "registerDelegationWithSignature(address,bytes32,bytes,address,uint8,bytes32,bytes32)",
+    "registerDelegationWithSignature(address,bytes32,bytes,address,bytes)",
     "unregisterDelegation(address)",
     "registerNamespaceDelegation(bytes32,bytes32,bytes)",
     "unregisterNamespaceDelegation(bytes32)"

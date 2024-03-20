@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
+import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
 import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
@@ -299,15 +301,13 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     ResourceId delegationControlId,
     bytes memory initCallData,
     address delegator,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
+    bytes memory signature
   ) public onlyDelegatecall {
     uint256 nonce = UserDelegationNonces.get(delegator);
     bytes32 hash = getMessageHash(delegatee, delegationControlId, initCallData, nonce);
 
     // If the message was not signed by the delegator or is invalid, revert
-    address signer = ecrecover(hash, v, r, s);
+    address signer = ECDSA.recover(hash, signature);
     if (signer != delegator) {
       revert World_InvalidSigner(delegator, delegatee);
     }

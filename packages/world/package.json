@@ -55,6 +55,7 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
+    "@openzeppelin/contracts": "^5.0.2",
     "abitype": "1.0.0",
     "arktype": "1.0.29-alpha",
     "viem": "2.7.12",

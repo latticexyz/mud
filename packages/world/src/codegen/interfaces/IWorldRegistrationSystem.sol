@@ -39,9 +39,7 @@ interface IWorldRegistrationSystem {
     ResourceId delegationControlId,
     bytes memory initCallData,
     address delegator,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
+    bytes memory signature
   ) external;
 
   function unregisterDelegation(address delegatee) external;

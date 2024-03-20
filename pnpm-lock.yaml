@@ -1046,6 +1046,9 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
+      '@openzeppelin/contracts':
+        specifier: ^5.0.2
+        version: 5.0.2
       abitype:
         specifier: 1.0.0
         version: 1.0.0(typescript@5.4.2)(zod@3.21.4)
@@ -2998,6 +3001,10 @@ packages:
     dependencies:
       mkdirp: 1.0.4
       rimraf: 3.0.2
+    dev: false
+
+  /@openzeppelin/contracts@5.0.2:
+    resolution: {integrity: sha512-ytPc6eLGcHHnapAZ9S+5qsdomhjo6QBHTDRRBFfTxXIpsicMhVPouPgmUPebZZZGX7vt9USA+Z+0M0dSVtSUEA==}
     dev: false
 
   /@oven/bun-darwin-aarch64@1.0.11:
