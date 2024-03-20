@@ -8,8 +8,8 @@ import { Store } from "./output";
 
 describe("configToV1", () => {
   it("should transform the broad v2 output to the broad v1 output", () => {
-    attest<StoreConfigV1, storeToV1<Store>>();
-    attest<storeToV1<Store>, StoreConfigV1>();
+    attest<StoreConfigV1, Omit<storeToV1<Store>, "v2">>();
+    attest<Omit<storeToV1<Store>, "v2">, StoreConfigV1>();
   });
 
   it("should transform a v2 store config output to the v1 config output", () => {
@@ -89,7 +89,10 @@ describe("configToV1", () => {
       },
     });
 
-    attest<typeof configV1>(storeToV1(configV2)).equals(configV1);
-    attest<storeToV1<typeof configV2>>(configV1);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { v2: _, ...v1FromV2 } = storeToV1(configV2);
+
+    attest<typeof configV1>(v1FromV2).equals(configV1);
+    attest<Omit<storeToV1<typeof configV2>, "v2">>(configV1);
   });
 });

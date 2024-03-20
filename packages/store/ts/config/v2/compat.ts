@@ -20,6 +20,7 @@ export type storeToV1<store> = store extends Store
       tables: {
         [key in keyof store["tables"] as store["tables"][key]["name"]]: tableToV1<store["tables"][key]>;
       };
+      v2: store;
     }
   : never;
 
@@ -69,5 +70,6 @@ export function storeToV1<store>(store: conform<store, Store>): storeToV1<store>
     codegenDirectory: store.codegen.codegenDirectory,
     codegenIndexFilename: store.codegen.codegenIndexFilename,
     tables: resolvedTables,
+    v2: store,
   } as unknown as storeToV1<store>;
 }
