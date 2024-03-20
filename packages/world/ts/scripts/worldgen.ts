@@ -20,7 +20,7 @@ const existingContracts = glob.sync(`${srcDir}/**/*.sol`).map((path) => ({
 // Load and resolve the config
 const mudConfig = (await loadConfig(configPath)) as WorldConfig;
 
-const outputBaseDirectory = path.join(srcDir, mudConfig.codegen.codegenDirectory);
+const outputBaseDirectory = path.join(srcDir, mudConfig.codegen.outputDirectory);
 
 // clear the worldgen directory
 if (clean) {

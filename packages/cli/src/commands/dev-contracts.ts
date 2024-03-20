@@ -60,7 +60,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
       }
       if (updatePath.includes(srcDir) || updatePath.includes(scriptDir)) {
         // Ignore changes to codegen files to avoid an infinite loop
-        if (!updatePath.includes(initialConfig.codegen.codegenDirectory)) {
+        if (!updatePath.includes(initialConfig.codegen.outputDirectory)) {
           console.log(chalk.blue("Contracts changed, queuing deploy…"));
           lastChange$.next(Date.now());
         }

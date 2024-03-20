@@ -25,7 +25,7 @@ const commandModule: CommandModule<Options, Options> = {
     const srcDir = await getSrcDirectory();
     const remappings = await getRemappings();
 
-    await tablegen(config, path.join(srcDir, config.codegen.codegenDirectory), remappings);
+    await tablegen(config, path.join(srcDir, config.codegen.outputDirectory), remappings);
 
     process.exit(0);
   },

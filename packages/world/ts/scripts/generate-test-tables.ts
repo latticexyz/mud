@@ -4,7 +4,9 @@ import { tablegen } from "@latticexyz/store/codegen";
 import { defineWorld } from "../config/v2/world";
 
 const config = defineWorld({
-  codegen: { codegenDirectory: "../test/codegen" },
+  codegen: {
+    outputDirectory: "../test/codegen",
+  },
   tables: {
     Bool: {
       schema: {
@@ -35,4 +37,4 @@ const config = defineWorld({
 const srcDir = await getSrcDirectory();
 const remappings = await getRemappings();
 
-await tablegen(config, path.join(srcDir, config.codegen.codegenDirectory), remappings);
+await tablegen(config, path.join(srcDir, config.codegen.outputDirectory), remappings);

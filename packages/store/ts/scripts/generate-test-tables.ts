@@ -6,7 +6,7 @@ import { defineStore } from "../config/v2/store";
 const config = defineStore({
   codegen: {
     storeImportPath: "../../../src/",
-    codegenDirectory: "../test/codegen",
+    outputDirectory: "../test/codegen",
   },
   namespace: "store",
   enums: {
@@ -53,4 +53,4 @@ const config = defineStore({
 const srcDir = await getSrcDirectory();
 const remappings = await getRemappings();
 
-await tablegen(config, path.join(srcDir, config.codegen.codegenDirectory), remappings);
+await tablegen(config, path.join(srcDir, config.codegen.outputDirectory), remappings);

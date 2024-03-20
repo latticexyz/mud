@@ -4,7 +4,7 @@ export default defineWorld({
   codegen: {
     worldgenDirectory: "interfaces",
     worldInterfaceName: "IBaseWorld",
-    codegenDirectory: ".",
+    outputDirectory: ".",
   },
   userTypes: {
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
@@ -22,7 +22,7 @@ export default defineWorld({
       },
       key: ["valueHash"],
       codegen: {
-        directory: "modules/keyswithvalue/tables",
+        outputDirectory: "modules/keyswithvalue/tables",
         tableIdArgument: true,
         storeArgument: true,
       },
@@ -43,7 +43,7 @@ export default defineWorld({
       },
       key: ["sourceTableId"],
       codegen: {
-        directory: "modules/keysintable/tables",
+        outputDirectory: "modules/keysintable/tables",
         storeArgument: true,
       },
     },
@@ -56,7 +56,7 @@ export default defineWorld({
       },
       key: ["sourceTableId", "keysHash"],
       codegen: {
-        directory: "modules/keysintable/tables",
+        outputDirectory: "modules/keysintable/tables",
         dataStruct: false,
         storeArgument: true,
       },
@@ -72,7 +72,7 @@ export default defineWorld({
       },
       key: [],
       codegen: {
-        directory: "modules/uniqueentity/tables",
+        outputDirectory: "modules/uniqueentity/tables",
         tableIdArgument: true,
         storeArgument: true,
       },
@@ -92,7 +92,7 @@ export default defineWorld({
       },
       key: ["delegator", "delegatee", "systemId", "callDataHash"],
       codegen: {
-        directory: "modules/std-delegations/tables",
+        outputDirectory: "modules/std-delegations/tables",
       },
     },
     SystemboundDelegations: {
@@ -104,7 +104,7 @@ export default defineWorld({
       },
       key: ["delegator", "delegatee", "systemId"],
       codegen: {
-        directory: "modules/std-delegations/tables",
+        outputDirectory: "modules/std-delegations/tables",
       },
     },
     TimeboundDelegations: {
@@ -115,7 +115,7 @@ export default defineWorld({
       },
       key: ["delegator", "delegatee"],
       codegen: {
-        directory: "modules/std-delegations/tables",
+        outputDirectory: "modules/std-delegations/tables",
       },
     },
     /************************************************************************
@@ -130,7 +130,7 @@ export default defineWorld({
       },
       key: ["systemId"],
       codegen: {
-        directory: "modules/puppet/tables",
+        outputDirectory: "modules/puppet/tables",
         tableIdArgument: true,
       },
     },
@@ -146,7 +146,7 @@ export default defineWorld({
       },
       key: ["account"],
       codegen: {
-        directory: "modules/tokens/tables",
+        outputDirectory: "modules/tokens/tables",
         tableIdArgument: true,
       },
     },
@@ -163,7 +163,7 @@ export default defineWorld({
       },
       key: [],
       codegen: {
-        directory: "modules/erc20-puppet/tables",
+        outputDirectory: "modules/erc20-puppet/tables",
         tableIdArgument: true,
       },
     },
@@ -175,7 +175,7 @@ export default defineWorld({
       },
       key: ["account", "spender"],
       codegen: {
-        directory: "modules/erc20-puppet/tables",
+        outputDirectory: "modules/erc20-puppet/tables",
         tableIdArgument: true,
       },
     },
@@ -185,7 +185,7 @@ export default defineWorld({
       },
       key: [],
       codegen: {
-        directory: "modules/erc20-puppet/tables",
+        outputDirectory: "modules/erc20-puppet/tables",
         tableIdArgument: true,
       },
     },
@@ -196,7 +196,7 @@ export default defineWorld({
       },
       key: ["namespaceId"],
       codegen: {
-        directory: "modules/erc20-puppet/tables",
+        outputDirectory: "modules/erc20-puppet/tables",
         tableIdArgument: true,
       },
     },
@@ -213,7 +213,7 @@ export default defineWorld({
       },
       key: [],
       codegen: {
-        directory: "modules/erc721-puppet/tables",
+        outputDirectory: "modules/erc721-puppet/tables",
         tableIdArgument: true,
       },
     },
@@ -224,7 +224,7 @@ export default defineWorld({
       },
       key: ["tokenId"],
       codegen: {
-        directory: "modules/erc721-puppet/tables",
+        outputDirectory: "modules/erc721-puppet/tables",
         tableIdArgument: true,
       },
     },
@@ -235,7 +235,7 @@ export default defineWorld({
       },
       key: ["tokenId"],
       codegen: {
-        directory: "modules/erc721-puppet/tables",
+        outputDirectory: "modules/erc721-puppet/tables",
         tableIdArgument: true,
       },
     },
@@ -246,7 +246,7 @@ export default defineWorld({
       },
       key: ["tokenId"],
       codegen: {
-        directory: "modules/erc721-puppet/tables",
+        outputDirectory: "modules/erc721-puppet/tables",
         tableIdArgument: true,
       },
     },
@@ -258,7 +258,7 @@ export default defineWorld({
       },
       key: ["owner", "operator"],
       codegen: {
-        directory: "modules/erc721-puppet/tables",
+        outputDirectory: "modules/erc721-puppet/tables",
         tableIdArgument: true,
       },
     },
@@ -269,7 +269,7 @@ export default defineWorld({
       },
       key: ["namespaceId"],
       codegen: {
-        directory: "modules/erc721-puppet/tables",
+        outputDirectory: "modules/erc721-puppet/tables",
         tableIdArgument: true,
       },
     },

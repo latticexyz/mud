@@ -44,7 +44,7 @@ export async function worldgenHandler(args: Options) {
   // Load the config
   const mudConfig = args.config ?? ((await loadConfig(args.configPath)) as WorldConfig);
 
-  const outputBaseDirectory = path.join(srcDir, mudConfig.codegen.codegenDirectory);
+  const outputBaseDirectory = path.join(srcDir, mudConfig.codegen.outputDirectory);
 
   // clear the worldgen directory
   if (args.clean) {

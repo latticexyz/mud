@@ -95,4 +95,4 @@ const config = defineStore({
 const srcDirectory = await getSrcDirectory();
 const remappings = await getRemappings();
 
-await tablegen(config, path.join(srcDirectory, config.codegen.codegenDirectory), remappings);
+await tablegen(config, path.join(srcDirectory, config.codegen.outputDirectory), remappings);
