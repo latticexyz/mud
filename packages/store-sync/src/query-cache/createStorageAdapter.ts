@@ -2,11 +2,16 @@ import { StorageAdapter } from "../common";
 import { QueryCacheStore, RawTableRecord, TableRecord } from "./createStore";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { Hex, concatHex, size } from "viem";
-import { KeySchema, decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import {
+  KeySchema,
+  decodeKey,
+  decodeValueArgs,
+  getKeySchema,
+  getValueSchema,
+} from "@latticexyz/protocol-parser/internal";
 import { flattenSchema } from "../flattenSchema";
 import debug from "debug";
 import { Tables } from "./common";
-import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser";
 
 function getRecordId({ tableId, keyTuple }: { tableId: Hex; keyTuple: readonly Hex[] }): string {
   return `${tableId}:${concatHex(keyTuple)}`;

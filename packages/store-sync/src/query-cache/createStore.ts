@@ -4,7 +4,7 @@ import { Tables } from "./common";
 import { Hex } from "viem";
 import { StaticPrimitiveType } from "@latticexyz/schema-type/internal";
 import { SchemaToPrimitives } from "@latticexyz/store";
-import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser";
+import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
 export type RawTableRecord<table extends Table = Table> = {
   readonly table: table;
