@@ -1,6 +1,6 @@
 import { Observable } from "rxjs";
 import { Abi, Block, Chain, PublicClient, Transport, WalletClient } from "viem";
-import { Store as StoreConfig } from "@latticexyz/store/config/v2";
+import { Store as StoreConfig } from "@latticexyz/store";
 import { StorageAdapterBlock } from "@latticexyz/store-sync";
 import { ZustandStore } from "@latticexyz/store-sync/zustand";
 import { ContractWrite } from "@latticexyz/common";

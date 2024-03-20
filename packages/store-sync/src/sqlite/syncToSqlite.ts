@@ -1,4 +1,4 @@
-import { Store as StoreConfig } from "@latticexyz/store/config/v2";
+import { Store as StoreConfig } from "@latticexyz/store";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { SyncOptions, SyncResult } from "../common";
 import { sqliteStorage } from "./sqliteStorage";

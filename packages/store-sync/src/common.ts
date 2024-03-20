@@ -1,12 +1,14 @@
 import { Address, Block, Hex, Log, PublicClient } from "viem";
-import { StoreEventsAbiItem, StoreEventsAbi, resolveConfig } from "@latticexyz/store";
+import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
+import { resolveConfig } from "@latticexyz/store/internal";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
 import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser/internal";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { flattenSchema } from "./flattenSchema";
-import { Store as StoreConfig, storeToV1 } from "@latticexyz/store/config/v2";
+import { Store as StoreConfig } from "@latticexyz/store";
+import { storeToV1 } from "@latticexyz/store/config/v2";
 
 /** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
 export const storeTables = resolveConfig(storeToV1(storeConfig)).tables;

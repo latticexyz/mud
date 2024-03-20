@@ -1,7 +1,7 @@
 import { PublicClient, encodePacked, size } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
-import { Store as StoreConfig } from "@latticexyz/store/config/v2";
+import { Store as StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { tables } from "./tables";
 import { spliceHex } from "@latticexyz/common";

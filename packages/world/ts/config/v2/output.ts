@@ -1,4 +1,4 @@
-import { Store } from "@latticexyz/store/config/v2";
+import { Store } from "@latticexyz/store";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 
 export type Module = {

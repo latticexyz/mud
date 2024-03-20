@@ -1,7 +1,7 @@
 import path from "path";
 import type { CommandModule } from "yargs";
 import { loadConfig } from "@latticexyz/config/node";
-import { Store as StoreConfig } from "@latticexyz/store/config/v2";
+import { Store as StoreConfig } from "@latticexyz/store";
 import { tablegen } from "@latticexyz/store/codegen";
 import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
 

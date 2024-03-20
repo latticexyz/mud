@@ -1,9 +1,9 @@
 import { StoreApi, UseBoundStore, create } from "zustand";
-import { Table } from "@latticexyz/store/config/v2";
+import { Table } from "@latticexyz/config";
 import { Tables } from "./common";
 import { Hex } from "viem";
 import { StaticPrimitiveType } from "@latticexyz/schema-type/internal";
-import { SchemaToPrimitives } from "@latticexyz/store";
+import { SchemaToPrimitives } from "@latticexyz/store/internal";
 import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
 export type RawTableRecord<table extends Table = Table> = {

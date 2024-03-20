@@ -1,4 +1,4 @@
-import { ResolvedStoreConfig, Tables, resolveConfig } from "@latticexyz/store";
+import { ResolvedStoreConfig, Tables, resolveConfig } from "@latticexyz/store/internal";
 import { SyncOptions, SyncResult, storeTables, worldTables } from "../common";
 import { createStoreSync } from "../createStoreSync";
 import { ZustandStore } from "./createStore";
@@ -6,7 +6,8 @@ import { createStore } from "./createStore";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { Address } from "viem";
 import { SyncStep } from "../SyncStep";
-import { Store as StoreConfig, storeToV1 } from "@latticexyz/store/config/v2";
+import { Store as StoreConfig } from "@latticexyz/store";
+import { storeToV1 } from "@latticexyz/store/config/v2";
 
 type AllTables<config extends StoreConfig, extraTables extends Tables | undefined> = ResolvedStoreConfig<
   storeToV1<config>

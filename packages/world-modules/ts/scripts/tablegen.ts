@@ -1,7 +1,7 @@
 import path from "path";
 import { loadConfig } from "@latticexyz/config/node";
 import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
-import { Store as StoreConfig } from "@latticexyz/store/config/v2";
+import { Store as StoreConfig } from "@latticexyz/store";
 import { tablegen } from "@latticexyz/store/codegen";
 
 const config = (await loadConfig()) as StoreConfig;
