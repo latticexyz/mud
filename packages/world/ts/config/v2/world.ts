@@ -108,3 +108,11 @@ export function defineWorld<const world>(world: validateWorld<world>): resolveWo
   validateWorld(world);
   return resolveWorld(world) as unknown as resolveWorld<world>;
 }
+
+// Temporary external export of defineWorld with namespaces disabled
+export function defineWorldWithoutNamespaces<const world>(
+  world: validateWorld<world> & { namespaces: `Namespaces will be enabled soon` },
+): resolveWorld<world> {
+  validateWorld(world);
+  return resolveWorld(world) as unknown as resolveWorld<world>;
+}
