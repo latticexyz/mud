@@ -473,7 +473,8 @@ function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelega
 function getMessageHash(
   address delegatee,
   ResourceId delegationControlId,
-  bytes memory initCallData
+  bytes memory initCallData,
+  uint256 nonce
 ) pure returns (bytes32);
 ```
 
@@ -1040,6 +1041,12 @@ error World_CallbackNotAllowed(bytes4 functionSelector);
 | Name               | Type     | Description                                       |
 | ------------------ | -------- | ------------------------------------------------- |
 | `functionSelector` | `bytes4` | The function selector of the disallowed callback. |
+
+#### World_InvalidSignature
+
+```solidity
+error World_InvalidSignature();
+```
 
 ## IWorldFactory
 

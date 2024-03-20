@@ -551,7 +551,8 @@ function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelega
 function getMessageHash(
   address delegatee,
   ResourceId delegationControlId,
-  bytes memory initCallData
+  bytes memory initCallData,
+  uint256 nonce
 ) pure returns (bytes32);
 ```
 
