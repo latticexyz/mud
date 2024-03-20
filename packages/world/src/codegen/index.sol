@@ -7,6 +7,7 @@ import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { ResourceAccess } from "./tables/ResourceAccess.sol";
 import { InstalledModules } from "./tables/InstalledModules.sol";
 import { UserDelegationControl } from "./tables/UserDelegationControl.sol";
+import { UserDelegationNonces } from "./tables/UserDelegationNonces.sol";
 import { NamespaceDelegationControl } from "./tables/NamespaceDelegationControl.sol";
 import { Balances } from "./tables/Balances.sol";
 import { Systems } from "./tables/Systems.sol";

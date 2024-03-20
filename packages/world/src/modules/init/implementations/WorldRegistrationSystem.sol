@@ -17,6 +17,7 @@ import { requireInterface } from "../../../requireInterface.sol";
 import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { UserDelegationControl } from "../../../codegen/tables/UserDelegationControl.sol";
+import { UserDelegationNonces } from "../../../codegen/tables/UserDelegationNonces.sol";
 import { NamespaceDelegationControl } from "../../../codegen/tables/NamespaceDelegationControl.sol";
 import { ISystemHook } from "../../../ISystemHook.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";
@@ -35,9 +36,10 @@ import { LimitedCallContext } from "../LimitedCallContext.sol";
 function getMessageHash(
   address delegatee,
   ResourceId delegationControlId,
-  bytes memory initCallData
+  bytes memory initCallData,
+  uint256 nonce
 ) pure returns (bytes32) {
-  return keccak256(abi.encode(delegatee, delegationControlId, initCallData));
+  return keccak256(abi.encode(delegatee, delegationControlId, initCallData, nonce));
 }
 
 function registerDelegationHelper(
@@ -309,8 +311,14 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     bytes32 r,
     bytes32 s
   ) public onlyDelegatecall {
-    bytes32 hash = getMessageHash(delegatee, delegationControlId, initCallData);
-    require(ecrecover(hash, v, r, s) == delegator, "not valid");
+    uint256 nonce = UserDelegationNonces.get(delegator);
+    bytes32 hash = getMessageHash(delegatee, delegationControlId, initCallData, nonce);
+    // If the message was not signed by the delegator or is invalid, revert
+    if (ecrecover(hash, v, r, s) != delegator) {
+      revert World_InvalidSignature();
+    }
+
+    UserDelegationNonces.set(delegator, nonce + 1);
 
     registerDelegationHelper(delegator, delegatee, delegationControlId, initCallData);
   }

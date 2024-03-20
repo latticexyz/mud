@@ -44,6 +44,10 @@ export default mudConfig({
         delegationControlId: "ResourceId",
       },
     },
+    UserDelegationNonces: {
+      keySchema: { delegator: "address" },
+      valueSchema: { nonce: "uint256" },
+    },
     NamespaceDelegationControl: {
       keySchema: {
         namespaceId: "ResourceId",

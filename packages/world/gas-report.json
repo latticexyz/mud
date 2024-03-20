@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12869027
+    "gasUsed": 13238212
   },
   {
     "file": "test/World.t.sol",
@@ -105,13 +105,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterDelegationWithSignature",
     "name": "register an unlimited delegation with signature",
-    "gasUsed": 80986
-  },
-  {
-    "file": "test/World.t.sol",
-    "test": "testRegisterDelegationWithSignature",
-    "name": "call a system via an unlimited delegation",
-    "gasUsed": 40891
+    "gasUsed": 115589
   },
   {
     "file": "test/World.t.sol",

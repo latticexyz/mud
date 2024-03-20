@@ -225,7 +225,7 @@ contract WorldTest is Test, GasReporter {
 
     // Should have registered the core system function selectors
     RegistrationSystem registrationSystem = RegistrationSystem(Systems.getSystem(REGISTRATION_SYSTEM_ID));
-    bytes4[22] memory funcSelectors = [
+    bytes4[23] memory funcSelectors = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
@@ -251,6 +251,7 @@ contract WorldTest is Test, GasReporter {
       registrationSystem.registerFunctionSelector.selector,
       registrationSystem.registerRootFunctionSelector.selector,
       registrationSystem.registerDelegation.selector,
+      registrationSystem.registerDelegationWithSignature.selector,
       registrationSystem.unregisterDelegation.selector,
       registrationSystem.registerNamespaceDelegation.selector,
       registrationSystem.unregisterNamespaceDelegation.selector
@@ -1174,11 +1175,11 @@ contract WorldTest is Test, GasReporter {
     world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
-    // Register a limited delegation
+    // Register a limited delegation using signature
     (address delegator, uint256 delegatorPk) = makeAddrAndKey("delegator");
     address delegatee = address(2);
 
-    bytes32 hash = getMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0));
+    bytes32 hash = getMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), 0);
     (uint8 v, bytes32 r, bytes32 s) = vm.sign(delegatorPk, hash);
 
     startGasReport("register an unlimited delegation with signature");
@@ -1187,13 +1188,40 @@ contract WorldTest is Test, GasReporter {
 
     // Call a system from the delegatee on behalf of the delegator
     vm.prank(delegatee);
-    startGasReport("call a system via an unlimited delegation");
     bytes memory returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
-    endGasReport();
     address returnedAddress = abi.decode(returnData, (address));
 
     // Expect the system to have received the delegator's address
     assertEq(returnedAddress, delegator);
+
+    // Unregister delegation
+    vm.prank(delegator);
+    world.unregisterDelegation(delegatee);
+
+    // Expect a revert when attempting to perform a call via callFrom after a delegation was unregistered
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
+    vm.prank(delegatee);
+    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+
+    // Attempt to register a limited delegation using an old signature
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InvalidSignature.selector));
+    world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, v, r, s);
+
+    // Expect a revert when attempting to perform a call via callFrom after a delegation was unregistered
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
+    vm.prank(delegatee);
+    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+
+    // Register a limited delegation using a new signature
+    hash = getMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), 1);
+    (v, r, s) = vm.sign(delegatorPk, hash);
+
+    world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, v, r, s);
+
+    // Call a system from the delegatee on behalf of the delegator
+    vm.prank(delegatee);
+    returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    returnedAddress = abi.decode(returnData, (address));
   }
 
   function testUnregisterUnlimitedDelegation() public {

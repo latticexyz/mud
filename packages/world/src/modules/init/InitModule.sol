@@ -14,6 +14,7 @@ import { NamespaceOwner } from "../../codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../codegen/tables/ResourceAccess.sol";
 import { InstalledModules } from "../../codegen/tables/InstalledModules.sol";
 import { UserDelegationControl } from "../../codegen/tables/UserDelegationControl.sol";
+import { UserDelegationNonces } from "../../codegen/tables/UserDelegationNonces.sol";
 import { NamespaceDelegationControl } from "../../codegen/tables/NamespaceDelegationControl.sol";
 
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
@@ -86,6 +87,7 @@ contract InitModule is Module {
     Balances.register();
     InstalledModules.register();
     UserDelegationControl.register();
+    UserDelegationNonces.register();
     NamespaceDelegationControl.register();
     ResourceAccess.register();
     Systems.register();
