@@ -31,8 +31,6 @@ export type tableToV1<table extends Table> = {
   keySchema: schemaToV1<getKeySchema<table>>;
   valueSchema: schemaToV1<getValueSchema<table>>;
   offchainOnly: Table extends table ? boolean : table["type"] extends "table" ? false : true;
-  tableId: table["tableId"];
-  namespace: table["namespace"];
   name: table["name"];
 };
 
@@ -50,8 +48,6 @@ export function storeToV1<store>(store: conform<store, Store>): storeToV1<store>
     keySchema: mapObject(getKeySchema(table), (field) => field.internalType),
     valueSchema: mapObject(getValueSchema(table), (field) => field.internalType),
     offchainOnly: table.type === "offchainTable",
-    tableId: table.tableId,
-    namespace: table.namespace,
     name: table.name,
   }));
 
