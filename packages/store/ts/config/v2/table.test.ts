@@ -1,9 +1,10 @@
 import { attest } from "@arktype/attest";
 import { describe, it } from "vitest";
 import { getStaticAbiTypeKeys, AbiTypeScope, extendScope } from "./scope";
-import { validateKeys, defineTable, getKeySchema, getValueSchema } from "./table";
+import { validateKeys, defineTable } from "./table";
 import { TABLE_CODEGEN_DEFAULTS } from "./defaults";
 import { resourceToHex } from "@latticexyz/common";
+import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
 describe("validateKeys", () => {
   it("should return a tuple of valid keys", () => {
@@ -186,6 +187,7 @@ describe("resolveTable", () => {
   });
 });
 
+// TODO: move tests to protocol parser after we add arktype
 describe("getKeySchema", () => {
   it("should return the fields of the schema that are part of the key", () => {
     const scope = extendScope(AbiTypeScope, { Static: "address", Dynamic: "string" });
@@ -209,6 +211,7 @@ describe("getKeySchema", () => {
   });
 });
 
+// TODO: move tests to protocol parser after we add arktype
 describe("getValueSchema", () => {
   it("should return the fields of the schema that are not part of the key", () => {
     const scope = extendScope(AbiTypeScope, { Static: "address", Dynamic: "string" });
