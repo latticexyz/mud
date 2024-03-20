@@ -6,7 +6,7 @@ import { UnionPick } from "@latticexyz/common/type-utils";
 import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser/internal";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
-import { flattenSchema } from "./flattenSchema";
+import { getKeySchema, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser";
 
 export const storeTables = storeConfig.tables;
 export const worldTables = worldConfig.tables;
@@ -124,7 +124,6 @@ export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
 export const schemasTableId = storeTables.store__Tables.tableId;
 export const schemasTable = {
   ...storeTables.store__Tables,
-  // TODO: remove once we've got everything using the new Table shape
-  keySchema: flattenSchema(storeTables.store__Tables.keySchema),
-  valueSchema: flattenSchema(storeTables.store__Tables.valueSchema),
+  keySchema: getSchemaTypes(getKeySchema(storeTables.store__Tables)),
+  valueSchema: getSchemaTypes(getValueSchema(storeTables.store__Tables)),
 };

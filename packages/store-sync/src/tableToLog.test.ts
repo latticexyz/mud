@@ -2,7 +2,7 @@
 import { describe, it, expect } from "vitest";
 import { tableToLog } from "./tableToLog";
 import { storeTables } from "./common";
-import { flattenSchema } from "./flattenSchema";
+import { getKeySchema, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser";
 
 describe("tableToLog", () => {
   it("should convert a table object to table registration log", async () => {
@@ -12,8 +12,8 @@ describe("tableToLog", () => {
         tableId: storeTables.store__Tables.tableId,
         namespace: storeTables.store__Tables.namespace,
         name: storeTables.store__Tables.name,
-        keySchema: flattenSchema(storeTables.store__Tables.keySchema),
-        valueSchema: flattenSchema(storeTables.store__Tables.valueSchema),
+        keySchema: getSchemaTypes(getKeySchema(storeTables.store__Tables)),
+        valueSchema: getSchemaTypes(getValueSchema(storeTables.store__Tables)),
       }),
     ).toMatchInlineSnapshot(`
       {
