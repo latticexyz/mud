@@ -6,7 +6,8 @@ import IModuleAbi from "@latticexyz/world-modules/out/IModule.sol/IModule.abi.js
 import { Tables, configToTables } from "./configToTables";
 import { helloStoreEvent } from "@latticexyz/store";
 import { StoreConfig } from "@latticexyz/store/internal";
-import { WorldConfig, helloWorldEvent } from "@latticexyz/world";
+import { helloWorldEvent } from "@latticexyz/world";
+import { WorldConfig } from "@latticexyz/world/internal";
 import { storeToV1 } from "@latticexyz/store/config/v2";
 import { worldToV1 } from "@latticexyz/world/config/v2";
 
