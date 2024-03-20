@@ -185,6 +185,16 @@ describe("resolveTable", () => {
       .throws('Invalid key. Expected `("id" | "age")[]`, received `["NotAKey"]`')
       .type.errors(`Type '"NotAKey"' is not assignable to type '"id" | "age"'`);
   });
+
+  it("should throw if no key is provided", () => {
+    attest(() =>
+      defineTable({
+        schema: { id: "address" },
+      }),
+    )
+      .throws('Invalid key. Expected `("id")[]`, received `undefined')
+      .type.errors("`key` is missing from input");
+  });
 });
 
 // TODO: move tests to protocol parser after we add arktype
