@@ -34,7 +34,7 @@ import { requireNamespace } from "../../../requireNamespace.sol";
 import { requireValidNamespace } from "../../../requireValidNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
-import { getMessageHash } from "./permit.sol";
+import { getSignedMessageHash } from "./permit.sol";
 
 function registerDelegationHelper(
   address delegator,
@@ -304,7 +304,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     bytes memory signature
   ) public onlyDelegatecall {
     uint256 nonce = UserDelegationNonces.get(delegator);
-    bytes32 hash = getMessageHash(delegatee, delegationControlId, initCallData, nonce);
+    bytes32 hash = getSignedMessageHash(delegatee, delegationControlId, initCallData, nonce);
 
     // If the message was not signed by the delegator or is invalid, revert
     address signer = ECDSA.recover(hash, signature);

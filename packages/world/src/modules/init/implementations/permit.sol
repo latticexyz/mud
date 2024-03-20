@@ -7,7 +7,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 // Inspired by ERC20Permit https://eips.ethereum.org/EIPS/eip-2612
 
-function getMessageHash(
+function getSignedMessageHash(
   address delegatee,
   ResourceId delegationControlId,
   bytes memory initCallData,

@@ -58,7 +58,7 @@ import { DelegationControlMock } from "./DelegationControlMock.sol";
 import { createWorld } from "./createWorld.sol";
 import { createInitModule } from "./createInitModule.sol";
 
-import { getMessageHash } from "../src/modules/init/implementations/WorldRegistrationSystem.sol";
+import { getSignedMessageHash } from "../src/modules/init/implementations/permit.sol";
 
 interface IWorldTestSystem {
   function testNamespace__err(string memory input) external pure;
@@ -1179,7 +1179,7 @@ contract WorldTest is Test, GasReporter {
     (address delegator, uint256 delegatorPk) = makeAddrAndKey("delegator");
     address delegatee = address(2);
 
-    bytes32 hash = getMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), 0);
+    bytes32 hash = getSignedMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), 0);
     (uint8 v, bytes32 r, bytes32 s) = vm.sign(delegatorPk, hash);
     bytes memory signature = abi.encodePacked(r, s, v);
 
@@ -1214,7 +1214,7 @@ contract WorldTest is Test, GasReporter {
     world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Register a limited delegation using a new signature
-    hash = getMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), 1);
+    hash = getSignedMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), 1);
     (v, r, s) = vm.sign(delegatorPk, hash);
     signature = abi.encodePacked(r, s, v);
 

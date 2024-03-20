@@ -3,7 +3,7 @@ import { useComponentValue, useEntityQuery } from "@latticexyz/react";
 import { Has, getComponentValueStrict } from "@latticexyz/recs";
 import { decodeEntity, singletonEntity } from "@latticexyz/store-sync/recs";
 import { useMUD } from "./MUDContext";
-import { encodePacked, Hex, keccak256, verifyMessage } from "viem";
+import { encodePacked, Hex, keccak256 } from "viem";
 import { resourceToHex } from "@latticexyz/common";
 
 const ITEMS = ["cup", "spoon", "fork"];
@@ -50,26 +50,19 @@ export const App = () => {
           const initCallData = "0x00";
           const nonce = 0n;
 
-          const message = getMessageHash(delegatee, delegationControlId, initCallData, nonce);
+          const raw = getMessageHash(delegatee, delegationControlId, initCallData, nonce);
 
           const signature = await walletClient.signMessage({
-            message,
+            message: { raw },
           });
 
-          const valid = await verifyMessage({
-            address: address,
-            message,
+          await worldContract.write.registerDelegationWithSignature([
+            delegatee,
+            delegationControlId,
+            initCallData,
+            address,
             signature,
-          });
-          console.log(valid);
-
-          // await worldContract.write.registerDelegationWithSignature([
-          //   delegatee,
-          //   delegationControlId,
-          //   initCallData,
-          //   address,
-          //   signature,
-          // ]);
+          ]);
         }}
       >
         Sign and register delegation
