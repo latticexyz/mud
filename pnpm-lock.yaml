@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      eslint-config-mdcs:
-        specifier: ^5.0.0
-        version: 5.0.0
     devDependencies:
       '@arktype/attest':
         specifier: 0.6.4
@@ -5614,10 +5610,6 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
     dev: true
-
-  /eslint-config-mdcs@5.0.0:
-    resolution: {integrity: sha512-d4lzeT/sQ3TkI69hd+N/dtQ15g3GrbIboTfCAw6FaDQTLjWK2O3+dNfOOfkAC5TlwyU9BxztR1TE+x8iSzyuPw==}
-    dev: false
 
   /eslint-plugin-react-hooks@4.6.0(eslint@8.57.0):
     resolution: {integrity: sha512-oFc7Itz9Qxh2x4gNHStv3BqJq54ExXmfC+a1NjAta66IAN87Wu0R/QArgIS9qKzX3dXKPI9H5crl9QchNMY9+g==}

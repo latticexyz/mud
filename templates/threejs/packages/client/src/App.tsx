@@ -1,4 +1,7 @@
-import React from "react";
+/* eslint-disable react/no-unknown-property */
+// Workaround react-three-fiber types by disabling unknown properties:
+// https://github.com/pmndrs/react-three-fiber/discussions/2487
+
 import { Canvas, Color, ThreeElements, useThree } from "@react-three/fiber";
 import { useComponentValue, useEntityQuery } from "@latticexyz/react";
 import { getComponentValueStrict, Has } from "@latticexyz/recs";
@@ -65,12 +68,10 @@ const Player = (props: ThreeElements["mesh"] & { color: Color }) => {
   return (
     <>
       <mesh {...props}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <boxGeometry args={[1, 2, 1]} />
         <meshStandardMaterial color={props.color} />
       </mesh>
       <mesh {...props}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
         <boxGeometry args={[1, 2, 1]} />
         <meshStandardMaterial color={props.color} />
       </mesh>
