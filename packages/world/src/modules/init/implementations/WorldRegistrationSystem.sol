@@ -40,6 +40,31 @@ function getMessageHash(
   return keccak256(abi.encode(delegatee, delegationControlId, initCallData));
 }
 
+function registerDelegationHelper(
+  address delegator,
+  address delegatee,
+  ResourceId delegationControlId,
+  bytes memory initCallData
+) {
+  // Store the delegation control contract address
+  UserDelegationControl._set({ delegator: delegator, delegatee: delegatee, delegationControlId: delegationControlId });
+
+  // If the delegation is limited...
+  if (Delegation.isLimited(delegationControlId)) {
+    // Require the delegationControl contract to implement the IDelegationControl interface
+    address delegationControl = Systems._getSystem(delegationControlId);
+    requireInterface(delegationControl, type(IDelegationControl).interfaceId);
+
+    // Call the delegation control contract's init function
+    SystemCall.callWithHooksOrRevert({
+      caller: delegator,
+      systemId: delegationControlId,
+      callData: initCallData,
+      value: 0
+    });
+  }
+}
+
 /**
  * @title WorldRegistrationSystem
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
@@ -272,27 +297,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public onlyDelegatecall {
-    // Store the delegation control contract address
-    UserDelegationControl._set({
-      delegator: _msgSender(),
-      delegatee: delegatee,
-      delegationControlId: delegationControlId
-    });
-
-    // If the delegation is limited...
-    if (Delegation.isLimited(delegationControlId)) {
-      // Require the delegationControl contract to implement the IDelegationControl interface
-      address delegationControl = Systems._getSystem(delegationControlId);
-      requireInterface(delegationControl, type(IDelegationControl).interfaceId);
-
-      // Call the delegation control contract's init function
-      SystemCall.callWithHooksOrRevert({
-        caller: _msgSender(),
-        systemId: delegationControlId,
-        callData: initCallData,
-        value: 0
-      });
-    }
+    registerDelegationHelper(_msgSender(), delegatee, delegationControlId, initCallData);
   }
 
   function registerDelegationWithSignature(
@@ -307,27 +312,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     bytes32 hash = getMessageHash(delegatee, delegationControlId, initCallData);
     require(ecrecover(hash, v, r, s) == delegator, "not valid");
 
-    // Store the delegation control contract address
-    UserDelegationControl._set({
-      delegator: delegator,
-      delegatee: delegatee,
-      delegationControlId: delegationControlId
-    });
-
-    // If the delegation is limited...
-    if (Delegation.isLimited(delegationControlId)) {
-      // Require the delegationControl contract to implement the IDelegationControl interface
-      address delegationControl = Systems._getSystem(delegationControlId);
-      requireInterface(delegationControl, type(IDelegationControl).interfaceId);
-
-      // Call the delegation control contract's init function
-      SystemCall.callWithHooksOrRevert({
-        caller: delegator,
-        systemId: delegationControlId,
-        callData: initCallData,
-        value: 0
-      });
-    }
+    registerDelegationHelper(delegator, delegatee, delegationControlId, initCallData);
   }
 
   /**
