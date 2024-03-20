@@ -1,4 +1,4 @@
-import { ErrorMessage, conform, narrow } from "@arktype/util";
+import { ErrorMessage, conform, narrow, requiredKeyOf } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { get, hasOwnKey } from "./generics";
@@ -48,14 +48,21 @@ export type validateTable<
   scope extends Scope = AbiTypeScope,
   options extends ValidateTableOptions = { inStoreContext: false },
 > = {
-  [key in keyof input]: key extends "key"
-    ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput>, scope>, input[key]>
+  [key in
+    | keyof input
+    | Exclude<
+        requiredKeyOf<TableInput>,
+        options["inStoreContext"] extends true ? "name" | "namespace" : ""
+      >]: key extends "key"
+    ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput>, scope>, get<input, key>>
     : key extends "schema"
-      ? validateSchema<input[key], scope>
+      ? validateSchema<get<input, key>, scope>
       : key extends "name" | "namespace"
         ? options["inStoreContext"] extends true
           ? ErrorMessage<"Overrides of `name` and `namespace` are not allowed for tables in a store config">
-          : narrow<input[key]>
+          : key extends keyof input
+            ? narrow<input[key]>
+            : never
         : key extends keyof TableInput
           ? TableInput[key]
           : ErrorMessage<`Key \`${key & string}\` does not exist in TableInput`>;

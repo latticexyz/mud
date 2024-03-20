@@ -188,12 +188,14 @@ describe("resolveTable", () => {
 
   it("should throw if no key is provided", () => {
     attest(() =>
+      // @ts-expect-error Property 'key' is missing in type
       defineTable({
         schema: { id: "address" },
+        name: "",
       }),
     )
       .throws('Invalid key. Expected `("id")[]`, received `undefined')
-      .type.errors("`key` is missing from input");
+      .type.errors("Property 'key' is missing in type");
   });
 });
 
