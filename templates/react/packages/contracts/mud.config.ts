@@ -2,11 +2,14 @@ import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
   tables: {
-    Counter: {
+    Tasks: {
       schema: {
-        value: "uint32",
+        id: "bytes32",
+        createdAt: "uint256",
+        completedAt: "uint256",
+        description: "string",
       },
-      key: [],
+      key: ["id"],
     },
   },
 });
