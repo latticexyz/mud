@@ -20,6 +20,7 @@
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
     "contracts": "workspace:*",
+    "permissionless": "^0.1.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rxjs": "7.5.5",

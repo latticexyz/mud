@@ -3,17 +3,7 @@
  * (https://viem.sh/docs/getting-started.html).
  * This line imports the functions we need from it.
  */
-import {
-  createPublicClient,
-  fallback,
-  webSocket,
-  http,
-  createWalletClient,
-  Hex,
-  parseEther,
-  ClientConfig,
-  getContract,
-} from "viem";
+import { createPublicClient, fallback, webSocket, http, Hex, parseEther, ClientConfig, getContract } from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -31,6 +21,8 @@ import { Subject, share } from "rxjs";
  * for the source of this information.
  */
 import mudConfig from "contracts/mud.config";
+import { createSmartAccountClient } from "permissionless";
+import { signerToSimpleSmartAccount } from "permissionless/accounts";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -60,9 +52,15 @@ export async function setupNetwork() {
    * (see https://viem.sh/docs/clients/wallet.html).
    */
   const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
-  const burnerWalletClient = createWalletClient({
-    ...clientOptions,
-    account: burnerAccount,
+  const burnerSmartAccount = await signerToSimpleSmartAccount(publicClient, {
+    entryPoint: "0x0000000071727De22E5E9d8BAf0edAc6f37da032",
+    factoryAddress: "0x91E60e0613810449d098b0b5Ec8b51A0FE8c8985",
+    signer: burnerAccount,
+  });
+  const burnerSmartAccountClient = createSmartAccountClient({
+    chain: clientOptions.chain,
+    bundlerTransport: http("http://127.0.0.1:4337"),
+    account: burnerSmartAccount,
   })
     .extend(transactionQueue())
     .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
@@ -73,7 +71,7 @@ export async function setupNetwork() {
   const worldContract = getContract({
     address: networkConfig.worldAddress as Hex,
     abi: IWorldAbi,
-    client: { public: publicClient, wallet: burnerWalletClient },
+    client: { public: publicClient, wallet: burnerSmartAccountClient },
   });
 
   /*
@@ -121,7 +119,7 @@ export async function setupNetwork() {
     tables,
     useStore,
     publicClient,
-    walletClient: burnerWalletClient,
+    walletClient: burnerSmartAccountClient,
     latestBlock$,
     storedBlockLogs$,
     waitForTransaction,
