@@ -12,7 +12,7 @@ export const TABLE_CODEGEN_DEFAULTS = {
 } as const;
 
 export const TABLE_DEPLOY_DEFAULTS = {
-  disable: false,
+  disabled: false,
 } as const;
 
 export const TABLE_DEFAULTS = {

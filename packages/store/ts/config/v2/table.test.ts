@@ -130,10 +130,10 @@ describe("resolveTable", () => {
       schema: { id: "address" },
       key: ["id"],
       name: "",
-      deploy: { disable: true },
+      deploy: { disabled: true },
     });
 
-    const expected = { disable: true } as const;
+    const expected = { disabled: true } as const;
 
     attest<typeof expected>(table.deploy).equals(expected);
   });

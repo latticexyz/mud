@@ -18,7 +18,7 @@ export type TableCodegen = {
 };
 
 export type TableDeploy = {
-  readonly disable: boolean;
+  readonly disabled: boolean;
 };
 
 export type Table = BaseTable & {
