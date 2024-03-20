@@ -58,6 +58,8 @@ import { DelegationControlMock } from "./DelegationControlMock.sol";
 import { createWorld } from "./createWorld.sol";
 import { createInitModule } from "./createInitModule.sol";
 
+import { getMessageHash } from "../src/modules/init/implementations/WorldRegistrationSystem.sol";
+
 interface IWorldTestSystem {
   function testNamespace__err(string memory input) external pure;
 }
@@ -1172,18 +1174,26 @@ contract WorldTest is Test, GasReporter {
     world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
-    uint256 privateKey = 1;
-
     // Register a limited delegation
-    address delegator = vm.addr(privateKey);
+    (address delegator, uint256 delegatorPk) = makeAddrAndKey("delegator");
     address delegatee = address(2);
 
-    bytes32 digest = keccak256("");
-    (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, digest);
-    bytes memory signature = abi.encodePacked(r, s, v);
+    bytes32 hash = getMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0));
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(delegatorPk, hash);
 
-    vm.prank(delegator);
-    world.registerDelegationWithSignature(signature);
+    startGasReport("register an unlimited delegation with signature");
+    world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, v, r, s);
+    endGasReport();
+
+    // Call a system from the delegatee on behalf of the delegator
+    vm.prank(delegatee);
+    startGasReport("call a system via an unlimited delegation");
+    bytes memory returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    endGasReport();
+    address returnedAddress = abi.decode(returnData, (address));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedAddress, delegator);
   }
 
   function testUnregisterUnlimitedDelegation() public {
