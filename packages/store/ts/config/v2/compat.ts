@@ -1,7 +1,7 @@
 import { conform } from "@arktype/util";
 import { Schema, Store, Table } from "./output";
 import { mapObject } from "@latticexyz/common/utils";
-import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser";
+import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
 export type storeToV1<store> = store extends Store
   ? {

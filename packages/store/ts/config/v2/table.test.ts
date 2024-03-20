@@ -4,7 +4,7 @@ import { getStaticAbiTypeKeys, AbiTypeScope, extendScope } from "./scope";
 import { validateKeys, defineTable } from "./table";
 import { TABLE_CODEGEN_DEFAULTS } from "./defaults";
 import { resourceToHex } from "@latticexyz/common";
-import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser";
+import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
 describe("validateKeys", () => {
   it("should return a tuple of valid keys", () => {
