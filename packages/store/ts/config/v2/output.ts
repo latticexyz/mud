@@ -11,21 +11,26 @@ export type Enums = {
 };
 
 export type TableCodegen = {
-  readonly directory: string;
+  readonly outputDirectory: string;
   readonly tableIdArgument: boolean;
   readonly storeArgument: boolean;
   readonly dataStruct: boolean;
 };
 
+export type TableDeploy = {
+  readonly disabled: boolean;
+};
+
 export type Table = BaseTable & {
   readonly codegen: TableCodegen;
+  readonly deploy: TableDeploy;
 };
 
 export type Codegen = {
   readonly storeImportPath: string;
   readonly userTypesFilename: string;
-  readonly codegenDirectory: string;
-  readonly codegenIndexFilename: string;
+  readonly outputDirectory: string;
+  readonly indexFilename: string;
 };
 
 export type Store = {

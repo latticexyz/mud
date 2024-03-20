@@ -1,14 +1,18 @@
 export const CODEGEN_DEFAULTS = {
   storeImportPath: "@latticexyz/store/src/",
   userTypesFilename: "common.sol",
-  codegenDirectory: "codegen",
-  codegenIndexFilename: "index.sol",
+  outputDirectory: "codegen",
+  indexFilename: "index.sol",
 } as const;
 
 export const TABLE_CODEGEN_DEFAULTS = {
-  directory: "tables",
+  outputDirectory: "tables",
   tableIdArgument: false,
   storeArgument: false,
+} as const;
+
+export const TABLE_DEPLOY_DEFAULTS = {
+  disabled: false,
 } as const;
 
 export const TABLE_DEFAULTS = {

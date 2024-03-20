@@ -2,7 +2,7 @@ import { attest } from "@arktype/attest";
 import { describe, it } from "vitest";
 import { getStaticAbiTypeKeys, AbiTypeScope, extendScope } from "./scope";
 import { validateKeys, defineTable } from "./table";
-import { TABLE_CODEGEN_DEFAULTS } from "./defaults";
+import { TABLE_CODEGEN_DEFAULTS, TABLE_DEPLOY_DEFAULTS } from "./defaults";
 import { resourceToHex } from "@latticexyz/common";
 import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
@@ -65,6 +65,7 @@ describe("resolveTable", () => {
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
       type: "table",
+      deploy: TABLE_DEPLOY_DEFAULTS,
     } as const;
 
     attest<typeof expected>(table).equals(expected);
@@ -88,6 +89,7 @@ describe("resolveTable", () => {
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
       type: "table",
+      deploy: TABLE_DEPLOY_DEFAULTS,
     } as const;
 
     attest<typeof expected>(table).equals(expected);
@@ -117,9 +119,23 @@ describe("resolveTable", () => {
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
       type: "table",
+      deploy: TABLE_DEPLOY_DEFAULTS,
     } as const;
 
     attest<typeof expected>(table).equals(expected);
+  });
+
+  it("should pass through deploy config", () => {
+    const table = defineTable({
+      schema: { id: "address" },
+      key: ["id"],
+      name: "",
+      deploy: { disabled: true },
+    });
+
+    const expected = { disabled: true } as const;
+
+    attest<typeof expected>(table.deploy).equals(expected);
   });
 
   it("should throw if the provided key is a dynamic ABI type", () => {

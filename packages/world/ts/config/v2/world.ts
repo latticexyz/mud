@@ -19,7 +19,7 @@ import { Tables } from "@latticexyz/store";
 import { resolveSystems } from "./systems";
 import { resolveNamespacedTables, validateNamespaces } from "./namespaces";
 import { resolveCodegen } from "./codegen";
-import { resolveDeployment } from "./deployment";
+import { resolveDeploy } from "./deploy";
 
 export type validateWorld<world> = {
   readonly [key in keyof world]: key extends "tables"
@@ -58,8 +58,8 @@ export type resolveWorld<world> = evaluate<
         {
           [key in keyof world]: key extends "systems"
             ? resolveSystems<world[key] & SystemsInput>
-            : key extends "deployment"
-              ? resolveDeployment<world[key]>
+            : key extends "deploy"
+              ? resolveDeploy<world[key]>
               : key extends "codegen"
                 ? resolveCodegen<world[key]>
                 : world[key];
@@ -95,7 +95,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
       ...resolvedStore,
       tables: { ...resolvedStore.tables, ...resolvedNamespacedTables },
       codegen: mergeIfUndefined(resolvedStore.codegen, resolveCodegen(world.codegen)),
-      deployment: resolveDeployment(world.deployment),
+      deploy: resolveDeploy(world.deploy),
       systems: resolveSystems(world.systems ?? CONFIG_DEFAULTS.systems),
       excludeSystems: get(world, "excludeSystems"),
       modules: world.modules,
