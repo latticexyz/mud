@@ -5,7 +5,7 @@ import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/intern
 
 export type storeToV1<store> = store extends Store
   ? {
-      namespace: store["namespace"];
+      namespace: store["namespace"] extends "" ? "" : string;
       enums: { [key in keyof store["enums"]]: string[] };
       userTypes: {
         [key in keyof store["userTypes"]]: {
@@ -17,7 +17,9 @@ export type storeToV1<store> = store extends Store
       userTypesFilename: store["codegen"]["userTypesFilename"];
       codegenDirectory: store["codegen"]["codegenDirectory"];
       codegenIndexFilename: store["codegen"]["codegenIndexFilename"];
-      tables: { [key in keyof store["tables"]]: tableToV1<store["tables"][key]> };
+      tables: {
+        [key in keyof store["tables"] as store["tables"][key]["name"]]: tableToV1<store["tables"][key]>;
+      };
     }
   : never;
 
@@ -40,16 +42,23 @@ export function storeToV1<store>(store: conform<store, Store>): storeToV1<store>
     filePath,
   }));
 
-  const resolvedTables = mapObject(store.tables, (table) => ({
-    directory: table.codegen.directory,
-    dataStruct: table.codegen.dataStruct,
-    tableIdArgument: table.codegen.tableIdArgument,
-    storeArgument: table.codegen.storeArgument,
-    keySchema: mapObject(getKeySchema(table), (field) => field.internalType),
-    valueSchema: mapObject(getValueSchema(table), (field) => field.internalType),
-    offchainOnly: table.type === "offchainTable",
-    name: table.name,
-  }));
+  const resolvedTables = Object.fromEntries(
+    Object.values(store.tables).map((table) => {
+      return [
+        table.name,
+        {
+          directory: table.codegen.directory,
+          dataStruct: table.codegen.dataStruct,
+          tableIdArgument: table.codegen.tableIdArgument,
+          storeArgument: table.codegen.storeArgument,
+          keySchema: mapObject(getKeySchema(table), (field) => field.internalType),
+          valueSchema: mapObject(getValueSchema(table), (field) => field.internalType),
+          offchainOnly: table.type === "offchainTable",
+          name: table.name,
+        },
+      ];
+    }),
+  );
 
   return {
     namespace: store.namespace,
