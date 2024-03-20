@@ -3,9 +3,8 @@ import { anvil, getScriptDirectory, getSrcDirectory } from "@latticexyz/common/f
 import chalk from "chalk";
 import chokidar from "chokidar";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
-import { StoreConfig } from "@latticexyz/store";
 import path from "path";
-import { WorldConfig } from "@latticexyz/world";
+import { World as WorldConfig } from "@latticexyz/world/config/v2";
 import { homedir } from "os";
 import { rmSync } from "fs";
 import { deployOptions, runDeploy } from "../runDeploy";
@@ -34,7 +33,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
     const configPath = opts.configPath ?? (await resolveConfigPath(opts.configPath));
     const srcDir = await getSrcDirectory();
     const scriptDir = await getScriptDirectory();
-    const initialConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
+    const initialConfig = (await loadConfig(configPath)) as WorldConfig;
 
     // Start an anvil instance in the background if no RPC url is provided
     if (!opts.rpc) {
@@ -61,7 +60,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
       }
       if (updatePath.includes(srcDir) || updatePath.includes(scriptDir)) {
         // Ignore changes to codegen files to avoid an infinite loop
-        if (!updatePath.includes(initialConfig.codegenDirectory)) {
+        if (!updatePath.includes(initialConfig.codegen.codegenDirectory)) {
           console.log(chalk.blue("Contracts changed, queuing deploy…"));
           lastChange$.next(Date.now());
         }
