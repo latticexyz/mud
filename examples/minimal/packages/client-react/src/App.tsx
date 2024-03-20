@@ -3,14 +3,22 @@ import { useComponentValue, useEntityQuery } from "@latticexyz/react";
 import { Has, getComponentValueStrict } from "@latticexyz/recs";
 import { decodeEntity, singletonEntity } from "@latticexyz/store-sync/recs";
 import { useMUD } from "./MUDContext";
+import { encodePacked, Hex, keccak256, verifyMessage } from "viem";
+import { resourceToHex } from "@latticexyz/common";
 
 const ITEMS = ["cup", "spoon", "fork"];
 const VARIANTS = ["yellow", "green", "red"];
 
+function getMessageHash(delegatee: Hex, delegationControlId: Hex, initCallData: Hex, nonce: bigint) {
+  return keccak256(
+    encodePacked(["address", "bytes32", "bytes", "uint256"], [delegatee, delegationControlId, initCallData, nonce]),
+  );
+}
+
 export const App = () => {
   const {
     components: { CounterTable, Inventory, MessageTable },
-    network: { worldContract, waitForTransaction },
+    network: { walletClient, worldContract, waitForTransaction },
   } = useMUD();
 
   const counter = useComponentValue(CounterTable, singletonEntity);
@@ -32,6 +40,40 @@ export const App = () => {
       <div>
         Counter: <span>{counter?.value ?? "??"}</span>
       </div>
+      <button
+        type="button"
+        onClick={async () => {
+          const { address } = walletClient.account;
+
+          const delegatee = "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377";
+          const delegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
+          const initCallData = "0x00";
+          const nonce = 0n;
+
+          const message = getMessageHash(delegatee, delegationControlId, initCallData, nonce);
+
+          const signature = await walletClient.signMessage({
+            message,
+          });
+
+          const valid = await verifyMessage({
+            address: address,
+            message,
+            signature,
+          });
+          console.log(valid);
+
+          // await worldContract.write.registerDelegationWithSignature([
+          //   delegatee,
+          //   delegationControlId,
+          //   initCallData,
+          //   address,
+          //   signature,
+          // ]);
+        }}
+      >
+        Sign and register delegation
+      </button>
       <button
         type="button"
         onClick={async () => {
