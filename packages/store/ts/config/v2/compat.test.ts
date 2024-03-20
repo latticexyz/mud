@@ -14,6 +14,7 @@ describe("configToV1", () => {
 
   it("should transform a v2 store config output to the v1 config output", () => {
     const configV1 = mudConfig({
+      namespace: "Custom",
       enums: {
         TerrainType: ["None", "Ocean", "Grassland", "Desert"],
       },
@@ -54,6 +55,7 @@ describe("configToV1", () => {
     }) satisfies StoreConfigV1;
 
     const configV2 = defineStore({
+      namespace: "Custom",
       enums: {
         TerrainType: ["None", "Ocean", "Grassland", "Desert"],
       },
