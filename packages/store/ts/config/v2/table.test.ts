@@ -197,6 +197,31 @@ describe("resolveTable", () => {
       .throws('Invalid key. Expected `("id")[]`, received `undefined')
       .type.errors("Property 'key' is missing in type");
   });
+
+  it("should throw if a string is provided as key", () => {
+    attest(() =>
+      defineTable({
+        schema: { id: "address" },
+        // @ts-expect-error Type 'string' is not assignable to type 'string[]'
+        key: "",
+        name: "",
+      }),
+    )
+      .throws('Invalid key. Expected `("id")[]`, received ``')
+      .type.errors("Type 'string' is not assignable to type 'string[]'");
+  });
+
+  it("should throw if an unknown key is provided", () => {
+    attest(() =>
+      defineTable({
+        schema: { id: "address" },
+        key: ["id"],
+        name: "",
+        // @ts-expect-error Key `keySchema` does not exist in TableInput
+        keySchema: { id: "address" },
+      }),
+    ).type.errors("Key `keySchema` does not exist in TableInput ");
+  });
 });
 
 // TODO: move tests to protocol parser after we add arktype

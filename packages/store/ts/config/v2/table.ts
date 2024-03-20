@@ -37,9 +37,11 @@ export function isValidPrimaryKey<schema extends SchemaInput, scope extends Scop
   );
 }
 
-export type validateKeys<validKeys extends PropertyKey, keys> = {
-  [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
-};
+export type validateKeys<validKeys extends PropertyKey, keys> = keys extends string[]
+  ? {
+      [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
+    }
+  : string[];
 
 export type ValidateTableOptions = { inStoreContext: boolean };
 
@@ -89,7 +91,7 @@ export function validateTable<input, scope extends Scope = AbiTypeScope>(
         .join(" | ")})[]\`, received \`${
         hasOwnKey(input, "key") && Array.isArray(input.key)
           ? `[${input.key.map((item) => `"${item}"`).join(", ")}]`
-          : "undefined"
+          : String(get(input, "key"))
       }\``,
     );
   }
