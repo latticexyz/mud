@@ -29,7 +29,7 @@ export type System = {
 
 export type Systems = { readonly [key: string]: System };
 
-export type Deployment = {
+export type Deploy = {
   /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed */
   readonly customWorldContract: string | undefined;
   /**
@@ -58,8 +58,8 @@ export type World = Store & {
   readonly excludeSystems: readonly string[];
   /** Modules to in the World */
   readonly modules: readonly Module[];
-  /** Deployment config */
-  readonly deployment: Deployment;
+  /** Deploy config */
+  readonly deploy: Deploy;
   /** Codegen config */
   readonly codegen: Codegen;
 };

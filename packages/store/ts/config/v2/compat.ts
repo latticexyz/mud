@@ -15,18 +15,19 @@ export type storeToV1<store> = store extends Store
       };
       storeImportPath: store["codegen"]["storeImportPath"];
       userTypesFilename: store["codegen"]["userTypesFilename"];
-      codegenDirectory: store["codegen"]["codegenDirectory"];
-      codegenIndexFilename: store["codegen"]["codegenIndexFilename"];
+      codegenDirectory: store["codegen"]["outputDirectory"];
+      codegenIndexFilename: store["codegen"]["indexFilename"];
       tables: {
         [key in keyof store["tables"] as store["tables"][key]["name"]]: tableToV1<store["tables"][key]>;
       };
+      v2: store;
     }
   : never;
 
 type schemaToV1<schema extends Schema> = { [key in keyof schema]: schema[key]["internalType"] };
 
 export type tableToV1<table extends Table> = {
-  directory: table["codegen"]["directory"];
+  directory: table["codegen"]["outputDirectory"];
   dataStruct: table["codegen"]["dataStruct"];
   tableIdArgument: table["codegen"]["tableIdArgument"];
   storeArgument: table["codegen"]["storeArgument"];
@@ -47,7 +48,7 @@ export function storeToV1<store>(store: conform<store, Store>): storeToV1<store>
       return [
         table.name,
         {
-          directory: table.codegen.directory,
+          directory: table.codegen.outputDirectory,
           dataStruct: table.codegen.dataStruct,
           tableIdArgument: table.codegen.tableIdArgument,
           storeArgument: table.codegen.storeArgument,
@@ -66,8 +67,9 @@ export function storeToV1<store>(store: conform<store, Store>): storeToV1<store>
     userTypes: resolvedUserTypes,
     storeImportPath: store.codegen.storeImportPath,
     userTypesFilename: store.codegen.userTypesFilename,
-    codegenDirectory: store.codegen.codegenDirectory,
-    codegenIndexFilename: store.codegen.codegenIndexFilename,
+    codegenDirectory: store.codegen.outputDirectory,
+    codegenIndexFilename: store.codegen.indexFilename,
     tables: resolvedTables,
+    v2: store,
   } as unknown as storeToV1<store>;
 }
