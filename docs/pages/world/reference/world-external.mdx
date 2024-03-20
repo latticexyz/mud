@@ -1044,8 +1044,10 @@ error World_CallbackNotAllowed(bytes4 functionSelector);
 
 #### World_InvalidSigner
 
+_Mismatched signature._
+
 ```solidity
-error World_InvalidSigner();
+error World_InvalidSigner(address delegator, address delegatee);
 ```
 
 ## IWorldFactory

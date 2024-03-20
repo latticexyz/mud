@@ -11,5 +11,5 @@ function getMessageHash(
   bytes memory initCallData,
   uint256 nonce
 ) pure returns (bytes32) {
-  return keccak256(abi.encode(delegatee, delegationControlId, initCallData, nonce));
+  return keccak256(abi.encodePacked(delegatee, delegationControlId, initCallData, nonce));
 }
