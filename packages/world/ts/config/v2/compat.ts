@@ -26,7 +26,7 @@ function systemsToV1<systems extends Systems>(systems: systems): systemsToV1<sys
 }
 
 export type worldToV1<world> = world extends World
-  ? storeToV1<world> & {
+  ? Omit<storeToV1<world>, "v2"> & {
       systems: systemsToV1<world["systems"]>;
       excludeSystems: mutable<world["excludeSystems"]>;
       modules: modulesToV1<world["modules"]>;
@@ -37,6 +37,7 @@ export type worldToV1<world> = world extends World
       worldInterfaceName: world["codegen"]["worldInterfaceName"];
       worldgenDirectory: world["codegen"]["worldgenDirectory"];
       worldImportPath: world["codegen"]["worldImportPath"];
+      v2: world;
     }
   : never;
 
@@ -54,5 +55,5 @@ export function worldToV1<world>(world: conform<world, World>): worldToV1<world>
     worldImportPath: world.codegen.worldImportPath,
   };
 
-  return { ...storeToV1(world as Store), ...v1WorldConfig } as worldToV1<world>;
+  return { ...storeToV1(world as Store), ...v1WorldConfig, v2: world } as worldToV1<world>;
 }

@@ -89,10 +89,10 @@ describe("configToV1", () => {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { v2: _, ...v1FromV2 } = storeToV1(configV2);
+    const { v2, ...v1FromV2 } = storeToV1(configV2);
 
     attest<typeof configV1>(v1FromV2).equals(configV1);
-    attest<Omit<storeToV1<typeof configV2>, "v2">>(configV1);
+    attest<typeof v1FromV2>(configV1).equals(v1FromV2);
+    attest<typeof configV2>(v2).equals(configV2);
   });
 });
