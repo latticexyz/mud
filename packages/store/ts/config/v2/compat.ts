@@ -1,10 +1,11 @@
 import { conform } from "@arktype/util";
-import { Store, Table } from "./output";
+import { Schema, Store, Table } from "./output";
 import { mapObject } from "@latticexyz/common/utils";
+import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
 export type storeToV1<store> = store extends Store
   ? {
-      namespace: store["namespace"];
+      namespace: store["namespace"] extends "" ? "" : string;
       enums: { [key in keyof store["enums"]]: string[] };
       userTypes: {
         [key in keyof store["userTypes"]]: {
@@ -14,19 +15,24 @@ export type storeToV1<store> = store extends Store
       };
       storeImportPath: store["codegen"]["storeImportPath"];
       userTypesFilename: store["codegen"]["userTypesFilename"];
-      codegenDirectory: store["codegen"]["codegenDirectory"];
-      codegenIndexFilename: store["codegen"]["codegenIndexFilename"];
-      tables: { [key in keyof store["tables"]]: tableToV1<store["tables"][key]> };
+      codegenDirectory: store["codegen"]["outputDirectory"];
+      codegenIndexFilename: store["codegen"]["indexFilename"];
+      tables: {
+        [key in keyof store["tables"] as store["tables"][key]["name"]]: tableToV1<store["tables"][key]>;
+      };
+      v2: store;
     }
   : never;
 
+type schemaToV1<schema extends Schema> = { [key in keyof schema]: schema[key]["internalType"] };
+
 export type tableToV1<table extends Table> = {
-  directory: table["codegen"]["directory"];
+  directory: table["codegen"]["outputDirectory"];
   dataStruct: table["codegen"]["dataStruct"];
   tableIdArgument: table["codegen"]["tableIdArgument"];
   storeArgument: table["codegen"]["storeArgument"];
-  keySchema: { [key in keyof table["keySchema"]]: table["keySchema"][key]["internalType"] };
-  valueSchema: { [key in keyof table["valueSchema"]]: table["valueSchema"][key]["internalType"] };
+  keySchema: schemaToV1<getKeySchema<table>>;
+  valueSchema: schemaToV1<getValueSchema<table>>;
   offchainOnly: Table extends table ? boolean : table["type"] extends "table" ? false : true;
   name: table["name"];
 };
@@ -37,16 +43,23 @@ export function storeToV1<store>(store: conform<store, Store>): storeToV1<store>
     filePath,
   }));
 
-  const resolvedTables = mapObject(store.tables, (table) => ({
-    directory: table.codegen.directory,
-    dataStruct: table.codegen.dataStruct,
-    tableIdArgument: table.codegen.tableIdArgument,
-    storeArgument: table.codegen.storeArgument,
-    keySchema: mapObject(table.keySchema, (field) => field.internalType),
-    valueSchema: mapObject(table.valueSchema, (field) => field.internalType),
-    offchainOnly: table.type === "offchainTable",
-    name: table.name,
-  }));
+  const resolvedTables = Object.fromEntries(
+    Object.values(store.tables).map((table) => {
+      return [
+        table.name,
+        {
+          directory: table.codegen.outputDirectory,
+          dataStruct: table.codegen.dataStruct,
+          tableIdArgument: table.codegen.tableIdArgument,
+          storeArgument: table.codegen.storeArgument,
+          keySchema: mapObject(getKeySchema(table), (field) => field.internalType),
+          valueSchema: mapObject(getValueSchema(table), (field) => field.internalType),
+          offchainOnly: table.type === "offchainTable",
+          name: table.name,
+        },
+      ];
+    }),
+  );
 
   return {
     namespace: store.namespace,
@@ -54,8 +67,9 @@ export function storeToV1<store>(store: conform<store, Store>): storeToV1<store>
     userTypes: resolvedUserTypes,
     storeImportPath: store.codegen.storeImportPath,
     userTypesFilename: store.codegen.userTypesFilename,
-    codegenDirectory: store.codegen.codegenDirectory,
-    codegenIndexFilename: store.codegen.codegenIndexFilename,
+    codegenDirectory: store.codegen.outputDirectory,
+    codegenIndexFilename: store.codegen.indexFilename,
     tables: resolvedTables,
+    v2: store,
   } as unknown as storeToV1<store>;
 }

@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 import { defineStoreWithShorthands } from "./storeWithShorthands";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
-import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS } from "./defaults";
+import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS, TABLE_DEPLOY_DEFAULTS } from "./defaults";
 import { defineStore } from "./store";
 
 describe("defineStoreWithShorthands", () => {
@@ -22,23 +22,12 @@ describe("defineStoreWithShorthands", () => {
               internalType: "address",
             },
           },
-          keySchema: {
-            id: {
-              type: "bytes32",
-              internalType: "bytes32",
-            },
-          },
-          valueSchema: {
-            value: {
-              type: "address",
-              internalType: "address",
-            },
-          },
           key: ["id"],
           name: "Name",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {},
@@ -69,23 +58,12 @@ describe("defineStoreWithShorthands", () => {
               internalType: "CustomType",
             },
           },
-          keySchema: {
-            id: {
-              type: "bytes32",
-              internalType: "bytes32",
-            },
-          },
-          valueSchema: {
-            value: {
-              type: "address",
-              internalType: "CustomType",
-            },
-          },
           key: ["id"],
           name: "Name",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
@@ -120,27 +98,12 @@ describe("defineStoreWithShorthands", () => {
               internalType: "uint256",
             },
           },
-          keySchema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-          },
-          valueSchema: {
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-            age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
           key: ["id"],
           name: "Example",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {},
@@ -156,6 +119,7 @@ describe("defineStoreWithShorthands", () => {
     const config = defineStoreWithShorthands({
       tables: { Example: { id: "address", name: "string", age: "uint256" } },
     });
+
     const expected = {
       tables: {
         Example: {
@@ -174,27 +138,12 @@ describe("defineStoreWithShorthands", () => {
               internalType: "uint256",
             },
           },
-          keySchema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-          },
-          valueSchema: {
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-            age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
           key: ["id"],
           name: "Example",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {},

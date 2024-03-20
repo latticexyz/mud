@@ -1,5 +1,5 @@
 import { Hex } from "viem";
-import { Codegen, Enums, TableCodegen, UserTypes } from "./output";
+import { Codegen, Enums, TableCodegen, TableDeploy, UserTypes } from "./output";
 import { Scope } from "./scope";
 
 export type SchemaInput = {
@@ -18,15 +18,16 @@ export type TableInput = {
   readonly namespace?: string;
   readonly type?: "table" | "offchainTable";
   readonly codegen?: Partial<TableCodegen>;
+  readonly deploy?: Partial<TableDeploy>;
 };
 
 export type TablesInput = {
-  readonly [key: string]: TableInput;
+  readonly [key: string]: Omit<TableInput, "namespace" | "name">;
 };
 
 export type StoreInput = {
   readonly namespace?: string;
-  readonly tables: TablesInput;
+  readonly tables?: TablesInput;
   readonly userTypes?: UserTypes;
   readonly enums?: Enums;
   readonly codegen?: Partial<Codegen>;
