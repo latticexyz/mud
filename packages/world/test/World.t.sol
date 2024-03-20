@@ -1161,6 +1161,31 @@ contract WorldTest is Test, GasReporter {
     );
   }
 
+  function testRegisterDelegationWithSignature() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "testSystem"
+    });
+    world.registerNamespace(systemId.getNamespaceId());
+    world.registerSystem(systemId, system, true);
+
+    uint256 privateKey = 1;
+
+    // Register a limited delegation
+    address delegator = vm.addr(privateKey);
+    address delegatee = address(2);
+
+    bytes32 digest = keccak256("");
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, digest);
+    bytes memory signature = abi.encodePacked(r, s, v);
+
+    vm.prank(delegator);
+    world.registerDelegationWithSignature(signature);
+  }
+
   function testUnregisterUnlimitedDelegation() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();

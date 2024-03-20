@@ -39,7 +39,7 @@ function getFunctionSignaturesBatchCall() pure returns (string[2] memory) {
 /**
  * @dev Function signatures for registration system
  */
-function getFunctionSignaturesRegistration() pure returns (string[14] memory) {
+function getFunctionSignaturesRegistration() pure returns (string[15] memory) {
   return [
     // --- ModuleInstallationSystem ---
     "installModule(address,bytes)",
@@ -55,6 +55,7 @@ function getFunctionSignaturesRegistration() pure returns (string[14] memory) {
     "registerFunctionSelector(bytes32,string)",
     "registerRootFunctionSelector(bytes32,string,string)",
     "registerDelegation(address,bytes32,bytes)",
+    "registerDelegationWithSignature(bytes)",
     "unregisterDelegation(address)",
     "registerNamespaceDelegation(bytes32,bytes32,bytes)",
     "unregisterNamespaceDelegation(bytes32)"

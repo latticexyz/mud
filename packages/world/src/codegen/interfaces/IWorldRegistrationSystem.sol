@@ -34,6 +34,8 @@ interface IWorldRegistrationSystem {
 
   function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData) external;
 
+  function registerDelegationWithSignature(bytes memory signature) external;
+
   function unregisterDelegation(address delegatee) external;
 
   function registerNamespaceDelegation(

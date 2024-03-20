@@ -63,7 +63,7 @@ contract LimitedCallContextTest is Test {
   }
 
   function testRegistrationSystem() public {
-    string[14] memory functionSignaturesRegistration = getFunctionSignaturesRegistration();
+    string[15] memory functionSignaturesRegistration = getFunctionSignaturesRegistration();
 
     for (uint256 i; i < functionSignaturesRegistration.length; i++) {
       callSystem(REGISTRATION_SYSTEM_ID, functionSignaturesRegistration[i]);
