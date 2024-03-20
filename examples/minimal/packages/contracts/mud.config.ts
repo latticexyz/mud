@@ -1,15 +1,15 @@
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
+  namespace: "LastCall",
   tables: {
-    Position: {
+    LastCall: {
       schema: {
-        id: "bytes32",
-        x: "int32",
-        y: "int32",
-        z: "int32",
+        caller: "address",
+        callTime: "uint256",
+        sender: "address",
       },
-      key: ["id"],
+      key: ["caller"],
     },
   },
 });
