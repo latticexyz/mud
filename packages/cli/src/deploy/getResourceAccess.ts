@@ -3,9 +3,8 @@ import { WorldDeploy, worldConfig } from "./common";
 import { debug } from "./debug";
 import { storeSpliceStaticDataEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
-import { decodeKey } from "@latticexyz/protocol-parser/internal";
+import { decodeKey, getKeySchema, getSchemaTypes } from "@latticexyz/protocol-parser/internal";
 import { getTableValue } from "./getTableValue";
-import { flattenSchema } from "./flattenSchema";
 
 export async function getResourceAccess({
   client,
@@ -30,9 +29,8 @@ export async function getResourceAccess({
     args: { tableId: worldConfig.tables.world__ResourceAccess.tableId },
   });
 
-  const keys = logs.map((log) =>
-    decodeKey(flattenSchema(worldConfig.tables.world__ResourceAccess.keySchema), log.args.keyTuple),
-  );
+  const keySchema = getSchemaTypes(getKeySchema(worldConfig.tables.world__ResourceAccess));
+  const keys = logs.map((log) => decodeKey(keySchema, log.args.keyTuple));
 
   const access = (
     await Promise.all(

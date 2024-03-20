@@ -6,8 +6,16 @@ import { WorldDeploy } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
-import { KeySchema, ValueSchema, decodeKey, decodeValueArgs, hexToSchema } from "@latticexyz/protocol-parser/internal";
-import { flattenSchema } from "./flattenSchema";
+import {
+  KeySchema,
+  ValueSchema,
+  decodeKey,
+  decodeValueArgs,
+  getKeySchema,
+  getSchemaTypes,
+  getValueSchema,
+  hexToSchema,
+} from "@latticexyz/protocol-parser/internal";
 
 export async function getTables({
   client,
@@ -34,9 +42,9 @@ export async function getTables({
 
   // TODO: combine with store-sync logToTable and export from somewhere
   const tables = logs.map((log) => {
-    const { tableId } = decodeKey(flattenSchema(storeConfig.tables.store__Tables.keySchema), log.args.keyTuple);
+    const { tableId } = decodeKey(getSchemaTypes(getKeySchema(storeConfig.tables.store__Tables)), log.args.keyTuple);
     const { namespace, name } = hexToResource(tableId);
-    const value = decodeValueArgs(flattenSchema(storeConfig.tables.store__Tables.valueSchema), log.args);
+    const value = decodeValueArgs(getSchemaTypes(getValueSchema(storeConfig.tables.store__Tables)), log.args);
 
     // TODO: migrate to better helper
     const keySchemaFields = hexToSchema(value.keySchema);

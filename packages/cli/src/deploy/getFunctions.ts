@@ -3,10 +3,9 @@ import { WorldDeploy, WorldFunction, worldConfig } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
-import { decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { decodeValueArgs, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser/internal";
 import { getTableValue } from "./getTableValue";
 import { hexToResource } from "@latticexyz/common";
-import { flattenSchema } from "./flattenSchema";
 
 export async function getFunctions({
   client,
@@ -27,7 +26,10 @@ export async function getFunctions({
   });
 
   const signatures = logs.map((log) => {
-    const value = decodeValueArgs(flattenSchema(worldConfig.tables.world__FunctionSignatures.valueSchema), log.args);
+    const value = decodeValueArgs(
+      getSchemaTypes(getValueSchema(worldConfig.tables.world__FunctionSignatures)),
+      log.args,
+    );
     return value.functionSignature;
   });
   debug("found", signatures.length, "function signatures for", worldDeploy.address);
