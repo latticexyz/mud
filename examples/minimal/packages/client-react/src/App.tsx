@@ -3,17 +3,10 @@ import { useComponentValue, useEntityQuery } from "@latticexyz/react";
 import { Has, getComponentValueStrict } from "@latticexyz/recs";
 import { decodeEntity, singletonEntity } from "@latticexyz/store-sync/recs";
 import { useMUD } from "./MUDContext";
-import { encodePacked, Hex, keccak256 } from "viem";
 import { resourceToHex } from "@latticexyz/common";
 
 const ITEMS = ["cup", "spoon", "fork"];
 const VARIANTS = ["yellow", "green", "red"];
-
-function getMessageHash(delegatee: Hex, delegationControlId: Hex, initCallData: Hex, nonce: bigint) {
-  return keccak256(
-    encodePacked(["address", "bytes32", "bytes", "uint256"], [delegatee, delegationControlId, initCallData, nonce]),
-  );
-}
 
 export const App = () => {
   const {
@@ -43,24 +36,44 @@ export const App = () => {
       <button
         type="button"
         onClick={async () => {
-          const { address } = walletClient.account;
-
           const delegatee = "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377";
           const delegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
           const initCallData = "0x00";
           const nonce = 0n;
 
-          const raw = getMessageHash(delegatee, delegationControlId, initCallData, nonce);
+          const domain = {
+            name: "batman",
+            chainId: walletClient.chain.id,
+            verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+            version: "134",
+          } as const;
+          const types = {
+            Delegation: [
+              { name: "delegatee", type: "address" },
+              { name: "delegationControlId", type: "bytes32" },
+              { name: "initCallData", type: "bytes" },
+              { name: "nonce", type: "uint256" },
+            ],
+          } as const;
+          const message = {
+            delegatee,
+            delegationControlId,
+            initCallData,
+            nonce,
+          } as const;
 
-          const signature = await walletClient.signMessage({
-            message: { raw },
+          const signature = await walletClient.signTypedData({
+            domain,
+            types,
+            primaryType: "Delegation",
+            message,
           });
 
           await worldContract.write.registerDelegationWithSignature([
             delegatee,
             delegationControlId,
             initCallData,
-            address,
+            walletClient.account.address,
             signature,
           ]);
         }}
