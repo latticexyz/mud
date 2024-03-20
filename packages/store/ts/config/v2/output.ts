@@ -17,8 +17,13 @@ export type TableCodegen = {
   readonly dataStruct: boolean;
 };
 
+export type TableDeploy = {
+  readonly disable: boolean;
+};
+
 export type Table = BaseTable & {
   readonly codegen: TableCodegen;
+  readonly deploy: TableDeploy;
 };
 
 export type Codegen = {

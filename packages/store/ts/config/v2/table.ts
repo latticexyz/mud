@@ -1,11 +1,11 @@
 import { ErrorMessage, conform, narrow, requiredKeyOf } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
-import { get, hasOwnKey } from "./generics";
+import { get, hasOwnKey, mergeIfUndefined } from "./generics";
 import { resolveSchema, validateSchema } from "./schema";
 import { AbiTypeScope, Scope, getStaticAbiTypeKeys } from "./scope";
 import { TableCodegen } from "./output";
-import { TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
+import { TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS, TABLE_DEPLOY_DEFAULTS } from "./defaults";
 import { resourceToHex } from "@latticexyz/common";
 import { SchemaInput, TableInput } from "./input";
 
@@ -138,6 +138,10 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
       readonly key: Readonly<input["key"]>;
       readonly schema: resolveSchema<input["schema"], scope>;
       readonly codegen: resolveTableCodegen<input>;
+      readonly deploy: mergeIfUndefined<
+        undefined extends input["deploy"] ? {} : input["deploy"],
+        typeof TABLE_DEPLOY_DEFAULTS
+      >;
     }
   : never;
 
@@ -158,6 +162,7 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
     key: input.key,
     schema: resolveSchema(input.schema, scope),
     codegen: resolveTableCodegen(input),
+    deploy: mergeIfUndefined(input.deploy ?? {}, TABLE_DEPLOY_DEFAULTS),
   } as unknown as resolveTable<input, scope>;
 }
 

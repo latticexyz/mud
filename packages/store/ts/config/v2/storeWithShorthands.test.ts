@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 import { defineStoreWithShorthands } from "./storeWithShorthands";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
-import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS } from "./defaults";
+import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS, TABLE_DEPLOY_DEFAULTS } from "./defaults";
 import { defineStore } from "./store";
 
 describe("defineStoreWithShorthands", () => {
@@ -27,6 +27,7 @@ describe("defineStoreWithShorthands", () => {
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {},
@@ -62,6 +63,7 @@ describe("defineStoreWithShorthands", () => {
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
@@ -101,6 +103,7 @@ describe("defineStoreWithShorthands", () => {
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {},
@@ -140,6 +143,7 @@ describe("defineStoreWithShorthands", () => {
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {},

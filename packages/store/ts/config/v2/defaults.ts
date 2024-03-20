@@ -11,6 +11,10 @@ export const TABLE_CODEGEN_DEFAULTS = {
   storeArgument: false,
 } as const;
 
+export const TABLE_DEPLOY_DEFAULTS = {
+  disable: false,
+} as const;
+
 export const TABLE_DEFAULTS = {
   namespace: "",
   type: "table",
