@@ -11,7 +11,7 @@ bytes32 constant DELEGATION_TYPEHASH = keccak256(
 );
 
 string constant name = "batman";
-uint256 constant version = 134;
+string constant version = "134";
 bytes32 constant hashedName = keccak256(abi.encode(name));
 bytes32 constant hashedVersion = keccak256(abi.encode(version));
 address constant verifyingContract = 0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC;
@@ -46,5 +46,7 @@ function getSignedMessageHash(
   uint256 nonce
 ) view returns (bytes32) {
   return
-    _hashTypedDataV4(keccak256(abi.encode(DELEGATION_TYPEHASH, delegatee, delegationControlId, initCallData, nonce)));
+    _hashTypedDataV4(
+      keccak256(abi.encode(DELEGATION_TYPEHASH, delegatee, delegationControlId, keccak256(initCallData), nonce))
+    );
 }

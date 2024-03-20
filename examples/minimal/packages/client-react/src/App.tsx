@@ -41,32 +41,28 @@ export const App = () => {
           const initCallData = "0x00";
           const nonce = 0n;
 
-          const domain = {
-            name: "batman",
-            chainId: walletClient.chain.id,
-            verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
-            version: "134",
-          } as const;
-          const types = {
-            Delegation: [
-              { name: "delegatee", type: "address" },
-              { name: "delegationControlId", type: "bytes32" },
-              { name: "initCallData", type: "bytes" },
-              { name: "nonce", type: "uint256" },
-            ],
-          } as const;
-          const message = {
-            delegatee,
-            delegationControlId,
-            initCallData,
-            nonce,
-          } as const;
-
           const signature = await walletClient.signTypedData({
-            domain,
-            types,
+            domain: {
+              name: "batman",
+              version: "134",
+              chainId: walletClient.chain.id,
+              verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+            },
+            types: {
+              Delegation: [
+                { name: "delegatee", type: "address" },
+                { name: "delegationControlId", type: "bytes32" },
+                { name: "initCallData", type: "bytes" },
+                { name: "nonce", type: "uint256" },
+              ],
+            },
             primaryType: "Delegation",
-            message,
+            message: {
+              delegatee,
+              delegationControlId,
+              initCallData,
+              nonce,
+            },
           });
 
           await worldContract.write.registerDelegationWithSignature([
