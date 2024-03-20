@@ -1,12 +1,15 @@
-import { defineWorld } from "@latticexyz/world/config/v2";
+import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
   tables: {
-    Counter: {
+    Position: {
       schema: {
-        value: "uint32",
+        id: "bytes32",
+        x: "int32",
+        y: "int32",
+        z: "int32",
       },
-      key: [],
+      key: ["id"],
     },
   },
 });

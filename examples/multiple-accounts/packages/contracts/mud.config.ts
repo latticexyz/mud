@@ -1,15 +1,15 @@
-import { defineWorld } from "@latticexyz/world/config/v2";
+import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
-  namespace: "LastCall",
   tables: {
-    LastCall: {
+    Position: {
       schema: {
-        caller: "address",
-        callTime: "uint256",
-        sender: "address",
+        id: "bytes32",
+        x: "int32",
+        y: "int32",
+        z: "int32",
       },
-      key: ["caller"],
+      key: ["id"],
     },
   },
 });

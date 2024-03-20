@@ -4,7 +4,7 @@ import chalk from "chalk";
 import chokidar from "chokidar";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import path from "path";
-import { World as WorldConfig } from "@latticexyz/world/config/v2";
+import { World as WorldConfig } from "@latticexyz/world";
 import { homedir } from "os";
 import { rmSync } from "fs";
 import { deployOptions, runDeploy } from "../runDeploy";

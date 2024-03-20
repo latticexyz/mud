@@ -3,7 +3,7 @@ import path, { basename } from "path";
 import { rmSync } from "fs";
 import { loadConfig } from "@latticexyz/config/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
-import { World as WorldConfig } from "@latticexyz/world/config/v2";
+import { World as WorldConfig } from "@latticexyz/world";
 import { worldgen } from "@latticexyz/world/node";
 
 // TODO dedupe this and cli's worldgen command

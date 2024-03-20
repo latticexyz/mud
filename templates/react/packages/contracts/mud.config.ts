@@ -1,13 +1,13 @@
-import { defineWorld } from "@latticexyz/world/config/v2";
+import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
   tables: {
-    Tasks: {
+    Position: {
       schema: {
         id: "bytes32",
-        createdAt: "uint256",
-        completedAt: "uint256",
-        description: "string",
+        x: "int32",
+        y: "int32",
+        z: "int32",
       },
       key: ["id"],
     },

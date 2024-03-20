@@ -1,47 +1,15 @@
-import { defineWorld } from "@latticexyz/world/config/v2";
-import { resolveTableId } from "@latticexyz/config/library";
+import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
-  systems: {
-    IncrementSystem: {
-      name: "increment",
-      openAccess: true,
-    },
-  },
-  excludeSystems: [
-    // Until namespace overrides, this system must be manually deployed in PostDeploy
-    "ChatNamespacedSystem",
-  ],
   tables: {
-    CounterTable: {
+    Position: {
       schema: {
-        value: "uint32",
+        id: "bytes32",
+        x: "int32",
+        y: "int32",
+        z: "int32",
       },
-      key: [],
-      codegen: { storeArgument: true },
-    },
-    MessageTable: {
-      type: "offchainTable",
-      schema: {
-        value: "string",
-      },
-      key: [],
-    },
-    Inventory: {
-      schema: {
-        owner: "address",
-        item: "uint32",
-        itemVariant: "uint32",
-        amount: "uint32",
-      },
-      key: ["owner", "item", "itemVariant"],
+      key: ["id"],
     },
   },
-  modules: [
-    {
-      name: "KeysWithValueModule",
-      root: true,
-      args: [resolveTableId("Inventory")],
-    },
-  ],
 });
