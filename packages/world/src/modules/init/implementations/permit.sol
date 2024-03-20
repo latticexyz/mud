@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-bytes32 constant EIP712_DOMAIN = keccak256(
+bytes32 constant EIP712DOMAIN_TYPEHASH = keccak256(
   "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
 );
 bytes32 constant DELEGATION_TYPEHASH = keccak256(
@@ -28,7 +28,7 @@ function toTypedDataHash(bytes32 domainSeparator, bytes32 structHash) pure retur
 }
 
 function _buildDomainSeparator() view returns (bytes32) {
-  return keccak256(abi.encode(EIP712_DOMAIN, hashedName, hashedVersion, block.chainid, verifyingContract));
+  return keccak256(abi.encode(EIP712DOMAIN_TYPEHASH, hashedName, hashedVersion, block.chainid, verifyingContract));
 }
 
 function _domainSeparatorV4() view returns (bytes32) {
