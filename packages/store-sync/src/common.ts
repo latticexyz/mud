@@ -3,10 +3,11 @@ import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
 import { Store as StoreConfig } from "@latticexyz/store/config/v2";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
-import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser/internal";
+import { TableRecord } from "@latticexyz/protocol-parser/internal";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { getKeySchema, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser";
+import { Table as ConfigTable } from "@latticexyz/config";
 
 export const storeTables = storeConfig.tables;
 export const worldTables = worldConfig.tables;
@@ -18,18 +19,7 @@ export const internalTableIds = [...Object.values(storeTables), ...Object.values
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
 
-export type TableNamespace = string;
-export type TableName = string;
-
-export type Table = {
-  address: Address;
-  tableId: Hex;
-  namespace: TableNamespace;
-  name: TableName;
-  keySchema: KeySchema;
-  valueSchema: ValueSchema;
-};
-
+export type Table = ConfigTable & { address: Hex };
 export type TableWithRecords = Table & { records: TableRecord[] };
 
 export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true, StoreEventsAbi>;

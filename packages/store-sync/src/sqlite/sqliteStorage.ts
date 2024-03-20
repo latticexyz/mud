@@ -13,7 +13,13 @@ import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import {
+  decodeKey,
+  decodeValueArgs,
+  getKeySchema,
+  getSchemaTypes,
+  getValueSchema,
+} from "@latticexyz/protocol-parser/internal";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
 
@@ -35,7 +41,13 @@ export async function sqliteStorage<config extends StoreConfig = StoreConfig>({
     // Find table registration logs and create new tables
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
     await database.transaction(async (tx) => {
-      for (const table of newTables) {
+      for (const baseTable of newTables) {
+        const table = {
+          ...baseTable,
+          keySchema: getSchemaTypes(getKeySchema(baseTable)),
+          valueSchema: getSchemaTypes(getValueSchema(baseTable)),
+        };
+
         debug(`creating table ${resourceToLabel(table)} for world ${chainId}:${table.address}`);
 
         const sqliteTable = buildTable(table);
@@ -83,10 +95,10 @@ export async function sqliteStorage<config extends StoreConfig = StoreConfig>({
       }
 
       for (const log of logs) {
-        const table = tables.find(
+        const baseTable = tables.find(
           (table) => table.address === getAddress(log.address) && table.tableId === log.args.tableId,
         );
-        if (!table) {
+        if (!baseTable) {
           const tableId = hexToResource(log.args.tableId);
           debug(
             `table ${resourceToLabel({ namespace: tableId.namespace, name: tableId.name })} not found, skipping log`,
@@ -94,6 +106,12 @@ export async function sqliteStorage<config extends StoreConfig = StoreConfig>({
           );
           continue;
         }
+
+        const table = {
+          ...baseTable,
+          keySchema: getSchemaTypes(getKeySchema(baseTable)),
+          valueSchema: getSchemaTypes(getValueSchema(baseTable)),
+        };
 
         const sqlTable = buildTable(table);
         const uniqueKey = concatHex(log.args.keyTuple as Hex[]);

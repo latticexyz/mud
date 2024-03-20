@@ -1,11 +1,12 @@
-import { hexToSchema, decodeValue, ValueSchema } from "@latticexyz/protocol-parser/internal";
-import { Hex, concatHex, decodeAbiParameters, parseAbiParameters } from "viem";
+import { hexToSchema, decodeValue } from "@latticexyz/protocol-parser/internal";
+import { concatHex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { StorageAdapterLog, Table, schemasTable } from "./common";
 import { hexToResource } from "@latticexyz/common";
 
 /**
  * @internal
  */
+
 export function logToTable(log: StorageAdapterLog & { eventName: "Store_SetRecord" }): Table {
   const [tableId, ...otherKeys] = log.args.keyTuple;
   if (otherKeys.length) {
@@ -15,31 +16,32 @@ export function logToTable(log: StorageAdapterLog & { eventName: "Store_SetRecor
   const table = hexToResource(tableId);
 
   const value = decodeValue(
-    // TODO: remove cast when we have strong types for user types
-    schemasTable.valueSchema as ValueSchema,
+    schemasTable.valueSchema,
     concatHex([log.args.staticData, log.args.encodedLengths, log.args.dynamicData]),
   );
 
-  // TODO: remove cast when we have strong types for user types
-  const keySchema = hexToSchema(value.keySchema as Hex);
+  const keySchema = hexToSchema(value.keySchema);
+  const valueSchema = hexToSchema(value.valueSchema);
 
-  // TODO: remove cast when we have strong types for user types
-  const valueSchema = hexToSchema(value.valueSchema as Hex);
-
-  // TODO: remove cast when we have strong types for user types
-  const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedKeyNames as Hex)[0];
-
-  // TODO: remove cast when we have strong types for user types
-  const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedFieldNames as Hex)[0];
+  const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedKeyNames)[0];
+  const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedFieldNames)[0];
 
   const valueAbiTypes = [...valueSchema.staticFields, ...valueSchema.dynamicFields];
 
   return {
     address: log.address,
+    type: table.type as "table" | "offchainTable",
     tableId,
     namespace: table.namespace,
     name: table.name,
-    keySchema: Object.fromEntries(keySchema.staticFields.map((abiType, i) => [keyNames[i], abiType])),
-    valueSchema: Object.fromEntries(valueAbiTypes.map((abiType, i) => [fieldNames[i], abiType])),
+    key: keyNames,
+    schema: {
+      ...Object.fromEntries(
+        keySchema.staticFields.map((abiType, i) => [keyNames[i], { type: abiType, internalType: abiType }]),
+      ),
+      ...Object.fromEntries(
+        valueAbiTypes.map((abiType, i) => [fieldNames[i], { type: abiType, internalType: abiType }]),
+      ),
+    },
   };
 }

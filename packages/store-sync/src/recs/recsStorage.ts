@@ -4,7 +4,7 @@ import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, s
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
-import { decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { decodeValueArgs, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser/internal";
 import { Hex, size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
@@ -77,6 +77,8 @@ export function recsStorage<tables extends Record<string, Table>>({
         continue;
       }
 
+      const valueSchema = getSchemaTypes(getValueSchema(table));
+
       const component = world.components.find((c) => c.id === table.tableId);
       if (!component) {
         debug(
@@ -91,7 +93,7 @@ export function recsStorage<tables extends Record<string, Table>>({
       const entity = hexKeyTupleToEntity(log.args.keyTuple);
 
       if (log.eventName === "Store_SetRecord") {
-        const value = decodeValueArgs(table.valueSchema, log.args);
+        const value = decodeValueArgs(valueSchema, log.args);
         debug("setting component", {
           namespace: table.namespace,
           name: table.name,
@@ -114,7 +116,7 @@ export function recsStorage<tables extends Record<string, Table>>({
         const previousValue = getComponentValue(component, entity);
         const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
         const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
-        const newValue = decodeValueArgs(table.valueSchema, {
+        const newValue = decodeValueArgs(valueSchema, {
           staticData: newStaticData,
           encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
           dynamicData: (previousValue?.__dynamicData as Hex) ?? "0x",
@@ -142,7 +144,7 @@ export function recsStorage<tables extends Record<string, Table>>({
         const previousValue = getComponentValue(component, entity);
         const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
         const newDynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);
-        const newValue = decodeValueArgs(table.valueSchema, {
+        const newValue = decodeValueArgs(valueSchema, {
           staticData: (previousValue?.__staticData as Hex) ?? "0x",
           // TODO: handle unchanged encoded lengths
           encodedLengths: log.args.encodedLengths,

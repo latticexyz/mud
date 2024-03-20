@@ -2,18 +2,13 @@
 import { describe, it, expect } from "vitest";
 import { tableToLog } from "./tableToLog";
 import { storeTables } from "./common";
-import { getKeySchema, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser";
 
 describe("tableToLog", () => {
   it("should convert a table object to table registration log", async () => {
     expect(
       tableToLog({
+        ...storeTables.store__Tables,
         address: "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
-        tableId: storeTables.store__Tables.tableId,
-        namespace: storeTables.store__Tables.namespace,
-        name: storeTables.store__Tables.name,
-        keySchema: getSchemaTypes(getKeySchema(storeTables.store__Tables)),
-        valueSchema: getSchemaTypes(getValueSchema(storeTables.store__Tables)),
       }),
     ).toMatchInlineSnapshot(`
       {

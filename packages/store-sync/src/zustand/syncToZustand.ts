@@ -1,5 +1,4 @@
-import { ResolvedStoreConfig, Tables, resolveConfig } from "@latticexyz/store";
-import { Store as StoreConfig, storeToV1 } from "@latticexyz/store/config/v2";
+import { Store as StoreConfig } from "@latticexyz/store/config/v2";
 import { SyncOptions, SyncResult, storeTables, worldTables } from "../common";
 import { createStoreSync } from "../createStoreSync";
 import { ZustandStore } from "./createStore";
@@ -7,11 +6,10 @@ import { createStore } from "./createStore";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { Address } from "viem";
 import { SyncStep } from "../SyncStep";
+import { Tables } from "./common";
 
-type AllTables<config extends StoreConfig, extraTables extends Tables | undefined> = ResolvedStoreConfig<
-  storeToV1<config>
->["tables"] &
-  (extraTables extends Tables ? extraTables : Record<never, never>) &
+type AllTables<config extends StoreConfig, extraTables extends Tables | undefined> = config["tables"] &
+  (extraTables extends Tables ? extraTables : {}) &
   typeof storeTables &
   typeof worldTables;
 
@@ -40,11 +38,9 @@ export async function syncToZustand<config extends StoreConfig, extraTables exte
   startSync = true,
   ...syncOptions
 }: SyncToZustandOptions<config, extraTables>): Promise<SyncToZustandResult<config, extraTables>> {
-  // TODO: migrate this once we redo config to return fully resolved tables (https://github.com/latticexyz/mud/issues/1668)
-  // TODO: move store/world tables into `resolveConfig`
-  const resolvedConfig = resolveConfig(storeToV1(config as StoreConfig));
+  // TODO: move store/world tables into config
   const tables = {
-    ...resolvedConfig.tables,
+    ...config.tables,
     ...extraTables,
     ...storeTables,
     ...worldTables,

@@ -1,11 +1,11 @@
-import { SchemaToPrimitives, Table, Tables } from "@latticexyz/store";
+import { SchemaToPrimitives } from "@latticexyz/store";
 import { StoreApi, UseBoundStore, create } from "zustand";
-import { RawRecord, TableRecord } from "./common";
+import { RawRecord, TableRecord, Tables, schemaToPrimitives } from "./common";
 import { Hex } from "viem";
-import { encodeKey } from "@latticexyz/protocol-parser/internal";
-import { flattenSchema } from "../flattenSchema";
+import { KeySchema, encodeKey, getKeySchema, getSchemaTypes } from "@latticexyz/protocol-parser/internal";
 import { getId } from "./getId";
 import { SyncStep } from "../SyncStep";
+import { Table } from "@latticexyz/config";
 
 type TableRecords<table extends Table> = {
   readonly [id: string]: TableRecord<table>;
@@ -36,11 +36,11 @@ export type ZustandState<tables extends Tables> = {
   readonly getRecords: <table extends Table>(table: table) => TableRecords<table>;
   readonly getRecord: <table extends Table>(
     table: table,
-    key: SchemaToPrimitives<table["keySchema"]>,
+    key: schemaToPrimitives<getKeySchema<table>>,
   ) => TableRecord<table> | undefined;
   readonly getValue: <table extends Table>(
     table: table,
-    key: SchemaToPrimitives<table["keySchema"]>,
+    key: schemaToPrimitives<getKeySchema<table>>,
   ) => TableRecord<table>["value"] | undefined;
 };
 
@@ -71,15 +71,16 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
     },
     getRecord: <table extends Table>(
       table: table,
-      key: SchemaToPrimitives<table["keySchema"]>,
+      key: schemaToPrimitives<getKeySchema<table>>,
     ): TableRecord<table> | undefined => {
-      const keyTuple = encodeKey(flattenSchema(table.keySchema), key);
+      const keySchema = getSchemaTypes(getKeySchema(table));
+      const keyTuple = encodeKey(keySchema as KeySchema, key);
       const id = getId({ tableId: table.tableId, keyTuple });
       return get().records[id] as unknown as TableRecord<table> | undefined;
     },
     getValue: <table extends Table>(
       table: table,
-      key: SchemaToPrimitives<table["keySchema"]>,
+      key: SchemaToPrimitives<getKeySchema<table>>,
     ): TableRecord<table>["value"] | undefined => {
       return get().getRecord(table, key)?.value;
     },

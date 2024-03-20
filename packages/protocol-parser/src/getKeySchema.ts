@@ -1,7 +1,9 @@
 import { StaticAbiType, Table } from "@latticexyz/config";
 
+// rename this to `tableToKeySchema`?
+
 export type getKeySchema<table extends Table> = {
-  [fieldName in table["key"][number]]: table["schema"][fieldName] & { type: StaticAbiType };
+  readonly [fieldName in table["key"][number]]: table["schema"][fieldName] & { type: StaticAbiType };
 };
 
 export function getKeySchema<table extends Table>(table: table): getKeySchema<table> {

@@ -1,13 +1,17 @@
-import { Tables } from "@latticexyz/store";
 import { StorageAdapter } from "../common";
-import { RawRecord, TableRecord } from "./common";
+import { RawRecord, TableRecord, Tables } from "./common";
 import { ZustandStore } from "./createStore";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { debug } from "./debug";
 import { getId } from "./getId";
 import { size } from "viem";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
-import { flattenSchema } from "../flattenSchema";
+import {
+  decodeKey,
+  decodeValueArgs,
+  getKeySchema,
+  getSchemaTypes,
+  getValueSchema,
+} from "@latticexyz/protocol-parser/internal";
 import { isDefined } from "@latticexyz/common/utils";
 
 export type CreateStorageAdapterOptions<tables extends Tables> = {
@@ -137,8 +141,8 @@ export function createStorageAdapter<tables extends Tables>({
                 id,
                 table: store.getState().tables[rawRecord.tableId],
                 keyTuple: rawRecord.keyTuple,
-                key: decodeKey(flattenSchema(table.keySchema), rawRecord.keyTuple),
-                value: decodeValueArgs(flattenSchema(table.valueSchema), rawRecord),
+                key: decodeKey(getSchemaTypes(getKeySchema(table)), rawRecord.keyTuple),
+                value: decodeValueArgs(getSchemaTypes(getValueSchema(table)), rawRecord),
               } satisfies TableRecord,
             ];
           })
