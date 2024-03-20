@@ -6,5 +6,5 @@
 
 export { helloWorldEvent, worldDeployedEvent } from "../worldEvents";
 
-export { defineWorld } from "../config/v2/world";
+export { defineWorldWithoutNamespaces as defineWorld } from "../config/v2/world";
 export type { World } from "../config/v2/output";

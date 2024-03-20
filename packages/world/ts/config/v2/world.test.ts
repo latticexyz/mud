@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { defineWorld } from "./world";
+import { defineWorld, defineWorldWithoutNamespaces } from "./world";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import {
@@ -713,5 +713,16 @@ describe("defineWorld", () => {
         },
       }),
     ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+  });
+});
+
+describe("defineWorldWithoutNamespaces", () => {
+  it("should throw if namespaces are defined", () => {
+    attest(() =>
+      defineWorldWithoutNamespaces({
+        // @ts-expect-error Namespaces will be enabled soon
+        namespaces: {},
+      }),
+    ).type.errors("Namespaces will be enabled soon");
   });
 });
