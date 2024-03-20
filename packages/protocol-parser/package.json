@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
+    "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "abitype": "1.0.0",
     "viem": "2.7.12"
