@@ -12,7 +12,8 @@ import { resourceToHex } from "@latticexyz/common";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { createClient, http } from "viem";
 import { getChainId } from "viem/actions";
-import { World as WorldConfig, worldToV1 } from "@latticexyz/world/config/v2";
+import { World as WorldConfig } from "@latticexyz/world";
+import { worldToV1 } from "@latticexyz/world/config/v2";
 
 // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
 const systemsTableId = resourceToHex({

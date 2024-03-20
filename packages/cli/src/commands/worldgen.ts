@@ -1,6 +1,6 @@
 import type { CommandModule } from "yargs";
 import { loadConfig } from "@latticexyz/config/node";
-import { World as WorldConfig } from "@latticexyz/world/config/v2";
+import { World as WorldConfig } from "@latticexyz/world";
 import { worldgen } from "@latticexyz/world/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import path from "path";

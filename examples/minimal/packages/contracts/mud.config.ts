@@ -1,4 +1,4 @@
-import { defineWorld } from "@latticexyz/world/config/v2";
+import { defineWorld } from "@latticexyz/world";
 import { resolveTableId } from "@latticexyz/config/library";
 
 export default defineWorld({

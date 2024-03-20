@@ -1,4 +1,4 @@
-import { defineWorld } from "@latticexyz/world/config/v2";
+import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
   namespace: "LastCall",
