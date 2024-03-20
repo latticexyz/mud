@@ -8,7 +8,6 @@ import { TableCodegen } from "./output";
 import { TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 import { resourceToHex } from "@latticexyz/common";
 import { SchemaInput, TableInput } from "./input";
-import { Table } from "@latticexyz/config";
 
 export type ValidKeys<schema extends SchemaInput, scope extends Scope> = readonly [
   getStaticAbiTypeKeys<schema, scope>,
@@ -159,22 +158,4 @@ export function defineTable<input, scope extends Scope = AbiTypeScope>(
 ): resolveTable<input, scope> {
   validateTable(input, scope);
   return resolveTable(input, scope) as resolveTable<input, scope>;
-}
-
-export type getKeySchema<table extends Table> = {
-  [fieldName in table["key"][number]]: table["schema"][fieldName];
-};
-
-export function getKeySchema<table extends Table>(table: table): getKeySchema<table> {
-  return Object.fromEntries(table.key.map((fieldName) => [fieldName, table.schema[fieldName]])) as getKeySchema<table>;
-}
-
-export type getValueSchema<table extends Table> = {
-  [fieldName in Exclude<keyof table["schema"], table["key"][number]>]: table["schema"][fieldName];
-};
-
-export function getValueSchema<table extends Table>(table: table): getValueSchema<table> {
-  return Object.fromEntries(
-    Object.entries(table.schema).filter(([fieldName]) => !table.key.includes(fieldName)),
-  ) as getValueSchema<table>;
 }

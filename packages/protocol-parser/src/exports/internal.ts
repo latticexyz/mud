@@ -25,3 +25,7 @@ export * from "../schemaToHex";
 export * from "../staticDataLength";
 export * from "../valueSchemaToFieldLayoutHex";
 export * from "../valueSchemaToHex";
+
+export * from "../getKeySchema";
+export * from "../getValueSchema";
+export * from "../getSchemaTypes";
