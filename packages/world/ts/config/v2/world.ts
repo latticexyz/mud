@@ -19,7 +19,7 @@ import { Tables } from "@latticexyz/store";
 import { resolveSystems } from "./systems";
 import { resolveNamespacedTables, validateNamespaces } from "./namespaces";
 import { resolveCodegen } from "./codegen";
-import { resolveDeploy as resolveDeploy } from "./deploy";
+import { resolveDeploy } from "./deploy";
 
 export type validateWorld<world> = {
   readonly [key in keyof world]: key extends "tables"
