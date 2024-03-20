@@ -30,10 +30,10 @@ export type worldToV1<world> = world extends World
       systems: systemsToV1<world["systems"]>;
       excludeSystems: mutable<world["excludeSystems"]>;
       modules: modulesToV1<world["modules"]>;
-      worldContractName: world["deployment"]["customWorldContract"];
-      postDeployScript: world["deployment"]["postDeployScript"];
-      deploysDirectory: world["deployment"]["deploysDirectory"];
-      worldsFile: world["deployment"]["worldsFile"];
+      worldContractName: world["deploy"]["customWorldContract"];
+      postDeployScript: world["deploy"]["postDeployScript"];
+      deploysDirectory: world["deploy"]["deploysDirectory"];
+      worldsFile: world["deploy"]["worldsFile"];
       worldInterfaceName: world["codegen"]["worldInterfaceName"];
       worldgenDirectory: world["codegen"]["worldgenDirectory"];
       worldImportPath: world["codegen"]["worldImportPath"];
@@ -45,10 +45,10 @@ export function worldToV1<world>(world: conform<world, World>): worldToV1<world>
     systems: systemsToV1(world.systems),
     excludeSystems: world.excludeSystems,
     modules: modulesToV1(world.modules),
-    worldContractName: world.deployment.customWorldContract,
-    postDeployScript: world.deployment.postDeployScript,
-    deploysDirectory: world.deployment.deploysDirectory,
-    worldsFile: world.deployment.worldsFile,
+    worldContractName: world.deploy.customWorldContract,
+    postDeployScript: world.deploy.postDeployScript,
+    deploysDirectory: world.deploy.deploysDirectory,
+    worldsFile: world.deploy.worldsFile,
     worldInterfaceName: world.codegen.worldInterfaceName,
     worldgenDirectory: world.codegen.worldgenDirectory,
     worldImportPath: world.codegen.worldImportPath,

@@ -3,7 +3,7 @@ import { defineWorld } from "./world";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { TABLE_CODEGEN_DEFAULTS, CODEGEN_DEFAULTS as STORE_CODEGEN_DEFAULTS } from "@latticexyz/store/config/v2";
-import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, DEPLOYMENT_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
+import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, DEPLOY_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
 import { World } from "./output";
 const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS };
 
@@ -312,7 +312,7 @@ describe("defineWorld", () => {
         userTypes: {},
         enums: {},
         namespace: "",
-        deployment: DEPLOYMENT_DEFAULTS,
+        deploy: DEPLOY_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
