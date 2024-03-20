@@ -3,7 +3,7 @@ import { AbiType, Schema, Table as BaseTable } from "@latticexyz/config";
 export type { AbiType, Schema };
 
 export type UserTypes = {
-  readonly [userTypeName: string]: { type: AbiType; filePath?: string };
+  readonly [userTypeName: string]: { type: AbiType; filePath: string };
 };
 
 export type Enums = {
