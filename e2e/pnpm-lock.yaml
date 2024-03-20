@@ -135,6 +135,9 @@ importers:
       '@latticexyz/common':
         specifier: link:../../../packages/common
         version: link:../../../packages/common
+      '@latticexyz/config':
+        specifier: link:../../../packages/config
+        version: link:../../../packages/config
       '@latticexyz/protocol-parser':
         specifier: link:../../../packages/protocol-parser
         version: link:../../../packages/protocol-parser

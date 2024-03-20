@@ -1,7 +1,7 @@
-import { Table } from "@latticexyz/config";
+import { StaticAbiType, Table } from "@latticexyz/config";
 
 export type getKeySchema<table extends Table> = {
-  [fieldName in table["key"][number]]: table["schema"][fieldName];
+  [fieldName in table["key"][number]]: table["schema"][fieldName] & { type: StaticAbiType };
 };
 
 export function getKeySchema<table extends Table>(table: table): getKeySchema<table> {

@@ -1,5 +1,14 @@
 import { mapObject } from "@latticexyz/utils";
-import { encodeKey, encodeValueArgs, valueSchemaToFieldLayoutHex } from "@latticexyz/protocol-parser/internal";
+import {
+  KeySchema,
+  encodeKey,
+  encodeValueArgs,
+  getKeySchema,
+  getSchemaTypes,
+  getValueSchema,
+  valueSchemaToFieldLayoutHex,
+} from "@latticexyz/protocol-parser/internal";
+import { Schema } from "@latticexyz/config";
 import { Data, EncodedData } from "./types";
 import config from "../../contracts/mud.config";
 
@@ -11,9 +20,11 @@ export function encodeTestData(testData: Data) {
     if (!records) return undefined;
     const tableConfig = config.tables[table];
     return records.map((record) => {
-      const key = encodeKey(tableConfig.keySchema, record.key);
-      const valueArgs = encodeValueArgs(tableConfig.valueSchema, record.value);
-      const fieldLayout = valueSchemaToFieldLayoutHex(tableConfig.valueSchema);
+      const keySchema = getSchemaTypes(getKeySchema(tableConfig) as unknown as Schema);
+      const valueSchema = getSchemaTypes(getValueSchema(tableConfig));
+      const key = encodeKey(keySchema as KeySchema, record.key);
+      const valueArgs = encodeValueArgs(valueSchema, record.value);
+      const fieldLayout = valueSchemaToFieldLayoutHex(valueSchema);
 
       return {
         key,
