@@ -475,6 +475,20 @@ function registerDelegation(
 | `delegationControlId` | `ResourceId` | The ID controlling the delegation          |
 | `initCallData`        | `bytes`      | The initialization data for the delegation |
 
+#### registerDelegationWithSignature
+
+```solidity
+function registerDelegationWithSignature(
+  address delegatee,
+  ResourceId delegationControlId,
+  bytes memory initCallData,
+  address delegator,
+  uint8 v,
+  bytes32 r,
+  bytes32 s
+) public onlyDelegatecall;
+```
+
 #### unregisterDelegation
 
 Unregisters a delegation
@@ -528,3 +542,28 @@ function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelega
 | Name          | Type         | Description             |
 | ------------- | ------------ | ----------------------- |
 | `namespaceId` | `ResourceId` | The ID of the namespace |
+
+## getMessageHash
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol)
+
+```solidity
+function getMessageHash(
+  address delegatee,
+  ResourceId delegationControlId,
+  bytes memory initCallData
+) pure returns (bytes32);
+```
+
+## registerDelegationHelper
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol)
+
+```solidity
+function registerDelegationHelper(
+  address delegator,
+  address delegatee,
+  ResourceId delegationControlId,
+  bytes memory initCallData
+);
+```
