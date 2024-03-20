@@ -77,7 +77,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
   const resolvedNamespacedTables = Object.fromEntries(
     Object.entries(namespaces)
       .map(([namespaceKey, namespace]) =>
-        Object.entries(namespace.tables).map(([tableKey, table]) => {
+        Object.entries(namespace.tables ?? {}).map(([tableKey, table]) => {
           validateTable(table, scope);
           return [
             `${namespaceKey}__${tableKey}`,
