@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/query",
-  "version": "2.0.0-next.18",
+  "version": "2.0.0",
   "description": "Tools for interacting with the MUD query API",
   "repository": {
     "type": "git",

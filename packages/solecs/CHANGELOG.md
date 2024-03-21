@@ -1,5 +1,15 @@
 # @latticexyz/solecs
 
+## 2.0.0
+
+### Major Changes
+
+- ce7125a1b: Removes `solecs` package. These were v1 contracts, now entirely replaced by our v2 tooling. See the [MUD docs](https://mud.dev/) for building with v2 or create a new project from our v2 templates with `pnpm create mud@next your-app-name`.
+
+### Patch Changes
+
+- 48909d151: bump forge-std and ds-test dependencies
+
 ## 2.0.0-next.18
 
 ## 2.0.0-next.17

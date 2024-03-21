@@ -1,5 +1,20 @@
 # @latticexyz/network
 
+## 2.0.0
+
+### Major Changes
+
+- 42c7d8986: Removes `network` package. Please see the [changelog](https://mud.dev/changelog) for how to migrate your app to the new `store-sync` package. Or create a new project from an up-to-date template with `pnpm create mud@next your-app-name`.
+
+### Patch Changes
+
+- b8a6158d6: bump viem to 1.6.0
+- 535229984: - bump to viem 1.3.0 and abitype 0.9.3
+  - move `@wagmi/chains` imports to `viem/chains`
+  - refine a few types
+- e019c7761: Remove devEmit function when sending network events from SyncWorker because they can't be serialized across the web worker boundary.
+- 6c6733256: Add `tableIdToHex` and `hexToTableId` pure functions and move/deprecate `TableId`.
+
 ## 2.0.0-next.18
 
 ## 2.0.0-next.17

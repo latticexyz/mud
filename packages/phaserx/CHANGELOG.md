@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.0
+
+### Patch Changes
+
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+
 ## 2.0.0-next.18
 
 ## 2.0.0-next.17
