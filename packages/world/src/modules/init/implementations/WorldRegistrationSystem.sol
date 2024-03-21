@@ -285,7 +285,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     ResourceId delegationControlId,
     bytes memory initCallData,
     address delegator,
-    bytes memory signature
+    bytes calldata signature
   ) public onlyDelegatecall {
     uint256 nonce = UserDelegationNonces.get(delegator);
     bytes32 hash = getSignedMessageHash(delegatee, delegationControlId, initCallData, nonce, _world());
