@@ -2,7 +2,7 @@
 "@latticexyz/store": major
 ---
 
-Store config has been rebuilt with strong types. The shape of the config has also changed slightly for clarity.
+Store config has been rebuilt with strong types. The shape of the config has also changed slightly for clarity, the biggest change of which is merging of `keySchema` and `valueSchema` into a single `schema` with a separate `key` for the table's primary key.
 
 _Note that the Store config is a subset of the World config and if you have a MUD project, you likely want to follow the World changelog for config migration steps._
 
