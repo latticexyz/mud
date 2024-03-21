@@ -739,4 +739,17 @@ describe("defineWorld", () => {
 
     attest<false>(config.systems.Example.openAccess).equals(false);
   });
+
+  it("should allow a const config as input", () => {
+    const config = {
+      tables: {
+        Example: {
+          schema: { id: "address", name: "string", age: "uint256" },
+          key: ["age"],
+        },
+      },
+    } as const;
+
+    defineWorld(config);
+  });
 });

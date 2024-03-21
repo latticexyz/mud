@@ -321,4 +321,17 @@ describe("defineWorldWithShorthands", () => {
       "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
     );
   });
+
+  it("should allow a const config as input", () => {
+    const config = {
+      tables: {
+        Example: {
+          schema: { id: "address", name: "string", age: "uint256" },
+          key: ["age"],
+        },
+      },
+    } as const;
+
+    defineWorldWithShorthands(config);
+  });
 });

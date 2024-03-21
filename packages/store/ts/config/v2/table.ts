@@ -37,11 +37,11 @@ export function isValidPrimaryKey<schema extends SchemaInput, scope extends Scop
   );
 }
 
-export type validateKeys<validKeys extends PropertyKey, keys> = keys extends string[]
+export type validateKeys<validKeys extends PropertyKey, keys> = keys extends readonly string[]
   ? {
-      [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
+      readonly [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
     }
-  : string[];
+  : readonly string[];
 
 export type ValidateTableOptions = { inStoreContext: boolean };
 

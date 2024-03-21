@@ -503,4 +503,17 @@ describe("defineStore", () => {
 
     attest(defineStore({ enums }).enums).equals(enums);
   });
+
+  it("should allow a const config as input", () => {
+    const config = {
+      tables: {
+        Example: {
+          schema: { id: "address", name: "string", age: "uint256" },
+          key: ["age"],
+        },
+      },
+    } as const;
+
+    defineStore(config);
+  });
 });
