@@ -12,7 +12,7 @@ import { mudFoundry } from "@latticexyz/common/chains";
 import { expectClientData } from "./data/expectClientData";
 import { Data } from "./data/types";
 
-describe("gm", async () => {
+describe("register", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
   let browser: Browser;
