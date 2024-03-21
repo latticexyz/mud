@@ -718,4 +718,13 @@ describe("defineWorld", () => {
       }),
     ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
   });
+
+  it("should throw if namespaces are defined (TODO: remove once namespaces support ships)", () => {
+    attest(() =>
+      defineWorld({
+        // @ts-expect-error TODO: remove once namespaces support ships
+        namespaces: {},
+      }),
+    ).type.errors("Namespaces config will be enabled soon.");
+  });
 });
