@@ -1,5 +1,15 @@
 # @latticexyz/query
 
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [4a6b4598]
+  - @latticexyz/store@2.0.1
+  - @latticexyz/common@2.0.1
+  - @latticexyz/config@2.0.1
+  - @latticexyz/schema-type@2.0.1
+
 ## 2.0.0
 
 ### Patch Changes
