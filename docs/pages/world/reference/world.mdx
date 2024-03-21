@@ -101,20 +101,20 @@ function setRecord(
   ResourceId tableId,
   bytes32[] calldata keyTuple,
   bytes calldata staticData,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes calldata dynamicData
 ) public virtual prohibitDirectCallback;
 ```
 
 **Parameters**
 
-| Name             | Type            | Description                                          |
-| ---------------- | --------------- | ---------------------------------------------------- |
-| `tableId`        | `ResourceId`    | The unique identifier for the table.                 |
-| `keyTuple`       | `bytes32[]`     | Array of keys identifying the record.                |
-| `staticData`     | `bytes`         | Static data (fixed length fields) of the record.     |
-| `encodedLengths` | `PackedCounter` | Encoded lengths of data.                             |
-| `dynamicData`    | `bytes`         | Dynamic data (variable length fields) of the record. |
+| Name             | Type             | Description                                          |
+| ---------------- | ---------------- | ---------------------------------------------------- |
+| `tableId`        | `ResourceId`     | The unique identifier for the table.                 |
+| `keyTuple`       | `bytes32[]`      | Array of keys identifying the record.                |
+| `staticData`     | `bytes`          | Static data (fixed length fields) of the record.     |
+| `encodedLengths` | `EncodedLengths` | Encoded lengths of data.                             |
+| `dynamicData`    | `bytes`          | Dynamic data (variable length fields) of the record. |
 
 #### spliceStaticData
 

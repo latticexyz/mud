@@ -75,7 +75,7 @@ const PUBLIC_APIS: PublicApis = {
       { source: "store/src/Hook.sol" },
       { source: "store/src/Memory.sol" },
       /*
-      { source: "store/src/PackedCounter.sol" },
+      { source: "store/src/EncodedLengths.sol" },
       */
       { source: "store/src/ResourceId.sol" },
       { source: "store/src/Schema.sol" },

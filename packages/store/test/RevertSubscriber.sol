@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import { StoreHook } from "../src/StoreHook.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
-import { PackedCounter } from "../src/PackedCounter.sol";
+import { EncodedLengths } from "../src/EncodedLengths.sol";
 import { ResourceId } from "../src/ResourceId.sol";
 
 contract RevertSubscriber is StoreHook {
@@ -11,7 +11,7 @@ contract RevertSubscriber is StoreHook {
     ResourceId,
     bytes32[] memory,
     bytes memory,
-    PackedCounter,
+    EncodedLengths,
     bytes memory,
     FieldLayout
   ) public pure override {
@@ -22,7 +22,7 @@ contract RevertSubscriber is StoreHook {
     ResourceId,
     bytes32[] memory,
     bytes memory,
-    PackedCounter,
+    EncodedLengths,
     bytes memory,
     FieldLayout
   ) public pure override {
@@ -43,7 +43,7 @@ contract RevertSubscriber is StoreHook {
     uint8,
     uint40,
     uint40,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) public pure override {
     revert("onBeforeSpliceDynamicData");
@@ -55,7 +55,7 @@ contract RevertSubscriber is StoreHook {
     uint8,
     uint40,
     uint40,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) public pure override {
     revert("onAfterSpliceDynamicData");

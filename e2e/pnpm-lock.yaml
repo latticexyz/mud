@@ -153,6 +153,9 @@ importers:
       '@latticexyz/utils':
         specifier: link:../../../packages/utils
         version: link:../../../packages/utils
+      '@latticexyz/world':
+        specifier: link:../../../packages/world
+        version: link:../../../packages/world
       '@viem/anvil':
         specifier: ^0.0.6
         version: 0.0.6

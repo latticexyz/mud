@@ -1,10 +1,10 @@
 [
   "constructor()",
+  "error EncodedLengths_InvalidLength(uint256 length)",
   "error Module_AlreadyInstalled()",
   "error Module_MissingDependency(address dependency)",
   "error Module_NonRootInstallNotSupported()",
   "error Module_RootInstallNotSupported()",
-  "error PackedCounter_InvalidLength(uint256 length)",
   "error Slice_OutOfBounds(bytes data, uint256 start, uint256 end)",
   "error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex)",
   "error Store_InvalidBounds(uint256 start, uint256 end)",

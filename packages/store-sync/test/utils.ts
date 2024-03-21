@@ -4,7 +4,7 @@ import { foundry } from "viem/chains";
 import initSqlJs from "sql.js";
 import mudConfig from "../../../e2e/packages/contracts/mud.config";
 import { createWorld } from "@latticexyz/recs";
-import { resolveConfig } from "@latticexyz/store";
+import { resolveConfig } from "@latticexyz/store/internal";
 import { RecsStorageAdapter, recsStorage } from "../src/recs";
 import { sqliteStorage } from "../src/sqlite";
 import { ZustandStore, createStorageAdapter, createStore } from "../src/zustand";

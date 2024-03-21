@@ -9,7 +9,7 @@ import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { FieldLayout, FieldLayoutLib } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "../src/EncodedLengths.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
@@ -248,7 +248,7 @@ contract StoreCoreTest is Test, StoreMock {
     // Set dynamic data length of dynamic index 0
     setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 10);
 
-    PackedCounter encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    EncodedLengths encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     assertEq(encodedLength.atIndex(0), 10);
     assertEq(encodedLength.atIndex(1), 0);
     assertEq(encodedLength.total(), 10);
@@ -292,12 +292,12 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a Store_SetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit Store_SetRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    emit Store_SetRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
-    this.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    this.setRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     // Get data
-    (bytes memory loadedStaticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = this.getRecord(
+    (bytes memory loadedStaticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = this.getRecord(
       tableId,
       keyTuple,
       fieldLayout
@@ -329,12 +329,12 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a Store_SetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit Store_SetRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    emit Store_SetRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
-    this.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    this.setRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     // Get data
-    (bytes memory loadedStaticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = this.getRecord(
+    (bytes memory loadedStaticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = this.getRecord(
       tableId,
       keyTuple,
       fieldLayout
@@ -378,9 +378,9 @@ contract StoreCoreTest is Test, StoreMock {
       thirdDataBytes = EncodeArray.encode(thirdData);
     }
 
-    PackedCounter encodedDynamicLength;
+    EncodedLengths encodedDynamicLength;
     {
-      encodedDynamicLength = PackedCounterLib.pack(uint40(secondDataBytes.length), uint40(thirdDataBytes.length));
+      encodedDynamicLength = EncodedLengthsLib.pack(uint40(secondDataBytes.length), uint40(thirdDataBytes.length));
     }
 
     // Concat data
@@ -399,7 +399,7 @@ contract StoreCoreTest is Test, StoreMock {
     this.setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
 
     // Get data
-    (bytes memory loadedStaticData, PackedCounter loadedEncodedLengths, bytes memory loadedDynamicData) = this
+    (bytes memory loadedStaticData, EncodedLengths loadedEncodedLengths, bytes memory loadedDynamicData) = this
       .getRecord(tableId, keyTuple, fieldLayout);
 
     assertEq(loadedStaticData, staticData);
@@ -507,7 +507,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(bytes16(this.getField(_data.tableId, keyTuple, 0, _data.fieldLayout)), bytes16(_data.firstDataBytes));
 
     // Verify the full static data is correct
-    (bytes memory loadedStaticData, PackedCounter loadedEncodedLengths, bytes memory loadedDynamicData) = this
+    (bytes memory loadedStaticData, EncodedLengths loadedEncodedLengths, bytes memory loadedDynamicData) = this
       .getRecord(_data.tableId, keyTuple, _data.fieldLayout);
     assertEq(this.getFieldLayout(_data.tableId).staticDataLength(), 48);
     assertEq(this.getValueSchema(_data.tableId).staticDataLength(), 48);
@@ -545,7 +545,7 @@ contract StoreCoreTest is Test, StoreMock {
       0,
       0,
       0,
-      PackedCounterLib.pack(_data.thirdDataBytes.length, 0),
+      EncodedLengthsLib.pack(_data.thirdDataBytes.length, 0),
       _data.thirdDataBytes
     );
 
@@ -575,7 +575,7 @@ contract StoreCoreTest is Test, StoreMock {
       1,
       uint48(_data.thirdDataBytes.length),
       0,
-      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.fourthDataBytes.length),
+      EncodedLengthsLib.pack(_data.thirdDataBytes.length, _data.fourthDataBytes.length),
       _data.fourthDataBytes
     );
 
@@ -590,7 +590,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(keccak256(loadedData), keccak256(_data.fourthDataBytes));
 
     // Verify all fields are correct
-    PackedCounter encodedLengths = PackedCounterLib.pack(
+    EncodedLengths encodedLengths = EncodedLengthsLib.pack(
       uint40(_data.thirdDataBytes.length),
       uint40(_data.fourthDataBytes.length)
     );
@@ -621,7 +621,7 @@ contract StoreCoreTest is Test, StoreMock {
       1,
       uint48(_data.thirdDataBytes.length),
       uint40(_data.fourthDataBytes.length),
-      PackedCounterLib.pack(_data.thirdDataBytes.length, _data.thirdDataBytes.length),
+      EncodedLengthsLib.pack(_data.thirdDataBytes.length, _data.thirdDataBytes.length),
       _data.thirdDataBytes
     );
 
@@ -669,9 +669,9 @@ contract StoreCoreTest is Test, StoreMock {
       thirdDataBytes = EncodeArray.encode(thirdData);
     }
 
-    PackedCounter encodedDynamicLength;
+    EncodedLengths encodedDynamicLength;
     {
-      encodedDynamicLength = PackedCounterLib.pack(uint40(secondDataBytes.length), uint40(thirdDataBytes.length));
+      encodedDynamicLength = EncodedLengthsLib.pack(uint40(secondDataBytes.length), uint40(thirdDataBytes.length));
     }
 
     // Concat data
@@ -692,7 +692,7 @@ contract StoreCoreTest is Test, StoreMock {
     this.setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
 
     // Get data
-    (bytes memory loadedStaticData, PackedCounter loadedEncodedLengths, bytes memory loadedDynamicData) = this
+    (bytes memory loadedStaticData, EncodedLengths loadedEncodedLengths, bytes memory loadedDynamicData) = this
       .getRecord(tableId, keyTuple, fieldLayout);
 
     assertEq(abi.encodePacked(loadedStaticData, loadedEncodedLengths, loadedDynamicData), data);
@@ -792,7 +792,7 @@ contract StoreCoreTest is Test, StoreMock {
       0,
       uint48(data.secondDataBytes.length),
       0,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
+      EncodedLengthsLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
       data.secondDataToPush
     );
 
@@ -836,7 +836,7 @@ contract StoreCoreTest is Test, StoreMock {
       1,
       uint48(data.newSecondDataBytes.length + data.thirdDataBytes.length),
       0,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
+      EncodedLengthsLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
       data.thirdDataToPush
     );
 
@@ -940,7 +940,7 @@ contract StoreCoreTest is Test, StoreMock {
       0,
       4 * 1,
       4 * 1,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
+      EncodedLengthsLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length),
       data.secondDataForUpdate
     );
 
@@ -993,7 +993,7 @@ contract StoreCoreTest is Test, StoreMock {
       1,
       uint48(data.newSecondDataBytes.length + 8 * 1),
       8 * 4,
-      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
+      EncodedLengthsLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length),
       data.thirdDataForUpdate
     );
 
@@ -1091,7 +1091,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
-    this.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    this.setRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     // Get data from indexed table - the indexer should have mirrored the data there
     (bytes memory indexedData, , ) = this.getRecord(indexerTableId, keyTuple, fieldLayout);
@@ -1160,7 +1160,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
     bytes memory dynamicData = abi.encodePacked(bytes("some string"));
-    PackedCounter encodedLengths = PackedCounterLib.pack(dynamicData.length);
+    EncodedLengths encodedLengths = EncodedLengthsLib.pack(dynamicData.length);
 
     // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
     vm.expectRevert(bytes("onBeforeSetRecord"));
@@ -1246,7 +1246,7 @@ contract StoreCoreTest is Test, StoreMock {
 
   struct RecordData {
     bytes staticData;
-    PackedCounter encodedLengths;
+    EncodedLengths encodedLengths;
     bytes dynamicData;
   }
 
@@ -1278,7 +1278,7 @@ contract StoreCoreTest is Test, StoreMock {
     bytes memory arrayDataBytes = EncodeArray.encode(arrayData);
     RecordData memory recordData = RecordData({
       staticData: abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10)),
-      encodedLengths: PackedCounterLib.pack(uint40(arrayDataBytes.length)),
+      encodedLengths: EncodedLengthsLib.pack(uint40(arrayDataBytes.length)),
       dynamicData: arrayDataBytes
     });
 
@@ -1347,9 +1347,9 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a Store_SetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit Store_SetRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    emit Store_SetRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
-    this.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    this.setRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
   }
 
   function testDeleteDataOffchainTable() public {
@@ -1385,9 +1385,9 @@ contract StoreCoreTest is Test, StoreMock {
       thirdDataBytes = EncodeArray.encode(thirdData);
     }
 
-    PackedCounter encodedDynamicLength;
+    EncodedLengths encodedDynamicLength;
     {
-      encodedDynamicLength = PackedCounterLib.pack(uint40(secondDataBytes.length), uint40(thirdDataBytes.length));
+      encodedDynamicLength = EncodedLengthsLib.pack(uint40(secondDataBytes.length), uint40(thirdDataBytes.length));
     }
 
     // Concat data

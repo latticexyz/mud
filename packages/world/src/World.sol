@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
-import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
 import { StoreData } from "./StoreData.sol";
@@ -139,7 +139,7 @@ contract World is StoreData, IWorldKernel {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes calldata dynamicData
   ) public virtual prohibitDirectCallback {
     // Require access to the namespace or name
