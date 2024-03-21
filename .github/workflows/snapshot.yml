@@ -32,8 +32,15 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Check for pre.json file existence
+        id: check_files
+        uses: andstor/file-existence-action@v2.0.0
+        with:
+          files: ".changeset/pre.json"
+
       # Remove this once https://github.com/changesets/changesets/issues/1195 is addressed
       - name: Temporarily exit pre-release mode to release a snapshot
+        if: steps.check_files.outputs.files_exists == 'true'
         run: pnpm changeset pre exit
 
       - name: Clean
