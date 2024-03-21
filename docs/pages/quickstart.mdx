@@ -14,33 +14,42 @@ To install the TypeScript templates you need:
   Note that version 18 is _required_.
   We do not support older or newer versions at the moment.
 
-  <details>
+    <details>
 
-  <summary>Installation instructions:</summary>
+      <summary>Installation instructions</summary>
 
-  {" "}
-  <Tabs items={["Linux and MacOS", "Windows"]}>
-    <Tab>
-      ```sh copy curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash nvm install 18 ```
-    </Tab>
+      <Tabs items={["Linux and MacOS", "Windows"]}>
+        <Tab>
+          ```sh copy
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash nvm install 18
+          ```
+        </Tab>
 
-    <Tab>
-      ```powershell copy # installs Chocolatey (Windows Package Manager) Set-ExecutionPolicy Bypass -Scope Process
-      -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol
-      -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')); #
-      download and install Node.js choco install nodejs --version="18.19.1" ```
-    </Tab>
-  </Tabs>
+        <Tab>
+        ```powershell copy
+          # installs Chocolatey (Windows Package Manager)
+          Set-ExecutionPolicy Bypass -Scope Process -Force;
+          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
+          iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));
 
-  </details>
+          # download and install Node.js
+          choco install nodejs --version="18.19.1"
+          ```
+        </Tab>
+      </Tabs>
+
+    </details>
 
 - [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
   <details>
 
-  <summary>Installation instructions:</summary>
+  {" "}
+
+  <summary>Installation instructions</summary>
 
   {" "}
+
   <Tabs items={["Linux (RedHat based)", "Linux (Debian based)", "MacOS", "Windows"]}>
     <Tab>```sh copy sudo dnf install git-all ```</Tab>
     <Tab>```sh copy sudo apt install git-all ```</Tab>
@@ -54,25 +63,27 @@ To install the TypeScript templates you need:
 
   <details>
 
-  <summary>Installation instructions:</summary>
+  {" "}
+
+  <summary>Installation instructions</summary>
 
     <Tabs items={['Linux and MacOS', 'Windows']}>
-    <Tab>
-      ```sh copy
-      curl -L https://foundry.paradigm.xyz | bash
-      export PATH=$PATH:~/.foundry/bin
-      ```
-    </Tab>
-    
-    <Tab>
-    1. Use either Git Bash (which you should already have because you installed git) or [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
 
-      1. Run the same commands you would on Linux and MacOS:
-
+      <Tab>
         ```sh copy
-        curl -L https://foundry.paradigm.xyz | bash
-        export PATH=$PATH:~/.foundry/bin
+        curl -L https://foundry.paradigm.xyz | bash export PATH=$PATH:~/.foundry/bin
         ```
+      </Tab>
+
+      <Tab>
+        1.  Use either Git Bash (which you should already have because you installed git) or [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+
+        1. Run the same commands you would on Linux and MacOS:
+
+           ```sh copy
+           curl -L https://foundry.paradigm.xyz | bash
+           export PATH=$PATH:~/.foundry/bin
+           ```
 
       </Tab>
 
@@ -81,9 +92,16 @@ To install the TypeScript templates you need:
   </details>
 
 - [pnpm, at least version 8](https://pnpm.io/)
-  ```sh copy
-  sudo npm install -g pnpm
-  ```
+
+    <details>
+
+      <summary>Installation instructions</summary>
+
+      ```sh copy
+      sudo npm install -g pnpm
+      ```
+
+    </details>
 
 ## Installation
 
@@ -95,6 +113,7 @@ To run any of the TypeScript templates:
    ```sh copy
    pnpm create mud tutorial
    ```
+
    <details>
 
    <summary>Possible errors in this stage</summary>
