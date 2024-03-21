@@ -10,8 +10,8 @@ pragma solidity >=0.8.24;
  */
 interface IEncodedLengthsErrors {
   /**
-   * @notice Error raised when the provided packed counter has an invalid length.
-   * @param length The length of the packed coutner.
+   * @notice Error raised when the provided encoded lengths has an invalid length.
+   * @param length The length of the encoded lengths.
    */
   error EncodedLengths_InvalidLength(uint256 length);
 }

@@ -19,7 +19,7 @@ export class InvalidHexLengthForSchemaError extends MUDError {
 export class InvalidHexLengthForEncodedLengthsError extends MUDError {
   override name = "InvalidHexLengthForEncodedLengthsError";
   constructor(value: Hex) {
-    super(`Hex value "${value}" has length of ${value.length - 2}, but expected length of 64 for a packed counter.`);
+    super(`Hex value "${value}" has length of ${value.length - 2}, but expected length of 64 for encoded lengths.`);
   }
 }
 

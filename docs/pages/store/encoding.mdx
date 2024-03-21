@@ -353,7 +353,7 @@ function _getStaticDataLocation(ResourceId tableId, bytes32[] memory keyTuple) i
 }
 ```
 
-The [encoded lengths](#encoded-lengths-packedcounter) of all dynamic length fields is stored in a single storage slot, which is determined by a hash of the table ID and the key tuple.
+The [encoded lengths](#encoded-lengths-encodedlengths) of all dynamic length fields is stored in a single storage slot, which is determined by a hash of the table ID and the key tuple.
 
 ```solidity
 function _getDynamicDataLengthLocation(ResourceId tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
@@ -376,7 +376,7 @@ function _getDynamicDataLocation(
 
 ## Events
 
-Data emitted as part of events uses the same encoding for [static length data](#static-length-data), [encoded lengths](#encoded-lengths-packedcounter) and [dynamic length data](#dynamic-length-data-encoding) as described above.
+Data emitted as part of events uses the same encoding for [static length data](#static-length-data), [encoded lengths](#encoded-lengths-encodedlengths) and [dynamic length data](#dynamic-length-data-encoding) as described above.
 
 Unlike the [layout in storage](#storage-layout), where each dynamic length data field is stored in its own storage location, in events all data of dynamic length fields is concatenated to a single `bytes` blob.
 The encoded lengths emitted as part of the event contain the information required to slice up this concatenated `bytes` blob into the individual fields.

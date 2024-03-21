@@ -7,7 +7,7 @@ import { IEncodedLengthsErrors } from "./IEncodedLengthsErrors.sol";
 /**
  * @title EncodedLengths Type Definition
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- * @dev Describes how the packed counter is structured.
+ * @dev Describes how the encoded lengths is structured.
  * - 0x00-0x06 The least significant 7 bytes (uint56) represent the total byte length of dynamic (variable length) data.
  * - 0x07-0xB The next five bytes (uint40) represent the length of the first dynamic field.
  * - 0x0C-0x10 Followed by the length of the second dynamic field
@@ -19,7 +19,7 @@ type EncodedLengths is bytes32;
 
 using EncodedLengthsInstance for EncodedLengths global;
 
-// Constants for packed counter handling:
+// Constants for encoded lengths handling:
 
 // Number of bits for the 7-byte accumulator
 uint256 constant ACC_BITS = 7 * BYTE_TO_BITS;
@@ -38,7 +38,7 @@ uint256 constant MAX_VAL = type(uint40).max;
 library EncodedLengthsLib {
   /**
    * @notice Packs a single value into a EncodedLengths.
-   * @dev Encodes the given value 'a' into the structure of a EncodedLengths. The packed counter's accumulator
+   * @dev Encodes the given value 'a' into the structure of a EncodedLengths. The encoded lengths's accumulator
    * will be set to 'a', and the first value slot of the EncodedLengths will also be set to 'a'.
    * @param a The length of the first dynamic field's data.
    * @return The resulting EncodedLengths containing the encoded value.
@@ -143,7 +143,7 @@ library EncodedLengthsInstance {
   /**
    * @notice Decode the accumulated counter from a EncodedLengths.
    * @dev Extracts the right-most 7 bytes of a EncodedLengths.
-   * @param encodedLengths The packed counter to decode.
+   * @param encodedLengths The encoded lengths to decode.
    * @return The accumulated value from the EncodedLengths.
    */
   function total(EncodedLengths encodedLengths) internal pure returns (uint256) {
@@ -153,7 +153,7 @@ library EncodedLengthsInstance {
   /**
    * @notice Decode the dynamic field size at a specific index from a EncodedLengths.
    * @dev Extracts value right-to-left, with 5 bytes per dynamic field after the right-most 7 bytes.
-   * @param encodedLengths The packed counter to decode.
+   * @param encodedLengths The encoded lengths to decode.
    * @param index The index to retrieve.
    * @return The value at the given index from the EncodedLengths.
    */
@@ -166,7 +166,7 @@ library EncodedLengthsInstance {
   /**
    * @notice Set a counter at a specific index in a EncodedLengths.
    * @dev Updates a value at a specific index and updates the accumulator field.
-   * @param encodedLengths The packed counter to modify.
+   * @param encodedLengths The encoded lengths to modify.
    * @param index The index to set.
    * @param newValueAtIndex The new value to set at the given index.
    * @return The modified EncodedLengths.
@@ -215,7 +215,7 @@ library EncodedLengthsInstance {
 
   /**
    * @notice Unwrap a EncodedLengths to its raw bytes32 representation.
-   * @param encodedLengths The packed counter to unwrap.
+   * @param encodedLengths The encoded lengths to unwrap.
    * @return The raw bytes32 value of the EncodedLengths.
    */
   function unwrap(EncodedLengths encodedLengths) internal pure returns (bytes32) {
