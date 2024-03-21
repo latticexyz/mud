@@ -1,5 +1,22 @@
 # Change Log
 
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [4a6b4598]
+  - @latticexyz/store@2.0.1
+  - @latticexyz/world@2.0.1
+  - @latticexyz/world-modules@2.0.1
+  - @latticexyz/abi-ts@2.0.1
+  - @latticexyz/common@2.0.1
+  - @latticexyz/config@2.0.1
+  - @latticexyz/gas-report@2.0.1
+  - @latticexyz/protocol-parser@2.0.1
+  - @latticexyz/schema-type@2.0.1
+  - @latticexyz/services@2.0.1
+  - @latticexyz/utils@2.0.1
+
 ## 2.0.0
 
 ### Major Changes

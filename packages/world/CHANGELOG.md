@@ -1,5 +1,21 @@
 # Change Log
 
+## 2.0.1
+
+### Patch Changes
+
+- 4a6b4598: Minor fixes to config input validations:
+
+  - `systems.openAccess` incorrectly expected `true` as the only valid input. It now allows `boolean`.
+  - The config complained if parts of it were defined `as const` outside the config input. This is now possible.
+  - Shorthand inputs are now enabled.
+
+- Updated dependencies [4a6b4598]
+  - @latticexyz/store@2.0.1
+  - @latticexyz/common@2.0.1
+  - @latticexyz/config@2.0.1
+  - @latticexyz/schema-type@2.0.1
+
 ## 2.0.0
 
 ### Major Changes
