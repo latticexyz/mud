@@ -14,17 +14,18 @@ Let's say we're making a game where players can move around a map. The definitio
 
 <CollapseCode>
 
-```tsx filename="mud.config.ts" {3-11} showLineNumbers
-export default mudConfig({
+```tsx filename="mud.config.ts" {5-12} showLineNumbers
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
   tables: {
     Position: {
-      keySchema: {
+      schema: {
         player: "address",
-      },
-      valueSchema: {
         x: "int32",
         y: "int32",
       },
+      key: ["player"],
     },
   },
 });
@@ -62,26 +63,26 @@ Let's add another table for terrain at a given position on the map. MUD allows f
 
 <CollapseCode>
 
-```tsx filename="mud.config.ts" {12-20} showLineNumbers
-export default mudConfig({
+```tsx filename="mud.config.ts" {13-20} showLineNumbers
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
   tables: {
     Position: {
-      keySchema: {
+      schema: {
         player: "address",
-      },
-      valueSchema: {
         x: "int32",
         y: "int32",
       },
+      key: ["player"],
     },
     Terrain: {
-      keySchema: {
+      schema: {
         x: "int32",
         y: "int32",
-      },
-      valueSchema: {
         terrainType: "string",
       },
+      key: ["terrainType"],
     },
   },
 });
