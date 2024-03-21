@@ -1,0 +1,44 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+  pull_request:
+    paths:
+      - "docs/**"
+  workflow_dispatch:
+
+jobs:
+  linkcheck:
+    name: Check links
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setup prerequisites
+        uses: ./.github/actions/setup-prerequisites
+
+      - name: Install node dependencies
+        working-directory: docs
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        working-directory: docs
+        run: pnpm build
+
+      - name: Start
+        working-directory: docs
+        run: pnpm start &
+
+      # TODO: wait for server to be online?
+
+      - name: Check links
+        uses: filiph/linkcheck@3.0.0
+        with:
+          arguments: localhost:3000
