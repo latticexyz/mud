@@ -733,8 +733,8 @@ importers:
   packages/store:
     dependencies:
       '@arktype/util':
-        specifier: 0.0.25
-        version: 0.0.25
+        specifier: 0.0.27
+        version: 0.0.27
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -1028,8 +1028,8 @@ importers:
   packages/world:
     dependencies:
       '@arktype/util':
-        specifier: 0.0.25
-        version: 0.0.25
+        specifier: 0.0.27
+        version: 0.0.27
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -1243,8 +1243,8 @@ packages:
     resolution: {integrity: sha512-MwtDGjbgfXWxlExjIL78HvPlWOma1XFEcDd3VWuCPMt/f+3TR7fXyiGFNlIYZGOYdOIU7qgjaE8dmbd6jdJa3Q==}
     dev: true
 
-  /@arktype/util@0.0.25:
-    resolution: {integrity: sha512-rcUpLkSNC6mA9qSesSL2WvSLzEbyh2VvzeLcywE6i6bp9TPLpB6G3k5cpVjM3bCE6bpZmTR2SR3ybZuQ+tCvbw==}
+  /@arktype/util@0.0.27:
+    resolution: {integrity: sha512-ZkPuSU8Q56YVgPInFhojLTujejM+VPfaZx6Guop41CvnozWFOTlC0uAHuDqvY4nYq3zXsMkRwm8LmaRZ3mslMg==}
     dev: false
 
   /@babel/code-frame@7.21.4:
