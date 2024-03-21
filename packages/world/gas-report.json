@@ -105,7 +105,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterDelegationWithSignature",
     "name": "register an unlimited delegation with signature",
-    "gasUsed": 117456
+    "gasUsed": 117636
   },
   {
     "file": "test/World.t.sol",
