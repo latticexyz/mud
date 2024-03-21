@@ -1,4 +1,4 @@
-import { Table } from "@latticexyz/store";
+import { Table } from "@latticexyz/store/internal";
 import { TableToComponent, tableToComponent } from "./tableToComponent";
 import { mapObject } from "@latticexyz/common/utils";
 import { World } from "@latticexyz/recs";

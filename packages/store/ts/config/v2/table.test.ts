@@ -1,357 +1,150 @@
-import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { resolveTableConfig } from "./table";
-import { Table } from "./output";
-import { AbiTypeScope, extendScope } from "./scope";
-import { Hex } from "viem";
-import { TABLE_CODEGEN_DEFAULTS } from "./defaults";
+import { describe, it } from "vitest";
+import { getStaticAbiTypeKeys, AbiTypeScope, extendScope } from "./scope";
+import { validateKeys, defineTable } from "./table";
+import { TABLE_CODEGEN_DEFAULTS, TABLE_DEPLOY_DEFAULTS } from "./defaults";
+import { resourceToHex } from "@latticexyz/common";
+import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
-describe("resolveTableConfig", () => {
-  it("should expand a single ABI type into a key/value schema", () => {
-    const table = resolveTableConfig("address");
-    const expected = {
-      tableId: "0x" as Hex,
-      schema: {
-        id: {
-          type: "bytes32",
-          internalType: "bytes32",
-        },
-        value: {
-          type: "address",
-          internalType: "address",
-        },
-      },
-      keySchema: {
-        id: {
-          type: "bytes32",
-          internalType: "bytes32",
-        },
-      },
-      valueSchema: {
-        value: {
-          type: "address",
-          internalType: "address",
-        },
-      },
-      key: ["id"],
-      name: "",
-      namespace: "",
-      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-      type: "table",
-    } as const;
-
-    attest<typeof expected>(table).equals(expected);
+describe("validateKeys", () => {
+  it("should return a tuple of valid keys", () => {
+    attest<
+      ["static"],
+      validateKeys<getStaticAbiTypeKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>, ["static"]>
+    >();
   });
 
-  it("should expand a single custom type into a key/value schema", () => {
-    const scope = extendScope(AbiTypeScope, { CustomType: "address" });
-    const table = resolveTableConfig("CustomType", scope);
-    const expected = {
-      tableId: "0x" as Hex,
-      schema: {
-        id: {
-          type: "bytes32",
-          internalType: "bytes32",
-        },
-        value: {
-          type: "address",
-          internalType: "CustomType",
-        },
-      },
-      keySchema: {
-        id: {
-          type: "bytes32",
-          internalType: "bytes32",
-        },
-      },
-      valueSchema: {
-        value: {
-          type: "address",
-          internalType: "CustomType",
-        },
-      },
-      key: ["id"],
-      name: "",
-      namespace: "",
-      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-      type: "table",
-    } as const;
+  it("should return a tuple of valid keys with an extended scope", () => {
+    const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
 
-    attest<typeof expected>(table).equals(expected);
+    attest<
+      ["static", "customStatic"],
+      validateKeys<
+        getStaticAbiTypeKeys<
+          { static: "uint256"; dynamic: "string"; customStatic: "static"; customDynamic: "dynamic" },
+          typeof scope
+        >,
+        ["static", "customStatic"]
+      >
+    >();
   });
 
-  it("should use `id` as single key if it has a static ABI type", () => {
-    const table = resolveTableConfig({ id: "address", name: "string", age: "uint256" });
-    const expected = {
-      tableId: "0x" as Hex,
-      schema: {
-        id: {
-          type: "address",
-          internalType: "address",
-        },
-        name: {
-          type: "string",
-          internalType: "string",
-        },
-        age: {
-          type: "uint256",
-          internalType: "uint256",
-        },
-      },
-      keySchema: {
-        id: {
-          type: "address",
-          internalType: "address",
-        },
-      },
-      valueSchema: {
-        name: {
-          type: "string",
-          internalType: "string",
-        },
-        age: {
-          type: "uint256",
-          internalType: "uint256",
-        },
-      },
-      key: ["id"],
-      name: "",
-      namespace: "",
-      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-      type: "table",
-    } as const;
+  it("should return a tuple of valid keys with an extended scope", () => {
+    const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
 
-    attest<typeof expected>(table).equals(expected);
+    attest<
+      ["static", "customStatic"],
+      validateKeys<
+        getStaticAbiTypeKeys<
+          { static: "uint256"; dynamic: "string"; customStatic: "static"; customDynamic: "dynamic" },
+          typeof scope
+        >,
+        ["static", "customStatic"]
+      >
+    >();
   });
+});
 
-  it("should use `id` as single key if it has a static custom type", () => {
-    const scope = extendScope(AbiTypeScope, { CustomType: "uint256" });
-    const table = resolveTableConfig({ id: "CustomType", name: "string", age: "uint256" }, scope);
-    const expected = {
-      tableId: "0x" as Hex,
-      schema: {
-        id: {
-          type: "uint256",
-          internalType: "CustomType",
-        },
-        name: {
-          type: "string",
-          internalType: "string",
-        },
-        age: {
-          type: "uint256",
-          internalType: "uint256",
-        },
-      },
-      keySchema: {
-        id: {
-          type: "uint256",
-          internalType: "CustomType",
-        },
-      },
-      valueSchema: {
-        name: {
-          type: "string",
-          internalType: "string",
-        },
-        age: {
-          type: "uint256",
-          internalType: "uint256",
-        },
-      },
-      key: ["id"],
-      name: "",
-      namespace: "",
-      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-      type: "table",
-    } as const;
-
-    attest<typeof expected>(table);
-  });
-
-  it("should throw if the shorthand key is a dynamic ABI type", () => {
-    // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
-    attest(() => resolveTableConfig({ id: "string", name: "string", age: "uint256" })).throwsAndHasTypeError(
-      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
-    );
-  });
-
-  it("should throw if the shorthand key is a dyamic custom type", () => {
-    const scope = extendScope(AbiTypeScope, { CustomType: "bytes" });
-    // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
-    attest(() => resolveTableConfig({ id: "CustomType" }, scope)).throwsAndHasTypeError(
-      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
-    );
-  });
-
-  it("should throw if the shorthand key is neither a custom nor ABI type", () => {
-    // @ts-expect-error Argument of type '"NotAnAbiType"' is not assignable to parameter of type 'AbiType'
-    attest(() => resolveTableConfig("NotAnAbiType"))
-      .throws("Invalid ABI type. `NotAnAbiType` not found in scope.")
-      .type.errors(`Argument of type '"NotAnAbiType"' is not assignable to parameter of type 'AbiType'`);
-  });
-
-  it("should throw if the shorthand doesn't include a key field", () => {
-    // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
-    attest(() => resolveTableConfig({ name: "string", age: "uint256" })).throwsAndHasTypeError(
-      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
-    );
-  });
-
+describe("resolveTable", () => {
   it("should return the full config given a full config with one key", () => {
-    const table = resolveTableConfig({
+    const table = defineTable({
       schema: { id: "address", name: "string", age: "uint256" },
       key: ["age"],
+      name: "",
     });
+
     const expected = {
-      tableId: "0x" as Hex,
+      tableId: resourceToHex({ type: "table", namespace: "", name: "" }),
       schema: {
         id: { type: "address", internalType: "address" },
         name: { type: "string", internalType: "string" },
         age: { type: "uint256", internalType: "uint256" },
-      },
-      keySchema: {
-        age: { type: "uint256", internalType: "uint256" },
-      },
-      valueSchema: {
-        id: { type: "address", internalType: "address" },
-        name: { type: "string", internalType: "string" },
       },
       key: ["age"],
       name: "",
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
       type: "table",
+      deploy: TABLE_DEPLOY_DEFAULTS,
     } as const;
 
     attest<typeof expected>(table).equals(expected);
   });
 
   it("should return the full config given a full config with two key", () => {
-    const table = resolveTableConfig({
+    const table = defineTable({
       schema: { id: "address", name: "string", age: "uint256" },
       key: ["age", "id"],
+      name: "",
     });
     const expected = {
-      tableId: "0x" as Hex,
+      tableId: resourceToHex({ type: "table", namespace: "", name: "" }),
       schema: {
         id: { type: "address", internalType: "address" },
         name: { type: "string", internalType: "string" },
         age: { type: "uint256", internalType: "uint256" },
-      },
-      keySchema: {
-        age: { type: "uint256", internalType: "uint256" },
-        id: { type: "address", internalType: "address" },
-      },
-      valueSchema: {
-        name: { type: "string", internalType: "string" },
       },
       key: ["age", "id"],
       name: "",
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
       type: "table",
+      deploy: TABLE_DEPLOY_DEFAULTS,
     } as const;
 
     attest<typeof expected>(table).equals(expected);
   });
 
-  it("should return the full config given a config with custom types as values", () => {
-    const scope = extendScope(AbiTypeScope, { CustomString: "string", CustomNumber: "uint256" });
-    const table = resolveTableConfig({ id: "address", name: "CustomString", age: "CustomNumber" }, scope);
+  it("should return the full config given a full config with custom type", () => {
+    const scope = extendScope(AbiTypeScope, { Static: "address", Dynamic: "string" });
+
+    const table = defineTable(
+      {
+        schema: { id: "Static", name: "Dynamic", age: "uint256" },
+        key: ["age"],
+        name: "",
+      },
+      scope,
+    );
+
     const expected = {
-      tableId: "0x" as Hex,
+      tableId: resourceToHex({ type: "table", namespace: "", name: "" }),
       schema: {
-        id: {
-          type: "address",
-          internalType: "address",
-        },
-        name: {
-          type: "string",
-          internalType: "CustomString",
-        },
-        age: {
-          type: "uint256",
-          internalType: "CustomNumber",
-        },
+        id: { type: "address", internalType: "Static" },
+        name: { type: "string", internalType: "Dynamic" },
+        age: { type: "uint256", internalType: "uint256" },
       },
-      keySchema: {
-        id: {
-          type: "address",
-          internalType: "address",
-        },
-      },
-      valueSchema: {
-        name: {
-          type: "string",
-          internalType: "CustomString",
-        },
-        age: {
-          type: "uint256",
-          internalType: "CustomNumber",
-        },
-      },
-      key: ["id"],
+      key: ["age"],
       name: "",
       namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
       type: "table",
+      deploy: TABLE_DEPLOY_DEFAULTS,
     } as const;
 
     attest<typeof expected>(table).equals(expected);
   });
 
-  it("should return the full config given a config with custom type as key", () => {
-    const scope = extendScope(AbiTypeScope, { CustomString: "string", CustomNumber: "uint256" });
-    const table = resolveTableConfig({ id: "CustomNumber", name: "CustomString", age: "CustomNumber" }, scope);
-    const expected = {
-      tableId: "0x" as Hex,
-      schema: {
-        id: {
-          type: "uint256",
-          internalType: "CustomNumber",
-        },
-        name: {
-          type: "string",
-          internalType: "CustomString",
-        },
-        age: {
-          type: "uint256",
-          internalType: "CustomNumber",
-        },
-      },
-      keySchema: {
-        id: {
-          type: "uint256",
-          internalType: "CustomNumber",
-        },
-      },
-      valueSchema: {
-        name: {
-          type: "string",
-          internalType: "CustomString",
-        },
-        age: {
-          type: "uint256",
-          internalType: "CustomNumber",
-        },
-      },
+  it("should pass through deploy config", () => {
+    const table = defineTable({
+      schema: { id: "address" },
       key: ["id"],
       name: "",
-      namespace: "",
-      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-      type: "table",
-    } as const;
+      deploy: { disabled: true },
+    });
 
-    attest<typeof expected>(table).equals(expected);
+    const expected = { disabled: true } as const;
+
+    attest<typeof expected>(table.deploy).equals(expected);
   });
 
   it("should throw if the provided key is a dynamic ABI type", () => {
     attest(() =>
-      resolveTableConfig({
+      defineTable({
         schema: { id: "address", name: "string", age: "uint256" },
         // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'
         key: ["name"],
+        name: "",
       }),
     )
       .throws('Invalid key. Expected `("id" | "age")[]`, received `["name"]`')
@@ -361,11 +154,12 @@ describe("resolveTableConfig", () => {
   it("should throw if the provided key is a dynamic ABI type if user types are provided", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "string" });
     attest(() =>
-      resolveTableConfig(
+      defineTable(
         {
           schema: { id: "address", name: "string", age: "uint256" },
           // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'
           key: ["name"],
+          name: "",
         },
         scope,
       ),
@@ -377,11 +171,12 @@ describe("resolveTableConfig", () => {
   it("should throw if the provided key is a dynamic custom type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "string" });
     attest(() =>
-      resolveTableConfig(
+      defineTable(
         {
           schema: { id: "CustomType", name: "string", age: "uint256" },
           // @ts-expect-error Type '"id"' is not assignable to type '"age"'
           key: ["id"],
+          name: "",
         },
         scope,
       ),
@@ -393,11 +188,12 @@ describe("resolveTableConfig", () => {
   it("should throw if the provided key is neither a custom nor ABI type", () => {
     const scope = extendScope(AbiTypeScope, { CustomType: "string" });
     attest(() =>
-      resolveTableConfig(
+      defineTable(
         {
           schema: { id: "address", name: "string", age: "uint256" },
           // @ts-expect-error Type '"NotAKey"' is not assignable to type '"id" | "age"'
           key: ["NotAKey"],
+          name: "",
         },
         scope,
       ),
@@ -406,9 +202,105 @@ describe("resolveTableConfig", () => {
       .type.errors(`Type '"NotAKey"' is not assignable to type '"id" | "age"'`);
   });
 
-  it("should extend the output Table type", () => {
-    const scope = extendScope(AbiTypeScope, { CustomString: "string", CustomNumber: "uint256" });
-    const table = resolveTableConfig({ id: "CustomNumber", name: "CustomString", age: "CustomNumber" }, scope);
-    attest<true, typeof table extends Table ? true : false>();
+  it("should throw if no key is provided", () => {
+    attest(() =>
+      // @ts-expect-error Property 'key' is missing in type
+      defineTable({
+        schema: { id: "address" },
+        name: "",
+      }),
+    )
+      .throws('Invalid key. Expected `("id")[]`, received `undefined')
+      .type.errors("Property 'key' is missing in type");
+  });
+
+  it("should throw if a string is provided as key", () => {
+    attest(() =>
+      defineTable({
+        schema: { id: "address" },
+        // @ts-expect-error Type 'string' is not assignable to type 'string[]'
+        key: "",
+        name: "",
+      }),
+    )
+      .throws('Invalid key. Expected `("id")[]`, received ``')
+      .type.errors("Type 'string' is not assignable to type 'string[]'");
+  });
+
+  it("should throw if a string is provided as schema", () => {
+    attest(() =>
+      defineTable({
+        // @ts-expect-error Type 'string' is not assignable to type 'SchemaInput'.
+        schema: "uint256",
+        key: [],
+        name: "",
+      }),
+    )
+      .throws('Error: Expected schema, received "uint256"')
+      .type.errors("Type 'string' is not assignable to type 'SchemaInput'.");
+  });
+
+  it("should throw if an unknown key is provided", () => {
+    attest(() =>
+      defineTable({
+        schema: { id: "address" },
+        key: ["id"],
+        name: "",
+        // @ts-expect-error Key `keySchema` does not exist in TableInput
+        keySchema: { id: "address" },
+      }),
+    ).type.errors("Key `keySchema` does not exist in TableInput ");
+  });
+});
+
+// TODO: move tests to protocol parser after we add arktype
+describe("getKeySchema", () => {
+  it("should return the fields of the schema that are part of the key", () => {
+    const scope = extendScope(AbiTypeScope, { Static: "address", Dynamic: "string" });
+    const table = defineTable(
+      {
+        schema: { id: "Static", name: "Dynamic", age: "uint256" },
+        key: ["age"],
+        name: "",
+      },
+      scope,
+    );
+
+    const expected = {
+      age: {
+        type: "uint256",
+        internalType: "uint256",
+      },
+    } as const;
+
+    attest<typeof expected>(getKeySchema(table)).equals(expected);
+  });
+});
+
+// TODO: move tests to protocol parser after we add arktype
+describe("getValueSchema", () => {
+  it("should return the fields of the schema that are not part of the key", () => {
+    const scope = extendScope(AbiTypeScope, { Static: "address", Dynamic: "string" });
+    const table = defineTable(
+      {
+        schema: { id: "Static", name: "Dynamic", age: "uint256" },
+        key: ["age"],
+        name: "",
+      },
+      scope,
+    );
+
+    const expected = {
+      id: {
+        type: "address",
+        internalType: "Static",
+      },
+      name: {
+        type: "string",
+        internalType: "Dynamic",
+      },
+    } as const;
+
+    attest<typeof expected>(getValueSchema(table)).equals(expected);
   });
 });

@@ -19,7 +19,7 @@ function onBeforeSetRecord(
   ResourceId tableId,
   bytes32[] memory keyTuple,
   bytes memory staticData,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes memory dynamicData,
   FieldLayout fieldLayout
 ) external;
@@ -27,14 +27,14 @@ function onBeforeSetRecord(
 
 **Parameters**
 
-| Name             | Type            | Description                                             |
-| ---------------- | --------------- | ------------------------------------------------------- |
-| `tableId`        | `ResourceId`    | The ID of the table where the record is to be set.      |
-| `keyTuple`       | `bytes32[]`     | An array representing the composite key for the record. |
-| `staticData`     | `bytes`         | The static data of the record.                          |
-| `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.  |
-| `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
-| `fieldLayout`    | `FieldLayout`   | The layout of the field, see FieldLayout.sol.           |
+| Name             | Type             | Description                                             |
+| ---------------- | ---------------- | ------------------------------------------------------- |
+| `tableId`        | `ResourceId`     | The ID of the table where the record is to be set.      |
+| `keyTuple`       | `bytes32[]`      | An array representing the composite key for the record. |
+| `staticData`     | `bytes`          | The static data of the record.                          |
+| `encodedLengths` | `EncodedLengths` | The encoded lengths of the dynamic data of the record.  |
+| `dynamicData`    | `bytes`          | The dynamic data of the record.                         |
+| `fieldLayout`    | `FieldLayout`    | The layout of the field, see FieldLayout.sol.           |
 
 #### onAfterSetRecord
 
@@ -45,7 +45,7 @@ function onAfterSetRecord(
   ResourceId tableId,
   bytes32[] memory keyTuple,
   bytes memory staticData,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes memory dynamicData,
   FieldLayout fieldLayout
 ) external;
@@ -53,14 +53,14 @@ function onAfterSetRecord(
 
 **Parameters**
 
-| Name             | Type            | Description                                             |
-| ---------------- | --------------- | ------------------------------------------------------- |
-| `tableId`        | `ResourceId`    | The ID of the table where the record was set.           |
-| `keyTuple`       | `bytes32[]`     | An array representing the composite key for the record. |
-| `staticData`     | `bytes`         | The static data of the record.                          |
-| `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.  |
-| `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
-| `fieldLayout`    | `FieldLayout`   | The layout of the field, see FieldLayout.sol.           |
+| Name             | Type             | Description                                             |
+| ---------------- | ---------------- | ------------------------------------------------------- |
+| `tableId`        | `ResourceId`     | The ID of the table where the record was set.           |
+| `keyTuple`       | `bytes32[]`      | An array representing the composite key for the record. |
+| `staticData`     | `bytes`          | The static data of the record.                          |
+| `encodedLengths` | `EncodedLengths` | The encoded lengths of the dynamic data of the record.  |
+| `dynamicData`    | `bytes`          | The dynamic data of the record.                         |
+| `fieldLayout`    | `FieldLayout`    | The layout of the field, see FieldLayout.sol.           |
 
 #### onBeforeSpliceStaticData
 
@@ -126,22 +126,22 @@ function onBeforeSpliceDynamicData(
   uint8 dynamicFieldIndex,
   uint40 startWithinField,
   uint40 deleteCount,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes memory data
 ) external;
 ```
 
 **Parameters**
 
-| Name                | Type            | Description                                                                    |
-| ------------------- | --------------- | ------------------------------------------------------------------------------ |
-| `tableId`           | `ResourceId`    | The ID of the table where the data is to be spliced.                           |
-| `keyTuple`          | `bytes32[]`     | An array representing the composite key for the record.                        |
-| `dynamicFieldIndex` | `uint8`         | The index of the dynamic field.                                                |
-| `startWithinField`  | `uint40`        | The start byte position within the field for splicing.                         |
-| `deleteCount`       | `uint40`        | The number of bytes to delete in the dynamic data of the record.               |
-| `encodedLengths`    | `PackedCounter` | The encoded lengths of the dynamic data of the record.                         |
-| `data`              | `bytes`         | The data to be inserted into the dynamic data of the record at the start byte. |
+| Name                | Type             | Description                                                                    |
+| ------------------- | ---------------- | ------------------------------------------------------------------------------ |
+| `tableId`           | `ResourceId`     | The ID of the table where the data is to be spliced.                           |
+| `keyTuple`          | `bytes32[]`      | An array representing the composite key for the record.                        |
+| `dynamicFieldIndex` | `uint8`          | The index of the dynamic field.                                                |
+| `startWithinField`  | `uint40`         | The start byte position within the field for splicing.                         |
+| `deleteCount`       | `uint40`         | The number of bytes to delete in the dynamic data of the record.               |
+| `encodedLengths`    | `EncodedLengths` | The encoded lengths of the dynamic data of the record.                         |
+| `data`              | `bytes`          | The data to be inserted into the dynamic data of the record at the start byte. |
 
 #### onAfterSpliceDynamicData
 
@@ -157,22 +157,22 @@ function onAfterSpliceDynamicData(
   uint8 dynamicFieldIndex,
   uint40 startWithinField,
   uint40 deleteCount,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes memory data
 ) external;
 ```
 
 **Parameters**
 
-| Name                | Type            | Description                                                              |
-| ------------------- | --------------- | ------------------------------------------------------------------------ |
-| `tableId`           | `ResourceId`    | The ID of the table where the data was spliced.                          |
-| `keyTuple`          | `bytes32[]`     | An array representing the composite key for the record.                  |
-| `dynamicFieldIndex` | `uint8`         | The index of the dynamic field.                                          |
-| `startWithinField`  | `uint40`        | The start byte position within the field for splicing.                   |
-| `deleteCount`       | `uint40`        | The number of bytes deleted in the dynamic data of the record.           |
-| `encodedLengths`    | `PackedCounter` | The encoded lengths of the dynamic data of the record.                   |
-| `data`              | `bytes`         | The data inserted into the dynamic data of the record at the start byte. |
+| Name                | Type             | Description                                                              |
+| ------------------- | ---------------- | ------------------------------------------------------------------------ |
+| `tableId`           | `ResourceId`     | The ID of the table where the data was spliced.                          |
+| `keyTuple`          | `bytes32[]`      | An array representing the composite key for the record.                  |
+| `dynamicFieldIndex` | `uint8`          | The index of the dynamic field.                                          |
+| `startWithinField`  | `uint40`         | The start byte position within the field for splicing.                   |
+| `deleteCount`       | `uint40`         | The number of bytes deleted in the dynamic data of the record.           |
+| `encodedLengths`    | `EncodedLengths` | The encoded lengths of the dynamic data of the record.                   |
+| `data`              | `bytes`          | The data inserted into the dynamic data of the record at the start byte. |
 
 #### onBeforeDeleteRecord
 

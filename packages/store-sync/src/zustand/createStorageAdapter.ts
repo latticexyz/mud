@@ -1,4 +1,4 @@
-import { Tables } from "@latticexyz/store";
+import { Tables } from "@latticexyz/store/internal";
 import { StorageAdapter } from "../common";
 import { RawRecord, TableRecord } from "./common";
 import { ZustandStore } from "./createStore";

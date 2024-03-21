@@ -1,4 +1,4 @@
-import { Table, SchemaToPrimitives } from "@latticexyz/store";
+import { Table, SchemaToPrimitives } from "@latticexyz/store/internal";
 import { Hex } from "viem";
 
 export type RawRecord = {

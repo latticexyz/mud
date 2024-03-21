@@ -1,61 +1,75 @@
 import { conform } from "@arktype/util";
-import { Config, Table } from "./output";
+import { Schema, Store, Table } from "./output";
 import { mapObject } from "@latticexyz/common/utils";
+import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
-export type configToV1<config> = config extends Config
+export type storeToV1<store> = store extends Store
   ? {
-      namespace: config["namespace"];
-      enums: { [key in keyof config["enums"]]: string[] };
+      namespace: store["namespace"] extends "" ? "" : string;
+      enums: { [key in keyof store["enums"]]: string[] };
       userTypes: {
-        [key in keyof config["userTypes"]]: {
-          internalType: config["userTypes"][key]["type"];
+        [key in keyof store["userTypes"]]: {
+          internalType: store["userTypes"][key]["type"];
           filePath: string;
         };
       };
-      storeImportPath: config["codegen"]["storeImportPath"];
-      userTypesFilename: config["codegen"]["userTypesFilename"];
-      codegenDirectory: config["codegen"]["codegenDirectory"];
-      codegenIndexFilename: config["codegen"]["codegenIndexFilename"];
-      tables: { [key in keyof config["tables"]]: tableToV1<config["tables"][key]> };
+      storeImportPath: store["codegen"]["storeImportPath"];
+      userTypesFilename: store["codegen"]["userTypesFilename"];
+      codegenDirectory: store["codegen"]["outputDirectory"];
+      codegenIndexFilename: store["codegen"]["indexFilename"];
+      tables: {
+        [key in keyof store["tables"] as store["tables"][key]["name"]]: tableToV1<store["tables"][key]>;
+      };
+      v2: store;
     }
   : never;
 
+type schemaToV1<schema extends Schema> = { [key in keyof schema]: schema[key]["internalType"] };
+
 export type tableToV1<table extends Table> = {
-  directory: table["codegen"]["directory"];
+  directory: table["codegen"]["outputDirectory"];
   dataStruct: table["codegen"]["dataStruct"];
   tableIdArgument: table["codegen"]["tableIdArgument"];
   storeArgument: table["codegen"]["storeArgument"];
-  keySchema: { [key in keyof table["keySchema"]]: table["keySchema"][key]["internalType"] };
-  valueSchema: { [key in keyof table["valueSchema"]]: table["valueSchema"][key]["internalType"] };
+  keySchema: schemaToV1<getKeySchema<table>>;
+  valueSchema: schemaToV1<getValueSchema<table>>;
   offchainOnly: Table extends table ? boolean : table["type"] extends "table" ? false : true;
   name: table["name"];
 };
 
-export function configToV1<config>(config: conform<config, Config>): configToV1<config> {
-  const resolvedUserTypes = mapObject(config.userTypes, ({ type, filePath }) => ({
+export function storeToV1<store>(store: conform<store, Store>): storeToV1<store> {
+  const resolvedUserTypes = mapObject(store.userTypes, ({ type, filePath }) => ({
     internalType: type,
     filePath,
   }));
 
-  const resolvedTables = mapObject(config.tables, (table) => ({
-    directory: table.codegen.directory,
-    dataStruct: table.codegen.dataStruct,
-    tableIdArgument: table.codegen.tableIdArgument,
-    storeArgument: table.codegen.storeArgument,
-    keySchema: mapObject(table.keySchema, (field) => field.internalType),
-    valueSchema: mapObject(table.valueSchema, (field) => field.internalType),
-    offchainOnly: table.type === "offchainTable",
-    name: table.name,
-  }));
+  const resolvedTables = Object.fromEntries(
+    Object.values(store.tables).map((table) => {
+      return [
+        table.name,
+        {
+          directory: table.codegen.outputDirectory,
+          dataStruct: table.codegen.dataStruct,
+          tableIdArgument: table.codegen.tableIdArgument,
+          storeArgument: table.codegen.storeArgument,
+          keySchema: mapObject(getKeySchema(table), (field) => field.internalType),
+          valueSchema: mapObject(getValueSchema(table), (field) => field.internalType),
+          offchainOnly: table.type === "offchainTable",
+          name: table.name,
+        },
+      ];
+    }),
+  );
 
   return {
-    namespace: config.namespace,
-    enums: config.enums,
+    namespace: store.namespace,
+    enums: store.enums,
     userTypes: resolvedUserTypes,
-    storeImportPath: config.codegen.storeImportPath,
-    userTypesFilename: config.codegen.userTypesFilename,
-    codegenDirectory: config.codegen.codegenDirectory,
-    codegenIndexFilename: config.codegen.codegenIndexFilename,
+    storeImportPath: store.codegen.storeImportPath,
+    userTypesFilename: store.codegen.userTypesFilename,
+    codegenDirectory: store.codegen.outputDirectory,
+    codegenIndexFilename: store.codegen.indexFilename,
     tables: resolvedTables,
-  } as unknown as configToV1<config>;
+    v2: store,
+  } as unknown as storeToV1<store>;
 }

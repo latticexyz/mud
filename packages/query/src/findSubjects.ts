@@ -1,5 +1,5 @@
 import { encodeAbiParameters } from "viem";
-import { Table } from "@latticexyz/store/config/v2";
+import { Table } from "@latticexyz/config";
 import { groupBy, uniqueBy } from "@latticexyz/common/utils";
 import { Query, SubjectRecords } from "./api";
 import { matchRecords } from "./matchRecords";

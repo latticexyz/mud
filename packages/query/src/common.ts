@@ -1,6 +1,6 @@
 import { StaticPrimitiveType } from "@latticexyz/schema-type/internal";
-import { SchemaToPrimitives } from "@latticexyz/store";
-import { Table } from "@latticexyz/store/config/v2";
+import { SchemaToPrimitives } from "@latticexyz/store/internal";
+import { Table } from "@latticexyz/config";
 import { Hex } from "viem";
 
 export type TableRecord<table extends Table> = {
