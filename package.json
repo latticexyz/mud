@@ -39,6 +39,7 @@
   "devDependencies": {
     "@arktype/attest": "0.6.4",
     "@changesets/cli": "^2.26.1",
+    "@types/glob": "^7.2.0",
     "@types/node": "^18.15.11",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
@@ -46,6 +47,7 @@
     "chalk": "^5.2.0",
     "eslint": "8.57.0",
     "execa": "^7.0.0",
+    "glob": "^8.0.3",
     "husky": ">=6",
     "lint-staged": ">=10",
     "prettier": "3.2.5",
