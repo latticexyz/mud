@@ -3,50 +3,32 @@ pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-bytes32 constant EIP712DOMAIN_TYPEHASH = keccak256(
-  "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-);
 bytes32 constant DELEGATION_TYPEHASH = keccak256(
   "Delegation(address delegatee,bytes32 delegationControlId,bytes initCallData,uint256 nonce)"
 );
 
-string constant name = "batman";
-string constant version = "134";
-bytes32 constant hashedName = keccak256(bytes(name));
-bytes32 constant hashedVersion = keccak256(bytes(version));
-address constant verifyingContract = 0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC;
-
-function toTypedDataHash(bytes32 domainSeparator, bytes32 structHash) pure returns (bytes32 digest) {
-  /// @solidity memory-safe-assembly
-  assembly {
-    let ptr := mload(0x40)
-    mstore(ptr, hex"19_01")
-    mstore(add(ptr, 0x02), domainSeparator)
-    mstore(add(ptr, 0x22), structHash)
-    digest := keccak256(ptr, 0x42)
-  }
-}
-
-function _buildDomainSeparator() view returns (bytes32) {
-  return keccak256(abi.encode(EIP712DOMAIN_TYPEHASH, hashedName, hashedVersion, block.chainid, verifyingContract));
-}
-
-function _domainSeparatorV4() view returns (bytes32) {
-  return _buildDomainSeparator();
-}
-
-function _hashTypedDataV4(bytes32 structHash) view returns (bytes32) {
-  return toTypedDataHash(_domainSeparatorV4(), structHash);
-}
+bytes32 constant DOMAIN_SEPARATOR = keccak256(
+  abi.encode(
+    keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+    keccak256("App Name"),
+    keccak256("1"),
+    1,
+    0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC
+  )
+);
 
 function getSignedMessageHash(
   address delegatee,
   ResourceId delegationControlId,
   bytes memory initCallData,
   uint256 nonce
-) view returns (bytes32) {
+) pure returns (bytes32) {
   return
-    _hashTypedDataV4(
-      keccak256(abi.encode(DELEGATION_TYPEHASH, delegatee, delegationControlId, keccak256(initCallData), nonce))
+    keccak256(
+      abi.encodePacked(
+        "\x19\x01",
+        DOMAIN_SEPARATOR,
+        keccak256(abi.encode(DELEGATION_TYPEHASH, delegatee, delegationControlId, keccak256(initCallData), nonce))
+      )
     );
 }
