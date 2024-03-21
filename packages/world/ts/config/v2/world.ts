@@ -15,11 +15,11 @@ import {
 } from "@latticexyz/store/config/v2";
 import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS } from "./defaults";
-import { Tables } from "@latticexyz/store";
+import { Tables } from "@latticexyz/store/internal";
 import { resolveSystems } from "./systems";
 import { resolveNamespacedTables, validateNamespaces } from "./namespaces";
 import { resolveCodegen } from "./codegen";
-import { resolveDeployment } from "./deployment";
+import { resolveDeploy } from "./deploy";
 
 export type validateWorld<world> = {
   readonly [key in keyof world]: key extends "tables"
@@ -58,8 +58,8 @@ export type resolveWorld<world> = evaluate<
         {
           [key in keyof world]: key extends "systems"
             ? resolveSystems<world[key] & SystemsInput>
-            : key extends "deployment"
-              ? resolveDeployment<world[key]>
+            : key extends "deploy"
+              ? resolveDeploy<world[key]>
               : key extends "codegen"
                 ? resolveCodegen<world[key]>
                 : world[key];
@@ -77,7 +77,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
   const resolvedNamespacedTables = Object.fromEntries(
     Object.entries(namespaces)
       .map(([namespaceKey, namespace]) =>
-        Object.entries(namespace.tables).map(([tableKey, table]) => {
+        Object.entries(namespace.tables ?? {}).map(([tableKey, table]) => {
           validateTable(table, scope);
           return [
             `${namespaceKey}__${tableKey}`,
@@ -95,7 +95,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
       ...resolvedStore,
       tables: { ...resolvedStore.tables, ...resolvedNamespacedTables },
       codegen: mergeIfUndefined(resolvedStore.codegen, resolveCodegen(world.codegen)),
-      deployment: resolveDeployment(world.deployment),
+      deploy: resolveDeploy(world.deploy),
       systems: resolveSystems(world.systems ?? CONFIG_DEFAULTS.systems),
       excludeSystems: get(world, "excludeSystems"),
       modules: world.modules,
@@ -105,6 +105,14 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
 }
 
 export function defineWorld<const world>(world: validateWorld<world>): resolveWorld<world> {
+  validateWorld(world);
+  return resolveWorld(world) as unknown as resolveWorld<world>;
+}
+
+// Temporary external export of defineWorld with namespaces disabled
+export function defineWorldWithoutNamespaces<const world>(
+  world: validateWorld<world> & { namespaces?: `Namespaces will be enabled soon` },
+): resolveWorld<world> {
   validateWorld(world);
   return resolveWorld(world) as unknown as resolveWorld<world>;
 }

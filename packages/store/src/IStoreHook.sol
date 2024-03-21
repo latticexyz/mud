@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import { FieldLayout } from "./FieldLayout.sol";
 import { IERC165 } from "./IERC165.sol";
-import { PackedCounter } from "./PackedCounter.sol";
+import { EncodedLengths } from "./EncodedLengths.sol";
 import { ResourceId } from "./ResourceId.sol";
 
 /**
@@ -27,7 +27,7 @@ interface IStoreHook is IERC165 {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) external;
@@ -45,7 +45,7 @@ interface IStoreHook is IERC165 {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) external;
@@ -100,7 +100,7 @@ interface IStoreHook is IERC165 {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory data
   ) external;
 
@@ -122,7 +122,7 @@ interface IStoreHook is IERC165 {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory data
   ) external;
 

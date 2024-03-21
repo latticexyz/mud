@@ -6,7 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { Storage } from "../src/Storage.sol";
-import { PackedCounter } from "../src/PackedCounter.sol";
+import { EncodedLengths } from "../src/EncodedLengths.sol";
 
 import { Mixed, MixedData } from "./codegen/index.sol";
 
@@ -44,16 +44,16 @@ contract GasTest is Test, GasReporter {
     endGasReport();
 
     startGasReport("custom encode (length)");
-    PackedCounter packedCounter = Mixed.encodeLengths(mixed.a32, mixed.s);
+    EncodedLengths encodedLengths = Mixed.encodeLengths(mixed.a32, mixed.s);
     endGasReport();
-    PackedCounter.unwrap(packedCounter);
+    EncodedLengths.unwrap(encodedLengths);
 
     startGasReport("custom encode (dynamic)");
     bytes memory customEncodedDynamic = Mixed.encodeDynamic(mixed.a32, mixed.s);
     endGasReport();
 
     startGasReport("custom encode");
-    (bytes memory customEncodedStatic2, PackedCounter customEncodedLengths, bytes memory customEncodedDynamic2) = Mixed
+    (bytes memory customEncodedStatic2, EncodedLengths customEncodedLengths, bytes memory customEncodedDynamic2) = Mixed
       .encode(mixed.u32, mixed.u128, mixed.a32, mixed.s);
     endGasReport();
 

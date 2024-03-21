@@ -6,7 +6,6 @@ import { Address } from "viem";
 import { getBlock, getBlockNumber } from "viem/actions";
 import { QueryCacheStore, createStore } from "../createStore";
 import { createStorageAdapter } from "../createStorageAdapter";
-import { getTables } from "../getTables";
 
 export { config };
 
@@ -14,7 +13,7 @@ export async function createHydratedStore(worldAddress: Address): Promise<{
   store: QueryCacheStore<(typeof config)["tables"]>;
   fetchLatestLogs: () => Promise<bigint>;
 }> {
-  const store = createStore({ tables: getTables(config) });
+  const store = createStore({ tables: config.tables });
   const storageAdapter = createStorageAdapter({ store });
 
   let lastBlockProcessed = (await getBlock(testClient, { blockTag: "earliest" })).number - 1n;

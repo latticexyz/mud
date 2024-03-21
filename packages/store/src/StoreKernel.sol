@@ -2,21 +2,21 @@
 pragma solidity >=0.8.24;
 
 import { STORE_VERSION } from "./version.sol";
-import { IStoreData } from "./IStoreData.sol";
+import { IStore } from "./IStore.sol";
 import { StoreRead } from "./StoreRead.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { IStoreEvents } from "./IStoreEvents.sol";
+import { IStoreKernel } from "./IStoreKernel.sol";
 
 /**
- * @title Store Data Contract
+ * @title StoreKernel Contract
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- * @notice This contract integrates the core storage functionalities and provides an interface for data storage.
- * @dev This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
- * but not write methods.
+ * @notice This contract integrates the storage functionalities except registration and provides an interface for data storage.
+ * @dev This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods.
  */
-abstract contract StoreData is IStoreData, StoreRead {
+abstract contract StoreKernel is IStoreKernel, StoreRead {
   /**
-   * @notice Constructs the StoreData contract and initializes the StoreCore.
+   * @notice Constructs the StoreKernel contract and initializes the StoreCore.
    * @dev Emits a HelloStore event upon creation.
    */
   constructor() {

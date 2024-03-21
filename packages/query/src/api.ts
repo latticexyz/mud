@@ -1,8 +1,8 @@
 import { Hex } from "viem";
 import { StaticPrimitiveType, DynamicPrimitiveType, SchemaAbiType } from "@latticexyz/schema-type/internal";
 import { satisfy } from "@latticexyz/common/type-utils";
-import { SchemaToPrimitives } from "@latticexyz/store";
-import { Table } from "@latticexyz/store/config/v2";
+import { SchemaToPrimitives } from "@latticexyz/store/internal";
+import { Table } from "@latticexyz/config";
 
 /**
  * These types represent the "over the wire" protocol (i.e. JSON) for the query API.

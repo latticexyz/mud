@@ -2,7 +2,7 @@ import { Hex } from "viem";
 import { DynamicAbiType, dynamicAbiTypes } from "./schemaAbiTypes";
 import { LiteralToBroad } from "./utils";
 
-// Variable-length ABI types, where their lengths are encoded by a PackedCounter within the record
+// Variable-length ABI types, where their lengths are encoded by EncodedLengths within the record
 
 export type DynamicPrimitiveType =
   | readonly number[]

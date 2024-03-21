@@ -1,4 +1,5 @@
-import { Store, Table } from "@latticexyz/store/config/v2";
+import { Store } from "@latticexyz/store";
+import { Table } from "@latticexyz/config";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
 import { ComparisonCondition, InCondition } from "@latticexyz/query";
 

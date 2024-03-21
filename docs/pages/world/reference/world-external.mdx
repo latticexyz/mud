@@ -12,21 +12,17 @@ that are dynamically registered in the World during deployment.
 
 _._
 
-### Functions
+## Store
 
-#### storeVersion
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/Store.sol)
 
-Retrieves the protocol version of the Store.
+**Inherits:**
+[IStore](/src/IStore.sol/interface.IStore.md), [StoreKernel](/src/StoreKernel.sol/abstract.StoreKernel.md)
 
-```solidity
-function storeVersion() public pure returns (bytes32);
-```
+This contract integrates the core storage functionalities and provides an interface for data storage.
 
-**Returns**
-
-| Name     | Type      | Description                        |
-| -------- | --------- | ---------------------------------- |
-| `<none>` | `bytes32` | The protocol version of the Store. |
+_This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
+but not write methods._
 
 #### registerTable
 
