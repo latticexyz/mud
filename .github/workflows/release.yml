@@ -53,4 +53,4 @@ jobs:
 
   docker:
     uses: ./.github/workflows/docker.yml
-    needs: version
+    needs: release
