@@ -501,6 +501,6 @@ describe("defineStore", () => {
       Example: ["First", "Second"],
     } as const;
 
-    defineStore({ enums });
+    attest(defineStore({ enums }).enums).equals(enums);
   });
 });
