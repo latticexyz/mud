@@ -8,9 +8,9 @@
 StoreKernel, [IWorldKernel](/world/reference/world-external#iworldkernel)
 
 _This contract is the core "World" contract containing various methods for
-data manipulation, system calls, and dynamic function selector handling.
-Note World unfortunately cannot inherit Store because some Store methods are
-registered via modules instead of directly on this contract._
+data manipulation, system calls, and dynamic function selector handling._
+
+_World doesn't inherit `Store` because the `IStoreRegistration` methods are added via the `InitModule`._
 
 ### State Variables
 
