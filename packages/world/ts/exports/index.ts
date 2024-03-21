@@ -6,5 +6,5 @@
 
 export { helloWorldEvent, worldDeployedEvent } from "../worldEvents";
 
-export { defineWorld } from "../config/v2/world";
+export { defineWorldWithShorthands as defineWorld } from "../config/v2/worldWithShorthands";
 export type { World } from "../config/v2/output";
