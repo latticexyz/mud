@@ -3,8 +3,6 @@ pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-string constant name = "App Name";
-string constant version = "1";
 address constant verifyingContract = 0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC;
 
 bytes32 constant DELEGATION_TYPEHASH = keccak256(
@@ -18,13 +16,7 @@ function getSignedMessageHash(
   uint256 nonce
 ) view returns (bytes32) {
   bytes32 domainSeperator = keccak256(
-    abi.encode(
-      keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
-      keccak256(bytes(name)),
-      keccak256(bytes(version)),
-      block.chainid,
-      verifyingContract
-    )
+    abi.encode(keccak256("EIP712Domain(uint256 chainId,address verifyingContract)"), block.chainid, verifyingContract)
   );
 
   return
