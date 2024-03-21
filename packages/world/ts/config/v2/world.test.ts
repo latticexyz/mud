@@ -729,12 +729,14 @@ describe("defineWorld", () => {
   });
 
   it("should allow setting openAccess of a system to false", () => {
-    defineWorld({
+    const config = defineWorld({
       systems: {
         Example: {
           openAccess: false,
         },
       },
     });
+
+    attest<false>(config.systems.Example.openAccess).equals(false);
   });
 });
