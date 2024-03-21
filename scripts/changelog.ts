@@ -100,6 +100,7 @@ async function getChanges(include: "diff" | "all") {
 
   if (include === "diff") {
     // Get the diff of the current branch to main
+    // --diff-filter=d excludes deleted files from diff (changesets deletes these files after release)
     changesetsToInclude = (await execa("git", ["diff", "--name-only", "--diff-filter=d", "main", ".changeset"])).stdout
       .trim()
       .split(/\s+/)
