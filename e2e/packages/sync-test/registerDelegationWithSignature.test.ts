@@ -16,7 +16,7 @@ import { worldToV1 } from "@latticexyz/world/config/v2";
 
 const worldConfigV1 = worldToV1(worldConfig);
 
-describe("register", async () => {
+describe("registerDelegationWithSignature.test", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
   let browser: Browser;
@@ -39,15 +39,24 @@ describe("register", async () => {
     await webserver.close();
   });
 
-  it("call the world", async () => {
+  it("calls the world", async () => {
     await openClientWithRootAccount(page);
     await waitForInitialSync(page);
 
-    const delegatee = "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377";
-    const delegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
-    const initCallData = "0x";
-    const nonce = 0n;
+    // Set up client
+    const clientOptions = {
+      chain: mudFoundry,
+      transport: transportObserver(http(mudFoundry.rpcUrls.default.http[0] ?? undefined)),
+      pollingInterval: 1000,
+    } as const satisfies ClientConfig;
 
+    const burnerAccount = createBurnerAccount("0x545824f54a7894601d34d6bb40a3dbb88064d3528a222914858fb32af616b89e");
+    const walletClient = createWalletClient({
+      ...clientOptions,
+      account: burnerAccount,
+    });
+
+    // Sign registration message
     const domain = {
       name: "App Name",
       version: "1",
@@ -64,30 +73,24 @@ describe("register", async () => {
       ],
     } as const;
 
-    const clientOptions = {
-      chain: mudFoundry,
-      transport: transportObserver(http(mudFoundry.rpcUrls.default.http[0] ?? undefined)),
-      pollingInterval: 1000,
-    } as const satisfies ClientConfig;
-
-    const burnerAccount = createBurnerAccount("0x545824f54a7894601d34d6bb40a3dbb88064d3528a222914858fb32af616b89e");
-    const walletClient = createWalletClient({
-      ...clientOptions,
-      account: burnerAccount,
-    });
+    const delegatee = "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377";
+    const delegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
+    const initCallData = "0x";
+    const nonce = 0n;
 
     const signature = await walletClient.signTypedData({
       domain,
       types,
       primaryType: "Delegation",
       message: {
-        delegatee,
-        delegationControlId,
-        initCallData,
+        delegatee: "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377",
+        delegationControlId: resourceToHex({ type: "system", namespace: "", name: "unlimited" }),
+        initCallData: "0x",
         nonce,
       },
     });
 
+    // Register the delegation
     await callWorld(page, "registerDelegationWithSignature", [
       delegatee,
       delegationControlId,
@@ -102,6 +105,6 @@ describe("register", async () => {
       encodeEntity(worldConfigV1.tables.UserDelegationNonces.keySchema, { delegator: burnerAccount.address }),
     ]);
 
-    expect(value.nonce).toEqual(1n);
+    expect((value as { nonce: bigint }).nonce).toEqual(1n);
   });
 });
