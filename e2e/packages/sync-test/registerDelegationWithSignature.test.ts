@@ -60,7 +60,7 @@ describe("registerDelegationWithSignature.test", async () => {
     const domain = {
       name: "App Name",
       version: "1",
-      chainId: 1,
+      chainId: walletClient.chain.id,
       verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
     } as const;
 
