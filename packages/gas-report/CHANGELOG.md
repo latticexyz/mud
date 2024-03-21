@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.0.0-next.18
+
+### Minor Changes
+
+- 90d0d79c: Now uses `--isolate` flag in `forge test` for more accurate gas measurement.
+
+### Patch Changes
+
+- a02da555b: Fixed gas report parsing for foundry versions released after 2024-02-15.
+
 ## 2.0.0-next.17
 
 ### Major Changes

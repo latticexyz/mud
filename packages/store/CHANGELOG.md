@@ -1,5 +1,191 @@
 # Change Log
 
+## 2.0.0-next.18
+
+### Major Changes
+
+- c9ee5e4a: Store and World configs have been rebuilt with strong types. The shape of these configs have also changed slightly for clarity, the biggest change of which is merging of `keySchema` and `valueSchema` into a single `schema` with a separate `key` for a table's primary key.
+
+  To migrate, first update the imported config method:
+
+  ```diff filename="mud.config.ts"
+  -import { mudConfig } from "@latticexyz/world/register";
+  +import { defineWorld } from "@latticexyz/world";
+
+  -export default mudConfig({
+  +export default defineWorld({
+  ```
+
+  _Note that if you are only using Store, you will need to import `defineStore` from `@latticexyz/store`._
+
+  Then migrate the table key by renaming `keySchema` to `schema` and define the table `key` with each field name from your key schema:
+
+  ```diff filename="mud.config.ts"
+   export default defineWorld({
+     tables: {
+       Position: {
+  -      keySchema: {
+  +      schema: {
+           player: "address",
+         },
+         valueSchema: {
+           x: "int32",
+           y: "int32",
+         },
+  +      key: ['player'],
+       },
+     },
+   });
+  ```
+
+  Now we can merge the `valueSchema` into `schema`.
+
+  ```diff filename="mud.config.ts"
+   export default defineWorld({
+     tables: {
+       Position: {
+         schema: {
+           player: "address",
+  -      },
+  -      valueSchema: {
+           x: "int32",
+           y: "int32",
+         },
+         key: ['player'],
+       },
+     },
+   });
+  ```
+
+  If you previously used the table config shorthand without the full `keySchema` and `valueSchema`, some of the defaults have changed. Shorthands now use an `id: "bytes32"` field by default rather than `key: "bytes32"` and corresponding `key: ["id"]`. To keep previous behavior, you may have to manually define your `schema` with the previous `key` and `value` fields.
+
+  ```diff filename="mud.config.ts"
+   export default defineWorld({
+     tables: {
+  -    OwnedBy: "address",
+  +    OwnedBy: {
+  +      schema: {
+  +        key: "bytes32",
+  +        value: "address",
+  +      },
+  +      key: ["key"],
+  +    },
+     },
+   });
+  ```
+
+  Singleton tables are defined similarly, where an empty `key` rather than `keySchema` is provided:
+
+  ```diff filename="mud.config.ts"
+  -keySchema: {}
+  +key: []
+  ```
+
+  Offchain tables are now defined as a table `type` instead an `offchainOnly` boolean:
+
+  ```diff filename="mud.config.ts"
+  -offchainOnly: true
+  +type: 'offchainTable'
+  ```
+
+  All codegen options have moved under `codegen`:
+
+  ```diff filename="mud.config.ts"
+   export default defineWorld({
+  -  codegenDirectory: "…",
+  +  codegen: {
+  +    outputDirectory: "…",
+  +  },
+     tables: {
+       Position: {
+         schema: {
+           player: "address",
+           x: "int32",
+           y: "int32",
+         },
+         key: ['player'],
+  -      directory: "…",
+  -      dataStruct: false,
+  +      codegen: {
+  +        outputDirectory: "…",
+  +        dataStruct: false,
+  +      },
+       },
+     },
+   });
+  ```
+
+- 9aa5e786: Set the protocol version to `2.0.0` for each Store and World.
+- 8193136a9: Added `dynamicFieldIndex` to the `Store_SpliceDynamicData` event. This enables indexers to store dynamic data as a blob per dynamic field without a schema lookup.
+- 3e7d83d0: Renamed `PackedCounter` to `EncodedLengths` for consistency.
+- 252a1852: Migrated to new config format.
+
+### Minor Changes
+
+- 93390d89: Added an `abstract` `StoreKernel` contract, which includes all Store interfaces except for registration, and implements write methods, `protocolVersion` and initializes `StoreCore`. `Store` extends `StoreKernel` with the `IStoreRegistration` interface. `StoreData` is removed as a separate interface/contract. `World` now extends `StoreKernel` (since the registration methods are added via the `InitModule`).
+- 144c0d8d: Replaced the static array length getters in table libraries with constants.
+- 3042f86e: Moved key schema and value schema methods to constants in code-generated table libraries for less bytecode and less gas in register/install methods.
+
+  ```diff
+  -console.log(SomeTable.getKeySchema());
+  +console.log(SomeTable._keySchema);
+
+  -console.log(SomeTable.getValueSchema());
+  +console.log(SomeTable._valueSchema);
+  ```
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- 2c920de7: Refactored `StoreCore` to import `IStoreEvents` instead of defining the events twice.
+- 44236041: Moved table ID and field layout constants in code-generated table libraries from the file level into the library, for clearer access and cleaner imports.
+
+  ```diff
+  -import { SomeTable, SomeTableTableId } from "./codegen/tables/SomeTable.sol";
+  +import { SomeTable } from "./codegen/tables/SomeTable.sol";
+
+  -console.log(SomeTableTableId);
+  +console.log(SomeTable._tableId);
+
+  -console.log(SomeTable.getFieldLayout());
+  +console.log(SomeTable._fieldLayout);
+  ```
+
+- c991c71a: Added interfaces for all errors that are used by `StoreCore`, which includes `FieldLayout`, `PackedCounter`, `Schema`, and `Slice`. This interfaces are inherited by `IStore`, ensuring that all possible errors are included in the `IStore` ABI for proper decoding in the frontend.
+- 190fdd11: Restored `Bytes.sliceN` helpers that were previously (mistakenly) removed and renamed them to `Bytes.getBytesN`.
+
+  If you're upgrading an existing MUD project, you can rerun codegen with `mud build` to update your table libraries to the new function names.
+
+- c58da9ad: Moved the `HelloStore` to `IStoreEvents` so all Store events are defined in the same interface.
+- Updated dependencies [82693072]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [44236041]
+- Updated dependencies [307abab3]
+- Updated dependencies [b38c096d]
+- Updated dependencies [e34d1170]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [3e7d83d0]
+  - @latticexyz/common@2.0.0-next.18
+  - @latticexyz/protocol-parser@2.0.0-next.18
+  - @latticexyz/schema-type@2.0.0-next.18
+  - @latticexyz/config@2.0.0-next.18
+
 ## 2.0.0-next.17
 
 ### Major Changes

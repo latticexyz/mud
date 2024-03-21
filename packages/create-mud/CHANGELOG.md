@@ -1,5 +1,77 @@
 # Change Log
 
+## 2.0.0-next.18
+
+### Major Changes
+
+- 252a1852: Migrated to new config format.
+
+### Minor Changes
+
+- 59267655: Added viem custom client actions that work the same as MUD's now-deprecated `getContract`, `writeContract`, and `sendTransaction` wrappers. Templates have been updated to reflect the new patterns.
+
+  You can migrate your own code like this:
+
+  ```diff
+  -import { createWalletClient } from "viem";
+  -import { getContract, writeContract, sendTransaction } from "@latticexyz/common";
+  +import { createWalletClient, getContract } from "viem";
+  +import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
+
+  -const walletClient = createWalletClient(...);
+  +const walletClient = createWalletClient(...)
+  +  .extend(transactionQueue())
+  +  .extend(writeObserver({ onWrite });
+
+   const worldContract = getContract({
+     client: { publicClient, walletClient },
+  -  onWrite,
+   });
+  ```
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- 44236041: Moved table ID and field layout constants in code-generated table libraries from the file level into the library, for clearer access and cleaner imports.
+
+  ```diff
+  -import { SomeTable, SomeTableTableId } from "./codegen/tables/SomeTable.sol";
+  +import { SomeTable } from "./codegen/tables/SomeTable.sol";
+
+  -console.log(SomeTableTableId);
+  +console.log(SomeTable._tableId);
+
+  -console.log(SomeTable.getFieldLayout());
+  +console.log(SomeTable._fieldLayout);
+  ```
+
+- 257a0afc: Bumped `typescript` to `5.4.2`, `eslint` to `8.57.0`, and both `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` to `7.1.1`.
+- 5237e320: Added `dbaeumer.vscode-eslint` and `esbenp.prettier-vscode` to recommended VSCode extensions.
+- 3042f86e: Moved key schema and value schema methods to constants in code-generated table libraries for less bytecode and less gas in register/install methods.
+
+  ```diff
+  -console.log(SomeTable.getKeySchema());
+  +console.log(SomeTable._keySchema);
+
+  -console.log(SomeTable.getValueSchema());
+  +console.log(SomeTable._valueSchema);
+  ```
+
+- 3e7d83d0: Renamed `PackedCounter` to `EncodedLengths` for consistency.
+
 ## 2.0.0-next.17
 
 ### Minor Changes

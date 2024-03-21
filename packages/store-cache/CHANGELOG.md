@@ -1,5 +1,7 @@
 # @latticexyz/store-cache
 
+## 2.0.0-next.18
+
 ## 2.0.0-next.17
 
 ## 2.0.0-next.16

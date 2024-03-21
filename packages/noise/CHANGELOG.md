@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.0-next.18
+
+### Patch Changes
+
+- 5a8dfc857: Removed the @latticexyz/noise package.
+
 ## 2.0.0-next.17
 
 ### Major Changes
