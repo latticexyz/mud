@@ -2,14 +2,14 @@
   "name": "mud-template-threejs",
   "private": true,
   "scripts": {
-    "build": "pnpm recursive run build",
-    "dev": "mprocs",
+    "build": "forge || export PATH=$PATH:~/.foundry/bin; pnpm recursive run build",
+    "dev": "forge || export PATH=$PATH:~/.foundry/bin; mprocs",
     "dev:client": "pnpm --filter 'client' run dev",
     "dev:contracts": "pnpm --filter 'contracts' dev",
     "foundry:up": "curl -L https://foundry.paradigm.xyz | bash && bash $HOME/.foundry/bin/foundryup",
     "mud:up": "pnpm mud set-version --tag main && pnpm install",
     "prepare": "(forge --version || pnpm foundry:up)",
-    "test": "pnpm recursive run test"
+    "test": "forge || export PATH=$PATH:~/.foundry/bin; pnpm recursive run test"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../packages/cli",
