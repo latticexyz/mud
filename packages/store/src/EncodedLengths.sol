@@ -32,13 +32,13 @@ uint256 constant MAX_VAL = type(uint40).max;
  * @title EncodedLengths Library
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice Static functions for handling EncodedLengths type.
- * @dev Provides utility functions to pack values into a EncodedLengths.
+ * @dev Provides utility functions to pack values into EncodedLengths.
  * The caller must ensure that the value arguments are <= MAX_VAL.
  */
 library EncodedLengthsLib {
   /**
-   * @notice Packs a single value into a EncodedLengths.
-   * @dev Encodes the given value 'a' into the structure of a EncodedLengths. The encoded lengths's accumulator
+   * @notice Packs a single value into EncodedLengths.
+   * @dev Encodes the given value 'a' into the structure of EncodedLengths. The encoded lengths's accumulator
    * will be set to 'a', and the first value slot of the EncodedLengths will also be set to 'a'.
    * @param a The length of the first dynamic field's data.
    * @return The resulting EncodedLengths containing the encoded value.
@@ -53,8 +53,8 @@ library EncodedLengthsLib {
   }
 
   /**
-   * @notice Packs two values into a EncodedLengths.
-   * @dev Encodes the given values 'a'-'b' into the structure of a EncodedLengths.
+   * @notice Packs two values into EncodedLengths.
+   * @dev Encodes the given values 'a'-'b' into the structure of EncodedLengths.
    * @param a The length of the first dynamic field's data.
    * @param b The length of the second dynamic field's data.
    * @return The resulting EncodedLengths containing the encoded values.
@@ -70,8 +70,8 @@ library EncodedLengthsLib {
   }
 
   /**
-   * @notice Packs three values into a EncodedLengths.
-   * @dev Encodes the given values 'a'-'c' into the structure of a EncodedLengths.
+   * @notice Packs three values into EncodedLengths.
+   * @dev Encodes the given values 'a'-'c' into the structure of EncodedLengths.
    * @param a The length of the first dynamic field's data.
    * @param b The length of the second dynamic field's data.
    * @param c The length of the third dynamic field's data.
@@ -89,8 +89,8 @@ library EncodedLengthsLib {
   }
 
   /**
-   * @notice Packs four values into a EncodedLengths.
-   * @dev Encodes the given values 'a'-'d' into the structure of a EncodedLengths.
+   * @notice Packs four values into EncodedLengths.
+   * @dev Encodes the given values 'a'-'d' into the structure of EncodedLengths.
    * @param a The length of the first dynamic field's data.
    * @param b The length of the second dynamic field's data.
    * @param c The length of the third dynamic field's data.
@@ -110,8 +110,8 @@ library EncodedLengthsLib {
   }
 
   /**
-   * @notice Packs five values into a EncodedLengths.
-   * @dev Encodes the given values 'a'-'e' into the structure of a EncodedLengths.
+   * @notice Packs five values into EncodedLengths.
+   * @dev Encodes the given values 'a'-'e' into the structure of EncodedLengths.
    * @param a The length of the first dynamic field's data.
    * @param b The length of the second dynamic field's data.
    * @param c The length of the third dynamic field's data.
@@ -136,13 +136,13 @@ library EncodedLengthsLib {
 /**
  * @title EncodedLengths Instance Library
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- * @notice Instance functions for handling a EncodedLengths.
- * @dev Offers decoding, extracting, and setting functionalities for a EncodedLengths.
+ * @notice Instance functions for handling EncodedLengths.
+ * @dev Offers decoding, extracting, and setting functionalities for EncodedLengths.
  */
 library EncodedLengthsInstance {
   /**
-   * @notice Decode the accumulated counter from a EncodedLengths.
-   * @dev Extracts the right-most 7 bytes of a EncodedLengths.
+   * @notice Decode the accumulated counter from EncodedLengths.
+   * @dev Extracts the right-most 7 bytes of EncodedLengths.
    * @param encodedLengths The encoded lengths to decode.
    * @return The accumulated value from the EncodedLengths.
    */
@@ -151,7 +151,7 @@ library EncodedLengthsInstance {
   }
 
   /**
-   * @notice Decode the dynamic field size at a specific index from a EncodedLengths.
+   * @notice Decode the dynamic field size at a specific index from EncodedLengths.
    * @dev Extracts value right-to-left, with 5 bytes per dynamic field after the right-most 7 bytes.
    * @param encodedLengths The encoded lengths to decode.
    * @param index The index to retrieve.
@@ -164,7 +164,7 @@ library EncodedLengthsInstance {
   }
 
   /**
-   * @notice Set a counter at a specific index in a EncodedLengths.
+   * @notice Set a counter at a specific index in EncodedLengths.
    * @dev Updates a value at a specific index and updates the accumulator field.
    * @param encodedLengths The encoded lengths to modify.
    * @param index The index to set.
@@ -214,7 +214,7 @@ library EncodedLengthsInstance {
   }
 
   /**
-   * @notice Unwrap a EncodedLengths to its raw bytes32 representation.
+   * @notice Unwrap EncodedLengths to its raw bytes32 representation.
    * @param encodedLengths The encoded lengths to unwrap.
    * @return The raw bytes32 value of the EncodedLengths.
    */
