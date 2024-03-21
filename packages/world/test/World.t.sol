@@ -13,7 +13,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { Tables, ResourceIds } from "@latticexyz/store/src/codegen/index.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
@@ -107,13 +107,13 @@ contract WorldTestSystem is System {
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
 
     if (StoreSwitch.getStoreAddress() == address(this)) {
-      StoreCore.setRecord(tableId, keyTuple, abi.encodePacked(data), PackedCounter.wrap(bytes32(0)), new bytes(0));
+      StoreCore.setRecord(tableId, keyTuple, abi.encodePacked(data), EncodedLengths.wrap(bytes32(0)), new bytes(0));
     } else {
       IBaseWorld(msg.sender).setRecord(
         tableId,
         keyTuple,
         abi.encodePacked(data),
-        PackedCounter.wrap(bytes32(0)),
+        EncodedLengths.wrap(bytes32(0)),
         new bytes(0)
       );
     }
@@ -896,7 +896,7 @@ contract WorldTest is Test, GasReporter {
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
     // Write data to the table and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(tableId, singletonKey, abi.encodePacked(true), EncodedLengths.wrap(bytes32(0)), new bytes(0));
     assertTrue(Bool.get(tableId));
 
     startGasReport("Delete record");
@@ -907,7 +907,7 @@ contract WorldTest is Test, GasReporter {
     assertFalse(Bool.get(tableId));
 
     // Write data to the table and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(tableId, singletonKey, abi.encodePacked(true), EncodedLengths.wrap(bytes32(0)), new bytes(0));
     assertTrue(Bool.get(tableId));
     assertTrue(Bool.get(tableId));
 
@@ -1352,7 +1352,7 @@ contract WorldTest is Test, GasReporter {
     emit HookCalled(
       abi.encodeCall(
         IStoreHook.onBeforeSetRecord,
-        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+        (tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0), fieldLayout)
       )
     );
 
@@ -1360,11 +1360,11 @@ contract WorldTest is Test, GasReporter {
     emit HookCalled(
       abi.encodeCall(
         IStoreHook.onAfterSetRecord,
-        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+        (tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0), fieldLayout)
       )
     );
 
-    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
@@ -1419,7 +1419,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
     vm.expectRevert(bytes("onBeforeSetRecord"));
-    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     // Expect a revert when the RevertSubscriber's onBeforeSpliceStaticData hook is called
     vm.expectRevert(bytes("onBeforeSpliceStaticData"));
@@ -1437,7 +1437,7 @@ contract WorldTest is Test, GasReporter {
     emit HookCalled(
       abi.encodeCall(
         IStoreHook.onBeforeSetRecord,
-        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+        (tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0), fieldLayout)
       )
     );
 
@@ -1445,11 +1445,11 @@ contract WorldTest is Test, GasReporter {
     emit HookCalled(
       abi.encodeCall(
         IStoreHook.onAfterSetRecord,
-        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+        (tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0), fieldLayout)
       )
     );
 
-    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);

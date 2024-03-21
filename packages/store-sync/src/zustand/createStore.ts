@@ -1,4 +1,4 @@
-import { SchemaToPrimitives, Table, Tables } from "@latticexyz/store";
+import { SchemaToPrimitives, Table, Tables } from "@latticexyz/store/internal";
 import { StoreApi, UseBoundStore, create } from "zustand";
 import { RawRecord, TableRecord } from "./common";
 import { Hex } from "viem";

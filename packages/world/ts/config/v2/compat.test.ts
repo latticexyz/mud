@@ -10,8 +10,8 @@ import { defineWorld } from "./world";
 describe("configToV1", () => {
   it("should transform the broad v2 output to the broad v1 output", () => {
     // Making the `worldContractName` prop required here since it is required on the output of `mudConfig`
-    attest<WorldConfigV1 & StoreConfigV1 & { worldContractName: string | undefined }, worldToV1<World>>();
-    attest<worldToV1<World>, WorldConfigV1 & StoreConfigV1 & { worldContractName: string | undefined }>();
+    attest<WorldConfigV1 & StoreConfigV1 & { worldContractName: string | undefined }, Omit<worldToV1<World>, "v2">>();
+    attest<Omit<worldToV1<World>, "v2">, WorldConfigV1 & StoreConfigV1 & { worldContractName: string | undefined }>();
   });
 
   it("should transform a v2 store config output to the v1 config output", () => {
@@ -90,7 +90,10 @@ describe("configToV1", () => {
       },
     });
 
-    attest<typeof configV1>(worldToV1(configV2)).equals(configV1);
-    attest<worldToV1<typeof configV2>>(configV1);
+    const { v2, ...v1FromV2 } = worldToV1(configV2);
+
+    attest<typeof configV1>(v1FromV2).equals(configV1);
+    attest<typeof v1FromV2>(configV1).equals(v1FromV2);
+    attest<typeof v2>(configV2).equals(v2);
   });
 });

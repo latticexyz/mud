@@ -1,4 +1,4 @@
-import { Table } from "@latticexyz/store/config/v2";
+import { Table } from "@latticexyz/config";
 import { ComparisonCondition, ConditionLiteral, QueryCondition } from "./api";
 import { TableRecord } from "./common";
 

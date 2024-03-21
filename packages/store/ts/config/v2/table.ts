@@ -1,11 +1,11 @@
-import { ErrorMessage, conform, narrow } from "@arktype/util";
+import { ErrorMessage, conform, narrow, requiredKeyOf } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
-import { get, hasOwnKey } from "./generics";
+import { get, hasOwnKey, mergeIfUndefined } from "./generics";
 import { resolveSchema, validateSchema } from "./schema";
 import { AbiTypeScope, Scope, getStaticAbiTypeKeys } from "./scope";
 import { TableCodegen } from "./output";
-import { TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
+import { TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS, TABLE_DEPLOY_DEFAULTS } from "./defaults";
 import { resourceToHex } from "@latticexyz/common";
 import { SchemaInput, TableInput } from "./input";
 
@@ -37,9 +37,11 @@ export function isValidPrimaryKey<schema extends SchemaInput, scope extends Scop
   );
 }
 
-export type validateKeys<validKeys extends PropertyKey, keys> = {
-  [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
-};
+export type validateKeys<validKeys extends PropertyKey, keys> = keys extends string[]
+  ? {
+      [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
+    }
+  : string[];
 
 export type ValidateTableOptions = { inStoreContext: boolean };
 
@@ -48,14 +50,21 @@ export type validateTable<
   scope extends Scope = AbiTypeScope,
   options extends ValidateTableOptions = { inStoreContext: false },
 > = {
-  [key in keyof input]: key extends "key"
-    ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput>, scope>, input[key]>
+  [key in
+    | keyof input
+    | Exclude<
+        requiredKeyOf<TableInput>,
+        options["inStoreContext"] extends true ? "name" | "namespace" : ""
+      >]: key extends "key"
+    ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput>, scope>, get<input, key>>
     : key extends "schema"
-      ? validateSchema<input[key], scope>
+      ? validateSchema<get<input, key>, scope>
       : key extends "name" | "namespace"
         ? options["inStoreContext"] extends true
           ? ErrorMessage<"Overrides of `name` and `namespace` are not allowed for tables in a store config">
-          : narrow<input[key]>
+          : key extends keyof input
+            ? narrow<input[key]>
+            : never
         : key extends keyof TableInput
           ? TableInput[key]
           : ErrorMessage<`Key \`${key & string}\` does not exist in TableInput`>;
@@ -82,7 +91,7 @@ export function validateTable<input, scope extends Scope = AbiTypeScope>(
         .join(" | ")})[]\`, received \`${
         hasOwnKey(input, "key") && Array.isArray(input.key)
           ? `[${input.key.map((item) => `"${item}"`).join(", ")}]`
-          : "undefined"
+          : String(get(input, "key"))
       }\``,
     );
   }
@@ -112,7 +121,7 @@ export type resolveTableCodegen<input extends TableInput> = {
 export function resolveTableCodegen<input extends TableInput>(input: input): resolveTableCodegen<input> {
   const options = input.codegen;
   return {
-    directory: get(options, "directory") ?? TABLE_CODEGEN_DEFAULTS.directory,
+    outputDirectory: get(options, "outputDirectory") ?? TABLE_CODEGEN_DEFAULTS.outputDirectory,
     tableIdArgument: get(options, "tableIdArgument") ?? TABLE_CODEGEN_DEFAULTS.tableIdArgument,
     storeArgument: get(options, "storeArgument") ?? TABLE_CODEGEN_DEFAULTS.storeArgument,
     // dataStruct is true if there are at least 2 value fields
@@ -129,6 +138,10 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
       readonly key: Readonly<input["key"]>;
       readonly schema: resolveSchema<input["schema"], scope>;
       readonly codegen: resolveTableCodegen<input>;
+      readonly deploy: mergeIfUndefined<
+        undefined extends input["deploy"] ? {} : input["deploy"],
+        typeof TABLE_DEPLOY_DEFAULTS
+      >;
     }
   : never;
 
@@ -149,6 +162,7 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
     key: input.key,
     schema: resolveSchema(input.schema, scope),
     codegen: resolveTableCodegen(input),
+    deploy: mergeIfUndefined(input.deploy ?? {}, TABLE_DEPLOY_DEFAULTS),
   } as unknown as resolveTable<input, scope>;
 }
 
