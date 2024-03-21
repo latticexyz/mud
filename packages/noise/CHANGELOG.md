@@ -1,5 +1,18 @@
 # Change Log
 
+## 2.0.0
+
+### Major Changes
+
+- aabd30767: Bumped Solidity version to 0.8.24.
+- 92de59982: Bump Solidity version to 0.8.21
+
+### Patch Changes
+
+- 5a8dfc857: Removed the @latticexyz/noise package.
+- 48909d151: bump forge-std and ds-test dependencies
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+
 ## 2.0.0-next.18
 
 ### Patch Changes

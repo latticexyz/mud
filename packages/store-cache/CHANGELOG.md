@@ -1,5 +1,19 @@
 # @latticexyz/store-cache
 
+## 2.0.0
+
+### Major Changes
+
+- e3de1a338: Removes `store-cache` package. Please see the [changelog](https://mud.dev/changelog) for how to migrate your app to the new `store-sync` package. Or create a new project from an up-to-date template with `pnpm create mud@next your-app-name`.
+
+  If you need reactivity, we recommend using `recs` package and `syncToRecs`. We'll be adding reactivity to `syncToSqlite` in a future release.
+
+### Patch Changes
+
+- 535229984: - bump to viem 1.3.0 and abitype 0.9.3
+  - move `@wagmi/chains` imports to `viem/chains`
+  - refine a few types
+
 ## 2.0.0-next.18
 
 ## 2.0.0-next.17
