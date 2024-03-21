@@ -1,5 +1,98 @@
 # @latticexyz/store-sync
 
+## 2.0.0-next.18
+
+### Major Changes
+
+- 8193136a9: Added `dynamicFieldIndex` to the `Store_SpliceDynamicData` event. This enables indexers to store dynamic data as a blob per dynamic field without a schema lookup.
+- adc68225: PostgreSQL sync/indexer now uses `{storeAddress}` for its database schema names and `{namespace}__{tableName}` for its database table names (or just `{tableName}` for root namespace), to be more consistent with the rest of the MUD codebase.
+
+  For namespaced tables:
+
+  ```diff
+  - SELECT * FROM 0xfff__some_ns.some_table
+  + SELECT * FROM 0xfff.some_ns__some_table
+  ```
+
+  For root tables:
+
+  ```diff
+  - SELECT * FROM 0xfff__.some_table
+  + SELECT * FROM 0xfff.some_table
+  ```
+
+  SQLite sync/indexer now uses snake case for its table names and column names for easier writing of queries and to better match PostgreSQL sync/indexer naming.
+
+  ```diff
+  - SELECT * FROM 0xfFf__someNS__someTable
+  + SELECT * FROM 0xfff__some_ns__some_table
+  ```
+
+- 252a1852: Migrated to new config format.
+
+### Minor Changes
+
+- 3622e39dd: Added a `followBlockTag` option to configure which block number to follow when running `createStoreSync`. It defaults to `latest` (current behavior), which is recommended for individual clients so that you always have the latest chain state.
+
+  Indexers now default to `safe` to avoid issues with reorgs and load-balanced RPCs being out of sync. This means indexers will be slightly behind the latest block number, but clients can quickly catch up. Indexers can override this setting using `FOLLOW_BLOCK_TAG` environment variable.
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- d5c0682fb: Updated all human-readable resource IDs to use `{namespace}__{name}` for consistency with world function signatures.
+- 3f5d33af: Fixes an issue with Zustand store sync where multiple updates to a record for a key in the same block did not get tracked and applied properly.
+- Updated dependencies [c9ee5e4a]
+- Updated dependencies [8f49c277d]
+- Updated dependencies [82693072]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [2c920de7]
+- Updated dependencies [44236041]
+- Updated dependencies [3be4deecf]
+- Updated dependencies [5debcca8]
+- Updated dependencies [9aa5e786]
+- Updated dependencies [307abab3]
+- Updated dependencies [c991c71a]
+- Updated dependencies [b38c096d]
+- Updated dependencies [e34d1170]
+- Updated dependencies [190fdd11]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [1a82c278]
+- Updated dependencies [8193136a9]
+- Updated dependencies [86766ce1]
+- Updated dependencies [93390d89]
+- Updated dependencies [144c0d8d]
+- Updated dependencies [c58da9ad]
+- Updated dependencies [be18b75b]
+- Updated dependencies [3042f86e]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [95f64c85]
+- Updated dependencies [3e7d83d0]
+- Updated dependencies [252a1852]
+  - @latticexyz/store@2.0.0-next.18
+  - @latticexyz/world@2.0.0-next.18
+  - @latticexyz/common@2.0.0-next.18
+  - @latticexyz/protocol-parser@2.0.0-next.18
+  - @latticexyz/schema-type@2.0.0-next.18
+  - @latticexyz/block-logs-stream@2.0.0-next.18
+  - @latticexyz/config@2.0.0-next.18
+  - @latticexyz/query@2.0.0-next.18
+  - @latticexyz/recs@2.0.0-next.18
+
 ## 2.0.0-next.17
 
 ### Minor Changes

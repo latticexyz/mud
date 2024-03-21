@@ -1,5 +1,74 @@
 # Change Log
 
+## 2.0.0-next.18
+
+### Major Changes
+
+- 44236041: Moved table ID and field layout constants in code-generated table libraries from the file level into the library, for clearer access and cleaner imports.
+
+  ```diff
+  -import { SomeTable, SomeTableTableId } from "./codegen/tables/SomeTable.sol";
+  +import { SomeTable } from "./codegen/tables/SomeTable.sol";
+
+  -console.log(SomeTableTableId);
+  +console.log(SomeTable._tableId);
+
+  -console.log(SomeTable.getFieldLayout());
+  +console.log(SomeTable._fieldLayout);
+  ```
+
+### Minor Changes
+
+- 59267655: Added viem custom client actions that work the same as MUD's now-deprecated `getContract`, `writeContract`, and `sendTransaction` wrappers. Templates have been updated to reflect the new patterns.
+
+  You can migrate your own code like this:
+
+  ```diff
+  -import { createWalletClient } from "viem";
+  -import { getContract, writeContract, sendTransaction } from "@latticexyz/common";
+  +import { createWalletClient, getContract } from "viem";
+  +import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
+
+  -const walletClient = createWalletClient(...);
+  +const walletClient = createWalletClient(...)
+  +  .extend(transactionQueue())
+  +  .extend(writeObserver({ onWrite });
+
+   const worldContract = getContract({
+     client: { publicClient, walletClient },
+  -  onWrite,
+   });
+  ```
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- 82693072: `waitForIdle` now falls back to `setTimeout` for environments without `requestIdleCallback`.
+- d5c0682fb: Updated all human-readable resource IDs to use `{namespace}__{name}` for consistency with world function signatures.
+- 01e46d99: Removed some unused files, namely `curry` in `@latticexyz/common` and `useDeprecatedComputedValue` from `@latticexyz/react`.
+- 307abab3: `resourceToLabel` now correctly returns just the resource name if its in the root namespace.
+- e34d1170: Moved the transaction simulation step to just before sending the transaction in our transaction queue actions (`sendTransaction` and `writeContract`).
+
+  This helps avoid cascading transaction failures for deep queues or when a transaction succeeding depends on the value of the previous.
+
+- db314a74: Upgraded prettier version to 3.2.5 and prettier-plugin-solidity version to 1.3.1.
+- Updated dependencies [b38c096d]
+- Updated dependencies [d7b1c588a]
+  - @latticexyz/schema-type@2.0.0-next.18
+
 ## 2.0.0-next.17
 
 ### Minor Changes

@@ -1,5 +1,71 @@
 # @latticexyz/dev-tools
 
+## 2.0.0-next.18
+
+### Major Changes
+
+- 252a1852: Migrated to new config format.
+
+### Minor Changes
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- d5c0682fb: Updated all human-readable resource IDs to use `{namespace}__{name}` for consistency with world function signatures.
+- Updated dependencies [c9ee5e4a]
+- Updated dependencies [3622e39dd]
+- Updated dependencies [8f49c277d]
+- Updated dependencies [82693072]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [2c920de7]
+- Updated dependencies [44236041]
+- Updated dependencies [3be4deecf]
+- Updated dependencies [5debcca8]
+- Updated dependencies [9aa5e786]
+- Updated dependencies [307abab3]
+- Updated dependencies [c991c71a]
+- Updated dependencies [b38c096d]
+- Updated dependencies [e34d1170]
+- Updated dependencies [190fdd11]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [1a82c278]
+- Updated dependencies [8193136a9]
+- Updated dependencies [86766ce1]
+- Updated dependencies [3f5d33af]
+- Updated dependencies [93390d89]
+- Updated dependencies [144c0d8d]
+- Updated dependencies [c58da9ad]
+- Updated dependencies [be18b75b]
+- Updated dependencies [3042f86e]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [95f64c85]
+- Updated dependencies [3e7d83d0]
+- Updated dependencies [adc68225]
+- Updated dependencies [252a1852]
+  - @latticexyz/store@2.0.0-next.18
+  - @latticexyz/world@2.0.0-next.18
+  - @latticexyz/store-sync@2.0.0-next.18
+  - @latticexyz/common@2.0.0-next.18
+  - @latticexyz/react@2.0.0-next.18
+  - @latticexyz/schema-type@2.0.0-next.18
+  - @latticexyz/recs@2.0.0-next.18
+  - @latticexyz/utils@2.0.0-next.18
+
 ## 2.0.0-next.17
 
 ### Patch Changes
