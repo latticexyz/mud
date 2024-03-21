@@ -384,33 +384,33 @@
     "gasUsed": 7033
   },
   {
-    "file": "test/PackedCounter.t.sol",
+    "file": "test/EncodedLengths.t.sol",
     "test": "testAtIndex",
-    "name": "get value at index of PackedCounter",
+    "name": "get value at index of EncodedLengths",
     "gasUsed": 24
   },
   {
-    "file": "test/PackedCounter.t.sol",
+    "file": "test/EncodedLengths.t.sol",
     "test": "testGas",
-    "name": "pack 1 length into PackedCounter",
+    "name": "pack 1 length into EncodedLengths",
     "gasUsed": 35
   },
   {
-    "file": "test/PackedCounter.t.sol",
+    "file": "test/EncodedLengths.t.sol",
     "test": "testGas",
-    "name": "pack 4 lengths into PackedCounter",
+    "name": "pack 4 lengths into EncodedLengths",
     "gasUsed": 169
   },
   {
-    "file": "test/PackedCounter.t.sol",
+    "file": "test/EncodedLengths.t.sol",
     "test": "testGas",
-    "name": "get total of PackedCounter",
+    "name": "get total of EncodedLengths",
     "gasUsed": 15
   },
   {
-    "file": "test/PackedCounter.t.sol",
+    "file": "test/EncodedLengths.t.sol",
     "test": "testSetAtIndex",
-    "name": "set value at index of PackedCounter",
+    "name": "set value at index of EncodedLengths",
     "gasUsed": 283
   },
   {

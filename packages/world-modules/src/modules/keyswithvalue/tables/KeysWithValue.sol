@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 library KeysWithValue {
@@ -627,10 +627,10 @@ library KeysWithValue {
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(bytes32[] memory keysWithValue) internal pure returns (PackedCounter _encodedLengths) {
+  function encodeLengths(bytes32[] memory keysWithValue) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(keysWithValue.length * 32);
+      _encodedLengths = EncodedLengthsLib.pack(keysWithValue.length * 32);
     }
   }
 
@@ -648,9 +648,9 @@ library KeysWithValue {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(bytes32[] memory keysWithValue) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(bytes32[] memory keysWithValue) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(keysWithValue);
+    EncodedLengths _encodedLengths = encodeLengths(keysWithValue);
     bytes memory _dynamicData = encodeDynamic(keysWithValue);
 
     return (_staticData, _encodedLengths, _dynamicData);

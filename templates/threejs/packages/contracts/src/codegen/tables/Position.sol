@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 struct PositionData {
@@ -201,7 +201,7 @@ library Position {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -216,7 +216,7 @@ library Position {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -230,7 +230,7 @@ library Position {
   function set(bytes32 id, int32 x, int32 y, int32 z) internal {
     bytes memory _staticData = encodeStatic(x, y, z);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -245,7 +245,7 @@ library Position {
   function _set(bytes32 id, int32 x, int32 y, int32 z) internal {
     bytes memory _staticData = encodeStatic(x, y, z);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -260,7 +260,7 @@ library Position {
   function set(bytes32 id, PositionData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.x, _table.y, _table.z);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -275,7 +275,7 @@ library Position {
   function _set(bytes32 id, PositionData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.x, _table.y, _table.z);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -303,7 +303,7 @@ library Position {
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) internal pure returns (PositionData memory _table) {
     (_table.x, _table.y, _table.z) = decodeStatic(_staticData);
@@ -343,10 +343,10 @@ library Position {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(int32 x, int32 y, int32 z) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(int32 x, int32 y, int32 z) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(x, y, z);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     return (_staticData, _encodedLengths, _dynamicData);

@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 library MessageTable {
@@ -64,7 +64,7 @@ library MessageTable {
    */
   function set(string memory value) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(value);
+    EncodedLengths _encodedLengths = encodeLengths(value);
     bytes memory _dynamicData = encodeDynamic(value);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -77,7 +77,7 @@ library MessageTable {
    */
   function _set(string memory value) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(value);
+    EncodedLengths _encodedLengths = encodeLengths(value);
     bytes memory _dynamicData = encodeDynamic(value);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -89,7 +89,7 @@ library MessageTable {
    * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
    */
   function decodeDynamic(
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _blob
   ) internal pure returns (string memory value) {
     uint256 _start;
@@ -108,7 +108,7 @@ library MessageTable {
    */
   function decode(
     bytes memory,
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (string memory value) {
     (value) = decodeDynamic(_encodedLengths, _dynamicData);
@@ -136,10 +136,10 @@ library MessageTable {
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(string memory value) internal pure returns (PackedCounter _encodedLengths) {
+  function encodeLengths(string memory value) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(bytes(value).length);
+      _encodedLengths = EncodedLengthsLib.pack(bytes(value).length);
     }
   }
 
@@ -157,9 +157,9 @@ library MessageTable {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(string memory value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(string memory value) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(value);
+    EncodedLengths _encodedLengths = encodeLengths(value);
     bytes memory _dynamicData = encodeDynamic(value);
 
     return (_staticData, _encodedLengths, _dynamicData);

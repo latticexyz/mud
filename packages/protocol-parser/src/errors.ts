@@ -16,8 +16,8 @@ export class InvalidHexLengthForSchemaError extends MUDError {
   }
 }
 
-export class InvalidHexLengthForPackedCounterError extends MUDError {
-  override name = "InvalidHexLengthForPackedCounterError";
+export class InvalidHexLengthForEncodedLengthsError extends MUDError {
+  override name = "InvalidHexLengthForEncodedLengthsError";
   constructor(value: Hex) {
     super(`Hex value "${value}" has length of ${value.length - 2}, but expected length of 64 for a packed counter.`);
   }
@@ -55,11 +55,11 @@ export class SchemaStaticLengthMismatchError extends MUDError {
   }
 }
 
-export class PackedCounterLengthMismatchError extends MUDError {
-  override name = "PackedCounterLengthMismatchError";
-  constructor(packedCounterData: Hex, definedLength: bigint, summedLength: bigint) {
+export class EncodedLengthsLengthMismatchError extends MUDError {
+  override name = "EncodedLengthsLengthMismatchError";
+  constructor(encodedLengthsData: Hex, definedLength: bigint, summedLength: bigint) {
     super(
-      `PackedCounter "${packedCounterData}" total bytes length (${definedLength}) did not match the summed length of all field byte lengths (${summedLength}).`,
+      `EncodedLengths "${encodedLengthsData}" total bytes length (${definedLength}) did not match the summed length of all field byte lengths (${summedLength}).`,
     );
   }
 }

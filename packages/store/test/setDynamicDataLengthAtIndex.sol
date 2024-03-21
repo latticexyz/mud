@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { PackedCounter } from "../src/PackedCounter.sol";
+import { EncodedLengths } from "../src/EncodedLengths.sol";
 import { StoreCoreInternal } from "../src/StoreCore.sol";
 import { Storage } from "../src/Storage.sol";
 import { ResourceId } from "../src/ResourceId.sol";
@@ -17,7 +17,7 @@ function setDynamicDataLengthAtIndex(
 ) {
   // Load dynamic data length from storage
   uint256 dynamicDataLengthSlot = StoreCoreInternal._getDynamicDataLengthLocation(tableId, keyTuple);
-  PackedCounter encodedLengths = PackedCounter.wrap(Storage.load({ storagePointer: dynamicDataLengthSlot }));
+  EncodedLengths encodedLengths = EncodedLengths.wrap(Storage.load({ storagePointer: dynamicDataLengthSlot }));
 
   // Update the encoded lengths
   encodedLengths = encodedLengths.setAtIndex(dynamicFieldIndex, newLengthAtIndex);

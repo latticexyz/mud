@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 // Import user types
@@ -161,7 +161,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(worldFunctionSelector);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -178,7 +178,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(worldFunctionSelector);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -192,7 +192,7 @@ library FunctionSelectors {
   function set(bytes4 worldFunctionSelector, ResourceId systemId, bytes4 systemFunctionSelector) internal {
     bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -207,7 +207,7 @@ library FunctionSelectors {
   function _set(bytes4 worldFunctionSelector, ResourceId systemId, bytes4 systemFunctionSelector) internal {
     bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -233,7 +233,7 @@ library FunctionSelectors {
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) internal pure returns (ResourceId systemId, bytes4 systemFunctionSelector) {
     (systemId, systemFunctionSelector) = decodeStatic(_staticData);
@@ -276,10 +276,10 @@ library FunctionSelectors {
   function encode(
     ResourceId systemId,
     bytes4 systemFunctionSelector
-  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     return (_staticData, _encodedLengths, _dynamicData);
