@@ -14,6 +14,7 @@ import { callPageFunction } from "./data/callPageFunction";
 import worldConfig from "@latticexyz/world/mud.config";
 import { worldToV1 } from "@latticexyz/world/config/v2";
 import { types } from "@latticexyz/world/internal";
+import { getWorld } from "./data/getWorld";
 
 const worldConfigV1 = worldToV1(worldConfig);
 
@@ -57,19 +58,19 @@ describe("registerDelegationWithSignature.test", async () => {
       account: burnerAccount,
     });
 
-    // Sign registration message
-    const domain = {
-      chainId: walletClient.chain.id,
-      verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
-    } as const;
+    const worldContract = await getWorld(page);
 
+    // Sign registration message
     const delegatee = "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377";
     const delegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
     const initCallData = "0x";
     const nonce = 0n;
 
     const signature = await walletClient.signTypedData({
-      domain,
+      domain: {
+        chainId: walletClient.chain.id,
+        verifyingContract: worldContract.address,
+      },
       types,
       primaryType: "Delegation",
       message: {
