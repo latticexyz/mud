@@ -43,8 +43,8 @@ export default defineWorld({
       key: ["delegator", "delegatee"],
     },
     UserDelegationNonces: {
-      keySchema: { delegator: "address" },
-      valueSchema: { nonce: "uint256" },
+      schema: { delegator: "address", nonce: "uint256" },
+      key: ["delegator"],
     },
     NamespaceDelegationControl: {
       schema: {
