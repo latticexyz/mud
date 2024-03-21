@@ -74,6 +74,7 @@
   "function popFromDynamicField(bytes32 tableId, bytes32[] keyTuple, uint8 dynamicFieldIndex, uint256 byteLengthToPop)",
   "function pushToDynamicField(bytes32 tableId, bytes32[] keyTuple, uint8 dynamicFieldIndex, bytes dataToPush)",
   "function registerDelegation(address delegatee, bytes32 delegationControlId, bytes initCallData)",
+  "function registerDelegationWithSignature(address delegatee, bytes32 delegationControlId, bytes initCallData, address delegator, bytes signature)",
   "function registerFunctionSelector(bytes32 systemId, string systemFunctionSignature) returns (bytes4 worldFunctionSelector)",
   "function registerNamespace(bytes32 namespaceId)",
   "function registerNamespaceDelegation(bytes32 namespaceId, bytes32 delegationControlId, bytes initCallData)",
