@@ -24,8 +24,8 @@ interface IStoreKernel is
   ISliceErrors
 {
   /**
-   * @notice Returns the version of the Store contract.
-   * @return version The version of the Store contract.
+   * @notice Returns the protocol version of the Store contract.
+   * @return version The protocol version of the Store contract.
    */
   function storeVersion() external view returns (bytes32 version);
 }
