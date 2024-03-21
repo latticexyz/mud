@@ -13,6 +13,7 @@ import { encodeEntity } from "@latticexyz/store-sync/recs";
 import { callPageFunction } from "./data/callPageFunction";
 import worldConfig from "@latticexyz/world/mud.config";
 import { worldToV1 } from "@latticexyz/world/config/v2";
+import { types } from "@latticexyz/world/internal";
 
 const worldConfigV1 = worldToV1(worldConfig);
 
@@ -64,15 +65,6 @@ describe("registerDelegationWithSignature.test", async () => {
       verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
     } as const;
 
-    const types = {
-      Delegation: [
-        { name: "delegatee", type: "address" },
-        { name: "delegationControlId", type: "bytes32" },
-        { name: "initCallData", type: "bytes" },
-        { name: "nonce", type: "uint256" },
-      ],
-    } as const;
-
     const delegatee = "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377";
     const delegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
     const initCallData = "0x";
@@ -83,9 +75,9 @@ describe("registerDelegationWithSignature.test", async () => {
       types,
       primaryType: "Delegation",
       message: {
-        delegatee: "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377",
-        delegationControlId: resourceToHex({ type: "system", namespace: "", name: "unlimited" }),
-        initCallData: "0x",
+        delegatee,
+        delegationControlId,
+        initCallData,
         nonce,
       },
     });
