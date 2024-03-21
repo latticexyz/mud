@@ -5,8 +5,8 @@ import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+import { StoreKernel } from "@latticexyz/store/src/StoreKernel.sol";
 
-import { StoreData } from "./StoreData.sol";
 import { WORLD_VERSION } from "./version.sol";
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
@@ -37,7 +37,7 @@ import { Balances } from "./codegen/tables/Balances.sol";
  * Note World unfortunately cannot inherit Store because some Store methods are
  * registered via modules instead of directly on this contract.
  */
-contract World is StoreData, IWorldKernel {
+contract World is StoreKernel, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
 
   /// @notice Address of the contract's creator.

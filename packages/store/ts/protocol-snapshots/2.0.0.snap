@@ -1,4 +1,5 @@
 [
+  "error EncodedLengths_InvalidLength(uint256 length)",
   "error FieldLayout_Empty()",
   "error FieldLayout_InvalidStaticDataLength(uint256 staticDataLength, uint256 computedStaticDataLength)",
   "error FieldLayout_StaticLengthDoesNotFitInAWord(uint256 index)",
@@ -6,7 +7,6 @@
   "error FieldLayout_StaticLengthIsZero(uint256 index)",
   "error FieldLayout_TooManyDynamicFields(uint256 numFields, uint256 maxFields)",
   "error FieldLayout_TooManyFields(uint256 numFields, uint256 maxFields)",
-  "error PackedCounter_InvalidLength(uint256 length)",
   "error Schema_InvalidLength(uint256 length)",
   "error Schema_StaticTypeAfterDynamicType()",
   "error Slice_OutOfBounds(bytes data, uint256 start, uint256 end)",
