@@ -495,4 +495,12 @@ describe("defineStore", () => {
       }),
     ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
   });
+
+  it("should allow const enum as input", () => {
+    const enums = {
+      Example: ["First", "Second"],
+    } as const;
+
+    defineStore({ enums });
+  });
 });
