@@ -2,7 +2,7 @@
 pragma solidity >=0.8.24;
 
 import { IStoreEvents } from "./IStoreEvents.sol";
-import { PackedCounter } from "./PackedCounter.sol";
+import { EncodedLengths } from "./EncodedLengths.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { ResourceId } from "./ResourceId.sol";
 
@@ -16,7 +16,7 @@ interface IStoreWrite is IStoreEvents {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes calldata dynamicData
   ) external;
 

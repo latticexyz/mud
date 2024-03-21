@@ -1,19 +1,20 @@
 import { describe, it } from "vitest";
-import { resolveStoreConfig } from "./store";
+import { defineStore } from "./store";
 import { attest } from "@arktype/attest";
 import { StoreConfig as StoreConfigV1 } from "../storeConfig";
 import { mudConfig } from "../../register";
-import { configToV1 } from "./compat";
-import { Config } from "./output";
+import { storeToV1 } from "./compat";
+import { Store } from "./output";
 
 describe("configToV1", () => {
   it("should transform the broad v2 output to the broad v1 output", () => {
-    attest<StoreConfigV1, configToV1<Config>>();
-    attest<configToV1<Config>, StoreConfigV1>();
+    attest<StoreConfigV1, Omit<storeToV1<Store>, "v2">>();
+    attest<Omit<storeToV1<Store>, "v2">, StoreConfigV1>();
   });
 
   it("should transform a v2 store config output to the v1 config output", () => {
     const configV1 = mudConfig({
+      namespace: "Custom",
       enums: {
         TerrainType: ["None", "Ocean", "Grassland", "Desert"],
       },
@@ -53,7 +54,8 @@ describe("configToV1", () => {
       },
     }) satisfies StoreConfigV1;
 
-    const configV2 = resolveStoreConfig({
+    const configV2 = defineStore({
+      namespace: "Custom",
       enums: {
         TerrainType: ["None", "Ocean", "Grassland", "Desert"],
       },
@@ -87,7 +89,10 @@ describe("configToV1", () => {
       },
     });
 
-    attest<typeof configV1>(configToV1(configV2)).equals(configV1);
-    attest<configToV1<typeof configV2>>(configV1);
+    const { v2, ...v1FromV2 } = storeToV1(configV2);
+
+    attest<typeof configV1>(v1FromV2).equals(configV1);
+    attest<typeof v1FromV2>(configV1).equals(v1FromV2);
+    attest<typeof configV2>(v2).equals(configV2);
   });
 });

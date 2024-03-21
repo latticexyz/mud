@@ -1,5 +1,5 @@
 import path from "path";
-import { resolveWorldConfig } from "@latticexyz/world";
+import { resolveWorldConfig } from "@latticexyz/world/internal";
 import { Config, ConfigInput, Library, Module, System, WorldFunction } from "./common";
 import { resourceToHex } from "@latticexyz/common";
 import { resolveWithContext } from "@latticexyz/config/library";
