@@ -1,12 +1,6 @@
-import { Enums } from "./ts/config/v2";
 import { defineStore } from "./ts/config/v2/store";
 
-const enums = {
-  Hello: ["First", "Second"],
-} as const satisfies Enums;
-
 export default defineStore({
-  enums,
   codegen: {
     storeImportPath: "../../",
   },
