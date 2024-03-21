@@ -12,7 +12,7 @@ import { ISliceErrors } from "./ISliceErrors.sol";
 /**
  * @title IStoreKernel
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- * @notice IStore includes the error interfaces for each library that it uses.
+ * @notice IStoreKernel includes the error interfaces for each library that it uses.
  */
 interface IStoreKernel is
   IStoreRead,
