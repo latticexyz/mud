@@ -13,7 +13,8 @@ import { protocolVersions } from "./protocolVersions";
  *   A new protocol snapshot will be created when you run this test again, which you should check into git.
  *
  * - If the protocol change is for a yet-to-be-release version (i.e. the version was bumped but packages not yet published),
- *   then it's safe to just update the protocol snapshot for this version (`vitest -u`).
+ *   or if _only_ parameter/return value names changed (which do not affect calldata), then it's safe to just
+ *   update the protocol snapshot for this version (`vitest -u`).
  */
 
 const [, currentVersion] = fs.readFileSync(`${__dirname}/../src/version.sol`, "utf8").match(/VERSION = "(.*?)"/) ?? [];
