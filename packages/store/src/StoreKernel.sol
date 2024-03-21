@@ -16,7 +16,7 @@ import { IStoreKernel } from "./IStoreKernel.sol";
  */
 abstract contract StoreKernel is IStoreKernel, StoreRead {
   /**
-   * @notice Constructs the Store contract and initializes the StoreCore.
+   * @notice Constructs the StoreKernel contract and initializes the StoreCore.
    * @dev Emits a HelloStore event upon creation.
    */
   constructor() {
