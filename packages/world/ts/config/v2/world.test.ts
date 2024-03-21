@@ -727,4 +727,14 @@ describe("defineWorld", () => {
       }),
     ).type.errors("Namespaces config will be enabled soon.");
   });
+
+  it("should allow setting openAccess of a system to false", () => {
+    defineWorld({
+      systems: {
+        Example: {
+          openAccess: false,
+        },
+      },
+    });
+  });
 });
