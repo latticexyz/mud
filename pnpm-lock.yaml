@@ -14,6 +14,9 @@ importers:
       '@changesets/cli':
         specifier: ^2.26.1
         version: 2.26.1
+      '@types/glob':
+        specifier: ^7.2.0
+        version: 7.2.0
       '@types/node':
         specifier: ^18.15.11
         version: 18.15.11
@@ -35,6 +38,9 @@ importers:
       execa:
         specifier: ^7.0.0
         version: 7.0.0
+      glob:
+        specifier: ^8.0.3
+        version: 8.0.3
       husky:
         specifier: '>=6'
         version: 6.0.0
@@ -430,8 +436,6 @@ importers:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0)
 
-  packages/ecs-browser: {}
-
   packages/faucet:
     dependencies:
       '@fastify/compress':
@@ -523,12 +527,6 @@ importers:
       vitest:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0)
-
-  packages/network: {}
-
-  packages/noise: {}
-
-  packages/phaserx: {}
 
   packages/protocol-parser:
     dependencies:
@@ -713,8 +711,6 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
 
-  packages/solecs: {}
-
   packages/solhint-config-mud:
     devDependencies:
       tsup:
@@ -733,10 +729,6 @@ importers:
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
-
-  packages/std-client: {}
-
-  packages/std-contracts: {}
 
   packages/store:
     dependencies:
@@ -804,8 +796,6 @@ importers:
       vitest:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0)
-
-  packages/store-cache: {}
 
   packages/store-indexer:
     dependencies:
