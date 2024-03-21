@@ -16,9 +16,8 @@ The is an example of a `World` config:
 
 ```tsx
 import { defineWorld } from "@latticexyz/world";
-import { resolveTableId } from "@latticexyz/config";
 
-export default mudConfig({
+export default defineWorld({
   excludeSystems: ["System3", "System2"],
   worldContractName: "CustomWorld",
   namespace: "mud",
@@ -42,16 +41,10 @@ export default mudConfig({
         completedAt: "uint256",
         description: "string",
       },
-      key: ["id"],    
+      key: ["id"],
+    },
   },
   deploysDirectory: "./mud-deploys",
-  modules: [
-    {
-      name: "KeysWithValueModule",
-      root: true,
-      args: [resolveTableId("CounterTable")],
-    },
-  ],
 });
 ```
 
@@ -64,9 +57,20 @@ The global configuration keys are all optional.
 
 - **`excludeSystems`**: an array of `string`: which systems to not deploy, even if their name ends with “System”.
 
-- **`worldContractName`**: a `string`: the name of a contract in your project implementing the `IWorld` interface.
-  Useful if you want to modify the default World implementation, but potentially dangerous.
-- **`deploysDirectory`** a `string`: which folder to put the deployment artifacts into after deployment.
+- **`deploy`**: a record of deployment options.
+
+  - **`postDeployScript`** a `string`: Script to execute after the deployment is complete.
+     This script must be placed in the forge scripts directory (see `foundry.toml`) and have a `.s.sol` extension.
+     The default is `PostDeploy`.
+
+  - **`deploysDirectory`** a `string`: Which folder to put the deployment artifacts into after deployment.
+    The default is `./deploys`.
+
+  - **`worldsFile`** a `string`: 
+
+- **`codegen`**: a record of code generation options.
+  
+
 
 - **`modules`** an array of module definitions: each module definition has a `name`, `root` (optional), and `args` key.
 
@@ -80,8 +84,12 @@ The global configuration keys are all optional.
 
   The value is a record of system configuration properties:
 
-  - `fileSelector` (optional): a `string`: the file selector for the system.
-  - `openAccess` (optional, default `true`): a `bool`: if set to `false`, only the systems in the same namespace and the addresses or systems listed in the `accessList` array have access.
+  - `registerFunctionSelectors` (optional, default `true`): a `bool`.
+    Whether we want to automatically register the `public` functions of the `System` as
+    [function selectors](/world/function-selectors)
+
+  - `openAccess` (optional, default `true`): a `bool`.
+    If set to `false`, only the systems in the same namespace and the addresses or systems listed in the `accessList` array have access.
 
   - `accessList` (required if openAccess is `false`): an array of `string`. Each address in the array will be granted access to this system, allowing them to call it.
 
