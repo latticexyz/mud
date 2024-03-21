@@ -15,7 +15,7 @@ The config is used to define:
 The is an example of a `World` config:
 
 ```tsx
-import { mudConfig } from "@latticexyz/world/register";
+import { defineWorld } from "@latticexyz/world";
 import { resolveTableId } from "@latticexyz/config";
 
 export default mudConfig({
@@ -30,10 +30,19 @@ export default mudConfig({
   },
   tables: {
     CounterTable: {
-      valueSchema: {
+      schema: {
         value: "uint32",
       },
+      key: [],
     },
+    Tasks: {
+      schema: {
+        id: "bytes32",
+        createdAt: "uint256",
+        completedAt: "uint256",
+        description: "string",
+      },
+      key: ["id"],    
   },
   deploysDirectory: "./mud-deploys",
   modules: [
@@ -79,22 +88,15 @@ The global configuration keys are all optional.
 - **`tables`**: a record of tables. The keys in the record are table names.
   The value is a record of [table properties](https://github.com/latticexyz/mud/blob/main/packages/store/ts/config/storeConfig.ts#L110-L135).
 
-  - **`valueSchema`** (record):
-    The keys of this record are the field names of the value (which should start with a lowercase letter).
+  - **`schema`** (record):
+    The keys of this record are the field names in the data, which includes both the key fields and the value fields.
+    By convention, these keys start with a lowercase letter.
     The values are strings that contain the data types of the fields.
     Note that this is the sole required field, all the others are optional.
 
-  - **`keySchema`** (record):
-    The keys of this record are the field names of the key (which should start with a lowercase letter).
-    The values are strings that contain the data types of the fields.
-
-    The default value is:
-
-    ```json
-    { "key": "bytes32" }
-    ```
-
-    For a singleton table (one that contains a single row), use `{}` as the key schema.
+  - **`key`** (list):
+    A list of the `schema` fields that are the key for that table.
+    If you want a singleton table, use an empty list (as in `CounterTable`) above.
 
   - **`directory`** (string):
     Directory in which to create the table.
