@@ -71,8 +71,12 @@ The global configuration keys are all optional.
   
 - **`codegen`**: a record of code generation options.
   
-
-
+  - **`worldInterfaceName`** a `string`: The name of the interface for the `World`.
+    The default value is `IWorld`.
+  
+  - **`worldgenDirectory`** a `string`: The directory for system and world interfaces.
+    The default value is `world`.
+  
 - **`modules`** an array of module definitions: each module definition has a `name`, `root` (optional), and `args` key.
 
   - `name`: Name of the module to install. The same module can be installed multiple times. This should be the name of the contract file without `.sol` (eg: if the file is named `DopeModule.sol`, the name of the module is `DopeModule`)
@@ -107,31 +111,6 @@ The global configuration keys are all optional.
     A list of the `schema` fields that are the key for that table.
     If you want a singleton table, use an empty list (as in `CounterTable`) above.
 
-  - **`directory`** (string):
-    Directory in which to create the table.
-    The default is `tables`, so by default tables are created in `src/codegen/tables`.
-
-  - **`tableIdArgument`** (bool):
-    Make methods accept `tableId` argument instead of it being a hardcoded constant.
-    The default is `false` because you can achieve the same result using [`StoreSwitch`](/store/table-libraries#storeswitch).
-
-  - **`storeArgument`** (bool):
-    Include methods that accept a manual `IStore` argument.
-    The default is `true`.
-
-  - **`offchainOnly`**: (bool):
-    Table's information is available offchain (using [events](https://docs.soliditylang.org/en/latest/contracts.html#events)), but don't store in onchain.
-    These tables require a lot less gas.
-
-  - **`dataStruct`**: (bool):
-    Include a [data struct](https://docs.soliditylang.org/en/v0.8.23/types.html#structs) and methods for it.
-    Default is false for 1-column tables; true for multi-column tables.
-
-    Sample code for using a table library with `dataStruct`:
-
-    ```solidity
-    // no data struct
-    MyTable.set(keccak256("some.key"), 1, 12, "foo");
-    // data struct
-    MyTable.set(keccak256("some.key"), { field1: 1, field2: 12, stringField: "foo" });
-    ```
+  - **`type`** (either `table` or `offchainTable`): [The table type](/store/tables#types-of-tables).
+    The default is `table`, which is a table stored onchain.
+    If you specify `offchainTable`, the table's data is only available offchain through events.
