@@ -5,7 +5,7 @@ import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreData } from "./IStoreData.sol";
 import { IStoreRegistration } from "./IStoreRegistration.sol";
 import { IFieldLayoutErrors } from "./IFieldLayoutErrors.sol";
-import { IPackedCounterErrors } from "./IPackedCounterErrors.sol";
+import { IEncodedLengthsErrors } from "./IEncodedLengthsErrors.sol";
 import { ISchemaErrors } from "./ISchemaErrors.sol";
 import { ISliceErrors } from "./ISliceErrors.sol";
 
@@ -19,7 +19,7 @@ interface IStore is
   IStoreRegistration,
   IStoreErrors,
   IFieldLayoutErrors,
-  IPackedCounterErrors,
+  IEncodedLengthsErrors,
   ISchemaErrors,
   ISliceErrors
 {}

@@ -5,7 +5,7 @@ import { IStore } from "../src/IStore.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { StoreData } from "../src/StoreData.sol";
-import { PackedCounter } from "../src/PackedCounter.sol";
+import { EncodedLengths } from "../src/EncodedLengths.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { Schema } from "../src/Schema.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
@@ -27,7 +27,7 @@ contract StoreMock is IStore, StoreData {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes calldata dynamicData
   ) public {
     StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
