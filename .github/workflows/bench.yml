@@ -2,8 +2,6 @@ name: Benchmarks
 
 on:
   workflow_dispatch:
-    paths-ignore:
-      - "docs/**"
 
 jobs:
   benchmarks:
