@@ -1020,38 +1020,12 @@ function _loadEncodedDynamicDataLength(
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Store.sol)
 
 **Inherits:**
-[IStore](/src/IStore.sol/interface.IStore.md), [StoreWrite](/src/StoreWrite.sol/abstract.StoreWrite.md), [StoreRead](/store/reference/store-core#storeread)
+[IStore](/src/IStore.sol/interface.IStore.md), [StoreKernel](/src/StoreKernel.sol/abstract.StoreKernel.md)
 
 This contract integrates the core storage functionalities and provides an interface for data storage.
 
 _This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
 but not write methods._
-
-### Functions
-
-#### constructor
-
-Constructs the Store contract and initializes the StoreCore.
-
-_Emits a HelloStore event upon creation._
-
-```solidity
-constructor();
-```
-
-#### storeVersion
-
-Retrieves the protocol version of the Store.
-
-```solidity
-function storeVersion() public pure returns (bytes32);
-```
-
-**Returns**
-
-| Name     | Type      | Description                        |
-| -------- | --------- | ---------------------------------- |
-| `<none>` | `bytes32` | The protocol version of the Store. |
 
 ## StoreRead
 
