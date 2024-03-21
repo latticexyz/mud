@@ -1,7 +1,12 @@
 import { createWalletClient, http } from "viem";
 import { mnemonicToAccount } from "viem/accounts";
 import { foundry } from "viem/chains";
-import { DETERMINISTIC_DEPLOYER, ENTRY_POINT_CREATE_CALL, SIMPLE_ACCOUNT_FACTORY_CREATE_CALL } from "./constants";
+import {
+  DETERMINISTIC_DEPLOYER,
+  ENTRY_POINT_CREATE_CALL,
+  ENTRY_POINT_SIMULATIONS_CREATE_CALL,
+  SIMPLE_ACCOUNT_FACTORY_CREATE_CALL,
+} from "./constants";
 
 const account = mnemonicToAccount("test test test test test test test test test test test junk");
 
@@ -25,4 +30,11 @@ const walletClient = createWalletClient({
   });
 
   console.log("SimpleAccountFactory deployed", simpleAccountFactoryHash);
+
+  const entryPointSimulationsHash = await walletClient.sendTransaction({
+    to: DETERMINISTIC_DEPLOYER,
+    data: ENTRY_POINT_SIMULATIONS_CREATE_CALL,
+  });
+
+  console.log("entryPointSimulations deployed", entryPointSimulationsHash);
 })();
