@@ -11,6 +11,10 @@ import { http, createWalletClient, ClientConfig } from "viem";
 import { mudFoundry } from "@latticexyz/common/chains";
 import { encodeEntity } from "@latticexyz/store-sync/recs";
 import { callPageFunction } from "./data/callPageFunction";
+import worldConfig from "@latticexyz/world/mud.config";
+import { worldToV1 } from "@latticexyz/world/config/v2";
+
+const worldConfigV1 = worldToV1(worldConfig);
 
 describe("register", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
@@ -93,7 +97,11 @@ describe("register", async () => {
     ]);
 
     // Expect delegation to have been created
-    const value = await callPageFunction(page, "getEntities", ["UserDelegationNonces"]);
-    expect(value[0]).toEqual(encodeEntity({ address: "address" }, { address: burnerAccount.address }));
+    const value = await callPageFunction(page, "getComponentValue", [
+      "UserDelegationNonces",
+      encodeEntity(worldConfigV1.tables.UserDelegationNonces.keySchema, { delegator: burnerAccount.address }),
+    ]);
+
+    expect(value.nonce).toEqual(1n);
   });
 });
