@@ -3,8 +3,9 @@ name: Prerelease 🚀
 on:
   push:
     branches:
-      # Target main branch
       - "main"
+    paths-ignore:
+      - "docs/**"
 
 # Ensure only one workflow/job is publishing to npm at a time
 concurrency: publish-to-npm
