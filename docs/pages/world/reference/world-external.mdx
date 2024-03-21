@@ -459,32 +459,6 @@ function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelega
 | ------------- | ------------ | ----------------------- |
 | `namespaceId` | `ResourceId` | The ID of the namespace |
 
-## getMessageHash
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol)
-
-```solidity
-function getMessageHash(
-  address delegatee,
-  ResourceId delegationControlId,
-  bytes memory initCallData,
-  uint256 nonce
-) pure returns (bytes32);
-```
-
-## registerDelegationHelper
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol)
-
-```solidity
-function registerDelegationHelper(
-  address delegator,
-  address delegatee,
-  ResourceId delegationControlId,
-  bytes memory initCallData
-);
-```
-
 ### Errors
 
 #### Store_TableAlreadyExists

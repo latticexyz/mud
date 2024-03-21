@@ -34,31 +34,7 @@ import { requireValidNamespace } from "../../../requireValidNamespace.sol";
 import { LimitedCallContext } from "../LimitedCallContext.sol";
 import { getSignedMessageHash } from "./getSignedMessageHash.sol";
 import { ECDSA } from "./ECDSA.sol";
-
-function registerDelegationHelper(
-  address delegator,
-  address delegatee,
-  ResourceId delegationControlId,
-  bytes memory initCallData
-) {
-  // Store the delegation control contract address
-  UserDelegationControl._set({ delegator: delegator, delegatee: delegatee, delegationControlId: delegationControlId });
-
-  // If the delegation is limited...
-  if (Delegation.isLimited(delegationControlId)) {
-    // Require the delegationControl contract to implement the IDelegationControl interface
-    address delegationControl = Systems._getSystem(delegationControlId);
-    requireInterface(delegationControl, type(IDelegationControl).interfaceId);
-
-    // Call the delegation control contract's init function
-    SystemCall.callWithHooksOrRevert({
-      caller: delegator,
-      systemId: delegationControlId,
-      callData: initCallData,
-      value: 0
-    });
-  }
-}
+import { createDelegation } from "./createDelegation.sol";
 
 /**
  * @title WorldRegistrationSystem
@@ -292,7 +268,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public onlyDelegatecall {
-    registerDelegationHelper(_msgSender(), delegatee, delegationControlId, initCallData);
+    createDelegation(_msgSender(), delegatee, delegationControlId, initCallData);
   }
 
   function registerDelegationWithSignature(
@@ -313,7 +289,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
 
     UserDelegationNonces.set(delegator, nonce + 1);
 
-    registerDelegationHelper(delegator, delegatee, delegationControlId, initCallData);
+    createDelegation(delegator, delegatee, delegationControlId, initCallData);
   }
 
   /**
