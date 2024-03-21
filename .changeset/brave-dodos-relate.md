@@ -1,8 +1,9 @@
 ---
+"@latticexyz/store": major
 "@latticexyz/world": major
 ---
 
-World config has been rebuilt with strong types. The shape of the config has also changed slightly for clarity, the biggest change of which is merging of `keySchema` and `valueSchema` into a single `schema` with a separate `key` for the table's primary key.
+Store and World configs have been rebuilt with strong types. The shape of these configs have also changed slightly for clarity, the biggest change of which is merging of `keySchema` and `valueSchema` into a single `schema` with a separate `key` for the table's primary key.
 
 To migrate, first update the imported config method:
 
@@ -13,6 +14,8 @@ To migrate, first update the imported config method:
 -export default mudConfig({
 +export default defineWorld({
 ```
+
+_Note that if you are only using Store, you will need to import `defineStore` from `@latticexyz/store`._
 
 Then migrate the table key by renaming `keySchema` to `schema` and define the table `key` with each field name from your key schema:
 
