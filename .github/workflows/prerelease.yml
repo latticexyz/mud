@@ -1,8 +1,7 @@
 name: Prerelease 🚀
 
 on:
-  push:
-    workflow_dispatch:
+  workflow_dispatch:
 
 # Ensure only one workflow/job is publishing to npm at a time
 concurrency: publish-to-npm
