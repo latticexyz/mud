@@ -31,8 +31,8 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Remove this once https://github.com/changesets/changesets/issues/1195 is addressed
-      - name: Temporarily exit pre-release mode to release a snapshot
-        run: pnpm changeset pre exit
+      # - name: Temporarily exit pre-release mode to release a snapshot
+      # run: pnpm changeset pre exit
 
       - name: Clean
         shell: bash
