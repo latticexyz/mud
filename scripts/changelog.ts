@@ -106,7 +106,7 @@ async function getChanges(include: "diff" | "all") {
       .map((filename) => filename.trim())
       .filter((filename) => /.md$/.test(filename));
   } else if (include === "all") {
-    // Load all current changesets from the .changeset/pre.json file
+    // Load all current changesets from the .changeset dir
     changesetsToInclude = glob.sync(".changeset/*.md");
   }
 
