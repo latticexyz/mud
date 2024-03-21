@@ -12,8 +12,8 @@ bytes32 constant DELEGATION_TYPEHASH = keccak256(
 
 string constant name = "batman";
 string constant version = "134";
-bytes32 constant hashedName = keccak256(abi.encode(name));
-bytes32 constant hashedVersion = keccak256(abi.encode(version));
+bytes32 constant hashedName = keccak256(bytes(name));
+bytes32 constant hashedVersion = keccak256(bytes(version));
 address constant verifyingContract = 0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC;
 
 function toTypedDataHash(bytes32 domainSeparator, bytes32 structHash) pure returns (bytes32 digest) {

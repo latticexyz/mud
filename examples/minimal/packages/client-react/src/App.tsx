@@ -45,16 +45,10 @@ export const App = () => {
             domain: {
               name: "batman",
               version: "134",
-              chainId: BigInt(walletClient.chain.id),
+              chainId: walletClient.chain.id,
               verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
             },
             types: {
-              EIP712Domain: [
-                { name: "name", type: "string" },
-                { name: "version", type: "string" },
-                { name: "chainId", type: "uint256" },
-                { name: "verifyingContract", type: "address" },
-              ],
               Delegation: [
                 { name: "delegatee", type: "address" },
                 { name: "delegationControlId", type: "bytes32" },
