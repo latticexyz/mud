@@ -477,6 +477,10 @@ function registerDelegation(
 
 #### registerDelegationWithSignature
 
+Registers a delegation for `delegator` with a signature
+
+_Creates a new delegation from the caller to the specified delegatee_
+
 ```solidity
 function registerDelegationWithSignature(
   address delegatee,
@@ -486,6 +490,16 @@ function registerDelegationWithSignature(
   bytes memory signature
 ) public onlyDelegatecall;
 ```
+
+**Parameters**
+
+| Name                  | Type         | Description                                |
+| --------------------- | ------------ | ------------------------------------------ |
+| `delegatee`           | `address`    | The address of the delegatee               |
+| `delegationControlId` | `ResourceId` | The ID controlling the delegation          |
+| `initCallData`        | `bytes`      | The initialization data for the delegation |
+| `delegator`           | `address`    | The address of the delegator               |
+| `signature`           | `bytes`      | The EIP712 signature                       |
 
 #### unregisterDelegation
 

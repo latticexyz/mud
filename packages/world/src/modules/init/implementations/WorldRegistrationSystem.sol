@@ -271,6 +271,15 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     createDelegation(_msgSender(), delegatee, delegationControlId, initCallData);
   }
 
+  /**
+   * @notice Registers a delegation for `delegator` with a signature
+   * @dev Creates a new delegation from the caller to the specified delegatee
+   * @param delegatee The address of the delegatee
+   * @param delegationControlId The ID controlling the delegation
+   * @param initCallData The initialization data for the delegation
+   * @param delegator The address of the delegator
+   * @param signature The EIP712 signature
+   */
   function registerDelegationWithSignature(
     address delegatee,
     ResourceId delegationControlId,
