@@ -3,7 +3,6 @@ import { useComponentValue, useEntityQuery } from "@latticexyz/react";
 import { Has, getComponentValueStrict } from "@latticexyz/recs";
 import { decodeEntity, singletonEntity } from "@latticexyz/store-sync/recs";
 import { useMUD } from "./MUDContext";
-import { resourceToHex } from "@latticexyz/common";
 
 const ITEMS = ["cup", "spoon", "fork"];
 const VARIANTS = ["yellow", "green", "red"];
@@ -11,7 +10,7 @@ const VARIANTS = ["yellow", "green", "red"];
 export const App = () => {
   const {
     components: { CounterTable, Inventory, MessageTable },
-    network: { walletClient, worldContract, waitForTransaction },
+    network: { worldContract, waitForTransaction },
   } = useMUD();
 
   const counter = useComponentValue(CounterTable, singletonEntity);
@@ -33,53 +32,6 @@ export const App = () => {
       <div>
         Counter: <span>{counter?.value ?? "??"}</span>
       </div>
-      <button
-        type="button"
-        onClick={async () => {
-          const delegatee = "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377";
-          const delegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
-          const initCallData = "0x00";
-          const nonce = 0n;
-
-          const domain = {
-            name: "App Name",
-            version: "1",
-            chainId: 1,
-            verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
-          } as const;
-
-          const types = {
-            Delegation: [
-              { name: "delegatee", type: "address" },
-              { name: "delegationControlId", type: "bytes32" },
-              { name: "initCallData", type: "bytes" },
-              { name: "nonce", type: "uint256" },
-            ],
-          } as const;
-
-          const signature = await walletClient.signTypedData({
-            domain,
-            types,
-            primaryType: "Delegation",
-            message: {
-              delegatee,
-              delegationControlId,
-              initCallData,
-              nonce,
-            },
-          });
-
-          await worldContract.write.registerDelegationWithSignature([
-            delegatee,
-            delegationControlId,
-            initCallData,
-            walletClient.account.address,
-            signature,
-          ]);
-        }}
-      >
-        Sign and register delegation
-      </button>
       <button
         type="button"
         onClick={async () => {

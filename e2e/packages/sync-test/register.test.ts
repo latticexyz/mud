@@ -92,6 +92,7 @@ describe("register", async () => {
       signature,
     ]);
 
+    // Expect delegation to have been created
     const value = await callPageFunction(page, "getEntities", ["UserDelegationNonces"]);
     expect(value[0]).toEqual(encodeEntity({ address: "address" }, { address: burnerAccount.address }));
   });
