@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { StoreData } from "@latticexyz/store/src/StoreData.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+import { StoreKernel } from "@latticexyz/store/src/StoreKernel.sol";
 
 import { WORLD_VERSION } from "./version.sol";
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
@@ -33,8 +33,10 @@ import { Balances } from "./codegen/tables/Balances.sol";
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This contract is the core "World" contract containing various methods for
  * data manipulation, system calls, and dynamic function selector handling.
+ *
+ * @dev World doesn't inherit `Store` because the `IStoreRegistration` methods are added via the `InitModule`.
  */
-contract World is StoreData, IWorldKernel {
+contract World is StoreKernel, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
 
   /// @notice Address of the contract's creator.

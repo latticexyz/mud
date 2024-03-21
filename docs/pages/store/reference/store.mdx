@@ -5,9 +5,7 @@
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol)
 
 **Inherits:**
-[IStoreData](/store/reference/store#istoredata), [IStoreRegistration](/store/reference/store#istoreregistration), [IStoreErrors](/store/reference/store#istoreerrors), [IFieldLayoutErrors](/src/IFieldLayoutErrors.sol/interface.IFieldLayoutErrors.md), [IEncodedLengthsErrors](/src/IEncodedLengthsErrors.sol/interface.IEncodedLengthsErrors.md), [ISchemaErrors](/src/ISchemaErrors.sol/interface.ISchemaErrors.md), [ISliceErrors](/src/ISliceErrors.sol/interface.ISliceErrors.md)
-
-IStore implements the error interfaces for each library that it uses.
+[IStoreKernel](/src/IStoreKernel.sol/interface.IStoreKernel.md), [IStoreRegistration](/store/reference/store#istoreregistration)
 
 ## IStoreEvents
 
@@ -312,33 +310,6 @@ error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fi
 | `startWithinField` | `uint40` | The start index within the field for the splice operation. |
 | `deleteCount`      | `uint40` | The number of bytes to delete in the splice operation.     |
 | `fieldLength`      | `uint40` | The field length for the splice operation.                 |
-
-## IStoreData
-
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreData.sol)
-
-**Inherits:**
-[IStoreRead](/store/reference/store#istoreread), [IStoreWrite](/store/reference/store#istorewrite)
-
-The IStoreData interface includes methods for reading and writing table values.
-
-_These methods are frequently invoked during runtime, so it is essential to prioritize optimizing their gas cost._
-
-### Functions
-
-#### storeVersion
-
-Returns the version of the Store contract.
-
-```solidity
-function storeVersion() external view returns (bytes32 version);
-```
-
-**Returns**
-
-| Name      | Type      | Description                        |
-| --------- | --------- | ---------------------------------- |
-| `version` | `bytes32` | The version of the Store contract. |
 
 ## IStoreRead
 

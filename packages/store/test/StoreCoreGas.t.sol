@@ -738,7 +738,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       SchemaType.UINT16
     );
 
-    IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
+    this.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
     bytes memory staticData = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
@@ -751,7 +751,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     emit Store_SetRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     startGasReport("StoreCore: set record in offchain table");
-    IStore(this).setRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
+    this.setRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
     endGasReport();
   }
 
@@ -766,7 +766,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
         SchemaType.UINT32_ARRAY,
         SchemaType.UINT32_ARRAY
       );
-      IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+      this.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
     }
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
@@ -802,7 +802,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     keyTuple[0] = bytes32("some key");
 
     // Set data
-    IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
+    this.setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
 
     // Expect a Store_DeleteRecord event to be emitted
     vm.expectEmit(true, true, true, true);
@@ -810,7 +810,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Delete data
     startGasReport("StoreCore: delete record in offchain table");
-    IStore(this).deleteRecord(tableId, keyTuple);
+    this.deleteRecord(tableId, keyTuple);
     endGasReport();
   }
 }

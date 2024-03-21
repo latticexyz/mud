@@ -1015,43 +1015,17 @@ function _loadEncodedDynamicDataLength(
 | -------- | ---------------- | ----------------------------------------------------------------------------------------- |
 | `<none>` | `EncodedLengths` | The loaded encoded dynamic data length from storage for the given table ID and key tuple. |
 
-## StoreData
+## Store
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreData.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Store.sol)
 
 **Inherits:**
-[IStoreData](/store/reference/store#istoredata), [StoreRead](/store/reference/store-core#storeread)
+[IStore](/src/IStore.sol/interface.IStore.md), [StoreKernel](/src/StoreKernel.sol/abstract.StoreKernel.md)
 
 This contract integrates the core storage functionalities and provides an interface for data storage.
 
 _This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
 but not write methods._
-
-### Functions
-
-#### constructor
-
-Constructs the StoreData contract and initializes the StoreCore.
-
-_Emits a HelloStore event upon creation._
-
-```solidity
-constructor();
-```
-
-#### storeVersion
-
-Retrieves the protocol version of the Store.
-
-```solidity
-function storeVersion() public pure returns (bytes32);
-```
-
-**Returns**
-
-| Name     | Type      | Description                        |
-| -------- | --------- | ---------------------------------- |
-| `<none>` | `bytes32` | The protocol version of the Store. |
 
 ## StoreRead
 

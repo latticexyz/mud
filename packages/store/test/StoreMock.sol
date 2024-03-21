@@ -4,7 +4,7 @@ pragma solidity >=0.8.24;
 import { IStore } from "../src/IStore.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { StoreData } from "../src/StoreData.sol";
+import { Store } from "../src/Store.sol";
 import { EncodedLengths } from "../src/EncodedLengths.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { Schema } from "../src/Schema.sol";
@@ -15,7 +15,7 @@ import { ResourceId } from "../src/ResourceId.sol";
 /**
  * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
  */
-contract StoreMock is IStore, StoreData {
+contract StoreMock is Store {
   constructor() {
     StoreCore.initialize();
     StoreCore.registerInternalTables();
