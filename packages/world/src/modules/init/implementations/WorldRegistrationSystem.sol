@@ -32,7 +32,7 @@ import { requireNamespace } from "../../../requireNamespace.sol";
 import { requireValidNamespace } from "../../../requireValidNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
-import { getSignedMessageHash } from "./permit.sol";
+import { getSignedMessageHash } from "./getSignedMessageHash.sol";
 import { tryRecover } from "./tryRecover.sol";
 
 function registerDelegationHelper(

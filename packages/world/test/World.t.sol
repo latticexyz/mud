@@ -58,7 +58,7 @@ import { DelegationControlMock } from "./DelegationControlMock.sol";
 import { createWorld } from "./createWorld.sol";
 import { createInitModule } from "./createInitModule.sol";
 
-import { getSignedMessageHash } from "../src/modules/init/implementations/permit.sol";
+import { getSignedMessageHash } from "../src/modules/init/implementations/getSignedMessageHash.sol";
 
 interface IWorldTestSystem {
   function testNamespace__err(string memory input) external pure;
