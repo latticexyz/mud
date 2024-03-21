@@ -1,5 +1,5 @@
 import { Callout } from "nextra/components";
-import { Tabs, Tab } from 'nextra/components'
+import { Tabs, Tab } from "nextra/components";
 
 # Getting started
 
@@ -14,88 +14,68 @@ To install the TypeScript templates you need:
   Note that version 18 is _required_.
   We do not support older or newer versions at the moment.
 
-  <details>  
+  <details>
 
   <summary>Installation instructions:</summary>
 
-    <Tabs items={['Linux and MacOS', 'Windows']}>
-      <Tab>
-        ```sh copy
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-        nvm install 18
-        ```
-      </Tab>
-      
-      <Tab>
-        ```powershell copy
-        # installs Chocolatey (Windows Package Manager)
-        Set-ExecutionPolicy Bypass -Scope Process -Force;
-        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
-        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));
-        # download and install Node.js
-        choco install nodejs --version="18.19.1"
-        ```
-      </Tab>
-    </Tabs>
+  {" "}
+  <Tabs items={["Linux and MacOS", "Windows"]}>
+    <Tab>
+      ```sh copy curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash nvm install 18 ```
+    </Tab>
+
+    <Tab>
+      ```powershell copy # installs Chocolatey (Windows Package Manager) Set-ExecutionPolicy Bypass -Scope Process
+      -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol
+      -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')); #
+      download and install Node.js choco install nodejs --version="18.19.1" ```
+    </Tab>
+  </Tabs>
 
   </details>
 
 - [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
-  <details>  
+  <details>
 
   <summary>Installation instructions:</summary>
 
-    <Tabs items={['Linux (RedHat based)', 'Linux (Debian based)', 'MacOS', 'Windows']}>
-      <Tab>
-        ```sh copy
-        sudo dnf install git-all
-        ```
-      </Tab>
-      <Tab>
-        ```sh copy
-        sudo apt install git-all
-        ```
-      </Tab>
-      <Tab>
-        ```sh copy
-        brew install git
-        ```
-      </Tab>
-      <Tab>
-        ```powershell copy
-        choco install git
-        ```
-      </Tab>  
-    </Tabs>
+  {" "}
+  <Tabs items={["Linux (RedHat based)", "Linux (Debian based)", "MacOS", "Windows"]}>
+    <Tab>```sh copy sudo dnf install git-all ```</Tab>
+    <Tab>```sh copy sudo apt install git-all ```</Tab>
+    <Tab>```sh copy brew install git ```</Tab>
+    <Tab>```powershell copy choco install git ```</Tab>
+  </Tabs>
 
   </details>
 
 - [Foundry](https://book.getfoundry.sh/getting-started/installation)
 
-  <details>  
+  <details>
 
   <summary>Installation instructions:</summary>
 
     <Tabs items={['Linux and MacOS', 'Windows']}>
-      <Tab>
-        ```sh copy
-        curl -L https://foundry.paradigm.xyz | bash
-        export PATH=$PATH:~/.foundry/bin
-        ```
-      </Tab>
-      
-      <Tab>
-      1. Use either Git Bash (which you should already have because you installed git) or [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+    <Tab>
+      ```sh copy
+      curl -L https://foundry.paradigm.xyz | bash
+      export PATH=$PATH:~/.foundry/bin
+      ```
+    </Tab>
+    
+    <Tab>
+    1. Use either Git Bash (which you should already have because you installed git) or [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
 
       1. Run the same commands you would on Linux and MacOS:
 
         ```sh copy
         curl -L https://foundry.paradigm.xyz | bash
         export PATH=$PATH:~/.foundry/bin
-        ```      
+        ```
 
       </Tab>
+
     </Tabs>
 
   </details>
@@ -113,11 +93,8 @@ To run any of the TypeScript templates:
    If you need, replace `tutorial` with your application name.
 
    ```sh copy
-   pnpm create mud@next tutorial
+   pnpm create mud tutorial
    ```
-
-   **Note:** The `@next` is only necessary until MUD v2.0 is officially released.
-
    <details>
 
    <summary>Possible errors in this stage</summary>
