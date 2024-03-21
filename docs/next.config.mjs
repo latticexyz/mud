@@ -224,7 +224,7 @@ export default withNextra({
       {
         source: "/templates/typescript/getting-started",
         destination: "/quickstart",
-        permanent: true,
+        permanent: false,
       },
     ];
   },
