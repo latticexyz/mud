@@ -8,22 +8,22 @@ export const useKeyboardMovement = () => {
 
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
-      if (e.key === "ArrowUp") {
+      if (e.key === "w") {
         moveBy(1, 0, 0);
       }
-      if (e.key === "ArrowDown") {
+      if (e.key === "s") {
         moveBy(-1, 0, 0);
       }
-      if (e.key === "ArrowLeft") {
+      if (e.key === "a") {
         moveBy(0, 0, -1);
       }
-      if (e.key === "ArrowRight") {
+      if (e.key === "d") {
         moveBy(0, 0, 1);
       }
-      if (e.key === " ") {
+      if (e.key === "t") {
         moveBy(0, 1, 0);
       }
-      if (e.ctrlKey) {
+      if (e.key === "g") {
         moveBy(0, -1, 0);
       }
     };
