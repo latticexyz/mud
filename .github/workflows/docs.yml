@@ -36,11 +36,11 @@ jobs:
 
       - name: Start
         working-directory: docs
-        run: pnpm start & npx wait-on http://localhost:3000
+        run: pnpm start & npx wait-on --timeout 5000 http://127.0.0.1:3000
 
       # TODO: wait for server to be online?
 
       - name: Check links
         uses: filiph/linkcheck@3.0.0
         with:
-          arguments: http://localhost:3000
+          arguments: http://127.0.0.1:3000
