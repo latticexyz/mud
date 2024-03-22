@@ -63,62 +63,58 @@ contract DeployKeyWithValueModule is Script {
 
 ## Understanding resource identifiers
 
-Resource identifiers are usually accessible at 32-byte values in hexadecimal.
-For example, in the MUD Dev Tools, when you see a value such as `0x7462...0000`, you can copy it and paste it somewhere else to see the complete value.
+Resource identifiers can be represented as 32-byte hexadecimal values.
+For example, in the MUD Dev Tools, you can see values such as `0x7462...0000`.
 
-### Online calculator
+These values can be parsed with [`hexToResource`](https://github.com/latticexyz/mud/blob/main/packages/common/src/hexToResource.ts), which converts resource IDs to human readable values.
 
-You can use [an online calculator](https://www.duplichecker.com/hex-to-text.php) to convert hex to text.
-The weird `�` characters you see are where the value of a byte is zero.
-
-### JavaScript
-
-You can use this JavaScript code to interpret a resource ID.
-
-```javascript
-num2bytes = (x) => (x < 256n ? [Number(x)] : num2bytes(x / 256n).concat([Number(x % 256n)]));
-num2chars = (x) =>
-  num2bytes(x)
-    .map((x) => String.fromCharCode(x))
-    .map((x) => (x == "\x00" ? "." : x))
-    .join("");
-removeTail = (x) => x.replace(/\.+$/, "");
-resourceIDtoString = (resourceID) => {
-  rawString = num2chars(resourceID);
-  return (
-    rawString.substring(0, 2) +
-    ":" +
-    removeTail(rawString.substring(2, 16)) +
-    ":" +
-    removeTail(rawString.substring(16, 32))
-  );
-};
-```
-
-When you use `resourceIDtoString` remember to add `n` at the end of the resource ID.
-Otherwise it gets interpreted as a normal number and because integers in JavaScript are less than 256 bits it gets turned into a floating point, which is not the desired function.
-
-```javascript
-resourceIDtoString(0x746273746f72650000000000000000005461626c657300000000000000000000n);
-("tb:store:Tables");
-```
-
-### TypeScript
-
-We include a function, [`hexToResource`](https://github.com/latticexyz/mud/blob/main/packages/common/src/hexToResource.ts), that interprets resource IDs for you.
+For example, we can parse these four resource ID's:
 
 ```ts
 import { hexToResource } from "@latticexyz/common";
 
-let sampleResourceId: Array<String> = [
+const sampleResourceIds: Hex[] = [
   "0x6e7373746f726500000000000000000000000000000000000000000000000000", // namespace
   "0x746273746f72650000000000000000005461626c657300000000000000000000", // table
-  "0x6f74776f726c6400000000000000000046756e6374696f6e5369676e61747572", // offline table
+  "0x6f74776f726c6400000000000000000046756e6374696f6e5369676e61747572", // offchain table
   "0x737900000000000000000000000000004163636573734d616e6167656d656e74", // system
 ];
 
-sampleResourceId.map((x) => {
+sampleResourceIds.map((resourceId) => {
   console.log("----------");
-  console.log(hexToResource(x));
+  console.log(hexToResource(resourceId));
 });
+```
+
+Which logs the following types, namespaces, and names:
+
+```console
+----------
+{
+  resourceId: '0x6e7373746f726500000000000000000000000000000000000000000000000000',
+  type: 'namespace',
+  namespace: 'store',
+  name: ''
+}
+----------
+{
+  resourceId: '0x746273746f72650000000000000000005461626c657300000000000000000000',
+  type: 'table',
+  namespace: 'store',
+  name: 'Tables'
+}
+----------
+{
+  resourceId: '0x6f74776f726c6400000000000000000046756e6374696f6e5369676e61747572',
+  type: 'offchainTable',
+  namespace: 'world',
+  name: 'FunctionSignatur'
+}
+----------
+{
+  resourceId: '0x737900000000000000000000000000004163636573734d616e6167656d656e74',
+  type: 'system',
+  namespace: '',
+  name: 'AccessManagement'
+}
 ```
