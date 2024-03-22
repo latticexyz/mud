@@ -16,6 +16,8 @@ import { worldToV1 } from "@latticexyz/world/config/v2";
 import { types } from "@latticexyz/world/internal";
 import { getWorld } from "./data/getWorld";
 
+const PRIVATE_KEY = "0x67bbd1575ecc79b3247c7d7b87a5bc533ccb6a63955a9fefdfaf75853f7cd543";
+
 const worldConfigV1 = worldToV1(worldConfig);
 
 describe("registerDelegationWithSignature", async () => {
@@ -51,10 +53,10 @@ describe("registerDelegationWithSignature", async () => {
       transport: transportObserver(http(mudFoundry.rpcUrls.default.http[0] ?? undefined)),
     } as const satisfies ClientConfig;
 
-    const burnerAccount = createBurnerAccount("0x545824f54a7894601d34d6bb40a3dbb88064d3528a222914858fb32af616b89e");
+    const account = createBurnerAccount(PRIVATE_KEY);
     const walletClient = createWalletClient({
       ...clientOptions,
-      account: burnerAccount,
+      account,
     });
 
     const worldContract = await getWorld(page);
@@ -93,7 +95,7 @@ describe("registerDelegationWithSignature", async () => {
     const value = await callPageFunction(page, "getComponentValue", [
       "UserDelegationControl",
       encodeEntity(worldConfigV1.tables.UserDelegationControl.keySchema, {
-        delegator: burnerAccount.address,
+        delegator: account.address,
         delegatee,
       }),
     ]);
