@@ -79,7 +79,7 @@ First, we’ll use the `PostDeploy.s.sol` to initialize the terrain in the `MapC
 
 ```solidity filename="packages/contracts/script/PostDeploy.s.sol" {9-11,22-62} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
@@ -269,7 +269,7 @@ We'll then make sure `PostDeploy.s.sol` initializes the boulders properly (with 
 
 ```solidity filename="packages/contracts/script/PostDeploy.s.sol" {9,11,61-65} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
@@ -376,7 +376,7 @@ Then let's use this table in the `move` and `spawn` methods in `MapSystem.sol`.
 
 ```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,8,15-16,38-39} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { Movable, Obstruction, Player, Position } from "../codegen/index.sol";
@@ -577,7 +577,7 @@ We'll address this by updating the `spawn` and `move` methods in `MapSystem.sol`
 
 ```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,15-18,43-46} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";

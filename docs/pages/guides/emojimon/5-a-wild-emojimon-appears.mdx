@@ -98,7 +98,7 @@ First let's make sure the client is being initialized properly in `PostDeploy.s.
 
 ```solidity filename="packages/contracts/scripts/PostDeploy.s.sol" {9,65-68} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
@@ -183,7 +183,7 @@ Then let's update the `spawn` method in `MapSystem.sol` to include the `Encounte
 
 ```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,26} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { Encounterable, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
@@ -253,7 +253,7 @@ At this point we would ideally like to implement an element of randomness for tr
 
 ```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,54-59} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { Encounterable, EncounterTrigger, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
@@ -323,7 +323,7 @@ Now that we have all of the encounter logic setup we just want to take the last 
 
 ```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,32} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { Encounter, Encounterable, EncounterTrigger, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
@@ -592,7 +592,7 @@ Now we need a way to choose a type of monster when entering an encounter. We can
 
 ```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5-6,58,63-68} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { Encounter, EncounterData, Encounterable, EncounterTrigger, MapConfig, Monster, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
@@ -837,7 +837,7 @@ We also want the emojimon to be able to escape if the fail throws multiple times
 
 ```solidity filename="pacakges/contracts/src/systems/EncounterSystem.sol" copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { Player, Encounter, EncounterData, MonsterCatchAttempt, OwnedBy, Monster } from "../codegen/index.sol";
@@ -1038,7 +1038,7 @@ Last but not least, players should be able to flee encounters. We can add this w
 
 ```solidity filename="packages/contracts/src/systems/EncounterSystem.sol" {38-46} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { Player, Encounter, EncounterData, MonsterCatchAttempt, OwnedBy, Monster } from "../codegen/index.sol";

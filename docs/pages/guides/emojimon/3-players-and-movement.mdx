@@ -81,7 +81,7 @@ To solve for these problems we can add the `spawn` method, which will assign the
 
 ```solidity filename="packages/contract/src/systems/MapSystem.sol" {4-5,8-15} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 import { System } from "@latticexyz/world/src/System.sol";
 import { Movable, Player, Position } from "../codegen/index.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
@@ -158,7 +158,7 @@ This will allow us to move users (e.g. the user's wallet address as their entity
 
 ```solidity filename="packages/contract/src/systems/MapSystem.sol" {5,18-34} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 import { System } from "@latticexyz/world/src/System.sol";
 import { Movable, Player, Position } from "../codegen/index.sol";
 import { Direction } from "../codegen/common.sol";
