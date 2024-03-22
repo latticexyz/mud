@@ -1,17 +1,17 @@
 {
-  "name": "account-abstraction",
-  "version": "0.0.0",
-  "private": true,
-  "license": "MIT",
-  "scripts": {
-    "build": "tsc",
-    "start": "wait-port localhost:8545 && node dist/index.js"
-  },
-  "dependencies": {
-    "typescript": "5.4.2",
-    "viem": "2.7.12"
-  },
-  "devDependencies": {
-    "wait-port": "^1.0.4"
-  }
+	"name": "account-abstraction",
+	"version": "0.0.0",
+	"private": true,
+	"license": "MIT",
+	"scripts": {
+		"build": "tsc",
+		"start": "wait-port http://host.docker.internal:8545 && node dist/index.js"
+	},
+	"dependencies": {
+		"typescript": "5.4.2",
+		"viem": "2.7.12"
+	},
+	"devDependencies": {
+		"wait-port": "^1.0.4"
+	}
 }

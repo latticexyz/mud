@@ -13,7 +13,7 @@ const account = mnemonicToAccount("test test test test test test test test test 
 const walletClient = createWalletClient({
   account,
   chain: foundry,
-  transport: http("http://127.0.0.1:8545"),
+  transport: http("http://host.docker.internal:8545"),
 });
 
 (async () => {

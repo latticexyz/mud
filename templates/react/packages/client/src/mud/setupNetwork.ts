@@ -13,7 +13,11 @@ import {
   ClientConfig,
   getContract,
   PublicClient,
+  Address,
+  createWalletClient,
+  Chain,
 } from "viem";
+import { foundry } from "viem/chains";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -34,6 +38,7 @@ import mudConfig from "contracts/mud.config";
 import { ENTRYPOINT_ADDRESS_V07, createSmartAccountClient } from "permissionless";
 import { signerToSimpleSmartAccount } from "permissionless/accounts";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
+import { mnemonicToAccount } from "viem/accounts";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -50,6 +55,21 @@ async function waitForDeployments(publicClient: PublicClient) {
 
     await new Promise((f) => setTimeout(f, 1000));
   }
+}
+
+async function seedAccount(to: Address, chain: Chain) {
+  const account = mnemonicToAccount("test test test test test test test test test test test junk");
+
+  const walletClient = createWalletClient({
+    account,
+    chain,
+    transport: http("http://host.docker.internal:8545"),
+  });
+
+  await walletClient.sendTransaction({
+    to,
+    value: parseEther("100"),
+  });
 }
 
 export async function setupNetwork() {
@@ -100,6 +120,10 @@ export async function setupNetwork() {
   })
     .extend(transactionQueue(publicClient))
     .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
+
+  if (clientOptions.chain.id === foundry.id) {
+    await seedAccount(burnerSmartAccount.address, clientOptions.chain);
+  }
 
   /*
    * Create an object for communicating with the deployed World.

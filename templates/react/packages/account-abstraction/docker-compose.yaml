@@ -3,7 +3,6 @@ version: "2.4"
 services:
   aa_setup:
     ports: [ "8545:8545" ]
-    network_mode: "host"
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,7 +10,6 @@ services:
   alto_bundler:
     image: ghcr.io/pimlicolabs/alto
     ports: [ "3000:3000" ]
-    network_mode: "host"
     environment:
       - ALTO_NETWORK_NAME=local
       - ALTO_ENTRY_POINT=0x0000000071727De22E5E9d8BAf0edAc6f37da032 # 0.7
