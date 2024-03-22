@@ -9,7 +9,7 @@ import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/intern
 describe("validateKeys", () => {
   it("should return a tuple of valid keys", () => {
     attest<
-      ["static"],
+      readonly ["static"],
       validateKeys<getStaticAbiTypeKeys<{ static: "uint256"; dynamic: "string" }, AbiTypeScope>, ["static"]>
     >();
   });
@@ -18,7 +18,7 @@ describe("validateKeys", () => {
     const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
 
     attest<
-      ["static", "customStatic"],
+      readonly ["static", "customStatic"],
       validateKeys<
         getStaticAbiTypeKeys<
           { static: "uint256"; dynamic: "string"; customStatic: "static"; customDynamic: "dynamic" },
@@ -33,7 +33,7 @@ describe("validateKeys", () => {
     const scope = extendScope(AbiTypeScope, { static: "address", dynamic: "string" });
 
     attest<
-      ["static", "customStatic"],
+      readonly ["static", "customStatic"],
       validateKeys<
         getStaticAbiTypeKeys<
           { static: "uint256"; dynamic: "string"; customStatic: "static"; customDynamic: "dynamic" },
@@ -218,13 +218,13 @@ describe("resolveTable", () => {
     attest(() =>
       defineTable({
         schema: { id: "address" },
-        // @ts-expect-error Type 'string' is not assignable to type 'string[]'
+        // @ts-expect-error Type 'string' is not assignable to type 'readonly string[]'
         key: "",
         name: "",
       }),
     )
       .throws('Invalid key. Expected `("id")[]`, received ``')
-      .type.errors("Type 'string' is not assignable to type 'string[]'");
+      .type.errors("Type 'string' is not assignable to type 'readonly string[]'");
   });
 
   it("should throw if a string is provided as schema", () => {

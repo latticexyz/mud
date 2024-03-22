@@ -7,7 +7,7 @@ import { Storage } from "./Storage.sol";
 import { Memory } from "./Memory.sol";
 import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
-import { PackedCounter } from "./PackedCounter.sol";
+import { EncodedLengths } from "./EncodedLengths.sol";
 import { Slice, SliceLib } from "./Slice.sol";
 import { Tables, ResourceIds, StoreHooks } from "./codegen/index.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
@@ -279,7 +279,7 @@ library StoreCore {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData
   ) internal {
     setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, getFieldLayout(tableId));
@@ -302,7 +302,7 @@ library StoreCore {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) internal {
@@ -556,7 +556,7 @@ library StoreCore {
     bytes memory data
   ) internal {
     // Load the previous length of the field to set from storage to compute how much data to delete
-    PackedCounter previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    EncodedLengths previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     uint40 previousFieldLength = uint40(previousEncodedLengths.atIndex(dynamicFieldIndex));
 
     StoreCoreInternal._spliceDynamicData({
@@ -651,7 +651,7 @@ library StoreCore {
     bytes memory dataToPush
   ) internal {
     // Load the previous length of the field to set from storage to compute where to start to push
-    PackedCounter previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    EncodedLengths previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     uint40 previousFieldLength = uint40(previousEncodedLengths.atIndex(dynamicFieldIndex));
 
     // Splice the dynamic data
@@ -683,7 +683,7 @@ library StoreCore {
     uint256 byteLengthToPop
   ) internal {
     // Load the previous length of the field to set from storage to compute where to start to push
-    PackedCounter previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    EncodedLengths previousEncodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     uint40 previousFieldLength = uint40(previousEncodedLengths.atIndex(dynamicFieldIndex));
 
     // Splice the dynamic data
@@ -717,7 +717,7 @@ library StoreCore {
   function getRecord(
     ResourceId tableId,
     bytes32[] memory keyTuple
-  ) internal view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
+  ) internal view returns (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData) {
     return getRecord(tableId, keyTuple, getFieldLayout(tableId));
   }
 
@@ -734,7 +734,7 @@ library StoreCore {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout
-  ) internal view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
+  ) internal view returns (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData) {
     // Get the static data length
     uint256 staticLength = fieldLayout.staticDataLength();
 
@@ -926,7 +926,7 @@ library StoreCore {
     // Verify the accessed data is within the bounds of the dynamic field.
     // This is necessary because we don't delete the dynamic data when a record is deleted,
     // but only decrease its length.
-    PackedCounter encodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    EncodedLengths encodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     uint256 fieldLength = encodedLengths.atIndex(dynamicFieldIndex);
     if (start >= fieldLength || end > fieldLength) {
       revert IStoreErrors.Store_IndexOutOfBounds(fieldLength, start >= fieldLength ? start : end - 1);
@@ -983,7 +983,7 @@ library StoreCoreInternal {
     uint40 startWithinField,
     uint40 deleteCount,
     bytes memory data,
-    PackedCounter previousEncodedLengths
+    EncodedLengths previousEncodedLengths
   ) internal {
     // Splicing dynamic data is not supported for offchain tables, because it
     // requires reading the previous encoded lengths from storage
@@ -1006,7 +1006,7 @@ library StoreCoreInternal {
     }
 
     // Update the encoded length
-    PackedCounter updatedEncodedLengths = previousEncodedLengths.setAtIndex(dynamicFieldIndex, updatedFieldLength);
+    EncodedLengths updatedEncodedLengths = previousEncodedLengths.setAtIndex(dynamicFieldIndex, updatedFieldLength);
 
     // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks._get(tableId);
@@ -1212,8 +1212,8 @@ library StoreCoreInternal {
   function _loadEncodedDynamicDataLength(
     ResourceId tableId,
     bytes32[] memory keyTuple
-  ) internal view returns (PackedCounter) {
+  ) internal view returns (EncodedLengths) {
     // Load dynamic data length from storage
-    return PackedCounter.wrap(Storage.load({ storagePointer: _getDynamicDataLengthLocation(tableId, keyTuple) }));
+    return EncodedLengths.wrap(Storage.load({ storagePointer: _getDynamicDataLengthLocation(tableId, keyTuple) }));
   }
 }

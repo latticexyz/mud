@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
@@ -46,7 +46,7 @@ contract KeysInTableHook is StoreHook {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory,
-    PackedCounter,
+    EncodedLengths,
     bytes memory,
     FieldLayout
   ) public override {
@@ -68,7 +68,7 @@ contract KeysInTableHook is StoreHook {
     uint8,
     uint40,
     uint40,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) public override {
     handleSet(tableId, keyTuple);

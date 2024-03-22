@@ -1,4 +1,4 @@
-import { conform, evaluate, narrow } from "@arktype/util";
+import { ErrorMessage, conform, evaluate, narrow } from "@arktype/util";
 import {
   UserTypes,
   extendedScope,
@@ -15,9 +15,9 @@ import {
 } from "@latticexyz/store/config/v2";
 import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS } from "./defaults";
-import { Tables } from "@latticexyz/store";
+import { Tables } from "@latticexyz/store/internal";
 import { resolveSystems } from "./systems";
-import { resolveNamespacedTables, validateNamespaces } from "./namespaces";
+import { resolveNamespacedTables } from "./namespaces";
 import { resolveCodegen } from "./codegen";
 import { resolveDeploy } from "./deploy";
 
@@ -29,7 +29,8 @@ export type validateWorld<world> = {
       : key extends "enums"
         ? narrow<world[key]>
         : key extends "namespaces"
-          ? validateNamespaces<world[key], extendedScope<world>>
+          ? // ? validateNamespaces<world[key], extendedScope<world>>
+            ErrorMessage<`Namespaces config will be enabled soon.`>
           : key extends keyof WorldInput
             ? conform<world[key], WorldInput[key]>
             : world[key];

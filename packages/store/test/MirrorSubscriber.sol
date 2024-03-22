@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import { IStore } from "../src/IStore.sol";
 import { StoreHook } from "../src/StoreHook.sol";
-import { PackedCounter } from "../src/PackedCounter.sol";
+import { EncodedLengths } from "../src/EncodedLengths.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
@@ -33,7 +33,7 @@ contract MirrorSubscriber is StoreHook {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData,
     FieldLayout
   ) public override {
@@ -57,7 +57,7 @@ contract MirrorSubscriber is StoreHook {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    PackedCounter,
+    EncodedLengths,
     bytes memory data
   ) public override {
     if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");

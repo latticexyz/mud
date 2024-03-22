@@ -14,7 +14,7 @@ export type SystemInput = {
    */
   registerFunctionSelectors?: boolean;
   /** If openAccess is true, any address can call the system */
-  openAccess?: true;
+  openAccess?: boolean;
   /** An array of addresses or system names that can access the system */
   accessList?: string[];
 };

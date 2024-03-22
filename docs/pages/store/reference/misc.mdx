@@ -1616,7 +1616,7 @@ From left to right, the bytes are laid out as follows:
 - 1 byte for number of static size fields
 - 1 byte for number of dynamic size fields
 - 28 bytes for 28 static field lengths
-  (MAX_DYNAMIC_FIELDS allows PackedCounter to pack the dynamic lengths into 1 word)\*
+  (MAX_DYNAMIC_FIELDS allows EncodedLengths to pack the dynamic lengths into 1 word)\*
 
 ```solidity
 type FieldLayout is bytes32;
@@ -2476,7 +2476,7 @@ uint256 constant MAX_STATIC_FIELDS = 28;
 
 #### MAX_DYNAMIC_FIELDS
 
-_Represents the maximum number of dynamic fields that can be packed in a PackedCounter._
+_Represents the maximum number of dynamic fields that can be packed in EncodedLengths._
 
 ```solidity
 uint256 constant MAX_DYNAMIC_FIELDS = 5;

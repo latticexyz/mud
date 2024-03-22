@@ -49,7 +49,7 @@ To run the indexer directly on your computer using SQLite:
    If necessary, install it first.
 
    ```bash copy
-   npx -y -p @latticexyz/store-indexer@next sqlite-indexer
+   npx -y -p @latticexyz/store-indexer sqlite-indexer
    ```
 
 **Note:** The `indexer.db` is persistent if you stop and restart the indexer.
@@ -76,7 +76,7 @@ The main purpose of this variant of the indexer is to efficiently hydrate a MUD 
    Install it first if necessary.
 
    ```bash copy
-   npx -y -p @latticexyz/store-indexer@next postgres-indexer
+   npx -y -p @latticexyz/store-indexer postgres-indexer
    ```
 
 1. Open a separate command line.
@@ -84,7 +84,7 @@ The main purpose of this variant of the indexer is to efficiently hydrate a MUD 
 
    ```bash copy
    export DATABASE_URL=postgres://127.0.0.1/postgres
-   npx -y -p @latticexyz/store-indexer@next postgres-frontend
+   npx -y -p @latticexyz/store-indexer postgres-frontend
    ```
 
 ### Schemaful indexing with PostgreSQL via npx
@@ -101,7 +101,7 @@ This approach doesn't scale well to all tables of a chain, but it is a convenien
    ```bash copy
    export RPC_HTTP_URL=http://127.0.0.1:8545
    export DATABASE_URL=postgres://127.0.0.1/postgres
-   npx -y -p @latticexyz/store-indexer@next postgres-decoded-indexer
+   npx -y -p @latticexyz/store-indexer postgres-decoded-indexer
    ```
 
 1. To verify the installation, run `psql` and then:
@@ -370,7 +370,7 @@ If the client does not need all the information stored in the `World`, you can [
 
    ```sh copy
    export RPC_HTTP_URL=http://127.0.0.1:8545
-   npx -y -p @latticexyz/store-indexer@next sqlite-indexer
+   npx -y -p @latticexyz/store-indexer sqlite-indexer
    ```
 
 1. Get the list of tables.

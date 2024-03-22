@@ -38,7 +38,7 @@ export type StoreInput = {
 export type TableShorthandInput = SchemaInput | string;
 
 export type TablesWithShorthandsInput = {
-  [key: string]: TableInput | TableShorthandInput;
+  readonly [key: string]: TableInput | TableShorthandInput;
 };
 
 export type StoreWithShorthandsInput = Omit<StoreInput, "tables"> & { tables: TablesWithShorthandsInput };
