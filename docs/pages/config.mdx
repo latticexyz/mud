@@ -28,7 +28,7 @@ export default defineWorld({
     },
   },
   tables: {
-    CounterTable: {
+    Counter: {
       schema: {
         value: "uint32",
       },
@@ -66,7 +66,7 @@ The global configuration keys are all optional.
 
   - **`key`** (list):
     A list of the `schema` fields that are the key for that table.
-    If you want a singleton table, use an empty list (as in `CounterTable`) above.
+    If you want a singleton table, use an empty list (as in `Counter` table above).
 
   - **`type`** (either `table` or `offchainTable`): [The table type](/store/tables#types-of-tables).
     The default is `table`, which is a table stored onchain.
