@@ -8,6 +8,8 @@ import { getComponentValueStrict, Has } from "@latticexyz/recs";
 import { useMUD } from "./MUDContext";
 import { useKeyboardMovement } from "./useKeyboardMovement";
 
+const style = { backgroundColor: "black", color: "white" };
+
 const Plane = () => {
   return (
     <>
@@ -147,7 +149,7 @@ const PlayerInfo = () => {
 
   if (!playerPosition) {
     return (
-      <div style={{ backgroundColor: "black", color: "white" }}>
+      <div style={style}>
         <table>
           <tbody>
             <tr>
@@ -165,7 +167,7 @@ const PlayerInfo = () => {
   }
 
   return (
-    <div style={{ backgroundColor: "black", color: "white" }}>
+    <div style={style}>
       <table>
         <tbody>
           <tr>
