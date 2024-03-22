@@ -1,4 +1,4 @@
-import { conform, evaluate, narrow } from "@arktype/util";
+import { ErrorMessage, conform, evaluate, narrow } from "@arktype/util";
 import {
   UserTypes,
   extendedScope,
@@ -17,7 +17,7 @@ import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS } from "./defaults";
 import { Tables } from "@latticexyz/store/internal";
 import { resolveSystems } from "./systems";
-import { resolveNamespacedTables, validateNamespaces } from "./namespaces";
+import { resolveNamespacedTables } from "./namespaces";
 import { resolveCodegen } from "./codegen";
 import { resolveDeploy } from "./deploy";
 
@@ -29,7 +29,8 @@ export type validateWorld<world> = {
       : key extends "enums"
         ? narrow<world[key]>
         : key extends "namespaces"
-          ? validateNamespaces<world[key], extendedScope<world>>
+          ? // ? validateNamespaces<world[key], extendedScope<world>>
+            ErrorMessage<`Namespaces config will be enabled soon.`>
           : key extends keyof WorldInput
             ? conform<world[key], WorldInput[key]>
             : world[key];
@@ -105,14 +106,6 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
 }
 
 export function defineWorld<const world>(world: validateWorld<world>): resolveWorld<world> {
-  validateWorld(world);
-  return resolveWorld(world) as unknown as resolveWorld<world>;
-}
-
-// Temporary external export of defineWorld with namespaces disabled
-export function defineWorldWithoutNamespaces<const world>(
-  world: validateWorld<world> & { namespaces?: `Namespaces will be enabled soon` },
-): resolveWorld<world> {
   validateWorld(world);
   return resolveWorld(world) as unknown as resolveWorld<world>;
 }

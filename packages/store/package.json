@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.0-next.17",
+  "version": "2.0.1",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -59,7 +59,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@arktype/util": "0.0.25",
+    "@arktype/util": "0.0.27",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",

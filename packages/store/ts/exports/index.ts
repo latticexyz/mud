@@ -16,5 +16,5 @@ export {
 export { storeEventsAbi } from "../storeEventsAbi";
 export type { StoreEventsAbi, StoreEventsAbiItem } from "../storeEventsAbi";
 
-export { defineStore } from "../config/v2/store";
+export { defineStoreWithShorthands as defineStore } from "../config/v2/storeWithShorthands";
 export type { Store } from "../config/v2/output";

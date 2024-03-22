@@ -1,5 +1,34 @@
 # Change Log
 
+## 2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- 433078c54: Reverse PackedCounter encoding, to optimize gas for bitshifts.
+  Ints are right-aligned, shifting using an index is straightforward if they are indexed right-to-left.
+
+  - Previous encoding: (7 bytes | accumulator),(5 bytes | counter 1),...,(5 bytes | counter 5)
+  - New encoding: (5 bytes | counter 5),...,(5 bytes | counter 1),(7 bytes | accumulator)
+
+- 331f0d636: Move `createFaucetService` from `@latticexyz/network` to `@latticexyz/services/faucet`.
+
+  ```diff
+  - import { createFaucetService } from "@latticexyz/network";
+  + import { createFaucetService } from "@latticexyz/services/faucet";
+  ```
+
+### Patch Changes
+
+- 3236f799e: protocol-parser in Go
+- 33f50f8a4: Fixed an issue where the TypeScript types for createFaucetService were not exported correctly from the @latticexyz/services package
+- 80a26419f: The build phase of services now works on machines with older protobuf compilers
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- 086be4ef4: fix a bug related to encoding negative bigints in MODE
+
+## 2.0.0-next.18
+
 ## 2.0.0-next.17
 
 ## 2.0.0-next.16
