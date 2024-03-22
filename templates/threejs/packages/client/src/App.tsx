@@ -147,7 +147,7 @@ const PlayerInfo = () => {
 
   if (!playerPosition) {
     return (
-      <div style={{ backgroundColor: "yellow" }}>
+      <div>
         <table>
           <tbody>
             <tr>
@@ -165,7 +165,7 @@ const PlayerInfo = () => {
   }
 
   return (
-    <div style={{ backgroundColor: "yellow" }}>
+    <div style={{ backgroundColor: "black", color: "white" }}>
       <table>
         <tbody>
           <tr>
