@@ -17,30 +17,13 @@ jobs:
   linkcheck:
     name: Check links
     runs-on: ubuntu-latest
+    services:
+      docs:
+        image: ./docs/Dockerfile
+        ports:
+          - 3000:3000
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
-      - name: Setup prerequisites
-        uses: ./.github/actions/setup-prerequisites
-
-      - name: Install node dependencies
-        working-directory: docs
-        run: pnpm install --frozen-lockfile
-
-      - name: Build
-        working-directory: docs
-        run: pnpm build
-
-      - name: Start
-        working-directory: docs
-        run: pnpm start & npx wait-on --timeout 5000 http://127.0.0.1:3000
-
-      # TODO: wait for server to be online?
-
       - name: Check links
         uses: filiph/linkcheck@3.0.0
         with:
-          arguments: http://127.0.0.1:3000
+          arguments: http://docs:3000
