@@ -18,7 +18,7 @@ import { getWorld } from "./data/getWorld";
 
 const worldConfigV1 = worldToV1(worldConfig);
 
-describe("registerDelegationWithSignature.test", async () => {
+describe("registerDelegationWithSignature", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
   let browser: Browser;
