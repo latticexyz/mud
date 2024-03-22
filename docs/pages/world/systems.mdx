@@ -1,4 +1,5 @@
 import Illustration from "./world-table-illustration.mdx";
+import { CollapseCode } from "../../components/CollapseCode";
 
 # Systems
 
@@ -20,9 +21,87 @@ The `World` serves as a central entry point and forwards calls to systems, which
 
 To call a `System`, you call the `World` in one of these ways:
 
-- If a [function selector for the `System` is registered in the `World`](./function-selectors), you can call it via `world.<namespace>_<system>_<function>(<arguments>)`.
-- You can use [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L346-L351).
-- If you have [the proper delegation](/world/account-delegation) you can use [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L353-L394).
+- If a [function selector for the `System` is registered in the `World`](./function-selectors), you can call it via `world.<namespace>__<function>(<arguments>)`.
+- You can use [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L333-L345).
+- If you have [the proper delegation](/world/account-delegation) you can use [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L347-L388).
+
+### Using `call`
+
+To use `call` you create the calldata to send the called `System` and use that as a parameter.
+
+<CollapseCode>
+
+```solidity filename="Call.s.sol" copy showLineNumbers {11-12,24-32}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { Tasks, TasksData } from "../src/codegen/index.sol";
+
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+contract Call is Script {
+  function run() external {
+    address worldAddress = 0x256e6eAf6a6683aB771C576f2f5C8A774BdAC8e3;
+
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    // Start broadcasting transactions from the deployer account
+    vm.startBroadcast(deployerPrivateKey);
+
+    ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "TasksSystem" });
+
+    bytes memory returnData = IWorld(worldAddress).call(
+      systemId,
+      abi.encodeWithSignature("addTask(string)", "Test task")
+    );
+
+    console.log("The return value is:");
+    console.logBytes(returnData);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+.
+.
+.
+ResourceId systemId = WorldResourceIdLib.encode({
+  typeId: RESOURCE_SYSTEM,
+  namespace: "",
+  name: "TasksSystem"
+});
+```
+
+Create a `ResourceId` for the `System`.
+
+```solidity
+bytes memory returnData =
+  IWorld(worldAddress).
+    call(systemId, abi.encodeWithSignature("addTask(string)", "Test task"));
+```
+
+Call the `System`. The calldata is created using [`abi.encodeWithSignature`](https://docs.soliditylang.org/en/latest/cheatsheet.html#index-1).
+
+The return data is of type [`bytes memory`](https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html#bytes-and-string).
+
+</details>
 
 ## Writing systems
 
@@ -120,11 +199,71 @@ If you need to call a `System` from a `System` in the root namespace you can use
 
 ## Registering systems
 
-For a `System` to be callable from a `World` it has to be [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/WorldRegistrationSystem.sol#L97-L201).
+For a `System` to be callable from a `World` it has to be [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L115-L178).
 Only the [namespace owner](./namespaces-access-control#ownership) can register a `System` in a namespace.
 
 `System`s can be registered once per `World`, but the same system can be registered in multiple `World`s.
 If you need multiple instances of a `System` in the same world, you can deploy the `System` multiple times and register the individual deployments individually.
+
+<CollapseCode>
+
+```solidity filename="MessagingExtension.s.sol" showLineNumbers {20,28,35-37}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { IBaseWorld } from "@latticexyz/world-modules/src/interfaces/IBaseWorld.sol";
+import { WorldRegistrationSystem } from "@latticexyz/world/src/modules/core/implementations/WorldRegistrationSystem.sol";
+
+// Create resource identifiers (for the namespace and system)
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+// For registering the table
+import { Messages, MessagesTableId } from "../src/codegen/index.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+// For deploying MessageSystem
+import { MessageSystem } from "../src/systems/MessageSystem.sol";
+
+contract MessagingExtension is Script {
+  function run() external {
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    WorldRegistrationSystem world = WorldRegistrationSystem(worldAddress);
+    ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("messaging"));
+    ResourceId systemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "MessageSystem");
+
+    vm.startBroadcast(deployerPrivateKey);
+
+    world.registerNamespace(namespaceResource);
+    StoreSwitch.setStoreAddress(worldAddress);
+    Messages.register();
+    MessageSystem messageSystem = new MessageSystem();
+    world.registerSystem(systemResource, messageSystem, true);
+    world.registerFunctionSelector(systemResource, "incrementMessage(string)");
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+`System` registration requires several steps:
+
+1. Create the resource ID for the `System`.
+1. Deploy the `System` contract.
+1. Use [`WorldRegistrationSystem.registerSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L115-L178) to register the `System`.
+   This function takes three parameters:
+   - The ResourceId for the `System`.
+   - The address of the `System` contract.
+   - Access control - whether access to the `System` is public (`true`) or limited to entities with access either to the namespace or the `System` itself (`false`).
+     <br />
+1. Optionally, register [function selectors](/world/function-selectors) for the `System`.
 
 ### Upgrading systems
 
@@ -135,7 +274,7 @@ This upgrade process removes the old `System` contract's access to the namespace
 Any access granted _manually_ to the old `System` is not revoked, nor granted to the upgraded `System`.
 
 **Note:** You _should_ make sure to remove any such manually granted access.
-`System` access is based on the contract address, so somebody else could register a namespace they'd own, register the old `System` contract as a system in their namespace, and then abuse those permissions (if the `System` has code that can be used for that, of course).
+MUD access is based on the contract address, so somebody else could register a namespace they'd own, register the old `System` contract as a system in their namespace, and then abuse those permissions (if the `System` has code that can be used for that, of course).
 
 ## Access control
 

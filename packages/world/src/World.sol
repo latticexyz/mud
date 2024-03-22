@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
-import { StoreData } from "@latticexyz/store/src/StoreData.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
-import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+import { StoreKernel } from "@latticexyz/store/src/StoreKernel.sol";
 
 import { WORLD_VERSION } from "./version.sol";
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
@@ -19,20 +19,24 @@ import { requireInterface } from "./requireInterface.sol";
 import { InstalledModules } from "./codegen/tables/InstalledModules.sol";
 import { UserDelegationControl } from "./codegen/tables/UserDelegationControl.sol";
 import { NamespaceDelegationControl } from "./codegen/tables/NamespaceDelegationControl.sol";
+import { InitModuleAddress } from "./codegen/tables/InitModuleAddress.sol";
 
-import { IModule, MODULE_INTERFACE_ID } from "./IModule.sol";
+import { IModule, IModule } from "./IModule.sol";
 import { IWorldKernel } from "./IWorldKernel.sol";
+import { IWorldEvents } from "./IWorldEvents.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
-import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 /**
  * @title World Contract
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This contract is the core "World" contract containing various methods for
  * data manipulation, system calls, and dynamic function selector handling.
+ *
+ * @dev World doesn't inherit `Store` because the `IStoreRegistration` methods are added via the `InitModule`.
  */
-contract World is StoreData, IWorldKernel {
+contract World is StoreKernel, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
 
   /// @notice Address of the contract's creator.
@@ -46,11 +50,14 @@ contract World is StoreData, IWorldKernel {
   /// @dev Event emitted when the World contract is created.
   constructor() {
     creator = msg.sender;
-    emit HelloWorld(WORLD_VERSION);
+    emit IWorldEvents.HelloWorld(WORLD_VERSION);
   }
 
   /**
    * @dev Prevents the World contract from calling itself.
+   * If the World is able to call itself via `delegatecall` from a system, the system would have root access to context like internal tables, causing a potential vulnerability.
+   * Ideally this should not happen because all operations to internal tables happen as internal library calls, and all calls to root systems happen as a `delegatecall` to the system.
+   * However, since this is an important invariant, we make it explicit by reverting if `msg.sender` is `address(this)` in all `World` methods.
    */
   modifier prohibitDirectCallback() {
     if (msg.sender == address(this)) {
@@ -61,53 +68,55 @@ contract World is StoreData, IWorldKernel {
 
   /**
    * @notice Initializes the World by installing the core module.
-   * @param coreModule The core module to initialize the World with.
+   * @param initModule The core module to initialize the World with.
    * @dev Only the initial creator can initialize. This can be done only once.
    */
-  function initialize(IModule coreModule) public prohibitDirectCallback {
+  function initialize(IModule initModule) public prohibitDirectCallback {
     // Only the initial creator of the World can initialize it
     if (msg.sender != creator) {
       revert World_AccessDenied(ROOT_NAMESPACE_ID.toString(), msg.sender);
     }
 
     // The World can only be initialized once
-    if (InstalledModules._get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
+    if (InitModuleAddress.get() != address(0)) {
       revert World_AlreadyInitialized();
     }
 
+    InitModuleAddress.set(address(initModule));
+
     // Initialize the World by installing the core module
-    _installRootModule(coreModule, new bytes(0));
+    _installRootModule(initModule, new bytes(0));
   }
 
   /**
    * @notice Installs a given root module in the World.
    * @param module The module to be installed.
-   * @param args Arguments for module installation.
+   * @param encodedArgs The ABI encoded arguments for module installation.
    * @dev The caller must own the root namespace.
    */
-  function installRootModule(IModule module, bytes memory args) public prohibitDirectCallback {
+  function installRootModule(IModule module, bytes memory encodedArgs) public prohibitDirectCallback {
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
-    _installRootModule(module, args);
+    _installRootModule(module, encodedArgs);
   }
 
   /**
    * @dev Internal function to install a root module.
    * @param module The module to be installed.
-   * @param args Arguments for module installation.
+   * @param encodedArgs The ABI encoded arguments for module installation.
    */
-  function _installRootModule(IModule module, bytes memory args) internal {
+  function _installRootModule(IModule module, bytes memory encodedArgs) internal {
     // Require the provided address to implement the IModule interface
-    requireInterface(address(module), MODULE_INTERFACE_ID);
+    requireInterface(address(module), type(IModule).interfaceId);
 
     WorldContextProviderLib.delegatecallWithContextOrRevert({
       msgSender: msg.sender,
       msgValue: 0,
       target: address(module),
-      callData: abi.encodeCall(IModule.installRoot, (args))
+      callData: abi.encodeCall(IModule.installRoot, (encodedArgs))
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules._set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(address(module), keccak256(encodedArgs), true);
   }
 
   /************************************************************************
@@ -129,7 +138,7 @@ contract World is StoreData, IWorldKernel {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes calldata dynamicData
   ) public virtual prohibitDirectCallback {
     // Require access to the namespace or name

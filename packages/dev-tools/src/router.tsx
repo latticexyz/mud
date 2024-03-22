@@ -40,6 +40,6 @@ export const router: Router = createMemoryRouter(
       <Route path="components" element={<ComponentsPage />}>
         <Route path=":id" element={<ComponentData />} />
       </Route>
-    </Route>
-  )
+    </Route>,
+  ),
 );

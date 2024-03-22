@@ -13,14 +13,20 @@ import { StoreConfig } from "../config";
 import { getSchemaTypeInfo, importForAbiOrUserType, resolveAbiOrUserType } from "./userType";
 
 export interface TableOptions {
+  /** Path where the file is expected to be written (relative to project root) */
   outputPath: string;
+  /** Name of the table, as used in filename and library name */
   tableName: string;
+  /** Options for `renderTable` function */
   renderOptions: RenderTableOptions;
 }
 
+/**
+ * Transforms store config and available solidity user types into useful options for `tablegen` and `renderTable`
+ */
 export function getTableOptions(
   config: StoreConfig,
-  solidityUserTypes: Record<string, SolidityUserDefinedType>
+  solidityUserTypes: Record<string, SolidityUserDefinedType>,
 ): TableOptions[] {
   const storeImportPath = config.storeImportPath;
 
@@ -78,7 +84,6 @@ export function getTableOptions(
     const staticResourceData = tableData.tableIdArgument
       ? undefined
       : {
-          tableIdName: tableName + "TableId",
           namespace: config.namespace,
           name: tableData.name,
           offchainOnly: tableData.offchainOnly,

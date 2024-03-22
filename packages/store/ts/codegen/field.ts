@@ -8,7 +8,12 @@ import {
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
 
-export function renderFieldMethods(options: RenderTableOptions) {
+/**
+ * Returns Solidity code for all the field-specific table methods (get, set, push, pop, etc.)
+ * @param options RenderTableOptions
+ * @returns string of Solidity code
+ */
+export function renderFieldMethods(options: RenderTableOptions): string {
   const storeArgument = options.storeArgument;
   const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
 
@@ -30,10 +35,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
              * @notice Get ${field.name}${_commentSuffix}.
              */
             function ${_methodNamePrefix}get${_methodNameSuffix}(${renderArguments([
-            _typedStore,
-            _typedTableId,
-            _typedKeyArgs,
-          ])}) internal view returns (${_typedFieldName}) {
+              _typedStore,
+              _typedTableId,
+              _typedKeyArgs,
+            ])}) internal view returns (${_typedFieldName}) {
               ${_keyTupleDefinition}
               ${
                 field.isDynamic
@@ -51,8 +56,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
               }
               return ${renderDecodeFieldSingle(field)};
             }
-        `
-        )
+          `,
+        ),
       );
     }
 
@@ -74,35 +79,48 @@ export function renderFieldMethods(options: RenderTableOptions) {
             ${_store}.${setFieldMethod}(${internalArguments});
           }
         `;
-      })
+      }),
     );
 
     if (field.isDynamic) {
       const portionData = fieldPortionData(field);
       const dynamicSchemaIndex = schemaIndex - options.staticFields.length;
+      const { typeWrappingData } = field;
 
       if (options.withGetters) {
-        result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-          renderWithStore(
-            storeArgument,
-            ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
-              /**
-               * @notice Get the length of ${field.name}${_commentSuffix}.
-               */
-              function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
-              _typedStore,
-              _typedTableId,
-              _typedKeyArgs,
-            ])}) internal view returns (uint256) {
-                ${_keyTupleDefinition}
-                uint256 _byteLength = ${_store}.getDynamicFieldLength(_tableId, _keyTuple, ${dynamicSchemaIndex});
-                unchecked {
-                  return _byteLength / ${portionData.elementLength};
+        if (typeWrappingData && typeWrappingData.kind === "staticArray") {
+          result += renderWithFieldSuffix(
+            options.withSuffixlessFieldMethods,
+            field.name,
+            (_methodNameSuffix) =>
+              `
+                // The length of ${field.name}
+                uint256 constant length${_methodNameSuffix} = ${typeWrappingData.staticLength};
+              `,
+          );
+        } else {
+          result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
+            renderWithStore(
+              storeArgument,
+              ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
+                /**
+                 * @notice Get the length of ${field.name}${_commentSuffix}.
+                 */
+                function ${_methodNamePrefix}length${_methodNameSuffix}(${renderArguments([
+                  _typedStore,
+                  _typedTableId,
+                  _typedKeyArgs,
+                ])}) internal view returns (uint256) {
+                  ${_keyTupleDefinition}
+                  uint256 _byteLength = ${_store}.getDynamicFieldLength(_tableId, _keyTuple, ${dynamicSchemaIndex});
+                  unchecked {
+                    return _byteLength / ${portionData.elementLength};
+                  }
                 }
-              }
-          `
-          )
-        );
+              `,
+            ),
+          );
+        }
 
         result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
           renderWithStore(
@@ -113,66 +131,68 @@ export function renderFieldMethods(options: RenderTableOptions) {
                * @dev Reverts with Store_IndexOutOfBounds if \`_index\` is out of bounds for the array.
               */
               function ${_methodNamePrefix}getItem${_methodNameSuffix}(${renderArguments([
-              _typedStore,
-              _typedTableId,
-              _typedKeyArgs,
-              "uint256 _index",
-            ])}) internal view returns (${portionData.typeWithLocation}) {
-              ${_keyTupleDefinition}
-              unchecked {
-                bytes memory _blob = ${_store}.getDynamicFieldSlice(
-                  _tableId,
-                  _keyTuple,
-                  ${dynamicSchemaIndex},
-                  _index * ${portionData.elementLength},
-                  (_index + 1) * ${portionData.elementLength}
+                _typedStore,
+                _typedTableId,
+                _typedKeyArgs,
+                "uint256 _index",
+              ])}) internal view returns (${portionData.typeWithLocation}) {
+                ${_keyTupleDefinition}
+                unchecked {
+                  bytes memory _blob = ${_store}.getDynamicFieldSlice(
+                    _tableId,
+                    _keyTuple,
+                    ${dynamicSchemaIndex},
+                    _index * ${portionData.elementLength},
+                    (_index + 1) * ${portionData.elementLength}
                   );
                   return ${portionData.decoded};
                 }
               }
-            `
-          )
+            `,
+          ),
         );
       }
 
-      result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-        renderWithStore(
-          storeArgument,
-          ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
+      if (!typeWrappingData || typeWrappingData.kind !== "staticArray") {
+        result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
+          renderWithStore(
+            storeArgument,
+            ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
               /**
                * @notice Push ${portionData.title} to ${field.name}${_commentSuffix}.
                */
               function ${_methodNamePrefix}push${_methodNameSuffix}(${renderArguments([
-            _typedStore,
-            _typedTableId,
-            _typedKeyArgs,
-            `${portionData.typeWithLocation} ${portionData.name}`,
-          ])}) internal {
-              ${_keyTupleDefinition}
-              ${_store}.pushToDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.encoded});
-            }
-            `
-        )
-      );
+                _typedStore,
+                _typedTableId,
+                _typedKeyArgs,
+                `${portionData.typeWithLocation} ${portionData.name}`,
+              ])}) internal {
+                ${_keyTupleDefinition}
+                ${_store}.pushToDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.encoded});
+              }
+            `,
+          ),
+        );
 
-      result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-        renderWithStore(
-          storeArgument,
-          ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
-            /**
-             * @notice Pop ${portionData.title} from ${field.name}${_commentSuffix}.
-             */
-            function ${_methodNamePrefix}pop${_methodNameSuffix}(${renderArguments([
-            _typedStore,
-            _typedTableId,
-            _typedKeyArgs,
-          ])}) internal {
-              ${_keyTupleDefinition}
-              ${_store}.popFromDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.elementLength});
-            }
-          `
-        )
-      );
+        result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
+          renderWithStore(
+            storeArgument,
+            ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
+              /**
+               * @notice Pop ${portionData.title} from ${field.name}${_commentSuffix}.
+               */
+              function ${_methodNamePrefix}pop${_methodNameSuffix}(${renderArguments([
+                _typedStore,
+                _typedTableId,
+                _typedKeyArgs,
+              ])}) internal {
+                ${_keyTupleDefinition}
+                ${_store}.popFromDynamicField(_tableId, _keyTuple, ${dynamicSchemaIndex}, ${portionData.elementLength});
+              }
+            `,
+          ),
+        );
+      }
 
       result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
         renderWithStore(storeArgument, ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => {
@@ -205,13 +225,18 @@ export function renderFieldMethods(options: RenderTableOptions) {
               }
             }
           `;
-        })
+        }),
       );
     }
   }
   return result;
 }
 
+/**
+ * Returns Solidity code for how to encode a particular field into bytes before storing onchain
+ * @param field RenderField
+ * @returns string of Solidity code
+ */
 export function renderEncodeFieldSingle(field: RenderField) {
   let func;
   if (field.arrayElement) {
@@ -224,14 +249,26 @@ export function renderEncodeFieldSingle(field: RenderField) {
   return `${func}(${field.typeUnwrap}(${field.name}))`;
 }
 
+/**
+ * Returns Solidity code for decoding a bytes value into its Solidity primitive type
+ * @param field description of field type
+ * @param offset byte-length offset of value in encoded bytes
+ * @returns string of Solidity code
+ */
 export function renderDecodeValueType(field: RenderType, offset: number) {
   const { staticByteLength } = field;
 
-  const innerSlice = `Bytes.slice${staticByteLength}(_blob, ${offset})`;
+  const innerSlice = `Bytes.getBytes${staticByteLength}(_blob, ${offset})`;
 
   return renderCastStaticBytesToType(field, innerSlice);
 }
 
+/**
+ * Returns Solidity code for how to cast a bytesN value to a particular type, which is assumed to have the same byte length
+ * @param field description of resulting field type
+ * @param staticBytes bytesN value
+ * @returns string of Solidity code
+ */
 function renderCastStaticBytesToType(field: RenderType, staticBytes: string) {
   const { staticByteLength, internalTypeId } = field;
   const bits = staticByteLength * 8;
@@ -251,8 +288,25 @@ function renderCastStaticBytesToType(field: RenderType, staticBytes: string) {
   return `${field.typeWrap}(${result})`;
 }
 
-/** bytes/string are dynamic, but aren't really arrays */
-function fieldPortionData(field: RenderField) {
+interface FieldPortionData {
+  /** Fully-qualified name of the user-defined type (may include a library name as prefix), followed by location (none/memory/storage) */
+  typeWithLocation: string;
+  /** Name of the field portion variable */
+  name: string;
+  /** Solidity code which encodes the field portion variable into bytes (for storing onchain) */
+  encoded: string;
+  /** Solidity code which decodes `_blob` variable into the field portion variable's type */
+  decoded: string;
+  /** Description of the field portion kind ("an element" or "a slice") */
+  title: string;
+  /** Byte length of array elements for arrays, 1 otherwise */
+  elementLength: number;
+}
+
+/**
+ * Returns data to describe either an array element, or a bytes slice, depending on the provided field type
+ */
+function fieldPortionData(field: RenderField): FieldPortionData {
   if (field.arrayElement) {
     const name = "_element";
     const elementFieldData = { ...field.arrayElement, arrayElement: undefined, name };
@@ -278,6 +332,11 @@ function fieldPortionData(field: RenderField) {
   }
 }
 
+/**
+ * Returns Solidity code for how to decode `_blob` variable into the particular field type
+ * @param field RenderField
+ * @returns string of Solidity code
+ */
 function renderDecodeFieldSingle(field: RenderField) {
   const { isDynamic, arrayElement } = field;
   if (arrayElement) {

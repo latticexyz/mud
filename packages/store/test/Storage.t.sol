@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -62,9 +62,9 @@ contract StorageTest is Test, GasReporter {
     bytes memory data = Storage.load({ storagePointer: storagePointer, offset: 31, length: 34 });
     endGasReport();
 
-    assertEq(Bytes.slice1(data, 0), bytes1(0x01));
-    assertEq(Bytes.slice32(data, 1), bytes32(0x0200000000000000000000000000000000000000000000000000000000000003));
-    assertEq(Bytes.slice1(data, 33), bytes1(0x04));
+    assertEq(Bytes.getBytes1(data, 0), bytes1(0x01));
+    assertEq(Bytes.getBytes32(data, 1), bytes32(0x0200000000000000000000000000000000000000000000000000000000000003));
+    assertEq(Bytes.getBytes1(data, 33), bytes1(0x04));
     assertEq(keccak256(data), keccak256(data1));
   }
 

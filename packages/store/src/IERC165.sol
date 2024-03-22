@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
-
-bytes4 constant ERC165_INTERFACE_ID = IERC165.supportsInterface.selector;
+pragma solidity >=0.8.24;
 
 // See https://eips.ethereum.org/EIPS/eip-165
 interface IERC165 {

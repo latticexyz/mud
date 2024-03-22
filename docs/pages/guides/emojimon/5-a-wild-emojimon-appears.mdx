@@ -578,7 +578,7 @@ With this screen setup there are two more steps to go—enabling the player to c
 You can run this command to update all the files to this point in the game's development.
 
 ```sh copy
-git reset --hard b8b063b330e77656485faf75bed1af5c344bdfbc
+git reset --hard 384d8b1aa8e3887d76ddbedf9da4729f84bf523f
 ```
 
 ## Capture emojimon
@@ -718,7 +718,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position }: ClientComponents
+  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position }: ClientComponents,
 ) {
   const wrapPosition = (x: number, y: number) => {
     const mapConfig = getComponentValue(MapConfig, singletonEntity);
@@ -814,7 +814,7 @@ When you click the button, the `EncounterScreen` creates a pending toast and kic
 You can run this command to update all the files to this point in the game's development.
 
 ```sh copy
-git reset --hard 00bffa27dc5d369fe536e35b84e0a5d5cc466645
+git reset --hard 9bf5f8478847d90430a90a345a3868bb379a18aa
 ```
 
 ## Flee encounters
@@ -890,7 +890,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position }: ClientComponents
+  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position }: ClientComponents,
 ) {
   const wrapPosition = (x: number, y: number) => {
     const mapConfig = getComponentValue(MapConfig, singletonEntity);
@@ -990,5 +990,5 @@ export function createSystemCalls(
 You can run this command to update all the files to this point in the game's development.
 
 ```sh copy
-git reset --hard 6511b5e9aa38f02f417ed41a63c75a9217bca1b8
+git reset --hard fd388e7d57c9ef4afb17534e47385246973a8ce5
 ```

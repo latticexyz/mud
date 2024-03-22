@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { WORD_SIZE, WORD_LAST_INDEX, BYTE_TO_BITS, MAX_TOTAL_FIELDS, MAX_DYNAMIC_FIELDS, LayoutOffsets } from "./constants.sol";
+import { IFieldLayoutErrors } from "./IFieldLayoutErrors.sol";
 
 /**
  * @title FieldLayout
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Represents a field layout encoded into a single bytes32.
  * From left to right, the bytes are laid out as follows:
  * - 2 bytes for total length of all static fields
  * - 1 byte for number of static size fields
  * - 1 byte for number of dynamic size fields
  * - 28 bytes for 28 static field lengths
- * (MAX_DYNAMIC_FIELDS allows PackedCounter to pack the dynamic lengths into 1 word)
+ * (MAX_DYNAMIC_FIELDS allows EncodedLengths to pack the dynamic lengths into 1 word)
  */
 type FieldLayout is bytes32;
 
@@ -20,17 +22,12 @@ using FieldLayoutInstance for FieldLayout global;
 
 /**
  * @title FieldLayoutLib
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev A library for handling field layout encoding into a single bytes32.
  * It provides a function to encode static and dynamic fields and ensure
  * various constraints regarding the length and size of the fields.
  */
 library FieldLayoutLib {
-  error FieldLayoutLib_TooManyFields(uint256 numFields, uint256 maxFields);
-  error FieldLayoutLib_TooManyDynamicFields(uint256 numFields, uint256 maxFields);
-  error FieldLayoutLib_Empty();
-  error FieldLayoutLib_StaticLengthIsZero();
-  error FieldLayoutLib_StaticLengthDoesNotFitInAWord();
-
   /**
    * @notice Encodes the given field layout into a single bytes32.
    * @dev Ensures various constraints on the length and size of the fields.
@@ -43,17 +40,18 @@ library FieldLayoutLib {
     uint256 fieldLayout;
     uint256 totalLength;
     uint256 totalFields = _staticFieldLengths.length + numDynamicFields;
-    if (totalFields > MAX_TOTAL_FIELDS) revert FieldLayoutLib_TooManyFields(totalFields, MAX_TOTAL_FIELDS);
+    if (totalFields > MAX_TOTAL_FIELDS)
+      revert IFieldLayoutErrors.FieldLayout_TooManyFields(totalFields, MAX_TOTAL_FIELDS);
     if (numDynamicFields > MAX_DYNAMIC_FIELDS)
-      revert FieldLayoutLib_TooManyDynamicFields(numDynamicFields, MAX_DYNAMIC_FIELDS);
+      revert IFieldLayoutErrors.FieldLayout_TooManyDynamicFields(numDynamicFields, MAX_DYNAMIC_FIELDS);
 
     // Compute the total static length and store the field lengths in the encoded fieldLayout
-    for (uint256 i = 0; i < _staticFieldLengths.length; ) {
+    for (uint256 i; i < _staticFieldLengths.length; ) {
       uint256 staticByteLength = _staticFieldLengths[i];
       if (staticByteLength == 0) {
-        revert FieldLayoutLib_StaticLengthIsZero();
+        revert IFieldLayoutErrors.FieldLayout_StaticLengthIsZero(i);
       } else if (staticByteLength > WORD_SIZE) {
-        revert FieldLayoutLib_StaticLengthDoesNotFitInAWord();
+        revert IFieldLayoutErrors.FieldLayout_StaticLengthDoesNotFitInAWord(i);
       }
 
       unchecked {
@@ -80,6 +78,7 @@ library FieldLayoutLib {
 
 /**
  * @title FieldLayoutInstance
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Provides instance functions for obtaining information from an encoded FieldLayout.
  */
 library FieldLayoutInstance {
@@ -151,30 +150,43 @@ library FieldLayoutInstance {
    */
   function validate(FieldLayout fieldLayout) internal pure {
     if (fieldLayout.isEmpty()) {
-      revert FieldLayoutLib.FieldLayoutLib_Empty();
+      revert IFieldLayoutErrors.FieldLayout_Empty();
     }
 
     uint256 _numDynamicFields = fieldLayout.numDynamicFields();
     if (_numDynamicFields > MAX_DYNAMIC_FIELDS) {
-      revert FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields(_numDynamicFields, MAX_DYNAMIC_FIELDS);
+      revert IFieldLayoutErrors.FieldLayout_TooManyDynamicFields(_numDynamicFields, MAX_DYNAMIC_FIELDS);
     }
 
     uint256 _numStaticFields = fieldLayout.numStaticFields();
     uint256 _numTotalFields = _numStaticFields + _numDynamicFields;
     if (_numTotalFields > MAX_TOTAL_FIELDS) {
-      revert FieldLayoutLib.FieldLayoutLib_TooManyFields(_numTotalFields, MAX_TOTAL_FIELDS);
+      revert IFieldLayoutErrors.FieldLayout_TooManyFields(_numTotalFields, MAX_TOTAL_FIELDS);
     }
 
     // Static lengths must be valid
+    uint256 _staticDataLength;
     for (uint256 i; i < _numStaticFields; ) {
       uint256 staticByteLength = fieldLayout.atIndex(i);
       if (staticByteLength == 0) {
-        revert FieldLayoutLib.FieldLayoutLib_StaticLengthIsZero();
+        revert IFieldLayoutErrors.FieldLayout_StaticLengthIsZero(i);
       } else if (staticByteLength > WORD_SIZE) {
-        revert FieldLayoutLib.FieldLayoutLib_StaticLengthDoesNotFitInAWord();
+        revert IFieldLayoutErrors.FieldLayout_StaticLengthDoesNotFitInAWord(i);
       }
+      _staticDataLength += staticByteLength;
       unchecked {
         i++;
+      }
+    }
+    // Static length sums must match
+    if (_staticDataLength != fieldLayout.staticDataLength()) {
+      revert IFieldLayoutErrors.FieldLayout_InvalidStaticDataLength(fieldLayout.staticDataLength(), _staticDataLength);
+    }
+    // Unused fields must be zero
+    for (uint256 i = _numStaticFields; i < MAX_TOTAL_FIELDS; i++) {
+      uint256 staticByteLength = fieldLayout.atIndex(i);
+      if (staticByteLength != 0) {
+        revert IFieldLayoutErrors.FieldLayout_StaticLengthIsNotZero(i);
       }
     }
   }

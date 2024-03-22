@@ -1,112 +1,113 @@
-import { mudConfig } from "./ts/register";
+import { defineWorld } from "./ts/config/v2/world";
 
-export default mudConfig({
-  worldImportPath: "../../",
-  worldgenDirectory: "interfaces",
-  worldInterfaceName: "IBaseWorld",
+export default defineWorld({
+  codegen: {
+    worldImportPath: "../../",
+    worldgenDirectory: "interfaces",
+    worldInterfaceName: "IBaseWorld",
+  },
   namespace: "world" as const, // NOTE: this namespace is only used for tables, the core system is deployed in the root namespace.
   userTypes: {
-    ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", internalType: "bytes32" },
+    ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
   },
   tables: {
     NamespaceOwner: {
-      keySchema: {
+      schema: {
         namespaceId: "ResourceId",
-      },
-      valueSchema: {
         owner: "address",
       },
+      key: ["namespaceId"],
     },
     ResourceAccess: {
-      keySchema: {
+      schema: {
         resourceId: "ResourceId",
         caller: "address",
-      },
-      valueSchema: {
         access: "bool",
       },
+      key: ["resourceId", "caller"],
     },
     InstalledModules: {
-      keySchema: {
-        moduleName: "bytes16",
-        argumentsHash: "bytes32", // Hash of the params passed to the `install` function
-      },
-      valueSchema: {
+      schema: {
         moduleAddress: "address",
+        argumentsHash: "bytes32", // Hash of the params passed to the `install` function
+        isInstalled: "bool",
       },
+      key: ["moduleAddress", "argumentsHash"],
     },
     UserDelegationControl: {
-      keySchema: {
+      schema: {
         delegator: "address",
         delegatee: "address",
-      },
-      valueSchema: {
         delegationControlId: "ResourceId",
       },
+      key: ["delegator", "delegatee"],
     },
     NamespaceDelegationControl: {
-      keySchema: {
+      schema: {
         namespaceId: "ResourceId",
-      },
-      valueSchema: {
         delegationControlId: "ResourceId",
       },
+      key: ["namespaceId"],
     },
     Balances: {
-      keySchema: {
+      schema: {
         namespaceId: "ResourceId",
-      },
-      valueSchema: {
         balance: "uint256",
       },
+      key: ["namespaceId"],
     },
     Systems: {
-      keySchema: {
+      schema: {
         systemId: "ResourceId",
-      },
-      valueSchema: {
         system: "address",
         publicAccess: "bool",
       },
-      dataStruct: false,
+      key: ["systemId"],
+      codegen: {
+        dataStruct: false,
+      },
     },
     SystemRegistry: {
-      keySchema: {
+      schema: {
         system: "address",
-      },
-      valueSchema: {
         systemId: "ResourceId",
       },
+      key: ["system"],
     },
     SystemHooks: {
-      keySchema: {
+      schema: {
         systemId: "ResourceId",
+        value: "bytes21[]",
       },
-      valueSchema: "bytes21[]",
+      key: ["systemId"],
     },
     FunctionSelectors: {
-      keySchema: {
-        functionSelector: "bytes4",
-      },
-      valueSchema: {
+      schema: {
+        worldFunctionSelector: "bytes4",
         systemId: "ResourceId",
         systemFunctionSelector: "bytes4",
       },
-      dataStruct: false,
+      key: ["worldFunctionSelector"],
+      codegen: { dataStruct: false },
     },
     FunctionSignatures: {
-      keySchema: {
+      type: "offchainTable",
+      schema: {
         functionSelector: "bytes4",
-      },
-      valueSchema: {
         functionSignature: "string",
       },
-      offchainOnly: true,
+      key: ["functionSelector"],
+    },
+    InitModuleAddress: {
+      schema: {
+        value: "address",
+      },
+      key: [],
     },
   },
   excludeSystems: [
     // Worldgen currently does not support systems inheriting logic
-    // from other contracts, so all parts of CoreSystem are named
+    // from other contracts, so all parts of RegistrationSystem are named
     // System too to be included in the IBaseWorld interface.
     // However, IStoreRegistrationSystem overlaps with IStore if
     // included in IBaseWorld, so it needs to be excluded from worldgen.

@@ -1,7 +1,7 @@
 import { PgColumnBuilderBase, PgTableWithColumns, pgSchema } from "drizzle-orm/pg-core";
-import { Address, getAddress } from "viem";
+import { Address } from "viem";
 import { snakeCase } from "change-case";
-import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser/internal";
 import { asBigInt, asHex } from "../postgres/columnTypes";
 import { transformSchemaName } from "../postgres/transformSchemaName";
 import { buildColumn } from "./buildColumn";
@@ -17,12 +17,15 @@ type PgTableFromSchema<TKeySchema extends KeySchema, TValueSchema extends ValueS
   schema: string;
   columns: {
     // TODO: figure out column types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [metaColumn in keyof typeof metaColumns]: any;
   } & {
     // TODO: figure out column types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [keyColumn in keyof TKeySchema]: any;
   } & {
     // TODO: figure out column types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [valueColumn in keyof TValueSchema]: any;
   };
 }>;
@@ -50,16 +53,16 @@ export function buildTable<TKeySchema extends KeySchema, TValueSchema extends Va
   // We intentionally do not snake case the namespace due to potential conflicts
   // with namespaces of a similar name (e.g. `MyNamespace` vs. `my_namespace`).
   // TODO: consider snake case when we resolve https://github.com/latticexyz/mud/issues/1991
-  const schemaName = transformSchemaName(`${address.toLowerCase()}__${namespace}`);
-  const tableName = snakeCase(name);
+  const schemaName = transformSchemaName(address.toLowerCase());
+  const tableName = namespace ? `${snakeCase(namespace)}__${snakeCase(name)}` : snakeCase(name);
 
   // Column names, however, are safe to snake case because they're scoped to tables, defined once per table, and there's a limited number of fields in total.
 
   const keyColumns = Object.fromEntries(
-    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()])
+    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()]),
   );
   const valueColumns = Object.fromEntries(
-    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()])
+    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(snakeCase(name), type).notNull()]),
   );
 
   // TODO: make sure there are no meta columns that overlap with key/value columns

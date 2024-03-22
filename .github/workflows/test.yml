@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - "docs/**"
   pull_request:
-
-env:
-  FOUNDRY_VERBOSITY: 5
+    paths-ignore:
+      - "docs/**"
 
 jobs:
   test:

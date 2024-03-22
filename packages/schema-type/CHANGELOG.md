@@ -1,5 +1,74 @@
 # Change Log
 
+## 2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- aabd30767: Bumped Solidity version to 0.8.24.
+- b38c096d: Moved all existing exports to a `/internal` import path to indicate that these are now internal-only and deprecated. We'll be replacing these types and functions with new ones that are compatible with our new, strongly-typed config.
+- 92de59982: Bump Solidity version to 0.8.21
+
+### Minor Changes
+
+- b02f9d0e4: add type narrowing `isStaticAbiType`
+- bb91edaa0: Added `isSchemaAbiType` helper function to check and narrow an unknown string to the `SchemaAbiType` type
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- f99e88987: Bump viem to 1.14.0 and abitype to 0.9.8
+- 48909d151: bump forge-std and ds-test dependencies
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- f03531d97: Fix byte lengths for `uint64` and `int64`.
+- b8a6158d6: bump viem to 1.6.0
+- 535229984: - bump to viem 1.3.0 and abitype 0.9.3
+  - move `@wagmi/chains` imports to `viem/chains`
+  - refine a few types
+
+## 2.0.0-next.18
+
+### Major Changes
+
+- b38c096d: Moved all existing exports to a `/internal` import path to indicate that these are now internal-only and deprecated. We'll be replacing these types and functions with new ones that are compatible with our new, strongly-typed config.
+
+### Minor Changes
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+## 2.0.0-next.17
+
+### Major Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+
+## 2.0.0-next.16
+
 ## 2.0.0-next.15
 
 ### Patch Changes

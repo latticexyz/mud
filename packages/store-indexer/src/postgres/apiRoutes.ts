@@ -8,7 +8,7 @@ import { queryLogs } from "./queryLogs";
 import { recordToLog } from "./recordToLog";
 import { debug, error } from "../debug";
 import { createBenchmark } from "@latticexyz/common";
-import { compress } from "../compress";
+import { compress } from "../koa-middleware/compress";
 
 export function apiRoutes(database: Sql): Middleware {
   const router = new Router();
@@ -38,8 +38,8 @@ export function apiRoutes(database: Sql): Middleware {
         ctx.body = "no logs found";
         error(
           `no logs found for chainId ${options.chainId}, address ${options.address}, filters ${JSON.stringify(
-            options.filters
-          )}`
+            options.filters,
+          )}`,
         );
         return;
       }

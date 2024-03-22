@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -11,9 +11,9 @@ import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
-import { DELEGATION_CONTROL_INTERFACE_ID } from "@latticexyz/world/src/IDelegationControl.sol";
+import { IDelegationControl } from "@latticexyz/world/src/IDelegationControl.sol";
 
-import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
+import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 
 import { PuppetModule } from "../src/modules/puppet/PuppetModule.sol";
@@ -47,8 +47,7 @@ contract PuppetModuleTest is Test, GasReporter {
   PuppetTestSystem private puppet;
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(createCoreModule());
+    world = createWorld();
   }
 
   function _setupPuppet() internal {

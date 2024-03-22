@@ -1,5 +1,589 @@
 # Change Log
 
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [4a6b4598]
+  - @latticexyz/store@2.0.1
+  - @latticexyz/world@2.0.1
+  - @latticexyz/common@2.0.1
+  - @latticexyz/config@2.0.1
+  - @latticexyz/schema-type@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- 865253dba: Refactored `InstalledModules` to key modules by addresses instead of pre-defined names. Previously, modules could report arbitrary names, meaning misconfigured modules could be installed under a name intended for another module.
+- aabd30767: Bumped Solidity version to 0.8.24.
+- 6ca1874e0: Modules now revert with `Module_AlreadyInstalled` if attempting to install more than once with the same calldata.
+
+  This is a temporary workaround for our deploy pipeline. We'll make these install steps more idempotent in the future.
+
+- 251170e1e: All optional modules have been moved from `@latticexyz/world` to `@latticexyz/world-modules`.
+  If you're using the MUD CLI, the import is already updated and no changes are necessary.
+- 252a1852: Migrated to new config format.
+
+### Minor Changes
+
+- d7325e517: Added the `ERC721Module` to `@latticexyz/world-modules`.
+  This module allows the registration of `ERC721` tokens in an existing World.
+
+  Important note: this module has not been audited yet, so any production use is discouraged for now.
+
+  ````solidity
+  import { PuppetModule } from "@latticexyz/world-modules/src/modules/puppet/PuppetModule.sol";
+  import { ERC721MetadataData } from "@latticexyz/world-modules/src/modules/erc721-puppet/tables/ERC721Metadata.sol";
+  import { IERC721Mintable } from "@latticexyz/world-modules/src/modules/erc721-puppet/IERC721Mintable.sol";
+  import { registerERC721 } from "@latticexyz/world-modules/src/modules/erc721-puppet/registerERC721.sol";
+
+  // The ERC721 module requires the Puppet module to be installed first
+  world.installModule(new PuppetModule(), new bytes(0));
+
+  // After the Puppet module is installed, new ERC721 tokens can be registered
+  IERC721Mintable token = registerERC721(world, "myERC721", ERC721MetadataData({ name: "Token", symbol: "TKN", baseURI: "" }));```
+  ````
+
+- 35348f831: Added the `PuppetModule` to `@latticexyz/world-modules`. The puppet pattern allows an external contract to be registered as an external interface for a MUD system.
+  This allows standards like `ERC20` (that require a specific interface and events to be emitted by a unique contract) to be implemented inside a MUD World.
+
+  The puppet serves as a proxy, forwarding all calls to the implementation system (also called the "puppet master").
+  The "puppet master" system can emit events from the puppet contract.
+
+  ```solidity
+  import { PuppetModule } from "@latticexyz/world-modules/src/modules/puppet/PuppetModule.sol";
+  import { createPuppet } from "@latticexyz/world-modules/src/modules/puppet/createPuppet.sol";
+
+  // Install the puppet module
+  world.installModule(new PuppetModule(), new bytes(0));
+
+  // Register a new puppet for any system
+  // The system must implement the `CustomInterface`,
+  // and the caller must own the system's namespace
+  CustomInterface puppet = CustomInterface(createPuppet(world, <systemId>));
+  ```
+
+- c4fc85041: Fixed `SystemSwitch` to properly call non-root systems from root systems.
+- 9352648b1: Since [#1564](https://github.com/latticexyz/mud/pull/1564) the World can no longer call itself via an external call.
+  This made the developer experience of calling other systems via root systems worse, since calls from root systems are executed from the context of the World.
+  The recommended approach is to use `delegatecall` to the system if in the context of a root system, and an external call via the World if in the context of a non-root system.
+  To bring back the developer experience of calling systems from other sysyems without caring about the context in which the call is executed, we added the `SystemSwitch` util.
+
+  ```diff
+  - // Instead of calling the system via an external call to world...
+  - uint256 value = IBaseWorld(_world()).callMySystem();
+
+  + // ...you can now use the `SystemSwitch` util.
+  + // This works independent of whether used in a root system or non-root system.
+  + uint256 value = abi.decode(SystemSwitch.call(abi.encodeCall(IBaseWorld.callMySystem, ()), (uint256));
+  ```
+
+  Note that if you already know your system is always executed as non-root system, you can continue to use the approach of calling other systems via the `IBaseWorld(world)`.
+
+- 836383734: Added the `ERC20Module` to `@latticexyz/world-modules`.
+  This module allows the registration of `ERC20` tokens in an existing World.
+
+  Important note: this module has not been audited yet, so any production use is discouraged for now.
+
+  ```solidity
+  import { PuppetModule } from "@latticexyz/world-modules/src/modules/puppet/PuppetModule.sol";
+  import { IERC20Mintable } from "@latticexyz/world-modules/src/modules/erc20-puppet/IERC20Mintable.sol";
+  import { registerERC20 } from "@latticexyz/world-modules/src/modules/erc20-puppet/registerERC20.sol";
+
+  // The ERC20 module requires the Puppet module to be installed first
+  world.installModule(new PuppetModule(), new bytes(0));
+
+  // After the Puppet module is installed, new ERC20 tokens can be registered
+  IERC20Mintable token = registerERC20(world, "myERC20", ERC20MetadataData({ decimals: 18, name: "Token", symbol: "TKN" }));
+  ```
+
+- 3042f86e: Moved key schema and value schema methods to constants in code-generated table libraries for less bytecode and less gas in register/install methods.
+
+  ```diff
+  -console.log(SomeTable.getKeySchema());
+  +console.log(SomeTable._keySchema);
+
+  -console.log(SomeTable.getValueSchema());
+  +console.log(SomeTable._valueSchema);
+  ```
+
+- fdbba6d88: Added a new delegation control called `SystemboundDelegationControl` that delegates control of a specific system for some maximum number of calls. It is almost identical to `CallboundDelegationControl` except the delegatee can call the system with any function and args.
+
+### Patch Changes
+
+- 7ce82b6fc: Store config now defaults `storeArgument: false` for all tables. This means that table libraries, by default, will no longer include the extra functions with the `_store` argument. This default was changed to clear up the confusion around using table libraries in tests, `PostDeploy` scripts, etc.
+
+  If you are sure you need to manually specify a store when interacting with tables, you can still manually toggle it back on with `storeArgument: true` in the table settings of your MUD config.
+
+  If you want to use table libraries in `PostDeploy.s.sol`, you can add the following lines:
+
+  ```diff
+    import { Script } from "forge-std/Script.sol";
+    import { console } from "forge-std/console.sol";
+    import { IWorld } from "../src/codegen/world/IWorld.sol";
+  + import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+    contract PostDeploy is Script {
+      function run(address worldAddress) external {
+  +     StoreSwitch.setStoreAddress(worldAddress);
+  +
+  +     SomeTable.get(someKey);
+  ```
+
+- a35c05ea9: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+- eaa766ef7: Removed `IUniqueEntitySystem` in favor of calling `getUniqueEntity` via `world.call` instead of the world function selector. This had a small gas improvement.
+- 0f27afddb: World function signatures for namespaced systems have changed from `{namespace}_{systemName}_{functionName}` to `{namespace}__{functionName}` (double underscore, no system name). This is more ergonomic and is more consistent with namespaced resources in other parts of the codebase (e.g. MUD config types, table names in the schemaful indexer).
+
+  If you have a project using the `namespace` key in your `mud.config.ts` or are manually registering systems and function selectors on a namespace, you will likely need to codegen your system interfaces (`pnpm build`) and update any calls to these systems through the world's namespaced function signatures.
+
+- c07fa0215: Tables and interfaces in the `world` package are now generated to the `codegen` folder.
+  This is only a breaking change if you imported tables or codegenerated interfaces from `@latticexyz/world` directly.
+  If you're using the MUD CLI, the changed import paths are already integrated and no further changes are necessary.
+
+  ```diff
+  - import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
+  + import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
+
+  ```
+
+- 4be22ba4: ERC20 and ERC721 implementations now always register the token namespace, instead of checking if it has already been registered. This prevents issues with registering the namespace beforehand, namely that only the owner of a system can create a puppet for it.
+- 44236041f: Moved table ID and field layout constants in code-generated table libraries from the file level into the library, for clearer access and cleaner imports.
+
+  ```diff
+  -import { SomeTable, SomeTableTableId } from "./codegen/tables/SomeTable.sol";
+  +import { SomeTable } from "./codegen/tables/SomeTable.sol";
+
+  -console.log(SomeTableTableId);
+  +console.log(SomeTable._tableId);
+
+  -console.log(SomeTable.getFieldLayout());
+  +console.log(SomeTable._fieldLayout);
+  ```
+
+- eb384bb0e: Added `isInstalled` and `requireNotInstalled` helpers to `Module` base contract.
+- 063daf80e: Previously `registerSystem` and `registerTable` had a side effect of registering namespaces if the system or table's namespace didn't exist yet.
+  This caused a possible frontrunning issue, where an attacker could detect a `registerSystem`/`registerTable` transaction in the mempool,
+  insert a `registerNamespace` transaction before it, grant themselves access to the namespace, transfer ownership of the namespace to the victim,
+  so that the `registerSystem`/`registerTable` transactions still went through successfully.
+  To mitigate this issue, the side effect of registering a namespace in `registerSystem` and `registerTable` has been removed.
+  Calls to these functions now expect the respective namespace to exist and the caller to own the namespace, otherwise they revert.
+
+  Changes in consuming projects are only necessary if tables or systems are registered manually.
+  If only the MUD deployer is used to register tables and systems, no changes are necessary, as the MUD deployer has been updated accordingly.
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     world.registerSystem(systemId, system, true);
+  ```
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     MyTable.register();
+  ```
+
+- 37c228c63: Refactored `ResourceId` to use a global Solidity `using` statement.
+- 37c228c63: Refactored EIP165 usages to use the built-in interfaceId property instead of pre-defined constants.
+- 88b1a5a19: We now expose a `WorldContextConsumerLib` library with the same functionality as the `WorldContextConsumer` contract, but the ability to be used inside of internal libraries.
+  We also renamed the `WorldContextProvider` library to `WorldContextProviderLib` for consistency.
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- e2d089c6d: Renamed the Module `args` parameter to `encodedArgs` to better reflect that it is ABI-encoded arguments.
+- 1890f1a06: Moved `store` tables to the `"store"` namespace (previously "mudstore") and `world` tables to the `"world"` namespace (previously root namespace).
+- 37c228c63: Refactored various Solidity files to not explicitly initialise variables to zero.
+- 747d8d1b8: Renamed token address fields in ERC20 and ERC721 modules to `tokenAddress`
+- 3e7d83d0: Renamed `PackedCounter` to `EncodedLengths` for consistency.
+- Updated dependencies [7ce82b6fc]
+- Updated dependencies [d8c8f66bf]
+- Updated dependencies [c6c13f2ea]
+- Updated dependencies [77dce993a]
+- Updated dependencies [ce97426c0]
+- Updated dependencies [1b86eac05]
+- Updated dependencies [a35c05ea9]
+- Updated dependencies [c9ee5e4a]
+- Updated dependencies [c963b46c7]
+- Updated dependencies [05b3e8882]
+- Updated dependencies [0f27afddb]
+- Updated dependencies [748f4588a]
+- Updated dependencies [865253dba]
+- Updated dependencies [8f49c277d]
+- Updated dependencies [7fa2ca183]
+- Updated dependencies [745485cda]
+- Updated dependencies [16b13ea8f]
+- Updated dependencies [aea67c580]
+- Updated dependencies [82693072]
+- Updated dependencies [07dd6f32c]
+- Updated dependencies [c07fa0215]
+- Updated dependencies [90e4161bb]
+- Updated dependencies [aabd30767]
+- Updated dependencies [65c9546c4]
+- Updated dependencies [6ca1874e0]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [1d60930d6]
+- Updated dependencies [01e46d99]
+- Updated dependencies [430e6b29a]
+- Updated dependencies [f9f9609ef]
+- Updated dependencies [904fd7d4e]
+- Updated dependencies [e6c03a87a]
+- Updated dependencies [1077c7f53]
+- Updated dependencies [2c920de7]
+- Updated dependencies [b9e562d8f]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [44236041f]
+- Updated dependencies [066056154]
+- Updated dependencies [759514d8b]
+- Updated dependencies [952cd5344]
+- Updated dependencies [d5094a242]
+- Updated dependencies [3fb9ce283]
+- Updated dependencies [c207d35e8]
+- Updated dependencies [db7798be2]
+- Updated dependencies [bb6ada740]
+- Updated dependencies [35c9f33df]
+- Updated dependencies [3be4deecf]
+- Updated dependencies [a25881160]
+- Updated dependencies [0b8ce3f2c]
+- Updated dependencies [933b54b5f]
+- Updated dependencies [5debcca8]
+- Updated dependencies [c4d5eb4e4]
+- Updated dependencies [f8dab7334]
+- Updated dependencies [1a0fa7974]
+- Updated dependencies [f62c767e7]
+- Updated dependencies [d00c4a9af]
+- Updated dependencies [9aa5e786]
+- Updated dependencies [307abab3]
+- Updated dependencies [de151fec0]
+- Updated dependencies [c32a9269a]
+- Updated dependencies [eb384bb0e]
+- Updated dependencies [37c228c63]
+- Updated dependencies [618dd0e89]
+- Updated dependencies [aacffcb59]
+- Updated dependencies [c991c71a]
+- Updated dependencies [ae340b2bf]
+- Updated dependencies [1bf2e9087]
+- Updated dependencies [e5d208e40]
+- Updated dependencies [b38c096d]
+- Updated dependencies [211be2a1e]
+- Updated dependencies [0f3e2e02b]
+- Updated dependencies [1f80a0b52]
+- Updated dependencies [d08789282]
+- Updated dependencies [5c965a919]
+- Updated dependencies [f99e88987]
+- Updated dependencies [939916bcd]
+- Updated dependencies [e5a962bc3]
+- Updated dependencies [331f0d636]
+- Updated dependencies [f6f402896]
+- Updated dependencies [d5b73b126]
+- Updated dependencies [e34d1170]
+- Updated dependencies [08b422171]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [190fdd11]
+- Updated dependencies [37c228c63]
+- Updated dependencies [37c228c63]
+- Updated dependencies [433078c54]
+- Updated dependencies [db314a74]
+- Updated dependencies [b2d2aa715]
+- Updated dependencies [4c7fd3eb2]
+- Updated dependencies [a0341daf9]
+- Updated dependencies [83583a505]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [6573e38e9]
+- Updated dependencies [51914d656]
+- Updated dependencies [063daf80e]
+- Updated dependencies [afaf2f5ff]
+- Updated dependencies [37c228c63]
+- Updated dependencies [59267655]
+- Updated dependencies [37c228c63]
+- Updated dependencies [2bfee9217]
+- Updated dependencies [1ca35e9a1]
+- Updated dependencies [44a5432ac]
+- Updated dependencies [6e66c5b74]
+- Updated dependencies [8d51a0348]
+- Updated dependencies [c162ad5a5]
+- Updated dependencies [88b1a5a19]
+- Updated dependencies [65c9546c4]
+- Updated dependencies [48909d151]
+- Updated dependencies [7b28d32e5]
+- Updated dependencies [b02f9d0e4]
+- Updated dependencies [2ca75f9b9]
+- Updated dependencies [f62c767e7]
+- Updated dependencies [bb91edaa0]
+- Updated dependencies [590542030]
+- Updated dependencies [1a82c278]
+- Updated dependencies [1b5eb0d07]
+- Updated dependencies [44a5432ac]
+- Updated dependencies [48c51b52a]
+- Updated dependencies [9f8b84e73]
+- Updated dependencies [66cc35a8c]
+- Updated dependencies [672d05ca1]
+- Updated dependencies [f1cd43bf9]
+- Updated dependencies [9d0f492a9]
+- Updated dependencies [55a05fd7a]
+- Updated dependencies [f03531d97]
+- Updated dependencies [c583f3cd0]
+- Updated dependencies [31ffc9d5d]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [63831a264]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [6db95ce15]
+- Updated dependencies [8193136a9]
+- Updated dependencies [5d737cf2e]
+- Updated dependencies [d075f82f3]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [a7b30c79b]
+- Updated dependencies [6470fe1fd]
+- Updated dependencies [86766ce1]
+- Updated dependencies [92de59982]
+- Updated dependencies [5741d53d0]
+- Updated dependencies [aee8020a6]
+- Updated dependencies [22ee44700]
+- Updated dependencies [e2d089c6d]
+- Updated dependencies [ad4ac4459]
+- Updated dependencies [be313068b]
+- Updated dependencies [ac508bf18]
+- Updated dependencies [93390d89]
+- Updated dependencies [57d8965df]
+- Updated dependencies [18d3aea55]
+- Updated dependencies [7987c94d6]
+- Updated dependencies [bb91edaa0]
+- Updated dependencies [144c0d8d]
+- Updated dependencies [5ac4c97f4]
+- Updated dependencies [bfcb293d1]
+- Updated dependencies [3e057061d]
+- Updated dependencies [1890f1a06]
+- Updated dependencies [e48171741]
+- Updated dependencies [e4a6189df]
+- Updated dependencies [9b43029c3]
+- Updated dependencies [37c228c63]
+- Updated dependencies [55ab88a60]
+- Updated dependencies [c58da9ad]
+- Updated dependencies [37c228c63]
+- Updated dependencies [4e4a34150]
+- Updated dependencies [535229984]
+- Updated dependencies [af639a264]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [99ab9cd6f]
+- Updated dependencies [be18b75b]
+- Updated dependencies [0c4f9fea9]
+- Updated dependencies [0d12db8c2]
+- Updated dependencies [c049c23f4]
+- Updated dependencies [80dd6992e]
+- Updated dependencies [60cfd089f]
+- Updated dependencies [24a6cd536]
+- Updated dependencies [37c228c63]
+- Updated dependencies [708b49c50]
+- Updated dependencies [d2f8e9400]
+- Updated dependencies [17f987209]
+- Updated dependencies [25086be5f]
+- Updated dependencies [37c228c63]
+- Updated dependencies [b1d41727d]
+- Updated dependencies [3ac68ade6]
+- Updated dependencies [c642ff3a0]
+- Updated dependencies [22ba7b675]
+- Updated dependencies [4c1dcd81e]
+- Updated dependencies [3042f86e]
+- Updated dependencies [c049c23f4]
+- Updated dependencies [5e71e1cb5]
+- Updated dependencies [6071163f7]
+- Updated dependencies [6c6733256]
+- Updated dependencies [cd5abcc3b]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [5c52bee09]
+- Updated dependencies [251170e1e]
+- Updated dependencies [8025c3505]
+- Updated dependencies [c4f49240d]
+- Updated dependencies [745485cda]
+- Updated dependencies [95f64c85]
+- Updated dependencies [37c228c63]
+- Updated dependencies [3e7d83d0]
+- Updated dependencies [5df1f31bc]
+- Updated dependencies [29c3f5087]
+- Updated dependencies [cea754dde]
+- Updated dependencies [331f0d636]
+- Updated dependencies [95c59b203]
+- Updated dependencies [cc2c8da00]
+- Updated dependencies [252a1852]
+- Updated dependencies [103f635eb]
+  - @latticexyz/store@2.0.0
+  - @latticexyz/world@2.0.0
+  - @latticexyz/common@2.0.0
+  - @latticexyz/schema-type@2.0.0
+  - @latticexyz/config@2.0.0
+
+## 2.0.0-next.18
+
+### Major Changes
+
+- 252a1852: Migrated to new config format.
+
+### Minor Changes
+
+- 3042f86e: Moved key schema and value schema methods to constants in code-generated table libraries for less bytecode and less gas in register/install methods.
+
+  ```diff
+  -console.log(SomeTable.getKeySchema());
+  +console.log(SomeTable._keySchema);
+
+  -console.log(SomeTable.getValueSchema());
+  +console.log(SomeTable._valueSchema);
+  ```
+
+### Patch Changes
+
+- 4be22ba4: ERC20 and ERC721 implementations now always register the token namespace, instead of checking if it has already been registered. This prevents issues with registering the namespace beforehand, namely that only the owner of a system can create a puppet for it.
+- 44236041: Moved table ID and field layout constants in code-generated table libraries from the file level into the library, for clearer access and cleaner imports.
+
+  ```diff
+  -import { SomeTable, SomeTableTableId } from "./codegen/tables/SomeTable.sol";
+  +import { SomeTable } from "./codegen/tables/SomeTable.sol";
+
+  -console.log(SomeTableTableId);
+  +console.log(SomeTable._tableId);
+
+  -console.log(SomeTable.getFieldLayout());
+  +console.log(SomeTable._fieldLayout);
+  ```
+
+- 3e7d83d0: Renamed `PackedCounter` to `EncodedLengths` for consistency.
+- Updated dependencies [c9ee5e4a]
+- Updated dependencies [8f49c277d]
+- Updated dependencies [82693072]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [2c920de7]
+- Updated dependencies [44236041]
+- Updated dependencies [3be4deecf]
+- Updated dependencies [5debcca8]
+- Updated dependencies [9aa5e786]
+- Updated dependencies [307abab3]
+- Updated dependencies [c991c71a]
+- Updated dependencies [b38c096d]
+- Updated dependencies [e34d1170]
+- Updated dependencies [190fdd11]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [1a82c278]
+- Updated dependencies [8193136a9]
+- Updated dependencies [86766ce1]
+- Updated dependencies [93390d89]
+- Updated dependencies [144c0d8d]
+- Updated dependencies [c58da9ad]
+- Updated dependencies [be18b75b]
+- Updated dependencies [3042f86e]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [95f64c85]
+- Updated dependencies [3e7d83d0]
+- Updated dependencies [252a1852]
+  - @latticexyz/store@2.0.0-next.18
+  - @latticexyz/world@2.0.0-next.18
+  - @latticexyz/common@2.0.0-next.18
+  - @latticexyz/schema-type@2.0.0-next.18
+  - @latticexyz/config@2.0.0-next.18
+
+## 2.0.0-next.17
+
+### Major Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+
+### Minor Changes
+
+- c4fc8504: Fixed `SystemSwitch` to properly call non-root systems from root systems.
+
+### Patch Changes
+
+- a35c05ea: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+- e2d089c6: Renamed the Module `args` parameter to `encodedArgs` to better reflect that it is ABI-encoded arguments.
+- Updated dependencies [a35c05ea]
+- Updated dependencies [05b3e888]
+- Updated dependencies [745485cd]
+- Updated dependencies [aabd3076]
+- Updated dependencies [db7798be]
+- Updated dependencies [618dd0e8]
+- Updated dependencies [c162ad5a]
+- Updated dependencies [55a05fd7]
+- Updated dependencies [6470fe1f]
+- Updated dependencies [e2d089c6]
+- Updated dependencies [17f98720]
+- Updated dependencies [5c52bee0]
+- Updated dependencies [745485cd]
+  - @latticexyz/common@2.0.0-next.17
+  - @latticexyz/store@2.0.0-next.17
+  - @latticexyz/world@2.0.0-next.17
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/config@2.0.0-next.17
+
+## 2.0.0-next.16
+
+### Major Changes
+
+- 865253db: Refactored `InstalledModules` to key modules by addresses instead of pre-defined names. Previously, modules could report arbitrary names, meaning misconfigured modules could be installed under a name intended for another module.
+
+### Patch Changes
+
+- eaa766ef: Removed `IUniqueEntitySystem` in favor of calling `getUniqueEntity` via `world.call` instead of the world function selector. This had a small gas improvement.
+- 0f27afdd: World function signatures for namespaced systems have changed from `{namespace}_{systemName}_{functionName}` to `{namespace}__{functionName}` (double underscore, no system name). This is more ergonomic and is more consistent with namespaced resources in other parts of the codebase (e.g. MUD config types, table names in the schemaful indexer).
+
+  If you have a project using the `namespace` key in your `mud.config.ts` or are manually registering systems and function selectors on a namespace, you will likely need to codegen your system interfaces (`pnpm build`) and update any calls to these systems through the world's namespaced function signatures.
+
+- 063daf80: Previously `registerSystem` and `registerTable` had a side effect of registering namespaces if the system or table's namespace didn't exist yet.
+  This caused a possible frontrunning issue, where an attacker could detect a `registerSystem`/`registerTable` transaction in the mempool,
+  insert a `registerNamespace` transaction before it, grant themselves access to the namespace, transfer ownership of the namespace to the victim,
+  so that the `registerSystem`/`registerTable` transactions still went through successfully.
+  To mitigate this issue, the side effect of registering a namespace in `registerSystem` and `registerTable` has been removed.
+  Calls to these functions now expect the respective namespace to exist and the caller to own the namespace, otherwise they revert.
+
+  Changes in consuming projects are only necessary if tables or systems are registered manually.
+  If only the MUD deployer is used to register tables and systems, no changes are necessary, as the MUD deployer has been updated accordingly.
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     world.registerSystem(systemId, system, true);
+  ```
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     MyTable.register();
+  ```
+
+- 37c228c6: Refactored `ResourceId` to use a global Solidity `using` statement.
+- 37c228c6: Refactored EIP165 usages to use the built-in interfaceId property instead of pre-defined constants.
+- 37c228c6: Refactored various Solidity files to not explicitly initialise variables to zero.
+- Updated dependencies [c6c13f2e]
+- Updated dependencies [0f27afdd]
+- Updated dependencies [865253db]
+- Updated dependencies [e6c03a87]
+- Updated dependencies [c207d35e]
+- Updated dependencies [d00c4a9a]
+- Updated dependencies [37c228c6]
+- Updated dependencies [1bf2e908]
+- Updated dependencies [f6f40289]
+- Updated dependencies [08b42217]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [063daf80]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [2bfee921]
+- Updated dependencies [7b28d32e]
+- Updated dependencies [9f8b84e7]
+- Updated dependencies [aee8020a]
+- Updated dependencies [ad4ac445]
+- Updated dependencies [57d8965d]
+- Updated dependencies [e4a6189d]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [3ac68ade]
+- Updated dependencies [c642ff3a]
+- Updated dependencies [37c228c6]
+- Updated dependencies [103f635e]
+  - @latticexyz/store@2.0.0-next.16
+  - @latticexyz/world@2.0.0-next.16
+  - @latticexyz/common@2.0.0-next.16
+  - @latticexyz/config@2.0.0-next.16
+  - @latticexyz/schema-type@2.0.0-next.16
+
 ## 2.0.0-next.15
 
 ### Patch Changes

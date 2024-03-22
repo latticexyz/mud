@@ -4,7 +4,7 @@
 
 - git ([download](https://git-scm.com/downloads))
 - foundry (forge, anvil, cast) ([download](https://book.getfoundry.sh/getting-started/installation), make sure to `foundryup` at least once)
-- node.js (v17+) ([download](https://nodejs.org/en/download/))
+- node.js (v18) ([download](https://nodejs.org/en/download/))
 - pnpm (`npm install pnpm --global` after installing node)
 
 ## Setup
@@ -15,26 +15,26 @@ Most projects in MUD are started by running `pnpm create mud <project name>`, bu
    You can use the command below.
 
    ```bash copy
-   git clone https://github.com/latticexyz/emojimon.git -b mud-update-next-14
+   git clone https://github.com/latticexyz/emojimon.git -b mud-update-next-16
    ```
 
 1. Install the dependencies and start up the MUD services (anvil node, contracts deployer, and client).
 
    ```bash copy
-   cd emojimon && pnpm install && pnpm run dev
+   cd emojimon && pnpm install && pnpm dev
    ```
 
 1. At this point you can play the game to see the finished game.
    Open the game in your browser.
-   By default the game is at [http://localhost:3000](http://localhost:3000), but it could be on a different port if that port's taken.
+   By default the game is at [http://localhost:3000](http://localhost:3000).
 
 1. Click the map to spawn at a specific location and move using the arrow keys.
    Note that on each block you can only move one space, and the block time on the anvil blockchain is one second.
 
-1. Now that you've seen our end goal, reset the repository to [the starting snapshot](https://github.com/latticexyz/emojimon/tree/8520a8206929f6265609cc9166c985846fd0cd87).
+1. Now that you've seen our end goal, reset the repository to [the starting snapshot](https://github.com/latticexyz/emojimon/tree/9dd3616244bc25518b06dfaa7beda51da07fb750).
 
 ```sh copy
-git reset --hard 8520a8206929f6265609cc9166c985846fd0cd87
+git reset --hard 9dd3616244bc25518b06dfaa7beda51da07fb750
 ```
 
 After you do this, the game is just a green area where the map is going to be.

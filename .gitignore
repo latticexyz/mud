@@ -16,3 +16,8 @@ yarn-error.log
 templates/*/pnpm-lock.yaml
 
 .env
+
+test-data/world-logs-bulk-*.json
+test-data/world-logs-query.json
+
+.attest

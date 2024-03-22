@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { BEFORE_SET_RECORD, AFTER_SPLICE_STATIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
@@ -13,8 +13,8 @@ import { ResourceId, WorldResourceIdInstance } from "@latticexyz/world/src/World
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { KeysInTableHook } from "./KeysInTableHook.sol";
-import { KeysInTable, KeysInTableTableId } from "./tables/KeysInTable.sol";
-import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol";
+import { KeysInTable } from "./tables/KeysInTable.sol";
+import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
 
 /**
  * This module deploys a hook that is called when a value is set in the `sourceTableId`
@@ -33,17 +33,13 @@ contract KeysInTableModule is Module {
   // from the source table id (passed as argument to the hook methods)
   KeysInTableHook private immutable hook = new KeysInTableHook();
 
-  function getName() public pure returns (bytes16) {
-    return bytes16("keysInTable");
-  }
-
-  function installRoot(bytes memory args) public override {
+  function installRoot(bytes memory encodedArgs) public override {
     // Naive check to ensure this is only installed once
     // TODO: only revert if there's nothing to do
-    requireNotInstalled(getName(), args);
+    requireNotInstalled(__self, encodedArgs);
 
     // Extract source table id from args
-    ResourceId sourceTableId = ResourceId.wrap(abi.decode(args, (bytes32)));
+    ResourceId sourceTableId = ResourceId.wrap(abi.decode(encodedArgs, (bytes32)));
 
     IBaseWorld world = IBaseWorld(_world());
 
@@ -51,16 +47,16 @@ contract KeysInTableModule is Module {
     bool success;
     bytes memory returnData;
 
-    if (!ResourceIds._getExists(KeysInTableTableId)) {
+    if (!ResourceIds._getExists(KeysInTable._tableId)) {
       // Register the tables
       (success, returnData) = address(world).delegatecall(
         abi.encodeCall(
           world.registerTable,
           (
-            KeysInTableTableId,
-            KeysInTable.getFieldLayout(),
-            KeysInTable.getKeySchema(),
-            KeysInTable.getValueSchema(),
+            KeysInTable._tableId,
+            KeysInTable._fieldLayout,
+            KeysInTable._keySchema,
+            KeysInTable._valueSchema,
             KeysInTable.getKeyNames(),
             KeysInTable.getFieldNames()
           )
@@ -72,10 +68,10 @@ contract KeysInTableModule is Module {
         abi.encodeCall(
           world.registerTable,
           (
-            UsedKeysIndexTableId,
-            UsedKeysIndex.getFieldLayout(),
-            UsedKeysIndex.getKeySchema(),
-            UsedKeysIndex.getValueSchema(),
+            UsedKeysIndex._tableId,
+            UsedKeysIndex._fieldLayout,
+            UsedKeysIndex._keySchema,
+            UsedKeysIndex._valueSchema,
             UsedKeysIndex.getKeyNames(),
             UsedKeysIndex.getFieldNames()
           )
@@ -85,12 +81,12 @@ contract KeysInTableModule is Module {
 
       // Grant the hook access to the tables
       (success, returnData) = address(world).delegatecall(
-        abi.encodeCall(world.grantAccess, (KeysInTableTableId, address(hook)))
+        abi.encodeCall(world.grantAccess, (KeysInTable._tableId, address(hook)))
       );
       if (!success) revertWithBytes(returnData);
 
       (success, returnData) = address(world).delegatecall(
-        abi.encodeCall(world.grantAccess, (UsedKeysIndexTableId, address(hook)))
+        abi.encodeCall(world.grantAccess, (UsedKeysIndex._tableId, address(hook)))
       );
       if (!success) revertWithBytes(returnData);
     }

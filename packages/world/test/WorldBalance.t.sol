@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -12,7 +12,7 @@ import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID } from "../src/constants.sol";
 import { Balances } from "../src/codegen/tables/Balances.sol";
 import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "../src/worldResourceTypes.sol";
-import { createCoreModule } from "./createCoreModule.sol";
+import { createWorld } from "./createWorld.sol";
 
 using WorldResourceIdInstance for ResourceId;
 
@@ -35,8 +35,7 @@ contract WorldBalanceTest is Test, GasReporter {
   address public caller = address(4242);
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(createCoreModule());
+    world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
 
     world.registerNamespace(namespaceId);
@@ -44,7 +43,7 @@ contract WorldBalanceTest is Test, GasReporter {
     world.registerSystem(rootSystemId, rootSystem, true);
     world.registerSystem(nonRootSystemId, nonRootSystem, true);
 
-    world.registerRootFunctionSelector(rootSystemId, "echoValue()", rootSystem.echoValue.selector);
+    world.registerRootFunctionSelector(rootSystemId, "echoValue()", "echoValue()");
     world.registerFunctionSelector(nonRootSystemId, "echoValue()");
   }
 
@@ -126,7 +125,7 @@ contract WorldBalanceTest is Test, GasReporter {
     // Call a function on a non-root system with value
     vm.deal(caller, value);
     vm.prank(caller);
-    (success, data) = address(world).call{ value: value }(abi.encodeWithSignature("namespace_testSystem_echoValue()"));
+    (success, data) = address(world).call{ value: value }(abi.encodeWithSignature("namespace__echoValue()"));
     assertTrue(success);
     assertEq(abi.decode(data, (uint256)), value);
 

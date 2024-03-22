@@ -37,7 +37,7 @@ const recordsTable = pgSchema(schemaName).table(
     key1Index: index("key1_index").on(table.address, table.tableId, table.key1),
     // TODO: add indices for querying without table ID
     // TODO: add indices for querying multiple keys
-  })
+  }),
 );
 
 export const tables = {

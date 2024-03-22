@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 /**
- * @dev World Version Constant
- * Defines the version identifier for the World contract or module.
- * This version identifier can be used for version checks, logging, and more.
+ * @title World protocol version
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ * @notice Contains a constant representing the version of the World protocol.
  */
 
-bytes32 constant WORLD_VERSION = "1.0.0-unaudited";
+/// @dev Identifier for the current World protocol version.
+bytes32 constant WORLD_VERSION = "2.0.0";

@@ -31,7 +31,7 @@ export function createSystemCalls(
    *   (https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L77-L83).
    */
   { worldContract, waitForTransaction }: SetupNetworkResult,
-  { Counter }: ClientComponents
+  { Counter }: ClientComponents,
 ) {
   const increment = async () => {
     /*

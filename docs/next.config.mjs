@@ -154,62 +154,77 @@ export default withNextra({
       {
         source: "/tutorials/emojimon/getting-started",
         destination: "/guides/emojimon/2-getting-started",
-        permanent: false
+        permanent: false,
       },
       {
         source: "/tutorials/emojimon/players-and-movement",
         destination: "/guides/emojimon/3-players-and-movement",
-        permanent: false
-      },      
+        permanent: false,
+      },
       {
         source: "/tutorials/emojimon/map-and-terrain",
         destination: "/guides/emojimon/4-map-and-terrain",
-        permanent: false
+        permanent: false,
       },
       {
         source: "/tutorials/emojimon/a-wild-emojimon-appears",
         destination: "/guides/emojimon/5-a-wild-emojimon-appears",
-        permanent: false
-      },      
+        permanent: false,
+      },
       {
         source: "/tutorials/emojimon/make-it-multiplayer",
         destination: "/guides/emojimon/6-advanced#make-it-multiplayer",
-        permanent: false
+        permanent: false,
       },
       {
         source: "/tutorials/emojimon/deploy-to-testnet",
         destination: "/cli/deploy",
-        permanent: false
-      },      
+        permanent: false,
+      },
       {
         source: "/tutorials/minimal",
         destination: "/guides/hello-world",
-        permanent: false
+        permanent: false,
       },
       {
         source: "/tutorials/minimal/add-table",
         destination: "/guides/hello-world/add-table",
-        permanent: false
-      },      
+        permanent: false,
+      },
       {
         source: "/tutorials/minimal/add-system",
         destination: "/guides/hello-world/add-system",
-        permanent: false
+        permanent: false,
       },
       {
         source: "/tutorials/minimal/deploy",
         destination: "/cli/deploy",
-        permanent: false
-      },      
+        permanent: false,
+      },
       {
         source: "/tutorials/walkthrough/minimal-onchain",
         destination: "/templates/typescript/contracts",
-        permanent: false
+        permanent: false,
       },
       {
         source: "/reference",
         destination: "/",
-        permanent: false
+        permanent: false,
+      },
+      {
+        source: "/cli/config",
+        destination: "/config",
+        permanent: false,
+      },
+      {
+        source: "/guides/extending-world",
+        destination: "/guides/extending-a-world",
+        permanent: false,
+      },
+      {
+        source: "/templates/typescript/getting-started",
+        destination: "/quickstart",
+        permanent: false,
       },
     ];
   },

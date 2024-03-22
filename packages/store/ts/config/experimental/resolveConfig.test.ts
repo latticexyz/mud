@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mudConfig } from "../../register/mudConfig";
 import { resolveConfig } from "./resolveConfig";
-import { MUDCoreContext } from "@latticexyz/config";
+import { MUDCoreContext } from "@latticexyz/config/library";
 import { resourceToHex } from "@latticexyz/common";
 MUDCoreContext.createContext();
 
@@ -25,7 +25,7 @@ const config = resolveConfig(
         valueSchema: "ResourceType",
       },
     },
-  })
+  }),
 );
 
 describe("resolveConfig", () => {
@@ -35,7 +35,7 @@ describe("resolveConfig", () => {
     expect(config.tables.Shorthand.name).toEqual("Shorthand");
 
     expect(config.tables.Shorthand.tableId).toEqual(
-      resourceToHex({ type: "table", namespace: "the-namespace", name: "Shorthand" })
+      resourceToHex({ type: "table", namespace: "the-namespace", name: "Shorthand" }),
     );
 
     expect(config.tables.Shorthand.keySchema).toEqual({

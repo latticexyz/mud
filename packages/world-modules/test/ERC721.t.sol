@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { console } from "forge-std/console.sol";
@@ -8,7 +8,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World } from "@latticexyz/world/src/World.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
-import { createCoreModule } from "@latticexyz/world/test/createCoreModule.sol";
+import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
@@ -72,8 +72,7 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   IERC721Mintable token;
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(createCoreModule());
+    world = createWorld();
     world.installModule(new PuppetModule(), new bytes(0));
     StoreSwitch.setStoreAddress(address(world));
 
@@ -302,9 +301,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testSafeTransferFromToERC721Recipient(uint256 id, address from, address operator) public {
-    _assumeDifferentNonZero(from, operator);
-
     ERC721Recipient recipient = new ERC721Recipient();
+    _assumeDifferentNonZero(from, operator, address(recipient));
 
     token.mint(from, id);
 

@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 /**
  * @title Store Hook Flags
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice Constants for enabling store hooks.
  * @dev These bitmaps can be used to enable selected store hooks. They can be combined with a bitwise OR (`|`).
  */

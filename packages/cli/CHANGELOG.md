@@ -1,5 +1,1322 @@
 # Change Log
 
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [4a6b4598]
+  - @latticexyz/store@2.0.1
+  - @latticexyz/world@2.0.1
+  - @latticexyz/world-modules@2.0.1
+  - @latticexyz/abi-ts@2.0.1
+  - @latticexyz/common@2.0.1
+  - @latticexyz/config@2.0.1
+  - @latticexyz/gas-report@2.0.1
+  - @latticexyz/protocol-parser@2.0.1
+  - @latticexyz/schema-type@2.0.1
+  - @latticexyz/services@2.0.1
+  - @latticexyz/utils@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- 07dd6f32c: Renamed all occurrences of `schema` where it is used as "value schema" to `valueSchema` to clearly distinguish it from "key schema".
+  The only breaking change for users is the change from `schema` to `valueSchema` in `mud.config.ts`.
+
+  ```diff
+  // mud.config.ts
+  export default mudConfig({
+    tables: {
+      CounterTable: {
+        keySchema: {},
+  -     schema: {
+  +     valueSchema: {
+          value: "uint32",
+        },
+      },
+    }
+  }
+  ```
+
+- 44236041f: Moved table ID and field layout constants in code-generated table libraries from the file level into the library, for clearer access and cleaner imports.
+
+  ```diff
+  -import { SomeTable, SomeTableTableId } from "./codegen/tables/SomeTable.sol";
+  +import { SomeTable } from "./codegen/tables/SomeTable.sol";
+
+  -console.log(SomeTableTableId);
+  +console.log(SomeTable._tableId);
+
+  -console.log(SomeTable.getFieldLayout());
+  +console.log(SomeTable._fieldLayout);
+  ```
+
+- 952cd5344: All `Store` methods now require the table's value schema to be passed in as an argument instead of loading it from storage.
+  This decreases gas cost and removes circular dependencies of the Schema table (where it was not possible to write to the Schema table before the Schema table was registered).
+
+  ```diff
+    function setRecord(
+      bytes32 table,
+      bytes32[] calldata key,
+      bytes calldata data,
+  +   Schema valueSchema
+    ) external;
+  ```
+
+  The same diff applies to `getRecord`, `getField`, `setField`, `pushToField`, `popFromField`, `updateInField`, and `deleteRecord`.
+
+  This change only requires changes in downstream projects if the `Store` methods were accessed directly. In most cases it is fully abstracted in the generated table libraries,
+  so downstream projects only need to regenerate their table libraries after updating MUD.
+
+- de151fec0: - Add `FieldLayout`, which is a `bytes32` user-type similar to `Schema`.
+
+  Both `FieldLayout` and `Schema` have the same kind of data in the first 4 bytes.
+
+  - 2 bytes for total length of all static fields
+  - 1 byte for number of static size fields
+  - 1 byte for number of dynamic size fields
+
+  But whereas `Schema` has `SchemaType` enum in each of the other 28 bytes, `FieldLayout` has static byte lengths in each of the other 28 bytes.
+
+  - Replace `Schema valueSchema` with `FieldLayout fieldLayout` in Store and World contracts.
+
+    `FieldLayout` is more gas-efficient because it already has lengths, and `Schema` has types which need to be converted to lengths.
+
+  - Add `getFieldLayout` to `IStore` interface.
+
+    There is no `FieldLayout` for keys, only for values, because key byte lengths aren't usually relevant on-chain. You can still use `getKeySchema` if you need key types.
+
+  - Add `fieldLayoutToHex` utility to `protocol-parser` package.
+  - Add `constants.sol` for constants shared between `FieldLayout`, `Schema` and `PackedCounter`.
+
+- c32a9269a: - All `World` function selectors that previously had `bytes16 namespace, bytes16 name` arguments now use `bytes32 resourceSelector` instead.
+  This includes `setRecord`, `setField`, `pushToField`, `popFromField`, `updateInField`, `deleteRecord`, `call`, `grantAccess`, `revokeAccess`, `registerTable`,
+  `registerStoreHook`, `registerSystemHook`, `registerFunctionSelector`, `registerSystem` and `registerRootFunctionSelector`.
+  This change aligns the `World` function selectors with the `Store` function selectors, reduces clutter, reduces gas cost and reduces the `World`'s contract size.
+
+  - The `World`'s `registerHook` function is removed. Use `registerStoreHook` or `registerSystemHook` instead.
+  - The `deploy` script is updated to integrate the World interface changes
+
+- e5d208e40: The `registerRootFunctionSelector` function's signature was changed to accept a `string functionSignature` parameter instead of a `bytes4 functionSelector` parameter.
+  This change enables the `World` to store the function signatures of all registered functions in a `FunctionSignatures` offchain table, which will allow for the automatic generation of interfaces for a given `World` address in the future.
+
+  ```diff
+  IBaseWorld {
+    function registerRootFunctionSelector(
+      ResourceId systemId,
+  -   bytes4 worldFunctionSelector,
+  +   string memory worldFunctionSignature,
+      bytes4 systemFunctionSelector
+    ) external returns (bytes4 worldFunctionSelector);
+  }
+  ```
+
+- 3d0b3edb4: Removes `.mudbackup` file handling and `--backup`, `--restore`, and `--force` options from `mud set-version` command.
+
+  To revert to a previous MUD version, use `git diff` to find the version that you changed from and want to revert to and run `pnpm mud set-version <prior-version>` again.
+
+- afaf2f5ff: - `Store`'s internal schema table is now a normal table instead of using special code paths. It is renamed to Tables, and the table ID changed from `mudstore:schema` to `mudstore:Tables`
+
+  - `Store`'s `registerSchema` and `setMetadata` are combined into a single `registerTable` method. This means metadata (key names, field names) is immutable and indexers can create tables with this metadata when a new table is registered on-chain.
+
+    ```diff
+    -  function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
+    -
+    -  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
+
+    +  function registerTable(
+    +    bytes32 table,
+    +    Schema keySchema,
+    +    Schema valueSchema,
+    +    string[] calldata keyNames,
+    +    string[] calldata fieldNames
+    +  ) external;
+    ```
+
+  - `World`'s `registerTable` method is updated to match the `Store` interface, `setMetadata` is removed
+  - The `getSchema` method is renamed to `getValueSchema` on all interfaces
+    ```diff
+    - function getSchema(bytes32 table) external view returns (Schema schema);
+    + function getValueSchema(bytes32 table) external view returns (Schema valueSchema);
+    ```
+  - The `store-sync` and `cli` packages are updated to integrate the breaking protocol changes. Downstream projects only need to manually integrate these changes if they access low level `Store` or `World` functions. Otherwise, a fresh deploy with the latest MUD will get you these changes.
+
+- 29c3f5087: `deploy`, `test`, `dev-contracts` were overhauled using a declarative deployment approach under the hood. Deploys are now idempotent and re-running them will introspect the world and figure out the minimal changes necessary to bring the world into alignment with its config: adding tables, adding/upgrading systems, changing access control, etc.
+
+  The following CLI arguments are now removed from these commands:
+
+  - `--debug` (you can now adjust CLI output with `DEBUG` environment variable, e.g. `DEBUG=mud:*`)
+  - `--priorityFeeMultiplier` (now calculated automatically)
+  - `--disableTxWait` (everything is now parallelized with smarter nonce management)
+  - `--pollInterval` (we now lean on viem defaults and we don't wait/poll until the very end of the deploy)
+
+  Most deployment-in-progress logs are now behind a [debug](https://github.com/debug-js/debug) flag, which you can enable with a `DEBUG=mud:*` environment variable.
+
+- 48c51b52a: RECS components are now dynamically created and inferred from your MUD config when using `syncToRecs`.
+
+  To migrate existing projects after upgrading to this MUD version:
+
+  1. Remove `contractComponents.ts` from `client/src/mud`
+  2. Remove `components` argument from `syncToRecs`
+  3. Update `build:mud` and `dev` scripts in `contracts/package.json` to remove tsgen
+
+     ```diff
+     - "build:mud": "mud tablegen && mud worldgen && mud tsgen --configPath mud.config.ts --out ../client/src/mud",
+     + "build:mud": "mud tablegen && mud worldgen",
+     ```
+
+     ```diff
+     - "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud",
+     + "dev": "pnpm mud dev-contracts",
+     ```
+
+- 57d8965df: Separated core systems deployment from `CoreModule`, and added the systems as arguments to `CoreModule`
+- 31ffc9d5d: The `registerFunctionSelector` function now accepts a single `functionSignature` string paramemer instead of separating function name and function arguments into separate parameters.
+
+  ```diff
+  IBaseWorld {
+    function registerFunctionSelector(
+      ResourceId systemId,
+  -   string memory systemFunctionName,
+  -   string memory systemFunctionArguments
+  +   string memory systemFunctionSignature
+    ) external returns (bytes4 worldFunctionSelector);
+  }
+  ```
+
+  This is a breaking change if you were manually registering function selectors, e.g. in a `PostDeploy.s.sol` script or a module.
+  To upgrade, simply replace the separate `systemFunctionName` and `systemFunctionArguments` parameters with a single `systemFunctionSignature` parameter.
+
+  ```diff
+    world.registerFunctionSelector(
+      systemId,
+  -   systemFunctionName,
+  -   systemFunctionArguments,
+  +   string(abi.encodePacked(systemFunctionName, systemFunctionArguments))
+    );
+  ```
+
+- ac508bf18: Renamed the default filename of generated user types from `Types.sol` to `common.sol` and the default filename of the generated table index file from `Tables.sol` to `index.sol`.
+
+  Both can be overridden via the MUD config:
+
+  ```ts
+  export default mudConfig({
+    /** Filename where common user types will be generated and imported from. */
+    userTypesFilename: "common.sol",
+    /** Filename where codegen index will be generated. */
+    codegenIndexFilename: "index.sol",
+  });
+  ```
+
+  Note: `userTypesFilename` was renamed from `userTypesPath` and `.sol` is not appended automatically anymore but needs to be part of the provided filename.
+
+  To update your existing project, update all imports from `Tables.sol` to `index.sol` and all imports from `Types.sol` to `common.sol`, or override the defaults in your MUD config to the previous values.
+
+  ```diff
+  - import { Counter } from "../src/codegen/Tables.sol";
+  + import { Counter } from "../src/codegen/index.sol";
+  - import { ExampleEnum } from "../src/codegen/Types.sol";
+  + import { ExampleEnum } from "../src/codegen/common.sol";
+  ```
+
+- 5e723b90e: - `ResourceSelector` is replaced with `ResourceId`, `ResourceIdLib`, `ResourceIdInstance`, `WorldResourceIdLib` and `WorldResourceIdInstance`.
+
+  Previously a "resource selector" was a `bytes32` value with the first 16 bytes reserved for the resource's namespace, and the last 16 bytes reserved for the resource's name.
+  Now a "resource ID" is a `bytes32` value with the first 2 bytes reserved for the resource type, the next 14 bytes reserved for the resource's namespace, and the last 16 bytes reserved for the resource's name.
+
+  Previously `ResouceSelector` was a library and the resource selector type was a plain `bytes32`.
+  Now `ResourceId` is a user type, and the functionality is implemented in the `ResourceIdInstance` (for type) and `WorldResourceIdInstance` (for namespace and name) libraries.
+  We split the logic into two libraries, because `Store` now also uses `ResourceId` and needs to be aware of resource types, but not of namespaces/names.
+
+  ```diff
+  - import { ResourceSelector } from "@latticexyz/world/src/ResourceSelector.sol";
+  + import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+  + import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+  + import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+  - bytes32 systemId = ResourceSelector.from("namespace", "name");
+  + ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "namespace", "name");
+
+  - using ResourceSelector for bytes32;
+  + using WorldResourceIdInstance for ResourceId;
+  + using ResourceIdInstance for ResourceId;
+
+    systemId.getName();
+    systemId.getNamespace();
+  + systemId.getType();
+
+  ```
+
+  - All `Store` and `World` methods now use the `ResourceId` type for `tableId`, `systemId`, `moduleId` and `namespaceId`.
+    All mentions of `resourceSelector` were renamed to `resourceId` or the more specific type (e.g. `tableId`, `systemId`)
+
+    ```diff
+    import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+    IStore {
+      function setRecord(
+    -   bytes32 tableId,
+    +   ResourceId tableId,
+        bytes32[] calldata keyTuple,
+        bytes calldata staticData,
+        PackedCounter encodedLengths,
+        bytes calldata dynamicData,
+        FieldLayout fieldLayout
+      ) external;
+
+      // Same for all other methods
+    }
+    ```
+
+    ```diff
+    import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+    IBaseWorld {
+      function callFrom(
+        address delegator,
+    -   bytes32 resourceSelector,
+    +   ResourceId systemId,
+        bytes memory callData
+      ) external payable returns (bytes memory);
+
+      // Same for all other methods
+    }
+    ```
+
+- 252a1852: Migrated to new config format.
+
+### Minor Changes
+
+- 645736df: Added an `--rpcBatch` option to `mud deploy` command to batch RPC calls for rate limited RPCs.
+- bdb46fe3a: Deploys now validate contract size before deploying and warns when a contract is over or close to the size limit (24kb). This should help identify the most common cause of "evm revert" errors during system and module contract deploys.
+- aabd30767: Bumped Solidity version to 0.8.24.
+- 618dd0e89: `WorldFactory` now expects a user-provided `salt` when calling `deployWorld(...)` (instead of the previous globally incrementing counter). This enables deterministic world addresses across different chains.
+
+  When using `mud deploy`, you can provide a `bytes32` hex-encoded salt using the `--salt` option, otherwise it defaults to a random hex value.
+
+- ccc21e913: Added a `--alwaysRunPostDeploy` flag to deploys (`deploy`, `test`, `dev-contracts` commands) to always run `PostDeploy.s.sol` script after each deploy. By default, `PostDeploy.s.sol` is only run once after a new world is deployed.
+
+  This is helpful if you want to continue a deploy that may not have finished (due to an error or otherwise) or to run deploys with an idempotent `PostDeploy.s.sol` script.
+
+- 59d78c93b: Added a `mud build` command that generates table libraries, system interfaces, and typed ABIs.
+- 66cc35a8c: Create gas-report package, move gas-report cli command and GasReporter contract to it
+- 92de59982: Bump Solidity version to 0.8.21
+- 8025c3505: Added a new `@latticexyz/abi-ts` package to generate TS type declaration files (`.d.ts`) for each ABI JSON file.
+
+  This allows you to import your JSON ABI and use it directly with libraries like [viem](https://npmjs.com/package/viem) and [abitype](https://npmjs.com/package/abitype).
+
+  ```
+  pnpm add @latticexyz/abi-ts
+  pnpm abi-ts
+  ```
+
+  By default, `abi-ts` looks for files with the glob `**/*.abi.json`, but you can customize this glob with the `--input` argument, e.g.
+
+  ```console
+  pnpm abi-ts --input 'abi/IWorld.sol/IWorld.abi.json'
+  ```
+
+- e667ee808: CLI `deploy`, `test`, `dev-contracts` no longer run `forge clean` before each deploy. We previously cleaned to ensure no outdated artifacts were checked into git (ABIs, typechain types, etc.). Now that all artifacts are gitignored, we can let forge use its cache again.
+- 5554b197: `mud deploy` now supports public/linked libraries.
+
+  This helps with cases where system contracts would exceed the EVM bytecode size limit and logic would need to be split into many smaller systems.
+
+  Instead of the overhead and complexity of system-to-system calls, this logic can now be moved into public libraries that will be deployed alongside your systems and automatically `delegatecall`ed.
+
+- c36ffd13c: - update the `set-version` cli command to work with the new release process by adding two new options:
+
+  - `--tag`: install the latest version of the given tag. For snapshot releases tags correspond to the branch name, commits to `main` result in an automatic snapshot release, so `--tag main` is equivalent to what used to be `-v canary`
+  - `--commit`: install a version based on a given commit hash. Since commits from `main` result in an automatic snapshot release it works for all commits on main, and it works for manual snapshot releases from branches other than main
+  - `set-version` now updates all `package.json` nested below the current working directory (expect `node_modules`), so no need for running it each workspace of a monorepo separately.
+
+  Example:
+
+  ```bash
+  pnpm mud set-version --tag main && pnpm install
+  pnpm mud set-version --commit db19ea39 && pnpm install
+  ```
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+- e1dc88ebe: Transactions sent via deploy will now be retried a few times before giving up. This hopefully helps with large deploys on some chains.
+
+### Patch Changes
+
+- 168a4cb43: Add support for legacy transactions in deploy script by falling back to `gasPrice` if `lastBaseFeePerGas` is not available
+- 7ce82b6fc: Store config now defaults `storeArgument: false` for all tables. This means that table libraries, by default, will no longer include the extra functions with the `_store` argument. This default was changed to clear up the confusion around using table libraries in tests, `PostDeploy` scripts, etc.
+
+  If you are sure you need to manually specify a store when interacting with tables, you can still manually toggle it back on with `storeArgument: true` in the table settings of your MUD config.
+
+  If you want to use table libraries in `PostDeploy.s.sol`, you can add the following lines:
+
+  ```diff
+    import { Script } from "forge-std/Script.sol";
+    import { console } from "forge-std/console.sol";
+    import { IWorld } from "../src/codegen/world/IWorld.sol";
+  + import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+    contract PostDeploy is Script {
+      function run(address worldAddress) external {
+  +     StoreSwitch.setStoreAddress(worldAddress);
+  +
+  +     SomeTable.get(someKey);
+  ```
+
+- a35c05ea9: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+- 3bfee32cf: `dev-contracts` will no longer bail when there was an issue with deploying (e.g. typo in contracts) and instead wait for file changes before retrying.
+- c32c8e8f2: Removes `std-contracts` package. These were v1 contracts, now entirely replaced by our v2 tooling. See the [MUD docs](https://mud.dev/) for building with v2 or create a new project from our v2 templates with `pnpm create mud@next your-app-name`.
+- 8f49c277d: Attempting to deploy multiple systems where there are overlapping system IDs now throws an error.
+- ce7125a1b: Removes `solecs` package. These were v1 contracts, now entirely replaced by our v2 tooling. See the [MUD docs](https://mud.dev/) for building with v2 or create a new project from our v2 templates with `pnpm create mud@next your-app-name`.
+- 854de0761: Using `mud set-version --link` will no longer attempt to fetch the latest version from npm.
+- aea67c580: Include bytecode for `World` and `Store` in npm packages.
+- c07fa0215: Tables and interfaces in the `world` package are now generated to the `codegen` folder.
+  This is only a breaking change if you imported tables or codegenerated interfaces from `@latticexyz/world` directly.
+  If you're using the MUD CLI, the changed import paths are already integrated and no further changes are necessary.
+
+  ```diff
+  - import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
+  + import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
+
+  ```
+
+- 87235a21b: Fix table IDs for module install step of deploy
+- d5c0682fb: Updated all human-readable resource IDs to use `{namespace}__{name}` for consistency with world function signatures.
+- 257a0afc: Bumped `typescript` to `5.4.2`, `eslint` to `8.57.0`, and both `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` to `7.1.1`.
+- 4e2a170f9: Deploys now continue if they detect a `Module_AlreadyInstalled` revert error.
+- 211be2a1e: The `FieldLayout` in table libraries is now generated at compile time instead of dynamically in a table library function.
+  This significantly reduces gas cost in all table library functions.
+- f99e88987: Bump viem to 1.14.0 and abitype to 0.9.8
+- 1feecf495: Added `--worldAddress` argument to `dev-contracts` CLI command so that you can develop against an existing world.
+- 433078c54: Reverse PackedCounter encoding, to optimize gas for bitshifts.
+  Ints are right-aligned, shifting using an index is straightforward if they are indexed right-to-left.
+
+  - Previous encoding: (7 bytes | accumulator),(5 bytes | counter 1),...,(5 bytes | counter 5)
+  - New encoding: (5 bytes | counter 5),...,(5 bytes | counter 1),(7 bytes | accumulator)
+
+- 61c6ab705: Changed deploy order so that system/module contracts are fully deployed before registering/installing them on the world.
+- e259ef79f: Generated `contractComponents` now properly import `World` as type
+- 78a837167: Fixed registration of world signatures/selectors for namespaced systems. We changed these signatures in [#2160](https://github.com/latticexyz/mud/pull/2160), but missed updating part of the deploy step.
+- 063daf80e: Previously `registerSystem` and `registerTable` had a side effect of registering namespaces if the system or table's namespace didn't exist yet.
+  This caused a possible frontrunning issue, where an attacker could detect a `registerSystem`/`registerTable` transaction in the mempool,
+  insert a `registerNamespace` transaction before it, grant themselves access to the namespace, transfer ownership of the namespace to the victim,
+  so that the `registerSystem`/`registerTable` transactions still went through successfully.
+  To mitigate this issue, the side effect of registering a namespace in `registerSystem` and `registerTable` has been removed.
+  Calls to these functions now expect the respective namespace to exist and the caller to own the namespace, otherwise they revert.
+
+  Changes in consuming projects are only necessary if tables or systems are registered manually.
+  If only the MUD deployer is used to register tables and systems, no changes are necessary, as the MUD deployer has been updated accordingly.
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     world.registerSystem(systemId, system, true);
+  ```
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     MyTable.register();
+  ```
+
+- 69d55ce32: Deploy commands (`deploy`, `dev-contracts`, `test`) now correctly run `worldgen` to generate system interfaces before deploying.
+- bd9cc8ec2: Refactor `deploy` command to break up logic into modules
+- 8d51a0348: Clean up Memory.sol, make mcopy pure
+- 2699630c0: Deploys will now always rebuild `IWorld.sol` interface (a workaround for https://github.com/foundry-rs/foundry/issues/6241)
+- 48909d151: bump forge-std and ds-test dependencies
+- 1d4039622: We fixed a bug in the deploy script that would cause the deployment to fail if a non-root namespace was used in the config.
+- 4fe079309: Fixed a few issues with deploys:
+
+  - properly handle enums in MUD config
+  - only deploy each unique module/system once
+  - waits for transactions serially instead of in parallel, to avoid RPC errors
+
+- 21a626ae9: Changed `mud` CLI import order so that environment variables from the `.env` file are loaded before other imports.
+- 5d737cf2e: Updated the `debug` util to pipe to `stdout` and added an additional util to explicitly pipe to `stderr` when needed.
+- db7798be2: Updated deployer with world's new `InitModule` naming.
+- d844cd441: Sped up builds by using more of forge's cache.
+
+  Previously we'd build only what we needed because we would check in ABIs and other build artifacts into git, but that meant that we'd get a lot of forge cache misses. Now that we no longer need these files visible, we can take advantage of forge's caching and greatly speed up builds, especially incremental ones.
+
+- bfcb293d1: What used to be known as `ephemeral` table is now called `offchain` table.
+  The previous `ephemeral` tables only supported an `emitEphemeral` method, which emitted a `StoreSetEphemeralRecord` event.
+
+  Now `offchain` tables support all regular table methods, except partial operations on dynamic fields (`push`, `pop`, `update`).
+  Unlike regular tables they don't store data on-chain but emit the same events as regular tables (`StoreSetRecord`, `StoreSpliceStaticData`, `StoreDeleteRecord`), so their data can be indexed by offchain indexers/clients.
+
+  ```diff
+  - EphemeralTable.emitEphemeral(value);
+  + OffchainTable.set(value);
+  ```
+
+- 55ab88a60: `StoreCore` and `IStore` now expose specific functions for `getStaticField` and `getDynamicField` in addition to the general `getField`.
+  Using the specific functions reduces gas overhead because more optimized logic can be executed.
+
+  ```solidity
+  interface IStore {
+    /**
+     * Get a single static field from the given tableId and key tuple, with the given value field layout.
+     * Note: the field value is left-aligned in the returned bytes32, the rest of the word is not zeroed out.
+     * Consumers are expected to truncate the returned value as needed.
+     */
+    function getStaticField(
+      bytes32 tableId,
+      bytes32[] calldata keyTuple,
+      uint8 fieldIndex,
+      FieldLayout fieldLayout
+    ) external view returns (bytes32);
+
+    /**
+     * Get a single dynamic field from the given tableId and key tuple at the given dynamic field index.
+     * (Dynamic field index = field index - number of static fields)
+     */
+    function getDynamicField(
+      bytes32 tableId,
+      bytes32[] memory keyTuple,
+      uint8 dynamicFieldIndex
+    ) external view returns (bytes memory);
+  }
+  ```
+
+- 4e4a34150: bump to latest TS version (5.1.6)
+- 535229984: - bump to viem 1.3.0 and abitype 0.9.3
+  - move `@wagmi/chains` imports to `viem/chains`
+  - refine a few types
+- 83583a505: `deploy` and `dev-contracts` CLI commands now use `forge build --skip test script` before deploying and run `mud abi-ts` to generate strong types for ABIs.
+- 60cfd089f: Templates and examples now use MUD's new sync packages, all built on top of [viem](https://viem.sh/). This greatly speeds up and stabilizes our networking code and improves types throughout.
+
+  These new sync packages come with support for our `recs` package, including `encodeEntity` and `decodeEntity` utilities for composite keys.
+
+  If you're using `store-cache` and `useRow`/`useRows`, you should wait to upgrade until we have a suitable replacement for those libraries. We're working on a [sql.js](https://github.com/sql-js/sql.js/)-powered sync module that will replace `store-cache`.
+
+  **Migrate existing RECS apps to new sync packages**
+
+  As you migrate, you may find some features replaced, removed, or not included by default. Please [open an issue](https://github.com/latticexyz/mud/issues/new) and let us know if we missed anything.
+
+  1. Add `@latticexyz/store-sync` package to your app's `client` package and make sure `viem` is pinned to version `1.3.1` (otherwise you may get type errors)
+  2. In your `supportedChains.ts`, replace `foundry` chain with our new `mudFoundry` chain.
+
+     ```diff
+     - import { foundry } from "viem/chains";
+     - import { MUDChain, latticeTestnet } from "@latticexyz/common/chains";
+     + import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains";
+
+     - export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
+     + export const supportedChains: MUDChain[] = [mudFoundry, latticeTestnet];
+     ```
+
+  3. In `getNetworkConfig.ts`, remove the return type (to let TS infer it for now), remove now-unused config values, and add the viem `chain` object.
+
+     ```diff
+     - export async function getNetworkConfig(): Promise<NetworkConfig> {
+     + export async function getNetworkConfig() {
+     ```
+
+     ```diff
+       const initialBlockNumber = params.has("initialBlockNumber")
+         ? Number(params.get("initialBlockNumber"))
+     -   : world?.blockNumber ?? -1; // -1 will attempt to find the block number from RPC
+     +   : world?.blockNumber ?? 0n;
+     ```
+
+     ```diff
+     + return {
+     +   privateKey: getBurnerWallet().value,
+     +   chain,
+     +   worldAddress,
+     +   initialBlockNumber,
+     +   faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
+     + };
+     ```
+
+  4. In `setupNetwork.ts`, replace `setupMUDV2Network` with `syncToRecs`.
+
+     ```diff
+     - import { setupMUDV2Network } from "@latticexyz/std-client";
+     - import { createFastTxExecutor, createFaucetService, getSnapSyncRecords } from "@latticexyz/network";
+     + import { createFaucetService } from "@latticexyz/network";
+     + import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther, ClientConfig } from "viem";
+     + import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
+     + import { createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
+     ```
+
+     ```diff
+     - const result = await setupMUDV2Network({
+     -   ...
+     - });
+
+     + const clientOptions = {
+     +   chain: networkConfig.chain,
+     +   transport: transportObserver(fallback([webSocket(), http()])),
+     +   pollingInterval: 1000,
+     + } as const satisfies ClientConfig;
+
+     + const publicClient = createPublicClient(clientOptions);
+
+     + const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+     + const burnerWalletClient = createWalletClient({
+     +   ...clientOptions,
+     +   account: burnerAccount,
+     + });
+
+     + const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
+     +   world,
+     +   config: storeConfig,
+     +   address: networkConfig.worldAddress as Hex,
+     +   publicClient,
+     +   components: contractComponents,
+     +   startBlock: BigInt(networkConfig.initialBlockNumber),
+     +   indexerUrl: networkConfig.indexerUrl ?? undefined,
+     + });
+
+     + const worldContract = createContract({
+     +   address: networkConfig.worldAddress as Hex,
+     +   abi: IWorld__factory.abi,
+     +   publicClient,
+     +   walletClient: burnerWalletClient,
+     + });
+     ```
+
+     ```diff
+       // Request drip from faucet
+     - const signer = result.network.signer.get();
+     - if (networkConfig.faucetServiceUrl && signer) {
+     -   const address = await signer.getAddress();
+     + if (networkConfig.faucetServiceUrl) {
+     +   const address = burnerAccount.address;
+     ```
+
+     ```diff
+       const requestDrip = async () => {
+     -   const balance = await signer.getBalance();
+     +   const balance = await publicClient.getBalance({ address });
+         console.info(`[Dev Faucet]: Player balance -> ${balance}`);
+     -   const lowBalance = balance?.lte(utils.parseEther("1"));
+     +   const lowBalance = balance < parseEther("1");
+     ```
+
+     You can remove the previous ethers `worldContract`, snap sync code, and fast transaction executor.
+
+     The return of `setupNetwork` is a bit different than before, so you may have to do corresponding app changes.
+
+     ```diff
+     + return {
+     +   world,
+     +   components,
+     +   playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
+     +   publicClient,
+     +   walletClient: burnerWalletClient,
+     +   latestBlock$,
+     +   blockStorageOperations$,
+     +   waitForTransaction,
+     +   worldContract,
+     + };
+     ```
+
+  5. Update `createSystemCalls` with the new return type of `setupNetwork`.
+
+     ```diff
+       export function createSystemCalls(
+     -   { worldSend, txReduced$, singletonEntity }: SetupNetworkResult,
+     +   { worldContract, waitForTransaction }: SetupNetworkResult,
+         { Counter }: ClientComponents
+       ) {
+          const increment = async () => {
+     -      const tx = await worldSend("increment", []);
+     -      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+     +      const tx = await worldContract.write.increment();
+     +      await waitForTransaction(tx);
+            return getComponentValue(Counter, singletonEntity);
+          };
+     ```
+
+  6. (optional) If you still need a clock, you can create it with:
+
+     ```ts
+     import { map, filter } from "rxjs";
+     import { createClock } from "@latticexyz/network";
+
+     const clock = createClock({
+       period: 1000,
+       initialTime: 0,
+       syncInterval: 5000,
+     });
+
+     world.registerDisposer(() => clock.dispose());
+
+     latestBlock$
+       .pipe(
+         map((block) => Number(block.timestamp) * 1000), // Map to timestamp in ms
+         filter((blockTimestamp) => blockTimestamp !== clock.lastUpdateTime), // Ignore if the clock was already refreshed with this block
+         filter((blockTimestamp) => blockTimestamp !== clock.currentTime), // Ignore if the current local timestamp is correct
+       )
+       .subscribe(clock.update); // Update the local clock
+     ```
+
+  If you're using the previous `LoadingState` component, you'll want to migrate to the new `SyncProgress`:
+
+  ```ts
+  import { SyncStep, singletonEntity } from "@latticexyz/store-sync/recs";
+
+  const syncProgress = useComponentValue(SyncProgress, singletonEntity, {
+    message: "Connecting",
+    percentage: 0,
+    step: SyncStep.INITIALIZE,
+  });
+
+  if (syncProgress.step === SyncStep.LIVE) {
+    // we're live!
+  }
+  ```
+
+- 24a6cd536: Changed the `userTypes` property to accept `{ filePath: string, internalType: SchemaAbiType }` to enable strong type inference from the config.
+- 708b49c50: Generated table libraries now have a set of functions prefixed with `_` that always use their own storage for read/write.
+  This saves gas for use cases where the functionality to dynamically determine which `Store` to use for read/write is not needed, e.g. root systems in a `World`, or when using `Store` without `World`.
+
+  We decided to continue to always generate a set of functions that dynamically decide which `Store` to use, so that the generated table libraries can still be imported by non-root systems.
+
+  ```solidity
+  library Counter {
+    // Dynamically determine which store to write to based on the context
+    function set(uint32 value) internal;
+
+    // Always write to own storage
+    function _set(uint32 value) internal;
+
+    // ... equivalent functions for all other Store methods
+  }
+  ```
+
+- 25086be5f: Replaced temporary `.mudtest` file in favor of `WORLD_ADDRESS` environment variable when running tests with `MudTest` contract
+- 9c83adc01: Added a non-deterministic fallback for deploying to chains that have replay protection on and do not support pre-EIP-155 transactions (no chain ID).
+
+  If you're using `mud deploy` and there's already a [deterministic deployer](https://github.com/Arachnid/deterministic-deployment-proxy) on your target chain, you can provide the address with `--deployerAddress 0x...` to still get some determinism.
+
+- c049c23f4: - The `World` contract now has an `initialize` function, which can be called once by the creator of the World to install the core module.
+  This change allows the registration of all core tables to happen in the `CoreModule`, so no table metadata has to be included in the `World`'s bytecode.
+
+  ```solidity
+  interface IBaseWorld {
+    function initialize(IModule coreModule) public;
+  }
+  ```
+
+  - The `World` contract now stores the original creator of the `World` in an immutable state variable.
+    It is used internally to only allow the original creator to initialize the `World` in a separate transaction.
+
+    ```solidity
+    interface IBaseWorld {
+      function creator() external view returns (address);
+    }
+    ```
+
+  - The deploy script is updated to use the `World`'s `initialize` function to install the `CoreModule` instead of `registerRootModule` as before.
+
+- 6c6733256: Add `tableIdToHex` and `hexToTableId` pure functions and move/deprecate `TableId`.
+- 251170e1e: All optional modules have been moved from `@latticexyz/world` to `@latticexyz/world-modules`.
+  If you're using the MUD CLI, the import is already updated and no changes are necessary.
+- c4f49240d: Table libraries now correctly handle uninitialized fixed length arrays.
+- afdba793f: Update RECS components with v2 key/value schemas. This helps with encoding/decoding composite keys and strong types for keys/values.
+
+  This may break if you were previously dependent on `component.id`, `component.metadata.componentId`, or `component.metadata.tableId`:
+
+  - `component.id` is now the on-chain `bytes32` hex representation of the table ID
+  - `component.metadata.componentName` is the table name (e.g. `Position`)
+  - `component.metadata.tableName` is the namespaced table name (e.g. `myworld:Position`)
+  - `component.metadata.keySchema` is an object with key names and their corresponding ABI types
+  - `component.metadata.valueSchema` is an object with field names and their corresponding ABI types
+
+- 3e7d83d0: Renamed `PackedCounter` to `EncodedLengths` for consistency.
+- cea754dde: - The external `setRecord` and `deleteRecord` methods of `IStore` no longer accept a `FieldLayout` as input, but load it from storage instead.
+  This is to prevent invalid `FieldLayout` values being passed, which could cause the onchain state to diverge from the indexer state.
+  However, the internal `StoreCore` library still exposes a `setRecord` and `deleteRecord` method that allows a `FieldLayout` to be passed.
+  This is because `StoreCore` can only be used internally, so the `FieldLayout` value can be trusted and we can save the gas for accessing storage.
+
+  ```diff
+  interface IStore {
+    function setRecord(
+      ResourceId tableId,
+      bytes32[] calldata keyTuple,
+      bytes calldata staticData,
+      PackedCounter encodedLengths,
+      bytes calldata dynamicData,
+  -   FieldLayout fieldLayout
+    ) external;
+
+    function deleteRecord(
+      ResourceId tableId,
+      bytes32[] memory keyTuple,
+  -   FieldLayout fieldLayout
+    ) external;
+  }
+  ```
+
+  - The `spliceStaticData` method and `Store_SpliceStaticData` event of `IStore` and `StoreCore` no longer include `deleteCount` in their signature.
+    This is because when splicing static data, the data after `start` is always overwritten with `data` instead of being shifted, so `deleteCount` is always the length of the data to be written.
+
+    ```diff
+
+    event Store_SpliceStaticData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+    - uint40 deleteCount,
+      bytes data
+    );
+
+    interface IStore {
+      function spliceStaticData(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+        uint48 start,
+    -   uint40 deleteCount,
+        bytes calldata data
+      ) external;
+    }
+    ```
+
+  - The `updateInField` method has been removed from `IStore`, as it's almost identical to the more general `spliceDynamicData`.
+    If you're manually calling `updateInField`, here is how to upgrade to `spliceDynamicData`:
+
+    ```diff
+    - store.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+    + uint8 dynamicFieldIndex = fieldIndex - fieldLayout.numStaticFields();
+    + store.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, uint40(startByteIndex), uint40(dataToSet.length), dataToSet);
+    ```
+
+  - All other methods that are only valid for dynamic fields (`pushToField`, `popFromField`, `getFieldSlice`)
+    have been renamed to make this more explicit (`pushToDynamicField`, `popFromDynamicField`, `getDynamicFieldSlice`).
+
+    Their `fieldIndex` parameter has been replaced by a `dynamicFieldIndex` parameter, which is the index relative to the first dynamic field (i.e. `dynamicFieldIndex` = `fieldIndex` - `numStaticFields`).
+    The `FieldLayout` parameter has been removed, as it was only used to calculate the `dynamicFieldIndex` in the method.
+
+    ```diff
+    interface IStore {
+    - function pushToField(
+    + function pushToDynamicField(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+        bytes calldata dataToPush,
+    -   FieldLayout fieldLayout
+      ) external;
+
+    - function popFromField(
+    + function popFromDynamicField(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+        uint256 byteLengthToPop,
+    -   FieldLayout fieldLayout
+      ) external;
+
+    - function getFieldSlice(
+    + function getDynamicFieldSlice(
+        ResourceId tableId,
+        bytes32[] memory keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+    -   FieldLayout fieldLayout,
+        uint256 start,
+        uint256 end
+      ) external view returns (bytes memory data);
+    }
+    ```
+
+  - `IStore` has a new `getDynamicFieldLength` length method, which returns the byte length of the given dynamic field and doesn't require the `FieldLayout`.
+
+    ```diff
+    IStore {
+    + function getDynamicFieldLength(
+    +   ResourceId tableId,
+    +   bytes32[] memory keyTuple,
+    +   uint8 dynamicFieldIndex
+    + ) external view returns (uint256);
+    }
+
+    ```
+
+  - `IStore` now has additional overloads for `getRecord`, `getField`, `getFieldLength` and `setField` that don't require a `FieldLength` to be passed, but instead load it from storage.
+  - `IStore` now exposes `setStaticField` and `setDynamicField` to save gas by avoiding the dynamic inference of whether the field is static or dynamic.
+  - The `getDynamicFieldSlice` method no longer accepts reading outside the bounds of the dynamic field.
+    This is to avoid returning invalid data, as the data of a dynamic field is not deleted when the record is deleted, but only its length is set to zero.
+
+- d2f8e9400: Moved to new resource ID utils.
+- dc258e686: The `mud test` cli now exits with code 1 on test failure. It used to exit with code 0, which meant that CIs didn't notice test failures.
+- Updated dependencies [7ce82b6fc]
+- Updated dependencies [d8c8f66bf]
+- Updated dependencies [c6c13f2ea]
+- Updated dependencies [77dce993a]
+- Updated dependencies [ce97426c0]
+- Updated dependencies [3236f799e]
+- Updated dependencies [1b86eac05]
+- Updated dependencies [a35c05ea9]
+- Updated dependencies [c9ee5e4a]
+- Updated dependencies [c963b46c7]
+- Updated dependencies [05b3e8882]
+- Updated dependencies [eaa766ef7]
+- Updated dependencies [52182f70d]
+- Updated dependencies [0f27afddb]
+- Updated dependencies [748f4588a]
+- Updated dependencies [865253dba]
+- Updated dependencies [8f49c277d]
+- Updated dependencies [7fa2ca183]
+- Updated dependencies [745485cda]
+- Updated dependencies [16b13ea8f]
+- Updated dependencies [aea67c580]
+- Updated dependencies [33f50f8a4]
+- Updated dependencies [82693072]
+- Updated dependencies [07dd6f32c]
+- Updated dependencies [c07fa0215]
+- Updated dependencies [90e4161bb]
+- Updated dependencies [aabd30767]
+- Updated dependencies [65c9546c4]
+- Updated dependencies [6ca1874e0]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [1d60930d6]
+- Updated dependencies [01e46d99]
+- Updated dependencies [4be22ba4]
+- Updated dependencies [430e6b29a]
+- Updated dependencies [f9f9609ef]
+- Updated dependencies [904fd7d4e]
+- Updated dependencies [e6c03a87a]
+- Updated dependencies [1077c7f53]
+- Updated dependencies [2c920de7]
+- Updated dependencies [b98e51808]
+- Updated dependencies [b9e562d8f]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [44236041f]
+- Updated dependencies [066056154]
+- Updated dependencies [759514d8b]
+- Updated dependencies [952cd5344]
+- Updated dependencies [d5094a242]
+- Updated dependencies [3fb9ce283]
+- Updated dependencies [c207d35e8]
+- Updated dependencies [db7798be2]
+- Updated dependencies [bb6ada740]
+- Updated dependencies [35c9f33df]
+- Updated dependencies [3be4deecf]
+- Updated dependencies [a25881160]
+- Updated dependencies [0b8ce3f2c]
+- Updated dependencies [933b54b5f]
+- Updated dependencies [5debcca8]
+- Updated dependencies [80a26419f]
+- Updated dependencies [c4d5eb4e4]
+- Updated dependencies [f8dab7334]
+- Updated dependencies [1a0fa7974]
+- Updated dependencies [f62c767e7]
+- Updated dependencies [d00c4a9af]
+- Updated dependencies [d7325e517]
+- Updated dependencies [9aa5e786]
+- Updated dependencies [307abab3]
+- Updated dependencies [de151fec0]
+- Updated dependencies [c32a9269a]
+- Updated dependencies [eb384bb0e]
+- Updated dependencies [37c228c63]
+- Updated dependencies [35348f831]
+- Updated dependencies [618dd0e89]
+- Updated dependencies [aacffcb59]
+- Updated dependencies [c991c71a]
+- Updated dependencies [ae340b2bf]
+- Updated dependencies [1bf2e9087]
+- Updated dependencies [e5d208e40]
+- Updated dependencies [b38c096d]
+- Updated dependencies [211be2a1e]
+- Updated dependencies [0f3e2e02b]
+- Updated dependencies [4bb7e8cbf]
+- Updated dependencies [1f80a0b52]
+- Updated dependencies [d08789282]
+- Updated dependencies [5c965a919]
+- Updated dependencies [f99e88987]
+- Updated dependencies [939916bcd]
+- Updated dependencies [e5a962bc3]
+- Updated dependencies [331f0d636]
+- Updated dependencies [f6f402896]
+- Updated dependencies [d5b73b126]
+- Updated dependencies [e34d1170]
+- Updated dependencies [08b422171]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [190fdd11]
+- Updated dependencies [c4fc85041]
+- Updated dependencies [37c228c63]
+- Updated dependencies [37c228c63]
+- Updated dependencies [433078c54]
+- Updated dependencies [2459e15fc]
+- Updated dependencies [db314a74]
+- Updated dependencies [b2d2aa715]
+- Updated dependencies [4c7fd3eb2]
+- Updated dependencies [a0341daf9]
+- Updated dependencies [ca50fef81]
+- Updated dependencies [83583a505]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [6573e38e9]
+- Updated dependencies [51914d656]
+- Updated dependencies [063daf80e]
+- Updated dependencies [afaf2f5ff]
+- Updated dependencies [37c228c63]
+- Updated dependencies [9352648b1]
+- Updated dependencies [59267655]
+- Updated dependencies [37c228c63]
+- Updated dependencies [2bfee9217]
+- Updated dependencies [1ca35e9a1]
+- Updated dependencies [ca3291751]
+- Updated dependencies [ba17bdab5]
+- Updated dependencies [44a5432ac]
+- Updated dependencies [6e66c5b74]
+- Updated dependencies [8d51a0348]
+- Updated dependencies [c162ad5a5]
+- Updated dependencies [88b1a5a19]
+- Updated dependencies [65c9546c4]
+- Updated dependencies [48909d151]
+- Updated dependencies [7b28d32e5]
+- Updated dependencies [f8a01a047]
+- Updated dependencies [b02f9d0e4]
+- Updated dependencies [2ca75f9b9]
+- Updated dependencies [f62c767e7]
+- Updated dependencies [bb91edaa0]
+- Updated dependencies [590542030]
+- Updated dependencies [1a82c278]
+- Updated dependencies [1b5eb0d07]
+- Updated dependencies [44a5432ac]
+- Updated dependencies [48c51b52a]
+- Updated dependencies [9f8b84e73]
+- Updated dependencies [a02da555b]
+- Updated dependencies [66cc35a8c]
+- Updated dependencies [672d05ca1]
+- Updated dependencies [f1cd43bf9]
+- Updated dependencies [9d0f492a9]
+- Updated dependencies [55a05fd7a]
+- Updated dependencies [f03531d97]
+- Updated dependencies [c583f3cd0]
+- Updated dependencies [31ffc9d5d]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [63831a264]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [6db95ce15]
+- Updated dependencies [8193136a9]
+- Updated dependencies [5d737cf2e]
+- Updated dependencies [d075f82f3]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [6ca1874e0]
+- Updated dependencies [a7b30c79b]
+- Updated dependencies [6470fe1fd]
+- Updated dependencies [86766ce1]
+- Updated dependencies [92de59982]
+- Updated dependencies [5741d53d0]
+- Updated dependencies [aee8020a6]
+- Updated dependencies [331f0d636]
+- Updated dependencies [22ee44700]
+- Updated dependencies [e2d089c6d]
+- Updated dependencies [ad4ac4459]
+- Updated dependencies [8025c3505]
+- Updated dependencies [be313068b]
+- Updated dependencies [ac508bf18]
+- Updated dependencies [836383734]
+- Updated dependencies [9ff4dd955]
+- Updated dependencies [93390d89]
+- Updated dependencies [4385c5a4c]
+- Updated dependencies [57d8965df]
+- Updated dependencies [18d3aea55]
+- Updated dependencies [7987c94d6]
+- Updated dependencies [bb91edaa0]
+- Updated dependencies [144c0d8d]
+- Updated dependencies [5ac4c97f4]
+- Updated dependencies [bfcb293d1]
+- Updated dependencies [3e057061d]
+- Updated dependencies [1890f1a06]
+- Updated dependencies [90d0d79c]
+- Updated dependencies [e48171741]
+- Updated dependencies [e4a6189df]
+- Updated dependencies [9b43029c3]
+- Updated dependencies [37c228c63]
+- Updated dependencies [55ab88a60]
+- Updated dependencies [c58da9ad]
+- Updated dependencies [37c228c63]
+- Updated dependencies [747d8d1b8]
+- Updated dependencies [4e4a34150]
+- Updated dependencies [535229984]
+- Updated dependencies [af639a264]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [99ab9cd6f]
+- Updated dependencies [086be4ef4]
+- Updated dependencies [be18b75b]
+- Updated dependencies [0c4f9fea9]
+- Updated dependencies [0d12db8c2]
+- Updated dependencies [c049c23f4]
+- Updated dependencies [80dd6992e]
+- Updated dependencies [60cfd089f]
+- Updated dependencies [24a6cd536]
+- Updated dependencies [37c228c63]
+- Updated dependencies [708b49c50]
+- Updated dependencies [d2f8e9400]
+- Updated dependencies [17f987209]
+- Updated dependencies [25086be5f]
+- Updated dependencies [37c228c63]
+- Updated dependencies [b1d41727d]
+- Updated dependencies [3ac68ade6]
+- Updated dependencies [c642ff3a0]
+- Updated dependencies [22ba7b675]
+- Updated dependencies [4c1dcd81e]
+- Updated dependencies [3042f86e]
+- Updated dependencies [c049c23f4]
+- Updated dependencies [9af542d3e]
+- Updated dependencies [5e71e1cb5]
+- Updated dependencies [6071163f7]
+- Updated dependencies [6c6733256]
+- Updated dependencies [cd5abcc3b]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [5c52bee09]
+- Updated dependencies [fdbba6d88]
+- Updated dependencies [251170e1e]
+- Updated dependencies [8025c3505]
+- Updated dependencies [c4f49240d]
+- Updated dependencies [745485cda]
+- Updated dependencies [95f64c85]
+- Updated dependencies [37c228c63]
+- Updated dependencies [3e7d83d0]
+- Updated dependencies [5df1f31bc]
+- Updated dependencies [a2f41ade9]
+- Updated dependencies [29c3f5087]
+- Updated dependencies [cea754dde]
+- Updated dependencies [5e71e1cb5]
+- Updated dependencies [331f0d636]
+- Updated dependencies [95c59b203]
+- Updated dependencies [cc2c8da00]
+- Updated dependencies [252a1852]
+- Updated dependencies [103f635eb]
+  - @latticexyz/store@2.0.0
+  - @latticexyz/world-modules@2.0.0
+  - @latticexyz/world@2.0.0
+  - @latticexyz/services@2.0.0
+  - @latticexyz/common@2.0.0
+  - @latticexyz/utils@2.0.0
+  - @latticexyz/protocol-parser@2.0.0
+  - @latticexyz/schema-type@2.0.0
+  - @latticexyz/gas-report@2.0.0
+  - @latticexyz/abi-ts@2.0.0
+  - @latticexyz/config@2.0.0
+
+## 2.0.0-next.18
+
+### Major Changes
+
+- 44236041: Moved table ID and field layout constants in code-generated table libraries from the file level into the library, for clearer access and cleaner imports.
+
+  ```diff
+  -import { SomeTable, SomeTableTableId } from "./codegen/tables/SomeTable.sol";
+  +import { SomeTable } from "./codegen/tables/SomeTable.sol";
+
+  -console.log(SomeTableTableId);
+  +console.log(SomeTable._tableId);
+
+  -console.log(SomeTable.getFieldLayout());
+  +console.log(SomeTable._fieldLayout);
+  ```
+
+- 252a1852: Migrated to new config format.
+
+### Minor Changes
+
+- 645736df: Added an `--rpcBatch` option to `mud deploy` command to batch RPC calls for rate limited RPCs.
+- 5554b197: `mud deploy` now supports public/linked libraries.
+
+  This helps with cases where system contracts would exceed the EVM bytecode size limit and logic would need to be split into many smaller systems.
+
+  Instead of the overhead and complexity of system-to-system calls, this logic can now be moved into public libraries that will be deployed alongside your systems and automatically `delegatecall`ed.
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- 8f49c277d: Attempting to deploy multiple systems where there are overlapping system IDs now throws an error.
+- d5c0682fb: Updated all human-readable resource IDs to use `{namespace}__{name}` for consistency with world function signatures.
+- 257a0afc: Bumped `typescript` to `5.4.2`, `eslint` to `8.57.0`, and both `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` to `7.1.1`.
+- 9c83adc01: Added a non-deterministic fallback for deploying to chains that have replay protection on and do not support pre-EIP-155 transactions (no chain ID).
+
+  If you're using `mud deploy` and there's already a [deterministic deployer](https://github.com/Arachnid/deterministic-deployment-proxy) on your target chain, you can provide the address with `--deployerAddress 0x...` to still get some determinism.
+
+- 3e7d83d0: Renamed `PackedCounter` to `EncodedLengths` for consistency.
+- Updated dependencies [c9ee5e4a]
+- Updated dependencies [8f49c277d]
+- Updated dependencies [82693072]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [4be22ba4]
+- Updated dependencies [2c920de7]
+- Updated dependencies [44236041]
+- Updated dependencies [3be4deecf]
+- Updated dependencies [5debcca8]
+- Updated dependencies [9aa5e786]
+- Updated dependencies [307abab3]
+- Updated dependencies [c991c71a]
+- Updated dependencies [b38c096d]
+- Updated dependencies [e34d1170]
+- Updated dependencies [190fdd11]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [1a82c278]
+- Updated dependencies [a02da555b]
+- Updated dependencies [8193136a9]
+- Updated dependencies [86766ce1]
+- Updated dependencies [93390d89]
+- Updated dependencies [144c0d8d]
+- Updated dependencies [90d0d79c]
+- Updated dependencies [c58da9ad]
+- Updated dependencies [be18b75b]
+- Updated dependencies [3042f86e]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [95f64c85]
+- Updated dependencies [3e7d83d0]
+- Updated dependencies [252a1852]
+  - @latticexyz/store@2.0.0-next.18
+  - @latticexyz/world@2.0.0-next.18
+  - @latticexyz/common@2.0.0-next.18
+  - @latticexyz/world-modules@2.0.0-next.18
+  - @latticexyz/protocol-parser@2.0.0-next.18
+  - @latticexyz/schema-type@2.0.0-next.18
+  - @latticexyz/gas-report@2.0.0-next.18
+  - @latticexyz/config@2.0.0-next.18
+  - @latticexyz/abi-ts@2.0.0-next.18
+  - @latticexyz/services@2.0.0-next.18
+  - @latticexyz/utils@2.0.0-next.18
+
+## 2.0.0-next.17
+
+### Minor Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+- 618dd0e8: `WorldFactory` now expects a user-provided `salt` when calling `deployWorld(...)` (instead of the previous globally incrementing counter). This enables deterministic world addresses across different chains.
+
+  When using `mud deploy`, you can provide a `bytes32` hex-encoded salt using the `--salt` option, otherwise it defaults to a random hex value.
+
+### Patch Changes
+
+- a35c05ea: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+- 78a83716: Fixed registration of world signatures/selectors for namespaced systems. We changed these signatures in [#2160](https://github.com/latticexyz/mud/pull/2160), but missed updating part of the deploy step.
+- db7798be: Updated deployer with world's new `InitModule` naming.
+- Updated dependencies [a35c05ea]
+- Updated dependencies [05b3e888]
+- Updated dependencies [745485cd]
+- Updated dependencies [aabd3076]
+- Updated dependencies [db7798be]
+- Updated dependencies [618dd0e8]
+- Updated dependencies [c4fc8504]
+- Updated dependencies [c162ad5a]
+- Updated dependencies [55a05fd7]
+- Updated dependencies [6470fe1f]
+- Updated dependencies [e2d089c6]
+- Updated dependencies [17f98720]
+- Updated dependencies [5c52bee0]
+- Updated dependencies [745485cd]
+  - @latticexyz/common@2.0.0-next.17
+  - @latticexyz/store@2.0.0-next.17
+  - @latticexyz/world-modules@2.0.0-next.17
+  - @latticexyz/world@2.0.0-next.17
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/gas-report@2.0.0-next.17
+  - @latticexyz/config@2.0.0-next.17
+  - @latticexyz/protocol-parser@2.0.0-next.17
+  - @latticexyz/abi-ts@2.0.0-next.17
+  - @latticexyz/services@2.0.0-next.17
+  - @latticexyz/utils@2.0.0-next.17
+
+## 2.0.0-next.16
+
+### Major Changes
+
+- 57d8965d: Separated core systems deployment from `CoreModule`, and added the systems as arguments to `CoreModule`
+
+### Patch Changes
+
+- 063daf80: Previously `registerSystem` and `registerTable` had a side effect of registering namespaces if the system or table's namespace didn't exist yet.
+  This caused a possible frontrunning issue, where an attacker could detect a `registerSystem`/`registerTable` transaction in the mempool,
+  insert a `registerNamespace` transaction before it, grant themselves access to the namespace, transfer ownership of the namespace to the victim,
+  so that the `registerSystem`/`registerTable` transactions still went through successfully.
+  To mitigate this issue, the side effect of registering a namespace in `registerSystem` and `registerTable` has been removed.
+  Calls to these functions now expect the respective namespace to exist and the caller to own the namespace, otherwise they revert.
+
+  Changes in consuming projects are only necessary if tables or systems are registered manually.
+  If only the MUD deployer is used to register tables and systems, no changes are necessary, as the MUD deployer has been updated accordingly.
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     world.registerSystem(systemId, system, true);
+  ```
+
+  ```diff
+  +  world.registerNamespace(namespaceId);
+     MyTable.register();
+  ```
+
+- Updated dependencies [c6c13f2e]
+- Updated dependencies [eaa766ef]
+- Updated dependencies [0f27afdd]
+- Updated dependencies [865253db]
+- Updated dependencies [e6c03a87]
+- Updated dependencies [c207d35e]
+- Updated dependencies [d00c4a9a]
+- Updated dependencies [37c228c6]
+- Updated dependencies [1bf2e908]
+- Updated dependencies [f6f40289]
+- Updated dependencies [08b42217]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [063daf80]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [2bfee921]
+- Updated dependencies [7b28d32e]
+- Updated dependencies [9f8b84e7]
+- Updated dependencies [aee8020a]
+- Updated dependencies [ad4ac445]
+- Updated dependencies [57d8965d]
+- Updated dependencies [e4a6189d]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [37c228c6]
+- Updated dependencies [3ac68ade]
+- Updated dependencies [c642ff3a]
+- Updated dependencies [37c228c6]
+- Updated dependencies [103f635e]
+  - @latticexyz/store@2.0.0-next.16
+  - @latticexyz/world-modules@2.0.0-next.16
+  - @latticexyz/world@2.0.0-next.16
+  - @latticexyz/abi-ts@2.0.0-next.16
+  - @latticexyz/common@2.0.0-next.16
+  - @latticexyz/config@2.0.0-next.16
+  - @latticexyz/gas-report@2.0.0-next.16
+  - @latticexyz/protocol-parser@2.0.0-next.16
+  - @latticexyz/schema-type@2.0.0-next.16
+  - @latticexyz/services@2.0.0-next.16
+  - @latticexyz/utils@2.0.0-next.16
+
 ## 2.0.0-next.15
 
 ### Minor Changes
@@ -1024,7 +2341,7 @@
        .pipe(
          map((block) => Number(block.timestamp) * 1000), // Map to timestamp in ms
          filter((blockTimestamp) => blockTimestamp !== clock.lastUpdateTime), // Ignore if the clock was already refreshed with this block
-         filter((blockTimestamp) => blockTimestamp !== clock.currentTime) // Ignore if the current local timestamp is correct
+         filter((blockTimestamp) => blockTimestamp !== clock.currentTime), // Ignore if the current local timestamp is correct
        )
        .subscribe(clock.update); // Update the local clock
      ```

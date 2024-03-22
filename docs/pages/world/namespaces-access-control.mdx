@@ -84,13 +84,13 @@ By default access to a namespace is granted to:
 
 Namespace access provides access to all the resources within the namespace, so there is no need, by default, for access to the resources within the namespace.
 
-If that is insufficient, [`AccessManagementSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/AccessManagementSystem.sol) lets you [`grantAccess`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/AccessManagementSystem.sol#L17-L29), [`revokeAccess`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/AccessManagementSystem.sol#L31-L43), and [`transferOwnership`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/implementations/AccessManagementSystem.sol#L45-L63) of a namespace.
+If that is insufficient, [`AccessManagementSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/AccessManagementSystem.sol) lets you [`grantAccess`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/AccessManagementSystem.sol#L18-L33), [`revokeAccess`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/AccessManagementSystem.sol#L35-L47), and [`transferOwnership`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/AccessManagementSystem.sol#L49-L73) of a namespace.
 
 For example, here is a script that grants access to the `Counter` table to one address and revokes it for another.
 
 <CollapseCode>
 
-```solidity filename="Permissions.s.sol" copy {21-22}
+```solidity filename="Permissions.s.sol" copy {7-8,20-21}
 pragma solidity >=0.8.21;
 
 import { Script } from "forge-std/Script.sol";

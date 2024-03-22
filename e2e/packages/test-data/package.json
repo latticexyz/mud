@@ -5,6 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "generate-bench-data-bulk": "tsx generate-bench-data-bulk.ts",
+    "generate-bench-data-query": "tsx generate-bench-data-query.ts",
     "generate-test-data": "tsx generate-test-data.ts"
   },
   "devDependencies": {
@@ -15,7 +17,7 @@
     "@viem/anvil": "^0.0.6",
     "execa": "^7.1.1",
     "tsx": "^3.12.6",
-    "typescript": "5.1.6",
-    "viem": "1.14.0"
+    "typescript": "5.4.2",
+    "viem": "2.7.12"
   }
 }

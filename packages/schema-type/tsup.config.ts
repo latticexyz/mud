@@ -1,8 +1,12 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/typescript/index.ts", "src/typescript/deprecated/index.ts"],
-  outDir: "dist/typescript",
+  entry: {
+    index: "src/typescript/exports/index.ts",
+    internal: "src/typescript/exports/internal.ts",
+    deprecated: "src/typescript/exports/deprecated.ts",
+  },
+  outDir: "dist",
   target: "esnext",
   format: ["esm"],
   dts: true,

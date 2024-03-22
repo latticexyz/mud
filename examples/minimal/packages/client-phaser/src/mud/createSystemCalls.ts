@@ -7,7 +7,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { worldContract, waitForTransaction }: SetupNetworkResult,
-  { CounterTable }: ClientComponents
+  { CounterTable }: ClientComponents,
 ) {
   const increment = async () => {
     const tx = await worldContract.write.increment();

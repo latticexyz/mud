@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -7,7 +7,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 import { StoreCore } from "../src/StoreCore.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
-import { PackedCounterLib } from "../src/PackedCounter.sol";
+import { EncodedLengthsLib } from "../src/EncodedLengths.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
@@ -100,9 +100,10 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     emit Store_SpliceDynamicData(
       tableId,
       keyTuple,
+      0,
       uint48(secondDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
-      PackedCounterLib.pack(newDataBytes.length, thirdDataBytes.length),
+      EncodedLengthsLib.pack(newDataBytes.length, thirdDataBytes.length),
       new bytes(0)
     );
 
@@ -143,14 +144,15 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     assertEq(SliceLib.fromBytes(dataBytes).decodeArray_uint32().length, 10);
     assertEq(SliceLib.fromBytes(newDataBytes).decodeArray_uint32().length, 10 - 10);
 
-    // Expect a StoreSpliceRecord event to be emitted after pop
+    // Expect a Store_SpliceDynamicData event to be emitted after pop
     vm.expectEmit(true, true, true, true);
     emit Store_SpliceDynamicData(
       tableId,
       keyTuple,
+      1,
       uint48(secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
-      PackedCounterLib.pack(secondDataBytes.length, newDataBytes.length),
+      EncodedLengthsLib.pack(secondDataBytes.length, newDataBytes.length),
       new bytes(0)
     );
 

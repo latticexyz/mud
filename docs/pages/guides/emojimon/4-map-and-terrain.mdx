@@ -232,7 +232,7 @@ export const GameBoard = () => {
 You can run this command to update all the files to this point in the game's development.
 
 ```sh copy
-git reset --hard d886c8375177bddc3a8353a3aba52f4fb71b550e
+git reset --hard 6fc5590d7b660f911b757d1fb32456dee9a97d38
 ```
 
 ## Turn boulders into obstructions
@@ -445,7 +445,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { MapConfig, Obstruction, Player, Position }: ClientComponents
+  { MapConfig, Obstruction, Player, Position }: ClientComponents,
 ) {
   const isObstructed = (x: number, y: number) => {
     return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
@@ -526,7 +526,7 @@ Now if you try moving onto a tile with a boulder you’ll see that you can’t!
 You can run this command to update all the files to this point in the game's development.
 
 ```sh copy
-git reset --hard 54213103d54d9d7772b212b5aefbdf9a43656cb9
+git reset --hard 952cf5032af33945872a99a95eaa59379a5df536
 ```
 
 ## Wraparound movement
@@ -596,5 +596,5 @@ contract MapSystem is System {
 You can run this command to update all the files to this point in the game's development.
 
 ```sh copy
-git reset --hard 1bffe935acc047b6d3a0acb24af5bea86a750e2c
+git reset --hard 11a3036da8e40ffd25d5f0098485c014d8e6c1c4
 ```

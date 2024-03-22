@@ -1,0 +1,33 @@
+.table {
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    Liberation Mono,
+    Courier New,
+    monospace;
+  background-color: hsl(var(--nextra-primary-hue) 100% 66%/0.1);
+  margin-top: 1em;
+  text-align: center;
+}
+
+.table th,
+.table td {
+  padding: 1em 1.5em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.table th {
+  color: white;
+  background: hsl(var(--nextra-primary-hue) 100% 45%/0.5);
+}
+.table thead th {
+  background: hsl(var(--nextra-primary-hue) 100% 45%/0.75);
+}
+
+.table tbody tr:hover th,
+.table tbody tr:hover td {
+  backdrop-filter: brightness(1.5);
+}
