@@ -1,5 +1,1534 @@
 # Change Log
 
+## 2.0.1
+
+### Patch Changes
+
+- 4a6b4598: Minor fixes to config input validations:
+
+  - `systems.openAccess` incorrectly expected `true` as the only valid input. It now allows `boolean`.
+  - The config complained if parts of it were defined `as const` outside the config input. This is now possible.
+  - Shorthand inputs are now enabled.
+  - @latticexyz/common@2.0.1
+  - @latticexyz/config@2.0.1
+  - @latticexyz/protocol-parser@2.0.1
+  - @latticexyz/schema-type@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- 7ce82b6fc: Store config now defaults `storeArgument: false` for all tables. This means that table libraries, by default, will no longer include the extra functions with the `_store` argument. This default was changed to clear up the confusion around using table libraries in tests, `PostDeploy` scripts, etc.
+
+  If you are sure you need to manually specify a store when interacting with tables, you can still manually toggle it back on with `storeArgument: true` in the table settings of your MUD config.
+
+  If you want to use table libraries in `PostDeploy.s.sol`, you can add the following lines:
+
+  ```diff
+    import { Script } from "forge-std/Script.sol";
+    import { console } from "forge-std/console.sol";
+    import { IWorld } from "../src/codegen/world/IWorld.sol";
+  + import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+    contract PostDeploy is Script {
+      function run(address worldAddress) external {
+  +     StoreSwitch.setStoreAddress(worldAddress);
+  +
+  +     SomeTable.get(someKey);
+  ```
+
+- c9ee5e4a: Store and World configs have been rebuilt with strong types. The shape of these configs have also changed slightly for clarity, the biggest change of which is merging of `keySchema` and `valueSchema` into a single `schema` with a separate `key` for a table's primary key.
+
+  To migrate, first update the imported config method:
+
+  ```diff filename="mud.config.ts"
+  -import { mudConfig } from "@latticexyz/world/register";
+  +import { defineWorld } from "@latticexyz/world";
+
+  -export default mudConfig({
+  +export default defineWorld({
+  ```
+
+  _Note that if you are only using Store, you will need to import `defineStore` from `@latticexyz/store`._
+
+  Then migrate the table key by renaming `keySchema` to `schema` and define the table `key` with each field name from your key schema:
+
+  ```diff filename="mud.config.ts"
+   export default defineWorld({
+     tables: {
+       Position: {
+  -      keySchema: {
+  +      schema: {
+           player: "address",
+         },
+         valueSchema: {
+           x: "int32",
+           y: "int32",
+         },
+  +      key: ['player'],
+       },
+     },
+   });
+  ```
+
+  Now we can merge the `valueSchema` into `schema`.
+
+  ```diff filename="mud.config.ts"
+   export default defineWorld({
+     tables: {
+       Position: {
+         schema: {
+           player: "address",
+  -      },
+  -      valueSchema: {
+           x: "int32",
+           y: "int32",
+         },
+         key: ['player'],
+       },
+     },
+   });
+  ```
+
+  If you previously used the table config shorthand without the full `keySchema` and `valueSchema`, some of the defaults have changed. Shorthands now use an `id: "bytes32"` field by default rather than `key: "bytes32"` and corresponding `key: ["id"]`. To keep previous behavior, you may have to manually define your `schema` with the previous `key` and `value` fields.
+
+  ```diff filename="mud.config.ts"
+   export default defineWorld({
+     tables: {
+  -    OwnedBy: "address",
+  +    OwnedBy: {
+  +      schema: {
+  +        key: "bytes32",
+  +        value: "address",
+  +      },
+  +      key: ["key"],
+  +    },
+     },
+   });
+  ```
+
+  Singleton tables are defined similarly, where an empty `key` rather than `keySchema` is provided:
+
+  ```diff filename="mud.config.ts"
+  -keySchema: {}
+  +key: []
+  ```
+
+  Offchain tables are now defined as a table `type` instead an `offchainOnly` boolean:
+
+  ```diff filename="mud.config.ts"
+  -offchainOnly: true
+  +type: 'offchainTable'
+  ```
+
+  All codegen options have moved under `codegen`:
+
+  ```diff filename="mud.config.ts"
+   export default defineWorld({
+  -  codegenDirectory: "…",
+  +  codegen: {
+  +    outputDirectory: "…",
+  +  },
+     tables: {
+       Position: {
+         schema: {
+           player: "address",
+           x: "int32",
+           y: "int32",
+         },
+         key: ['player'],
+  -      directory: "…",
+  -      dataStruct: false,
+  +      codegen: {
+  +        outputDirectory: "…",
+  +        dataStruct: false,
+  +      },
+       },
+     },
+   });
+  ```
+
+- 07dd6f32c: Renamed all occurrences of `schema` where it is used as "value schema" to `valueSchema` to clearly distinguish it from "key schema".
+  The only breaking change for users is the change from `schema` to `valueSchema` in `mud.config.ts`.
+
+  ```diff
+  // mud.config.ts
+  export default mudConfig({
+    tables: {
+      CounterTable: {
+        keySchema: {},
+  -     schema: {
+  +     valueSchema: {
+          value: "uint32",
+        },
+      },
+    }
+  }
+  ```
+
+- aabd30767: Bumped Solidity version to 0.8.24.
+- 331dbfdcb: We've updated Store events to be "schemaless", meaning there is enough information in each event to only need to operate on the bytes of each record to make an update to that record without having to first decode the record by its schema. This enables new kinds of indexers and sync strategies.
+
+  If you've written your own sync logic or are interacting with Store calls directly, this is a breaking change. We have a few more breaking protocol changes upcoming, so you may hold off on upgrading until those land.
+
+  If you are using MUD's built-in tooling (table codegen, indexer, store sync, etc.), you don't have to make any changes except upgrading to the latest versions and deploying a fresh World.
+
+  - The `data` field in each `StoreSetRecord` and `StoreEphemeralRecord` has been replaced with three new fields: `staticData`, `encodedLengths`, and `dynamicData`. This better reflects the on-chain state and makes it easier to perform modifications to the raw bytes. We recommend storing each of these fields individually in your off-chain storage of choice (indexer, client, etc.).
+
+    ```diff
+    - event StoreSetRecord(bytes32 tableId, bytes32[] keyTuple, bytes data);
+    + event StoreSetRecord(bytes32 tableId, bytes32[] keyTuple, bytes staticData, bytes32 encodedLengths, bytes dynamicData);
+
+    - event StoreEphemeralRecord(bytes32 tableId, bytes32[] keyTuple, bytes data);
+    + event StoreEphemeralRecord(bytes32 tableId, bytes32[] keyTuple, bytes staticData, bytes32 encodedLengths, bytes dynamicData);
+    ```
+
+  - The `StoreSetField` event is now replaced by two new events: `StoreSpliceStaticData` and `StoreSpliceDynamicData`. Splicing allows us to perform efficient operations like push and pop, in addition to replacing a field value. We use two events because updating a dynamic-length field also requires updating the record's `encodedLengths` (aka PackedCounter).
+
+    ```diff
+    - event StoreSetField(bytes32 tableId, bytes32[] keyTuple, uint8 fieldIndex, bytes data);
+    + event StoreSpliceStaticData(bytes32 tableId, bytes32[] keyTuple, uint48 start, uint40 deleteCount, bytes data);
+    + event StoreSpliceDynamicData(bytes32 tableId, bytes32[] keyTuple, uint48 start, uint40 deleteCount, bytes data, bytes32 encodedLengths);
+    ```
+
+  Similarly, Store setter methods (e.g. `setRecord`) have been updated to reflect the `data` to `staticData`, `encodedLengths`, and `dynamicData` changes. We'll be following up shortly with Store getter method changes for more gas efficient storage reads.
+
+- f9f9609ef: The argument order on `Store_SpliceDynamicData`, `onBeforeSpliceDynamicData` and `onAfterSpliceDynamicData` has been changed to match the argument order on `Store_SetRecord`,
+  where the `PackedCounter encodedLength` field comes before the `bytes dynamicData` field.
+
+  ```diff
+  IStore {
+    event Store_SpliceDynamicData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+      uint40 deleteCount,
+  +   PackedCounter encodedLengths,
+      bytes data,
+  -   PackedCounter encodedLengths
+    );
+  }
+
+  IStoreHook {
+    function onBeforeSpliceDynamicData(
+      ResourceId tableId,
+      bytes32[] memory keyTuple,
+      uint8 dynamicFieldIndex,
+      uint40 startWithinField,
+      uint40 deleteCount,
+  +   PackedCounter encodedLengths,
+      bytes memory data,
+  -   PackedCounter encodedLengths
+    ) external;
+
+    function onAfterSpliceDynamicData(
+      ResourceId tableId,
+      bytes32[] memory keyTuple,
+      uint8 dynamicFieldIndex,
+      uint40 startWithinField,
+      uint40 deleteCount,
+  +   PackedCounter encodedLengths,
+      bytes memory data,
+  -   PackedCounter encodedLengths
+    ) external;
+  }
+  ```
+
+- b9e562d8f: The `World` now performs `ERC165` interface checks to ensure that the `StoreHook`, `SystemHook`, `System`, `DelegationControl` and `Module` contracts to actually implement their respective interfaces before registering them in the World.
+
+  The required `supportsInterface` methods are implemented on the respective base contracts.
+  When creating one of these contracts, the recommended approach is to extend the base contract rather than the interface.
+
+  ```diff
+  - import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+  + import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
+
+  - contract MyStoreHook is IStoreHook {}
+  + contract MyStoreHook is StoreHook {}
+  ```
+
+  ```diff
+  - import { ISystemHook } from "@latticexyz/world/src/interfaces/ISystemHook.sol";
+  + import { SystemHook } from "@latticexyz/world/src/SystemHook.sol";
+
+  - contract MySystemHook is ISystemHook {}
+  + contract MySystemHook is SystemHook {}
+  ```
+
+  ```diff
+  - import { IDelegationControl } from "@latticexyz/world/src/interfaces/IDelegationControl.sol";
+  + import { DelegationControl } from "@latticexyz/world/src/DelegationControl.sol";
+
+  - contract MyDelegationControl is IDelegationControl {}
+  + contract MyDelegationControl is DelegationControl {}
+  ```
+
+  ```diff
+  - import { IModule } from "@latticexyz/world/src/interfaces/IModule.sol";
+  + import { Module } from "@latticexyz/world/src/Module.sol";
+
+  - contract MyModule is IModule {}
+  + contract MyModule is Module {}
+  ```
+
+- 759514d8b: Moved the registration of store hooks and systems hooks to bitmaps with bitwise operator instead of a struct.
+
+  ```diff
+  - import { StoreHookLib } from "@latticexyz/src/StoreHook.sol";
+  + import {
+  +   BEFORE_SET_RECORD,
+  +   BEFORE_SET_FIELD,
+  +   BEFORE_DELETE_RECORD
+  + } from "@latticexyz/store/storeHookTypes.sol";
+
+    StoreCore.registerStoreHook(
+      tableId,
+      subscriber,
+  -   StoreHookLib.encodeBitmap({
+  -     onBeforeSetRecord: true,
+  -     onAfterSetRecord: false,
+  -     onBeforeSetField: true,
+  -     onAfterSetField: false,
+  -     onBeforeDeleteRecord: true,
+  -     onAfterDeleteRecord: false
+  -   })
+  +   BEFORE_SET_RECORD | BEFORE_SET_FIELD | BEFORE_DELETE_RECORD
+    );
+  ```
+
+  ```diff
+  - import { SystemHookLib } from "../src/SystemHook.sol";
+  + import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
+
+    world.registerSystemHook(
+      systemId,
+      subscriber,
+  -   SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
+  +   BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM
+    );
+
+  ```
+
+- 952cd5344: All `Store` methods now require the table's value schema to be passed in as an argument instead of loading it from storage.
+  This decreases gas cost and removes circular dependencies of the Schema table (where it was not possible to write to the Schema table before the Schema table was registered).
+
+  ```diff
+    function setRecord(
+      bytes32 table,
+      bytes32[] calldata key,
+      bytes calldata data,
+  +   Schema valueSchema
+    ) external;
+  ```
+
+  The same diff applies to `getRecord`, `getField`, `setField`, `pushToField`, `popFromField`, `updateInField`, and `deleteRecord`.
+
+  This change only requires changes in downstream projects if the `Store` methods were accessed directly. In most cases it is fully abstracted in the generated table libraries,
+  so downstream projects only need to regenerate their table libraries after updating MUD.
+
+- d5094a242: - The `IStoreHook` interface was changed to replace `onBeforeSetField` and `onAfterSetField` with `onBeforeSpliceStaticData`, `onAfterSpliceStaticData`, `onBeforeSpliceDynamicData` and `onAfterSpliceDynamicData`.
+
+  This new interface matches the new `StoreSpliceStaticData` and `StoreSpliceDynamicData` events, and avoids having to read the entire field from storage when only a subset of the field was updated
+  (e.g. when pushing elements to a field).
+
+  ```diff
+  interface IStoreHook {
+  - function onBeforeSetField(
+  -   bytes32 tableId,
+  -   bytes32[] memory keyTuple,
+  -   uint8 fieldIndex,
+  -   bytes memory data,
+  -   FieldLayout fieldLayout
+  - ) external;
+
+  - function onAfterSetField(
+  -   bytes32 tableId,
+  -   bytes32[] memory keyTuple,
+  -   uint8 fieldIndex,
+  -   bytes memory data,
+  -   FieldLayout fieldLayout
+  - ) external;
+
+  + function onBeforeSpliceStaticData(
+  +   bytes32 tableId,
+  +   bytes32[] memory keyTuple,
+  +   uint48 start,
+  +   uint40 deleteCount,
+  +   bytes memory data
+  + ) external;
+
+  + function onAfterSpliceStaticData(
+  +   bytes32 tableId,
+  +   bytes32[] memory keyTuple,
+  +   uint48 start,
+  +   uint40 deleteCount,
+  +   bytes memory data
+  + ) external;
+
+  + function onBeforeSpliceDynamicData(
+  +   bytes32 tableId,
+  +   bytes32[] memory keyTuple,
+  +   uint8 dynamicFieldIndex,
+  +   uint40 startWithinField,
+  +   uint40 deleteCount,
+  +   bytes memory data,
+  +   PackedCounter encodedLengths
+  + ) external;
+
+  + function onAfterSpliceDynamicData(
+  +   bytes32 tableId,
+  +   bytes32[] memory keyTuple,
+  +   uint8 dynamicFieldIndex,
+  +   uint40 startWithinField,
+  +   uint40 deleteCount,
+  +   bytes memory data,
+  +   PackedCounter encodedLengths
+  + ) external;
+  }
+  ```
+
+  - All `calldata` parameters on the `IStoreHook` interface were changed to `memory`, since the functions are called with `memory` from the `World`.
+  - `IStore` exposes two new functions: `spliceStaticData` and `spliceDynamicData`.
+
+    These functions provide lower level access to the operations happening under the hood in `setField`, `pushToField`, `popFromField` and `updateInField` and simplify handling
+    the new splice hooks.
+
+    `StoreCore`'s internal logic was simplified to use the `spliceStaticData` and `spliceDynamicData` functions instead of duplicating similar logic in different functions.
+
+    ```solidity
+    interface IStore {
+      // Splice data in the static part of the record
+      function spliceStaticData(
+        bytes32 tableId,
+        bytes32[] calldata keyTuple,
+        uint48 start,
+        uint40 deleteCount,
+        bytes calldata data
+      ) external;
+
+      // Splice data in the dynamic part of the record
+      function spliceDynamicData(
+        bytes32 tableId,
+        bytes32[] calldata keyTuple,
+        uint8 dynamicFieldIndex,
+        uint40 startWithinField,
+        uint40 deleteCount,
+        bytes calldata data
+      ) external;
+    }
+    ```
+
+- a25881160: Remove `TableId` library to simplify `store` package
+- c4d5eb4e4: - The `onSetRecord` hook is split into `onBeforeSetRecord` and `onAfterSetRecord` and the `onDeleteRecord` hook is split into `onBeforeDeleteRecord` and `onAfterDeleteRecord`.
+  The purpose of this change is to allow more fine-grained control over the point in the lifecycle at which hooks are executed.
+
+  The previous hooks were executed before modifying data, so they can be replaced with the respective `onBefore` hooks.
+
+  ```diff
+  - function onSetRecord(
+  + function onBeforeSetRecord(
+      bytes32 table,
+      bytes32[] memory key,
+      bytes memory data,
+      Schema valueSchema
+    ) public;
+
+  - function onDeleteRecord(
+  + function onBeforeDeleteRecord(
+      bytes32 table,
+      bytes32[] memory key,
+      Schema valueSchema
+    ) public;
+  ```
+
+  - It is now possible to specify which methods of a hook contract should be called when registering a hook. The purpose of this change is to save gas by avoiding to call no-op hook methods.
+
+    ```diff
+    function registerStoreHook(
+      bytes32 tableId,
+    - IStoreHook hookAddress
+    + IStoreHook hookAddress,
+    + uint8 enabledHooksBitmap
+    ) public;
+
+    function registerSystemHook(
+      bytes32 systemId,
+    - ISystemHook hookAddress
+    + ISystemHook hookAddress,
+    + uint8 enabledHooksBitmap
+    ) public;
+    ```
+
+    There are `StoreHookLib` and `SystemHookLib` with helper functions to encode the bitmap of enabled hooks.
+
+    ```solidity
+    import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
+
+    uint8 storeHookBitmap = StoreBookLib.encodeBitmap({
+      onBeforeSetRecord: true,
+      onAfterSetRecord: true,
+      onBeforeSetField: true,
+      onAfterSetField: true,
+      onBeforeDeleteRecord: true,
+      onAfterDeleteRecord: true
+    });
+    ```
+
+    ```solidity
+    import { SystemHookLib } from "@latticexyz/world/src/SystemHook.sol";
+
+    uint8 systemHookBitmap = SystemHookLib.encodeBitmap({
+      onBeforeCallSystem: true,
+      onAfterCallSystem: true
+    });
+    ```
+
+  - The `onSetRecord` hook call for `emitEphemeralRecord` has been removed to save gas and to more clearly distinguish ephemeral tables as offchain tables.
+
+- 9aa5e786: Set the protocol version to `2.0.0` for each Store and World.
+- de151fec0: - Add `FieldLayout`, which is a `bytes32` user-type similar to `Schema`.
+
+  Both `FieldLayout` and `Schema` have the same kind of data in the first 4 bytes.
+
+  - 2 bytes for total length of all static fields
+  - 1 byte for number of static size fields
+  - 1 byte for number of dynamic size fields
+
+  But whereas `Schema` has `SchemaType` enum in each of the other 28 bytes, `FieldLayout` has static byte lengths in each of the other 28 bytes.
+
+  - Replace `Schema valueSchema` with `FieldLayout fieldLayout` in Store and World contracts.
+
+    `FieldLayout` is more gas-efficient because it already has lengths, and `Schema` has types which need to be converted to lengths.
+
+  - Add `getFieldLayout` to `IStore` interface.
+
+    There is no `FieldLayout` for keys, only for values, because key byte lengths aren't usually relevant on-chain. You can still use `getKeySchema` if you need key types.
+
+  - Add `fieldLayoutToHex` utility to `protocol-parser` package.
+  - Add `constants.sol` for constants shared between `FieldLayout`, `Schema` and `PackedCounter`.
+
+- ae340b2bf: Store's `getRecord` has been updated to return `staticData`, `encodedLengths`, and `dynamicData` instead of a single `data` blob, to match the new behaviour of Store setter methods.
+
+  If you use codegenerated libraries, you will only need to update `encode` calls.
+
+  ```diff
+  - bytes memory data = Position.encode(x, y);
+  + (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) = Position.encode(x, y);
+  ```
+
+- 433078c54: Reverse PackedCounter encoding, to optimize gas for bitshifts.
+  Ints are right-aligned, shifting using an index is straightforward if they are indexed right-to-left.
+
+  - Previous encoding: (7 bytes | accumulator),(5 bytes | counter 1),...,(5 bytes | counter 5)
+  - New encoding: (5 bytes | counter 5),...,(5 bytes | counter 1),(7 bytes | accumulator)
+
+- 83583a505: Store and World contract ABIs are now exported from the `out` directory. You'll need to update your imports like:
+
+  ```diff
+  - import IBaseWorldAbi from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorldAbi.json";
+  + import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorldAbi.json";
+  ```
+
+  `MudTest.sol` was also moved to the World package. You can update your import like:
+
+  ```diff
+  - import { MudTest } from "@latticexyz/store/src/MudTest.sol";
+  + import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
+  ```
+
+- afaf2f5ff: - `Store`'s internal schema table is now a normal table instead of using special code paths. It is renamed to Tables, and the table ID changed from `mudstore:schema` to `mudstore:Tables`
+
+  - `Store`'s `registerSchema` and `setMetadata` are combined into a single `registerTable` method. This means metadata (key names, field names) is immutable and indexers can create tables with this metadata when a new table is registered on-chain.
+
+    ```diff
+    -  function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
+    -
+    -  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
+
+    +  function registerTable(
+    +    bytes32 table,
+    +    Schema keySchema,
+    +    Schema valueSchema,
+    +    string[] calldata keyNames,
+    +    string[] calldata fieldNames
+    +  ) external;
+    ```
+
+  - `World`'s `registerTable` method is updated to match the `Store` interface, `setMetadata` is removed
+  - The `getSchema` method is renamed to `getValueSchema` on all interfaces
+    ```diff
+    - function getSchema(bytes32 table) external view returns (Schema schema);
+    + function getValueSchema(bytes32 table) external view returns (Schema valueSchema);
+    ```
+  - The `store-sync` and `cli` packages are updated to integrate the breaking protocol changes. Downstream projects only need to manually integrate these changes if they access low level `Store` or `World` functions. Otherwise, a fresh deploy with the latest MUD will get you these changes.
+
+- 44a5432ac: These breaking changes only affect store utilities, you aren't affected if you use `@latticexyz/cli` codegen scripts.
+
+  - Add `remappings` argument to the `tablegen` codegen function, so that it can read user-provided files.
+  - In `RenderTableOptions` change the type of `imports` from `RelativeImportDatum` to `ImportDatum`, to allow passing absolute imports to the table renderer.
+  - Add `solidityUserTypes` argument to several functions that need to resolve user or abi types: `resolveAbiOrUserType`, `importForAbiOrUserType`, `getUserTypeInfo`.
+  - Add `userTypes` config option to MUD config, which takes user types mapped to file paths from which to import them.
+
+- 65c9546c4: - Always render field methods with a suffix in tablegen (they used to not be rendered if field methods without a suffix were rendered).
+  - Add `withSuffixlessFieldMethods` to `RenderTableOptions`, which indicates that field methods without a suffix should be rendered.
+- 672d05ca1: - Moves Store events into its own `IStoreEvents` interface
+
+  - Moves Store interfaces to their own files
+  - Adds a `StoreData` abstract contract to initialize a Store and expose the Store version
+
+  If you're using MUD out of the box, you won't have to make any changes. You will only need to update if you're using any of the base Store interfaces.
+
+- 8193136a9: Added `dynamicFieldIndex` to the `Store_SpliceDynamicData` event. This enables indexers to store dynamic data as a blob per dynamic field without a schema lookup.
+- 92de59982: Bump Solidity version to 0.8.21
+- ac508bf18: Renamed the default filename of generated user types from `Types.sol` to `common.sol` and the default filename of the generated table index file from `Tables.sol` to `index.sol`.
+
+  Both can be overridden via the MUD config:
+
+  ```ts
+  export default mudConfig({
+    /** Filename where common user types will be generated and imported from. */
+    userTypesFilename: "common.sol",
+    /** Filename where codegen index will be generated. */
+    codegenIndexFilename: "index.sol",
+  });
+  ```
+
+  Note: `userTypesFilename` was renamed from `userTypesPath` and `.sol` is not appended automatically anymore but needs to be part of the provided filename.
+
+  To update your existing project, update all imports from `Tables.sol` to `index.sol` and all imports from `Types.sol` to `common.sol`, or override the defaults in your MUD config to the previous values.
+
+  ```diff
+  - import { Counter } from "../src/codegen/Tables.sol";
+  + import { Counter } from "../src/codegen/index.sol";
+  - import { ExampleEnum } from "../src/codegen/Types.sol";
+  + import { ExampleEnum } from "../src/codegen/common.sol";
+  ```
+
+- bfcb293d1: What used to be known as `ephemeral` table is now called `offchain` table.
+  The previous `ephemeral` tables only supported an `emitEphemeral` method, which emitted a `StoreSetEphemeralRecord` event.
+
+  Now `offchain` tables support all regular table methods, except partial operations on dynamic fields (`push`, `pop`, `update`).
+  Unlike regular tables they don't store data on-chain but emit the same events as regular tables (`StoreSetRecord`, `StoreSpliceStaticData`, `StoreDeleteRecord`), so their data can be indexed by offchain indexers/clients.
+
+  ```diff
+  - EphemeralTable.emitEphemeral(value);
+  + OffchainTable.set(value);
+  ```
+
+- 1890f1a06: Moved `store` tables to the `"store"` namespace (previously "mudstore") and `world` tables to the `"world"` namespace (previously root namespace).
+- af639a264: `Store` events have been renamed for consistency and readability.
+  If you're parsing `Store` events manually, you need to update your ABI.
+  If you're using the MUD sync stack, the new events are already integrated and no further changes are necessary.
+
+  ```diff
+  - event StoreSetRecord(
+  + event Store_SetRecord(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      bytes staticData,
+      bytes32 encodedLengths,
+      bytes dynamicData
+    );
+  - event StoreSpliceStaticData(
+  + event Store_SpliceStaticData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+      uint40 deleteCount,
+      bytes data
+    );
+  - event StoreSpliceDynamicData(
+  + event Store_SpliceDynamicData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+      uint40 deleteCount,
+      bytes data,
+      bytes32 encodedLengths
+    );
+  - event StoreDeleteRecord(
+  + event Store_DeleteRecord(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple
+    );
+  ```
+
+- 5e723b90e: - `ResourceSelector` is replaced with `ResourceId`, `ResourceIdLib`, `ResourceIdInstance`, `WorldResourceIdLib` and `WorldResourceIdInstance`.
+
+  Previously a "resource selector" was a `bytes32` value with the first 16 bytes reserved for the resource's namespace, and the last 16 bytes reserved for the resource's name.
+  Now a "resource ID" is a `bytes32` value with the first 2 bytes reserved for the resource type, the next 14 bytes reserved for the resource's namespace, and the last 16 bytes reserved for the resource's name.
+
+  Previously `ResouceSelector` was a library and the resource selector type was a plain `bytes32`.
+  Now `ResourceId` is a user type, and the functionality is implemented in the `ResourceIdInstance` (for type) and `WorldResourceIdInstance` (for namespace and name) libraries.
+  We split the logic into two libraries, because `Store` now also uses `ResourceId` and needs to be aware of resource types, but not of namespaces/names.
+
+  ```diff
+  - import { ResourceSelector } from "@latticexyz/world/src/ResourceSelector.sol";
+  + import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+  + import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+  + import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+  - bytes32 systemId = ResourceSelector.from("namespace", "name");
+  + ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "namespace", "name");
+
+  - using ResourceSelector for bytes32;
+  + using WorldResourceIdInstance for ResourceId;
+  + using ResourceIdInstance for ResourceId;
+
+    systemId.getName();
+    systemId.getNamespace();
+  + systemId.getType();
+
+  ```
+
+  - All `Store` and `World` methods now use the `ResourceId` type for `tableId`, `systemId`, `moduleId` and `namespaceId`.
+    All mentions of `resourceSelector` were renamed to `resourceId` or the more specific type (e.g. `tableId`, `systemId`)
+
+    ```diff
+    import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+    IStore {
+      function setRecord(
+    -   bytes32 tableId,
+    +   ResourceId tableId,
+        bytes32[] calldata keyTuple,
+        bytes calldata staticData,
+        PackedCounter encodedLengths,
+        bytes calldata dynamicData,
+        FieldLayout fieldLayout
+      ) external;
+
+      // Same for all other methods
+    }
+    ```
+
+    ```diff
+    import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+    IBaseWorld {
+      function callFrom(
+        address delegator,
+    -   bytes32 resourceSelector,
+    +   ResourceId systemId,
+        bytes memory callData
+      ) external payable returns (bytes memory);
+
+      // Same for all other methods
+    }
+    ```
+
+- 99ab9cd6f: Store events now use an `indexed` `tableId`. This adds ~100 gas per write, but means we our sync stack can filter events by table.
+- c049c23f4: - `StoreCore`'s `initialize` function is split into `initialize` (to set the `StoreSwitch`'s `storeAddress`) and `registerCoreTables` (to register the `Tables` and `StoreHooks` tables).
+  The purpose of this is to give consumers more granular control over the setup flow.
+
+  - The `StoreRead` contract no longer calls `StoreCore.initialize` in its constructor.
+    `StoreCore` consumers are expected to call `StoreCore.initialize` and `StoreCore.registerCoreTable` in their own setup logic.
+
+- 24a6cd536: Changed the `userTypes` property to accept `{ filePath: string, internalType: SchemaAbiType }` to enable strong type inference from the config.
+- 5c52bee09: Renamed `StoreCore`'s `registerCoreTables` method to `registerInternalTables`.
+- 3e7d83d0: Renamed `PackedCounter` to `EncodedLengths` for consistency.
+- cea754dde: - The external `setRecord` and `deleteRecord` methods of `IStore` no longer accept a `FieldLayout` as input, but load it from storage instead.
+  This is to prevent invalid `FieldLayout` values being passed, which could cause the onchain state to diverge from the indexer state.
+  However, the internal `StoreCore` library still exposes a `setRecord` and `deleteRecord` method that allows a `FieldLayout` to be passed.
+  This is because `StoreCore` can only be used internally, so the `FieldLayout` value can be trusted and we can save the gas for accessing storage.
+
+  ```diff
+  interface IStore {
+    function setRecord(
+      ResourceId tableId,
+      bytes32[] calldata keyTuple,
+      bytes calldata staticData,
+      PackedCounter encodedLengths,
+      bytes calldata dynamicData,
+  -   FieldLayout fieldLayout
+    ) external;
+
+    function deleteRecord(
+      ResourceId tableId,
+      bytes32[] memory keyTuple,
+  -   FieldLayout fieldLayout
+    ) external;
+  }
+  ```
+
+  - The `spliceStaticData` method and `Store_SpliceStaticData` event of `IStore` and `StoreCore` no longer include `deleteCount` in their signature.
+    This is because when splicing static data, the data after `start` is always overwritten with `data` instead of being shifted, so `deleteCount` is always the length of the data to be written.
+
+    ```diff
+
+    event Store_SpliceStaticData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+    - uint40 deleteCount,
+      bytes data
+    );
+
+    interface IStore {
+      function spliceStaticData(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+        uint48 start,
+    -   uint40 deleteCount,
+        bytes calldata data
+      ) external;
+    }
+    ```
+
+  - The `updateInField` method has been removed from `IStore`, as it's almost identical to the more general `spliceDynamicData`.
+    If you're manually calling `updateInField`, here is how to upgrade to `spliceDynamicData`:
+
+    ```diff
+    - store.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+    + uint8 dynamicFieldIndex = fieldIndex - fieldLayout.numStaticFields();
+    + store.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, uint40(startByteIndex), uint40(dataToSet.length), dataToSet);
+    ```
+
+  - All other methods that are only valid for dynamic fields (`pushToField`, `popFromField`, `getFieldSlice`)
+    have been renamed to make this more explicit (`pushToDynamicField`, `popFromDynamicField`, `getDynamicFieldSlice`).
+
+    Their `fieldIndex` parameter has been replaced by a `dynamicFieldIndex` parameter, which is the index relative to the first dynamic field (i.e. `dynamicFieldIndex` = `fieldIndex` - `numStaticFields`).
+    The `FieldLayout` parameter has been removed, as it was only used to calculate the `dynamicFieldIndex` in the method.
+
+    ```diff
+    interface IStore {
+    - function pushToField(
+    + function pushToDynamicField(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+        bytes calldata dataToPush,
+    -   FieldLayout fieldLayout
+      ) external;
+
+    - function popFromField(
+    + function popFromDynamicField(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+        uint256 byteLengthToPop,
+    -   FieldLayout fieldLayout
+      ) external;
+
+    - function getFieldSlice(
+    + function getDynamicFieldSlice(
+        ResourceId tableId,
+        bytes32[] memory keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+    -   FieldLayout fieldLayout,
+        uint256 start,
+        uint256 end
+      ) external view returns (bytes memory data);
+    }
+    ```
+
+  - `IStore` has a new `getDynamicFieldLength` length method, which returns the byte length of the given dynamic field and doesn't require the `FieldLayout`.
+
+    ```diff
+    IStore {
+    + function getDynamicFieldLength(
+    +   ResourceId tableId,
+    +   bytes32[] memory keyTuple,
+    +   uint8 dynamicFieldIndex
+    + ) external view returns (uint256);
+    }
+
+    ```
+
+  - `IStore` now has additional overloads for `getRecord`, `getField`, `getFieldLength` and `setField` that don't require a `FieldLength` to be passed, but instead load it from storage.
+  - `IStore` now exposes `setStaticField` and `setDynamicField` to save gas by avoiding the dynamic inference of whether the field is static or dynamic.
+  - The `getDynamicFieldSlice` method no longer accepts reading outside the bounds of the dynamic field.
+    This is to avoid returning invalid data, as the data of a dynamic field is not deleted when the record is deleted, but only its length is set to zero.
+
+- 252a1852: Migrated to new config format.
+
+### Minor Changes
+
+- 1d60930d6: It is now possible to unregister Store hooks and System hooks.
+
+  ```solidity
+  interface IStore {
+    function unregisterStoreHook(bytes32 table, IStoreHook hookAddress) external;
+    // ...
+  }
+
+  interface IWorld {
+    function unregisterSystemHook(bytes32 resourceSelector, ISystemHook hookAddress) external;
+    // ...
+  }
+  ```
+
+- 66cc35a8c: Create gas-report package, move gas-report cli command and GasReporter contract to it
+- a7b30c79b: Rename `MudV2Test` to `MudTest` and move from `@latticexyz/std-contracts` to `@latticexyz/store`.
+
+  ```solidity
+  // old import
+  import { MudV2Test } from "@latticexyz/std-contracts/src/test/MudV2Test.t.sol";
+  // new import
+  import { MudTest } from "@latticexyz/store/src/MudTest.sol";
+  ```
+
+  Refactor `StoreSwitch` to use a storage slot instead of `function isStore()` to determine which contract is Store:
+
+  - Previously `StoreSwitch` called `isStore()` on `msg.sender` to determine if `msg.sender` is a `Store` contract. If the call succeeded, the `Store` methods were called on `msg.sender`, otherwise the data was written to the own storage.
+  - With this change `StoreSwitch` instead checks for an `address` in a known storage slot. If the address equals the own address, data is written to the own storage. If it is an external address, `Store` methods are called on this address. If it is unset (`address(0)`), store methods are called on `msg.sender`.
+  - In practice this has the same effect as before: By default the `World` contracts sets its own address in `StoreSwitch`, while `System` contracts keep the Store address undefined, so `Systems` write to their caller (`World`) if they are executed via `call` or directly to the `World` storage if they are executed via `delegatecall`.
+  - Besides gas savings, this change has two additional benefits:
+    1. it is now possible for `Systems` to explicitly set a `Store` address to make them exclusive to that `Store` and
+    2. table libraries can now be used in tests without having to provide an explicit `Store` argument, because the `MudTest` base contract redirects reads and writes to the internal `World` contract.
+
+- 93390d89: Added an `abstract` `StoreKernel` contract, which includes all Store interfaces except for registration, and implements write methods, `protocolVersion` and initializes `StoreCore`. `Store` extends `StoreKernel` with the `IStoreRegistration` interface. `StoreData` is removed as a separate interface/contract. `World` now extends `StoreKernel` (since the registration methods are added via the `InitModule`).
+- 144c0d8d: Replaced the static array length getters in table libraries with constants.
+- 9b43029c3: Add protocol version with corresponding getter and event on deploy
+
+  ```solidity
+  world.worldVersion();
+  world.storeVersion(); // a World is also a Store
+  ```
+
+  ```solidity
+  event HelloWorld(bytes32 indexed worldVersion);
+  event HelloStore(bytes32 indexed storeVersion);
+  ```
+
+- 55ab88a60: `StoreCore` and `IStore` now expose specific functions for `getStaticField` and `getDynamicField` in addition to the general `getField`.
+  Using the specific functions reduces gas overhead because more optimized logic can be executed.
+
+  ```solidity
+  interface IStore {
+    /**
+     * Get a single static field from the given tableId and key tuple, with the given value field layout.
+     * Note: the field value is left-aligned in the returned bytes32, the rest of the word is not zeroed out.
+     * Consumers are expected to truncate the returned value as needed.
+     */
+    function getStaticField(
+      bytes32 tableId,
+      bytes32[] calldata keyTuple,
+      uint8 fieldIndex,
+      FieldLayout fieldLayout
+    ) external view returns (bytes32);
+
+    /**
+     * Get a single dynamic field from the given tableId and key tuple at the given dynamic field index.
+     * (Dynamic field index = field index - number of static fields)
+     */
+    function getDynamicField(
+      bytes32 tableId,
+      bytes32[] memory keyTuple,
+      uint8 dynamicFieldIndex
+    ) external view returns (bytes memory);
+  }
+  ```
+
+- 80dd6992e: Add an optional `namePrefix` argument to `renderRecordData`, to support inlined logic in codegenned `set` method which uses a struct.
+- 708b49c50: Generated table libraries now have a set of functions prefixed with `_` that always use their own storage for read/write.
+  This saves gas for use cases where the functionality to dynamically determine which `Store` to use for read/write is not needed, e.g. root systems in a `World`, or when using `Store` without `World`.
+
+  We decided to continue to always generate a set of functions that dynamically decide which `Store` to use, so that the generated table libraries can still be imported by non-root systems.
+
+  ```solidity
+  library Counter {
+    // Dynamically determine which store to write to based on the context
+    function set(uint32 value) internal;
+
+    // Always write to own storage
+    function _set(uint32 value) internal;
+
+    // ... equivalent functions for all other Store methods
+  }
+  ```
+
+- 3ac68ade6: Removed `allowEmpty` option from `FieldLayout.validate()` as field layouts should never be empty.
+- 3042f86e: Moved key schema and value schema methods to constants in code-generated table libraries for less bytecode and less gas in register/install methods.
+
+  ```diff
+  -console.log(SomeTable.getKeySchema());
+  +console.log(SomeTable._keySchema);
+
+  -console.log(SomeTable.getValueSchema());
+  +console.log(SomeTable._valueSchema);
+  ```
+
+- 5e71e1cb5: Moved `KeySchema`, `ValueSchema`, `SchemaToPrimitives` and `TableRecord` types into `@latticexyz/protocol-parser`
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+- 8025c3505: We now use `@latticexyz/abi-ts` to generate TS type declaration files (`.d.ts`) for each ABI JSON file. This replaces our usage TypeChain everywhere.
+
+  If you previously relied on TypeChain types from `@latticexyz/store` or `@latticexyz/world`, you will either need to migrate to viem or abitype using ABI JSON imports or generate TypeChain types from our exported ABI JSON files.
+
+  ```ts
+  import { getContract } from "viem";
+  import IStoreAbi from "@latticexyz/store/abi/IStore.sol/IStore.abi.json";
+
+  const storeContract = getContract({
+    abi: IStoreAbi,
+    ...
+  });
+
+  await storeContract.write.setRecord(...);
+  ```
+
+- 103f635eb: Improved error messages for invalid `FieldLayout`s
+
+  ```diff
+  -error FieldLayoutLib_InvalidLength(uint256 length);
+  +error FieldLayoutLib_TooManyFields(uint256 numFields, uint256 maxFields);
+  +error FieldLayoutLib_TooManyDynamicFields(uint256 numFields, uint256 maxFields);
+  +error FieldLayoutLib_Empty();
+  ```
+
+### Patch Changes
+
+- d8c8f66bf: Exclude ERC165 interface ID from custom interface ID's.
+- c6c13f2ea: Storage events are now emitted after "before" hooks, so that the resulting logs are now correctly ordered and reflect onchain logic. This resolves issues with store writes and event emissions happening in "before" hooks.
+- 1b86eac05: Changed the type of the output variable in the `slice4` function to `bytes4`.
+- a35c05ea9: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+- c963b46c7: Optimize storage library
+- 05b3e8882: Fixed a race condition when registering core tables, where we would set a record in the `ResourceIds` table before the table was registered.
+- aea67c580: Include bytecode for `World` and `Store` in npm packages.
+- 90e4161bb: Moved the test tables out of the main config in `world` and `store` and into their own separate config.
+- 904fd7d4e: Add store sync package
+- e6c03a87a: Renamed the `requireNoCallback` modifier to `prohibitDirectCallback`.
+- 1077c7f53: Fixed an issue where `mud.config.ts` source file was not included in the package, causing TS errors downstream.
+- 2c920de7: Refactored `StoreCore` to import `IStoreEvents` instead of defining the events twice.
+- 44236041f: Moved table ID and field layout constants in code-generated table libraries from the file level into the library, for clearer access and cleaner imports.
+
+  ```diff
+  -import { SomeTable, SomeTableTableId } from "./codegen/tables/SomeTable.sol";
+  +import { SomeTable } from "./codegen/tables/SomeTable.sol";
+
+  -console.log(SomeTableTableId);
+  +console.log(SomeTable._tableId);
+
+  -console.log(SomeTable.getFieldLayout());
+  +console.log(SomeTable._fieldLayout);
+  ```
+
+- f62c767e7: Parallelized table codegen. Also put logs behind debug flag, which can be enabled using the `DEBUG=mud:*` environment variable.
+- 37c228c63: Refactored various files to specify integers in a hex base instead of decimals.
+- c991c71a: Added interfaces for all errors that are used by `StoreCore`, which includes `FieldLayout`, `PackedCounter`, `Schema`, and `Slice`. This interfaces are inherited by `IStore`, ensuring that all possible errors are included in the `IStore` ABI for proper decoding in the frontend.
+- 1bf2e9087: Updated codegen to not render `push` and `pop` methods for static arrays. The `length` method now returns the hardcoded known length instead of calculating it like with a dynamic array.
+- 211be2a1e: The `FieldLayout` in table libraries is now generated at compile time instead of dynamically in a table library function.
+  This significantly reduces gas cost in all table library functions.
+- 0f3e2e02b: Added `Storage.loadField` to optimize loading 32 bytes or less from storage (which is always the case when loading data for static fields).
+- d08789282: Prefixed all errors with their respective library/contract for improved debugging.
+- 5c965a919: Align Store events parameter naming between IStoreWrite and StoreCore
+- f99e88987: Bump viem to 1.14.0 and abitype to 0.9.8
+- d5b73b126: Optimize autogenerated table libraries
+- 190fdd11: Restored `Bytes.sliceN` helpers that were previously (mistakenly) removed and renamed them to `Bytes.getBytesN`.
+
+  If you're upgrading an existing MUD project, you can rerun codegen with `mud build` to update your table libraries to the new function names.
+
+- b2d2aa715: Added an explicit package export for `mud.config`
+- 5e723b90e: The `ResourceType` table is removed.
+  It was previously used to store the resource type for each resource ID in a `World`. This is no longer necessary as the [resource type is now encoded in the resource ID](https://github.com/latticexyz/mud/pull/1544).
+
+  To still be able to determine whether a given resource ID exists, a `ResourceIds` table has been added.
+  The previous `ResourceType` table was part of `World` and missed tables that were registered directly via `StoreCore.registerTable` instead of via `World.registerTable` (e.g. when a table was registered as part of a root module).
+  This problem is solved by the new table `ResourceIds` being part of `Store`.
+
+  `StoreCore`'s `hasTable` function was removed in favor of using `ResourceIds.getExists(tableId)` directly.
+
+  ```diff
+  - import { ResourceType } from "@latticexyz/world/src/tables/ResourceType.sol";
+  - import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+  + import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+
+  - bool tableExists = StoreCore.hasTable(tableId);
+  + bool tableExists = ResourceIds.getExists(tableId);
+
+  - bool systemExists = ResourceType.get(systemId) != Resource.NONE;
+  + bool systemExists = ResourceIds.getExists(systemId);
+  ```
+
+- 6573e38e9: Renamed all occurrences of `table` where it is used as "table ID" to `tableId`.
+  This is only a breaking change for consumers who manually decode `Store` events, but not for consumers who use the MUD libraries.
+
+  ```diff
+  event StoreSetRecord(
+  - bytes32 table,
+  + bytes32 tableId,
+    bytes32[] key,
+    bytes data
+  );
+
+  event StoreSetField(
+  - bytes32 table,
+  + bytes32 tableId,
+    bytes32[] key,
+    uint8 fieldIndex,
+    bytes data
+  );
+
+  event StoreDeleteRecord(
+  - bytes32 table,
+  + bytes32 tableId,
+    bytes32[] key
+  );
+
+  event StoreEphemeralRecord(
+  - bytes32 table,
+  + bytes32 tableId,
+    bytes32[] key,
+    bytes data
+  );
+  ```
+
+- 37c228c63: Refactored `ResourceId` to use a global Solidity `using` statement.
+- 37c228c63: Refactored EIP165 usages to use the built-in interfaceId property instead of pre-defined constants.
+- 6e66c5b74: Renamed all occurrences of `key` where it is used as "key tuple" to `keyTuple`.
+  This is only a breaking change for consumers who manually decode `Store` events, but not for consumers who use the MUD libraries.
+
+  ```diff
+  event StoreSetRecord(
+    bytes32 tableId,
+  - bytes32[] key,
+  + bytes32[] keyTuple,
+    bytes data
+  );
+
+  event StoreSetField(
+    bytes32 tableId,
+  - bytes32[] key,
+  + bytes32[] keyTuple,
+    uint8 fieldIndex,
+    bytes data
+  );
+
+  event StoreDeleteRecord(
+    bytes32 tableId,
+  - bytes32[] key,
+  + bytes32[] keyTuple,
+  );
+
+  event StoreEphemeralRecord(
+    bytes32 tableId,
+  - bytes32[] key,
+  + bytes32[] keyTuple,
+    bytes data
+  );
+  ```
+
+- 8d51a0348: Clean up Memory.sol, make mcopy pure
+- 48909d151: bump forge-std and ds-test dependencies
+- 7b28d32e5: Added a custom error `Store_InvalidBounds` for when the `start:end` slice in `getDynamicFieldSlice` is invalid (it used to revert with the default overflow error)
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- 48c51b52a: RECS components are now dynamically created and inferred from your MUD config when using `syncToRecs`.
+
+  To migrate existing projects after upgrading to this MUD version:
+
+  1. Remove `contractComponents.ts` from `client/src/mud`
+  2. Remove `components` argument from `syncToRecs`
+  3. Update `build:mud` and `dev` scripts in `contracts/package.json` to remove tsgen
+
+     ```diff
+     - "build:mud": "mud tablegen && mud worldgen && mud tsgen --configPath mud.config.ts --out ../client/src/mud",
+     + "build:mud": "mud tablegen && mud worldgen",
+     ```
+
+     ```diff
+     - "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud",
+     + "dev": "pnpm mud dev-contracts",
+     ```
+
+- 9f8b84e73: Aligned the order of function arguments in the `Storage` library.
+
+  ```solidity
+  store(uint256 storagePointer, uint256 offset, bytes memory data)
+  store(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer)
+  load(uint256 storagePointer, uint256 offset, uint256 length)
+  load(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer)
+  ```
+
+- 55a05fd7a: Refactored `StoreCore.registerStoreHook` to use `StoreHooks._push` for gas efficiency.
+- 63831a264: Minor `Store` cleanups: renamed `Utils.sol` to `leftMask.sol` since it only contains a single free function, and removed a leftover sanity check.
+- 6db95ce15: Fixed `StoreCore` to pass `previousEncodedLengths` into `onBeforeSpliceDynamicData`.
+- 5d737cf2e: Updated the `debug` util to pipe to `stdout` and added an additional util to explicitly pipe to `stderr` when needed.
+- 22ee44700: All `Store` and `World` tables now use the appropriate user-types for `ResourceId`, `FieldLayout` and `Schema` to avoid manual `wrap`/`unwrap`.
+- ad4ac4459: Added more validation checks for `FieldLayout` and `Schema`.
+- be313068b: Optimized the `StoreCore` hash function determining the data location to use less gas.
+- bb91edaa0: Fixed `resolveUserTypes` for static arrays.
+  `resolveUserTypes` is used by `deploy`, which prevented deploying tables with static arrays.
+- 5ac4c97f4: Fixed M-04 Memory Corruption on Load From Storage
+  It only affected external use of `Storage.load` with a `memoryPointer` argument
+- e48171741: Removed unused imports from various files in the `store` and `world` packages.
+- 37c228c63: Refactored various Solidity files to not explicitly initialise variables to zero.
+- c58da9ad: Moved the `HelloStore` to `IStoreEvents` so all Store events are defined in the same interface.
+- 37c228c63: Refactored some Store functions to use a right bit mask instead of left.
+- 535229984: - bump to viem 1.3.0 and abitype 0.9.3
+  - move `@wagmi/chains` imports to `viem/chains`
+  - refine a few types
+- 0d12db8c2: Optimize Schema methods.
+  Return `uint256` instead of `uint8` in SchemaInstance numFields methods
+- 37c228c63: Simplified a check in `Slice.getSubslice`.
+- 22ba7b675: Simplified a couple internal constants used for bitshifting.
+- 745485cda: Updated `StoreCore` to check that tables exist before registering store hooks.
+- 37c228c63: Optimised the `Schema.validate` function to decrease gas use.
+- cc2c8da00: - Refactor tightcoder to use typescript functions instead of ejs
+  - Optimize `TightCoder` library
+  - Add `isLeftAligned` and `getLeftPaddingBits` common codegen helpers
+- Updated dependencies [a35c05ea9]
+- Updated dependencies [16b13ea8f]
+- Updated dependencies [82693072]
+- Updated dependencies [07dd6f32c]
+- Updated dependencies [aabd30767]
+- Updated dependencies [65c9546c4]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [904fd7d4e]
+- Updated dependencies [b98e51808]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [44236041f]
+- Updated dependencies [066056154]
+- Updated dependencies [3fb9ce283]
+- Updated dependencies [bb6ada740]
+- Updated dependencies [35c9f33df]
+- Updated dependencies [0b8ce3f2c]
+- Updated dependencies [933b54b5f]
+- Updated dependencies [307abab3]
+- Updated dependencies [de151fec0]
+- Updated dependencies [aacffcb59]
+- Updated dependencies [b38c096d]
+- Updated dependencies [4bb7e8cbf]
+- Updated dependencies [f99e88987]
+- Updated dependencies [939916bcd]
+- Updated dependencies [e34d1170]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [433078c54]
+- Updated dependencies [db314a74]
+- Updated dependencies [ca50fef81]
+- Updated dependencies [59267655]
+- Updated dependencies [8d51a0348]
+- Updated dependencies [c162ad5a5]
+- Updated dependencies [48909d151]
+- Updated dependencies [f8a01a047]
+- Updated dependencies [b02f9d0e4]
+- Updated dependencies [f62c767e7]
+- Updated dependencies [bb91edaa0]
+- Updated dependencies [590542030]
+- Updated dependencies [1b5eb0d07]
+- Updated dependencies [44a5432ac]
+- Updated dependencies [f03531d97]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [5d737cf2e]
+- Updated dependencies [d075f82f3]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [92de59982]
+- Updated dependencies [9ff4dd955]
+- Updated dependencies [bfcb293d1]
+- Updated dependencies [3e057061d]
+- Updated dependencies [535229984]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [0c4f9fea9]
+- Updated dependencies [60cfd089f]
+- Updated dependencies [24a6cd536]
+- Updated dependencies [708b49c50]
+- Updated dependencies [d2f8e9400]
+- Updated dependencies [25086be5f]
+- Updated dependencies [b1d41727d]
+- Updated dependencies [4c1dcd81e]
+- Updated dependencies [6071163f7]
+- Updated dependencies [6c6733256]
+- Updated dependencies [cd5abcc3b]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [c4f49240d]
+- Updated dependencies [3e7d83d0]
+- Updated dependencies [5df1f31bc]
+- Updated dependencies [a2f41ade9]
+- Updated dependencies [cea754dde]
+- Updated dependencies [5e71e1cb5]
+- Updated dependencies [331f0d636]
+- Updated dependencies [cc2c8da00]
+  - @latticexyz/common@2.0.0
+  - @latticexyz/protocol-parser@2.0.0
+  - @latticexyz/schema-type@2.0.0
+  - @latticexyz/config@2.0.0
+
+## 2.0.0-next.18
+
+### Major Changes
+
+- c9ee5e4a: Store and World configs have been rebuilt with strong types. The shape of these configs have also changed slightly for clarity, the biggest change of which is merging of `keySchema` and `valueSchema` into a single `schema` with a separate `key` for a table's primary key.
+
+  To migrate, first update the imported config method:
+
+  ```diff filename="mud.config.ts"
+  -import { mudConfig } from "@latticexyz/world/register";
+  +import { defineWorld } from "@latticexyz/world";
+
+  -export default mudConfig({
+  +export default defineWorld({
+  ```
+
+  _Note that if you are only using Store, you will need to import `defineStore` from `@latticexyz/store`._
+
+  Then migrate the table key by renaming `keySchema` to `schema` and define the table `key` with each field name from your key schema:
+
+  ```diff filename="mud.config.ts"
+   export default defineWorld({
+     tables: {
+       Position: {
+  -      keySchema: {
+  +      schema: {
+           player: "address",
+         },
+         valueSchema: {
+           x: "int32",
+           y: "int32",
+         },
+  +      key: ['player'],
+       },
+     },
+   });
+  ```
+
+  Now we can merge the `valueSchema` into `schema`.
+
+  ```diff filename="mud.config.ts"
+   export default defineWorld({
+     tables: {
+       Position: {
+         schema: {
+           player: "address",
+  -      },
+  -      valueSchema: {
+           x: "int32",
+           y: "int32",
+         },
+         key: ['player'],
+       },
+     },
+   });
+  ```
+
+  If you previously used the table config shorthand without the full `keySchema` and `valueSchema`, some of the defaults have changed. Shorthands now use an `id: "bytes32"` field by default rather than `key: "bytes32"` and corresponding `key: ["id"]`. To keep previous behavior, you may have to manually define your `schema` with the previous `key` and `value` fields.
+
+  ```diff filename="mud.config.ts"
+   export default defineWorld({
+     tables: {
+  -    OwnedBy: "address",
+  +    OwnedBy: {
+  +      schema: {
+  +        key: "bytes32",
+  +        value: "address",
+  +      },
+  +      key: ["key"],
+  +    },
+     },
+   });
+  ```
+
+  Singleton tables are defined similarly, where an empty `key` rather than `keySchema` is provided:
+
+  ```diff filename="mud.config.ts"
+  -keySchema: {}
+  +key: []
+  ```
+
+  Offchain tables are now defined as a table `type` instead an `offchainOnly` boolean:
+
+  ```diff filename="mud.config.ts"
+  -offchainOnly: true
+  +type: 'offchainTable'
+  ```
+
+  All codegen options have moved under `codegen`:
+
+  ```diff filename="mud.config.ts"
+   export default defineWorld({
+  -  codegenDirectory: "…",
+  +  codegen: {
+  +    outputDirectory: "…",
+  +  },
+     tables: {
+       Position: {
+         schema: {
+           player: "address",
+           x: "int32",
+           y: "int32",
+         },
+         key: ['player'],
+  -      directory: "…",
+  -      dataStruct: false,
+  +      codegen: {
+  +        outputDirectory: "…",
+  +        dataStruct: false,
+  +      },
+       },
+     },
+   });
+  ```
+
+- 9aa5e786: Set the protocol version to `2.0.0` for each Store and World.
+- 8193136a9: Added `dynamicFieldIndex` to the `Store_SpliceDynamicData` event. This enables indexers to store dynamic data as a blob per dynamic field without a schema lookup.
+- 3e7d83d0: Renamed `PackedCounter` to `EncodedLengths` for consistency.
+- 252a1852: Migrated to new config format.
+
+### Minor Changes
+
+- 93390d89: Added an `abstract` `StoreKernel` contract, which includes all Store interfaces except for registration, and implements write methods, `protocolVersion` and initializes `StoreCore`. `Store` extends `StoreKernel` with the `IStoreRegistration` interface. `StoreData` is removed as a separate interface/contract. `World` now extends `StoreKernel` (since the registration methods are added via the `InitModule`).
+- 144c0d8d: Replaced the static array length getters in table libraries with constants.
+- 3042f86e: Moved key schema and value schema methods to constants in code-generated table libraries for less bytecode and less gas in register/install methods.
+
+  ```diff
+  -console.log(SomeTable.getKeySchema());
+  +console.log(SomeTable._keySchema);
+
+  -console.log(SomeTable.getValueSchema());
+  +console.log(SomeTable._valueSchema);
+  ```
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- 2c920de7: Refactored `StoreCore` to import `IStoreEvents` instead of defining the events twice.
+- 44236041: Moved table ID and field layout constants in code-generated table libraries from the file level into the library, for clearer access and cleaner imports.
+
+  ```diff
+  -import { SomeTable, SomeTableTableId } from "./codegen/tables/SomeTable.sol";
+  +import { SomeTable } from "./codegen/tables/SomeTable.sol";
+
+  -console.log(SomeTableTableId);
+  +console.log(SomeTable._tableId);
+
+  -console.log(SomeTable.getFieldLayout());
+  +console.log(SomeTable._fieldLayout);
+  ```
+
+- c991c71a: Added interfaces for all errors that are used by `StoreCore`, which includes `FieldLayout`, `PackedCounter`, `Schema`, and `Slice`. This interfaces are inherited by `IStore`, ensuring that all possible errors are included in the `IStore` ABI for proper decoding in the frontend.
+- 190fdd11: Restored `Bytes.sliceN` helpers that were previously (mistakenly) removed and renamed them to `Bytes.getBytesN`.
+
+  If you're upgrading an existing MUD project, you can rerun codegen with `mud build` to update your table libraries to the new function names.
+
+- c58da9ad: Moved the `HelloStore` to `IStoreEvents` so all Store events are defined in the same interface.
+- Updated dependencies [82693072]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [44236041]
+- Updated dependencies [307abab3]
+- Updated dependencies [b38c096d]
+- Updated dependencies [e34d1170]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [3e7d83d0]
+  - @latticexyz/common@2.0.0-next.18
+  - @latticexyz/protocol-parser@2.0.0-next.18
+  - @latticexyz/schema-type@2.0.0-next.18
+  - @latticexyz/config@2.0.0-next.18
+
+## 2.0.0-next.17
+
+### Major Changes
+
+- aabd3076: Bumped Solidity version to 0.8.24.
+- 5c52bee0: Renamed `StoreCore`'s `registerCoreTables` method to `registerInternalTables`.
+
+### Patch Changes
+
+- a35c05ea: Table libraries now hardcode the `bytes32` table ID value rather than computing it in Solidity. This saves a bit of gas across all storage operations.
+- 05b3e888: Fixed a race condition when registering core tables, where we would set a record in the `ResourceIds` table before the table was registered.
+- 55a05fd7: Refactored `StoreCore.registerStoreHook` to use `StoreHooks._push` for gas efficiency.
+- 745485cd: Updated `StoreCore` to check that tables exist before registering store hooks.
+- Updated dependencies [a35c05ea]
+- Updated dependencies [aabd3076]
+- Updated dependencies [c162ad5a]
+  - @latticexyz/common@2.0.0-next.17
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/config@2.0.0-next.17
+
+## 2.0.0-next.16
+
+### Minor Changes
+
+- 3ac68ade: Removed `allowEmpty` option from `FieldLayout.validate()` as field layouts should never be empty.
+- 103f635e: Improved error messages for invalid `FieldLayout`s
+
+  ```diff
+  -error FieldLayoutLib_InvalidLength(uint256 length);
+  +error FieldLayoutLib_TooManyFields(uint256 numFields, uint256 maxFields);
+  +error FieldLayoutLib_TooManyDynamicFields(uint256 numFields, uint256 maxFields);
+  +error FieldLayoutLib_Empty();
+  ```
+
+### Patch Changes
+
+- c6c13f2e: Storage events are now emitted after "before" hooks, so that the resulting logs are now correctly ordered and reflect onchain logic. This resolves issues with store writes and event emissions happening in "before" hooks.
+- e6c03a87: Renamed the `requireNoCallback` modifier to `prohibitDirectCallback`.
+- 37c228c6: Refactored various files to specify integers in a hex base instead of decimals.
+- 1bf2e908: Updated codegen to not render `push` and `pop` methods for static arrays. The `length` method now returns the hardcoded known length instead of calculating it like with a dynamic array.
+- 37c228c6: Refactored `ResourceId` to use a global Solidity `using` statement.
+- 37c228c6: Refactored EIP165 usages to use the built-in interfaceId property instead of pre-defined constants.
+- 7b28d32e: Added a custom error `Store_InvalidBounds` for when the `start:end` slice in `getDynamicFieldSlice` is invalid (it used to revert with the default overflow error)
+- 9f8b84e7: Aligned the order of function arguments in the `Storage` library.
+
+  ```solidity
+  store(uint256 storagePointer, uint256 offset, bytes memory data)
+  store(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer)
+  load(uint256 storagePointer, uint256 offset, uint256 length)
+  load(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer)
+  ```
+
+- ad4ac445: Added more validation checks for `FieldLayout` and `Schema`.
+- 37c228c6: Refactored various Solidity files to not explicitly initialise variables to zero.
+- 37c228c6: Refactored some Store functions to use a right bit mask instead of left.
+- 37c228c6: Simplified a check in `Slice.getSubslice`.
+- 37c228c6: Optimised the `Schema.validate` function to decrease gas use.
+  - @latticexyz/common@2.0.0-next.16
+  - @latticexyz/config@2.0.0-next.16
+  - @latticexyz/schema-type@2.0.0-next.16
+
+## 2.0.0-next.15
+
+### Patch Changes
+
+- d8c8f66b: Exclude ERC165 interface ID from custom interface ID's.
+- 1b86eac0: Changed the type of the output variable in the `slice4` function to `bytes4`.
+- 1077c7f5: Fixed an issue where `mud.config.ts` source file was not included in the package, causing TS errors downstream.
+- 59054203: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- 6db95ce1: Fixed `StoreCore` to pass `previousEncodedLengths` into `onBeforeSpliceDynamicData`.
+- 5d737cf2: Updated the `debug` util to pipe to `stdout` and added an additional util to explicitly pipe to `stderr` when needed.
+- 5ac4c97f: Fixed M-04 Memory Corruption on Load From Storage
+  It only affected external use of `Storage.load` with a `memoryPointer` argument
+- e4817174: Removed unused imports from various files in the `store` and `world` packages.
+- Updated dependencies [933b54b5]
+- Updated dependencies [59054203]
+- Updated dependencies [1b5eb0d0]
+- Updated dependencies [5d737cf2]
+- Updated dependencies [4c1dcd81]
+- Updated dependencies [5df1f31b]
+  - @latticexyz/common@2.0.0-next.15
+  - @latticexyz/config@2.0.0-next.15
+  - @latticexyz/schema-type@2.0.0-next.15
+
 ## 2.0.0-next.14
 
 ### Patch Changes

@@ -4,11 +4,14 @@ import {
   keySchemaToHex,
   valueSchemaToFieldLayoutHex,
   valueSchemaToHex,
-} from "@latticexyz/protocol-parser";
+} from "@latticexyz/protocol-parser/internal";
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { StorageAdapterLog, Table, storeTables } from "./common";
 import { flattenSchema } from "./flattenSchema";
 
+/**
+ * @internal
+ */
 export function tableToLog(table: Table): StorageAdapterLog & { eventName: "Store_SetRecord" } {
   return {
     eventName: "Store_SetRecord",

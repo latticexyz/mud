@@ -1,10 +1,9 @@
-import { System, WorldDeploy, worldTables } from "./common";
+import { DeployedSystem, WorldDeploy, worldTables } from "./common";
 import { Client } from "viem";
 import { getResourceIds } from "./getResourceIds";
-import { hexToResource } from "@latticexyz/common";
+import { hexToResource, resourceToLabel } from "@latticexyz/common";
 import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
-import { resourceLabel } from "./resourceLabel";
 import { getFunctions } from "./getFunctions";
 import { getResourceAccess } from "./getResourceAccess";
 
@@ -14,7 +13,7 @@ export async function getSystems({
 }: {
   readonly client: Client;
   readonly worldDeploy: WorldDeploy;
-}): Promise<readonly Omit<System, "abi" | "bytecode" | "deployedBytecodeSize">[]> {
+}): Promise<readonly DeployedSystem[]> {
   const [resourceIds, functions, resourceAccess] = await Promise.all([
     getResourceIds({ client, worldDeploy }),
     getFunctions({ client, worldDeploy }),
@@ -22,9 +21,9 @@ export async function getSystems({
   ]);
   const systems = resourceIds.map(hexToResource).filter((resource) => resource.type === "system");
 
-  debug("looking up systems", systems.map(resourceLabel).join(", "));
+  debug("looking up systems", systems.map(resourceToLabel).join(", "));
   return await Promise.all(
-    systems.map(async (system) => {
+    systems.map(async (system): Promise<DeployedSystem> => {
       const { system: address, publicAccess } = await getTableValue({
         client,
         worldDeploy,
@@ -43,6 +42,6 @@ export async function getSystems({
           .map(({ address }) => address),
         functions: systemFunctions,
       };
-    })
+    }),
   );
 }

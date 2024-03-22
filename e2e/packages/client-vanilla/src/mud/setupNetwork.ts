@@ -4,7 +4,7 @@ import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
-import { createBurnerAccount, getContract, resourceToHex, transportObserver } from "@latticexyz/common";
+import { createBurnerAccount, getContract, transportObserver } from "@latticexyz/common";
 import mudConfig from "contracts/mud.config";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
@@ -29,8 +29,7 @@ export async function setupNetwork() {
   const worldContract = getContract({
     address: networkConfig.worldAddress as Hex,
     abi: IWorldAbi,
-    publicClient,
-    walletClient: burnerWalletClient,
+    client: { public: publicClient, wallet: burnerWalletClient },
   });
 
   const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
@@ -41,11 +40,7 @@ export async function setupNetwork() {
     startBlock: BigInt(networkConfig.initialBlockNumber),
     indexerUrl: networkConfig.indexerUrl ?? undefined,
     filters: Object.entries(mudConfig.tables).map(([, table]) => {
-      const tableId = resourceToHex({
-        type: table.offchainOnly ? "offchainTable" : "table",
-        namespace: mudConfig.namespace,
-        name: table.name,
-      });
+      const tableId = table.tableId;
       if (table.name === mudConfig.tables.Position.name) {
         return {
           tableId,

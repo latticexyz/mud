@@ -26,7 +26,7 @@ async function run() {
       console.error(chalk.red(msg));
       if (msg.includes("Missing required argument")) {
         console.log(
-          chalk.yellow(`Run 'pnpm mud ${process.argv[2]} --help' for a list of available and required arguments.`)
+          chalk.yellow(`Run 'pnpm mud ${process.argv[2]} --help' for a list of available and required arguments.`),
         );
       }
       console.log("");

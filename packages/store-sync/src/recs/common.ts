@@ -1,5 +1,5 @@
 import { Metadata } from "@latticexyz/recs";
-import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser/internal";
 
 export type StoreComponentMetadata = Metadata & {
   componentName: string;

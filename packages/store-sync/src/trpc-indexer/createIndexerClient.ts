@@ -14,6 +14,7 @@ type CreateIndexerClientOptions = {
  *
  * @param {CreateIndexerClientOptions} options See `CreateIndexerClientOptions`.
  * @returns {CreateTRPCProxyClient<AppRouter>} A typed tRPC client.
+ * @deprecated Use the `createIndexerClient` export from `@latticexyz/store-sync/indexer-client
  */
 export function createIndexerClient({ url }: CreateIndexerClientOptions): CreateTRPCProxyClient<AppRouter> {
   return createTRPCProxyClient<AppRouter>({

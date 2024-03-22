@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
-import { ERC165_INTERFACE_ID } from "./IERC165.sol";
-import { IWorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "./IWorldContextConsumer.sol";
+import { IERC165 } from "./IERC165.sol";
+import { IWorldContextConsumer } from "./IWorldContextConsumer.sol";
 
 // The context size is 20 bytes for msg.sender, and 32 bytes for msg.value
 uint256 constant CONTEXT_BYTES = 20 + 32;
 
 /**
  * @title WorldContextConsumer - Extracting trusted context values from appended calldata.
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This contract is designed to extract trusted context values (like msg.sender and msg.value)
  * from the appended calldata. It provides mechanisms similar to EIP-2771 (https://eips.ethereum.org/EIPS/eip-2771),
  * but allowing any contract to be the trusted forwarder.
@@ -40,7 +41,7 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
    * @return The address of the World contract that routed the call to this WorldContextConsumer.
    */
   function _world() public view returns (address) {
-    return StoreSwitch.getStoreAddress();
+    return WorldContextConsumerLib._world();
   }
 
   /**
@@ -50,10 +51,15 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
    * @return True if the interface is supported, false otherwise.
    */
   function supportsInterface(bytes4 interfaceId) public pure virtual returns (bool) {
-    return interfaceId == WORLD_CONTEXT_CONSUMER_INTERFACE_ID || interfaceId == ERC165_INTERFACE_ID;
+    return interfaceId == type(IWorldContextConsumer).interfaceId || interfaceId == type(IERC165).interfaceId;
   }
 }
 
+/**
+ * @title WorldContextConsumerLib
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ * @notice Helpers for working with data in the context of calling a World
+ */
 library WorldContextConsumerLib {
   /**
    * @notice Extract the `msg.sender` from the context appended to the calldata.
@@ -65,7 +71,7 @@ library WorldContextConsumerLib {
       // Load 32 bytes from calldata at position calldatasize() - context size,
       // then shift left 96 bits (to right-align the address)
       // 96 = 256 - 20 * 8
-      sender := shr(96, calldataload(sub(calldatasize(), CONTEXT_BYTES)))
+      sender := shr(0x60, calldataload(sub(calldatasize(), CONTEXT_BYTES)))
     }
     if (sender == address(0)) sender = msg.sender;
   }
@@ -78,7 +84,7 @@ library WorldContextConsumerLib {
   function _msgValue() internal pure returns (uint256 value) {
     assembly {
       // Load 32 bytes from calldata at position calldatasize() - 32 bytes,
-      value := calldataload(sub(calldatasize(), 32))
+      value := calldataload(sub(calldatasize(), 0x20))
     }
   }
 
@@ -93,6 +99,7 @@ library WorldContextConsumerLib {
 
 /**
  * @title WorldContextProviderLib - Utility functions to call contracts with context values appended to calldata.
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This library provides functions to make calls or delegatecalls to other contracts,
  * appending the context values (like msg.sender and msg.value) to the calldata for WorldContextConsumer to consume.
  */

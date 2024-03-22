@@ -7,6 +7,8 @@ export interface ForgeConfig {
   script: string;
   out: string;
   libs: string[];
+  cache: boolean;
+  cache_path: string;
   eth_rpc_url: string | null;
 
   // compiler
@@ -85,7 +87,7 @@ export async function getRemappings(profile?: string): Promise<[string, string][
  */
 export async function forge(
   args: string[],
-  options?: { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv }
+  options?: { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv },
 ): Promise<void> {
   const execOptions: Options<string> = {
     env: { FOUNDRY_PROFILE: options?.profile, ...options?.env },

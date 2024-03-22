@@ -1,22 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { FieldLayout } from "./FieldLayout.sol";
-import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
-import { PackedCounter } from "./PackedCounter.sol";
+import { IERC165 } from "./IERC165.sol";
+import { EncodedLengths } from "./EncodedLengths.sol";
 import { ResourceId } from "./ResourceId.sol";
 
-// ERC-165 Interface ID (see https://eips.ethereum.org/EIPS/eip-165)
-bytes4 constant STORE_HOOK_INTERFACE_ID = IStoreHook.onBeforeSetRecord.selector ^
-  IStoreHook.onAfterSetRecord.selector ^
-  IStoreHook.onBeforeSpliceStaticData.selector ^
-  IStoreHook.onAfterSpliceStaticData.selector ^
-  IStoreHook.onBeforeSpliceDynamicData.selector ^
-  IStoreHook.onAfterSpliceDynamicData.selector ^
-  IStoreHook.onBeforeDeleteRecord.selector ^
-  IStoreHook.onAfterDeleteRecord.selector ^
-  ERC165_INTERFACE_ID;
-
+/**
+ * @title IStoreHook
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ */
 interface IStoreHook is IERC165 {
   /// @notice Error emitted when a function is not implemented.
   error StoreHook_NotImplemented();
@@ -34,7 +27,7 @@ interface IStoreHook is IERC165 {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) external;
@@ -52,7 +45,7 @@ interface IStoreHook is IERC165 {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) external;
@@ -107,7 +100,7 @@ interface IStoreHook is IERC165 {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory data
   ) external;
 
@@ -129,7 +122,7 @@ interface IStoreHook is IERC165 {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory data
   ) external;
 

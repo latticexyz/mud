@@ -14,11 +14,8 @@ components.Counter.update$.subscribe((update) => {
   document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
 });
 
-// Just for demonstration purposes: we create a global function that can be
-// called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
-(window as any).increment = async () => {
-  console.log("new counter value:", await increment());
-};
+// Attach the increment function to the html element with ID `incrementButton` (if it exists)
+document.querySelector("#incrementButton")?.addEventListener("click", increment);
 
 // https://vitejs.dev/guide/env-and-mode.html
 if (import.meta.env.DEV) {

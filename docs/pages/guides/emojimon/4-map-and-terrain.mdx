@@ -450,7 +450,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { Obstruction, Player, Position }: ClientComponents
+  { Obstruction, Player, Position }: ClientComponents,
 ) {
   const isObstructed = (x: number, y: number) => {
     return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
@@ -582,8 +582,21 @@ Now if you try moving onto a tile with a boulder you’ll see that you can’t!
 
 ## Wrap map boundary
 
+<<<<<<< HEAD
 Currently, players can move off of the bounds of the map.
 We'll address this by updating the `spawn` and `move` methods in `MapSystem.sol` to wrap the player coordinate around the map size.
+=======
+
+```sh copy
+git reset --hard 952cf5032af33945872a99a95eaa59379a5df536
+```
+
+## Wraparound movement
+
+Players can move off of the bounds of the map.
+We'll address this by updating the `spawn` and `moveTo` methods in `MapSystem.sol` to wrap the player coordinate around the map size.
+
+> > > > > > > origin/main
 
 <CollapseCode>
 
@@ -661,7 +674,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { MapConfig, Obstruction, Player, Position }: ClientComponents
+  { MapConfig, Obstruction, Player, Position }: ClientComponents,
 ) {
   const wrapPosition = (x: number, y: number) => {
     const mapConfig = getComponentValue(MapConfig, singletonEntity);
@@ -777,5 +790,9 @@ export function createSystemCalls(
 You can run this command to update all the files to this point in the game's development.
 
 ```sh copy
+<<<<<<< HEAD
 git reset --hard b7e3ee85fd1756fd2a5aba87e0f0ab5b3407d359
+=======
+git reset --hard 11a3036da8e40ffd25d5f0098485c014d8e6c1c4
+>>>>>>> origin/main
 ```

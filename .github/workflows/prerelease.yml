@@ -1,16 +1,14 @@
 name: Prerelease 🚀
 
 on:
-  push:
-    branches:
-      # Target main branch
-      - "main"
+  workflow_dispatch:
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+# Ensure only one workflow/job is publishing to npm at a time
+concurrency: publish-to-npm
 
 jobs:
   prerelease:
-    name: Changests Prerelease
+    name: Changesets Prerelease
     if: github.repository == 'latticexyz/mud'
     runs-on: ubuntu-latest
     # Permissions necessary for Changesets to push a new branch and open PRs
@@ -21,8 +19,8 @@ jobs:
       pull-requests: write
       id-token: write
     steps:
-      - uses: actions/checkout@v3
-        name: Checkout Repo
+      - name: Checkout Repo
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 

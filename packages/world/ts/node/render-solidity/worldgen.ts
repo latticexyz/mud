@@ -1,20 +1,21 @@
 import { readFileSync } from "fs";
 import path from "path";
 import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum } from "@latticexyz/common/codegen";
-import { StoreConfig } from "@latticexyz/store";
 import { renderSystemInterface } from "./renderSystemInterface";
-import { renderWorld } from "./renderWorld";
+import { renderWorldInterface } from "./renderWorldInterface";
 import { resolveWorldConfig } from "../../config/resolveWorldConfig";
-import { WorldConfig } from "../../config/types";
+import { World as WorldConfig } from "../../config/v2/output";
+import { worldToV1 } from "../../config/v2/compat";
 
 export async function worldgen(
-  config: StoreConfig & WorldConfig,
+  configV2: WorldConfig,
   existingContracts: { path: string; basename: string }[],
-  outputBaseDirectory: string
+  outputBaseDirectory: string,
 ) {
+  const config = worldToV1(configV2);
   const resolvedConfig = resolveWorldConfig(
     config,
-    existingContracts.map(({ basename }) => basename)
+    existingContracts.map(({ basename }) => basename),
   );
 
   const worldgenBaseDirectory = path.join(outputBaseDirectory, config.worldgenDirectory);
@@ -42,11 +43,9 @@ export async function worldgen(
       }
     });
     const systemInterfaceName = `I${system.basename}`;
-    // create an interface using the external functions and imports
-    const { name } = resolvedConfig.systems[system.basename];
     const output = renderSystemInterface({
       name: systemInterfaceName,
-      functionPrefix: config.namespace === "" ? "" : `${config.namespace}_${name}_`,
+      functionPrefix: config.namespace === "" ? "" : `${config.namespace}__`,
       functions,
       errors,
       imports,
@@ -64,7 +63,7 @@ export async function worldgen(
   }
 
   // render IWorld
-  const output = renderWorld({
+  const output = renderWorldInterface({
     interfaceName: config.worldInterfaceName,
     imports: systemInterfaceImports,
     storeImportPath: config.storeImportPath,
@@ -72,5 +71,5 @@ export async function worldgen(
   });
   // write to file
   const fullOutputPath = path.join(worldgenBaseDirectory, config.worldInterfaceName + ".sol");
-  await formatAndWriteSolidity(output, fullOutputPath, "Generated system interface");
+  await formatAndWriteSolidity(output, fullOutputPath, "Generated world interface");
 }

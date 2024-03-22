@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 
@@ -9,8 +9,10 @@ import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { createWorld } from "./createWorld.sol";
 
 contract UtilsTestSystem is System {
   function systemNamespace() public view returns (bytes16) {
@@ -25,14 +27,18 @@ contract UtilsTest is Test {
   error SomeError(uint256 someValue, string someString);
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world = createWorld();
+    StoreSwitch.setStoreAddress(address(world));
   }
 
   function _registerAndGetNamespace(bytes14 namespace) internal returns (bytes16 returnedNamespace) {
     UtilsTestSystem testSystem = new UtilsTestSystem();
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+    if (!ResourceIds.getExists(namespaceId)) {
+      world.registerNamespace(namespaceId);
+    }
     world.registerSystem(systemId, testSystem, true);
 
     bytes memory data = world.call(systemId, abi.encodeCall(UtilsTestSystem.systemNamespace, ()));

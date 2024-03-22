@@ -275,14 +275,14 @@ Example: encoded static data of a table with a `uint64` and a `uint40` field.
 
 ## Dynamic length data
 
-### Encoded lengths (`PackedCounter`)
+### Encoded lengths (`EncodedLengths`)
 
 Tables can have up to five dynamic length fields, each of which has a maximum size of `2**40` (~1 trillion) bytes.
 This makes it possible to pack the lengths of all dynamic length fields of a table in a single `bytes32` word, instead of prefixing each dynamic length field with 32 bytes to store its length.
 
-The data structure to store the lengths of all dynamic length fields is called `PackedCounter`.
+The data structure to store the lengths of all dynamic length fields is called `EncodedLengths`.
 
-Example: `PackedCounter` with 5 fields.
+Example: `EncodedLengths` with 5 fields.
 
 ```
 0x 0000000000000F 0000000001 0000000002 0000000003 0000000004 0000000005
@@ -325,17 +325,17 @@ It is used as an onchain gas optimization for storage operations on static lengt
 Example: `FieldLayout` with 3 fields (`uint64`, `uint40`, `address[]`).
 
 ```
-0x 0010 02 01 08080000000000000000000000000000000000000000000000000000
+0x 000D 02 01 08050000000000000000000000000000000000000000000000000000
   |----|--|--|--------------------------------------------------------|
   |    |  |  | Up to 28 static byte lengths, one byte each            |
-  |    |  |  | 8 (uint64), 5 (uint40), 0 (address[])                  |
+  |    |  |  | 8 (uint64), 5 (uint40)                  |
   |----|--|--|--------------------------------------------------------|
   |    |  | Number of dynamic length fields                           |
   |    |  | 1                                                         |
-  |----|--|--|--------------------------------------------------------|
+  |----|--|-----------------------------------------------------------|
   |    | Number of static length fields                               |
   |    | 2                                                            |
-  |----|--|--|--------------------------------------------------------|
+  |----|--------------------------------------------------------------|
   | Total byte length of all static length fields                     |
   | 13                                                                |
 ```
@@ -353,7 +353,7 @@ function _getStaticDataLocation(ResourceId tableId, bytes32[] memory keyTuple) i
 }
 ```
 
-The [encoded lengths](#encoded-lengths-packedcounter) of all dynamic length fields is stored in a single storage slot, which is determined by a hash of the table ID and the key tuple.
+The [encoded lengths](#encoded-lengths-encodedlengths) of all dynamic length fields is stored in a single storage slot, which is determined by a hash of the table ID and the key tuple.
 
 ```solidity
 function _getDynamicDataLengthLocation(ResourceId tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
@@ -370,13 +370,13 @@ function _getDynamicDataLocation(
   bytes32[] memory keyTuple,
   uint8 dynamicFieldIndex
 ) internal pure returns (uint256) {
-  return uint256(DYNMAIC_DATA_SLOT ^ bytes1(dynamicFieldIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
+  return uint256(DYNAMIC_DATA_SLOT ^ bytes1(dynamicFieldIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
 }
 ```
 
 ## Events
 
-Data emitted as part of events uses the same encoding for [static length data](#static-length-data), [encoded lengths](#encoded-lengths-packedcounter) and [dynamic length data](#dynamic-length-data-encoding) as described above.
+Data emitted as part of events uses the same encoding for [static length data](#static-length-data), [encoded lengths](#encoded-lengths-encodedlengths) and [dynamic length data](#dynamic-length-data-encoding) as described above.
 
 Unlike the [layout in storage](#storage-layout), where each dynamic length data field is stored in its own storage location, in events all data of dynamic length fields is concatenated to a single `bytes` blob.
 The encoded lengths emitted as part of the event contain the information required to slice up this concatenated `bytes` blob into the individual fields.

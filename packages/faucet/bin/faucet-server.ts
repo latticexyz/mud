@@ -18,8 +18,10 @@ const faucetAccount = privateKeyToAccount(env.FAUCET_PRIVATE_KEY);
 // @see https://fastify.dev/docs/latest/
 const server = fastify({
   maxParamLength: 5000,
+  logger: true,
 });
 
+await server.register(import("@fastify/compress"));
 await server.register(import("@fastify/cors"));
 
 // k8s healthchecks

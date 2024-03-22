@@ -1,0 +1,36 @@
+name: Test published packages
+
+on:
+  workflow_call:
+    inputs:
+      tag-or-version:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      tag-or-version:
+        required: true
+        type: string
+
+jobs:
+  test-create-mud-project:
+    name: Test create-mud project
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest-16-cores, windows-latest]
+        template: [vanilla, react, react-ecs, phaser, threejs]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          sparse-checkout: .github
+
+      - name: Setup
+        uses: ./.github/actions/setup-prerequisites
+
+      - name: Test
+        run: |
+          pnpm create mud@${{ inputs.tag-or-version }} project --template ${{ matrix.template }}
+          pnpm --dir project run test

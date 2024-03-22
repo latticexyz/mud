@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
-import { STORE_VERSION } from "./version.sol";
 import { IStoreRead } from "./IStoreRead.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
-import { PackedCounter } from "./PackedCounter.sol";
+import { EncodedLengths } from "./EncodedLengths.sol";
 import { ResourceId } from "./ResourceId.sol";
 
 /**
  * @title StoreRead
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev A contract that provides read operations for storage tables using `StoreCore`.
  */
 contract StoreRead is IStoreRead {
@@ -52,7 +52,7 @@ contract StoreRead is IStoreRead {
   function getRecord(
     ResourceId tableId,
     bytes32[] calldata keyTuple
-  ) public view virtual returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
+  ) public view virtual returns (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData) {
     return StoreCore.getRecord(tableId, keyTuple);
   }
 
@@ -69,7 +69,7 @@ contract StoreRead is IStoreRead {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     FieldLayout fieldLayout
-  ) public view virtual returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
+  ) public view virtual returns (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData) {
     return StoreCore.getRecord(tableId, keyTuple, fieldLayout);
   }
 

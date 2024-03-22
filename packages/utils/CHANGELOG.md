@@ -1,5 +1,47 @@
 # Change Log
 
+## 2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- 52182f70d: Removed `keccak256` and `keccak256Coord` hash utils in favor of [viem's `keccak256`](https://viem.sh/docs/utilities/keccak256.html#keccak256).
+
+  ```diff
+  - import { keccak256 } from "@latticexyz/utils";
+  + import { keccak256, toHex } from "viem";
+
+  - const hash = keccak256("some string");
+  + const hash = keccak256(toHex("some string"));
+  ```
+
+  ```diff
+  - import { keccak256Coord } from "@latticexyz/utils";
+  + import { encodeAbiParameters, keccak256, parseAbiParameters } from "viem";
+
+    const coord = { x: 1, y: 1 };
+  - const hash = keccak256Coord(coord);
+  + const hash = keccak256(encodeAbiParameters(parseAbiParameters("int32, int32"), [coord.x, coord.y]));
+  ```
+
+### Patch Changes
+
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- 4e4a34150: bump to latest TS version (5.1.6)
+
+## 2.0.0-next.18
+
+## 2.0.0-next.17
+
+## 2.0.0-next.16
+
+## 2.0.0-next.15
+
+### Patch Changes
+
+- 59054203: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+
 ## 2.0.0-next.14
 
 ## 2.0.0-next.13

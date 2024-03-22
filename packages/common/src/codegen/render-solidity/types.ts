@@ -12,15 +12,18 @@ export interface RelativeImportDatum {
 export type ImportDatum = AbsoluteImportDatum | RelativeImportDatum;
 
 export interface StaticResourceData {
-  /** Name of the table id constant to render. */
-  tableIdName: string;
+  /** Table namespace string */
   namespace: string;
+  /** Table name string */
   name: string;
+  /** Whether the table is offchain only (does not use storage) */
   offchainOnly: boolean;
 }
 
 export interface RenderType {
+  /** Fully-qualified name of the user-defined type (may include a library name as prefix) */
   typeId: string;
+  /** Fully-qualified name of the user-defined type (may include a library name as prefix), followed by location (none/memory/storage) */
   typeWithLocation: string;
   /** The name of the enum element in SchemaType to use for schema registration (e.g. "UINT256_ARRAY") */
   enumName: string;

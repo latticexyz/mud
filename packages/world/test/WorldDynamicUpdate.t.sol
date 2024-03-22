@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -21,7 +21,7 @@ import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
 import { AddressArray } from "./codegen/tables/AddressArray.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { createWorld } from "./createWorld.sol";
 
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/IWorldErrors.sol";
@@ -46,16 +46,15 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
   bytes internal encodedData;
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
 
     key = "testKey";
     keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     singletonKey = new bytes32[](0);
-    FieldLayout fieldLayout = AddressArray.getFieldLayout();
-    Schema valueSchema = AddressArray.getValueSchema();
+    FieldLayout fieldLayout = AddressArray._fieldLayout;
+    Schema valueSchema = AddressArray._valueSchema;
 
     // Initialize the data in setUp so that slots aren't warm in tests (to test cold update)
 
@@ -64,6 +63,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
     tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
 
     // Register a new table
+    world.registerNamespace(tableId.getNamespaceId());
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
     // Create data
@@ -83,7 +83,7 @@ contract UpdateInDynamicFieldTest is Test, GasReporter {
   }
 
   function testPopFromDynamicField() public {
-    FieldLayout fieldLayout = AddressArray.getFieldLayout();
+    FieldLayout fieldLayout = AddressArray._fieldLayout;
 
     // Expect the data to be written
     assertEq(AddressArray.get(tableId, key), initData);

@@ -15,18 +15,14 @@ The way you use it is very similar to the way you'd use `useState`, but with a b
 To initialize the synchronization you use [`syncToZustand`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/zustand/syncToZustand.ts).
 
 ```ts copy
-  import { syncToZustand } from "@latticexyz/store-sync/zustand";
+import { syncToZustand } from "@latticexyz/store-sync/zustand";
 
-  .
-  .
-  .
-
-  const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
-    config: mudConfig,
-    address: networkConfig.worldAddress as Hex,
-    publicClient,
-    startBlock: BigInt(networkConfig.initialBlockNumber),
-  });
+const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
+  config: mudConfig,
+  address: networkConfig.worldAddress as Hex,
+  publicClient,
+  startBlock: BigInt(networkConfig.initialBlockNumber),
+});
 ```
 
 The most important fields returned by `syncToZustand` are:
@@ -198,15 +194,11 @@ If your application does not use React, you can still use Zustand to read MUD da
 ```ts copy
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 
-  .
-  .
-  .
-
 const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
-    config: mudConfig,
-    address: networkConfig.worldAddress as Hex,
-    publicClient,
-    startBlock: BigInt(networkConfig.initialBlockNumber),
+  config: mudConfig,
+  address: networkConfig.worldAddress as Hex,
+  publicClient,
+  startBlock: BigInt(networkConfig.initialBlockNumber),
 });
 ```
 
@@ -457,8 +449,7 @@ To read data you use `useStore.getState()`. It supports the same functions as th
 
 1. Browse to the application.
 
-1. Open the console.
-   [Here are in the instructions on how to do it in Chrome](https://developer.chrome.com/docs/devtools/console/javascript/).
+1. [Open the console (see Chrome instructions)](https://developer.chrome.com/docs/devtools/console/javascript/).
 
 1. Run this command to call `zustand` which we defined in `index.ts`:
 

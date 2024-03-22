@@ -13,7 +13,7 @@
     "@improbable-eng/grpc-web": "^0.15.0",
     "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
-    "@latticexyz/phaserx": "link:../../../../packages/phaserx",
+    "@latticexyz/phaserx": "2.0.0-next.17",
     "@latticexyz/react": "link:../../../../packages/react",
     "@latticexyz/recs": "link:../../../../packages/recs",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
@@ -35,7 +35,7 @@
     "styled-components": "^5.3.10",
     "threads": "^1.7.0",
     "use-resize-observer": "^9.1.0",
-    "viem": "1.14.0",
+    "viem": "2.7.12",
     "vite": "^4.2.1",
     "zustand": "^4.3.8"
   },
@@ -43,10 +43,10 @@
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
     "@types/styled-components": "^5.1.26",
-    "@typescript-eslint/eslint-plugin": "^5.46.1",
-    "@typescript-eslint/parser": "^5.46.1",
+    "@typescript-eslint/eslint-plugin": "7.1.1",
+    "@typescript-eslint/parser": "7.1.1",
     "@vitejs/plugin-react": "^3.1.0",
-    "eslint": "^8.29.0",
-    "typescript": "5.1.6"
+    "eslint": "8.57.0",
+    "typescript": "5.4.2"
   }
 }

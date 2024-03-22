@@ -33,7 +33,7 @@ Before continuing, try figuring out what components and systems would need to be
 
 Let's start by adding three new tables to `mud.config.ts`.
 
-- `Encounterable` can an entity can engage in an encounter
+- `Encounterable` can an entity engage in an encounter.
 - `EncounterTrigger` can an entity trigger an encounter when moved on by a player.
 - `Encounter` associate a player with an encounter.
 
@@ -399,7 +399,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { Encounter, MapConfig, Obstruction, Player, Position }: ClientComponents
+  { Encounter, MapConfig, Obstruction, Player, Position }: ClientComponents,
 ) {
   const wrapPosition = (x: number, y: number) => {
     const mapConfig = getComponentValue(MapConfig, singletonEntity);
@@ -876,7 +876,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position }: ClientComponents
+  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position }: ClientComponents,
 ) {
   const wrapPosition = (x: number, y: number) => {
     const mapConfig = getComponentValue(MapConfig, singletonEntity);
@@ -1014,6 +1014,16 @@ export function createSystemCalls(
 
 When you click the button, the `EncounterScreen` creates a pending toast and kicks off the transaction by calling our `throwBall` method above. We use `awaitStreamValue` to ensure the transaction went through and MUD has updated the client component data. After that, we can get the result of the catch attempt and return it so that the `EncounterScreen` can render the proper message in the toast.
 
+# <<<<<<< HEAD
+
+You can run this command to update all the files to this point in the game's development.
+
+```sh copy
+git reset --hard 9bf5f8478847d90430a90a345a3868bb379a18aa
+```
+
+> > > > > > > origin/main
+
 ## Flee encounters
 
 Last but not least, players should be able to flee encounters. We can add this with a `flee` method in `EncounterSystem.sol` as well. To keep it simple we’ll guarantee that the player can always run away safely.
@@ -1091,7 +1101,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position }: ClientComponents
+  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position }: ClientComponents,
 ) {
   const wrapPosition = (x: number, y: number) => {
     const mapConfig = getComponentValue(MapConfig, singletonEntity);

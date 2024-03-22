@@ -265,7 +265,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { Player, Position }: ClientComponents
+  { Player, Position }: ClientComponents,
 ) {
   const move = async (direction: Direction) => {
     if (!playerEntity) {
@@ -450,7 +450,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { Player, Position }: ClientComponents
+  { Player, Position }: ClientComponents,
 ) {
   const move = async (direction: Direction) => {
     if (!playerEntity) {

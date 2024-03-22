@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
+
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { IWorldErrors } from "./IWorldErrors.sol";
@@ -9,6 +11,7 @@ import { NamespaceOwner } from "./codegen/tables/NamespaceOwner.sol";
 
 /**
  * @title AccessControl
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Provides access control functions for checking permissions and ownership within a namespace.
  */
 library AccessControl {
@@ -48,6 +51,17 @@ library AccessControl {
   function requireOwner(ResourceId resourceId, address caller) internal view {
     if (NamespaceOwner._get(resourceId.getNamespaceId()) != caller) {
       revert IWorldErrors.World_AccessDenied(resourceId.toString(), caller);
+    }
+  }
+
+  /**
+   * @notice Check for existence of the given resource ID.
+   * @dev Reverts with IWorldErrors.World_ResourceNotFound if the resource does not exist.
+   * @param resourceId The resource ID to check existence for.
+   */
+  function requireExistence(ResourceId resourceId) internal view {
+    if (!ResourceIds._getExists(resourceId)) {
+      revert IWorldErrors.World_ResourceNotFound(resourceId, resourceId.toString());
     }
   }
 }

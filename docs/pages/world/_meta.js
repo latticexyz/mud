@@ -11,6 +11,6 @@ export default {
   modules: "Modules",
   reference: "Reference",
   "world-table-illustration": {
-    "display": "hidden"
+    display: "hidden",
   },
 };

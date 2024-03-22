@@ -1,9 +1,14 @@
 import worldPackageJson from "../../packages/world/package.json" assert { type: "json" };
 
 export default {
-  quickstart: "Quickstart",
-  introduction: "Introduction",
-  "protocol-vs-framework": "Protocol vs. Framework",
+  introduction: {
+    title: "What is MUD?",
+    theme: { breadcrumb: false },
+  },
+  quickstart: {
+    title: "Get started",
+    theme: { breadcrumb: false },
+  },
   protocol: {
     title: "Protocol",
     type: "separator",
@@ -14,14 +19,20 @@ export default {
     title: "Framework",
     type: "separator",
   },
+  config: "Config",
   cli: "CLI",
-  "state-sync": "State Sync",
   "state-query": "State Query",
   services: "Services",
-  plugins: "Plugins",
-  templates: "Templates",
+  "---": {
+    title: "", // no title renders as a line
+    type: "separator",
+  },
   guides: "Guides",
-  contribute: "Contribute",
+  templates: "Templates",
+  contribute: {
+    title: "Contribute",
+    theme: { breadcrumb: false },
+  },
   changelog: "Changelog",
   retrospectives: "Retrospectives",
   // --------------------
