@@ -63,7 +63,7 @@ async function seedAccount(to: Address, chain: Chain) {
   const walletClient = createWalletClient({
     account,
     chain,
-    transport: http("http://host.docker.internal:8545"),
+    transport: http("http://localhost:8545"),
   });
 
   await walletClient.sendTransaction({

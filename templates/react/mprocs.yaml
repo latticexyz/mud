@@ -7,4 +7,4 @@ procs:
     shell: pnpm run dev
   account-abstraction:
     cwd: packages/account-abstraction
-    shell: docker-compose up
+    shell: docker-compose up --build
