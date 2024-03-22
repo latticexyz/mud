@@ -39,44 +39,49 @@ Let's start by adding three new tables to `mud.config.ts`.
 
 <CollapseCode>
 
-```ts filename="packages/contracts/mud.config.ts" {9-20} copy showLineNumbers
-import { mudConfig } from "@latticexyz/world/register";
+```ts filename="packages/contracts/mud.config.ts" {9-19} copy showLineNumbers
+import { defineWorld } from "@latticexyz/world";
 
-export default mudConfig({
+export default defineWorld({
   enums: {
     Direction: ["North", "East", "South", "West"],
     TerrainType: ["None", "TallGrass", "Boulder"],
   },
   tables: {
     Encounter: {
-      keySchema: {
+      schema: {
         player: "bytes32",
-      },
-      valueSchema: {
         exists: "bool",
         monster: "bytes32",
         catchAttempts: "uint256",
       },
+      key: ["player"],
     },
     EncounterTrigger: "bool",
     Encounterable: "bool",
     MapConfig: {
-      keySchema: {},
-      dataStruct: false,
-      valueSchema: {
+      schema: {
         width: "uint32",
         height: "uint32",
         terrain: "bytes",
+      },
+      key: [],
+      codegen: {
+        dataStruct: false,
       },
     },
     Movable: "bool",
     Obstruction: "bool",
     Player: "bool",
     Position: {
-      dataStruct: false,
-      valueSchema: {
+      schema: {
+        id: "bytes32",
         x: "int32",
         y: "int32",
+      },
+      key: ["id"],
+      codegen: {
+        dataStruct: false,
       },
     },
   },
@@ -528,10 +533,10 @@ We'll add a new enum for `MonsterType` and use that in a new `Monster` table/com
 
 <CollapseCode>
 
-```ts filename="packages/contracts/mud.config.ts" {6,31} copy showLineNumbers
-import { mudConfig } from "@latticexyz/world/register";
+```ts filename="packages/contracts/mud.config.ts" {6,32} copy showLineNumbers
+import { defineWorld } from "@latticexyz/world";
 
-export default mudConfig({
+export default defineWorld({
   enums: {
     Direction: ["North", "East", "South", "West"],
     MonsterType: ["None", "Eagle", "Rat", "Caterpillar"],
@@ -539,24 +544,25 @@ export default mudConfig({
   },
   tables: {
     Encounter: {
-      keySchema: {
+      schema: {
         player: "bytes32",
-      },
-      valueSchema: {
         exists: "bool",
         monster: "bytes32",
         catchAttempts: "uint256",
       },
+      key: ["player"],
     },
     EncounterTrigger: "bool",
     Encounterable: "bool",
     MapConfig: {
-      keySchema: {},
-      dataStruct: false,
-      valueSchema: {
+      schema: {
         width: "uint32",
         height: "uint32",
         terrain: "bytes",
+      },
+      key: [],
+      codegen: {
+        dataStruct: false,
       },
     },
     Monster: "MonsterType",
@@ -564,10 +570,14 @@ export default mudConfig({
     Obstruction: "bool",
     Player: "bool",
     Position: {
-      dataStruct: false,
-      valueSchema: {
+      schema: {
+        id: "bytes32",
         x: "int32",
         y: "int32",
+      },
+      key: ["id"],
+      codegen: {
+        dataStruct: false,
       },
     },
   },
@@ -755,10 +765,10 @@ Go ahead and add both of these to the MUD config.
 
 <CollapseCode>
 
-```ts filename="packages/contracts/mud.config.ts" {6,32-41,45} copy showLineNumbers
-import { mudConfig } from "@latticexyz/world/register";
+```ts filename="packages/contracts/mud.config.ts" {6,33-43,47} copy showLineNumbers
+import { defineWorld } from "@latticexyz/world";
 
-export default mudConfig({
+export default defineWorld({
   enums: {
     Direction: ["North", "East", "South", "West"],
     MonsterCatchResult: ["Missed", "Caught", "Fled"],
@@ -767,34 +777,36 @@ export default mudConfig({
   },
   tables: {
     Encounter: {
-      keySchema: {
+      schema: {
         player: "bytes32",
-      },
-      valueSchema: {
         exists: "bool",
         monster: "bytes32",
         catchAttempts: "uint256",
       },
+      key: ["player"],
     },
     EncounterTrigger: "bool",
     Encounterable: "bool",
     MapConfig: {
-      keySchema: {},
-      dataStruct: false,
-      valueSchema: {
+      schema: {
         width: "uint32",
         height: "uint32",
         terrain: "bytes",
       },
+      key: [],
+      codegen: {
+        dataStruct: false,
+      },
     },
     MonsterCatchAttempt: {
-      offchainOnly: true,
-      dataStruct: false,
-      keySchema: {
+      type: "offchainTable",
+      schema: {
         encounter: "bytes32",
-      },
-      valueSchema: {
         result: "MonsterCatchResult",
+      },
+      key: ["encounter"],
+      codegen: {
+        dataStruct: false,
       },
     },
     Monster: "MonsterType",
@@ -803,10 +815,14 @@ export default mudConfig({
     OwnedBy: "bytes32",
     Player: "bool",
     Position: {
-      dataStruct: false,
-      valueSchema: {
+      schema: {
+        id: "bytes32",
         x: "int32",
         y: "int32",
+      },
+      key: ["id"],
+      codegen: {
+        dataStruct: false,
       },
     },
   },
@@ -1013,16 +1029,6 @@ export function createSystemCalls(
 </CollapseCode>
 
 When you click the button, the `EncounterScreen` creates a pending toast and kicks off the transaction by calling our `throwBall` method above. We use `awaitStreamValue` to ensure the transaction went through and MUD has updated the client component data. After that, we can get the result of the catch attempt and return it so that the `EncounterScreen` can render the proper message in the toast.
-
-# <<<<<<< HEAD
-
-You can run this command to update all the files to this point in the game's development.
-
-```sh copy
-git reset --hard 9bf5f8478847d90430a90a345a3868bb379a18aa
-```
-
-> > > > > > > origin/main
 
 ## Flee encounters
 

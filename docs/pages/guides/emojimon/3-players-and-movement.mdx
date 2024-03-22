@@ -16,18 +16,18 @@ MUD then autogenerates all of the files needed to make sure your app knows these
 
 We're going to start by defining three new tables:
 
-- `Player: 'bool'` - determine which entities are players (e.g. distinct wallet addresses).
-- `Movable: 'bool'` - determine whether or not an entity can move.
-- `Position: { valueSchema: { x: 'int32', y: 'int32' } }` - determine which position an entity is located on a 2D grid.
+- `Player` to determine which entities are players (e.g. distinct wallet addresses).
+- `Movable` to determine whether or not an entity can move.
+- `Position` to determine which position an entity is located on a 2D grid.
 
 The syntax is as follows:
 
 <CollapseCode>
 
-```tsx filename="packages/contract/mud.config.ts" {8-16} copy showLineNumbers
-import { mudConfig } from "@latticexyz/world/register";
+```tsx filename="packages/contract/mud.config.ts" {8-20} copy showLineNumbers
+import { defineWorld } from "@latticexyz/world";
 
-export default mudConfig({
+export default defineWorld({
   enums: {
     Direction: ["North", "East", "South", "West"],
   },
@@ -35,10 +35,14 @@ export default mudConfig({
     Movable: "bool",
     Player: "bool",
     Position: {
-      dataStruct: false,
-      valueSchema: {
+      schema: {
+        id: "bytes32",
         x: "int32",
         y: "int32",
+      },
+      key: ["id"],
+      codegen: {
+        dataStruct: false,
       },
     },
   },
@@ -51,32 +55,16 @@ export default mudConfig({
 
 <summary>Explanation</summary>
 
-```typescript
-    Movable: "bool",
-    Player: "bool",
-```
-
-When we do not specify a key schema for a table, MUD uses the default, a `bytes32` value.
-The key in these cases is the entity ID for the entities being described.
-As in most cases in the Ethereum ecosystem, there is no distinction between zero (or in the case of boolean values, `false`) and nothing.
+For `Movable` and `Player` tables, we use the "shorthand" table definition that just specifies a single value type. In these cases, MUD defaults the `schema` to an `id` key of `bytes32` and uses the specified type for the `value` field.
+The `id` key in these cases is the entity ID for the entities being described.
+In Solidity and the EVM, there is no distinction between an unset variable and zero/false.
 So by default entites are neither `Movable` nor a `Player`.
 
-```typescript
-    Position: {
-      dataStruct: false,
-      valueSchema: {
-        x: "int32",
-        y: "int32",
-      },
-    },
-```
-
-The `Position` of an entity includes both an `x` coordinate and a `y` coordinate.
-When a table has multiple fields, we use `valueSchema` inside a structure to describe them instead of just using a string with the Solidity field type.
+The `Position` table defines the full schema with an `id` key to match our other tables as well as `x` and `y` coordinate fields. For better ergonomics, we turn off the "data struct" codegen option so our table library methods return an `(x, y)` tuple instead of a struct.
 
 </details>
 
-If after modifying the file you get an error on the `pnpm dev` process, restart it.
+If after modifying the file you get an error on the `pnpm dev` process, restarting it should resolve the issue.
 
 ## Create the map system and its methods
 

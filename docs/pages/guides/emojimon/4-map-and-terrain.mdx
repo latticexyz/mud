@@ -19,31 +19,37 @@ Go ahead and add the `MapConfig` as a singleton table in the MUD config (`mud.co
 
 <CollapseCode>
 
-```ts filename="packages/contracts/mud.config.ts" {6,9-17} copy showLineNumbers
-import { mudConfig } from "@latticexyz/world/register";
+```ts filename="packages/contracts/mud.config.ts" {6,9-19} copy showLineNumbers
+import { defineWorld } from "@latticexyz/world";
 
-export default mudConfig({
+export default defineWorld({
   enums: {
     Direction: ["North", "East", "South", "West"],
     TerrainType: ["None", "TallGrass", "Boulder"],
   },
   tables: {
     MapConfig: {
-      keySchema: {},
-      dataStruct: false,
-      valueSchema: {
+      schema: {
         width: "uint32",
         height: "uint32",
         terrain: "bytes",
+      },
+      key: [],
+      codegen: {
+        dataStruct: false,
       },
     },
     Movable: "bool",
     Player: "bool",
     Position: {
-      dataStruct: false,
-      valueSchema: {
+      schema: {
+        id: "bytes32",
         x: "int32",
         y: "int32",
+      },
+      key: ["id"],
+      codegen: {
+        dataStruct: false,
       },
     },
   },
@@ -56,33 +62,9 @@ export default mudConfig({
 
 <summary>Explanation</summary>
 
-```ts
-  enums: {
-    TerrainType: ["None", "TallGrass", "Boulder"],
-  },
-```
+Similar to the included `Direction` enum, we add one for terrain types.
 
-This is how you define an [enumeration](https://www.tutorialspoint.com/solidity/solidity_enums.htm).
-The Solidity code for enumerations goes in `packages/contracts/src/codegen/common.sol`.
-
-```ts
-    MapConfig: {
-      keySchema: {},
-```
-
-An empty key schema is the way you define [a singleton table](/store/advanced-features#singleton-table) (a table with only one value).
-
-```ts
-      dataStruct: false,
-      valueSchema: {
-        width: "uint32",
-        height: "uint32",
-        terrain: "bytes",
-      },
-    },
-```
-
-The terrain is a `bytes` blob for ease of storage. We'll encode and store our terrain data next.
+We also add a singleton table (a table with only one value) to hold our map configuration by using an empty `key`. The terrain is a `bytes` blob for ease of storage, which we'll encode and store in the next step.
 
 </details>
 
@@ -241,32 +223,38 @@ Let's start by adding the table to the MUD config:
 
 <CollapseCode>
 
-```ts filename="packages/contracts/mud.config.ts" {19} copy showLineNumbers
-import { mudConfig } from "@latticexyz/world/register";
+```ts filename="packages/contracts/mud.config.ts" {21} copy showLineNumbers
+import { defineWorld } from "@latticexyz/world";
 
-export default mudConfig({
+export default defineWorld({
   enums: {
     Direction: ["North", "East", "South", "West"],
     TerrainType: ["None", "TallGrass", "Boulder"],
   },
   tables: {
     MapConfig: {
-      keySchema: {},
-      dataStruct: false,
-      valueSchema: {
+      schema: {
         width: "uint32",
         height: "uint32",
         terrain: "bytes",
+      },
+      key: [],
+      codegen: {
+        dataStruct: false,
       },
     },
     Movable: "bool",
     Obstruction: "bool",
     Player: "bool",
     Position: {
-      dataStruct: false,
-      valueSchema: {
+      schema: {
+        id: "bytes32",
         x: "int32",
         y: "int32",
+      },
+      key: ["id"],
+      codegen: {
+        dataStruct: false,
       },
     },
   },
@@ -582,21 +570,8 @@ Now if you try moving onto a tile with a boulder you’ll see that you can’t!
 
 ## Wrap map boundary
 
-<<<<<<< HEAD
 Currently, players can move off of the bounds of the map.
 We'll address this by updating the `spawn` and `move` methods in `MapSystem.sol` to wrap the player coordinate around the map size.
-=======
-
-```sh copy
-git reset --hard 952cf5032af33945872a99a95eaa59379a5df536
-```
-
-## Wraparound movement
-
-Players can move off of the bounds of the map.
-We'll address this by updating the `spawn` and `moveTo` methods in `MapSystem.sol` to wrap the player coordinate around the map size.
-
-> > > > > > > origin/main
 
 <CollapseCode>
 
@@ -790,9 +765,5 @@ export function createSystemCalls(
 You can run this command to update all the files to this point in the game's development.
 
 ```sh copy
-<<<<<<< HEAD
 git reset --hard b7e3ee85fd1756fd2a5aba87e0f0ab5b3407d359
-=======
-git reset --hard 11a3036da8e40ffd25d5f0098485c014d8e6c1c4
->>>>>>> origin/main
 ```
