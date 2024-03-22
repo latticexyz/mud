@@ -41,7 +41,7 @@ describe("registerDelegationWithSignature", async () => {
     await webserver.close();
   });
 
-  it("calls the world", async () => {
+  it("can generate a signature and register a delegation", async () => {
     await openClientWithRootAccount(page);
     await waitForInitialSync(page);
 
@@ -49,7 +49,6 @@ describe("registerDelegationWithSignature", async () => {
     const clientOptions = {
       chain: mudFoundry,
       transport: transportObserver(http(mudFoundry.rpcUrls.default.http[0] ?? undefined)),
-      pollingInterval: 1000,
     } as const satisfies ClientConfig;
 
     const burnerAccount = createBurnerAccount("0x545824f54a7894601d34d6bb40a3dbb88064d3528a222914858fb32af616b89e");
@@ -92,10 +91,18 @@ describe("registerDelegationWithSignature", async () => {
 
     // Expect delegation to have been created
     const value = await callPageFunction(page, "getComponentValue", [
-      "UserDelegationNonces",
-      encodeEntity(worldConfigV1.tables.UserDelegationNonces.keySchema, { delegator: burnerAccount.address }),
+      "UserDelegationControl",
+      encodeEntity(worldConfigV1.tables.UserDelegationControl.keySchema, {
+        delegator: burnerAccount.address,
+        delegatee,
+      }),
     ]);
 
-    expect((value as { nonce: bigint }).nonce).toEqual(1n);
+    expect(value).toMatchInlineSnapshot(`
+        {
+          "__staticData": "0x73790000000000000000000000000000756e6c696d6974656400000000000000",
+          "delegationControlId": "0x73790000000000000000000000000000756e6c696d6974656400000000000000",
+        }
+      `);
   });
 });
