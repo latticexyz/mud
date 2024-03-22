@@ -3,7 +3,17 @@
  * (https://viem.sh/docs/getting-started.html).
  * This line imports the functions we need from it.
  */
-import { createPublicClient, fallback, webSocket, http, Hex, parseEther, ClientConfig, getContract } from "viem";
+import {
+  createPublicClient,
+  fallback,
+  webSocket,
+  http,
+  Hex,
+  parseEther,
+  ClientConfig,
+  getContract,
+  PublicClient,
+} from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -27,6 +37,21 @@ import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
+async function waitForDeployments(publicClient: PublicClient) {
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const code = await publicClient.getBytecode({
+      address: ENTRYPOINT_ADDRESS_V07,
+    });
+
+    if (code !== undefined) {
+      break;
+    }
+
+    await new Promise((f) => setTimeout(f, 1000));
+  }
+}
+
 export async function setupNetwork() {
   const networkConfig = await getNetworkConfig();
 
@@ -41,6 +66,8 @@ export async function setupNetwork() {
   } as const satisfies ClientConfig;
 
   const publicClient = createPublicClient(clientOptions);
+
+  await waitForDeployments(publicClient);
 
   /*
    * Create an observable for contract writes that we can
