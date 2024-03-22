@@ -147,7 +147,7 @@ const PlayerInfo = () => {
 
   if (!playerPosition) {
     return (
-      <div>
+      <div style={{ backgroundColor: "black", color: "white" }}>
         <table>
           <tbody>
             <tr>
