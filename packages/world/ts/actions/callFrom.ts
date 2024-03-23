@@ -18,18 +18,16 @@ import { getKeySchema, getValueSchema, decodeValueArgs, encodeKey } from "@latti
 import worldConfig from "../../mud.config";
 import IStoreReadAbi from "../../out/IStoreRead.sol/IStoreRead.abi.json";
 
+// Accepts either `worldFunctionToSystemFunction` or `publicClient`, but not both.
 type CallFromParameters = CallFromFunctionParameters | CallFromClientParameters;
-
 type CallFromBaseParameters = {
   worldAddress: Hex;
   delegatorAddress: Hex;
 };
-
 type CallFromFunctionParameters = CallFromBaseParameters & {
   worldFunctionToSystemFunction: (worldFunctionSelector: Hex) => Promise<SystemFunction>;
   publicClient?: never;
 };
-
 type CallFromClientParameters = CallFromBaseParameters & {
   worldFunctionToSystemFunction?: never;
   publicClient: PublicClient;
@@ -37,11 +35,15 @@ type CallFromClientParameters = CallFromBaseParameters & {
 
 type SystemFunction = { systemId: Hex; systemFunctionSelector: Hex };
 
-// By extending viem clients with this function after delegation, the delegation is automatically
-// applied to the World contract writes, meaning these writes are made on behalf of the delegator.
+// By extending viem clients with this function after delegation, the delegation is automatically applied to World contract writes.
+// This means that these writes are made on behalf of the delegator.
+// Internally, it transforms the write arguments to use `callFrom`.
 //
 // Accepts either `worldFunctionToSystemFunction` or `publicClient` as an argument.
-// If `publicClient` is provided, a read request to the World contract will occur.
+// `worldFunctionToSystemFunction` allows manually providing the mapping function, thus users can utilize their client store for the lookup.
+// If `publicClient` is provided instead, this function retrieves the corresponding system function from the World contract.
+//
+// The function mapping is cached to avoid redundant retrievals for the same World function.
 export function callFrom<TChain extends Chain, TAccount extends Account>(
   params: CallFromParameters,
 ): (client: WalletClient<Transport, TChain, TAccount>) => Pick<WalletActions<TChain, TAccount>, "writeContract"> {
@@ -95,10 +97,11 @@ async function worldFunctionToSystemFunction(
 ): Promise<SystemFunction> {
   const cacheKey = concat([params.worldAddress, worldFunctionSelector]);
 
-  // Skip the request if it has been called previously.
+  // Use cache if the function has been called previously.
   const cached = systemFunctionCache.get(cacheKey);
   if (cached) return cached;
 
+  // If a mapping function is provided, use it. Otherwise, call the World contract.
   const systemFunction = params.worldFunctionToSystemFunction
     ? await params.worldFunctionToSystemFunction(worldFunctionSelector)
     : await retrieveSystemFunctionFromContract(params.publicClient, params.worldAddress, worldFunctionSelector);
