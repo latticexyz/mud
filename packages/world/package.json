@@ -11,7 +11,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
-    "./actions": "./dist/ts/actions/index.js",
+    "./actions": "./dist/actions.js",
     "./internal": "./dist/internal.js",
     "./mud.config": "./dist/mud.config.js",
     "./config/v2": "./dist/config/v2.js",
