@@ -1,7 +1,7 @@
 import { transformIterator, uuid } from "@latticexyz/utils";
 import { mapObject } from "@latticexyz/utils";
 import { filter, map, Subject } from "rxjs";
-import { OptionalTypes } from "./constants";
+import { OptionalTypes, Type } from "./constants";
 import { createIndexer } from "./Indexer";
 import {
   Component,
@@ -204,6 +204,31 @@ export function getComponentValue<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
   entity: Entity,
 ): ComponentValue<S, T> | undefined {
+  function getComponentValueImpl<S extends Schema, T = unknown>(
+    schema: Schema,
+    entitySymbol: EntitySymbol,
+    values: ComponentValue<S, T>
+  ): Record<string, unknown> | undefined {
+    const value: Record<string, unknown> = {};
+    const schemaKeys = Object.keys(schema);
+
+    for (const key of schemaKeys) {
+      const val = values[key];
+
+      if (typeof val === "object") {
+        const temp = getComponentValueImpl(schema[key] as Schema, entitySymbol, val as ComponentValue<S, T>);
+        if (temp === undefined) return undefined;
+        value[key] = temp;
+      } else {
+        // val is a primitive value so we can just assign it
+        if (val === undefined && !OptionalTypes.includes(schema[key] as Type)) return undefined;
+        value[key] = val;
+      }
+    }
+
+    return value;
+  }
+
   const value: Record<string, unknown> = {};
   const entitySymbol = getEntitySymbol(entity);
 
@@ -211,8 +236,18 @@ export function getComponentValue<S extends Schema, T = unknown>(
   const schemaKeys = Object.keys(component.schema);
   for (const key of schemaKeys) {
     const val = component.values[key].get(entitySymbol);
-    if (val === undefined && !OptionalTypes.includes(component.schema[key])) return undefined;
-    value[key] = val;
+
+    if (typeof val === "object") {
+      // val is a nested schema so we need to recursive call getComponentValue
+      const temp = getComponentValueImpl(component.schema[key] as Schema, entitySymbol, val as ComponentValue<S, T>);
+
+      if (temp === undefined) return undefined;
+      value[key] = temp;
+    } else {
+      // val is a primitive value so we can just assign it
+      if (val === undefined && !OptionalTypes.includes(component.schema[key] as Type)) return undefined;
+      value[key] = val;
+    }
   }
 
   return value as ComponentValue<S, T>;
