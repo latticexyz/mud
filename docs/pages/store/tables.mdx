@@ -46,9 +46,7 @@ The table ID encodes the table's type and name in a 32-byte `ResourceId` value a
 import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
-.
-.
-.
+...
 
 // Using the `RESOURCE_TABLE` type makes it an onchain table
 ResourceId tableId = ResourceIdLib.encode({
@@ -61,10 +59,8 @@ ResourceId offchainTableId = ResourceIdLib.encode({
   typeId: RESOURCE_OFFCHAIN_TABLE,
   name: "Balance"
 });
-
-console.log("Onchain table id:%x", uint256(ResourceId.unwrap(tableId)));
-console.log("Offchain table id:%x", uint256(ResourceId.unwrap(offchainTableId)));
 ```
+
 
 ### Key schema
 
