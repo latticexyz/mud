@@ -4,6 +4,7 @@ export default defineConfig({
   entry: [
     "src/index.ts",
     "src/sqlite/index.ts",
+    "src/sse/index.ts",
     "src/postgres/index.ts",
     "src/postgres-decoded/index.ts",
     "src/recs/index.ts",
