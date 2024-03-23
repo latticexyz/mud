@@ -42,6 +42,7 @@ export function createIndexerClient({ url }: CreateIndexerClientOptions): Indexe
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isStorageAdapterBlock(data: any): data is Omit<StorageAdapterBlock, "blockNumber"> & { blockNumber: string } {
   return data && typeof data.blockNumber === "string" && Array.isArray(data.logs);
 }

@@ -1,4 +1,4 @@
-import { SchemaToPrimitives, decodeValueArgs, encodeKey } from "@latticexyz/protocol-parser";
+import { SchemaToPrimitives, decodeValueArgs, encodeKey } from "@latticexyz/protocol-parser/internal";
 import { WorldDeploy, worldAbi } from "./common";
 import { Client } from "viem";
 import { readContract } from "viem/actions";

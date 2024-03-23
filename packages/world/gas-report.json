@@ -57,13 +57,13 @@
     "file": "test/Factories.t.sol",
     "test": "testCreate2Factory",
     "name": "deploy contract via Create2",
-    "gasUsed": 4965450
+    "gasUsed": 4960875
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12657699
+    "gasUsed": 12796213
   },
   {
     "file": "test/World.t.sol",
@@ -117,7 +117,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterRootFunctionSelector",
     "name": "Register a root function selector",
-    "gasUsed": 107427
+    "gasUsed": 113693
   },
   {
     "file": "test/World.t.sol",

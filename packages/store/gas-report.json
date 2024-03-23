@@ -1,15 +1,21 @@
 [
   {
     "file": "test/Bytes.t.sol",
-    "test": "testSetBytes4Memory",
-    "name": "set bytes4 in bytes memory",
-    "gasUsed": 37
+    "test": "testGetBytes3",
+    "name": "get bytes3 with offset 1",
+    "gasUsed": 13
   },
   {
     "file": "test/Bytes.t.sol",
-    "test": "testSlice32",
-    "name": "slice bytes32 with offset 10",
+    "test": "testGetBytes32",
+    "name": "get bytes32 with offset 10",
     "gasUsed": 13
+  },
+  {
+    "file": "test/Bytes.t.sol",
+    "test": "testSetBytes4Memory",
+    "name": "set bytes4 in bytes memory",
+    "gasUsed": 37
   },
   {
     "file": "test/Callbacks.t.sol",
@@ -28,6 +34,36 @@
     "test": "testSetAndGet",
     "name": "Callbacks: push 1 element",
     "gasUsed": 32402
+  },
+  {
+    "file": "test/EncodedLengths.t.sol",
+    "test": "testAtIndex",
+    "name": "get value at index of EncodedLengths",
+    "gasUsed": 24
+  },
+  {
+    "file": "test/EncodedLengths.t.sol",
+    "test": "testGas",
+    "name": "pack 1 length into EncodedLengths",
+    "gasUsed": 35
+  },
+  {
+    "file": "test/EncodedLengths.t.sol",
+    "test": "testGas",
+    "name": "pack 4 lengths into EncodedLengths",
+    "gasUsed": 169
+  },
+  {
+    "file": "test/EncodedLengths.t.sol",
+    "test": "testGas",
+    "name": "get total of EncodedLengths",
+    "gasUsed": 15
+  },
+  {
+    "file": "test/EncodedLengths.t.sol",
+    "test": "testSetAtIndex",
+    "name": "set value at index of EncodedLengths",
+    "gasUsed": 283
   },
   {
     "file": "test/FieldLayout.t.sol",
@@ -376,36 +412,6 @@
     "test": "testSetGetDeleteInternal",
     "name": "delete record from Mixed (internal, warm)",
     "gasUsed": 7033
-  },
-  {
-    "file": "test/PackedCounter.t.sol",
-    "test": "testAtIndex",
-    "name": "get value at index of PackedCounter",
-    "gasUsed": 24
-  },
-  {
-    "file": "test/PackedCounter.t.sol",
-    "test": "testGas",
-    "name": "pack 1 length into PackedCounter",
-    "gasUsed": 35
-  },
-  {
-    "file": "test/PackedCounter.t.sol",
-    "test": "testGas",
-    "name": "pack 4 lengths into PackedCounter",
-    "gasUsed": 169
-  },
-  {
-    "file": "test/PackedCounter.t.sol",
-    "test": "testGas",
-    "name": "get total of PackedCounter",
-    "gasUsed": 15
-  },
-  {
-    "file": "test/PackedCounter.t.sol",
-    "test": "testSetAtIndex",
-    "name": "set value at index of PackedCounter",
-    "gasUsed": 283
   },
   {
     "file": "test/ResourceId.t.sol",

@@ -5,6 +5,8 @@ name: Build
 # because the release workflow includes a build+verify step.
 on:
   pull_request:
+    paths-ignore:
+      - "docs/**"
 
 jobs:
   build:

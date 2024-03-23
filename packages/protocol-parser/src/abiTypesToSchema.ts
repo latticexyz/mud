@@ -1,4 +1,4 @@
-import { DynamicAbiType, SchemaAbiType, StaticAbiType, isDynamicAbiType } from "@latticexyz/schema-type";
+import { DynamicAbiType, SchemaAbiType, StaticAbiType, isDynamicAbiType } from "@latticexyz/schema-type/internal";
 import { Schema } from "./common";
 
 export function abiTypesToSchema(abiTypes: SchemaAbiType[]): Schema {

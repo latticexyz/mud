@@ -35,7 +35,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
           
           (
             bytes memory _staticData,
-            PackedCounter _encodedLengths,
+            EncodedLengths _encodedLengths,
             bytes memory _dynamicData
             ) = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
             return decode(_staticData, _encodedLengths, _dynamicData);
@@ -129,7 +129,7 @@ export function renderRecordData(options: RenderTableOptions, namePrefix = "") {
 
   if (options.dynamicFields.length > 0) {
     result += `
-      PackedCounter _encodedLengths = encodeLengths(
+      EncodedLengths _encodedLengths = encodeLengths(
         ${renderArguments(options.dynamicFields.map(({ name }) => `${namePrefix}${name}`))}
       );
       bytes memory _dynamicData = encodeDynamic(
@@ -138,7 +138,7 @@ export function renderRecordData(options: RenderTableOptions, namePrefix = "") {
     `;
   } else {
     result += `
-      PackedCounter _encodedLengths;
+      EncodedLengths _encodedLengths;
       bytes memory _dynamicData;
     `;
   }
@@ -219,7 +219,7 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
       /**
        * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
        */
-      function decodeDynamic(PackedCounter _encodedLengths, bytes memory _blob) internal pure returns (${renderArguments(
+      function decodeDynamic(EncodedLengths _encodedLengths, bytes memory _blob) internal pure returns (${renderArguments(
         dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`),
       )}) {
         ${renderList(
@@ -260,7 +260,7 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
     */
     function decode(
       bytes memory ${staticFields.length > 0 ? "_staticData" : ""},
-      PackedCounter ${dynamicFields.length > 0 ? "_encodedLengths" : ""},
+      EncodedLengths ${dynamicFields.length > 0 ? "_encodedLengths" : ""},
       bytes memory ${dynamicFields.length > 0 ? "_dynamicData" : ""}
     ) internal pure returns (${renderedDecodedRecord}) {
   `;

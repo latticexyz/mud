@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 struct TwoFieldsData {
@@ -144,7 +144,7 @@ library TwoFields {
   function get(ResourceId _tableId) internal view returns (TwoFieldsData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -158,7 +158,7 @@ library TwoFields {
   function _get(ResourceId _tableId) internal view returns (TwoFieldsData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -172,7 +172,7 @@ library TwoFields {
   function set(ResourceId _tableId, bool value1, bool value2) internal {
     bytes memory _staticData = encodeStatic(value1, value2);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -186,7 +186,7 @@ library TwoFields {
   function _set(ResourceId _tableId, bool value1, bool value2) internal {
     bytes memory _staticData = encodeStatic(value1, value2);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -200,7 +200,7 @@ library TwoFields {
   function set(ResourceId _tableId, TwoFieldsData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.value1, _table.value2);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -214,7 +214,7 @@ library TwoFields {
   function _set(ResourceId _tableId, TwoFieldsData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.value1, _table.value2);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -226,9 +226,9 @@ library TwoFields {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (bool value1, bool value2) {
-    value1 = (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    value1 = (_toBool(uint8(Bytes.getBytes1(_blob, 0))));
 
-    value2 = (_toBool(uint8(Bytes.slice1(_blob, 1))));
+    value2 = (_toBool(uint8(Bytes.getBytes1(_blob, 1))));
   }
 
   /**
@@ -239,7 +239,7 @@ library TwoFields {
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) internal pure returns (TwoFieldsData memory _table) {
     (_table.value1, _table.value2) = decodeStatic(_staticData);
@@ -277,10 +277,10 @@ library TwoFields {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(bool value1, bool value2) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(bool value1, bool value2) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(value1, value2);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     return (_staticData, _encodedLengths, _dynamicData);

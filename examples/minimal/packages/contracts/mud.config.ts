@@ -1,8 +1,7 @@
-import { mudConfig } from "@latticexyz/world/register";
+import { defineWorld } from "@latticexyz/world";
+import { resolveTableId } from "@latticexyz/config/library";
 
-import { resolveTableId } from "@latticexyz/config";
-
-export default mudConfig({
+export default defineWorld({
   systems: {
     IncrementSystem: {
       name: "increment",
@@ -15,26 +14,27 @@ export default mudConfig({
   ],
   tables: {
     CounterTable: {
-      keySchema: {},
-      valueSchema: {
+      schema: {
         value: "uint32",
       },
-      storeArgument: true,
+      key: [],
+      codegen: { storeArgument: true },
     },
     MessageTable: {
-      keySchema: {},
-      valueSchema: {
+      type: "offchainTable",
+      schema: {
         value: "string",
       },
-      offchainOnly: true,
+      key: [],
     },
     Inventory: {
-      keySchema: {
+      schema: {
         owner: "address",
         item: "uint32",
         itemVariant: "uint32",
+        amount: "uint32",
       },
-      valueSchema: { amount: "uint32" },
+      key: ["owner", "item", "itemVariant"],
     },
   },
   modules: [

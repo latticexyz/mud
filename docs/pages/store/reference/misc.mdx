@@ -57,14 +57,15 @@ function setBytes4(bytes memory input, uint256 index, bytes4 overwrite) internal
 | -------- | ------- | ------------------------------------------------------------------------- |
 | `<none>` | `bytes` | The modified bytes blob with the new 4-byte value at the specified index. |
 
-#### slice1
+#### getBytes1
 
-SLICE
+GET
+Used by codegen libraries
 
 _Extracts a single byte from a bytes blob starting at a specific position._
 
 ```solidity
-function slice1(bytes memory data, uint256 start) internal pure returns (bytes1 output);
+function getBytes1(bytes memory data, uint256 start) internal pure returns (bytes1 output);
 ```
 
 **Parameters**
@@ -80,12 +81,12 @@ function slice1(bytes memory data, uint256 start) internal pure returns (bytes1 
 | -------- | -------- | ------------------------------------------------------------------------- |
 | `output` | `bytes1` | The extracted bytes1 value from the specified position in the bytes blob. |
 
-#### slice1
+#### getBytes1
 
 _Extracts a single byte from a bytes32 value starting at a specific position._
 
 ```solidity
-function slice1(bytes32 data, uint256 start) internal pure returns (bytes1 output);
+function getBytes1(bytes32 data, uint256 start) internal pure returns (bytes1 output);
 ```
 
 **Parameters**
@@ -101,12 +102,12 @@ function slice1(bytes32 data, uint256 start) internal pure returns (bytes1 outpu
 | -------- | -------- | ---------------------------------------------------------------------------- |
 | `output` | `bytes1` | The extracted bytes1 value from the specified position in the bytes32 value. |
 
-#### slice2
+#### getBytes2
 
 _Extracts a 2-byte sequence from a bytes blob starting at a specific position._
 
 ```solidity
-function slice2(bytes memory data, uint256 start) internal pure returns (bytes2 output);
+function getBytes2(bytes memory data, uint256 start) internal pure returns (bytes2 output);
 ```
 
 **Parameters**
@@ -122,12 +123,12 @@ function slice2(bytes memory data, uint256 start) internal pure returns (bytes2 
 | -------- | -------- | ------------------------------------------------------------------------- |
 | `output` | `bytes2` | The extracted bytes2 value from the specified position in the bytes blob. |
 
-#### slice2
+#### getBytes2
 
 _Extracts a 2-byte sequence from a bytes32 value starting at a specific position._
 
 ```solidity
-function slice2(bytes32 data, uint256 start) internal pure returns (bytes2 output);
+function getBytes2(bytes32 data, uint256 start) internal pure returns (bytes2 output);
 ```
 
 **Parameters**
@@ -143,12 +144,54 @@ function slice2(bytes32 data, uint256 start) internal pure returns (bytes2 outpu
 | -------- | -------- | ---------------------------------------------------------------------------- |
 | `output` | `bytes2` | The extracted bytes2 value from the specified position in the bytes32 value. |
 
-#### slice4
+#### getBytes3
+
+_Extracts a 3-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes3(bytes memory data, uint256 start) internal pure returns (bytes3 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                     |
+| ------- | --------- | --------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 3-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.     |
+
+**Returns**
+
+| Name     | Type     | Description                                                               |
+| -------- | -------- | ------------------------------------------------------------------------- |
+| `output` | `bytes3` | The extracted bytes3 value from the specified position in the bytes blob. |
+
+#### getBytes3
+
+_Extracts a 3-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes3(bytes32 data, uint256 start) internal pure returns (bytes3 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                        |
+| ------- | --------- | ------------------------------------------------------------------ |
+| `data`  | `bytes32` | The bytes32 value from which a 3-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.     |
+
+**Returns**
+
+| Name     | Type     | Description                                                                  |
+| -------- | -------- | ---------------------------------------------------------------------------- |
+| `output` | `bytes3` | The extracted bytes3 value from the specified position in the bytes32 value. |
+
+#### getBytes4
 
 _Extracts a 4-byte sequence from a bytes blob starting at a specific position._
 
 ```solidity
-function slice4(bytes memory data, uint256 start) internal pure returns (bytes4 output);
+function getBytes4(bytes memory data, uint256 start) internal pure returns (bytes4 output);
 ```
 
 **Parameters**
@@ -164,12 +207,33 @@ function slice4(bytes memory data, uint256 start) internal pure returns (bytes4 
 | -------- | -------- | ------------------------------------------------------------------------- |
 | `output` | `bytes4` | The extracted bytes4 value from the specified position in the bytes blob. |
 
-#### slice5
+#### getBytes4
+
+_Extracts a 4-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes4(bytes32 data, uint256 start) internal pure returns (bytes4 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                        |
+| ------- | --------- | ------------------------------------------------------------------ |
+| `data`  | `bytes32` | The bytes32 value from which a 4-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.     |
+
+**Returns**
+
+| Name     | Type     | Description                                                                  |
+| -------- | -------- | ---------------------------------------------------------------------------- |
+| `output` | `bytes4` | The extracted bytes4 value from the specified position in the bytes32 value. |
+
+#### getBytes5
 
 _Extracts a 5-byte sequence from a bytes blob starting at a specific position._
 
 ```solidity
-function slice5(bytes memory data, uint256 start) internal pure returns (bytes5 output);
+function getBytes5(bytes memory data, uint256 start) internal pure returns (bytes5 output);
 ```
 
 **Parameters**
@@ -185,12 +249,117 @@ function slice5(bytes memory data, uint256 start) internal pure returns (bytes5 
 | -------- | -------- | ------------------------------------------------------------------------- |
 | `output` | `bytes5` | The extracted bytes5 value from the specified position in the bytes blob. |
 
-#### slice8
+#### getBytes5
+
+_Extracts a 5-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes5(bytes32 data, uint256 start) internal pure returns (bytes5 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                        |
+| ------- | --------- | ------------------------------------------------------------------ |
+| `data`  | `bytes32` | The bytes32 value from which a 5-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.     |
+
+**Returns**
+
+| Name     | Type     | Description                                                                  |
+| -------- | -------- | ---------------------------------------------------------------------------- |
+| `output` | `bytes5` | The extracted bytes5 value from the specified position in the bytes32 value. |
+
+#### getBytes6
+
+_Extracts a 6-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes6(bytes memory data, uint256 start) internal pure returns (bytes6 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                     |
+| ------- | --------- | --------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 6-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.     |
+
+**Returns**
+
+| Name     | Type     | Description                                                               |
+| -------- | -------- | ------------------------------------------------------------------------- |
+| `output` | `bytes6` | The extracted bytes6 value from the specified position in the bytes blob. |
+
+#### getBytes6
+
+_Extracts a 6-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes6(bytes32 data, uint256 start) internal pure returns (bytes6 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                        |
+| ------- | --------- | ------------------------------------------------------------------ |
+| `data`  | `bytes32` | The bytes32 value from which a 6-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.     |
+
+**Returns**
+
+| Name     | Type     | Description                                                                  |
+| -------- | -------- | ---------------------------------------------------------------------------- |
+| `output` | `bytes6` | The extracted bytes6 value from the specified position in the bytes32 value. |
+
+#### getBytes7
+
+_Extracts a 7-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes7(bytes memory data, uint256 start) internal pure returns (bytes7 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                     |
+| ------- | --------- | --------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 7-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.     |
+
+**Returns**
+
+| Name     | Type     | Description                                                               |
+| -------- | -------- | ------------------------------------------------------------------------- |
+| `output` | `bytes7` | The extracted bytes7 value from the specified position in the bytes blob. |
+
+#### getBytes7
+
+_Extracts a 7-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes7(bytes32 data, uint256 start) internal pure returns (bytes7 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                        |
+| ------- | --------- | ------------------------------------------------------------------ |
+| `data`  | `bytes32` | The bytes32 value from which a 7-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.     |
+
+**Returns**
+
+| Name     | Type     | Description                                                                  |
+| -------- | -------- | ---------------------------------------------------------------------------- |
+| `output` | `bytes7` | The extracted bytes7 value from the specified position in the bytes32 value. |
+
+#### getBytes8
 
 _Extracts a 8-byte sequence from a bytes blob starting at a specific position._
 
 ```solidity
-function slice8(bytes memory data, uint256 start) internal pure returns (bytes8 output);
+function getBytes8(bytes memory data, uint256 start) internal pure returns (bytes8 output);
 ```
 
 **Parameters**
@@ -206,12 +375,327 @@ function slice8(bytes memory data, uint256 start) internal pure returns (bytes8 
 | -------- | -------- | ------------------------------------------------------------------------- |
 | `output` | `bytes8` | The extracted bytes8 value from the specified position in the bytes blob. |
 
-#### slice16
+#### getBytes8
+
+_Extracts a 8-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes8(bytes32 data, uint256 start) internal pure returns (bytes8 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                        |
+| ------- | --------- | ------------------------------------------------------------------ |
+| `data`  | `bytes32` | The bytes32 value from which a 8-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.     |
+
+**Returns**
+
+| Name     | Type     | Description                                                                  |
+| -------- | -------- | ---------------------------------------------------------------------------- |
+| `output` | `bytes8` | The extracted bytes8 value from the specified position in the bytes32 value. |
+
+#### getBytes9
+
+_Extracts a 9-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes9(bytes memory data, uint256 start) internal pure returns (bytes9 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                     |
+| ------- | --------- | --------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 9-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.     |
+
+**Returns**
+
+| Name     | Type     | Description                                                               |
+| -------- | -------- | ------------------------------------------------------------------------- |
+| `output` | `bytes9` | The extracted bytes9 value from the specified position in the bytes blob. |
+
+#### getBytes9
+
+_Extracts a 9-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes9(bytes32 data, uint256 start) internal pure returns (bytes9 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                        |
+| ------- | --------- | ------------------------------------------------------------------ |
+| `data`  | `bytes32` | The bytes32 value from which a 9-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.     |
+
+**Returns**
+
+| Name     | Type     | Description                                                                  |
+| -------- | -------- | ---------------------------------------------------------------------------- |
+| `output` | `bytes9` | The extracted bytes9 value from the specified position in the bytes32 value. |
+
+#### getBytes10
+
+_Extracts a 10-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes10(bytes memory data, uint256 start) internal pure returns (bytes10 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 10-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes10` | The extracted bytes10 value from the specified position in the bytes blob. |
+
+#### getBytes10
+
+_Extracts a 10-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes10(bytes32 data, uint256 start) internal pure returns (bytes10 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 10-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes10` | The extracted bytes10 value from the specified position in the bytes32 value. |
+
+#### getBytes11
+
+_Extracts a 11-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes11(bytes memory data, uint256 start) internal pure returns (bytes11 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 11-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes11` | The extracted bytes11 value from the specified position in the bytes blob. |
+
+#### getBytes11
+
+_Extracts a 11-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes11(bytes32 data, uint256 start) internal pure returns (bytes11 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 11-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes11` | The extracted bytes11 value from the specified position in the bytes32 value. |
+
+#### getBytes12
+
+_Extracts a 12-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes12(bytes memory data, uint256 start) internal pure returns (bytes12 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 12-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes12` | The extracted bytes12 value from the specified position in the bytes blob. |
+
+#### getBytes12
+
+_Extracts a 12-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes12(bytes32 data, uint256 start) internal pure returns (bytes12 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 12-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes12` | The extracted bytes12 value from the specified position in the bytes32 value. |
+
+#### getBytes13
+
+_Extracts a 13-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes13(bytes memory data, uint256 start) internal pure returns (bytes13 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 13-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes13` | The extracted bytes13 value from the specified position in the bytes blob. |
+
+#### getBytes13
+
+_Extracts a 13-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes13(bytes32 data, uint256 start) internal pure returns (bytes13 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 13-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes13` | The extracted bytes13 value from the specified position in the bytes32 value. |
+
+#### getBytes14
+
+_Extracts a 14-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes14(bytes memory data, uint256 start) internal pure returns (bytes14 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 14-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes14` | The extracted bytes14 value from the specified position in the bytes blob. |
+
+#### getBytes14
+
+_Extracts a 14-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes14(bytes32 data, uint256 start) internal pure returns (bytes14 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 14-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes14` | The extracted bytes14 value from the specified position in the bytes32 value. |
+
+#### getBytes15
+
+_Extracts a 15-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes15(bytes memory data, uint256 start) internal pure returns (bytes15 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 15-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes15` | The extracted bytes15 value from the specified position in the bytes blob. |
+
+#### getBytes15
+
+_Extracts a 15-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes15(bytes32 data, uint256 start) internal pure returns (bytes15 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 15-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes15` | The extracted bytes15 value from the specified position in the bytes32 value. |
+
+#### getBytes16
 
 _Extracts a 16-byte sequence from a bytes blob starting at a specific position._
 
 ```solidity
-function slice16(bytes memory data, uint256 start) internal pure returns (bytes16 output);
+function getBytes16(bytes memory data, uint256 start) internal pure returns (bytes16 output);
 ```
 
 **Parameters**
@@ -227,12 +711,159 @@ function slice16(bytes memory data, uint256 start) internal pure returns (bytes1
 | -------- | --------- | -------------------------------------------------------------------------- |
 | `output` | `bytes16` | The extracted bytes16 value from the specified position in the bytes blob. |
 
-#### slice20
+#### getBytes16
+
+_Extracts a 16-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes16(bytes32 data, uint256 start) internal pure returns (bytes16 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 16-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes16` | The extracted bytes16 value from the specified position in the bytes32 value. |
+
+#### getBytes17
+
+_Extracts a 17-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes17(bytes memory data, uint256 start) internal pure returns (bytes17 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 17-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes17` | The extracted bytes17 value from the specified position in the bytes blob. |
+
+#### getBytes17
+
+_Extracts a 17-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes17(bytes32 data, uint256 start) internal pure returns (bytes17 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 17-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes17` | The extracted bytes17 value from the specified position in the bytes32 value. |
+
+#### getBytes18
+
+_Extracts a 18-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes18(bytes memory data, uint256 start) internal pure returns (bytes18 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 18-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes18` | The extracted bytes18 value from the specified position in the bytes blob. |
+
+#### getBytes18
+
+_Extracts a 18-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes18(bytes32 data, uint256 start) internal pure returns (bytes18 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 18-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes18` | The extracted bytes18 value from the specified position in the bytes32 value. |
+
+#### getBytes19
+
+_Extracts a 19-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes19(bytes memory data, uint256 start) internal pure returns (bytes19 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 19-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes19` | The extracted bytes19 value from the specified position in the bytes blob. |
+
+#### getBytes19
+
+_Extracts a 19-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes19(bytes32 data, uint256 start) internal pure returns (bytes19 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 19-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes19` | The extracted bytes19 value from the specified position in the bytes32 value. |
+
+#### getBytes20
 
 _Extracts a 20-byte sequence from a bytes blob starting at a specific position._
 
 ```solidity
-function slice20(bytes memory data, uint256 start) internal pure returns (bytes20 output);
+function getBytes20(bytes memory data, uint256 start) internal pure returns (bytes20 output);
 ```
 
 **Parameters**
@@ -248,12 +879,495 @@ function slice20(bytes memory data, uint256 start) internal pure returns (bytes2
 | -------- | --------- | -------------------------------------------------------------------------- |
 | `output` | `bytes20` | The extracted bytes20 value from the specified position in the bytes blob. |
 
-#### slice32
+#### getBytes20
+
+_Extracts a 20-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes20(bytes32 data, uint256 start) internal pure returns (bytes20 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 20-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes20` | The extracted bytes20 value from the specified position in the bytes32 value. |
+
+#### getBytes21
+
+_Extracts a 21-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes21(bytes memory data, uint256 start) internal pure returns (bytes21 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 21-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes21` | The extracted bytes21 value from the specified position in the bytes blob. |
+
+#### getBytes21
+
+_Extracts a 21-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes21(bytes32 data, uint256 start) internal pure returns (bytes21 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 21-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes21` | The extracted bytes21 value from the specified position in the bytes32 value. |
+
+#### getBytes22
+
+_Extracts a 22-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes22(bytes memory data, uint256 start) internal pure returns (bytes22 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 22-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes22` | The extracted bytes22 value from the specified position in the bytes blob. |
+
+#### getBytes22
+
+_Extracts a 22-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes22(bytes32 data, uint256 start) internal pure returns (bytes22 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 22-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes22` | The extracted bytes22 value from the specified position in the bytes32 value. |
+
+#### getBytes23
+
+_Extracts a 23-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes23(bytes memory data, uint256 start) internal pure returns (bytes23 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 23-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes23` | The extracted bytes23 value from the specified position in the bytes blob. |
+
+#### getBytes23
+
+_Extracts a 23-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes23(bytes32 data, uint256 start) internal pure returns (bytes23 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 23-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes23` | The extracted bytes23 value from the specified position in the bytes32 value. |
+
+#### getBytes24
+
+_Extracts a 24-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes24(bytes memory data, uint256 start) internal pure returns (bytes24 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 24-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes24` | The extracted bytes24 value from the specified position in the bytes blob. |
+
+#### getBytes24
+
+_Extracts a 24-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes24(bytes32 data, uint256 start) internal pure returns (bytes24 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 24-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes24` | The extracted bytes24 value from the specified position in the bytes32 value. |
+
+#### getBytes25
+
+_Extracts a 25-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes25(bytes memory data, uint256 start) internal pure returns (bytes25 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 25-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes25` | The extracted bytes25 value from the specified position in the bytes blob. |
+
+#### getBytes25
+
+_Extracts a 25-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes25(bytes32 data, uint256 start) internal pure returns (bytes25 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 25-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes25` | The extracted bytes25 value from the specified position in the bytes32 value. |
+
+#### getBytes26
+
+_Extracts a 26-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes26(bytes memory data, uint256 start) internal pure returns (bytes26 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 26-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes26` | The extracted bytes26 value from the specified position in the bytes blob. |
+
+#### getBytes26
+
+_Extracts a 26-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes26(bytes32 data, uint256 start) internal pure returns (bytes26 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 26-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes26` | The extracted bytes26 value from the specified position in the bytes32 value. |
+
+#### getBytes27
+
+_Extracts a 27-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes27(bytes memory data, uint256 start) internal pure returns (bytes27 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 27-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes27` | The extracted bytes27 value from the specified position in the bytes blob. |
+
+#### getBytes27
+
+_Extracts a 27-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes27(bytes32 data, uint256 start) internal pure returns (bytes27 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 27-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes27` | The extracted bytes27 value from the specified position in the bytes32 value. |
+
+#### getBytes28
+
+_Extracts a 28-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes28(bytes memory data, uint256 start) internal pure returns (bytes28 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 28-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes28` | The extracted bytes28 value from the specified position in the bytes blob. |
+
+#### getBytes28
+
+_Extracts a 28-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes28(bytes32 data, uint256 start) internal pure returns (bytes28 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 28-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes28` | The extracted bytes28 value from the specified position in the bytes32 value. |
+
+#### getBytes29
+
+_Extracts a 29-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes29(bytes memory data, uint256 start) internal pure returns (bytes29 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 29-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes29` | The extracted bytes29 value from the specified position in the bytes blob. |
+
+#### getBytes29
+
+_Extracts a 29-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes29(bytes32 data, uint256 start) internal pure returns (bytes29 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 29-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes29` | The extracted bytes29 value from the specified position in the bytes32 value. |
+
+#### getBytes30
+
+_Extracts a 30-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes30(bytes memory data, uint256 start) internal pure returns (bytes30 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 30-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes30` | The extracted bytes30 value from the specified position in the bytes blob. |
+
+#### getBytes30
+
+_Extracts a 30-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes30(bytes32 data, uint256 start) internal pure returns (bytes30 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 30-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes30` | The extracted bytes30 value from the specified position in the bytes32 value. |
+
+#### getBytes31
+
+_Extracts a 31-byte sequence from a bytes blob starting at a specific position._
+
+```solidity
+function getBytes31(bytes memory data, uint256 start) internal pure returns (bytes31 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                      |
+| ------- | --------- | ---------------------------------------------------------------- |
+| `data`  | `bytes`   | The bytes blob from which a 31-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes blob for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                |
+| -------- | --------- | -------------------------------------------------------------------------- |
+| `output` | `bytes31` | The extracted bytes31 value from the specified position in the bytes blob. |
+
+#### getBytes31
+
+_Extracts a 31-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes31(bytes32 data, uint256 start) internal pure returns (bytes31 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 31-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes31` | The extracted bytes31 value from the specified position in the bytes32 value. |
+
+#### getBytes32
 
 _Extracts a 32-byte sequence from a bytes blob starting at a specific position._
 
 ```solidity
-function slice32(bytes memory data, uint256 start) internal pure returns (bytes32 output);
+function getBytes32(bytes memory data, uint256 start) internal pure returns (bytes32 output);
 ```
 
 **Parameters**
@@ -268,6 +1382,27 @@ function slice32(bytes memory data, uint256 start) internal pure returns (bytes3
 | Name     | Type      | Description                                                                |
 | -------- | --------- | -------------------------------------------------------------------------- |
 | `output` | `bytes32` | The extracted bytes32 value from the specified position in the bytes blob. |
+
+#### getBytes32
+
+_Extracts a 32-byte sequence from a bytes32 value starting at a specific position._
+
+```solidity
+function getBytes32(bytes32 data, uint256 start) internal pure returns (bytes32 output);
+```
+
+**Parameters**
+
+| Name    | Type      | Description                                                         |
+| ------- | --------- | ------------------------------------------------------------------- |
+| `data`  | `bytes32` | The bytes32 value from which a 32-byte sequence is to be extracted. |
+| `start` | `uint256` | The starting position within the bytes32 value for extraction.      |
+
+**Returns**
+
+| Name     | Type      | Description                                                                   |
+| -------- | --------- | ----------------------------------------------------------------------------- |
+| `output` | `bytes32` | The extracted bytes32 value from the specified position in the bytes32 value. |
 
 ## FieldLayoutInstance
 
@@ -481,7 +1616,7 @@ From left to right, the bytes are laid out as follows:
 - 1 byte for number of static size fields
 - 1 byte for number of dynamic size fields
 - 28 bytes for 28 static field lengths
-  (MAX_DYNAMIC_FIELDS allows PackedCounter to pack the dynamic lengths into 1 word)\*
+  (MAX_DYNAMIC_FIELDS allows EncodedLengths to pack the dynamic lengths into 1 word)\*
 
 ```solidity
 type FieldLayout is bytes32;
@@ -1341,7 +2476,7 @@ uint256 constant MAX_STATIC_FIELDS = 28;
 
 #### MAX_DYNAMIC_FIELDS
 
-_Represents the maximum number of dynamic fields that can be packed in a PackedCounter._
+_Represents the maximum number of dynamic fields that can be packed in EncodedLengths._
 
 ```solidity
 uint256 constant MAX_DYNAMIC_FIELDS = 5;
@@ -1548,10 +2683,10 @@ bytes2 constant RESOURCE_OFFCHAIN_TABLE = "ot";
 
 #### STORE_VERSION
 
-Contains a constant representing the version of the Store.
+Contains a constant representing the version of the Store protocol.
 
-_Identifier for the current Store version._
+_Identifier for the current Store protocol version._
 
 ```solidity
-bytes32 constant STORE_VERSION = "1.0.0-unaudited";
+bytes32 constant STORE_VERSION = "2.0.0";
 ```

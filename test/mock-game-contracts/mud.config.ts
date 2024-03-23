@@ -1,61 +1,55 @@
-import { mudConfig } from "@latticexyz/world/register";
+import { defineWorld } from "@latticexyz/world";
 
-export default mudConfig({
+export default defineWorld({
   enums: {
     TerrainType: ["None", "Ocean", "Grassland", "Desert"],
   },
   tables: {
     Position: {
-      keySchema: {
+      schema: {
         player: "address",
-      },
-      valueSchema: {
         x: "int32",
         y: "int32",
       },
+      key: ["player"],
     },
     Health: {
-      keySchema: {
+      schema: {
         player: "address",
-      },
-      valueSchema: {
         health: "uint256",
       },
+      key: ["player"],
     },
     Inventory: {
-      keySchema: {
+      schema: {
         player: "address",
         item: "uint8",
-      },
-      valueSchema: {
         amount: "uint32",
       },
+      key: ["player", "item"],
     },
     Score: {
-      keySchema: {
+      schema: {
         player: "address",
         game: "uint256",
-      },
-      valueSchema: {
         score: "uint256",
       },
+      key: ["player", "game"],
     },
     Winner: {
-      keySchema: {
+      schema: {
         game: "uint256",
-      },
-      valueSchema: {
         player: "address",
       },
+      key: ["game"],
     },
     Terrain: {
-      keySchema: {
+      schema: {
         x: "int32",
         y: "int32",
-      },
-      valueSchema: {
         terrainType: "TerrainType",
       },
+      key: ["x", "y"],
     },
   },
 });

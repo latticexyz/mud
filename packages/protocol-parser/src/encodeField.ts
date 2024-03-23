@@ -1,4 +1,4 @@
-import { SchemaAbiType, arrayAbiTypeToStaticAbiType, isArrayAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType, arrayToStaticAbiType, isArrayAbiType } from "@latticexyz/schema-type/internal";
 import { AbiParameterToPrimitiveType } from "abitype";
 import { Hex, encodePacked } from "viem";
 
@@ -7,7 +7,7 @@ export function encodeField<TSchemaAbiType extends SchemaAbiType>(
   value: AbiParameterToPrimitiveType<{ type: TSchemaAbiType }>,
 ): Hex {
   if (isArrayAbiType(fieldType) && Array.isArray(value)) {
-    const staticFieldType = arrayAbiTypeToStaticAbiType(fieldType);
+    const staticFieldType = arrayToStaticAbiType(fieldType);
     // TODO: we can remove conditional once this is fixed: https://github.com/wagmi-dev/viem/pull/1147
     return value.length === 0
       ? "0x"

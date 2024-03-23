@@ -5,12 +5,15 @@ import { SolhintRule } from "../solhintTypes";
 
 export class SystemFileName implements SolhintRule {
   ruleId = "system-file-name";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reporter: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   config: any;
 
   expectedContractName: string;
   isSystemFile = false;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(reporter: any, config: any, inputSrc: string, fileName: string) {
     this.reporter = reporter;
     this.config = config;

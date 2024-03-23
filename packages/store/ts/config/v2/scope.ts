@@ -1,27 +1,28 @@
 import { Dict, evaluate } from "@arktype/util";
-import { SchemaInput } from "./schema";
-import { StaticAbiType, DynamicAbiType } from "@latticexyz/schema-type";
+import { SchemaInput } from "./input";
+import { StaticAbiType, schemaAbiTypes } from "@latticexyz/schema-type/internal";
+import { AbiType } from "./output";
 
-export type AbiType = StaticAbiType | DynamicAbiType;
-
-export const EmptyScope = { types: {} } as const satisfies ScopeOptions;
-export type EmptyScope = typeof EmptyScope;
+export const Scope = { types: {} } as const satisfies ScopeOptions;
+export type Scope = typeof Scope;
 
 export type AbiTypeScope = ScopeOptions<{ [t in AbiType]: t }>;
-export const AbiTypeScope = { types: {} } as AbiTypeScope; // TODO: runtime implementation
+export const AbiTypeScope = {
+  types: Object.fromEntries(schemaAbiTypes.map((abiType) => [abiType, abiType])),
+} as AbiTypeScope;
 
 export type ScopeOptions<types extends Dict<string, AbiType> = Dict<string, AbiType>> = {
   types: types;
 };
 
 export type getStaticAbiTypeKeys<
-  types extends SchemaInput<scope>,
-  scope extends AbiTypeScope = AbiTypeScope,
-> = SchemaInput extends types
+  schema extends SchemaInput,
+  scope extends Scope = AbiTypeScope,
+> = SchemaInput extends schema
   ? string
   : {
-      [key in keyof types]: scope["types"][types[key]] extends StaticAbiType ? key : never;
-    }[keyof types];
+      [key in keyof schema]: scope["types"][schema[key] & keyof scope["types"]] extends StaticAbiType ? key : never;
+    }[keyof schema];
 
 export type extendScope<scope extends ScopeOptions, additionalTypes extends Dict<string, AbiType>> = evaluate<
   ScopeOptions<evaluate<scope["types"] & additionalTypes>>
@@ -31,6 +32,10 @@ export function extendScope<scope extends ScopeOptions, additionalTypes extends 
   scope: scope,
   additionalTypes: additionalTypes,
 ): extendScope<scope, additionalTypes> {
-  // TODO: runtime implementation
-  return {} as never;
+  return {
+    types: {
+      ...scope.types,
+      ...additionalTypes,
+    },
+  };
 }

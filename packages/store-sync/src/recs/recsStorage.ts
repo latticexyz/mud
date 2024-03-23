@@ -1,10 +1,10 @@
-import { Table, resolveConfig } from "@latticexyz/store";
+import { Table, resolveConfig } from "@latticexyz/store/internal";
 import { debug } from "./debug";
 import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, setComponent } from "@latticexyz/recs";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
-import { decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { Hex, size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
@@ -14,9 +14,10 @@ import { singletonEntity } from "./singletonEntity";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { TablesToComponents, tablesToComponents } from "./tablesToComponents";
+import { storeToV1 } from "@latticexyz/store/config/v2";
 
-const storeTables = resolveConfig(storeConfig).tables;
-const worldTables = resolveConfig(worldConfig).tables;
+const storeTables = resolveConfig(storeToV1(storeConfig)).tables;
+const worldTables = resolveConfig(storeToV1(worldConfig)).tables;
 
 export type RecsStorageOptions<tables extends Record<string, Table>> = {
   world: RecsWorld;

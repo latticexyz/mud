@@ -120,6 +120,7 @@ async function runGasReport(options: Options): Promise<GasReport> {
       });
       logs = (await child).stdout;
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.log(error.stdout ?? error);
     console.log(chalk.red("\n-----------\nError while running the gas report (see above)"));

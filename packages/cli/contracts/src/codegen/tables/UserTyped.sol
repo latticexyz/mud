@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 // Import user types
@@ -541,7 +541,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -566,7 +566,7 @@ library UserTyped {
     _keyTuple[3] = bytes32(uint256(TestTypeLibrary.TestTypeUint128.unwrap(k4)));
     _keyTuple[4] = ResourceId.unwrap(k5);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -591,7 +591,7 @@ library UserTyped {
   ) internal {
     bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](5);
@@ -621,7 +621,7 @@ library UserTyped {
   ) internal {
     bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](5);
@@ -647,7 +647,7 @@ library UserTyped {
   ) internal {
     bytes memory _staticData = encodeStatic(_table.v1, _table.v2, _table.v3, _table.v4, _table.v5);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](5);
@@ -673,7 +673,7 @@ library UserTyped {
   ) internal {
     bytes memory _staticData = encodeStatic(_table.v1, _table.v2, _table.v3, _table.v4, _table.v5);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](5);
@@ -702,15 +702,15 @@ library UserTyped {
       ResourceId v5
     )
   {
-    v1 = TestTypeAddress.wrap(address(Bytes.slice20(_blob, 0)));
+    v1 = TestTypeAddress.wrap(address(Bytes.getBytes20(_blob, 0)));
 
-    v2 = TestTypeInt64.wrap(int64(uint64(Bytes.slice8(_blob, 20))));
+    v2 = TestTypeInt64.wrap(int64(uint64(Bytes.getBytes8(_blob, 20))));
 
-    v3 = TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(Bytes.slice1(_blob, 28))));
+    v3 = TestTypeLibrary.TestTypeBool.wrap(_toBool(uint8(Bytes.getBytes1(_blob, 28))));
 
-    v4 = TestTypeLibrary.TestTypeUint128.wrap(uint128(Bytes.slice16(_blob, 29)));
+    v4 = TestTypeLibrary.TestTypeUint128.wrap(uint128(Bytes.getBytes16(_blob, 29)));
 
-    v5 = ResourceId.wrap(Bytes.slice32(_blob, 45));
+    v5 = ResourceId.wrap(Bytes.getBytes32(_blob, 45));
   }
 
   /**
@@ -721,7 +721,7 @@ library UserTyped {
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) internal pure returns (UserTypedData memory _table) {
     (_table.v1, _table.v2, _table.v3, _table.v4, _table.v5) = decodeStatic(_staticData);
@@ -793,10 +793,10 @@ library UserTyped {
     TestTypeLibrary.TestTypeBool v3,
     TestTypeLibrary.TestTypeUint128 v4,
     ResourceId v5
-  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     return (_staticData, _encodedLengths, _dynamicData);

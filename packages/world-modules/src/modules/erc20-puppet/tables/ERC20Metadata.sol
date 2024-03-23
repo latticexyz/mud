@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 struct ERC20MetadataData {
@@ -404,7 +404,7 @@ library ERC20Metadata {
   function get(ResourceId _tableId) internal view returns (ERC20MetadataData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -418,7 +418,7 @@ library ERC20Metadata {
   function _get(ResourceId _tableId) internal view returns (ERC20MetadataData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -432,7 +432,7 @@ library ERC20Metadata {
   function set(ResourceId _tableId, uint8 decimals, string memory name, string memory symbol) internal {
     bytes memory _staticData = encodeStatic(decimals);
 
-    PackedCounter _encodedLengths = encodeLengths(name, symbol);
+    EncodedLengths _encodedLengths = encodeLengths(name, symbol);
     bytes memory _dynamicData = encodeDynamic(name, symbol);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -446,7 +446,7 @@ library ERC20Metadata {
   function _set(ResourceId _tableId, uint8 decimals, string memory name, string memory symbol) internal {
     bytes memory _staticData = encodeStatic(decimals);
 
-    PackedCounter _encodedLengths = encodeLengths(name, symbol);
+    EncodedLengths _encodedLengths = encodeLengths(name, symbol);
     bytes memory _dynamicData = encodeDynamic(name, symbol);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -460,7 +460,7 @@ library ERC20Metadata {
   function set(ResourceId _tableId, ERC20MetadataData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.decimals);
 
-    PackedCounter _encodedLengths = encodeLengths(_table.name, _table.symbol);
+    EncodedLengths _encodedLengths = encodeLengths(_table.name, _table.symbol);
     bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -474,7 +474,7 @@ library ERC20Metadata {
   function _set(ResourceId _tableId, ERC20MetadataData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.decimals);
 
-    PackedCounter _encodedLengths = encodeLengths(_table.name, _table.symbol);
+    EncodedLengths _encodedLengths = encodeLengths(_table.name, _table.symbol);
     bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -486,14 +486,14 @@ library ERC20Metadata {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (uint8 decimals) {
-    decimals = (uint8(Bytes.slice1(_blob, 0)));
+    decimals = (uint8(Bytes.getBytes1(_blob, 0)));
   }
 
   /**
    * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
    */
   function decodeDynamic(
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _blob
   ) internal pure returns (string memory name, string memory symbol) {
     uint256 _start;
@@ -518,7 +518,7 @@ library ERC20Metadata {
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (ERC20MetadataData memory _table) {
     (_table.decimals) = decodeStatic(_staticData);
@@ -559,10 +559,10 @@ library ERC20Metadata {
   function encodeLengths(
     string memory name,
     string memory symbol
-  ) internal pure returns (PackedCounter _encodedLengths) {
+  ) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(bytes(name).length, bytes(symbol).length);
+      _encodedLengths = EncodedLengthsLib.pack(bytes(name).length, bytes(symbol).length);
     }
   }
 
@@ -584,10 +584,10 @@ library ERC20Metadata {
     uint8 decimals,
     string memory name,
     string memory symbol
-  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(decimals);
 
-    PackedCounter _encodedLengths = encodeLengths(name, symbol);
+    EncodedLengths _encodedLengths = encodeLengths(name, symbol);
     bytes memory _dynamicData = encodeDynamic(name, symbol);
 
     return (_staticData, _encodedLengths, _dynamicData);

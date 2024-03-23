@@ -12,21 +12,17 @@ that are dynamically registered in the World during deployment.
 
 _._
 
-### Functions
+## Store
 
-#### storeVersion
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/Store.sol)
 
-Retrieves the version of the store.
+**Inherits:**
+[IStore](/src/IStore.sol/interface.IStore.md), [StoreKernel](/src/StoreKernel.sol/abstract.StoreKernel.md)
 
-```solidity
-function storeVersion() public pure returns (bytes32);
-```
+This contract integrates the core storage functionalities and provides an interface for data storage.
 
-**Returns**
-
-| Name     | Type      | Description                                    |
-| -------- | --------- | ---------------------------------------------- |
-| `<none>` | `bytes32` | The current version of the store as a bytes32. |
+_This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
+but not write methods._
 
 #### registerTable
 
@@ -357,17 +353,17 @@ _Creates a mapping for a root World function without namespace or name prefix_
 function registerRootFunctionSelector(
   ResourceId systemId,
   string memory worldFunctionSignature,
-  bytes4 systemFunctionSelector
+  string memory systemFunctionSignature
 ) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
 ```
 
 **Parameters**
 
-| Name                     | Type         | Description                         |
-| ------------------------ | ------------ | ----------------------------------- |
-| `systemId`               | `ResourceId` | The system ID                       |
-| `worldFunctionSignature` | `string`     | The signature of the World function |
-| `systemFunctionSelector` | `bytes4`     | The selector of the system function |
+| Name                      | Type         | Description                          |
+| ------------------------- | ------------ | ------------------------------------ |
+| `systemId`                | `ResourceId` | The system ID                        |
+| `worldFunctionSignature`  | `string`     | The signature of the World function  |
+| `systemFunctionSignature` | `string`     | The signature of the system function |
 
 **Returns**
 
@@ -718,7 +714,7 @@ so it's ABI should include these errors._
 
 #### worldVersion
 
-Retrieve the version of the World.
+Retrieve the protocol version of the World.
 
 ```solidity
 function worldVersion() external view returns (bytes32);
@@ -726,9 +722,9 @@ function worldVersion() external view returns (bytes32);
 
 **Returns**
 
-| Name     | Type      | Description                          |
-| -------- | --------- | ------------------------------------ |
-| `<none>` | `bytes32` | The version identifier of the World. |
+| Name     | Type      | Description                        |
+| -------- | --------- | ---------------------------------- |
+| `<none>` | `bytes32` | The protocol version of the World. |
 
 #### creator
 
