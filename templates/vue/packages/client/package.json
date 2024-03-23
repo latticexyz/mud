@@ -1,0 +1,33 @@
+{
+  "name": "client",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "wait-port localhost:8545 && vite",
+    "preview": "vite preview",
+    "test": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@latticexyz/common": "2.0.0-next.17",
+    "@latticexyz/dev-tools": "2.0.0-next.17",
+    "@latticexyz/recs": "2.0.0-next.17",
+    "@latticexyz/schema-type": "2.0.0-next.17",
+    "@latticexyz/services": "2.0.0-next.17",
+    "@latticexyz/store-sync": "2.0.0-next.17",
+    "@latticexyz/utils": "2.0.0-next.17",
+    "@latticexyz/world": "2.0.0-next.17",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "contracts": "workspace:*",
+    "rxjs": "7.5.5",
+    "typescript": "5.1.6",
+    "viem": "1.14.0",
+    "vue": "^3.4.21"
+  },
+  "devDependencies": {
+    "vite": "^4.2.1",
+    "wait-port": "^1.0.4"
+  }
+}
