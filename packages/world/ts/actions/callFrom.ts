@@ -13,9 +13,8 @@ import {
 } from "viem";
 import { getAction, encodeFunctionData } from "viem/utils";
 import { writeContract } from "viem/actions";
-import { resourceToHex } from "@latticexyz/common";
-import { resolveUserTypes } from "@latticexyz/store";
-import { decodeValueArgs, encodeKey } from "@latticexyz/protocol-parser";
+import { mapObject } from "@latticexyz/common/utils";
+import { getKeySchema, getValueSchema, decodeValueArgs, encodeKey } from "@latticexyz/protocol-parser/internal";
 import worldConfig from "../../mud.config";
 import IStoreReadAbi from "../../out/IStoreRead.sol/IStoreRead.abi.json";
 
@@ -95,16 +94,6 @@ export function callFrom<TChain extends Chain, TAccount extends Account>({
   });
 }
 
-const functionSelectorsTable = {
-  tableId: resourceToHex({
-    type: worldConfig.tables.FunctionSelectors.offchainOnly ? "offchainTable" : "table",
-    namespace: worldConfig.namespace,
-    name: worldConfig.tables.FunctionSelectors.name,
-  }),
-  keySchema: resolveUserTypes(worldConfig.tables.FunctionSelectors.keySchema, worldConfig.userTypes),
-  valueSchema: resolveUserTypes(worldConfig.tables.FunctionSelectors.valueSchema, worldConfig.userTypes),
-};
-
 const systemFunctionCache = new Map<Hex, SystemFunction>();
 
 async function retrieveSystemFunction(
@@ -118,14 +107,28 @@ async function retrieveSystemFunction(
   const cached = systemFunctionCache.get(cacheKey);
   if (cached) return cached;
 
+  const table = worldConfig.tables.world__FunctionSelectors;
+
+  const _keySchema = getKeySchema(table);
+  const keySchema = mapObject<typeof _keySchema, { [K in keyof typeof _keySchema]: (typeof _keySchema)[K]["type"] }>(
+    _keySchema,
+    ({ type }) => type,
+  );
+
+  const _valueSchema = getValueSchema(table);
+  const valueSchema = mapObject<
+    typeof _valueSchema,
+    { [K in keyof typeof _valueSchema]: (typeof _valueSchema)[K]["type"] }
+  >(_valueSchema, ({ type }) => type);
+
   const [staticData, encodedLengths, dynamicData] = await publicClient.readContract({
     address: worldAddress,
     abi: IStoreReadAbi,
     functionName: "getRecord",
-    args: [functionSelectorsTable.tableId, encodeKey(functionSelectorsTable.keySchema, { worldFunctionSelector })],
+    args: [table.tableId, encodeKey(keySchema, { worldFunctionSelector })],
   });
 
-  const decoded = decodeValueArgs(functionSelectorsTable.valueSchema, { staticData, encodedLengths, dynamicData });
+  const decoded = decodeValueArgs(valueSchema, { staticData, encodedLengths, dynamicData });
 
   const systemFunction: SystemFunction = {
     systemId: decoded.systemId,
