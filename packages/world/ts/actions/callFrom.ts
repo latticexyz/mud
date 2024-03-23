@@ -42,19 +42,14 @@ type SystemFunction = { systemId: Hex; systemFunctionSelector: Hex };
 //
 // Accepts either `worldFunctionToSystemFunction` or `publicClient` as an argument.
 // If `publicClient` is provided, a read request to the World contract will occur.
-export function callFrom<TChain extends Chain, TAccount extends Account>({
-  worldAddress,
-  delegatorAddress,
-  worldFunctionToSystemFunction,
-  publicClient,
-}: CallFromParameters): (
-  client: WalletClient<Transport, TChain, TAccount>,
-) => Pick<WalletActions<TChain, TAccount>, "writeContract"> {
+export function callFrom<TChain extends Chain, TAccount extends Account>(
+  params: CallFromParameters,
+): (client: WalletClient<Transport, TChain, TAccount>) => Pick<WalletActions<TChain, TAccount>, "writeContract"> {
   return (client) => ({
     // Applies to: `client.writeContract`, `getContract(client, ...).write`
     writeContract: async (writeArgs): Promise<WriteContractReturnType> => {
       // Skip if the contract isn't the World.
-      if (writeArgs.address !== worldAddress) {
+      if (writeArgs.address !== params.worldAddress) {
         return getAction(client, writeContract, "writeContract")(writeArgs);
       }
 
@@ -69,9 +64,7 @@ export function callFrom<TChain extends Chain, TAccount extends Account>({
       const worldFunctionSelector = slice(worldCalldata, 0, 4);
 
       // Get the systemId and System's function selector.
-      const { systemId, systemFunctionSelector } = worldFunctionToSystemFunction
-        ? await worldFunctionToSystemFunction(worldFunctionSelector)
-        : await retrieveSystemFunction(publicClient, worldAddress, worldFunctionSelector);
+      const { systemId, systemFunctionSelector } = await worldFunctionToSystemFunction(params, worldFunctionSelector);
 
       // Construct the System's calldata.
       // If there's no args, use the System's function selector as calldata.
@@ -85,7 +78,7 @@ export function callFrom<TChain extends Chain, TAccount extends Account>({
       const callFromArgs: typeof writeArgs = {
         ...writeArgs,
         functionName: "callFrom",
-        args: [delegatorAddress, systemId, systemCalldata],
+        args: [params.delegatorAddress, systemId, systemCalldata],
       };
 
       // Call `writeContract` with the new args.
@@ -96,17 +89,30 @@ export function callFrom<TChain extends Chain, TAccount extends Account>({
 
 const systemFunctionCache = new Map<Hex, SystemFunction>();
 
-async function retrieveSystemFunction(
-  publicClient: PublicClient,
-  worldAddress: Hex,
+async function worldFunctionToSystemFunction(
+  params: CallFromParameters,
   worldFunctionSelector: Hex,
 ): Promise<SystemFunction> {
-  const cacheKey = concat([worldAddress, worldFunctionSelector]);
+  const cacheKey = concat([params.worldAddress, worldFunctionSelector]);
 
   // Skip the request if it has been called previously.
   const cached = systemFunctionCache.get(cacheKey);
   if (cached) return cached;
 
+  const systemFunction = params.worldFunctionToSystemFunction
+    ? await params.worldFunctionToSystemFunction(worldFunctionSelector)
+    : await retrieveSystemFunctionFromContract(params.publicClient, params.worldAddress, worldFunctionSelector);
+
+  systemFunctionCache.set(cacheKey, systemFunction);
+
+  return systemFunction;
+}
+
+async function retrieveSystemFunctionFromContract(
+  publicClient: PublicClient,
+  worldAddress: Hex,
+  worldFunctionSelector: Hex,
+): Promise<SystemFunction> {
   const table = worldConfig.tables.world__FunctionSelectors;
 
   const _keySchema = getKeySchema(table);
@@ -134,8 +140,6 @@ async function retrieveSystemFunction(
     systemId: decoded.systemId,
     systemFunctionSelector: decoded.systemFunctionSelector,
   };
-
-  systemFunctionCache.set(cacheKey, systemFunction);
 
   return systemFunction;
 }
