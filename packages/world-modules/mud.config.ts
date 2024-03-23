@@ -136,7 +136,7 @@ export default defineWorld({
     },
     /************************************************************************
      *
-     *    TOKEN TABLES (SHARED BY ERC20, ERC721)
+     *    TOKEN TABLES (SHARED BY ERC20, ERC721 or ERC1155)
      *
      ************************************************************************/
     Balances: {
@@ -149,6 +149,47 @@ export default defineWorld({
         outputDirectory: "modules/tokens/tables",
         tableIdArgument: true,
       },
+    },
+    TokenURIStorage: {
+      directory: "modules/tokens/tables",
+      keySchema: {
+        tokenId: "uint256",
+      },
+      valueSchema: {
+        tokenURI: "string",
+      },
+      tableIdArgument: true,
+    },
+    TokenOperatorApproval: {
+      directory: "modules/tokens/tables",
+      keySchema: {
+        owner: "address",
+        operator: "address",
+      },
+      valueSchema: {
+        approved: "bool",
+      },
+      tableIdArgument: true,
+    },
+    TokenMetadata: {
+      directory: "modules/tokens/tables",
+      keySchema: {},
+      valueSchema: {
+        name: "string",
+        symbol: "string",
+        baseURI: "string",
+      },
+      tableIdArgument: true,
+    },
+    TokenRegistry: {
+      directory: "modules/tokens/tables",
+      keySchema: {
+        namespaceId: "ResourceId",
+      },
+      valueSchema: {
+        tokenAddress: "address",
+      },
+      tableIdArgument: true,
     },
     /************************************************************************
      *
@@ -273,6 +314,29 @@ export default defineWorld({
         tableIdArgument: true,
       },
     },
+    /************************************************************************
+     *
+     *    ERC1155 MODULE
+     *
+     ************************************************************************/
+    ERC1155Balances: {
+      directory: "modules/erc1155-puppet/tables",
+      keySchema: {
+        id: "uint256",
+        owner: "address",
+      },
+      valueSchema: {
+        balance: "uint256",
+      },
+      tableIdArgument: true,
+    },
   },
-  excludeSystems: ["UniqueEntitySystem", "PuppetFactorySystem", "ERC20System", "ERC721System"],
+  excludeSystems: [
+    "UniqueEntitySystem",
+    "PuppetFactorySystem",
+    "ERC20System",
+    "ERC721System",
+    "ERC1155System",
+    "ERC1155URIStorageSystem",
+  ],
 });

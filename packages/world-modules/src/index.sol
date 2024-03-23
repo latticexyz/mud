@@ -12,6 +12,10 @@ import { SystemboundDelegations } from "./modules/std-delegations/tables/Systemb
 import { TimeboundDelegations } from "./modules/std-delegations/tables/TimeboundDelegations.sol";
 import { PuppetRegistry } from "./modules/puppet/tables/PuppetRegistry.sol";
 import { Balances } from "./modules/tokens/tables/Balances.sol";
+import { TokenURIStorage } from "./modules/tokens/tables/TokenURIStorage.sol";
+import { TokenOperatorApproval } from "./modules/tokens/tables/TokenOperatorApproval.sol";
+import { TokenMetadata, TokenMetadataData } from "./modules/tokens/tables/TokenMetadata.sol";
+import { TokenRegistry } from "./modules/tokens/tables/TokenRegistry.sol";
 import { ERC20Metadata, ERC20MetadataData } from "./modules/erc20-puppet/tables/ERC20Metadata.sol";
 import { Allowances } from "./modules/erc20-puppet/tables/Allowances.sol";
 import { TotalSupply } from "./modules/erc20-puppet/tables/TotalSupply.sol";
@@ -22,3 +26,4 @@ import { Owners } from "./modules/erc721-puppet/tables/Owners.sol";
 import { TokenApproval } from "./modules/erc721-puppet/tables/TokenApproval.sol";
 import { OperatorApproval } from "./modules/erc721-puppet/tables/OperatorApproval.sol";
 import { ERC721Registry } from "./modules/erc721-puppet/tables/ERC721Registry.sol";
+import { ERC1155Balances } from "./modules/erc1155-puppet/tables/ERC1155Balances.sol";
