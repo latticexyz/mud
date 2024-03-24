@@ -13,8 +13,13 @@ import {
 } from "viem";
 import { getAction, encodeFunctionData } from "viem/utils";
 import { writeContract } from "viem/actions";
-import { mapObject } from "@latticexyz/common/utils";
-import { getKeySchema, getValueSchema, decodeValueArgs, encodeKey } from "@latticexyz/protocol-parser/internal";
+import {
+  getKeySchema,
+  getValueSchema,
+  getSchemaTypes,
+  decodeValueArgs,
+  encodeKey,
+} from "@latticexyz/protocol-parser/internal";
 import worldConfig from "../../mud.config";
 import IStoreReadAbi from "../../out/IStoreRead.sol/IStoreRead.abi.json";
 
@@ -118,17 +123,8 @@ async function retrieveSystemFunctionFromContract(
 ): Promise<SystemFunction> {
   const table = worldConfig.tables.world__FunctionSelectors;
 
-  const _keySchema = getKeySchema(table);
-  const keySchema = mapObject<typeof _keySchema, { [K in keyof typeof _keySchema]: (typeof _keySchema)[K]["type"] }>(
-    _keySchema,
-    ({ type }) => type,
-  );
-
-  const _valueSchema = getValueSchema(table);
-  const valueSchema = mapObject<
-    typeof _valueSchema,
-    { [K in keyof typeof _valueSchema]: (typeof _valueSchema)[K]["type"] }
-  >(_valueSchema, ({ type }) => type);
+  const keySchema = getSchemaTypes(getKeySchema(table));
+  const valueSchema = getSchemaTypes(getValueSchema(table));
 
   const [staticData, encodedLengths, dynamicData] = await publicClient.readContract({
     address: worldAddress,
