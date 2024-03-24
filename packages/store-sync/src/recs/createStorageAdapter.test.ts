@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { recsStorage } from "./recsStorage";
+import { recsStorage } from "./createStorageAdapter";
 import { createWorld, getComponentEntities, getComponentValue } from "@latticexyz/recs";
 import mudConfig from "../../../../e2e/packages/contracts/mud.config";
 import worldRpcLogs from "../../../../test-data/world-logs.json";

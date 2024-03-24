@@ -3,7 +3,7 @@ import { Store as StoreConfig } from "@latticexyz/store";
 import { storeToV1 } from "@latticexyz/store/config/v2";
 import { Component as RecsComponent, World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { SyncOptions, SyncResult } from "../common";
-import { RecsStorageAdapter, recsStorage } from "./recsStorage";
+import { CreateStorageAdapterResult, createStorageAdapter } from "./createStorageAdapter";
 import { createStoreSync } from "../createStoreSync";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
@@ -19,7 +19,7 @@ type SyncToRecsOptions<config extends StoreConfig, extraTables extends Record<st
 };
 
 type SyncToRecsResult<config extends StoreConfig, extraTables extends Record<string, Table>> = SyncResult & {
-  components: RecsStorageAdapter<ResolvedStoreConfig<storeToV1<config>>["tables"] & extraTables>["components"];
+  components: CreateStorageAdapterResult<ResolvedStoreConfig<storeToV1<config>>["tables"] & extraTables>["components"];
   stopSync: () => void;
 };
 
@@ -35,7 +35,7 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
     ...extraTables,
   } as ResolvedStoreConfig<storeToV1<config>>["tables"] & extraTables;
 
-  const { storageAdapter, components } = recsStorage({
+  const { storageAdapter, components } = createStorageAdapter({
     world,
     tables,
     shouldSkipUpdateStream: (): boolean =>
