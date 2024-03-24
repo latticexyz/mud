@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { recsStorage } from "./createStorageAdapter";
+import { createStorageAdapter } from "./createStorageAdapter";
 import { createWorld, getComponentEntities, getComponentValue } from "@latticexyz/recs";
 import mudConfig from "../../../../e2e/packages/contracts/mud.config";
 import worldRpcLogs from "../../../../test-data/world-logs.json";
@@ -8,10 +8,8 @@ import { StoreEventsLog } from "../common";
 import { singletonEntity } from "./singletonEntity";
 import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
 import { storeEventsAbi } from "@latticexyz/store";
-import { resolveConfig } from "@latticexyz/store/internal";
-import { storeToV1 } from "@latticexyz/store/config/v2";
 
-const tables = resolveConfig(storeToV1(mudConfig)).tables;
+const tables = mudConfig.tables;
 
 // TODO: make test-data a proper package and export this
 const blocks = groupLogsByBlockNumber(
@@ -27,10 +25,10 @@ const blocks = groupLogsByBlockNumber(
   }),
 );
 
-describe("recsStorage", () => {
+describe("createStorageAdapter", () => {
   it("creates components", async () => {
     const world = createWorld();
-    const { components } = recsStorage({ world, tables });
+    const { components } = createStorageAdapter({ world, tables });
     expect(components.NumberList.id).toMatchInlineSnapshot(
       '"0x746200000000000000000000000000004e756d6265724c697374000000000000"',
     );
@@ -38,7 +36,7 @@ describe("recsStorage", () => {
 
   it("sets component values from logs", async () => {
     const world = createWorld();
-    const { storageAdapter, components } = recsStorage({ world, tables });
+    const { storageAdapter, components } = createStorageAdapter({ world, tables });
 
     for (const block of blocks) {
       await storageAdapter(block);

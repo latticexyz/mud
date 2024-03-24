@@ -1,4 +1,4 @@
-import { Table, resolveConfig } from "@latticexyz/store/internal";
+import { Table } from "@latticexyz/config";
 import { debug } from "./debug";
 import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, setComponent } from "@latticexyz/recs";
 import { defineInternalComponents } from "./defineInternalComponents";
@@ -14,10 +14,9 @@ import { singletonEntity } from "./singletonEntity";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { TablesToComponents, tablesToComponents } from "./tablesToComponents";
-import { storeToV1 } from "@latticexyz/store/config/v2";
 
-const storeTables = resolveConfig(storeToV1(storeConfig)).tables;
-const worldTables = resolveConfig(storeToV1(worldConfig)).tables;
+const storeTables = storeConfig.tables;
+const worldTables = worldConfig.tables;
 
 export type CreateStorageAdapterOptions<tables extends Record<string, Table>> = {
   world: RecsWorld;

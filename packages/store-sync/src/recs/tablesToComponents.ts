@@ -1,10 +1,10 @@
-import { Table } from "@latticexyz/store/internal";
+import { Table } from "@latticexyz/config";
 import { TableToComponent, tableToComponent } from "./tableToComponent";
 import { mapObject } from "@latticexyz/common/utils";
 import { World } from "@latticexyz/recs";
 
 export type TablesToComponents<tables extends Record<string, Table>> = {
-  [tableName in keyof tables]: TableToComponent<tables[tableName]>;
+  [k in keyof tables]: TableToComponent<tables[k]>;
 };
 
 export function tablesToComponents<tables extends Record<string, Table>>(
