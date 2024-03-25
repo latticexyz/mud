@@ -1,6 +1,8 @@
 ---
-"@latticexyz/world": minor
+"@latticexyz/world": patch
 ---
+
+This is an internal feature and is not ready for stable consumption yet.
 
 Added viem custom client actions for delegation. By extending viem clients with this function after delegation, the delegation is automatically applied to World contract writes. This means that these writes are made on behalf of the delegator. Internally, it transforms the write arguments to use `callFrom`.
 
