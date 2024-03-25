@@ -57,13 +57,13 @@
     "file": "test/Factories.t.sol",
     "test": "testCreate2Factory",
     "name": "deploy contract via Create2",
-    "gasUsed": 4960863
+    "gasUsed": 4960875
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 13367296
+    "gasUsed": 12796213
   },
   {
     "file": "test/World.t.sol",
@@ -81,7 +81,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 74777
+    "gasUsed": 74727
   },
   {
     "file": "test/World.t.sol",
@@ -100,12 +100,6 @@
     "test": "testPushToDynamicField",
     "name": "Push data to the table",
     "gasUsed": 110775
-  },
-  {
-    "file": "test/World.t.sol",
-    "test": "testRegisterDelegationWithSignature",
-    "name": "register an unlimited delegation with signature",
-    "gasUsed": 117464
   },
   {
     "file": "test/World.t.sol",
@@ -129,7 +123,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 185349
+    "gasUsed": 185337
   },
   {
     "file": "test/World.t.sol",

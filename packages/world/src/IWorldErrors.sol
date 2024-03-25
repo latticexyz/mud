@@ -107,9 +107,4 @@ interface IWorldErrors {
    * @param functionSelector The function selector of the disallowed callback.
    */
   error World_CallbackNotAllowed(bytes4 functionSelector);
-
-  /**
-   * @dev Mismatched signature.
-   */
-  error World_InvalidSigner(address delegator, address delegatee);
 }

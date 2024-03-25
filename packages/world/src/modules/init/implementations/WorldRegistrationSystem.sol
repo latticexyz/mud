@@ -17,7 +17,6 @@ import { requireInterface } from "../../../requireInterface.sol";
 import { NamespaceOwner } from "../../../codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../codegen/tables/ResourceAccess.sol";
 import { UserDelegationControl } from "../../../codegen/tables/UserDelegationControl.sol";
-import { UserDelegationNonces } from "../../../codegen/tables/UserDelegationNonces.sol";
 import { NamespaceDelegationControl } from "../../../codegen/tables/NamespaceDelegationControl.sol";
 import { ISystemHook } from "../../../ISystemHook.sol";
 import { IWorldErrors } from "../../../IWorldErrors.sol";
@@ -32,8 +31,6 @@ import { requireNamespace } from "../../../requireNamespace.sol";
 import { requireValidNamespace } from "../../../requireValidNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
-import { getSignedMessageHash } from "./getSignedMessageHash.sol";
-import { ECDSA } from "./ECDSA.sol";
 import { createDelegation } from "./createDelegation.sol";
 
 /**

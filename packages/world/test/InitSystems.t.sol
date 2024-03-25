@@ -9,9 +9,9 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { createWorld } from "./createWorld.sol";
 
 import { LimitedCallContext } from "../src/modules/init/LimitedCallContext.sol";
-import { getFunctionSignaturesAccessManagement, getFunctionSignaturesBalanceTransfer, getFunctionSignaturesBatchCall, getFunctionSignaturesDelegation, getFunctionSignaturesRegistration } from "../src/modules/init/functionSignatures.sol";
+import { getFunctionSignaturesAccessManagement, getFunctionSignaturesBalanceTransfer, getFunctionSignaturesBatchCall, getFunctionSignaturesRegistration } from "../src/modules/init/functionSignatures.sol";
 
-import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, DELEGATION_SYSTEM_ID, REGISTRATION_SYSTEM_ID } from "../src/modules/init/constants.sol";
+import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, REGISTRATION_SYSTEM_ID } from "../src/modules/init/constants.sol";
 
 import { Systems } from "../src/codegen/tables/Systems.sol";
 
@@ -59,14 +59,6 @@ contract LimitedCallContextTest is Test {
 
     for (uint256 i; i < functionSignaturesBatchCall.length; i++) {
       callSystem(BATCH_CALL_SYSTEM_ID, functionSignaturesBatchCall[i]);
-    }
-  }
-
-  function testDelegationSystem() public {
-    string[1] memory functionSignatures = getFunctionSignaturesDelegation();
-
-    for (uint256 i; i < functionSignatures.length; i++) {
-      callSystem(DELEGATION_SYSTEM_ID, functionSignatures[i]);
     }
   }
 

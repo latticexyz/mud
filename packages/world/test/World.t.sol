@@ -39,7 +39,6 @@ import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
 import { AccessManagementSystem } from "../src/modules/init/implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "../src/modules/init/implementations/BalanceTransferSystem.sol";
 import { BatchCallSystem } from "../src/modules/init/implementations/BatchCallSystem.sol";
-import { DelegationSystem } from "../src/modules/init/implementations/DelegationSystem.sol";
 
 import { InitModule } from "../src/modules/init/InitModule.sol";
 import { RegistrationSystem } from "../src/modules/init/RegistrationSystem.sol";
@@ -58,8 +57,6 @@ import { AddressArray } from "./codegen/tables/AddressArray.sol";
 import { DelegationControlMock } from "./DelegationControlMock.sol";
 import { createWorld } from "./createWorld.sol";
 import { createInitModule } from "./createInitModule.sol";
-
-import { getSignedMessageHash } from "../src/modules/init/implementations/getSignedMessageHash.sol";
 
 interface IWorldTestSystem {
   function testNamespace__err(string memory input) external pure;
@@ -226,7 +223,7 @@ contract WorldTest is Test, GasReporter {
 
     // Should have registered the core system function selectors
     RegistrationSystem registrationSystem = RegistrationSystem(Systems.getSystem(REGISTRATION_SYSTEM_ID));
-    bytes4[23] memory funcSelectors = [
+    bytes4[22] memory funcSelectors = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
@@ -238,8 +235,6 @@ contract WorldTest is Test, GasReporter {
       // --- BatchCallSystem ---
       BatchCallSystem.batchCall.selector,
       BatchCallSystem.batchCallFrom.selector,
-      // --- DelegationSystem ---
-      DelegationSystem.registerDelegationWithSignature.selector,
       // --- ModuleInstallationSystem ---
       registrationSystem.installModule.selector,
       // --- StoreRegistrationSystem ---
@@ -1164,68 +1159,6 @@ contract WorldTest is Test, GasReporter {
       UNLIMITED_DELEGATION,
       new bytes(0)
     );
-  }
-
-  function testRegisterDelegationWithSignature() public {
-    // Register a new system
-    WorldTestSystem system = new WorldTestSystem();
-    ResourceId systemId = WorldResourceIdLib.encode({
-      typeId: RESOURCE_SYSTEM,
-      namespace: "namespace",
-      name: "testSystem"
-    });
-    world.registerNamespace(systemId.getNamespaceId());
-    world.registerSystem(systemId, system, true);
-
-    // Register a limited delegation using signature
-    (address delegator, uint256 delegatorPk) = makeAddrAndKey("delegator");
-    address delegatee = address(2);
-
-    bytes32 hash = getSignedMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), 0, address(world));
-    (uint8 v, bytes32 r, bytes32 s) = vm.sign(delegatorPk, hash);
-    bytes memory signature = abi.encodePacked(r, s, v);
-
-    startGasReport("register an unlimited delegation with signature");
-    world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, signature);
-    endGasReport();
-
-    // Call a system from the delegatee on behalf of the delegator
-    vm.prank(delegatee);
-    bytes memory returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
-    address returnedAddress = abi.decode(returnData, (address));
-
-    // Expect the system to have received the delegator's address
-    assertEq(returnedAddress, delegator);
-
-    // Unregister delegation
-    vm.prank(delegator);
-    world.unregisterDelegation(delegatee);
-
-    // Expect a revert when attempting to perform a call via callFrom after a delegation was unregistered
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
-    vm.prank(delegatee);
-    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
-
-    // Attempt to register a limited delegation using an old signature
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_InvalidSigner.selector, delegator, delegatee));
-    world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, signature);
-
-    // Expect a revert when attempting to perform a call via callFrom after a delegation was unregistered
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
-    vm.prank(delegatee);
-    world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
-
-    // Register a limited delegation using a new signature
-    hash = getSignedMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), 1, address(world));
-    (v, r, s) = vm.sign(delegatorPk, hash);
-    signature = abi.encodePacked(r, s, v);
-
-    world.registerDelegationWithSignature(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, signature);
-
-    // Call a system from the delegatee on behalf of the delegator
-    vm.prank(delegatee);
-    returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
-    returnedAddress = abi.decode(returnData, (address));
   }
 
   function testUnregisterUnlimitedDelegation() public {

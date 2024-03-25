@@ -47,61 +47,21 @@ contract KeysInTableModule is Module {
     bool success;
     bytes memory returnData;
 
-    if (!ResourceIds._getExists(KeysInTable._tableId)) {
-      // Register the tables
-      (success, returnData) = address(world).delegatecall(
-        abi.encodeCall(
-          world.registerTable,
-          (
-            KeysInTable._tableId,
-            KeysInTable._fieldLayout,
-            KeysInTable._keySchema,
-            KeysInTable._valueSchema,
-            KeysInTable.getKeyNames(),
-            KeysInTable.getFieldNames()
-          )
-        )
-      );
-      if (!success) revertWithBytes(returnData);
-
-      (success, returnData) = address(world).delegatecall(
-        abi.encodeCall(
-          world.registerTable,
-          (
-            UsedKeysIndex._tableId,
-            UsedKeysIndex._fieldLayout,
-            UsedKeysIndex._keySchema,
-            UsedKeysIndex._valueSchema,
-            UsedKeysIndex.getKeyNames(),
-            UsedKeysIndex.getFieldNames()
-          )
-        )
-      );
-      if (!success) revertWithBytes(returnData);
-
-      // Grant the hook access to the tables
-      (success, returnData) = address(world).delegatecall(
-        abi.encodeCall(world.grantAccess, (KeysInTable._tableId, address(hook)))
-      );
-      if (!success) revertWithBytes(returnData);
-
-      (success, returnData) = address(world).delegatecall(
-        abi.encodeCall(world.grantAccess, (UsedKeysIndex._tableId, address(hook)))
-      );
-      if (!success) revertWithBytes(returnData);
-    }
-
-    // Register a hook that is called when a value is set in the source table
+    // Register the tables
     (success, returnData) = address(world).delegatecall(
       abi.encodeCall(
-        world.registerStoreHook,
+        world.registerTable,
         (
-          sourceTableId,
-          hook,
-          BEFORE_SET_RECORD | AFTER_SPLICE_STATIC_DATA | AFTER_SPLICE_DYNAMIC_DATA | BEFORE_DELETE_RECORD
+          KeysInTable._tableId,
+          KeysInTable._fieldLayout,
+          KeysInTable._keySchema,
+          KeysInTable._valueSchema,
+          KeysInTable.getKeyNames(),
+          KeysInTable.getFieldNames()
         )
       )
     );
+    if (!success) revertWithBytes(returnData);
   }
 
   function install(bytes memory) public pure {

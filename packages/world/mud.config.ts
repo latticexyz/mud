@@ -42,10 +42,6 @@ export default defineWorld({
       },
       key: ["delegator", "delegatee"],
     },
-    UserDelegationNonces: {
-      schema: { delegator: "address", nonce: "uint256" },
-      key: ["delegator"],
-    },
     NamespaceDelegationControl: {
       schema: {
         namespaceId: "ResourceId",

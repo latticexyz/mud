@@ -60,10 +60,3 @@ function getFunctionSignaturesRegistration() pure returns (string[14] memory) {
     "unregisterNamespaceDelegation(bytes32)"
   ];
 }
-
-/**
- * @dev Function signatures for delegation system
- */
-function getFunctionSignaturesDelegation() pure returns (string[1] memory) {
-  return ["registerDelegationWithSignature(address,bytes32,bytes,address,bytes)"];
-}
