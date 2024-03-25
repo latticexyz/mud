@@ -10,7 +10,7 @@ import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "../src/EncodedLengths.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
@@ -170,7 +170,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     keyTuple[0] = keccak256("some.key");
 
     startGasReport("set static record (1 slot)");
-    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData);
+    StoreCore.setRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), dynamicData);
     endGasReport();
 
     // Get data
@@ -198,7 +198,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     keyTuple[0] = "some key";
 
     startGasReport("set static record (2 slots)");
-    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData);
+    StoreCore.setRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), dynamicData);
     endGasReport();
 
     // Get data
@@ -238,7 +238,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       thirdDataBytes = EncodeArray.encode(thirdData);
     }
 
-    PackedCounter encodedDynamicLength = PackedCounterLib.pack(
+    EncodedLengths encodedDynamicLength = EncodedLengthsLib.pack(
       uint40(secondDataBytes.length),
       uint40(thirdDataBytes.length)
     );
@@ -400,7 +400,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       thirdDataBytes = EncodeArray.encode(thirdData);
     }
 
-    PackedCounter encodedDynamicLength = PackedCounterLib.pack(
+    EncodedLengths encodedDynamicLength = EncodedLengthsLib.pack(
       uint40(secondDataBytes.length),
       uint40(thirdDataBytes.length)
     );
@@ -660,7 +660,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     bytes memory dynamicData = new bytes(0);
 
     startGasReport("set record on table with subscriber");
-    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData);
+    StoreCore.setRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), dynamicData);
     endGasReport();
 
     staticData = abi.encodePacked(bytes16(0x1112131415161718191a1b1c1d1e1f20));
@@ -702,7 +702,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;
     bytes memory arrayDataBytes = EncodeArray.encode(arrayData);
-    PackedCounter encodedArrayDataLength = PackedCounterLib.pack(uint40(arrayDataBytes.length));
+    EncodedLengths encodedArrayDataLength = EncodedLengthsLib.pack(uint40(arrayDataBytes.length));
     bytes memory dynamicData = arrayDataBytes;
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
     bytes memory data = abi.encodePacked(staticData, encodedArrayDataLength, dynamicData);
@@ -738,7 +738,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       SchemaType.UINT16
     );
 
-    IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
+    this.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
     bytes memory staticData = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
@@ -748,10 +748,10 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Expect a Store_SetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit Store_SetRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    emit Store_SetRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     startGasReport("StoreCore: set record in offchain table");
-    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    this.setRecord(tableId, keyTuple, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
     endGasReport();
   }
 
@@ -766,7 +766,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
         SchemaType.UINT32_ARRAY,
         SchemaType.UINT32_ARRAY
       );
-      IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+      this.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
     }
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
@@ -788,9 +788,9 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       thirdDataBytes = EncodeArray.encode(thirdData);
     }
 
-    PackedCounter encodedDynamicLength;
+    EncodedLengths encodedDynamicLength;
     {
-      encodedDynamicLength = PackedCounterLib.pack(uint40(secondDataBytes.length), uint40(thirdDataBytes.length));
+      encodedDynamicLength = EncodedLengthsLib.pack(uint40(secondDataBytes.length), uint40(thirdDataBytes.length));
     }
 
     // Concat data
@@ -802,7 +802,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     keyTuple[0] = bytes32("some key");
 
     // Set data
-    IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
+    this.setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
 
     // Expect a Store_DeleteRecord event to be emitted
     vm.expectEmit(true, true, true, true);
@@ -810,7 +810,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Delete data
     startGasReport("StoreCore: delete record in offchain table");
-    IStore(this).deleteRecord(tableId, keyTuple);
+    this.deleteRecord(tableId, keyTuple);
     endGasReport();
   }
 }

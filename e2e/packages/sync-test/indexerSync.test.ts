@@ -143,7 +143,7 @@ describe("Sync from indexer", async () => {
             y: -2,
             zone: "0x6d61703100000000000000000000000000000000000000000000000000000000",
           },
-        ])
+        ]),
       );
 
       // Should not have thrown errors

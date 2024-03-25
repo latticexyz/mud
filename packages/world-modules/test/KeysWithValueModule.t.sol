@@ -8,7 +8,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
@@ -16,6 +16,7 @@ import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncod
 
 import { World } from "@latticexyz/world/src/World.sol";
 import { IModule } from "@latticexyz/world/src/IModule.sol";
+import { IModuleErrors } from "@latticexyz/world/src/IModuleErrors.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance, NAME_BITS, TYPE_BITS } from "@latticexyz/world/src/WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "@latticexyz/world/src/constants.sol";
@@ -92,7 +93,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     uint256 value = 1;
 
     startGasReport("set a record on a table with KeysWithValueModule installed");
-    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value), PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value), EncodedLengths.wrap(bytes32(0)), new bytes(0));
     endGasReport();
 
     // Get the list of entities with this value from the target table
@@ -115,7 +116,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     );
 
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
-    vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
+    vm.expectRevert(IModuleErrors.Module_AlreadyInstalled.selector);
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
   }
 
@@ -125,7 +126,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     // Set a value in the source table
     uint256 value1 = 1;
 
-    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value1), PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value1), EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     // Get the list of entities with value1 from the target table
     bytes32[] memory keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value1)));
@@ -135,7 +136,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(keysWithValue[0], key1, "2");
 
     // Set a another key with the same value
-    world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value1), PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value1), EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     // Get the list of entities with value2 from the target table
     keysWithValue = KeysWithValue.get(targetTableId, keccak256(abi.encodePacked(value1)));
@@ -149,7 +150,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     uint256 value2 = 2;
 
     startGasReport("change a record on a table with KeysWithValueModule installed");
-    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value2), PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value2), EncodedLengths.wrap(bytes32(0)), new bytes(0));
     endGasReport();
 
     // Get the list of entities with value1 from the target table
@@ -251,14 +252,14 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     _installKeysWithValueModule();
 
     // Set a value in the source table
-    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value), PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value), EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     startGasReport("Get list of keys with a given value");
     bytes32[] memory keysWithValue = getKeysWithValue(
       world,
       sourceTableId,
       abi.encodePacked(value),
-      PackedCounter.wrap(bytes32(0)),
+      EncodedLengths.wrap(bytes32(0)),
       new bytes(0)
     );
     endGasReport();
@@ -268,14 +269,14 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(keysWithValue[0], key1);
 
     // Set a another key with the same value
-    world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value), PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value), EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     // Get the list of keys with value from the target table
     keysWithValue = getKeysWithValue(
       world,
       sourceTableId,
       abi.encodePacked(value),
-      PackedCounter.wrap(bytes32(0)),
+      EncodedLengths.wrap(bytes32(0)),
       new bytes(0)
     );
 

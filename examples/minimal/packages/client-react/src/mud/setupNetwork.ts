@@ -1,5 +1,4 @@
-import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
-import { createFaucetService } from "@latticexyz/services/faucet";
+import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, ClientConfig } from "viem";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
@@ -32,8 +31,7 @@ export async function setupNetwork() {
   const worldContract = getContract({
     address: networkConfig.worldAddress as Hex,
     abi: IWorldAbi,
-    publicClient,
-    walletClient: burnerWalletClient,
+    client: { public: publicClient, wallet: burnerWalletClient },
     onWrite: (write) => write$.next(write),
   });
 

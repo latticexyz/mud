@@ -218,6 +218,6 @@ export const staticAbiTypeToByteLength = {
   address: 20,
 } as const satisfies Record<StaticAbiType, number>;
 
-export function isStaticAbiType(abiType: string): abiType is StaticAbiType {
+export function isStaticAbiType(abiType: unknown): abiType is StaticAbiType {
   return staticAbiTypes.includes(abiType as StaticAbiType);
 }
