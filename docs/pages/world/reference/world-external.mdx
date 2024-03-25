@@ -5,7 +5,7 @@
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/codegen/interfaces/IBaseWorld.sol)
 
 **Inherits:**
-[IStore](/store/reference/store#istore), [IWorldKernel](/world/reference/world-external#iworldkernel), [IAccessManagementSystem](/world/reference/world-external#iaccessmanagementsystem), [IBalanceTransferSystem](/world/reference/world-external#ibalancetransfersystem), [IBatchCallSystem](/world/reference/world-external#ibatchcallsystem), [IDelegationSystem](/src/codegen/interfaces/IDelegationSystem.sol/interface.IDelegationSystem.md), [IModuleInstallationSystem](/world/reference/world-external#imoduleinstallationsystem), [IWorldRegistrationSystem](/world/reference/world-external#iworldregistrationsystem), [IRegistrationSystem](/world/reference/world-external#iregistrationsystem)
+[IStore](/store/reference/store#istore), [IWorldKernel](/world/reference/world-external#iworldkernel), [IAccessManagementSystem](/world/reference/world-external#iaccessmanagementsystem), [IBalanceTransferSystem](/world/reference/world-external#ibalancetransfersystem), [IBatchCallSystem](/world/reference/world-external#ibatchcallsystem), [IModuleInstallationSystem](/world/reference/world-external#imoduleinstallationsystem), [IWorldRegistrationSystem](/world/reference/world-external#iworldregistrationsystem), [IRegistrationSystem](/world/reference/world-external#iregistrationsystem)
 
 This interface integrates all systems and associated function selectors
 that are dynamically registered in the World during deployment.
@@ -997,14 +997,6 @@ error World_CallbackNotAllowed(bytes4 functionSelector);
 | Name               | Type     | Description                                       |
 | ------------------ | -------- | ------------------------------------------------- |
 | `functionSelector` | `bytes4` | The function selector of the disallowed callback. |
-
-#### World_InvalidSigner
-
-_Mismatched signature._
-
-```solidity
-error World_InvalidSigner(address delegator, address delegatee);
-```
 
 ## IWorldFactory
 

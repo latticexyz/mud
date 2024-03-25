@@ -31,12 +31,6 @@ address internal immutable balanceTransferSystem;
 address internal immutable batchCallSystem;
 ```
 
-#### delegationSystem
-
-```solidity
-address internal immutable delegationSystem;
-```
-
 #### registrationSystem
 
 ```solidity
@@ -52,7 +46,6 @@ constructor(
   AccessManagementSystem _accessManagementSystem,
   BalanceTransferSystem _balanceTransferSystem,
   BatchCallSystem _batchCallSystem,
-  DelegationSystem _delegationSystem,
   RegistrationSystem _registrationSystem
 );
 ```
@@ -162,18 +155,6 @@ _This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the s
 ```solidity
 ResourceId constant BATCH_CALL_SYSTEM_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("BatchCall")))
-);
-```
-
-#### DELEGATION_SYSTEM_ID
-
-_Resource ID for delegation system._
-
-_This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name._
-
-```solidity
-ResourceId constant DELEGATION_SYSTEM_ID = ResourceId.wrap(
-  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("Delegation")))
 );
 ```
 
