@@ -50,4 +50,11 @@ export default defineWorld({
       key: [],
     },
   },
+  modules: [
+    {
+      name: "DelegationModule",
+      root: true,
+      args: [],
+    },
+  ],
 });
