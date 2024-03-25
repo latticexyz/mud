@@ -1,4 +1,4 @@
-// Inspired by https://viem.sh/docs/actions/wallet/signTypedData#usage
+// Follows https://viem.sh/docs/actions/wallet/signTypedData#usage
 
 export const types = {
   Delegation: [
