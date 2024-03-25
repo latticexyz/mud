@@ -9,42 +9,64 @@ It is comparable to `abi.encodePacked`, but with some notable differences:
   This might cause some elements to wrap around two storage slots, but saves a lot of space.
   For example, an `address[3]` array will only use 2 storage slots in MUD instead of 3 in Solidity, leading to a 33% reduction in storage costs.
 - **Array lengths are packed into a single slot**.
-  Tables are limited to up to 5 dynamic fields, and the length of each field is limited to `2**40` (over a million millions), we can pack the lengths of all dynamic length fields of a table into a single storage slot.
+  Tables are limited to up to 5 dynamic fields, and the length of each field is limited to 2<sup>40</sup> (over a million millions), we can pack the lengths of all dynamic length fields of a table into a single storage slot.
   Compared to Solidity, this saves 1 storage slot per dynamic length element except for the first one.
 
 This encoding scheme greatly reduces gas for storage operations on dynamic length fields and for emitting events.
-**For events it reduces the payload size by ~80%** compared to the Solidity default of `abi.encode` (depending on the table schema).
+**For events it reduces the payload size by over 80%** compared to the Solidity default of `abi.encode` (depending on the table schema).
 Note that since the encoding happens at runtime and does not have access to compiler internals, there is some overhead for encoding and decoding that is not present in vanilla Solidity.
 
-## Schema
+## Schemas
 
-Each table has a key schema and a value schema, which define the data types of each column.
+Each table has two schemas: a key schema and a value schema.
+The schemas define the data type of each column.
 
-Both key schema and value schema use the same data structure, a `bytes32` value that encodes the total byte length of all static length fields, the number of static length fields, the number of dynamic length fields, and up to 28 column types.
+The key schema and the value schema use the same data structure, a `bytes32` value that encodes the total byte length of all static length fields, the number of static length fields, the number of dynamic length fields, and up to 28 column types.
 
-| Bytes | Value                           | Type     | Constraint |
-| ----: | ------------------------------- | -------- | ---------- | 
-| 31-30 | Total length of static fields   | `uint16` | 
-| 29    | Number of static length fields  | `uint8`  | ≤ (28 - number of dynamic length fields)    
-| 28    | Number of dynamic length fields | `uint8`  | For key, 0. For value, ≤5
-| 27    | Type of first column            | `SchemaType`
-| 26    | Type of second column           | `SchemaType`
+| Byte(s) | Value                           | Type     | Constraint |
+| ------: | ------------------------------- | -------- | ---------- | 
+| 0-1     | Total length of static fields   | `uint16` | 
+| 2       | Number of static length fields  | `uint8`  | ≤ (28 - number of dynamic length fields)    
+| 3       | Number of dynamic length fields | `uint8`  | For the key schema, 0 <br /> For the value schema, ≤5
+| 4       | Type of first column            | `SchemaType`
+| 5       | Type of second column           | `SchemaType`
 | .
-| n     | Type of (28-n)'th column | `SchemaType`
+| n       | Type of (n-3)'th column | `SchemaType`
 | ,
-| 0     | Type of 28th column | `SchemaType`
+| 31      | Type of 28th column | `SchemaType`
 
 Types are represented via the `SchemaType` enum and encoded as one byte per type.
 The encoding is specified in [`SchemaType.sol`](https://github.com/latticexyz/mud/blob/main/packages/schema-type/src/solidity/SchemaType.sol)
 
+<details>
+
+<summary>Schema types</summary>
+
+| Value (hex) | Value (dec) | Type                |
+| ----------: | ----------: | ------------------- | 
+| 0x00≤n≤0x1F | 0≤n≤31      | `uint<8n(+1)>`      |
+| 0x20≤n≤0x3F | 32≤n≤63     | `int<8(n-31)>`      |
+| 0x40≤n≤0x5F | 64≤n≤95     | `bytes<n-63>`       |
+| 0x60        | 96          | `bool`              |
+| 0x61        | 97          | `address`           |
+| 0x62≤n≤0x81 | 98≤n≤129    | `uint<8(n-97)>[]`   |
+| 0x82≤n≤0xA1 | 130≤n≤161   | `int<8(n-129)>[]`   |
+| 0xA2≤n≤0xC1 | 162≤n≤193   | `bytes<8(n-161)>[]` |
+| 0xC2        | 194         | `bool[]`            |
+| 0xC3        | 195         | `address[]`         |
+| 0xC4        | 196         | `bytes`             |
+| 0xC5        | 197         | `string`            |
+
+</details>
+
 Note that the dynamic length types *must* come after all static length types.
 
-For example, let's interpret the schema `0x002102031f00c5c4820000000000000000000000000000000000000000000000`.
+For example, let's interpret the schema `0x001c0303180001c5c48300000000000000000000000000000000000000000000`.
 
-| Byte number | 31-30  | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22-0 |
-| ----------- | ------ | -- | -- | -- | -- | -- | -- | -- | -------------- |
-| Schema data | `0x0021` | `02` | `03` | `1f` | `00` | `c5` | `c4` | `82` | `0000000000000000000000000000000000000000000000` |
-| Meaning     | 33 bytes of static data | two static length fields | three dynamic length fields | 1st field - `1f` (`uint256`) | 2nd field - `00` (`uint8`) | 3rd field - `c5` (`string`) | 4th field - `c4` (`bytes`) | 5th field - `82` (`int8[]`) | No other fields |
+| Byte number | 0-1      |  2   |  3   |  4   |  5   | 6    | 7    |  8   | 9    | 10-31   |
+| ----------- | -------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ------- |
+| Schema data | `0x001c` | `03` | `03` | `18` | `00` | `01` | `c5` | `c4` | `83` | `0...0` |
+| Meaning     | 28 bytes of static data | three static length fields | three dynamic length fields | 1st field - `18` (`uint200`) | 2nd field - `00` (`uint8`) | 3rd field - `01` (`uin16`) | 4th field - `c5` (`string`) | 5th field - `c4` (`bytes`) | 6th field - `83` (`int16[]`) | No other fields |
 
 
 ## Events
@@ -112,8 +134,9 @@ The first four 256-bit words correspond to the four unindexed event fields.
 | 2    | `EncodedLengths encodedLengths` | `0x0000000000000000000000000000060000000005000000000500000000000010` |
 | 3    | `bytes dynamicData`             | `0x0...0120` |
 
-ABI encoding tries to fit every field in a 32-byte word.
-Because this is impossible with dynamic fields, the value is an offset into where in the data the field starts.
+ABI encoding starts with one 32-byte word per field.
+If the field is static, the word contains that value.
+If the field is dynamic, the word contains an offset into where the field data starts.
 
 | Event field          | Starting byte       | Words in the data 
 | -------------------- | ------------------: | -----------------:
@@ -130,7 +153,8 @@ Because this is impossible with dynamic fields, the value is an offset into wher
 | 6    | `0x0......02`
 
 
-This is a variable-length array, so the first word is the array length, followed by the values.
+This is a variable-length array. 
+The first word is the array length, followed by the values.
 The key fields are treated internally as 32-byte values, so every value takes 32 bytes.
 This gives us
 
@@ -146,7 +170,7 @@ This is the static data (the static fields that are not in the key).
 | Word | Data | 
 | ---: | ---- |
 | 7    | `0x0...01c`
-| 8    | `0x00000000000000000000000000000000000000000000000bad04600d00000000`
+| 8    | `0x00000000000000000000000000000000000000000000000bad 04 600d 00000000`
 
 Because the type is an unspecified number of bytes, the first 32-byte word is the length.
 In this case, the length is `0x1C=28`.
@@ -195,7 +219,7 @@ The total length is `0x10 = 16`.
 | Word | Data | 
 | ---: | ---- |
 | 9    | `0x0000000000000000000000000000000000000000000000000000000000000010`
-| 10   | `0x68656c6c6f776f726c6400010002000300000000000000000000000000000000`
+| 10   | `0x68656c6c6f 776f726c64 000100020003 00000000000000000000000000000000`
 
 This value is also `bytes`, so the first word is the length of the data, in this case `0x10=16`.
 Combining this with the encoded lengths information, we get these values:
@@ -271,7 +295,7 @@ This data starts at word six (byte `0xC0 = 192 = 32*6`).
 | Word | Data | 
 | ---: | ---- |
 | 6 | `0x0...01`
-| 7 | `0xff0...0`
+| 7 | `0xff 0...0`
 
 The first word of this field, word 6, tells us that we are only changing one byte of the data, so we aren't changing `val3` either.
 The first byte of word 7, the only one that matters, is `0xFF`.
@@ -316,7 +340,7 @@ The first six 256-bit words correspond to the unindexed event fields.
 | 1    | `uint8 dynamicFieldIndex`       | `0x00...02`  |
 | 2    | `uint48 start`                  | `0x00...06`  |
 | 3    | `uint40 deleteCount`            | `0x00...00`  |
-| 4    | `EncodedLengths encodedLengths` | `0x0000000000000000000000000000080000000000000000000000000000000008`
+| 4    | `EncodedLengths encodedLengths` | `0x0000000000 0000000000 0000000008 0000000000 0000000000 00000000000008`
 | 5    | `bytes data`                    | `0x00...120` |
 
 `keyTuple` is interpreted the same way it is in `Store_SetRecord`.
@@ -336,7 +360,7 @@ The byte at which we start the change.
 Here is it byte six.
 The effect on the length of the data depends on what we are doing.
 If we are appending data, we would have six bytes now (three values) and add to them.
-If we are modifying data, we should have at least eight bytes now (four values), and we modify the third value.
+If we are modifying data, we should have at least eight bytes now (four values), and we modify the fourth value (`dyn3[3]`).
 
 **`uint40 deleteCount`**
 
@@ -354,8 +378,8 @@ This value starts at byte `0x120 = 288 = 9*32`, or word nine.
 
 | Word | Data | 
 | ---: | ---- |
-|  9 | `0x0000000000000000000000000000000000000000000000000000000000000002`
-| 10 | `0x12340000000000000000000000000000000000000000000000000000000000000`
+|  9   | `0x0000000000000000000000000000000000000000000000000000000000000002`
+| 10   | `0x1234 000000000000000000000000000000000000000000000000000000000000`
 
 Again, the first word of the `bytes` value tells us how many bytes we have (two).
 The second gives us the value we are adding, in this case `0x1234`.
