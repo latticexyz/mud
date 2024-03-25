@@ -13,6 +13,7 @@ import {
 } from "viem";
 import { getAction, encodeFunctionData } from "viem/utils";
 import { writeContract } from "viem/actions";
+import { readHex } from "@latticexyz/common";
 import {
   getKeySchema,
   getValueSchema,
@@ -73,13 +74,9 @@ export function callFrom<TChain extends Chain, TAccount extends Account>(
       // Get the systemId and System's function selector.
       const { systemId, systemFunctionSelector } = await worldFunctionToSystemFunction(params, worldFunctionSelector);
 
-      // Construct the System's calldata.
-      // If there's no args, use the System's function selector as calldata.
-      // Otherwise, use the World's calldata, replacing the World's function selector with the System's.
-      const systemCalldata =
-        worldCalldata === worldFunctionSelector
-          ? systemFunctionSelector
-          : concat([systemFunctionSelector, slice(worldCalldata, 4)]);
+      // Construct the System's calldata by replacing the World's function selector with the System's.
+      // Use `readHex` instead of `slice` to prevent out-of-bounds errors with calldata that has no args.
+      const systemCalldata = concat([systemFunctionSelector, readHex(worldCalldata, 4)]);
 
       // Construct args for `callFrom`.
       const callFromArgs: typeof writeArgs = {
