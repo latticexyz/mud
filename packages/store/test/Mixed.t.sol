@@ -7,7 +7,7 @@ import { StoreCore } from "../src/StoreCore.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema, SchemaLib, SchemaType } from "../src/Schema.sol";
-import { PackedCounter } from "../src/PackedCounter.sol";
+import { EncodedLengths } from "../src/EncodedLengths.sol";
 
 import { Mixed, MixedData } from "./codegen/index.sol";
 
@@ -125,7 +125,7 @@ contract MixedTest is Test, GasReporter, StoreMock {
     a32[1] = 4;
     string memory s = "some string";
 
-    (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) = Mixed.encode(1, 2, a32, s);
+    (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData) = Mixed.encode(1, 2, a32, s);
     assertEq(staticData, hex"0000000100000000000000000000000000000002");
     assertEq(encodedLengths.unwrap(), hex"000000000000000000000000000000000000000b000000000800000000000013");
     assertEq(dynamicData, hex"0000000300000004736f6d6520737472696e67");
