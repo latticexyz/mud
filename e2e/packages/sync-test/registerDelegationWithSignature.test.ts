@@ -5,7 +5,6 @@ import { createAsyncErrorHandler } from "./asyncErrors";
 import { deployContracts, startViteServer, startBrowserAndPage, openClientWithRootAccount } from "./setup";
 import { rpcHttpUrl } from "./setup/constants";
 import { waitForInitialSync } from "./data/waitForInitialSync";
-import { callWorld } from "./data/callWorld";
 import { createBurnerAccount, resourceToHex, transportObserver } from "@latticexyz/common";
 import { http, createWalletClient, ClientConfig } from "viem";
 import { mudFoundry } from "@latticexyz/common/chains";
@@ -15,6 +14,7 @@ import worldConfig from "@latticexyz/world/mud.config";
 import { worldToV1 } from "@latticexyz/world/config/v2";
 import { types } from "@latticexyz/world/internal";
 import { getWorld } from "./data/getWorld";
+import { callRegisterDelegationWithSignature } from "./data/callRegisterDelegationWithSignature";
 
 const PRIVATE_KEY = "0x67bbd1575ecc79b3247c7d7b87a5bc533ccb6a63955a9fefdfaf75853f7cd543";
 
@@ -83,7 +83,7 @@ describe("registerDelegationWithSignature", async () => {
     });
 
     // Register the delegation
-    await callWorld(page, "registerDelegationWithSignature", [
+    await callRegisterDelegationWithSignature(page, [
       delegatee,
       delegationControlId,
       initCallData,

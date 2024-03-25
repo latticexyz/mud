@@ -28,42 +28,7 @@ export async function setupNetwork() {
 
   const worldContract = getContract({
     address: networkConfig.worldAddress as Hex,
-    abi: [
-      ...IWorldAbi,
-      {
-        type: "function",
-        name: "registerDelegationWithSignature",
-        inputs: [
-          {
-            name: "delegatee",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "delegationControlId",
-            type: "bytes32",
-            internalType: "ResourceId",
-          },
-          {
-            name: "initCallData",
-            type: "bytes",
-            internalType: "bytes",
-          },
-          {
-            name: "delegator",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "signature",
-            type: "bytes",
-            internalType: "bytes",
-          },
-        ],
-        outputs: [],
-        stateMutability: "nonpayable",
-      },
-    ],
+    abi: IWorldAbi,
     client: { public: publicClient, wallet: burnerWalletClient },
   });
 
