@@ -39,6 +39,7 @@ import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
 import { AccessManagementSystem } from "../src/modules/init/implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "../src/modules/init/implementations/BalanceTransferSystem.sol";
 import { BatchCallSystem } from "../src/modules/init/implementations/BatchCallSystem.sol";
+import { DelegationSystem } from "../src/modules/init/implementations/DelegationSystem.sol";
 
 import { InitModule } from "../src/modules/init/InitModule.sol";
 import { RegistrationSystem } from "../src/modules/init/RegistrationSystem.sol";
@@ -237,6 +238,8 @@ contract WorldTest is Test, GasReporter {
       // --- BatchCallSystem ---
       BatchCallSystem.batchCall.selector,
       BatchCallSystem.batchCallFrom.selector,
+      // --- DelegationSystem ---
+      DelegationSystem.registerDelegationWithSignature.selector,
       // --- ModuleInstallationSystem ---
       registrationSystem.installModule.selector,
       // --- StoreRegistrationSystem ---
@@ -251,7 +254,6 @@ contract WorldTest is Test, GasReporter {
       registrationSystem.registerFunctionSelector.selector,
       registrationSystem.registerRootFunctionSelector.selector,
       registrationSystem.registerDelegation.selector,
-      registrationSystem.registerDelegationWithSignature.selector,
       registrationSystem.unregisterDelegation.selector,
       registrationSystem.registerNamespaceDelegation.selector,
       registrationSystem.unregisterNamespaceDelegation.selector

@@ -9,6 +9,7 @@ import { IWorldKernel } from "../../IWorldKernel.sol";
 import { IAccessManagementSystem } from "./IAccessManagementSystem.sol";
 import { IBalanceTransferSystem } from "./IBalanceTransferSystem.sol";
 import { IBatchCallSystem } from "./IBatchCallSystem.sol";
+import { IDelegationSystem } from "./IDelegationSystem.sol";
 import { IModuleInstallationSystem } from "./IModuleInstallationSystem.sol";
 import { IWorldRegistrationSystem } from "./IWorldRegistrationSystem.sol";
 import { IRegistrationSystem } from "./IRegistrationSystem.sol";
@@ -26,6 +27,7 @@ interface IBaseWorld is
   IAccessManagementSystem,
   IBalanceTransferSystem,
   IBatchCallSystem,
+  IDelegationSystem,
   IModuleInstallationSystem,
   IWorldRegistrationSystem,
   IRegistrationSystem

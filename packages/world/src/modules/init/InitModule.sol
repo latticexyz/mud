@@ -20,10 +20,11 @@ import { NamespaceDelegationControl } from "../../codegen/tables/NamespaceDelega
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
 import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
+import { DelegationSystem } from "./implementations/DelegationSystem.sol";
 
 import { RegistrationSystem } from "./RegistrationSystem.sol";
-import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, REGISTRATION_SYSTEM_ID } from "./constants.sol";
-import { getFunctionSignaturesAccessManagement, getFunctionSignaturesBalanceTransfer, getFunctionSignaturesBatchCall, getFunctionSignaturesRegistration } from "./functionSignatures.sol";
+import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, DELEGATION_SYSTEM_ID, REGISTRATION_SYSTEM_ID } from "./constants.sol";
+import { getFunctionSignaturesAccessManagement, getFunctionSignaturesBalanceTransfer, getFunctionSignaturesBatchCall, getFunctionSignaturesRegistration, getFunctionSignaturesDelegation } from "./functionSignatures.sol";
 
 import { Systems } from "../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../codegen/tables/FunctionSelectors.sol";
@@ -45,17 +46,20 @@ contract InitModule is Module {
   address internal immutable accessManagementSystem;
   address internal immutable balanceTransferSystem;
   address internal immutable batchCallSystem;
+  address internal immutable delegationSystem;
   address internal immutable registrationSystem;
 
   constructor(
     AccessManagementSystem _accessManagementSystem,
     BalanceTransferSystem _balanceTransferSystem,
     BatchCallSystem _batchCallSystem,
+    DelegationSystem _delegationSystem,
     RegistrationSystem _registrationSystem
   ) {
     accessManagementSystem = address(_accessManagementSystem);
     balanceTransferSystem = address(_balanceTransferSystem);
     batchCallSystem = address(_batchCallSystem);
+    delegationSystem = address(_delegationSystem);
     registrationSystem = address(_registrationSystem);
   }
 
@@ -117,6 +121,7 @@ contract InitModule is Module {
     _registerSystem(accessManagementSystem, ACCESS_MANAGEMENT_SYSTEM_ID);
     _registerSystem(balanceTransferSystem, BALANCE_TRANSFER_SYSTEM_ID);
     _registerSystem(batchCallSystem, BATCH_CALL_SYSTEM_ID);
+    _registerSystem(delegationSystem, DELEGATION_SYSTEM_ID);
     _registerSystem(registrationSystem, REGISTRATION_SYSTEM_ID);
   }
 
@@ -153,7 +158,12 @@ contract InitModule is Module {
       _registerRootFunctionSelector(BATCH_CALL_SYSTEM_ID, functionSignaturesBatchCall[i]);
     }
 
-    string[15] memory functionSignaturesRegistration = getFunctionSignaturesRegistration();
+    string[1] memory functionSignaturesDelegation = getFunctionSignaturesDelegation();
+    for (uint256 i = 0; i < functionSignaturesDelegation.length; i++) {
+      _registerRootFunctionSelector(DELEGATION_SYSTEM_ID, functionSignaturesDelegation[i]);
+    }
+
+    string[14] memory functionSignaturesRegistration = getFunctionSignaturesRegistration();
     for (uint256 i = 0; i < functionSignaturesRegistration.length; i++) {
       _registerRootFunctionSelector(REGISTRATION_SYSTEM_ID, functionSignaturesRegistration[i]);
     }

@@ -5,7 +5,7 @@
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/codegen/interfaces/IBaseWorld.sol)
 
 **Inherits:**
-[IStore](/store/reference/store#istore), [IWorldKernel](/world/reference/world-external#iworldkernel), [IAccessManagementSystem](/world/reference/world-external#iaccessmanagementsystem), [IBalanceTransferSystem](/world/reference/world-external#ibalancetransfersystem), [IBatchCallSystem](/world/reference/world-external#ibatchcallsystem), [IModuleInstallationSystem](/world/reference/world-external#imoduleinstallationsystem), [IWorldRegistrationSystem](/world/reference/world-external#iworldregistrationsystem), [IRegistrationSystem](/world/reference/world-external#iregistrationsystem)
+[IStore](/store/reference/store#istore), [IWorldKernel](/world/reference/world-external#iworldkernel), [IAccessManagementSystem](/world/reference/world-external#iaccessmanagementsystem), [IBalanceTransferSystem](/world/reference/world-external#ibalancetransfersystem), [IBatchCallSystem](/world/reference/world-external#ibatchcallsystem), [IDelegationSystem](/src/codegen/interfaces/IDelegationSystem.sol/interface.IDelegationSystem.md), [IModuleInstallationSystem](/world/reference/world-external#imoduleinstallationsystem), [IWorldRegistrationSystem](/world/reference/world-external#iworldregistrationsystem), [IRegistrationSystem](/world/reference/world-external#iregistrationsystem)
 
 This interface integrates all systems and associated function selectors
 that are dynamically registered in the World during deployment.
@@ -392,32 +392,6 @@ function registerDelegation(
 | `delegatee`           | `address`    | The address of the delegatee               |
 | `delegationControlId` | `ResourceId` | The ID controlling the delegation          |
 | `initCallData`        | `bytes`      | The initialization data for the delegation |
-
-#### registerDelegationWithSignature
-
-Registers a delegation for `delegator` with a signature
-
-_Creates a new delegation from the caller to the specified delegatee_
-
-```solidity
-function registerDelegationWithSignature(
-  address delegatee,
-  ResourceId delegationControlId,
-  bytes memory initCallData,
-  address delegator,
-  bytes calldata signature
-) public onlyDelegatecall;
-```
-
-**Parameters**
-
-| Name                  | Type         | Description                                |
-| --------------------- | ------------ | ------------------------------------------ |
-| `delegatee`           | `address`    | The address of the delegatee               |
-| `delegationControlId` | `ResourceId` | The ID controlling the delegation          |
-| `initCallData`        | `bytes`      | The initialization data for the delegation |
-| `delegator`           | `address`    | The address of the delegator               |
-| `signature`           | `bytes`      | The EIP712 signature                       |
 
 #### unregisterDelegation
 

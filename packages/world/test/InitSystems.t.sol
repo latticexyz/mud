@@ -9,9 +9,9 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { createWorld } from "./createWorld.sol";
 
 import { LimitedCallContext } from "../src/modules/init/LimitedCallContext.sol";
-import { getFunctionSignaturesAccessManagement, getFunctionSignaturesBalanceTransfer, getFunctionSignaturesBatchCall, getFunctionSignaturesRegistration } from "../src/modules/init/functionSignatures.sol";
+import { getFunctionSignaturesAccessManagement, getFunctionSignaturesBalanceTransfer, getFunctionSignaturesBatchCall, getFunctionSignaturesDelegation, getFunctionSignaturesRegistration } from "../src/modules/init/functionSignatures.sol";
 
-import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, REGISTRATION_SYSTEM_ID } from "../src/modules/init/constants.sol";
+import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, DELEGATION_SYSTEM_ID, REGISTRATION_SYSTEM_ID } from "../src/modules/init/constants.sol";
 
 import { Systems } from "../src/codegen/tables/Systems.sol";
 
@@ -62,8 +62,16 @@ contract LimitedCallContextTest is Test {
     }
   }
 
+  function testDelegationSystem() public {
+    string[1] memory functionSignatures = getFunctionSignaturesDelegation();
+
+    for (uint256 i; i < functionSignatures.length; i++) {
+      callSystem(DELEGATION_SYSTEM_ID, functionSignatures[i]);
+    }
+  }
+
   function testRegistrationSystem() public {
-    string[15] memory functionSignaturesRegistration = getFunctionSignaturesRegistration();
+    string[14] memory functionSignaturesRegistration = getFunctionSignaturesRegistration();
 
     for (uint256 i; i < functionSignaturesRegistration.length; i++) {
       callSystem(REGISTRATION_SYSTEM_ID, functionSignaturesRegistration[i]);
