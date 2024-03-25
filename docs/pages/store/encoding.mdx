@@ -87,6 +87,26 @@ The `Store_` events have two topics:
 The fields are in the event definition. 
 In Solidity, unindexed event fields are [ABI encoded](https://docs.soliditylang.org/en/latest/abi-spec.html#formal-specification-of-the-encoding).
 
+| Field                           | Encoding                                       |
+| ------------------------------- | ---------------------------------------------- |
+| `bytes32[] keyTuple`            | Standard ABI encoding (32-byte fields)
+| `bytes staticData`              | Packed ABI encoding of a tuple with the value's static fields
+| `EncodedLengths encodedLengths` | See below.
+| `bytes dynamicData`             | Modified packed ABI encoding of data, use `encodedLengths` for length delimiters
+
+`encodedLengths` is a 32-byte value that contains the length in bytes of all the dynamic data fields:
+
+```
+EncodedLengths = bytes[32] where:
+
+bytes[0:6]   = len of all dynamic data
+bytes[6:11]  = len of 1st dynamic field
+bytes[11:16] = len of 2nd dynamic field
+bytes[16:21] = len of 3rd dynamic field
+bytes[21:26] = len of 4th dynamic field
+bytes[26:31] = len of 5th dynamic field
+```
+
 <details>
 
 <summary>Example</summary>
@@ -246,6 +266,12 @@ To interpret the values we need to get the types from the schema.
 Note that this event is also emitted if the record did not exist previously. 
 Solidity does not distinguish between a record not existing, and a record existing with all the values set to zero.
 
+| Field                           | Encoding                                       |
+| ------------------------------- | ---------------------------------------------- |
+| `bytes32[] keyTuple`            | Standard ABI encoding (32-byte fields)
+| `uint48 start`                  | The starting byte of the segment of static data to change 
+| `bytes data`                    | Packed ABI encoding of a tuple with the value's static fields
+
 <details>
 
 <summary>Example</summary>
@@ -309,6 +335,14 @@ This is the new value of `val2`.
 Note that this event is also emitted if the record did not exist previously. 
 Solidity does not distinguish between a record not existing, and a record existing with all the values set to zero.
 
+| Field                           | Encoding                                       |
+| ------------------------------- | ---------------------------------------------- |
+| `bytes32[] keyTuple`            | Standard ABI encoding (32-byte fields)
+| `uint8 dynamicFieldIndex`       | The sequential number (counting from zero) of the dynamic field to change. 0 ≤ `dynamicFieldIndex` ≤ 4
+| `uint48 start`                  | The starting byte of the segment of the `dynamicFieldIndex`'th dynamic field to change
+| `uint40 deleteCount`            | The number of bytes to delete from the `dynamicFieldIndex`'th dynamic field.
+| `EncodedLengths encodedLengths` | Similar to `encodedLengths` in `Store_SetRecord`, except that only the size of the `dynamicFieldIndex`'th field is included
+| `bytes data`             | Bytes to add/change in the `dynamicFieldIndex`'th dynamic field.
 
 <details>
 
@@ -348,7 +382,8 @@ The first six 256-bit words correspond to the unindexed event fields.
 **`uint8 dynamicFieldIndex`**
 
 The index of the dynamic field we are modifying.
-The value here is two, counting from zero it is the third schema field.
+The value here is two.
+Counting from zero it is the third schema field.
 
 ```typescript
          dyn3: "int16[]",
@@ -428,6 +463,10 @@ The other difference is that word 9 is zero - there is a `bytes data` value, but
 ### `Store_DeleteRecord`
 
 [This event](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L66-L71) is emitted when a record is deleted.
+
+| Field                           | Encoding                                       |
+| ------------------------------- | ---------------------------------------------- |
+| `bytes32[] keyTuple`            | Standard ABI encoding (32-byte fields)
 
 The only unindexed event field is `bytes32[] keyTuple`, which contains the key.
 See the example in [`Store_SetRecord`](#store_setrecord) to interpret it.
