@@ -3,6 +3,8 @@ pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
+// Implements EIP712 signatures https://eips.ethereum.org/EIPS/eip-712
+
 bytes32 constant DELEGATION_TYPEHASH = keccak256(
   "Delegation(address delegatee,bytes32 delegationControlId,bytes initCallData,uint256 nonce)"
 );
