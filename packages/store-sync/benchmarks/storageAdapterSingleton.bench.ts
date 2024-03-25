@@ -5,24 +5,23 @@ import worldRpcLogs from "../../../test-data/world-logs.json";
 
 const blocks = logsToBlocks(worldRpcLogs);
 
-const { storageAdapter: recsStorageAdapter } = createRecsStorage();
-const { storageAdapter: zustandStorageAdapter } = createZustandStorage();
-const { storageAdapter: sqliteStorageAdapter } = await createSqliteStorage();
-
 describe("Hydrate Storage Adapter: singleton", () => {
   bench("recs: `storageAdapter`", async () => {
+    const { storageAdapter: recsStorageAdapter } = createRecsStorage();
     for (const block of blocks) {
       await recsStorageAdapter(block);
     }
   });
 
   bench("zustand: `storageAdapter`", async () => {
+    const { storageAdapter: zustandStorageAdapter } = createZustandStorage();
     for (const block of blocks) {
       await zustandStorageAdapter(block);
     }
   });
 
   bench("sqlite: `storageAdapter`", async () => {
+    const { storageAdapter: sqliteStorageAdapter } = await createSqliteStorage();
     for (const block of blocks) {
       await sqliteStorageAdapter(block);
     }

@@ -4,9 +4,7 @@ pragma solidity >=0.8.24;
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 /**
- * @dev World Resource Types
- * @dev Constants related to World Resource Types and Masks.
- * @dev These constants are used to represent various resource types within the system.
+ * @dev Constants used to work with world resource types.
  */
 
 // Resource that identifies a namespace, a container belonging to a

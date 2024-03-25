@@ -24,7 +24,7 @@ export type GroupLogsByBlockNumberResult<TLog extends PartialLog> = {
  */
 export function groupLogsByBlockNumber<TLog extends PartialLog>(
   logs: readonly TLog[],
-  toBlock?: BlockNumber
+  toBlock?: BlockNumber,
 ): GroupLogsByBlockNumberResult<TLog> {
   const blockNumbers = Array.from(new Set(logs.map((log) => log.blockNumber)));
   blockNumbers.sort(bigIntSort);

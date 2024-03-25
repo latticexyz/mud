@@ -35,6 +35,7 @@ describe("V2", () => {
     const Position = defineComponentV2(world, { x: TypeV2.Number, y: TypeV2.Number });
 
     defineSystem(world, [HasValueV2(Position, { x: 1, y: 1 })], (update) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const e = update;
     });
 

@@ -49,7 +49,7 @@ To run the indexer directly on your computer using SQLite:
    If necessary, install it first.
 
    ```bash copy
-   npx -y -p @latticexyz/store-indexer@next sqlite-indexer
+   npx -y -p @latticexyz/store-indexer sqlite-indexer
    ```
 
 **Note:** The `indexer.db` is persistent if you stop and restart the indexer.
@@ -76,7 +76,7 @@ The main purpose of this variant of the indexer is to efficiently hydrate a MUD 
    Install it first if necessary.
 
    ```bash copy
-   npx -y -p @latticexyz/store-indexer@next postgres-indexer
+   npx -y -p @latticexyz/store-indexer postgres-indexer
    ```
 
 1. Open a separate command line.
@@ -84,7 +84,7 @@ The main purpose of this variant of the indexer is to efficiently hydrate a MUD 
 
    ```bash copy
    export DATABASE_URL=postgres://127.0.0.1/postgres
-   npx -y -p @latticexyz/store-indexer@next postgres-frontend
+   npx -y -p @latticexyz/store-indexer postgres-frontend
    ```
 
 ### Schemaful indexing with PostgreSQL via npx
@@ -101,7 +101,7 @@ This approach doesn't scale well to all tables of a chain, but it is a convenien
    ```bash copy
    export RPC_HTTP_URL=http://127.0.0.1:8545
    export DATABASE_URL=postgres://127.0.0.1/postgres
-   npx -y -p @latticexyz/store-indexer@next postgres-decoded-indexer
+   npx -y -p @latticexyz/store-indexer postgres-decoded-indexer
    ```
 
 1. To verify the installation, run `psql` and then:
@@ -370,7 +370,7 @@ If the client does not need all the information stored in the `World`, you can [
 
    ```sh copy
    export RPC_HTTP_URL=http://127.0.0.1:8545
-   npx -y -p @latticexyz/store-indexer@next sqlite-indexer
+   npx -y -p @latticexyz/store-indexer sqlite-indexer
    ```
 
 1. Get the list of tables.
@@ -386,7 +386,7 @@ If the client does not need all the information stored in the `World`, you can [
 
    ```sh copy
    INDEXER_URL=http://localhost:3001/trpc
-   WORLD_ADDRESS=0x6e9474e9c83676b9a71133ff96db43e7aa0a4342
+   WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
    TABLE_ID=0x746200000000000000000000000000005461736b730000000000000000000000
    CHAIN_ID=31337
    JSON='{"0":{"json":{"chainId": '$CHAIN_ID', "address": "'$WORLD_ADDRESS'", "filters": [{"tableId": "'$TABLE_ID'"}]}}}'
@@ -426,7 +426,7 @@ If the client does not need all the information stored in the `World`, you can [
 
    ```sh copy
    INDEXER_URL=http://localhost:3001/trpc
-   WORLD_ADDRESS=0x7203e7adfdf38519e1ff4f8da7dcdc969371f377
+   WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
    CHAIN_ID=17001
    JSON='{"0":{"json":{"chainId":'$CHAIN_ID', "address":"'$WORLD_ADDRESS'"}}}'
    ENCODED_JSON=`echo "console.log(encodeURI('$JSON'))" | node`

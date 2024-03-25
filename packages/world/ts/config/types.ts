@@ -1,34 +1,33 @@
 import { z } from "zod";
-import { DynamicResolution, ValueWithType } from "@latticexyz/config";
+import { DynamicResolution, ValueWithType } from "@latticexyz/config/library";
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { zWorldConfig } from "./worldConfig";
 import { SYSTEM_DEFAULTS } from "./defaults";
 
 // zod doesn't preserve doc comments
-export type SystemUserConfig =
+export type SystemUserConfig = {
+  /** The full resource selector consists of namespace and name */
+  name?: string;
+  /**
+   * Register function selectors for the system in the World.
+   * Defaults to true.
+   * Note:
+   * - For root systems all World function selectors will correspond to the system's function selectors.
+   * - For non-root systems, the World function selectors will be <namespace>_<system>_<function>.
+   */
+  registerFunctionSelectors?: boolean;
+} & (
   | {
-      /** The full resource selector consists of namespace and name */
-      name?: string;
-      /**
-       * Register function selectors for the system in the World.
-       * Defaults to true.
-       * Note:
-       * - For root systems all World function selectors will correspond to the system's function selectors.
-       * - For non-root systems, the World function selectors will be <namespace>_<system>_<function>.
-       */
-      registerFunctionSelectors?: boolean;
-    } & (
-      | {
-          /** If openAccess is true, any address can call the system */
-          openAccess?: true;
-        }
-      | {
-          /** If openAccess is false, only the addresses or systems in `access` can call the system */
-          openAccess: false;
-          /** An array of addresses or system names that can access the system */
-          accessList: string[];
-        }
-    );
+      /** If openAccess is true, any address can call the system */
+      openAccess?: true;
+    }
+  | {
+      /** If openAccess is false, only the addresses or systems in `access` can call the system */
+      openAccess: false;
+      /** An array of addresses or system names that can access the system */
+      accessList: string[];
+    }
+);
 
 export interface ExpandSystemConfig<T extends SystemUserConfig, SystemName extends string>
   extends OrDefaults<

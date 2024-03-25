@@ -15,10 +15,9 @@ The config is used to define:
 The is an example of a `World` config:
 
 ```tsx
-import { mudConfig } from "@latticexyz/world/register";
-import { resolveTableId } from "@latticexyz/config";
+import { defineWorld } from "@latticexyz/world";
 
-export default mudConfig({
+export default defineWorld({
   enums: {
     TerrainType: ["None", "TallGrass", "Boulder"],
   },
@@ -32,20 +31,23 @@ export default mudConfig({
     },
   },
   tables: {
-    CounterTable: {
-      valueSchema: {
+    Counter: {
+      schema: {
         value: "uint32",
       },
+      key: [],
+    },
+    Tasks: {
+      schema: {
+        id: "bytes32",
+        createdAt: "uint256",
+        completedAt: "uint256",
+        description: "string",
+      },
+      key: ["id"],
     },
   },
   deploysDirectory: "./mud-deploys",
-  modules: [
-    {
-      name: "KeysWithValueModule",
-      root: true,
-      args: [resolveTableId("CounterTable")],
-    },
-  ],
 });
 ```
 
@@ -56,27 +58,32 @@ The global configuration keys are all optional.
 - **`namespace`**: a `string`: which namespace to deploy the resources defined in the config into.
   The default value is the ROOT namespace.
 
-- **`excludeSystems`**: an array of `string`: which systems to not deploy, even if their name ends with “System”.
+- **`tables`**: a record of tables. The keys in the record are table names.
+  The value is a record of [table properties](https://github.com/latticexyz/mud/blob/main/packages/store/ts/config/storeConfig.ts#L110-L135).
 
-- **`worldContractName`**: a `string`: the name of a contract in your project implementing the `IWorld` interface.
-  Useful if you want to modify the default World implementation, but potentially dangerous.
-- **`deploysDirectory`** a `string`: which folder to put the deployment artifacts into after deployment.
+  - **`schema`** (record):
+    The keys of this record are the field names in the data, which includes both the key fields and the value fields.
+    By convention, these keys start with a lowercase letter.
+    The values are strings that contain the data types of the fields.
+    Note that this is the sole required field, all the others are optional.
 
-- **`modules`** an array of module definitions: each module definition has a `name`, `root` (optional), and `args` key.
+  - **`key`** (list):
+    A list of the `schema` fields that are the key for that table.
+    If you want a singleton table, use an empty list (as in `Counter` table above).
 
-  - `name`: Name of the module to install. The same module can be installed multiple times. This should be the name of the contract file without `.sol` (eg: if the file is named `DopeModule.sol`, the name of the module is `DopeModule`)
-
-  - `root`: whether to create a `root` module or not. `root` modules have access to all tables and are not bound to namespace restrictions.
-
-  - `args`: a list of arguments to be sent to the `install` function of the module. In this array, you can use the function `resolveTableId`. This function will turn a table name from your config into its low-level ID in the World. It is useful to pass references of a table to a module.
+  - **`type`** (either `table` or `offchainTable`): [The table type](/store/tables#types-of-tables).
+    The default is `table`, which is a table stored onchain.
+    If you specify `offchainTable`, the table's data is only available offchain through events.
 
 - **`systems`**: a record of system definitions. The keys in the record are file names without the `.sol` extension. For example, if your system is named `TestSystem.sol`, use `TestSystem` as the key.
 
   The value is a record of system configuration properties:
 
-  - `fileSelector` (optional): a `string`: the file selector for the system.
-  - `openAccess` (optional, default `true`): a `bool`: if set to `false`, only the systems in the same namespace and the addresses or systems listed in the the `accessList` array have access.
-
+  - `registerFunctionSelectors` (optional, default `true`): a `bool`.
+    Whether we want to automatically register the `public` functions of the `System` as
+    [function selectors](/world/function-selectors)
+  - `openAccess` (optional, default `true`): a `bool`.
+     If set to `false`, only the systems in the same namespace and the addresses or systems listed in the `accessList` array have access.    
   - `accessList` (required if openAccess is `false`): an array of `string`. Each address in the array will be granted access to this system, allowing them to call it.
 
 - **`enums`**: a record of [enumerations](https://solidity-by-example.org/enum/).
@@ -86,48 +93,31 @@ The global configuration keys are all optional.
 - **`tables`**: a record of tables. The keys in the record are table names.
   The value is a record of [table properties](https://github.com/latticexyz/mud/blob/main/packages/store/ts/config/storeConfig.ts#L110-L135).
 
-  - **`valueSchema`** (record):
-    The keys of this record are the field names of the value (which should start with a lowercase letter).
-    The values are strings that contain the data types of the fields.
-    Note that this is the sole required field, all the others are optional.
+- **`excludeSystems`**: an array of `string`: which systems to not deploy, even if their name ends with “System”.
 
-  - **`keySchema`** (record):
-    The keys of this record are the field names of the key (which should start with a lowercase letter).
-    The values are strings that contain the data types of the fields.
+- **`modules`** an array of module definitions: each module definition has a `name`, `root` (optional), and `args` key.
 
-    The default value is:
+  - `name`: Name of the module to install. The same module can be installed multiple times. This should be the name of the contract file without `.sol` (eg: if the file is named `DopeModule.sol`, the name of the module is `DopeModule`)
 
-    ```json
-    { "key": "bytes32" }
-    ```
+  - `root`: whether to create a `root` module or not. `root` modules have access to all tables and are not bound to namespace restrictions.
 
-    For a singleton table (one that contains a single row), use `{}` as the key schema.
+  - `args`: a list of arguments to be sent to the `install` function of the module. In this array, you can use the function `resolveTableId`. This function will turn a table name from your config into its low-level ID in the World. It is useful to pass references of a table to a module.
 
-  - **`directory`** (string):
-    Directory in which to create the table.
-    The default is `tables`, so by default tables are created in `src/codegen/tables`.
+- **`codegen`**: a record of code generation options.
 
-  - **`tableIdArgument`** (bool):
-    Make methods accept `tableId` argument instead of it being a hardcoded constant.
-    The default is `false` because you can achieve the same result using [`StoreSwitch`](/store/table-libraries#storeswitch).
+  - **`worldInterfaceName`** a `string`: The name of the interface for the `World`.
+    The default value is `IWorld`.
+  - **`worldgenDirectory`** a `string`: The directory for system and world interfaces.
+    The default value is `world`.
 
-  - **`storeArgument`** (bool):
-    Include methods that accept a manual `IStore` argument.
-    The default is `true`.
+- **`deploy`**: a record of deployment options.
 
-  - **`offchainOnly`**: (bool):
-    Table's information is available offchain (using [events](https://docs.soliditylang.org/en/latest/contracts.html#events)), but don't store in onchain.
-    These tables require a lot less gas.
+  - **`postDeployScript`** a `string`: Script to execute after the deployment is complete.
+    This script must be placed in the forge scripts directory (see `foundry.toml`) and have a `.s.sol` extension.
+    The default is `PostDeploy`.
 
-  - **`dataStruct`**: (bool):
-    Include a [data struct](https://docs.soliditylang.org/en/v0.8.23/types.html#structs) and methods for it.
-    Default is false for 1-column tables; true for multi-column tables.
+  - **`deploysDirectory`** a `string`: Which folder to put the deployment artifacts into after deployment.
+    The default is `./deploys`.
 
-    Sample code for using a table library with `dataStruct`:
-
-    ```solidity
-    // no data struct
-    MyTable.set(keccak256("some.key"), 1, 12, "foo");
-    // data struct
-    MyTable.set(keccak256("some.key"), { field1: 1, field2: 12, stringField: "foo" });
-    ```
+  - **`worldsFile`** a `string`: JSON file for the chain to `World` deploy address mapping.
+    The default is `./worlds.json`.

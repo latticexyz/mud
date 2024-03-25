@@ -7,13 +7,12 @@ import { STORE_VERSION } from "../src/version.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
+import { IStoreEvents } from "../src/IStoreEvents.sol";
 
 contract StoreMockTest is Test {
-  event HelloStore(bytes32 indexed storeVersion);
-
   function testStoreMockConstrctor() public {
     vm.expectEmit(true, true, true, true);
-    emit HelloStore(STORE_VERSION);
+    emit IStoreEvents.HelloStore(STORE_VERSION);
     new StoreMock();
   }
 }

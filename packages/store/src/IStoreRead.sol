@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { PackedCounter } from "./PackedCounter.sol";
+import { EncodedLengths } from "./EncodedLengths.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
 import { ResourceId } from "./ResourceId.sol";
 
+/**
+ * @title IStoreRead
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ */
 interface IStoreRead {
   function getFieldLayout(ResourceId tableId) external view returns (FieldLayout fieldLayout);
 
@@ -19,7 +23,7 @@ interface IStoreRead {
   function getRecord(
     ResourceId tableId,
     bytes32[] calldata keyTuple
-  ) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+  ) external view returns (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData);
 
   /**
    * Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given field layout
@@ -28,7 +32,7 @@ interface IStoreRead {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     FieldLayout fieldLayout
-  ) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+  ) external view returns (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData);
 
   /**
    * Get a single field from the given tableId and key tuple, loading the field layout from storage

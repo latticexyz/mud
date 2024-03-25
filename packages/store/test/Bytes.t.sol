@@ -6,14 +6,32 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Bytes } from "../src/Bytes.sol";
 
 contract BytesTest is Test, GasReporter {
-  // TODO: add tests for other sliceX functions
+  // TODO: add tests for other getBytesX functions
 
-  function testSlice32() public {
+  function testGetBytes3() public {
+    bytes memory a = new bytes(5);
+    a[0] = 0x01;
+    a[1] = 0x02;
+    a[2] = 0x03;
+    a[3] = 0x04;
+    a[4] = 0x05;
+
+    startGasReport("get bytes3 with offset 1");
+    bytes3 b = Bytes.getBytes3(a, 1);
+    endGasReport();
+
+    assertEq(b.length, 3);
+    assertEq(uint256(uint8(b[0])), 0x02);
+    assertEq(uint256(uint8(b[1])), 0x03);
+    assertEq(uint256(uint8(b[2])), 0x04);
+  }
+
+  function testGetBytes32() public {
     bytes32 original = keccak256("some data");
     bytes memory input = abi.encodePacked(bytes10(keccak256("irrelevant data")), original);
 
-    startGasReport("slice bytes32 with offset 10");
-    bytes32 output = Bytes.slice32(input, 10);
+    startGasReport("get bytes32 with offset 10");
+    bytes32 output = Bytes.getBytes32(input, 10);
     endGasReport();
 
     assertEq(output, original);

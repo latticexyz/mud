@@ -1,9 +1,9 @@
 import { StorageAdapterLog } from "@latticexyz/store-sync";
-import { decodeDynamicField } from "@latticexyz/protocol-parser";
+import { decodeDynamicField } from "@latticexyz/protocol-parser/internal";
 import { RecordData } from "./common";
 
 export function recordToLog(
-  record: Omit<RecordData, "recordBlockNumber">
+  record: Omit<RecordData, "recordBlockNumber">,
 ): StorageAdapterLog & { eventName: "Store_SetRecord" } {
   return {
     address: record.address,

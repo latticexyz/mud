@@ -5,7 +5,7 @@ import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
-import { ResourceIds, ResourceIdsTableId } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 
@@ -28,7 +28,7 @@ contract EchoSystem is System {
   }
 
   function readTable() public view returns (Schema) {
-    return StoreCore.getKeySchema(ResourceIdsTableId);
+    return StoreCore.getKeySchema(ResourceIds._tableId);
   }
 
   function echo(string memory message) public pure returns (string memory) {
@@ -125,11 +125,7 @@ contract SystemSwitchTest is Test, GasReporter {
   }
 
   function testCallRootFromRootWorldSelector() public {
-    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(
-      rootSystemBId,
-      "echo(string)",
-      EchoSystem.echo.selector
-    );
+    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(rootSystemBId, "echo(string)", "echo(string)");
     bytes memory callData = abi.encodeWithSelector(worldFunctionSelector, "hello");
 
     vm.prank(caller);
@@ -140,7 +136,7 @@ contract SystemSwitchTest is Test, GasReporter {
   function testCallRootFromRootReadTable() public {
     vm.prank(caller);
     bytes memory returnData = _executeFromSystemA(rootSystemBId, abi.encodeCall(EchoSystem.readTable, ()));
-    assertEq(Schema.unwrap(abi.decode(returnData, (Schema))), Schema.unwrap(ResourceIds.getKeySchema()));
+    assertEq(Schema.unwrap(abi.decode(returnData, (Schema))), Schema.unwrap(ResourceIds._keySchema));
   }
 
   // - ROOT FROM NON ROOT ---------------------------------------------------------------------------- //
@@ -164,11 +160,7 @@ contract SystemSwitchTest is Test, GasReporter {
   }
 
   function testCallRootFromNonRootWorldSelector() public {
-    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(
-      rootSystemBId,
-      "echo(string)",
-      EchoSystem.echo.selector
-    );
+    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(rootSystemBId, "echo(string)", "echo(string)");
     bytes memory callData = abi.encodeWithSelector(worldFunctionSelector, "hello");
 
     vm.prank(caller);
@@ -179,7 +171,7 @@ contract SystemSwitchTest is Test, GasReporter {
   function testCallRootFromNonRootReadTable() public {
     vm.prank(caller);
     bytes memory returnData = _executeFromSystemA(rootSystemBId, abi.encodeCall(EchoSystem.readTable, ()));
-    assertEq(Schema.unwrap(abi.decode(returnData, (Schema))), Schema.unwrap(ResourceIds.getKeySchema()));
+    assertEq(Schema.unwrap(abi.decode(returnData, (Schema))), Schema.unwrap(ResourceIds._keySchema));
   }
 
   // - NON ROOT FROM ROOT ---------------------------------------------------------------------------- //
@@ -203,11 +195,7 @@ contract SystemSwitchTest is Test, GasReporter {
   }
 
   function testCallNonRootFromRootWorldSelector() public {
-    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(
-      systemBId,
-      "echo(string)",
-      EchoSystem.echo.selector
-    );
+    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(systemBId, "echo(string)", "echo(string)");
     bytes memory callData = abi.encodeWithSelector(worldFunctionSelector, "hello");
 
     vm.prank(caller);
@@ -222,8 +210,8 @@ contract SystemSwitchTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         IStoreErrors.Store_TableNotFound.selector,
-        ResourceIdsTableId,
-        string(abi.encodePacked(ResourceIdsTableId))
+        ResourceIds._tableId,
+        string(abi.encodePacked(ResourceIds._tableId))
       )
     );
     world.call(systemAId, abi.encodeCall(EchoSystem.call, (systemBId, abi.encodeCall(EchoSystem.readTable, ()))));
@@ -250,11 +238,7 @@ contract SystemSwitchTest is Test, GasReporter {
   }
 
   function testCallNonRootFromNonRootWorldSelector() public {
-    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(
-      systemBId,
-      "echo(string)",
-      EchoSystem.echo.selector
-    );
+    bytes4 worldFunctionSelector = world.registerRootFunctionSelector(systemBId, "echo(string)", "echo(string)");
     bytes memory callData = abi.encodeWithSelector(worldFunctionSelector, "hello");
 
     vm.prank(caller);
@@ -269,8 +253,8 @@ contract SystemSwitchTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         IStoreErrors.Store_TableNotFound.selector,
-        ResourceIdsTableId,
-        string(abi.encodePacked(ResourceIdsTableId))
+        ResourceIds._tableId,
+        string(abi.encodePacked(ResourceIds._tableId))
       )
     );
     world.call(systemAId, abi.encodeCall(EchoSystem.call, (systemBId, abi.encodeCall(EchoSystem.readTable, ()))));
