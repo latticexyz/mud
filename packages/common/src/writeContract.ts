@@ -9,6 +9,7 @@ import {
   WriteContractReturnType,
   ContractFunctionName,
   ContractFunctionArgs,
+  PublicClient,
 } from "viem";
 import { simulateContract, writeContract as viem_writeContract } from "viem/actions";
 import pRetry from "p-retry";
@@ -31,6 +32,7 @@ export async function writeContract<
 >(
   client: Client<Transport, chain, account>,
   request: WriteContractParameters<abi, functionName, args, chain, account, chainOverride>,
+  publicClient?: PublicClient<Transport, chain>,
 ): Promise<WriteContractReturnType> {
   const rawAccount = request.account ?? client.account;
   if (!rawAccount) {
@@ -40,7 +42,7 @@ export async function writeContract<
   const account = parseAccount(rawAccount);
 
   const nonceManager = await getNonceManager({
-    client: client,
+    client: publicClient || client,
     address: account.address,
     blockTag: "pending",
   });
@@ -54,11 +56,14 @@ export async function writeContract<
     }
 
     debug("simulating", request.functionName, "at", request.address);
-    const result = await simulateContract<chain, account, abi, functionName, args, chainOverride>(client, {
-      ...request,
-      blockTag: "pending",
-      account,
-    } as unknown as SimulateContractParameters<abi, functionName, args, chain, chainOverride>);
+    const result = await simulateContract<chain, account | undefined, abi, functionName, args, chainOverride>(
+      publicClient || client,
+      {
+        ...request,
+        blockTag: "pending",
+        account,
+      } as unknown as SimulateContractParameters<abi, functionName, args, chain, chainOverride>,
+    );
 
     return result.request as unknown as WriteContractParameters<abi, functionName, args, chain, account, chainOverride>;
   }

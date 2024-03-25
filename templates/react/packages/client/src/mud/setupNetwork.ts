@@ -39,6 +39,7 @@ import { ENTRYPOINT_ADDRESS_V07, createSmartAccountClient } from "permissionless
 import { signerToSimpleSmartAccount } from "permissionless/accounts";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
 import { mnemonicToAccount } from "viem/accounts";
+import { call, getTransactionCount } from "viem/actions";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -68,7 +69,7 @@ async function seedAccount(to: Address, chain: Chain) {
 
   await walletClient.sendTransaction({
     to,
-    value: parseEther("100"),
+    value: parseEther("5"),
   });
 }
 
@@ -118,7 +119,14 @@ export async function setupNetwork() {
     },
     account: burnerSmartAccount,
   })
-    .extend(transactionQueue())
+    .extend(() => ({
+      getTransactionCount: (args) => {
+        console.log("getTransactionCount, ", args);
+        return getTransactionCount(publicClient, args);
+      },
+      call: (args) => call(publicClient, args),
+    }))
+    .extend(transactionQueue(publicClient))
     .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
 
   if (clientOptions.chain.id === foundry.id) {
