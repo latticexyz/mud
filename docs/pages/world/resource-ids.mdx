@@ -19,47 +19,71 @@ Currently, MUD supports these resource types:
 
 ## Creating resource identifiers
 
-To create a resource ID in your Solidity code you can use `WorldResourceIdLib.encode`.
-This function accepts a single parameter, a structure with three string fields:
+To create a resource ID in your Solidity code you typically use [`WorldResourceIdLib.encode`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldResourceId.sol#L22-L34).
+This function accepts three fields:
 
 - `typeId` is the resource type.
 - `namespace` is the namespace in which the resource is located.
   If this is the root namespace, use the empty string.
 - `name` is the name of the resource, except in the case of namespaces, where it is empty.
 
-For example, in the code below we create a resource for a table in the root namespace whose name is `Tasks`.
+For a namespace resource ID you can either have a `name` that is all zeros, or use [`WorldResourceIdLib.encodeNamespace`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldResourceId.sol#L36-L43).
+
+For example, the code below creates the resource ID for a namespace and a `System` inside it.
 
 <CollapseCode>
 
-```solidity filename="DeployKeyWithValueModule.s.sol" copy showLineNumbers {7-9,20-24}
+```solidity filename="MessagingExtension.s.sol" copy showLineNumbers {29-30}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
+
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
-import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
-import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
-import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { KeysWithValueModule } from "@latticexyz/world-modules/src/modules/keyswithvalue/KeysWithValueModule.sol";
+import { IBaseWorld } from "@latticexyz/world-modules/src/interfaces/IBaseWorld.sol";
 
-contract DeployKeyWithValueModule is Script {
+import { WorldRegistrationSystem } from "@latticexyz/world/src/modules/init/implementations/WorldRegistrationSystem.sol";
+
+// Create resource identifiers (for the namespace and system)
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+// For registering the table
+import { Messages, MessagesTableId } from "../src/codegen/index.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+// For deploying MessageSystem
+import { MessageSystem } from "../src/systems/MessageSystem.sol";
+
+contract MessagingExtension is Script {
   function run() external {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+    WorldRegistrationSystem world = WorldRegistrationSystem(worldAddress);
+    ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("messaging"));
+    ResourceId systemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "MessageSystem");
+
     vm.startBroadcast(deployerPrivateKey);
-    IWorld world = IWorld(worldAddress);
+    world.registerNamespace(namespaceResource);
+
     StoreSwitch.setStoreAddress(worldAddress);
-    // Deploy the module
-    KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
-    ResourceId sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "Tasks" });
-    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+    Messages.register();
+
+    MessageSystem messageSystem = new MessageSystem();
+    console.log("MessageSystem address: ", address(messageSystem));
+
+    world.registerSystem(systemResource, messageSystem, true);
+    world.registerFunctionSelector(systemResource, "incrementMessage(string)");
+
     vm.stopBroadcast();
   }
 }
 ```
 
 </CollapseCode>
+
 
 ## Understanding resource identifiers
 
