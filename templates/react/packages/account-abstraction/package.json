@@ -5,11 +5,16 @@
 	"license": "MIT",
 	"scripts": {
 		"build": "tsc",
-		"start": "wait-port http://host.docker.internal:8545 && node dist/index.js"
+		"dev": "wait-port localhost:8545 && pnpm run start:deploy-contracts && pnpm run start:alto",
+		"start:alto": "node ./node_modules/alto/src/lib/cli/alto.js run --config ./config.localhost.json",
+		"start:deploy-contracts": "node dist/deploy-contracts/index.js"
 	},
 	"dependencies": {
+		"alto": "git+https://github.com/pimlicolabs/alto.git#prepare-package-json",
+		"fastify": "^4.26.2",
 		"typescript": "5.4.2",
-		"viem": "2.7.12"
+		"viem": "2.7.12",
+		"zod": "^3.22.4"
 	},
 	"devDependencies": {
 		"wait-port": "^1.0.4"

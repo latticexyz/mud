@@ -118,7 +118,7 @@ export async function setupNetwork() {
     },
     account: burnerSmartAccount,
   })
-    .extend(transactionQueue(publicClient))
+    .extend(transactionQueue())
     .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
 
   if (clientOptions.chain.id === foundry.id) {

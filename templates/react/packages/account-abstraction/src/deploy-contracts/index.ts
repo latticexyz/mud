@@ -6,14 +6,14 @@ import {
   ENTRY_POINT_CREATE_CALL,
   ENTRY_POINT_SIMULATIONS_CREATE_CALL,
   SIMPLE_ACCOUNT_FACTORY_CREATE_CALL,
-} from "./constants";
+} from "../constants";
 
 const account = mnemonicToAccount("test test test test test test test test test test test junk");
 
 const walletClient = createWalletClient({
   account,
   chain: foundry,
-  transport: http("http://host.docker.internal:8545"),
+  transport: http("http://127.0.0.1:8545"),
 });
 
 (async () => {
