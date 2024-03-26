@@ -43,6 +43,6 @@ contract DelegationWithSignatureModule is Module {
   }
 
   function install(bytes memory) public pure {
-    revert Module_RootInstallNotSupported();
+    revert Module_NonRootInstallNotSupported();
   }
 }
