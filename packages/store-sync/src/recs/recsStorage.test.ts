@@ -7,9 +7,11 @@ import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import { StoreEventsLog } from "../common";
 import { singletonEntity } from "./singletonEntity";
 import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
-import { resolveConfig, storeEventsAbi } from "@latticexyz/store";
+import { storeEventsAbi } from "@latticexyz/store";
+import { resolveConfig } from "@latticexyz/store/internal";
+import { storeToV1 } from "@latticexyz/store/config/v2";
 
-const tables = resolveConfig(mudConfig).tables;
+const tables = resolveConfig(storeToV1(mudConfig)).tables;
 
 // TODO: make test-data a proper package and export this
 const blocks = groupLogsByBlockNumber(
@@ -20,6 +22,7 @@ const blocks = groupLogsByBlockNumber(
       topics: log.topics as [Hex, ...Hex[]],
       strict: true,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
   }),
 );

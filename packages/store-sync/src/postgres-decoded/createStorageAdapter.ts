@@ -2,12 +2,12 @@ import { Hex, PublicClient, concatHex, getAddress } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
 import { buildTable } from "./buildTable";
-import { StoreConfig } from "@latticexyz/store";
+import { Store as StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { tables as internalTables } from "../postgres/tables";
 import { createStorageAdapter as createBytesStorageAdapter } from "../postgres/createStorageAdapter";
 import { setupTables } from "../postgres/setupTables";
@@ -22,14 +22,14 @@ export type PostgresStorageAdapter = {
   cleanUp: () => Promise<void>;
 };
 
-export async function createStorageAdapter<TConfig extends StoreConfig = StoreConfig>({
+export async function createStorageAdapter<config extends StoreConfig = StoreConfig>({
   database,
   publicClient,
   config,
 }: {
   database: PgDatabase<QueryResultHKT>;
   publicClient: PublicClient;
-  config?: TConfig;
+  config?: config;
 }): Promise<PostgresStorageAdapter> {
   const bytesStorageAdapter = await createBytesStorageAdapter({ database, publicClient, config });
   const cleanUp: (() => Promise<void>)[] = [];

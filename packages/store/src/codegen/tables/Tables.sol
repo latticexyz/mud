@@ -13,7 +13,7 @@ import { SliceLib } from "../../Slice.sol";
 import { EncodeArray } from "../../tightcoder/EncodeArray.sol";
 import { FieldLayout } from "../../FieldLayout.sol";
 import { Schema } from "../../Schema.sol";
-import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "../../EncodedLengths.sol";
 import { ResourceId } from "../../ResourceId.sol";
 
 // Import user types
@@ -534,7 +534,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -549,7 +549,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -570,7 +570,7 @@ library Tables {
   ) internal {
     bytes memory _staticData = encodeStatic(fieldLayout, keySchema, valueSchema);
 
-    PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
+    EncodedLengths _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
     bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -592,7 +592,7 @@ library Tables {
   ) internal {
     bytes memory _staticData = encodeStatic(fieldLayout, keySchema, valueSchema);
 
-    PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
+    EncodedLengths _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
     bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -607,7 +607,7 @@ library Tables {
   function set(ResourceId tableId, TablesData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.fieldLayout, _table.keySchema, _table.valueSchema);
 
-    PackedCounter _encodedLengths = encodeLengths(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
+    EncodedLengths _encodedLengths = encodeLengths(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
     bytes memory _dynamicData = encodeDynamic(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -622,7 +622,7 @@ library Tables {
   function _set(ResourceId tableId, TablesData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.fieldLayout, _table.keySchema, _table.valueSchema);
 
-    PackedCounter _encodedLengths = encodeLengths(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
+    EncodedLengths _encodedLengths = encodeLengths(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
     bytes memory _dynamicData = encodeDynamic(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -637,18 +637,18 @@ library Tables {
   function decodeStatic(
     bytes memory _blob
   ) internal pure returns (FieldLayout fieldLayout, Schema keySchema, Schema valueSchema) {
-    fieldLayout = FieldLayout.wrap(Bytes.slice32(_blob, 0));
+    fieldLayout = FieldLayout.wrap(Bytes.getBytes32(_blob, 0));
 
-    keySchema = Schema.wrap(Bytes.slice32(_blob, 32));
+    keySchema = Schema.wrap(Bytes.getBytes32(_blob, 32));
 
-    valueSchema = Schema.wrap(Bytes.slice32(_blob, 64));
+    valueSchema = Schema.wrap(Bytes.getBytes32(_blob, 64));
   }
 
   /**
    * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
    */
   function decodeDynamic(
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _blob
   ) internal pure returns (bytes memory abiEncodedKeyNames, bytes memory abiEncodedFieldNames) {
     uint256 _start;
@@ -673,7 +673,7 @@ library Tables {
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (TablesData memory _table) {
     (_table.fieldLayout, _table.keySchema, _table.valueSchema) = decodeStatic(_staticData);
@@ -720,10 +720,10 @@ library Tables {
   function encodeLengths(
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
-  ) internal pure returns (PackedCounter _encodedLengths) {
+  ) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(bytes(abiEncodedKeyNames).length, bytes(abiEncodedFieldNames).length);
+      _encodedLengths = EncodedLengthsLib.pack(bytes(abiEncodedKeyNames).length, bytes(abiEncodedFieldNames).length);
     }
   }
 
@@ -750,10 +750,10 @@ library Tables {
     Schema valueSchema,
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
-  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(fieldLayout, keySchema, valueSchema);
 
-    PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
+    EncodedLengths _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
     bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
 
     return (_staticData, _encodedLengths, _dynamicData);

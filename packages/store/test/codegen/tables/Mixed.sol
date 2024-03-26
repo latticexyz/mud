@@ -13,7 +13,7 @@ import { SliceLib } from "../../../src/Slice.sol";
 import { EncodeArray } from "../../../src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "../../../src/FieldLayout.sol";
 import { Schema } from "../../../src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "../../../src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "../../../src/EncodedLengths.sol";
 import { ResourceId } from "../../../src/ResourceId.sol";
 
 struct MixedData {
@@ -485,7 +485,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -500,7 +500,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -514,7 +514,7 @@ library Mixed {
   function set(bytes32 key, uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal {
     bytes memory _staticData = encodeStatic(u32, u128);
 
-    PackedCounter _encodedLengths = encodeLengths(a32, s);
+    EncodedLengths _encodedLengths = encodeLengths(a32, s);
     bytes memory _dynamicData = encodeDynamic(a32, s);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -529,7 +529,7 @@ library Mixed {
   function _set(bytes32 key, uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal {
     bytes memory _staticData = encodeStatic(u32, u128);
 
-    PackedCounter _encodedLengths = encodeLengths(a32, s);
+    EncodedLengths _encodedLengths = encodeLengths(a32, s);
     bytes memory _dynamicData = encodeDynamic(a32, s);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -544,7 +544,7 @@ library Mixed {
   function set(bytes32 key, MixedData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.u32, _table.u128);
 
-    PackedCounter _encodedLengths = encodeLengths(_table.a32, _table.s);
+    EncodedLengths _encodedLengths = encodeLengths(_table.a32, _table.s);
     bytes memory _dynamicData = encodeDynamic(_table.a32, _table.s);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -559,7 +559,7 @@ library Mixed {
   function _set(bytes32 key, MixedData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.u32, _table.u128);
 
-    PackedCounter _encodedLengths = encodeLengths(_table.a32, _table.s);
+    EncodedLengths _encodedLengths = encodeLengths(_table.a32, _table.s);
     bytes memory _dynamicData = encodeDynamic(_table.a32, _table.s);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -572,16 +572,16 @@ library Mixed {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (uint32 u32, uint128 u128) {
-    u32 = (uint32(Bytes.slice4(_blob, 0)));
+    u32 = (uint32(Bytes.getBytes4(_blob, 0)));
 
-    u128 = (uint128(Bytes.slice16(_blob, 4)));
+    u128 = (uint128(Bytes.getBytes16(_blob, 4)));
   }
 
   /**
    * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
    */
   function decodeDynamic(
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _blob
   ) internal pure returns (uint32[] memory a32, string memory s) {
     uint256 _start;
@@ -606,7 +606,7 @@ library Mixed {
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (MixedData memory _table) {
     (_table.u32, _table.u128) = decodeStatic(_staticData);
@@ -646,10 +646,10 @@ library Mixed {
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(uint32[] memory a32, string memory s) internal pure returns (PackedCounter _encodedLengths) {
+  function encodeLengths(uint32[] memory a32, string memory s) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(a32.length * 4, bytes(s).length);
+      _encodedLengths = EncodedLengthsLib.pack(a32.length * 4, bytes(s).length);
     }
   }
 
@@ -672,10 +672,10 @@ library Mixed {
     uint128 u128,
     uint32[] memory a32,
     string memory s
-  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(u32, u128);
 
-    PackedCounter _encodedLengths = encodeLengths(a32, s);
+    EncodedLengths _encodedLengths = encodeLengths(a32, s);
     bytes memory _dynamicData = encodeDynamic(a32, s);
 
     return (_staticData, _encodedLengths, _dynamicData);

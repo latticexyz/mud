@@ -1,141 +1,175 @@
-import { ErrorMessage, evaluate } from "@arktype/util";
-import { SchemaInput, resolveSchema } from "./schema";
-import { AbiTypeScope, getStaticAbiTypeKeys } from "./scope";
+import { ErrorMessage, conform, narrow, requiredKeyOf } from "@arktype/util";
+import { isStaticAbiType } from "@latticexyz/schema-type/internal";
+import { Hex } from "viem";
+import { get, hasOwnKey, mergeIfUndefined } from "./generics";
+import { resolveSchema, validateSchema } from "./schema";
+import { AbiTypeScope, Scope, getStaticAbiTypeKeys } from "./scope";
+import { TableCodegen } from "./output";
+import { TABLE_CODEGEN_DEFAULTS, TABLE_DEFAULTS, TABLE_DEPLOY_DEFAULTS } from "./defaults";
+import { resourceToHex } from "@latticexyz/common";
+import { SchemaInput, TableInput } from "./input";
 
-export type NoStaticKeyFieldError =
-  ErrorMessage<"Provide a `key` field with static ABI type or a full config with explicit primaryKey override.">;
-
-export type ValidKeys<schema extends SchemaInput<scope>, scope extends AbiTypeScope> = [
+export type ValidKeys<schema extends SchemaInput, scope extends Scope> = readonly [
   getStaticAbiTypeKeys<schema, scope>,
   ...getStaticAbiTypeKeys<schema, scope>[],
 ];
 
-export type TableInput<
-  schema extends SchemaInput<scope> = SchemaInput,
-  scope extends AbiTypeScope = AbiTypeScope,
-  primaryKey extends ValidKeys<schema, scope> = ValidKeys<schema, scope>,
-> = TableFullInput<schema, scope, primaryKey> | TableShorthandInput<scope>;
+function getValidKeys<schema extends SchemaInput, scope extends Scope = AbiTypeScope>(
+  schema: schema,
+  scope: scope = AbiTypeScope as unknown as scope,
+): ValidKeys<schema, scope> {
+  return Object.entries(schema)
+    .filter(([, internalType]) => hasOwnKey(scope.types, internalType) && isStaticAbiType(scope.types[internalType]))
+    .map(([key]) => key) as unknown as ValidKeys<schema, scope>;
+}
 
-export type TableShorthandInput<scope extends AbiTypeScope = AbiTypeScope> = SchemaInput<scope> | keyof scope["types"];
+export function isValidPrimaryKey<schema extends SchemaInput, scope extends Scope>(
+  key: unknown,
+  schema: schema,
+  scope: scope = AbiTypeScope as unknown as scope,
+): key is ValidKeys<schema, scope> {
+  return (
+    Array.isArray(key) &&
+    key.every(
+      (key) =>
+        hasOwnKey(schema, key) && hasOwnKey(scope.types, schema[key]) && isStaticAbiType(scope.types[schema[key]]),
+    )
+  );
+}
 
-export type TableFullInput<
-  schema extends SchemaInput<scope> = SchemaInput,
-  scope extends AbiTypeScope = AbiTypeScope,
-  primaryKey extends ValidKeys<schema, scope> = ValidKeys<schema, scope>,
+export type validateKeys<validKeys extends PropertyKey, keys> = keys extends readonly string[]
+  ? {
+      readonly [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
+    }
+  : readonly string[];
+
+export type ValidateTableOptions = { inStoreContext: boolean };
+
+export type validateTable<
+  input,
+  scope extends Scope = AbiTypeScope,
+  options extends ValidateTableOptions = { inStoreContext: false },
 > = {
-  schema: schema;
-  primaryKey: primaryKey;
+  [key in
+    | keyof input
+    | Exclude<
+        requiredKeyOf<TableInput>,
+        options["inStoreContext"] extends true ? "name" | "namespace" : ""
+      >]: key extends "key"
+    ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput>, scope>, get<input, key>>
+    : key extends "schema"
+      ? validateSchema<get<input, key>, scope>
+      : key extends "name" | "namespace"
+        ? options["inStoreContext"] extends true
+          ? ErrorMessage<"Overrides of `name` and `namespace` are not allowed for tables in a store config">
+          : key extends keyof input
+            ? narrow<input[key]>
+            : never
+        : key extends keyof TableInput
+          ? TableInput[key]
+          : ErrorMessage<`Key \`${key & string}\` does not exist in TableInput`>;
 };
 
-// We don't use `conform` here because the restrictions we're imposing here are not native to typescript
-export type validateTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> =
-  input extends SchemaInput<scope>
-    ? // If a shorthand schema is provided, require it to have a static key field
-      "key" extends getStaticAbiTypeKeys<input, scope>
-      ? input
-      : NoStaticKeyFieldError
-    : input extends keyof scope["types"]
-      ? input
-      : input extends string
-        ? keyof scope["types"]
-        : SchemaInput<scope>;
+export function validateTable<input, scope extends Scope = AbiTypeScope>(
+  input: input,
+  scope: scope = AbiTypeScope as unknown as scope,
+  options: ValidateTableOptions = { inStoreContext: false },
+): asserts input is TableInput & input {
+  if (typeof input !== "object" || input == null) {
+    throw new Error(`Expected full table config, got \`${JSON.stringify(input)}\``);
+  }
 
-export type resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope> =
-  input extends SchemaInput<scope>
-    ? "key" extends getStaticAbiTypeKeys<input, scope>
-      ? // If the shorthand includes a static field called `key`, use it as key
-        evaluate<TableFullInput<input, scope, ["key"]>>
-      : never
-    : input extends keyof scope["types"]
-      ? evaluate<
-          TableFullInput<
-            { key: "bytes32"; value: input },
-            scope,
-            ["key" & getStaticAbiTypeKeys<{ key: "bytes32"; value: input }, scope>]
-          >
-        >
-      : never;
+  if (!hasOwnKey(input, "schema")) {
+    throw new Error("Missing schema input");
+  }
+  validateSchema(input.schema, scope);
 
-export function resolveTableShorthand<input, scope extends AbiTypeScope = AbiTypeScope>(
-  input: validateTableShorthand<input, scope>,
-  scope?: scope,
-): resolveTableShorthand<input, scope> {
-  // TODO: runtime implementation
-  return {} as never;
+  if (!hasOwnKey(input, "key") || !isValidPrimaryKey(input["key"], input["schema"], scope)) {
+    throw new Error(
+      `Invalid key. Expected \`(${getValidKeys(input["schema"], scope)
+        .map((item) => `"${String(item)}"`)
+        .join(" | ")})[]\`, received \`${
+        hasOwnKey(input, "key") && Array.isArray(input.key)
+          ? `[${input.key.map((item) => `"${item}"`).join(", ")}]`
+          : String(get(input, "key"))
+      }\``,
+    );
+  }
+
+  if ((options.inStoreContext && hasOwnKey(input, "name")) || hasOwnKey(input, "namespace")) {
+    throw new Error("Overrides of `name` and `namespace` are not allowed for tables in a store config.");
+  }
 }
 
-export type validateKeys<validKeys extends PropertyKey, keys> = {
-  [i in keyof keys]: keys[i] extends validKeys ? keys[i] : validKeys;
+export type resolveTableCodegen<input extends TableInput> = {
+  [key in keyof TableCodegen]-?: key extends keyof input["codegen"]
+    ? undefined extends input["codegen"][key]
+      ? key extends "dataStruct"
+        ? boolean
+        : key extends keyof typeof TABLE_CODEGEN_DEFAULTS
+          ? (typeof TABLE_CODEGEN_DEFAULTS)[key]
+          : never
+      : input["codegen"][key]
+    : // dataStruct isn't narrowed, because its value is conditional on the number of value schema fields
+      key extends "dataStruct"
+      ? boolean
+      : key extends keyof typeof TABLE_CODEGEN_DEFAULTS
+        ? (typeof TABLE_CODEGEN_DEFAULTS)[key]
+        : never;
 };
 
-export function validateKeys<validKeys extends PropertyKey, keys = PropertyKey[]>(
-  keys: validateKeys<validKeys, keys>,
-): keys {
-  // TODO: runtime implementation
-  return {} as never;
+export function resolveTableCodegen<input extends TableInput>(input: input): resolveTableCodegen<input> {
+  const options = input.codegen;
+  return {
+    outputDirectory: get(options, "outputDirectory") ?? TABLE_CODEGEN_DEFAULTS.outputDirectory,
+    tableIdArgument: get(options, "tableIdArgument") ?? TABLE_CODEGEN_DEFAULTS.tableIdArgument,
+    storeArgument: get(options, "storeArgument") ?? TABLE_CODEGEN_DEFAULTS.storeArgument,
+    // dataStruct is true if there are at least 2 value fields
+    dataStruct: get(options, "dataStruct") ?? Object.keys(input.schema).length - input.key.length > 1,
+  } satisfies TableCodegen as resolveTableCodegen<input>;
 }
 
-export type validateTableFull<input, scope extends AbiTypeScope = AbiTypeScope> =
-  input extends TableFullInput<SchemaInput<scope>, scope>
-    ? {
-        primaryKey: validateKeys<getStaticAbiTypeKeys<input["schema"], scope>, input["primaryKey"]>;
-        schema: input["schema"];
-      }
-    : input extends { primaryKey: unknown; schema: SchemaInput }
-      ? {
-          primaryKey: validateKeys<getStaticAbiTypeKeys<input["schema"], scope>, input["primaryKey"]>;
-          schema: SchemaInput<scope>;
-        }
-      : {
-          primaryKey: string[];
-          schema: SchemaInput<scope>;
-        };
+export type resolveTable<input, scope extends Scope = Scope> = input extends TableInput
+  ? {
+      readonly tableId: Hex;
+      readonly name: input["name"];
+      readonly namespace: undefined extends input["namespace"] ? typeof TABLE_DEFAULTS.namespace : input["namespace"];
+      readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
+      readonly key: Readonly<input["key"]>;
+      readonly schema: resolveSchema<input["schema"], scope>;
+      readonly codegen: resolveTableCodegen<input>;
+      readonly deploy: mergeIfUndefined<
+        undefined extends input["deploy"] ? {} : input["deploy"],
+        typeof TABLE_DEPLOY_DEFAULTS
+      >;
+    }
+  : never;
 
-export type validateTableConfig<input, scope extends AbiTypeScope = AbiTypeScope> =
-  input extends TableShorthandInput<scope>
-    ? validateTableShorthand<input, scope>
-    : input extends string
-      ? validateTableShorthand<input, scope>
-      : validateTableFull<input, scope>;
+export function resolveTable<input extends TableInput, scope extends Scope = AbiTypeScope>(
+  input: input,
+  scope: scope = AbiTypeScope as unknown as scope,
+): resolveTable<input, scope> {
+  const name = input.name;
+  const type = input.type ?? TABLE_DEFAULTS.type;
+  const namespace = input.namespace ?? TABLE_DEFAULTS.namespace;
+  const tableId = input.tableId ?? resourceToHex({ type, namespace, name });
 
-export type resolveTableFullConfig<
-  input extends TableFullInput<SchemaInput<scope>, scope>,
-  scope extends AbiTypeScope = AbiTypeScope,
-> = evaluate<{
-  primaryKey: input["primaryKey"];
-  schema: resolveSchema<input["schema"], scope>;
-  keySchema: resolveSchema<
-    {
-      [key in input["primaryKey"][number]]: input["schema"][key];
-    },
-    scope
-  >;
-  valueSchema: resolveSchema<
-    {
-      [key in Exclude<keyof input["schema"], input["primaryKey"][number]>]: input["schema"][key];
-    },
-    scope
-  >;
-}>;
+  return {
+    tableId,
+    name,
+    namespace,
+    type,
+    key: input.key,
+    schema: resolveSchema(input.schema, scope),
+    codegen: resolveTableCodegen(input),
+    deploy: mergeIfUndefined(input.deploy ?? {}, TABLE_DEPLOY_DEFAULTS),
+  } as unknown as resolveTable<input, scope>;
+}
 
-export type resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope> = evaluate<
-  input extends TableShorthandInput<scope>
-    ? resolveTableFullConfig<resolveTableShorthand<input, scope>, scope>
-    : input extends TableFullInput<SchemaInput<scope>, scope>
-      ? resolveTableFullConfig<input, scope>
-      : never
->;
-
-/**
- * If a shorthand table config is passed () we expand it with sane defaults:
- * - A single ABI type is turned into { schema: { key: "bytes32", value: INPUT }, key: ["key"] }.
- * - A schema with a `key` field with static ABI type is turned into { schema: INPUT, key: ["key"] }.
- * - A schema without a `key` field is invalid.
- */
-export function resolveTableConfig<input, scope extends AbiTypeScope = AbiTypeScope>(
-  input: validateTableConfig<input, scope>,
-  scope?: scope,
-): resolveTableConfig<input, scope> {
-  // TODO: runtime implementation
-  return {} as never;
+export function defineTable<input, scope extends Scope = AbiTypeScope>(
+  input: validateTable<input, scope>,
+  scope: scope = AbiTypeScope as unknown as scope,
+): resolveTable<input, scope> {
+  validateTable(input, scope);
+  return resolveTable(input, scope) as resolveTable<input, scope>;
 }

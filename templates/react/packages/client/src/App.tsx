@@ -33,7 +33,7 @@ export const App = () => {
 
                     checkbox.disabled = true;
                     try {
-                      await burner.systemCalls.toggleTask(task.key.key);
+                      await burner.systemCalls.toggleTask(task.key.id);
                     } finally {
                       checkbox.disabled = false;
                     }
@@ -55,7 +55,7 @@ export const App = () => {
                     const button = event.currentTarget;
                     button.disabled = true;
                     try {
-                      await burner.systemCalls.deleteTask(task.key.key);
+                      await burner.systemCalls.deleteTask(task.key.id);
                     } finally {
                       button.disabled = false;
                     }

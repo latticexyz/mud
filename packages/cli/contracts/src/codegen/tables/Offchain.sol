@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 library Offchain {
@@ -86,7 +86,7 @@ library Offchain {
   function set(bytes32 key, uint256 value) internal {
     bytes memory _staticData = encodeStatic(value);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -101,7 +101,7 @@ library Offchain {
   function _set(bytes32 key, uint256 value) internal {
     bytes memory _staticData = encodeStatic(value);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -114,7 +114,7 @@ library Offchain {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (uint256 value) {
-    value = (uint256(Bytes.slice32(_blob, 0)));
+    value = (uint256(Bytes.getBytes32(_blob, 0)));
   }
 
   /**
@@ -123,7 +123,7 @@ library Offchain {
    *
    *
    */
-  function decode(bytes memory _staticData, PackedCounter, bytes memory) internal pure returns (uint256 value) {
+  function decode(bytes memory _staticData, EncodedLengths, bytes memory) internal pure returns (uint256 value) {
     (value) = decodeStatic(_staticData);
   }
 
@@ -161,10 +161,10 @@ library Offchain {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(uint256 value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(uint256 value) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(value);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     return (_staticData, _encodedLengths, _dynamicData);

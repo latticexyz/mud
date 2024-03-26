@@ -1,10 +1,10 @@
 import { Client, Transport, Chain, Account, Hex, getAddress, Address } from "viem";
 import { writeContract, resourceToLabel } from "@latticexyz/common";
-import { System, WorldDeploy, worldAbi } from "./common";
+import { Library, System, WorldDeploy, worldAbi } from "./common";
 import { debug } from "./debug";
 import { getSystems } from "./getSystems";
 import { getResourceAccess } from "./getResourceAccess";
-import { uniqueBy, wait } from "@latticexyz/common/utils";
+import { wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 
@@ -13,11 +13,13 @@ import { ensureContractsDeployed } from "./ensureContractsDeployed";
 export async function ensureSystems({
   client,
   deployerAddress,
+  libraries,
   worldDeploy,
   systems,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
-  readonly deployerAddress: Hex; // TODO: move this into WorldDeploy to reuse a world's deployer?
+  readonly deployerAddress: Hex;
+  readonly libraries: readonly Library[];
   readonly worldDeploy: WorldDeploy;
   readonly systems: readonly System[];
 }): Promise<readonly Hex[]> {
@@ -32,7 +34,7 @@ export async function ensureSystems({
     worldSystems.some(
       (worldSystem) =>
         worldSystem.systemId === system.systemId &&
-        getAddress(worldSystem.address) === getAddress(system.getAddress(deployerAddress)),
+        getAddress(worldSystem.address) === getAddress(system.prepareDeploy(deployerAddress, libraries).address),
     ),
   );
   if (existingSystems.length) {
@@ -47,7 +49,7 @@ export async function ensureSystems({
     worldSystems.some(
       (worldSystem) =>
         worldSystem.systemId === system.systemId &&
-        getAddress(worldSystem.address) !== getAddress(system.getAddress(deployerAddress)),
+        getAddress(worldSystem.address) !== getAddress(system.prepareDeploy(deployerAddress, libraries).address),
     ),
   );
   if (systemsToUpgrade.length) {
@@ -64,8 +66,8 @@ export async function ensureSystems({
   await ensureContractsDeployed({
     client,
     deployerAddress,
-    contracts: uniqueBy(missingSystems, (system) => getAddress(system.getAddress(deployerAddress))).map((system) => ({
-      bytecode: system.bytecode,
+    contracts: missingSystems.map((system) => ({
+      bytecode: system.prepareDeploy(deployerAddress, libraries).bytecode,
       deployedBytecodeSize: system.deployedBytecodeSize,
       label: `${resourceToLabel(system)} system`,
     })),
@@ -81,7 +83,7 @@ export async function ensureSystems({
             abi: worldAbi,
             // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
             functionName: "registerSystem",
-            args: [system.systemId, system.getAddress(deployerAddress), system.allowAll],
+            args: [system.systemId, system.prepareDeploy(deployerAddress, libraries).address, system.allowAll],
           }),
         {
           retries: 3,
@@ -109,7 +111,7 @@ export async function ensureSystems({
           resourceId: system.systemId,
           address:
             worldSystems.find((s) => s.systemId === systemId)?.address ??
-            systems.find((s) => s.systemId === systemId)?.getAddress(deployerAddress),
+            systems.find((s) => s.systemId === systemId)?.prepareDeploy(deployerAddress, libraries).address,
         }))
         .filter((access): access is typeof access & { address: Address } => access.address != null),
     ),

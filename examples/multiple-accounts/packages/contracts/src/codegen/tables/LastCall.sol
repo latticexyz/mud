@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 struct LastCallData {
@@ -157,7 +157,7 @@ library LastCall {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(caller)));
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -172,7 +172,7 @@ library LastCall {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(caller)));
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -186,7 +186,7 @@ library LastCall {
   function set(address caller, uint256 callTime, address sender) internal {
     bytes memory _staticData = encodeStatic(callTime, sender);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -201,7 +201,7 @@ library LastCall {
   function _set(address caller, uint256 callTime, address sender) internal {
     bytes memory _staticData = encodeStatic(callTime, sender);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -216,7 +216,7 @@ library LastCall {
   function set(address caller, LastCallData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.callTime, _table.sender);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -231,7 +231,7 @@ library LastCall {
   function _set(address caller, LastCallData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.callTime, _table.sender);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -244,9 +244,9 @@ library LastCall {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (uint256 callTime, address sender) {
-    callTime = (uint256(Bytes.slice32(_blob, 0)));
+    callTime = (uint256(Bytes.getBytes32(_blob, 0)));
 
-    sender = (address(Bytes.slice20(_blob, 32)));
+    sender = (address(Bytes.getBytes20(_blob, 32)));
   }
 
   /**
@@ -257,7 +257,7 @@ library LastCall {
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) internal pure returns (LastCallData memory _table) {
     (_table.callTime, _table.sender) = decodeStatic(_staticData);
@@ -297,10 +297,10 @@ library LastCall {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(uint256 callTime, address sender) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(uint256 callTime, address sender) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(callTime, sender);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     return (_staticData, _encodedLengths, _dynamicData);

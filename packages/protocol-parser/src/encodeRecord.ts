@@ -1,4 +1,4 @@
-import { StaticPrimitiveType, DynamicPrimitiveType } from "@latticexyz/schema-type";
+import { StaticPrimitiveType, DynamicPrimitiveType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { encodeField } from "./encodeField";
 import { Schema } from "./common";
@@ -26,9 +26,9 @@ export function encodeRecord(
 
   const dynamicData = dynamicDataItems.join("");
 
-  const packedCounter = `${dynamicFieldByteLengths
+  const encodedLengths = `${dynamicFieldByteLengths
     .map((length) => encodeField("uint40", length).replace(/^0x/, ""))
     .join("")}${encodeField("uint56", dynamicTotalByteLength).replace(/^0x/, "")}`.padStart(64, "0");
 
-  return `0x${staticData}${packedCounter}${dynamicData}`;
+  return `0x${staticData}${encodedLengths}${dynamicData}`;
 }

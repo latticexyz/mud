@@ -5,7 +5,7 @@ import { WorldDeploy, storeTables } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
-import { KeySchema, ValueSchema, decodeKey, decodeValueArgs, hexToSchema } from "@latticexyz/protocol-parser";
+import { KeySchema, ValueSchema, decodeKey, decodeValueArgs, hexToSchema } from "@latticexyz/protocol-parser/internal";
 
 export async function getTables({
   client,

@@ -14,7 +14,9 @@ type WriteArgs<TMethod extends WriteMethodName> = AbiParametersToPrimitiveTypes<
 export function callWorld<TMethod extends WriteMethodName>(page: Page, method: TMethod, args?: WriteArgs<TMethod>) {
   return page.evaluate(
     ([_method, _args]) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const worldContract = (window as any).worldContract as WorldContract;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const writeMethod = worldContract.write[_method as any];
       return writeMethod(_args)
         .then((tx) => window["waitForTransaction"](tx))

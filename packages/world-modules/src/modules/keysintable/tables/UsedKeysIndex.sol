@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 // Import user types
@@ -218,7 +218,7 @@ library UsedKeysIndex {
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = keysHash;
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -234,7 +234,7 @@ library UsedKeysIndex {
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = keysHash;
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -254,7 +254,7 @@ library UsedKeysIndex {
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = keysHash;
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -268,7 +268,7 @@ library UsedKeysIndex {
   function set(ResourceId sourceTableId, bytes32 keysHash, bool has, uint40 index) internal {
     bytes memory _staticData = encodeStatic(has, index);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -284,7 +284,7 @@ library UsedKeysIndex {
   function _set(ResourceId sourceTableId, bytes32 keysHash, bool has, uint40 index) internal {
     bytes memory _staticData = encodeStatic(has, index);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -300,7 +300,7 @@ library UsedKeysIndex {
   function set(IStore _store, ResourceId sourceTableId, bytes32 keysHash, bool has, uint40 index) internal {
     bytes memory _staticData = encodeStatic(has, index);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -314,9 +314,9 @@ library UsedKeysIndex {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (bool has, uint40 index) {
-    has = (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    has = (_toBool(uint8(Bytes.getBytes1(_blob, 0))));
 
-    index = (uint40(Bytes.slice5(_blob, 1)));
+    index = (uint40(Bytes.getBytes5(_blob, 1)));
   }
 
   /**
@@ -327,7 +327,7 @@ library UsedKeysIndex {
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) internal pure returns (bool has, uint40 index) {
     (has, index) = decodeStatic(_staticData);
@@ -380,10 +380,10 @@ library UsedKeysIndex {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(bool has, uint40 index) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(bool has, uint40 index) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(has, index);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     return (_staticData, _encodedLengths, _dynamicData);
