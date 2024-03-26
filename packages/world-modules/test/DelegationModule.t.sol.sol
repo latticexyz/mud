@@ -102,5 +102,8 @@ contract DelegationWithSignatureModuleTest is Test, GasReporter {
     vm.prank(delegatee);
     returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
     returnedAddress = abi.decode(returnData, (address));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedAddress, delegator);
   }
 }
