@@ -275,7 +275,7 @@ export default defineWorld({
     },
     /************************************************************************
      *
-     *    Register Delegation With Signature MODULE
+     *    REGISTER DELEGATION WITH SIGNATURE MODULE
      *
      ************************************************************************/
     UserDelegationNonces: {
