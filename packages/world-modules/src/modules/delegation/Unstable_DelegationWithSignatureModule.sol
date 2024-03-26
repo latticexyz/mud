@@ -7,12 +7,13 @@ import { Module } from "@latticexyz/world/src/Module.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { UserDelegationNonces } from "./tables/UserDelegationNonces.sol";
-import { DelegationWithSignatureSystem } from "./DelegationWithSignatureSystem.sol";
+import { Unstable_DelegationWithSignatureSystem } from "./Unstable_DelegationWithSignatureSystem.sol";
 
 import { DELEGATION_SYSTEM_ID } from "./constants.sol";
 
-contract DelegationWithSignatureModule is Module {
-  DelegationWithSignatureSystem private immutable delegationWithSignatureSystem = new DelegationWithSignatureSystem();
+contract Unstable_DelegationWithSignatureModule is Module {
+  Unstable_DelegationWithSignatureSystem private immutable delegationWithSignatureSystem =
+    new Unstable_DelegationWithSignatureSystem();
 
   function installRoot(bytes memory encodedArgs) public {
     requireNotInstalled(__self, encodedArgs);

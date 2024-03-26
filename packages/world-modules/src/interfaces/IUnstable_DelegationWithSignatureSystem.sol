@@ -6,12 +6,12 @@ pragma solidity >=0.8.24;
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 /**
- * @title IDelegationWithSignatureSystem
+ * @title IUnstable_DelegationWithSignatureSystem
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
-interface IDelegationWithSignatureSystem {
-  error InvalidSigner(address delegator, address delegatee);
+interface IUnstable_DelegationWithSignatureSystem {
+  error InvalidSignature(address signer);
 
   function registerDelegationWithSignature(
     address delegatee,
