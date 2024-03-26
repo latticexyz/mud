@@ -18,16 +18,16 @@ import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@lattic
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { WorldTestSystem } from "@latticexyz/world/test/World.t.sol";
 
-import { DelegationModule } from "../src/modules/delegation/DelegationModule.sol";
-import { DelegationSystem } from "../src/modules/delegation/DelegationSystem.sol";
+import { DelegationWithSignatureModule } from "../src/modules/delegation/DelegationWithSignatureModule.sol";
+import { DelegationWithSignatureSystem } from "../src/modules/delegation/DelegationWithSignatureSystem.sol";
 import { getSignedMessageHash } from "../src/modules/delegation/getSignedMessageHash.sol";
 import { registerDelegationWithSignature } from "../src/modules/delegation/registerDelegationWithSignature.sol";
 
-contract DelegationModuleTest is Test, GasReporter {
+contract DelegationWithSignatureModuleTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
 
   IBaseWorld world;
-  DelegationModule delegationModule = new DelegationModule();
+  DelegationWithSignatureModule delegationWithSignatureModule = new DelegationWithSignatureModule();
 
   function setUp() public {
     world = createWorld();
@@ -36,7 +36,7 @@ contract DelegationModuleTest is Test, GasReporter {
 
   function testInstallRoot() public {
     startGasReport("install delegation module");
-    world.installRootModule(delegationModule, new bytes(0));
+    world.installRootModule(delegationWithSignatureModule, new bytes(0));
     endGasReport();
   }
 
@@ -51,7 +51,7 @@ contract DelegationModuleTest is Test, GasReporter {
     world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
-    world.installRootModule(delegationModule, new bytes(0));
+    world.installRootModule(delegationWithSignatureModule, new bytes(0));
 
     // Register a limited delegation using signature
     (address delegator, uint256 delegatorPk) = makeAddrAndKey("delegator");
@@ -83,7 +83,7 @@ contract DelegationModuleTest is Test, GasReporter {
     world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Attempt to register a limited delegation using an old signature
-    vm.expectRevert(abi.encodeWithSelector(DelegationSystem.InvalidSigner.selector, delegator, delegatee));
+    vm.expectRevert(abi.encodeWithSelector(DelegationWithSignatureSystem.InvalidSigner.selector, delegator, delegatee));
     registerDelegationWithSignature(world, delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, signature);
 
     // Expect a revert when attempting to perform a call via callFrom after a delegation was unregistered

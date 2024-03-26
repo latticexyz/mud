@@ -4,7 +4,7 @@ pragma solidity >=0.8.24;
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 
-import { DelegationSystem } from "./DelegationSystem.sol";
+import { DelegationWithSignatureSystem } from "./DelegationWithSignatureSystem.sol";
 
 function registerDelegationWithSignature(
   IBaseWorld world,
@@ -14,7 +14,7 @@ function registerDelegationWithSignature(
   address delegator,
   bytes memory signature
 ) {
-  DelegationSystem(address(world)).registerDelegationWithSignature(
+  DelegationWithSignatureSystem(address(world)).registerDelegationWithSignature(
     delegatee,
     delegationControlId,
     initCallData,

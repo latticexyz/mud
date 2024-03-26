@@ -7,12 +7,12 @@ import { Module } from "@latticexyz/world/src/Module.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { UserDelegationNonces } from "./tables/UserDelegationNonces.sol";
-import { DelegationSystem } from "./DelegationSystem.sol";
+import { DelegationWithSignatureSystem } from "./DelegationWithSignatureSystem.sol";
 
 import { DELEGATION_SYSTEM_ID } from "./constants.sol";
 
-contract DelegationModule is Module {
-  DelegationSystem private immutable delegationSystem = new DelegationSystem();
+contract DelegationWithSignatureModule is Module {
+  DelegationWithSignatureSystem private immutable delegationWithSignatureSystem = new DelegationWithSignatureSystem();
 
   function installRoot(bytes memory encodedArgs) public {
     requireNotInstalled(__self, encodedArgs);
@@ -24,7 +24,7 @@ contract DelegationModule is Module {
 
     // Register system
     (bool success, bytes memory data) = address(world).delegatecall(
-      abi.encodeCall(world.registerSystem, (DELEGATION_SYSTEM_ID, delegationSystem, true))
+      abi.encodeCall(world.registerSystem, (DELEGATION_SYSTEM_ID, delegationWithSignatureSystem, true))
     );
     if (!success) revertWithBytes(data);
 

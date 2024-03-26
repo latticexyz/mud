@@ -52,7 +52,7 @@ export default defineWorld({
   },
   modules: [
     {
-      name: "DelegationModule",
+      name: "DelegationWithSignatureModule",
       root: true,
       args: [],
     },

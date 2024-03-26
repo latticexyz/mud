@@ -9,7 +9,7 @@ import { UserDelegationNonces } from "./tables/UserDelegationNonces.sol";
 import { getSignedMessageHash } from "./getSignedMessageHash.sol";
 import { ECDSA } from "./ECDSA.sol";
 
-contract DelegationSystem is System {
+contract DelegationWithSignatureSystem is System {
   /**
    * @dev Mismatched signature.
    */
