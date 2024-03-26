@@ -35,6 +35,7 @@ export default {
   },
   changelog: "Changelog",
   retrospectives: "Retrospectives",
+  audits: "Audits",
   // --------------------
   version: {
     title: worldPackageJson.version,
