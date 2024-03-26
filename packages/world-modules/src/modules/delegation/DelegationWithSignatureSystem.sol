@@ -35,7 +35,7 @@ contract DelegationWithSignatureSystem is System {
     bytes32 hash = getSignedMessageHash(delegatee, delegationControlId, initCallData, nonce, _world());
 
     // If the message was not signed by the delegator or is invalid, revert
-    (address signer, , ) = ECDSA.tryRecover(hash, signature);
+    address signer = ECDSA.recover(hash, signature);
     if (signer != delegator) {
       revert InvalidSigner(delegator, delegatee);
     }
