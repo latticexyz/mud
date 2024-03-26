@@ -3,12 +3,12 @@ import { Callout } from "nextra/components";
 # Tables
 
 Each piece of data in `Store` is stored as a _record_ in a _table_.
-You can think of tables in two ways, either [as a relational database](./how-mud-models-data) or as a key-value store.
+You can think of tables in two ways, either [as a relational database](./data-model) or as a key-value store.
 
 - Each table is identified by a unique `ResourceId tableId`.
 - Each record in a table is identified by a unique `bytes32[] keyTuple`.
   You can think of the key tuple as a composite key in a relational database, or as a nested mapping in a key-value store.
-- Each table has a `ValueSchema` that defines the types of data stored in the table.
+- Each table has a value schema (all the `schema` fields that aren't part of the `key`) that defines the types of data stored in the table.
   You can think of the value schema as the column types in a table in a relational database, or the type of structs stored in a key-value store.
 
 Tables are registered in the `Store` contract at runtime.
@@ -46,6 +46,8 @@ The table ID encodes the table's type and name in a 32-byte `ResourceId` value a
 import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
+...
+
 // Using the `RESOURCE_TABLE` type makes it an onchain table
 ResourceId tableId = ResourceIdLib.encode({
   typeId: RESOURCE_TABLE,
@@ -58,6 +60,7 @@ ResourceId offchainTableId = ResourceIdLib.encode({
   name: "Balance"
 });
 ```
+
 
 ### Key schema
 
@@ -103,7 +106,6 @@ Key and (value) field names are simple string arrays, and must have the same len
 string[] memory keyNames = new string[](1);
 keyNames[0] = "owner";
 
-
 string[] memory fieldNames = new string[](1);
 fieldNames[0] = "balance";
 ```
@@ -118,17 +120,14 @@ import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.s
 
 uint256[] memory staticFields = new uint256[](1);
 staticFields[0] = 32; // The byte length of the first field
-FieldLayout fieldLayout = FieldLayoutLib.encode({
-  staticFields: staticFields,
-  numDynamicFields: 0
-});
+FieldLayout fieldLayout = FieldLayoutLib.encode(staticFields, 0);
 ```
 
 ### Manually register a table
 
 Registering a table is a prerequisite for writing to the table, and allows [offchain indexers](../services/indexer) to [replicate the onchain state](/guides/replicating-onchain-state).
 
-```solidity
+```solidity copy
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 
 IStore store = IStore(STORE_ADDRESS);
