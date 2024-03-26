@@ -2,9 +2,9 @@ import { createWalletClient, getContract, type Hex } from "viem";
 import { Subject, share } from "rxjs";
 import { type ContractWrite } from "@latticexyz/common";
 import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
+import { callFrom } from "@latticexyz/world/internal";
 import { createViemClientConfig } from "../createViemClientConfig";
 import { getBurnerAccount } from "./getBurnerAccount";
-import { callFrom } from "./callFrom";
 import { type Network } from "../setupNetwork";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 
