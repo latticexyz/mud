@@ -22,7 +22,6 @@ import { DelegationWithSignatureModule } from "../src/modules/delegation/Delegat
 import { DelegationWithSignatureSystem } from "../src/modules/delegation/DelegationWithSignatureSystem.sol";
 import { getSignedMessageHash } from "../src/modules/delegation/getSignedMessageHash.sol";
 import { ECDSA } from "../src/modules/delegation/ECDSA.sol";
-import { registerDelegationWithSignature } from "../src/modules/delegation/registerDelegationWithSignature.sol";
 
 contract DelegationWithSignatureModuleTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
@@ -64,10 +63,22 @@ contract DelegationWithSignatureModuleTest is Test, GasReporter {
 
     // Attempt to register a limited delegation using an empty signature
     vm.expectRevert(abi.encodeWithSelector(ECDSA.ECDSAInvalidSignatureLength.selector, 0));
-    registerDelegationWithSignature(world, delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, new bytes(0));
+    DelegationWithSignatureSystem(address(world)).registerDelegationWithSignature(
+      delegatee,
+      UNLIMITED_DELEGATION,
+      new bytes(0),
+      delegator,
+      new bytes(0)
+    );
 
     startGasReport("register an unlimited delegation with signature");
-    registerDelegationWithSignature(world, delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, signature);
+    DelegationWithSignatureSystem(address(world)).registerDelegationWithSignature(
+      delegatee,
+      UNLIMITED_DELEGATION,
+      new bytes(0),
+      delegator,
+      signature
+    );
     endGasReport();
 
     // Call a system from the delegatee on behalf of the delegator
@@ -89,7 +100,13 @@ contract DelegationWithSignatureModuleTest is Test, GasReporter {
 
     // Attempt to register a limited delegation using an old signature
     vm.expectRevert(abi.encodeWithSelector(DelegationWithSignatureSystem.InvalidSigner.selector, delegator, delegatee));
-    registerDelegationWithSignature(world, delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, signature);
+    DelegationWithSignatureSystem(address(world)).registerDelegationWithSignature(
+      delegatee,
+      UNLIMITED_DELEGATION,
+      new bytes(0),
+      delegator,
+      signature
+    );
 
     // Expect a revert when attempting to perform a call via callFrom after a delegation was unregistered
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
@@ -101,7 +118,13 @@ contract DelegationWithSignatureModuleTest is Test, GasReporter {
     (v, r, s) = vm.sign(delegatorPk, hash);
     signature = abi.encodePacked(r, s, v);
 
-    registerDelegationWithSignature(world, delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, signature);
+    DelegationWithSignatureSystem(address(world)).registerDelegationWithSignature(
+      delegatee,
+      UNLIMITED_DELEGATION,
+      new bytes(0),
+      delegator,
+      signature
+    );
 
     // Call a system from the delegatee on behalf of the delegator
     vm.prank(delegatee);
