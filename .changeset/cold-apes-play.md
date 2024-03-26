@@ -4,4 +4,4 @@
 "@latticexyz/world": patch
 ---
 
-Added a module to register delegations with a signature.
+Added a new module, `DelegationWithSignatureModule`, which allows registering delegations with a signature.
