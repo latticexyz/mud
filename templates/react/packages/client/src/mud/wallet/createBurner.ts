@@ -45,7 +45,7 @@ export function createBurner(network: Network, delegatorAddress?: Hex) {
             .getState()
             .getValue(network.tables.FunctionSelectors, { worldFunctionSelector });
 
-          if (!systemFunction) throw new Error(`Possibly not synced: ${worldFunctionSelector}`);
+          if (!systemFunction) throw new Error(`Possibly store not synced: ${worldFunctionSelector}`);
 
           return { systemId: systemFunction.systemId, systemFunctionSelector: systemFunction.systemFunctionSelector };
         },
