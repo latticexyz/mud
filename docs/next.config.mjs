@@ -226,6 +226,11 @@ export default withNextra({
         destination: "/quickstart",
         permanent: false,
       },
+      {
+        source: "/templates/typescript/three",
+        destination: "/templates/typescript/threejs",
+        permanent: false,
+      },
     ];
   },
 });
