@@ -50,4 +50,11 @@ export default defineWorld({
       key: [],
     },
   },
+  modules: [
+    {
+      name: "Unstable_DelegationWithSignatureModule",
+      root: true,
+      args: [],
+    },
+  ],
 });

@@ -31,6 +31,7 @@ import { requireNamespace } from "../../../requireNamespace.sol";
 import { requireValidNamespace } from "../../../requireValidNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
+import { createDelegation } from "./createDelegation.sol";
 
 /**
  * @title WorldRegistrationSystem
@@ -264,27 +265,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public onlyDelegatecall {
-    // Store the delegation control contract address
-    UserDelegationControl._set({
-      delegator: _msgSender(),
-      delegatee: delegatee,
-      delegationControlId: delegationControlId
-    });
-
-    // If the delegation is limited...
-    if (Delegation.isLimited(delegationControlId)) {
-      // Require the delegationControl contract to implement the IDelegationControl interface
-      address delegationControl = Systems._getSystem(delegationControlId);
-      requireInterface(delegationControl, type(IDelegationControl).interfaceId);
-
-      // Call the delegation control contract's init function
-      SystemCall.callWithHooksOrRevert({
-        caller: _msgSender(),
-        systemId: delegationControlId,
-        callData: initCallData,
-        value: 0
-      });
-    }
+    createDelegation(_msgSender(), delegatee, delegationControlId, initCallData);
   }
 
   /**
