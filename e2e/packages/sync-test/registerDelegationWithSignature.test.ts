@@ -101,11 +101,9 @@ describe("registerDelegationWithSignature", async () => {
       }),
     ]);
 
-    expect(value).toMatchInlineSnapshot(`
-        {
-          "__staticData": "0x73790000000000000000000000000000756e6c696d6974656400000000000000",
-          "delegationControlId": "0x73790000000000000000000000000000756e6c696d6974656400000000000000",
-        }
-      `);
+    expect(value).toMatchObject({
+      __staticData: delegationControlId,
+      delegationControlId,
+    });
   });
 });
