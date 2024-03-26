@@ -13,7 +13,7 @@ contract DelegationWithSignatureSystem is System {
   /**
    * @dev Mismatched signature.
    */
-  error InvalidSigner(address delegator, address delegatee);
+  error InvalidSignature(address signer);
 
   /**
    * @notice Registers a delegation for `delegator` with a signature
@@ -37,7 +37,7 @@ contract DelegationWithSignatureSystem is System {
     // If the message was not signed by the delegator or is invalid, revert
     address signer = ECDSA.recover(hash, signature);
     if (signer != delegator) {
-      revert InvalidSigner(delegator, delegatee);
+      revert InvalidSignature(signer);
     }
 
     UserDelegationNonces.set(delegator, nonce + 1);

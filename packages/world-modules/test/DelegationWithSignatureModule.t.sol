@@ -99,7 +99,12 @@ contract DelegationWithSignatureModuleTest is Test, GasReporter {
     world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Attempt to register a limited delegation using an old signature
-    vm.expectRevert(abi.encodeWithSelector(DelegationWithSignatureSystem.InvalidSigner.selector, delegator, delegatee));
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        DelegationWithSignatureSystem.InvalidSignature.selector,
+        0x1Ee32CcbA4C692C5b89e0858F2C0779C8a3D98AB
+      )
+    );
     DelegationWithSignatureSystem(address(world)).registerDelegationWithSignature(
       delegatee,
       UNLIMITED_DELEGATION,
