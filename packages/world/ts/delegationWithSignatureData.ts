@@ -1,6 +1,6 @@
 // Follows https://viem.sh/docs/actions/wallet/signTypedData#usage
 
-export const types = {
+export const delegationWithSignatureTypes = {
   Delegation: [
     { name: "delegatee", type: "address" },
     { name: "delegationControlId", type: "bytes32" },

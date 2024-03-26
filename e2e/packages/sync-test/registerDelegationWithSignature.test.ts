@@ -12,7 +12,7 @@ import { encodeEntity } from "@latticexyz/store-sync/recs";
 import { callPageFunction } from "./data/callPageFunction";
 import worldConfig from "@latticexyz/world/mud.config";
 import { worldToV1 } from "@latticexyz/world/config/v2";
-import { types } from "@latticexyz/world/internal";
+import { delegationWithSignatureTypes } from "@latticexyz/world/internal";
 import { getWorld } from "./data/getWorld";
 import { callRegisterDelegationWithSignature } from "./data/callRegisterDelegationWithSignature";
 
@@ -73,7 +73,7 @@ describe("registerDelegationWithSignature", async () => {
         chainId: delegatorWalletClient.chain.id,
         verifyingContract: worldContract.address,
       },
-      types,
+      types: delegationWithSignatureTypes,
       primaryType: "Delegation",
       message: {
         delegatee,
