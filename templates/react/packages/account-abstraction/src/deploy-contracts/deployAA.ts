@@ -1,20 +1,12 @@
-import { createWalletClient, http } from "viem";
-import { mnemonicToAccount } from "viem/accounts";
-import { foundry } from "viem/chains";
 import {
+  ANVIL_WALLET_CLIENT,
   DETERMINISTIC_DEPLOYER,
   ENTRY_POINT_CREATE_CALL,
   ENTRY_POINT_SIMULATIONS_CREATE_CALL,
   SIMPLE_ACCOUNT_FACTORY_CREATE_CALL,
 } from "../constants";
 
-const account = mnemonicToAccount("test test test test test test test test test test test junk");
-
-const walletClient = createWalletClient({
-  account,
-  chain: foundry,
-  transport: http("http://127.0.0.1:8545"),
-});
+const walletClient = ANVIL_WALLET_CLIENT();
 
 (async () => {
   const entryPointHash = await walletClient.sendTransaction({
@@ -36,5 +28,5 @@ const walletClient = createWalletClient({
     data: ENTRY_POINT_SIMULATIONS_CREATE_CALL,
   });
 
-  console.log("entryPointSimulations deployed", entryPointSimulationsHash);
+  console.log("EntryPointSimulations deployed", entryPointSimulationsHash);
 })();

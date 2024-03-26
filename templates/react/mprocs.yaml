@@ -5,6 +5,9 @@ procs:
   client:
     cwd: packages/client
     shell: pnpm run dev
-  account-abstraction:
+  alto-bundler:
     cwd: packages/account-abstraction
-    shell: pnpm run dev
+    shell: pnpm run dev:alto
+  paymaster:
+    cwd: packages/account-abstraction
+    shell: pnpm run dev:paymaster

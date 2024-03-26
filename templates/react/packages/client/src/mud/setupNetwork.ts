@@ -3,21 +3,7 @@
  * (https://viem.sh/docs/getting-started.html).
  * This line imports the functions we need from it.
  */
-import {
-  createPublicClient,
-  fallback,
-  webSocket,
-  http,
-  Hex,
-  parseEther,
-  ClientConfig,
-  getContract,
-  PublicClient,
-  Address,
-  createWalletClient,
-  Chain,
-} from "viem";
-import { foundry } from "viem/chains";
+import { createPublicClient, fallback, webSocket, http, Hex, parseEther, ClientConfig, getContract } from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -37,41 +23,9 @@ import { Subject, share } from "rxjs";
 import mudConfig from "contracts/mud.config";
 import { ENTRYPOINT_ADDRESS_V07, createSmartAccountClient } from "permissionless";
 import { signerToSimpleSmartAccount } from "permissionless/accounts";
-import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
-import { mnemonicToAccount } from "viem/accounts";
-import { call, getTransactionCount } from "viem/actions";
+import { createPimlicoBundlerClient, createPimlicoPaymasterClient } from "permissionless/clients/pimlico";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
-
-async function waitForDeployments(publicClient: PublicClient) {
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const code = await publicClient.getBytecode({
-      address: ENTRYPOINT_ADDRESS_V07,
-    });
-
-    if (code !== undefined) {
-      break;
-    }
-
-    await new Promise((f) => setTimeout(f, 1000));
-  }
-}
-
-async function seedAccount(to: Address, chain: Chain) {
-  const account = mnemonicToAccount("test test test test test test test test test test test junk");
-
-  const walletClient = createWalletClient({
-    account,
-    chain,
-    transport: http("http://localhost:8545"),
-  });
-
-  await walletClient.sendTransaction({
-    to,
-    value: parseEther("5"),
-  });
-}
 
 export async function setupNetwork() {
   const networkConfig = await getNetworkConfig();
@@ -88,8 +42,6 @@ export async function setupNetwork() {
 
   const publicClient = createPublicClient(clientOptions);
 
-  await waitForDeployments(publicClient);
-
   /*
    * Create an observable for contract writes that we can
    * pass into MUD dev tools for transaction observability.
@@ -101,37 +53,37 @@ export async function setupNetwork() {
    * (see https://viem.sh/docs/clients/wallet.html).
    */
   const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+
   const pimlicoBundlerClient = createPimlicoBundlerClient({
     chain: clientOptions.chain,
     transport: http("http://127.0.0.1:4337"),
     entryPoint: ENTRYPOINT_ADDRESS_V07,
   });
+
+  const pimlicoPaymaster = createPimlicoPaymasterClient({
+    chain: clientOptions.chain,
+    transport: http("http://127.0.0.1:4338"),
+    entryPoint: ENTRYPOINT_ADDRESS_V07,
+  });
+
   const burnerSmartAccount = await signerToSimpleSmartAccount(publicClient, {
     entryPoint: ENTRYPOINT_ADDRESS_V07,
     factoryAddress: "0x91E60e0613810449d098b0b5Ec8b51A0FE8c8985",
     signer: burnerAccount,
   });
+
   const burnerSmartAccountClient = createSmartAccountClient({
     chain: clientOptions.chain,
     bundlerTransport: http("http://127.0.0.1:4337"),
     middleware: {
+      sponsorUserOperation: pimlicoPaymaster.sponsorUserOperation,
       gasPrice: async () => (await pimlicoBundlerClient.getUserOperationGasPrice()).fast, // use pimlico bundler to get gas prices
     },
+    entryPoint: ENTRYPOINT_ADDRESS_V07,
     account: burnerSmartAccount,
   })
-    .extend(() => ({
-      getTransactionCount: (args) => {
-        console.log("getTransactionCount, ", args);
-        return getTransactionCount(publicClient, args);
-      },
-      call: (args) => call(publicClient, args),
-    }))
     .extend(transactionQueue(publicClient))
     .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
-
-  if (clientOptions.chain.id === foundry.id) {
-    await seedAccount(burnerSmartAccount.address, clientOptions.chain);
-  }
 
   /*
    * Create an object for communicating with the deployed World.
