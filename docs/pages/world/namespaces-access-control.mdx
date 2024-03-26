@@ -106,13 +106,13 @@ contract Permissions is Script {
 
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
     uint256 namespaceOwnerPrivateKey = vm.envUint("PRIVATE_KEY");
-    
+
     // Start broadcasting transactions from the account owning the namespace
     vm.startBroadcast(namespaceOwnerPrivateKey);
-    
+
     IWorld(worldAddress).grantAccess(Counter._tableId, address(0));
     IWorld(worldAddress).revokeAccess(Counter._tableId, address(1));
-    
+
     vm.stopBroadcast();
   }
 }
