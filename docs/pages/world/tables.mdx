@@ -46,7 +46,7 @@ contract ReadCounter is Script {
     StoreSwitch.setStoreAddress(worldAddress);
     console.log("Counter value:", Counter.get());
   }
-}  
+}
 ```
 
 </CollapseCode>
@@ -83,7 +83,6 @@ If this had been a table with a key, we'd need to provide the key as a parameter
 
 </details>
 
-
 ### Writing to table
 
 All the functions to [write to a MUD store](/store/table-libraries#writing-data) are available.
@@ -106,18 +105,18 @@ contract ResetCounter is Script {
     // Specify a store so that you can use tables directly
     address worldAddress = 0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC;
     StoreSwitch.setStoreAddress(worldAddress);
-    
+
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-    
+
     // Start broadcasting transactions from the deployer account
     vm.startBroadcast(deployerPrivateKey);
     Counter.set(0);
     vm.stopBroadcast();
-    
+
     console.log("Counter value:", Counter.get());
   }
-}  
+}
 ```
 
 </CollapseCode>
