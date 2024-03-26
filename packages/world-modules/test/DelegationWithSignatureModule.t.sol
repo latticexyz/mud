@@ -21,6 +21,7 @@ import { WorldTestSystem } from "@latticexyz/world/test/World.t.sol";
 import { DelegationWithSignatureModule } from "../src/modules/delegation/DelegationWithSignatureModule.sol";
 import { DelegationWithSignatureSystem } from "../src/modules/delegation/DelegationWithSignatureSystem.sol";
 import { getSignedMessageHash } from "../src/modules/delegation/getSignedMessageHash.sol";
+import { ECDSA } from "../src/modules/delegation/ECDSA.sol";
 import { registerDelegationWithSignature } from "../src/modules/delegation/registerDelegationWithSignature.sol";
 
 contract DelegationWithSignatureModuleTest is Test, GasReporter {
@@ -60,6 +61,10 @@ contract DelegationWithSignatureModuleTest is Test, GasReporter {
     bytes32 hash = getSignedMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), 0, address(world));
     (uint8 v, bytes32 r, bytes32 s) = vm.sign(delegatorPk, hash);
     bytes memory signature = abi.encodePacked(r, s, v);
+
+    // Attempt to register a limited delegation using an empty signature
+    vm.expectRevert(abi.encodeWithSelector(ECDSA.ECDSAInvalidSignatureLength.selector, 0));
+    registerDelegationWithSignature(world, delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, new bytes(0));
 
     startGasReport("register an unlimited delegation with signature");
     registerDelegationWithSignature(world, delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, signature);
