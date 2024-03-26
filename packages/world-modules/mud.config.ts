@@ -286,5 +286,11 @@ export default defineWorld({
       },
     },
   },
-  excludeSystems: ["UniqueEntitySystem", "PuppetFactorySystem", "ERC20System", "ERC721System"],
+  excludeSystems: [
+    "UniqueEntitySystem",
+    "PuppetFactorySystem",
+    "ERC20System",
+    "ERC721System",
+    "Unstable_DelegationWithSignatureSystem",
+  ],
 });
