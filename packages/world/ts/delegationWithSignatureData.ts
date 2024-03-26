@@ -5,6 +5,7 @@ export const delegationWithSignatureTypes = {
     { name: "delegatee", type: "address" },
     { name: "delegationControlId", type: "bytes32" },
     { name: "initCallData", type: "bytes" },
+    { name: "delegator", type: "address" },
     { name: "nonce", type: "uint256" },
   ],
 } as const;

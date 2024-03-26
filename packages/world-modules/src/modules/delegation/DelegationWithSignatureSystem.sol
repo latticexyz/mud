@@ -32,7 +32,7 @@ contract DelegationWithSignatureSystem is System {
     bytes memory signature
   ) public {
     uint256 nonce = UserDelegationNonces.get(delegator);
-    bytes32 hash = getSignedMessageHash(delegatee, delegationControlId, initCallData, nonce, _world());
+    bytes32 hash = getSignedMessageHash(delegatee, delegationControlId, initCallData, delegator, nonce, _world());
 
     // If the message was not signed by the delegator or is invalid, revert
     address signer = ECDSA.recover(hash, signature);

@@ -79,6 +79,7 @@ describe("registerDelegationWithSignature", async () => {
         delegatee,
         delegationControlId,
         initCallData,
+        delegator: delegator.address,
         nonce,
       },
     });
