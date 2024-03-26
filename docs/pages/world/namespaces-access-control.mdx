@@ -98,21 +98,21 @@ import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { CounterTableId } from "../src/codegen/index.sol";
+import { Counter } from "../src/codegen/index.sol";
 
 contract Permissions is Script {
   function run() external {
-    address worldAddress = 0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342;
+    address worldAddress = 0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC;
 
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
     uint256 namespaceOwnerPrivateKey = vm.envUint("PRIVATE_KEY");
-
+    
     // Start broadcasting transactions from the account owning the namespace
     vm.startBroadcast(namespaceOwnerPrivateKey);
-
-    IWorld(worldAddress).grantAccess(CounterTableId, address(0));
-    IWorld(worldAddress).revokeAccess(CounterTableId, address(1));
-
+    
+    IWorld(worldAddress).grantAccess(Counter._tableId, address(0));
+    IWorld(worldAddress).revokeAccess(Counter._tableId, address(1));
+    
     vm.stopBroadcast();
   }
 }
