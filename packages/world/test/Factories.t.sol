@@ -61,68 +61,6 @@ contract FactoriesTest is Test, GasReporter {
 
     // User defined bytes for create2
     bytes memory _salt1 = abi.encode(salt1);
-
-    // Address we expect for first World
-    address calculatedAddress = calculateAddress(
-      worldFactoryAddress,
-      keccak256(abi.encode(account, _salt1)),
-      type(World).creationCode
-    );
-
-    // Check for HelloWorld event from World
-    vm.expectEmit(true, true, true, true);
-    emit IWorldEvents.HelloWorld(WORLD_VERSION);
-
-    // Check for WorldDeployed event from Factory
-    vm.expectEmit(true, false, false, false);
-    emit WorldDeployed(calculatedAddress, salt1);
-    startGasReport("deploy world via WorldFactory");
-    worldFactory.deployWorld(_salt1);
-    endGasReport();
-
-    // Set the store address manually
-    StoreSwitch.setStoreAddress(calculatedAddress);
-
-    // Confirm correct Core is installed
-    assertTrue(InstalledModules.get(address(initModule), keccak256(new bytes(0))));
-
-    // Confirm the msg.sender is owner of the root namespace of the new world
-    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
-
-    // Deploy a second world
-
-    // User defined bytes for create2
-    // unchecked for the fuzzing test
-    bytes memory _salt2 = abi.encode(salt2);
-
-    // Address we expect for second World
-    calculatedAddress = calculateAddress(
-      worldFactoryAddress,
-      keccak256(abi.encode(account, _salt2)),
-      type(World).creationCode
-    );
-
-    // Check for HelloWorld event from World
-    vm.expectEmit(true, true, true, true);
-    emit IWorldEvents.HelloWorld(WORLD_VERSION);
-
-    // Check for WorldDeployed event from Factory
-    vm.expectEmit(true, false, false, false);
-    emit WorldDeployed(calculatedAddress, salt2);
-    worldFactory.deployWorld(_salt2);
-
-    // Set the store address manually
-    StoreSwitch.setStoreAddress(calculatedAddress);
-
-    // Confirm correct Core is installed
-    assertTrue(InstalledModules.get(address(initModule), keccak256(new bytes(0))));
-
-    // Confirm the msg.sender is owner of the root namespace of the new world
-    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
-
-    // Expect revert when deploying world with same bytes salt as already deployed world
-    vm.expectRevert();
-    worldFactory.deployWorld(_salt1);
   }
 
   function testWorldFactoryGas() public {

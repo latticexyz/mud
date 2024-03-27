@@ -102,7 +102,7 @@ contract Unstable_DelegationWithSignatureModuleTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         Unstable_DelegationWithSignatureSystem.InvalidSignature.selector,
-        0x1Ee32CcbA4C692C5b89e0858F2C0779C8a3D98AB
+        0x651AE0Fd466EDf729CdD605977edb19d17dEe012
       )
     );
     Unstable_DelegationWithSignatureSystem(address(world)).registerDelegationWithSignature(

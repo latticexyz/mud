@@ -40,7 +40,7 @@ contract World is StoreKernel, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
 
   /// @notice Address of the contract's creator.
-  address public immutable creator;
+  address public creator;
 
   /// @return The current version of the world contract.
   function worldVersion() public pure returns (bytes32) {
@@ -48,7 +48,9 @@ contract World is StoreKernel, IWorldKernel {
   }
 
   /// @dev Event emitted when the World contract is created.
-  constructor() {
+  function initializeWorld() public initializer {
+    initializeStore();
+
     creator = msg.sender;
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
   }

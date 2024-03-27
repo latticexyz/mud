@@ -8,6 +8,8 @@ import { IBaseWorld } from "./codegen/interfaces/IBaseWorld.sol";
 import { IModule } from "./IModule.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
 
+import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+
 /**
  * @title WorldFactory
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
@@ -33,7 +35,11 @@ contract WorldFactory is IWorldFactory {
     // Deploy a new World and increase the WorldCount
     bytes memory bytecode = type(World).creationCode;
     uint256 _salt = uint256(keccak256(abi.encode(msg.sender, salt)));
-    worldAddress = Create2.deploy(bytecode, _salt);
+
+    // Deploy the world implementation
+    address worldImplementationAddress = Create2.deploy(bytecode, _salt);
+    // Deploy the world proxy
+    worldAddress = address(new ERC1967Proxy(worldImplementationAddress, abi.encodeCall(World.initializeWorld, ())));
     IBaseWorld world = IBaseWorld(worldAddress);
 
     // Initialize the World and transfer ownership to the caller

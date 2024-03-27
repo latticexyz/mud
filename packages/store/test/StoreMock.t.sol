@@ -11,8 +11,10 @@ import { IStoreEvents } from "../src/IStoreEvents.sol";
 
 contract StoreMockTest is Test {
   function testStoreMockConstrctor() public {
+    StoreMock store = new StoreMock();
+
     vm.expectEmit(true, true, true, true);
     emit IStoreEvents.HelloStore(STORE_VERSION);
-    new StoreMock();
+    store.initializeStore();
   }
 }
