@@ -31,7 +31,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    Use the `vanilla` template.
 
    ```sh copy
-   pnpm create mud@next extension
+   pnpm create mud extension
    cd extension/packages/contracts
    ```
 
@@ -156,7 +156,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    Choose either the `react-ecs` user interface or the `vanilla` one.
 
    ```sh copy
-   pnpm create mud@next extendMe
+   pnpm create mud extendMe
    cd extendMe
    pnpm dev
    ```
@@ -464,7 +464,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    Word 0 shows us that this field's value starts at `0x60`, which is word 3.
    Because there are no static fields, word 3 is all zeros.
 
-   Word 1 is a [`PackedCounter`](https://github.com/latticexyz/mud/blob/main/packages/store/src/PackedCounter.sol) with the lengths of the dynamic fields.
+   Word 1 is a [`EncodedLengths`](https://github.com/latticexyz/mud/blob/main/packages/store/src/EncodedLengths.sol) with the lengths of the dynamic fields.
    Here is the interpretation.
 
    | Bytes |            Value | Meaning                                                                     |
@@ -476,7 +476,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    | 26-22 |     `0000000000` | The length of the (non-existent in `Messages`) fourth dynamic field is zero |
    | 31-27 |     `0000000000` | The length of the (non-existent in `Messages`) fifth dynamic field is zero  |
 
-   MUD tables can only have up to five dynamic fields because `PackedCounter` needs to fit in a 32 byte word.
+   MUD tables can only have up to five dynamic fields because `EncodedLengths` needs to fit in a 32 byte word.
 
    Word 2 shows us that the field with the dynamic lengths starts at byte 0x80, which is word 4.
    Word 4 gives us the length of the string.
@@ -635,7 +635,7 @@ We will now fix this.
 1. Add the `@latticexyz/store` package.
 
    ```ts sh copy
-   pnpm add @latticexyz/store@next
+   pnpm add @latticexyz/store
    ```
 
 1. Copy the `mud.config.ts` from the application being extended (`extendMe`) to `src/mud/counter.config.ts`.

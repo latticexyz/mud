@@ -1,6 +1,8 @@
 import KeysWithValueModuleData from "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
 import KeysInTableModuleData from "@latticexyz/world-modules/out/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
 import UniqueEntityModuleData from "@latticexyz/world-modules/out/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
+// eslint-disable-next-line max-len
+import Unstable_DelegationWithSignatureModuleData from "@latticexyz/world-modules/out/Unstable_DelegationWithSignatureModule.sol/Unstable_DelegationWithSignatureModule.json" assert { type: "json" };
 import { Abi, Hex, size } from "viem";
 import { findPlaceholders } from "./findPlaceholders";
 
@@ -26,5 +28,12 @@ export const defaultModuleContracts = [
     bytecode: UniqueEntityModuleData.bytecode.object as Hex,
     placeholders: findPlaceholders(UniqueEntityModuleData.bytecode.linkReferences),
     deployedBytecodeSize: size(UniqueEntityModuleData.deployedBytecode.object as Hex),
+  },
+  {
+    name: "Unstable_DelegationWithSignatureModule",
+    abi: Unstable_DelegationWithSignatureModuleData.abi as Abi,
+    bytecode: Unstable_DelegationWithSignatureModuleData.bytecode.object as Hex,
+    placeholders: findPlaceholders(Unstable_DelegationWithSignatureModuleData.bytecode.linkReferences),
+    deployedBytecodeSize: size(Unstable_DelegationWithSignatureModuleData.deployedBytecode.object as Hex),
   },
 ];

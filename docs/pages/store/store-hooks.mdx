@@ -1,6 +1,12 @@
 import { CollapseCode } from "../../components/CollapseCode";
+import { Callout } from "nextra/components";
 
 # Store hooks
+
+<Callout type="info" emoji="ⓘ">
+  This page is about hooks before and after information is modified. You can also use [`System`
+  hooks](../world/system-hooks) that execute before or after a `System` call.
+</Callout>
 
 Store hooks allow you to react to state changes onchain.
 
@@ -30,7 +36,7 @@ contract CustomHook is StoreHook {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData,
     FieldLayout
   ) public override {

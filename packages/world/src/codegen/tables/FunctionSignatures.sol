@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 library FunctionSignatures {
@@ -65,7 +65,7 @@ library FunctionSignatures {
    */
   function set(bytes4 functionSelector, string memory functionSignature) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(functionSignature);
+    EncodedLengths _encodedLengths = encodeLengths(functionSignature);
     bytes memory _dynamicData = encodeDynamic(functionSignature);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -79,7 +79,7 @@ library FunctionSignatures {
    */
   function _set(bytes4 functionSelector, string memory functionSignature) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(functionSignature);
+    EncodedLengths _encodedLengths = encodeLengths(functionSignature);
     bytes memory _dynamicData = encodeDynamic(functionSignature);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -92,7 +92,7 @@ library FunctionSignatures {
    * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
    */
   function decodeDynamic(
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _blob
   ) internal pure returns (string memory functionSignature) {
     uint256 _start;
@@ -111,7 +111,7 @@ library FunctionSignatures {
    */
   function decode(
     bytes memory,
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (string memory functionSignature) {
     (functionSignature) = decodeDynamic(_encodedLengths, _dynamicData);
@@ -141,10 +141,10 @@ library FunctionSignatures {
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(string memory functionSignature) internal pure returns (PackedCounter _encodedLengths) {
+  function encodeLengths(string memory functionSignature) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(bytes(functionSignature).length);
+      _encodedLengths = EncodedLengthsLib.pack(bytes(functionSignature).length);
     }
   }
 
@@ -162,9 +162,9 @@ library FunctionSignatures {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(string memory functionSignature) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(string memory functionSignature) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(functionSignature);
+    EncodedLengths _encodedLengths = encodeLengths(functionSignature);
     bytes memory _dynamicData = encodeDynamic(functionSignature);
 
     return (_staticData, _encodedLengths, _dynamicData);

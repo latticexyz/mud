@@ -1,5 +1,17 @@
 [
   {
+    "file": "test/DelegationWithSignatureModule.t.sol",
+    "test": "testInstallRoot",
+    "name": "install delegation module",
+    "gasUsed": 689194
+  },
+  {
+    "file": "test/DelegationWithSignatureModule.t.sol",
+    "test": "testRegisterDelegationWithSignature",
+    "name": "register an unlimited delegation with signature",
+    "gasUsed": 117588
+  },
+  {
     "file": "test/ERC20.t.sol",
     "test": "testApprove",
     "name": "approve",
@@ -267,7 +279,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromCallboundDelegation",
     "name": "register a callbound delegation",
-    "gasUsed": 139044
+    "gasUsed": 138994
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -279,7 +291,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromSystemDelegation",
     "name": "register a systembound delegation",
-    "gasUsed": 136166
+    "gasUsed": 136116
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -291,7 +303,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromTimeboundDelegation",
     "name": "register a timebound delegation",
-    "gasUsed": 132709
+    "gasUsed": 132659
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",

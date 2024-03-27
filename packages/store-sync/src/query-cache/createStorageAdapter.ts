@@ -2,7 +2,13 @@ import { StorageAdapter } from "../common";
 import { QueryCacheStore, RawTableRecord, TableRecord } from "./createStore";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { Hex, concatHex, size } from "viem";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import {
+  KeySchema,
+  decodeKey,
+  decodeValueArgs,
+  getKeySchema,
+  getValueSchema,
+} from "@latticexyz/protocol-parser/internal";
 import { flattenSchema } from "../flattenSchema";
 import debug from "debug";
 import { Tables } from "./common";
@@ -109,8 +115,9 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions<Quer
     const records: readonly TableRecord[] = [
       ...previousRecords.filter((record) => !touchedIds.has(record.id)),
       ...Object.values(updatedRawRecords).map((rawRecord): TableRecord => {
-        const key = decodeKey(flattenSchema(rawRecord.table.keySchema), rawRecord.keyTuple);
-        const value = decodeValueArgs(flattenSchema(rawRecord.table.valueSchema), rawRecord);
+        const keySchema = flattenSchema(getKeySchema(rawRecord.table));
+        const key = decodeKey(keySchema as KeySchema, rawRecord.keyTuple);
+        const value = decodeValueArgs(flattenSchema(getValueSchema(rawRecord.table)), rawRecord);
 
         return {
           table: rawRecord.table,

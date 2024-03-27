@@ -1,4 +1,4 @@
-import { AbiType, StaticAbiType, Schema, Table as BaseTable } from "@latticexyz/config";
+import { AbiType, Schema, Table as BaseTable } from "@latticexyz/config";
 
 export type { AbiType, Schema };
 
@@ -10,41 +10,35 @@ export type Enums = {
   readonly [enumName: string]: readonly [string, ...string[]];
 };
 
-export type KeySchema = {
-  readonly [keyName: string]: {
-    /** the Solidity primitive ABI type */
-    readonly type: StaticAbiType;
-    /** the user defined type or Solidity primitive ABI type */
-    readonly internalType: string;
-  };
-};
-
-export type TableCodegenOptions = {
-  readonly directory: string;
+export type TableCodegen = {
+  readonly outputDirectory: string;
   readonly tableIdArgument: boolean;
   readonly storeArgument: boolean;
   readonly dataStruct: boolean;
 };
 
-export type Table = BaseTable & {
-  readonly keySchema: KeySchema;
-  readonly valueSchema: Schema;
-  readonly codegen: TableCodegenOptions;
+export type TableDeploy = {
+  readonly disabled: boolean;
 };
 
-export type CodegenOptions = {
+export type Table = BaseTable & {
+  readonly codegen: TableCodegen;
+  readonly deploy: TableDeploy;
+};
+
+export type Codegen = {
   readonly storeImportPath: string;
   readonly userTypesFilename: string;
-  readonly codegenDirectory: string;
-  readonly codegenIndexFilename: string;
+  readonly outputDirectory: string;
+  readonly indexFilename: string;
 };
 
-export type Config = {
+export type Store = {
   readonly tables: {
     readonly [namespacedTableName: string]: Table;
   };
   readonly userTypes: UserTypes;
   readonly enums: Enums;
   readonly namespace: string;
-  readonly codegen: CodegenOptions;
+  readonly codegen: Codegen;
 };
