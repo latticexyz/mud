@@ -3,4 +3,5 @@ export default {
   vanilla: "Vanilla",
   "react-ecs": "React-ECS",
   threejs: "Three.js",
+  vue: "Vue",
 };
