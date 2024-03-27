@@ -9,8 +9,8 @@ export type PATH_DEFAULTS = typeof PATH_DEFAULTS;
 
 export const DEFAULTS = {
   namespace: "",
-  enums: {} as Record<string, never>,
-  userTypes: {} as Record<string, never>,
+  enums: {},
+  userTypes: {},
 } as const;
 
 export type DEFAULTS = typeof DEFAULTS;
