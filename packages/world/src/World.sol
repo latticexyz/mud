@@ -28,8 +28,6 @@ import { IWorldEvents } from "./IWorldEvents.sol";
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
 
-import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-
 /**
  * @title World Contract
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)

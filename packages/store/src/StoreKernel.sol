@@ -8,7 +8,7 @@ import { StoreCore } from "./StoreCore.sol";
 import { IStoreEvents } from "./IStoreEvents.sol";
 import { IStoreKernel } from "./IStoreKernel.sol";
 
-import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import { Initializable } from "./Initializable.sol";
 
 /**
  * @title StoreKernel Contract
