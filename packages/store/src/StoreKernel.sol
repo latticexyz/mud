@@ -8,18 +8,20 @@ import { StoreCore } from "./StoreCore.sol";
 import { IStoreEvents } from "./IStoreEvents.sol";
 import { IStoreKernel } from "./IStoreKernel.sol";
 
+import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+
 /**
  * @title StoreKernel Contract
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This contract integrates the storage functionalities except registration and provides an interface for data storage.
  * @dev This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods.
  */
-abstract contract StoreKernel is IStoreKernel, StoreRead {
+abstract contract StoreKernel is IStoreKernel, StoreRead, Initializable {
   /**
    * @notice Constructs the StoreKernel contract and initializes the StoreCore.
    * @dev Emits a HelloStore event upon creation.
    */
-  constructor() {
+  function initializeStore() public initializer {
     StoreCore.initialize();
     emit IStoreEvents.HelloStore(STORE_VERSION);
   }

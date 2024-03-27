@@ -58,6 +58,8 @@ import { DelegationControlMock } from "./DelegationControlMock.sol";
 import { createWorld } from "./createWorld.sol";
 import { createInitModule } from "./createInitModule.sol";
 
+import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+
 interface IWorldTestSystem {
   function testNamespace__err(string memory input) external pure;
 }
@@ -201,7 +203,15 @@ contract WorldTest is Test, GasReporter {
 
     vm.expectEmit(true, true, true, true);
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
-    IBaseWorld newWorld = IBaseWorld(address(new World()));
+
+    // Deploy the world implementation
+    address worldImplementationAddress = address(new World());
+
+    // Deploy the world proxy
+    address worldAddress = address(
+      new ERC1967Proxy(worldImplementationAddress, abi.encodeCall(World.initializeWorld, ()))
+    );
+    IBaseWorld newWorld = IBaseWorld(worldAddress);
     StoreSwitch.setStoreAddress(address(newWorld));
 
     // Expect the creator to be the original deployer

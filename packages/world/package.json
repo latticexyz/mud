@@ -50,7 +50,7 @@
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "test": "tsc --noEmit && vitest --run --passWithNoTests && forge test",
+    "test": "forge test",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
@@ -60,6 +60,7 @@
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
+    "@openzeppelin/contracts": "^5.0.2",
     "abitype": "1.0.0",
     "arktype": "1.0.29-alpha",
     "viem": "2.7.12",

@@ -28,6 +28,8 @@ import { IWorldEvents } from "./IWorldEvents.sol";
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
 
+import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+
 /**
  * @title World Contract
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
@@ -40,7 +42,7 @@ contract World is StoreKernel, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
 
   /// @notice Address of the contract's creator.
-  address public immutable creator;
+  address public creator;
 
   /// @return The current version of the world contract.
   function worldVersion() public pure returns (bytes32) {
@@ -48,7 +50,9 @@ contract World is StoreKernel, IWorldKernel {
   }
 
   /// @dev Event emitted when the World contract is created.
-  constructor() {
+  function initializeWorld() public initializer {
+    initializeStore();
+
     creator = msg.sender;
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
   }
