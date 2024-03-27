@@ -118,7 +118,7 @@ This function takes three parameters:
 
 <CollapseCode>
 
-```solidity copy showLineNumbers {7-10,35-39}
+```solidity filename="TestDelegation.s.sol" copy showLineNumbers {7-10,35-39}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
@@ -146,8 +146,8 @@ contract TestDelegation is Script {
     IWorld world = IWorld(worldAddress);
     ResourceId systemId = WorldResourceIdLib.encode({
       typeId: RESOURCE_SYSTEM,
-      namespace: "LastCall",
-      name: "LastCallSystem"
+      namespace: "",
+      name: "IncrementSystem"
     });
 
     // Run as the first address
@@ -164,8 +164,10 @@ contract TestDelegation is Script {
     // Run as the second address
     vm.startBroadcast(userPrivateKey2);
 
-    /* bytes memory returnData = */ world.callFrom(userAddress, systemId, abi.encodeWithSignature("newCall()"));
-
+    bytes memory returnData = world.callFrom(userAddress, systemId, 
+      abi.encodeWithSignature("increment()"));
+    console.logBytes(returnData);
+ 
     vm.stopBroadcast();
   }
 }
@@ -213,11 +215,14 @@ contract TestDelegation is Script {
     address worldAddress = vm.envAddress("WORLD_ADDRESS");
 
     IWorld world = IWorld(worldAddress);
-    ResourceId systemId =
-        WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "LastCall", name: "LastCallSystem" });
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "",
+      name: "IncrementSystem"
+    });    
 ```
 
-The system where `newCall`, the function to which we are delegating access, is located is `LastCall:LastCallSystem`.
+The system where `increment`, the function to which we are delegating access, is located in `IncrementSystem` at the root namespace.
 
 ```solidity
 
@@ -252,7 +257,7 @@ This means that if you need in a `World` to implement multiple delegation algori
 
 <CollapseCode>
 
-```solidity copy showLineNumbers {26-30,46-47}
+```solidity copy filename="TestDelegation.s.sol" showLineNumbers {26-30,46-47}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
@@ -280,8 +285,8 @@ contract TestDelegation is Script {
     IWorld world = IWorld(worldAddress);
     ResourceId systemId = WorldResourceIdLib.encode({
       typeId: RESOURCE_SYSTEM,
-      namespace: "LastCall",
-      name: "LastCallSystem"
+      namespace: "",
+      name: "IncrementSystem"
     });
 
     // Run as the first address
@@ -298,9 +303,10 @@ contract TestDelegation is Script {
     // Run as the second address
     vm.startBroadcast(userPrivateKey2);
 
-    /* bytes memory returnData = */
-    world.callFrom(userAddress, systemId, abi.encodeWithSignature("newCall()"));
-
+    bytes memory returnData = world.callFrom(userAddress, systemId, 
+      abi.encodeWithSignature("increment()"));
+    console.logBytes(returnData);
+ 
     vm.stopBroadcast();
   }
 }
@@ -321,20 +327,17 @@ The beginning of the script, which registers a delegation, is in the previous se
     // Run as the second address
     vm.startBroadcast(userPrivateKey2);
 
-    /* bytes memory returnData = */ world.callFrom(userAddress, systemId,
-        abi.encodeWithSignature("newCall()")
-    );
+    bytes memory returnData = world.callFrom(userAddress, systemId, 
+      abi.encodeWithSignature("increment()"));
+    console.logBytes(returnData);
 ```
 
-To actually use a delegation you use `world.callFrom` with the address of the user on whose behalf you are performing the action, the resource identifier of the `System` on which you perform the action, and the calldata to send that system (which includes the signature of the function name and parameters, followed by parameter values).
+To actually use a delegation you use `world.callFrom` with the address of the user on whose behalf you are performing the action, the resource identifier of the `System` on which you perform the action, and the calldata to send that system (which includes the signature of the function name and parameters, followed by parameter values if any).
 
-The output is returned as `bytes memory`
-Here it is commented out because the call we're using here, [`newCall()`](https://github.com/latticexyz/mud/blob/main/examples/multiple-accounts/packages/contracts/src/systems/LastCallSystem.sol#L8-L10), does not return any data.
+The output is returned as `bytes memory`.
 
 ```solidity
-
     vm.stopBroadcast();
-
   }
 }
 ```
@@ -350,7 +353,7 @@ If you need a _commitment_, create a table with a `System` that lets the address
 
 <CollapseCode>
 
-```solidity copy showLineNumbers {16}
+```solidity filename="RemoveDelegation.s.sol" copy showLineNumbers {17}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
@@ -363,10 +366,11 @@ contract RemoveDelegation is Script {
     // Load the configuration
     uint256 userPrivateKey = vm.envUint("PRIVATE_KEY");
     address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    address userAddress2 = vm.envAddress("USER_ADDRESS_2");
 
     IWorld world = IWorld(worldAddress);
     vm.startBroadcast(userPrivateKey);
-    world.unregisterDelegation(address(0x60A7));
+    world.unregisterDelegation(userAddress2);
     vm.stopBroadcast();
   }
 }
