@@ -1,4 +1,4 @@
-import { Table } from "@latticexyz/store";
+import { Table } from "@latticexyz/store/internal";
 import { useRecords } from "./useRecords";
 import { FieldValue } from "./FieldValue";
 

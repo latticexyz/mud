@@ -7,7 +7,6 @@ import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
 import { testClient } from "../../test/common";
 import { getBlockNumber } from "viem/actions";
 import { Address } from "viem";
-import { getTables } from "./getTables";
 
 describe("createStorageAdapter", async () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -17,7 +16,7 @@ describe("createStorageAdapter", async () => {
   });
 
   it("sets component values from logs", async () => {
-    const useStore = createStore({ tables: getTables(config) });
+    const useStore = createStore({ tables: config.tables });
     const storageAdapter = createStorageAdapter({ store: useStore });
 
     console.log("fetching blocks");
