@@ -28,7 +28,7 @@ export function validateSchema<scope extends Scope = AbiTypeScope>(
 }
 
 export type resolveSchema<schema, scope extends Scope> = evaluate<{
-  [key in keyof schema]: {
+  readonly [key in keyof schema]: {
     /** the Solidity primitive ABI type */
     readonly type: schema[key] extends FixedArrayAbiType
       ? fixedArrayToArray<schema[key]>
