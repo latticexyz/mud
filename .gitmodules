@@ -1,0 +1,3 @@
+[submodule "packages/world/lib/openzeppelin-foundry-upgrades"]
+	path = packages/world/lib/openzeppelin-foundry-upgrades
+	url = https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades
