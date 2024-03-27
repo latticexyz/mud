@@ -20,18 +20,6 @@ declare module "@latticexyz/config/library" {
 }
 
 // store-specific helper to preserve strong types, depends on store's type extensions to the core config
-export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig>
-  extends OrDefaults<
-    T,
-    {
-      enums: typeof DEFAULTS.enums;
-      userTypes: typeof DEFAULTS.userTypes;
-      namespace: typeof DEFAULTS.namespace;
-      storeImportPath: typeof PATH_DEFAULTS.storeImportPath;
-      userTypesFilename: typeof PATH_DEFAULTS.userTypesFilename;
-      codegenDirectory: typeof PATH_DEFAULTS.codegenDirectory;
-      codegenIndexFilename: typeof PATH_DEFAULTS.codegenIndexFilename;
-    }
-  > {
+export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig> extends OrDefaults<T, DEFAULTS & PATH_DEFAULTS> {
   tables: ExpandTablesConfig<T["tables"]>;
 }

@@ -21,9 +21,9 @@ export function scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope>
 ): scopeWithEnums<enums, scope> {
   if (isEnums(enums)) {
     const enumScope = Object.fromEntries(Object.keys(enums).map((key) => [key, "uint8" as const]));
-    return extendScope(scope, enumScope) as scopeWithEnums<enums, scope>;
+    return extendScope(scope, enumScope) as never;
   }
-  return scope as scopeWithEnums<enums, scope>;
+  return scope as never;
 }
 
 export type resolveEnums<enums> = { readonly [key in keyof enums]: Readonly<enums[key]> };
