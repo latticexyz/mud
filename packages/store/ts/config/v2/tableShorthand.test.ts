@@ -1,7 +1,7 @@
 import { describe, it } from "vitest";
 import { attest } from "@arktype/attest";
 import { AbiTypeScope, extendScope } from "./scope";
-import { defineTableShorthand } from "./tableShorthand";
+import { defineTableShorthand, NoStaticKeyFieldError } from "./tableShorthand";
 
 describe("defineTableShorthand", () => {
   it("should expand a single ABI type into a id/value schema", () => {
@@ -146,8 +146,6 @@ describe("defineTableShorthand", () => {
     attest(() =>
       // @ts-expect-error "Error: Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option."
       defineTableShorthand({ id: "CustomType", name: "string", age: "uint256" }, scope),
-    ).throwsAndHasTypeError(
-      "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
-    );
+    ).throwsAndHasTypeError(NoStaticKeyFieldError);
   });
 });

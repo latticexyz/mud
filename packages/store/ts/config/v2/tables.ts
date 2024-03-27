@@ -39,5 +39,5 @@ export function resolveTables<tables extends TablesInput, scope extends Scope = 
     Object.entries(tables).map(([key, table]) => {
       return [key, resolveTable(mergeIfUndefined(table, { name: key }), scope)];
     }),
-  ) as unknown as resolveTables<tables, scope>;
+  ) as never;
 }

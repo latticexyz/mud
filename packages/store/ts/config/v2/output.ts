@@ -1,3 +1,4 @@
+import { evaluate } from "@arktype/util";
 import { AbiType, Schema, Table as BaseTable } from "@latticexyz/config";
 
 export type { AbiType, Schema };
@@ -21,10 +22,12 @@ export type TableDeploy = {
   readonly disabled: boolean;
 };
 
-export type Table = BaseTable & {
-  readonly codegen: TableCodegen;
-  readonly deploy: TableDeploy;
-};
+export type Table = evaluate<
+  BaseTable & {
+    readonly codegen: TableCodegen;
+    readonly deploy: TableDeploy;
+  }
+>;
 
 export type Codegen = {
   readonly storeImportPath: string;

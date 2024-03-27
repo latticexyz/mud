@@ -21,7 +21,7 @@ export type getStaticAbiTypeKeys<
 > = SchemaInput extends schema
   ? string
   : {
-      [key in keyof schema]: scope["types"][schema[key] & keyof scope["types"]] extends StaticAbiType ? key : never;
+      [key in keyof schema]: scope["types"] extends { [_ in schema[key]]: StaticAbiType } ? key : never;
     }[keyof schema];
 
 export type extendScope<scope extends ScopeOptions, additionalTypes extends Dict<string, AbiType>> = evaluate<

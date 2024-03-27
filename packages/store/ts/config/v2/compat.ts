@@ -71,5 +71,5 @@ export function storeToV1<store>(store: conform<store, Store>): storeToV1<store>
     codegenIndexFilename: store.codegen.indexFilename,
     tables: resolvedTables,
     v2: store,
-  } as unknown as storeToV1<store>;
+  } as never;
 }
