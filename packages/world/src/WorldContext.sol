@@ -154,6 +154,7 @@ library WorldContextProviderLib {
     address target,
     bytes memory callData
   ) internal returns (bool success, bytes memory data) {
+    // @custom:oz-upgrades-unsafe-allow delegatecall
     (success, data) = target.delegatecall(
       appendContext({ callData: callData, msgSender: msgSender, msgValue: msgValue })
     );

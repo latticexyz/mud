@@ -12,6 +12,6 @@ contract UpgradeTest is Test, GasReporter {
     uint256 one = 1;
     assertEq(one, 1);
 
-    address proxy = Upgrades.deployUUPSProxy("World.sol", abi.encodeCall(World.initialize, ()));
+    address proxy = Upgrades.deployUUPSProxy("World.sol", abi.encodeCall(World.initializeWorld, ()));
   }
 }

@@ -3,6 +3,7 @@ solc = "0.8.24"
 ffi = true
 ast = true
 build_info = true
+extra_output = ["storageLayout"]
 fuzz_runs = 256
 optimizer = true
 optimizer_runs = 3000
@@ -13,6 +14,5 @@ out = "out"
 bytecode_hash = "none"
 extra_output_files = [
   "abi",
-  "evm.bytecode",
-  "storageLayout"
+  "evm.bytecode"
 ]

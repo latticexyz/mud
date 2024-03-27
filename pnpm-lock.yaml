@@ -1086,8 +1086,8 @@ importers:
         specifier: ^3.1.8
         version: 3.1.8
       forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
-        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        specifier: https://github.com/foundry-rs/forge-std.git#e4aef94c1768803a16fe19f7ce8b65defd027cfd
+        version: github.com/foundry-rs/forge-std/e4aef94c1768803a16fe19f7ce8b65defd027cfd
       glob:
         specifier: ^8.0.3
         version: 8.0.3
@@ -11489,6 +11489,12 @@ packages:
     resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1}
     name: forge-std
     version: 1.6.0
+    dev: true
+
+  github.com/foundry-rs/forge-std/e4aef94c1768803a16fe19f7ce8b65defd027cfd:
+    resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/e4aef94c1768803a16fe19f7ce8b65defd027cfd}
+    name: forge-std
+    version: 1.7.6
     dev: true
 
   github.com/holic/create-create-app/74376c59b48a04aabbe94d9cacfe9cb1cecccd63:
