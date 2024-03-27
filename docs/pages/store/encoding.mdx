@@ -94,6 +94,8 @@ In Solidity, unindexed event fields are [ABI encoded](https://docs.soliditylang.
 | `EncodedLengths encodedLengths` | See below.
 | `bytes dynamicData`             | Modified packed ABI encoding of data, use `encodedLengths` for length delimiters
 
+<a id="encoded-lengths" />
+
 `encodedLengths` is a 32-byte value that contains the length in bytes of all the dynamic data fields:
 
 ```
@@ -484,7 +486,7 @@ function _getStaticDataLocation(ResourceId tableId, bytes32[] memory keyTuple) i
 }
 ```
 
-The `encodedLengths` field (the length of all dynamic-length fields) is stored in a single storage slot, which is determined by a hash of the table ID and the key tuple.
+[The `encodedLengths` field](#encoded-lengths) (the length of all dynamic-length fields) is stored in a single storage slot, which is determined by a hash of the table ID and the key tuple.
 
 ```solidity
 function _getDynamicDataLengthLocation(ResourceId tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
