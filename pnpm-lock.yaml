@@ -1045,6 +1045,9 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
+      '@openzeppelin/contracts-upgradeable':
+        specifier: ^5.0.2
+        version: 5.0.2(@openzeppelin/contracts@5.0.2)
       abitype:
         specifier: 1.0.0
         version: 1.0.0(typescript@5.4.2)(zod@3.21.4)
@@ -2997,6 +3000,18 @@ packages:
     dependencies:
       mkdirp: 1.0.4
       rimraf: 3.0.2
+    dev: false
+
+  /@openzeppelin/contracts-upgradeable@5.0.2(@openzeppelin/contracts@5.0.2):
+    resolution: {integrity: sha512-0MmkHSHiW2NRFiT9/r5Lu4eJq5UJ4/tzlOgYXNAIj/ONkQTVnz22pLxDvp4C4uZ9he7ZFvGn3Driptn1/iU7tQ==}
+    peerDependencies:
+      '@openzeppelin/contracts': 5.0.2
+    dependencies:
+      '@openzeppelin/contracts': 5.0.2
+    dev: false
+
+  /@openzeppelin/contracts@5.0.2:
+    resolution: {integrity: sha512-ytPc6eLGcHHnapAZ9S+5qsdomhjo6QBHTDRRBFfTxXIpsicMhVPouPgmUPebZZZGX7vt9USA+Z+0M0dSVtSUEA==}
     dev: false
 
   /@oven/bun-darwin-aarch64@1.0.11:
