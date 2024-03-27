@@ -202,6 +202,7 @@ contract WorldTest is Test, GasReporter {
     vm.expectEmit(true, true, true, true);
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
     IBaseWorld newWorld = IBaseWorld(address(new World()));
+    newWorld.initializeWorld();
     StoreSwitch.setStoreAddress(address(newWorld));
 
     // Expect the creator to be the original deployer

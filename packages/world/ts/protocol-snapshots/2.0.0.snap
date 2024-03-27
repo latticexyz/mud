@@ -68,6 +68,7 @@
   "function getValueSchema(bytes32 tableId) view returns (bytes32 valueSchema)",
   "function grantAccess(bytes32 resourceId, address grantee)",
   "function initialize(address initModule)",
+  "function initializeWorld()",
   "function installModule(address module, bytes encodedArgs)",
   "function installRootModule(address module, bytes encodedArgs)",
   "function popFromDynamicField(bytes32 tableId, bytes32[] keyTuple, uint8 dynamicFieldIndex, uint256 byteLengthToPop)",

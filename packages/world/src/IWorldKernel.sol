@@ -64,6 +64,8 @@ interface IWorldCall {
  * so it's ABI should include these errors.
  */
 interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors, IWorldEvents, IModuleErrors {
+  function initializeWorld() external;
+
   /**
    * @notice Retrieve the protocol version of the World.
    * @return The protocol version of the World.

@@ -35,6 +35,7 @@ contract WorldFactory is IWorldFactory {
     uint256 _salt = uint256(keccak256(abi.encode(msg.sender, salt)));
     worldAddress = Create2.deploy(bytecode, _salt);
     IBaseWorld world = IBaseWorld(worldAddress);
+    world.initializeWorld();
 
     // Initialize the World and transfer ownership to the caller
     world.initialize(initModule);

@@ -28,6 +28,8 @@ import { IWorldEvents } from "./IWorldEvents.sol";
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
 
+import { Initializable } from "./Initializable.sol";
+
 /**
  * @title World Contract
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
@@ -36,11 +38,11 @@ import { Balances } from "./codegen/tables/Balances.sol";
  *
  * @dev World doesn't inherit `Store` because the `IStoreRegistration` methods are added via the `InitModule`.
  */
-contract World is StoreKernel, IWorldKernel {
+contract World is StoreKernel, IWorldKernel, Initializable {
   using WorldResourceIdInstance for ResourceId;
 
   /// @notice Address of the contract's creator.
-  address public immutable creator;
+  address public creator;
 
   /// @return The current version of the world contract.
   function worldVersion() public pure returns (bytes32) {
@@ -48,7 +50,7 @@ contract World is StoreKernel, IWorldKernel {
   }
 
   /// @dev Event emitted when the World contract is created.
-  constructor() {
+  function initializeWorld() public initializer {
     creator = msg.sender;
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
   }

@@ -7,5 +7,6 @@ import { createInitModule } from "./createInitModule.sol";
 
 function createWorld() returns (IBaseWorld world) {
   world = IBaseWorld(address(new World()));
+  world.initializeWorld();
   world.initialize(createInitModule());
 }
