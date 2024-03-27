@@ -681,7 +681,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testDeleteDataOffchainTable",
     "name": "StoreCore: delete record in offchain table",
-    "gasUsed": 28225
+    "gasUsed": 28203
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -723,13 +723,13 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 52904
+    "gasUsed": 52882
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 47489
+    "gasUsed": 47467
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -747,13 +747,13 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 60374
+    "gasUsed": 60419
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 49266
+    "gasUsed": 49244
   },
   {
     "file": "test/StoreCoreGas.t.sol",

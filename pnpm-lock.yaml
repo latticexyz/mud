@@ -1124,6 +1124,9 @@ importers:
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
+      '@openzeppelin/contracts':
+        specifier: ^5.0.2
+        version: 5.0.2
       zod:
         specifier: ^3.21.4
         version: 3.21.4
