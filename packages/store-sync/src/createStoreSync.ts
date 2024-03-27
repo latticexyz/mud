@@ -1,4 +1,4 @@
-import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
+import { storeEventsAbi } from "@latticexyz/store";
 import { Hex, TransactionReceiptNotFoundError } from "viem";
 import {
   StorageAdapter,
@@ -32,12 +32,13 @@ import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
+import { Store as StoreConfig } from "@latticexyz/store";
 
 const debug = parentDebug.extend("createStoreSync");
 
 const defaultFilters: SyncFilter[] = internalTableIds.map((tableId) => ({ tableId }));
 
-type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
+type CreateStoreSyncOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
   storageAdapter: StorageAdapter;
   onProgress?: (opts: {
     step: SyncStep;
@@ -48,7 +49,7 @@ type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOpt
   }) => void;
 };
 
-export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>({
+export async function createStoreSync<config extends StoreConfig = StoreConfig>({
   storageAdapter,
   onProgress,
   publicClient,
@@ -61,7 +62,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   initialState,
   initialBlockLogs,
   indexerUrl,
-}: CreateStoreSyncOptions<TConfig>): Promise<SyncResult> {
+}: CreateStoreSyncOptions<config>): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]

@@ -1,5 +1,5 @@
 import { mapObject } from "@latticexyz/common/utils";
-import { ValueSchema } from "@latticexyz/store";
+import { ValueSchema } from "@latticexyz/store/internal";
 
 export function flattenSchema<schema extends ValueSchema>(
   schema: schema,

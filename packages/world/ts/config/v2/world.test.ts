@@ -2,14 +2,19 @@ import { describe, it } from "vitest";
 import { defineWorld } from "./world";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
-import { TABLE_CODEGEN_DEFAULTS, CODEGEN_DEFAULTS as STORE_CODEGEN_DEFAULTS } from "@latticexyz/store/config/v2";
-import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, DEPLOYMENT_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
+import {
+  TABLE_CODEGEN_DEFAULTS,
+  CODEGEN_DEFAULTS as STORE_CODEGEN_DEFAULTS,
+  TABLE_DEPLOY_DEFAULTS,
+} from "@latticexyz/store/config/v2";
+import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, DEPLOY_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
 import { World } from "./output";
 const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS };
 
 describe("defineWorld", () => {
   it("should resolve namespaced tables", () => {
     const config = defineWorld({
+      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -46,27 +51,12 @@ describe("defineWorld", () => {
               internalType: "string",
             },
           },
-          keySchema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-          },
-          valueSchema: {
-            value: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-            dynamic: {
-              type: "string",
-              internalType: "string",
-            },
-          },
           key: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {},
@@ -79,6 +69,7 @@ describe("defineWorld", () => {
 
   it("should resolve namespaced table config with user types and enums", () => {
     const config = defineWorld({
+      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -122,27 +113,12 @@ describe("defineWorld", () => {
               internalType: "Dynamic",
             },
           },
-          keySchema: {
-            id: {
-              type: "address",
-              internalType: "Static",
-            },
-          },
-          valueSchema: {
-            value: {
-              type: "uint8",
-              internalType: "MyEnum",
-            },
-            dynamic: {
-              type: "string",
-              internalType: "Dynamic",
-            },
-          },
           key: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {
@@ -160,6 +136,7 @@ describe("defineWorld", () => {
 
   it("should extend the output World type", () => {
     const config = defineWorld({
+      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -189,6 +166,7 @@ describe("defineWorld", () => {
   it("should not use the global namespace for namespaced tables", () => {
     const config = defineWorld({
       namespace: "namespace",
+      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         AnotherOne: {
           tables: {
@@ -239,27 +217,12 @@ describe("defineWorld", () => {
                 internalType: "uint256",
               },
             },
-            keySchema: {
-              age: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-            },
-            valueSchema: {
-              id: {
-                type: "address",
-                internalType: "address",
-              },
-              name: {
-                type: "string",
-                internalType: "string",
-              },
-            },
             key: ["age"],
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
             type: "table",
+            deploy: TABLE_DEPLOY_DEFAULTS,
           },
         },
         userTypes: {},
@@ -303,27 +266,12 @@ describe("defineWorld", () => {
                 internalType: "static",
               },
             },
-            keySchema: {
-              age: {
-                type: "address",
-                internalType: "static",
-              },
-            },
-            valueSchema: {
-              id: {
-                type: "string",
-                internalType: "dynamic",
-              },
-              name: {
-                type: "string",
-                internalType: "string",
-              },
-            },
             key: ["age"],
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
             type: "table",
+            deploy: TABLE_DEPLOY_DEFAULTS,
           },
         },
         userTypes: {
@@ -366,33 +314,18 @@ describe("defineWorld", () => {
                 internalType: "uint256",
               },
             },
-            keySchema: {
-              age: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-              id: {
-                type: "address",
-                internalType: "address",
-              },
-            },
-            valueSchema: {
-              name: {
-                type: "string",
-                internalType: "string",
-              },
-            },
             key: ["age", "id"],
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
             type: "table",
+            deploy: TABLE_DEPLOY_DEFAULTS,
           },
         },
         userTypes: {},
         enums: {},
         namespace: "",
-        deployment: DEPLOYMENT_DEFAULTS,
+        deploy: DEPLOY_DEFAULTS,
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -431,27 +364,12 @@ describe("defineWorld", () => {
                 internalType: "uint256",
               },
             },
-            keySchema: {
-              firstKey: {
-                type: "address",
-                internalType: "address",
-              },
-              firstAge: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-            },
-            valueSchema: {
-              firstName: {
-                type: "string",
-                internalType: "string",
-              },
-            },
             key: ["firstKey", "firstAge"],
             name: "First",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
             type: "table",
+            deploy: TABLE_DEPLOY_DEFAULTS,
           },
           Second: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
@@ -469,27 +387,12 @@ describe("defineWorld", () => {
                 internalType: "uint256",
               },
             },
-            keySchema: {
-              secondKey: {
-                type: "address",
-                internalType: "address",
-              },
-              secondAge: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-            },
-            valueSchema: {
-              secondName: {
-                type: "string",
-                internalType: "string",
-              },
-            },
             key: ["secondKey", "secondAge"],
             name: "Second",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
             type: "table",
+            deploy: TABLE_DEPLOY_DEFAULTS,
           },
         },
         userTypes: {},
@@ -538,27 +441,12 @@ describe("defineWorld", () => {
                 internalType: "uint256",
               },
             },
-            keySchema: {
-              firstKey: {
-                type: "address",
-                internalType: "Static",
-              },
-              firstAge: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-            },
-            valueSchema: {
-              firstName: {
-                type: "string",
-                internalType: "Dynamic",
-              },
-            },
             key: ["firstKey", "firstAge"],
             name: "First",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
             type: "table",
+            deploy: TABLE_DEPLOY_DEFAULTS,
           },
           Second: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
@@ -576,27 +464,12 @@ describe("defineWorld", () => {
                 internalType: "uint256",
               },
             },
-            keySchema: {
-              secondKey: {
-                type: "address",
-                internalType: "Static",
-              },
-              secondAge: {
-                type: "uint256",
-                internalType: "uint256",
-              },
-            },
-            valueSchema: {
-              secondName: {
-                type: "string",
-                internalType: "Dynamic",
-              },
-            },
             key: ["secondKey", "secondAge"],
             name: "Second",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
             type: "table",
+            deploy: TABLE_DEPLOY_DEFAULTS,
           },
         },
         userTypes: {
@@ -701,27 +574,12 @@ describe("defineWorld", () => {
                 internalType: "static",
               },
             },
-            keySchema: {
-              name: {
-                type: "uint8",
-                internalType: "ValidNames",
-              },
-            },
-            valueSchema: {
-              age: {
-                type: "address",
-                internalType: "static",
-              },
-              id: {
-                type: "string",
-                internalType: "dynamic",
-              },
-            },
             key: ["name"],
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
             type: "table",
+            deploy: TABLE_DEPLOY_DEFAULTS,
           },
         },
         userTypes: {
@@ -771,10 +629,127 @@ describe("defineWorld", () => {
       });
 
       attest<"namespace">(config.namespace).equals("namespace");
-      attest<"namespace">(config.tables.Example.namespace).equals("namespace");
-      attest(config.tables.Example.tableId).equals(
+      attest<"namespace">(config.tables.namespace__Example.namespace).equals("namespace");
+      attest(config.tables.namespace__Example.tableId).equals(
         resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
       );
     });
+  });
+
+  it("should use the custom name and namespace as table index", () => {
+    const config = defineWorld({
+      namespace: "CustomNamespace",
+      tables: {
+        Example: {
+          schema: { id: "address" },
+          key: ["id"],
+        },
+      },
+    });
+
+    attest<"CustomNamespace__Example", keyof typeof config.tables>();
+  });
+
+  it("should throw if namespace is overridden in top level tables", () => {
+    attest(() =>
+      defineWorld({
+        namespace: "CustomNamespace",
+        tables: {
+          Example: {
+            schema: { id: "address" },
+            key: ["id"],
+            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
+            namespace: "NotAllowed",
+          },
+        },
+      }),
+    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+  });
+
+  it("should throw if name is overridden in top level tables", () => {
+    attest(() =>
+      defineWorld({
+        tables: {
+          Example: {
+            schema: { id: "address" },
+            key: ["id"],
+            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
+            name: "NotAllowed",
+          },
+        },
+      }),
+    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+  });
+
+  it.skip("should throw if name is overridden in namespaced tables", () => {
+    attest(() =>
+      defineWorld({
+        // @ts-expect-error TODO: remove once namespaces support ships
+        namespaces: {
+          MyNamespace: {
+            tables: {
+              Example: {
+                schema: { id: "address" },
+                key: ["id"],
+                name: "NotAllowed",
+              },
+            },
+          },
+        },
+      }),
+    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+  });
+
+  it.skip("should throw if namespace is overridden in namespaced tables", () => {
+    attest(() =>
+      defineWorld({
+        // @ts-expect-error TODO: remove once namespaces support ships
+        namespaces: {
+          MyNamespace: {
+            tables: {
+              Example: {
+                schema: { id: "address" },
+                key: ["id"],
+                namespace: "NotAllowed",
+              },
+            },
+          },
+        },
+      }),
+    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+  });
+
+  it("should throw if namespaces are defined (TODO: remove once namespaces support ships)", () => {
+    attest(() =>
+      defineWorld({
+        // @ts-expect-error TODO: remove once namespaces support ships
+        namespaces: {},
+      }),
+    ).type.errors("Namespaces config will be enabled soon.");
+  });
+
+  it("should allow setting openAccess of a system to false", () => {
+    const config = defineWorld({
+      systems: {
+        Example: {
+          openAccess: false,
+        },
+      },
+    });
+
+    attest<false>(config.systems.Example.openAccess).equals(false);
+  });
+
+  it("should allow a const config as input", () => {
+    const config = {
+      tables: {
+        Example: {
+          schema: { id: "address", name: "string", age: "uint256" },
+          key: ["age"],
+        },
+      },
+    } as const;
+
+    defineWorld(config);
   });
 });

@@ -1,55 +1,60 @@
-import { mudConfig } from "@latticexyz/world/register";
+import { defineWorld } from "@latticexyz/world";
 
-export default mudConfig({
+export default defineWorld({
   tables: {
     Number: {
-      keySchema: {
+      schema: {
         key: "uint32",
-      },
-      valueSchema: {
         value: "uint32",
       },
+      key: ["key"],
     },
     Vector: {
-      keySchema: {
+      schema: {
         key: "uint32",
-      },
-      valueSchema: {
         x: "int32",
         y: "int32",
       },
+      key: ["key"],
     },
     NumberList: {
-      keySchema: {},
-      valueSchema: {
+      schema: {
         value: "uint32[]",
       },
+      key: [],
     },
     Multi: {
-      keySchema: {
+      schema: {
         a: "uint32",
         b: "bool",
         c: "uint256",
         d: "int120",
-      },
-      valueSchema: {
         num: "int256",
         value: "bool",
       },
+      key: ["a", "b", "c", "d"],
     },
     Position: {
-      keySchema: {
+      schema: {
         zone: "bytes32",
         x: "int32",
         y: "int32",
-      },
-      valueSchema: {
         player: "address",
       },
+      key: ["zone", "x", "y"],
     },
     StaticArray: {
-      keySchema: {},
-      valueSchema: "uint256[3]",
+      schema: {
+        value: "uint256[3]",
+      },
+      key: [],
     },
   },
+  modules: [
+    {
+      name: "Unstable_DelegationWithSignatureModule",
+      root: true,
+      args: [],
+    },
+  ],
 });
