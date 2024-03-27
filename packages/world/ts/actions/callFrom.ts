@@ -57,7 +57,12 @@ export function callFrom<TChain extends Chain, TAccount extends Account>(
     // Applies to: `client.writeContract`, `getContract(client, ...).write`
     writeContract: async (writeArgs): Promise<WriteContractReturnType> => {
       // Skip if the contract isn't the World.
-      if (writeArgs.address !== params.worldAddress || writeArgs.functionName === "registerDelegationWithSignature") {
+      if (
+        writeArgs.address !== params.worldAddress ||
+        writeArgs.functionName === "call" ||
+        writeArgs.functionName === "callFrom" ||
+        writeArgs.functionName === "registerDelegationWithSignature"
+      ) {
         return getAction(client, writeContract, "writeContract")(writeArgs);
       }
 
