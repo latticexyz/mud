@@ -7,13 +7,13 @@ import { createDelegation } from "@latticexyz/world/src/modules/init/implementat
 
 import { UserDelegationNonces } from "./tables/UserDelegationNonces.sol";
 import { getSignedMessageHash } from "./getSignedMessageHash.sol";
-import { ECDSA } from "./ECDSA.sol";
+import { SignatureChecker } from "./SignatureChecker.sol";
 
 contract Unstable_DelegationWithSignatureSystem is System {
   /**
-   * @dev Mismatched signature.
+   * @dev Invalid signature.
    */
-  error InvalidSignature(address signer);
+  error InvalidSignature();
 
   /**
    * @notice Registers a delegation for `delegator` with a signature
@@ -34,10 +34,8 @@ contract Unstable_DelegationWithSignatureSystem is System {
     uint256 nonce = UserDelegationNonces.get(delegator);
     bytes32 hash = getSignedMessageHash(delegatee, delegationControlId, initCallData, delegator, nonce, _world());
 
-    // If the message was not signed by the delegator or is invalid, revert
-    address signer = ECDSA.recover(hash, signature);
-    if (signer != delegator) {
-      revert InvalidSignature(signer);
+    if (!SignatureChecker.isValidSignatureNow(delegator, hash, signature)) {
+      revert InvalidSignature();
     }
 
     UserDelegationNonces.set(delegator, nonce + 1);
