@@ -12,21 +12,17 @@ that are dynamically registered in the World during deployment.
 
 _._
 
-### Functions
+## Store
 
-#### storeVersion
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/Store.sol)
 
-Retrieves the version of the store.
+**Inherits:**
+[IStore](/src/IStore.sol/interface.IStore.md), [StoreKernel](/src/StoreKernel.sol/abstract.StoreKernel.md)
 
-```solidity
-function storeVersion() public pure returns (bytes32);
-```
+This contract integrates the core storage functionalities and provides an interface for data storage.
 
-**Returns**
-
-| Name     | Type      | Description                                    |
-| -------- | --------- | ---------------------------------------------- |
-| `<none>` | `bytes32` | The current version of the store as a bytes32. |
+_This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
+but not write methods._
 
 #### registerTable
 
@@ -357,17 +353,17 @@ _Creates a mapping for a root World function without namespace or name prefix_
 function registerRootFunctionSelector(
   ResourceId systemId,
   string memory worldFunctionSignature,
-  bytes4 systemFunctionSelector
+  string memory systemFunctionSignature
 ) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
 ```
 
 **Parameters**
 
-| Name                     | Type         | Description                         |
-| ------------------------ | ------------ | ----------------------------------- |
-| `systemId`               | `ResourceId` | The system ID                       |
-| `worldFunctionSignature` | `string`     | The signature of the World function |
-| `systemFunctionSelector` | `bytes4`     | The selector of the system function |
+| Name                      | Type         | Description                          |
+| ------------------------- | ------------ | ------------------------------------ |
+| `systemId`                | `ResourceId` | The system ID                        |
+| `worldFunctionSignature`  | `string`     | The signature of the World function  |
+| `systemFunctionSignature` | `string`     | The signature of the system function |
 
 **Returns**
 
@@ -455,75 +451,189 @@ function unregisterNamespaceDelegation(ResourceId namespaceId) public onlyDelega
 
 #### Store_TableAlreadyExists
 
+Error raised if the provided table already exists.
+
 ```solidity
 error Store_TableAlreadyExists(ResourceId tableId, string tableIdString);
 ```
 
+**Parameters**
+
+| Name            | Type         | Description                                                                            |
+| --------------- | ------------ | -------------------------------------------------------------------------------------- |
+| `tableId`       | `ResourceId` | The ID of the table.                                                                   |
+| `tableIdString` | `string`     | The stringified ID of the table (for easier debugging if cleartext tableIds are used). |
+
 #### Store_TableNotFound
+
+Error raised if the provided table cannot be found.
 
 ```solidity
 error Store_TableNotFound(ResourceId tableId, string tableIdString);
 ```
 
+**Parameters**
+
+| Name            | Type         | Description                                                                            |
+| --------------- | ------------ | -------------------------------------------------------------------------------------- |
+| `tableId`       | `ResourceId` | The ID of the table.                                                                   |
+| `tableIdString` | `string`     | The stringified ID of the table (for easier debugging if cleartext tableIds are used). |
+
 #### Store_InvalidResourceType
+
+Error raised if the provided resource ID cannot be found.
 
 ```solidity
 error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
 ```
 
-#### Store_InvalidStaticDataLength
+**Parameters**
 
-```solidity
-error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
-```
+| Name               | Type         | Description                                         |
+| ------------------ | ------------ | --------------------------------------------------- |
+| `expected`         | `bytes2`     | The expected resource type.                         |
+| `resourceId`       | `ResourceId` | The resource ID.                                    |
+| `resourceIdString` | `string`     | The stringified resource ID (for easier debugging). |
 
 #### Store_InvalidBounds
+
+Error raised if the provided slice bounds are invalid.
 
 ```solidity
 error Store_InvalidBounds(uint256 start, uint256 end);
 ```
 
+**Parameters**
+
+| Name    | Type      | Description                                                                   |
+| ------- | --------- | ----------------------------------------------------------------------------- |
+| `start` | `uint256` | The start index within the dynamic field for the slice operation (inclusive). |
+| `end`   | `uint256` | The end index within the dynamic field for the slice operation (exclusive).   |
+
 #### Store_IndexOutOfBounds
+
+Error raised if the provided index is out of bounds.
+
+_Raised if the start index is larger than the previous length of the field._
 
 ```solidity
 error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
 ```
 
+**Parameters**
+
+| Name            | Type      | Description |
+| --------------- | --------- | ----------- |
+| `length`        | `uint256` | FIXME       |
+| `accessedIndex` | `uint256` | FIXME       |
+
+#### Store_InvalidStaticDataLength
+
+Error raised if the provided static data length is invalid.
+
+```solidity
+error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
+```
+
+**Parameters**
+
+| Name       | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| `expected` | `uint256` | The expected length. |
+| `received` | `uint256` | The provided length. |
+
 #### Store_InvalidKeyNamesLength
+
+Error raised if the provided key names length is invalid.
 
 ```solidity
 error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
 ```
 
+**Parameters**
+
+| Name       | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| `expected` | `uint256` | The expected length. |
+| `received` | `uint256` | The provided length. |
+
 #### Store_InvalidFieldNamesLength
+
+Error raised if the provided field names length is invalid.
 
 ```solidity
 error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
 ```
 
+**Parameters**
+
+| Name       | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| `expected` | `uint256` | The expected length. |
+| `received` | `uint256` | The provided length. |
+
 #### Store_InvalidValueSchemaLength
+
+Error raised if the provided value schema length is invalid.
 
 ```solidity
 error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
 ```
 
+**Parameters**
+
+| Name       | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| `expected` | `uint256` | The expected length. |
+| `received` | `uint256` | The provided length. |
+
 #### Store_InvalidValueSchemaStaticLength
+
+Error raised if the provided schema static length is invalid.
 
 ```solidity
 error Store_InvalidValueSchemaStaticLength(uint256 expected, uint256 received);
 ```
 
+**Parameters**
+
+| Name       | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| `expected` | `uint256` | The expected length. |
+| `received` | `uint256` | The provided length. |
+
 #### Store_InvalidValueSchemaDynamicLength
+
+Error raised if the provided schema dynamic length is invalid.
 
 ```solidity
 error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
 ```
 
+**Parameters**
+
+| Name       | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| `expected` | `uint256` | The expected length. |
+| `received` | `uint256` | The provided length. |
+
 #### Store_InvalidSplice
+
+Error raised if the provided splice is invalid.
+
+_Raised if the splice total length of the field is changed but the splice is not at the end of the field._
 
 ```solidity
 error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
 ```
+
+**Parameters**
+
+| Name               | Type     | Description                                                |
+| ------------------ | -------- | ---------------------------------------------------------- |
+| `startWithinField` | `uint40` | The start index within the field for the splice operation. |
+| `deleteCount`      | `uint40` | The number of bytes to delete in the splice operation.     |
+| `fieldLength`      | `uint40` | The field length for the splice operation.                 |
 
 ## IWorldCall
 
@@ -591,17 +701,20 @@ function callFrom(
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldKernel.sol)
 
 **Inherits:**
-[IWorldModuleInstallation](/world/reference/world-external#iworldmoduleinstallation), [IWorldCall](/world/reference/world-external#iworldcall), [IWorldErrors](/world/reference/world-external#iworlderrors)
+[IWorldModuleInstallation](/world/reference/world-external#iworldmoduleinstallation), [IWorldCall](/world/reference/world-external#iworldcall), [IWorldErrors](/world/reference/world-external#iworlderrors), [IWorldEvents](/src/IWorldEvents.sol/interface.IWorldEvents.md), [IModuleErrors](/src/IModuleErrors.sol/interface.IModuleErrors.md)
 
 The IWorldKernel interface includes all methods that are part of the World contract's
 internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
 registered functions selectors from the `InitModule`.
 
+_The IWorldKernel interface inherits IModuleErrors because the world can be delegatecalled with module code,
+so it's ABI should include these errors._
+
 ### Functions
 
 #### worldVersion
 
-Retrieve the version of the World.
+Retrieve the protocol version of the World.
 
 ```solidity
 function worldVersion() external view returns (bytes32);
@@ -609,9 +722,9 @@ function worldVersion() external view returns (bytes32);
 
 **Returns**
 
-| Name     | Type      | Description                          |
-| -------- | --------- | ------------------------------------ |
-| `<none>` | `bytes32` | The version identifier of the World. |
+| Name     | Type      | Description                        |
+| -------- | --------- | ---------------------------------- |
+| `<none>` | `bytes32` | The protocol version of the World. |
 
 #### creator
 
@@ -642,22 +755,6 @@ function initialize(IModule initModule) external;
 | Name         | Type      | Description                                           |
 | ------------ | --------- | ----------------------------------------------------- |
 | `initModule` | `IModule` | The InitModule to be installed during initialization. |
-
-### Events
-
-#### HelloWorld
-
-_Emitted upon successful World initialization._
-
-```solidity
-event HelloWorld(bytes32 indexed worldVersion);
-```
-
-**Parameters**
-
-| Name           | Type      | Description                                 |
-| -------------- | --------- | ------------------------------------------- |
-| `worldVersion` | `bytes32` | The version of the World being initialized. |
 
 ## IWorldModuleInstallation
 

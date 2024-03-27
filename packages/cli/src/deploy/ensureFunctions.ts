@@ -50,7 +50,7 @@ export async function ensureFunctions({
               abi: worldAbi,
               // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
               functionName: "registerRootFunctionSelector",
-              args: [func.systemId, func.systemFunctionSignature, func.systemFunctionSelector],
+              args: [func.systemId, func.systemFunctionSignature, func.systemFunctionSignature],
             }),
           {
             retries: 3,

@@ -11,6 +11,7 @@ import { createBenchmark } from "@latticexyz/common";
  * @deprecated
  */
 export async function getLogs(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   database: PgDatabase<any>,
   {
     chainId,

@@ -13,7 +13,7 @@ import { SliceLib } from "../../Slice.sol";
 import { EncodeArray } from "../../tightcoder/EncodeArray.sol";
 import { FieldLayout } from "../../FieldLayout.sol";
 import { Schema } from "../../Schema.sol";
-import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "../../EncodedLengths.sol";
 import { ResourceId } from "../../ResourceId.sol";
 
 // Import user types
@@ -408,10 +408,10 @@ library Hooks {
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(bytes21[] memory hooks) internal pure returns (PackedCounter _encodedLengths) {
+  function encodeLengths(bytes21[] memory hooks) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(hooks.length * 21);
+      _encodedLengths = EncodedLengthsLib.pack(hooks.length * 21);
     }
   }
 
@@ -429,9 +429,9 @@ library Hooks {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(bytes21[] memory hooks) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(bytes21[] memory hooks) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(hooks);
+    EncodedLengths _encodedLengths = encodeLengths(hooks);
     bytes memory _dynamicData = encodeDynamic(hooks);
 
     return (_staticData, _encodedLengths, _dynamicData);

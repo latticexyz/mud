@@ -1,7 +1,5 @@
-import { Table } from "@latticexyz/store";
+import { Table } from "@latticexyz/store/internal";
 import { useRecords } from "./useRecords";
-import { isHex } from "viem";
-import { TruncatedHex } from "../TruncatedHex";
 import { FieldValue } from "./FieldValue";
 
 // TODO: use react-table or similar for better perf with lots of logs

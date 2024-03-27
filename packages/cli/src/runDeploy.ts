@@ -5,14 +5,14 @@ import { deploy } from "./deploy/deploy";
 import { createWalletClient, http, Hex, isHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
-import { StoreConfig } from "@latticexyz/store";
-import { WorldConfig } from "@latticexyz/world";
+import { World as WorldConfig } from "@latticexyz/world";
+import { worldToV1 } from "@latticexyz/world/config/v2";
 import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { MUDError } from "@latticexyz/common/errors";
 import { resolveConfig } from "./deploy/resolveConfig";
 import { getChainId } from "viem/actions";
-import { postDeploy } from "./utils/utils/postDeploy";
+import { postDeploy } from "./utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 
@@ -22,6 +22,10 @@ export const deployOptions = {
   profile: { type: "string", desc: "The foundry profile to use" },
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
   rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
+  rpcBatch: {
+    type: "boolean",
+    desc: "Enable batch processing of RPC requests in viem client (defaults to batch size of 100 and wait of 1s)",
+  },
   deployerAddress: {
     type: "string",
     desc: "Deploy using an existing deterministic deployer (https://github.com/Arachnid/deterministic-deployment-proxy)",
@@ -53,7 +57,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
-  const config = (await loadConfig(opts.configPath)) as StoreConfig & WorldConfig;
+  const configV2 = (await loadConfig(opts.configPath)) as WorldConfig;
+  const config = worldToV1(configV2);
   if (opts.printConfig) {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
   }
@@ -70,7 +75,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   // Run build
   if (!opts.skipBuild) {
-    await build({ config, srcDir, foundryProfile: profile });
+    await build({ config: configV2, srcDir, foundryProfile: profile });
   }
 
   const privateKey = process.env.PRIVATE_KEY as Hex;
@@ -85,9 +90,17 @@ in your contracts directory to use the default anvil private key.`,
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
   const client = createWalletClient({
-    transport: http(rpc),
+    transport: http(rpc, {
+      batch: opts.rpcBatch
+        ? {
+            batchSize: 100,
+            wait: 1000,
+          }
+        : undefined,
+    }),
     account: privateKeyToAccount(privateKey),
   });
+
   console.log("Deploying from", client.account.address);
 
   const startTime = Date.now();

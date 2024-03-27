@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DynamicResolutionType, zEthereumAddress, zName, zObjectName } from "@latticexyz/config";
+import { DynamicResolutionType, zEthereumAddress, zName, zObjectName } from "@latticexyz/config/library";
 import { SYSTEM_DEFAULTS, WORLD_DEFAULTS } from "./defaults";
 
 const zSystemName = zObjectName;

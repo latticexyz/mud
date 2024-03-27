@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 struct Dynamics1Data {
@@ -114,19 +114,8 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_bytes32_1(staticB32)));
   }
 
-  /**
-   * @notice Get the length of staticB32.
-   */
-  function lengthStaticB32(bytes32 key) internal pure returns (uint256) {
-    return 1;
-  }
-
-  /**
-   * @notice Get the length of staticB32.
-   */
-  function _lengthStaticB32(bytes32 key) internal pure returns (uint256) {
-    return 1;
-  }
+  // The length of staticB32
+  uint256 constant lengthStaticB32 = 1;
 
   /**
    * @notice Get an item of staticB32.
@@ -224,19 +213,8 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_int32_2(staticI32)));
   }
 
-  /**
-   * @notice Get the length of staticI32.
-   */
-  function lengthStaticI32(bytes32 key) internal pure returns (uint256) {
-    return 2;
-  }
-
-  /**
-   * @notice Get the length of staticI32.
-   */
-  function _lengthStaticI32(bytes32 key) internal pure returns (uint256) {
-    return 2;
-  }
+  // The length of staticI32
+  uint256 constant lengthStaticI32 = 2;
 
   /**
    * @notice Get an item of staticI32.
@@ -334,19 +312,8 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint128_3(staticU128)));
   }
 
-  /**
-   * @notice Get the length of staticU128.
-   */
-  function lengthStaticU128(bytes32 key) internal pure returns (uint256) {
-    return 3;
-  }
-
-  /**
-   * @notice Get the length of staticU128.
-   */
-  function _lengthStaticU128(bytes32 key) internal pure returns (uint256) {
-    return 3;
-  }
+  // The length of staticU128
+  uint256 constant lengthStaticU128 = 3;
 
   /**
    * @notice Get an item of staticU128.
@@ -444,19 +411,8 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 3, EncodeArray.encode(fromStaticArray_address_4(staticAddrs)));
   }
 
-  /**
-   * @notice Get the length of staticAddrs.
-   */
-  function lengthStaticAddrs(bytes32 key) internal pure returns (uint256) {
-    return 4;
-  }
-
-  /**
-   * @notice Get the length of staticAddrs.
-   */
-  function _lengthStaticAddrs(bytes32 key) internal pure returns (uint256) {
-    return 4;
-  }
+  // The length of staticAddrs
+  uint256 constant lengthStaticAddrs = 4;
 
   /**
    * @notice Get an item of staticAddrs.
@@ -554,19 +510,8 @@ library Dynamics1 {
     StoreCore.setDynamicField(_tableId, _keyTuple, 4, EncodeArray.encode(fromStaticArray_bool_5(staticBools)));
   }
 
-  /**
-   * @notice Get the length of staticBools.
-   */
-  function lengthStaticBools(bytes32 key) internal pure returns (uint256) {
-    return 5;
-  }
-
-  /**
-   * @notice Get the length of staticBools.
-   */
-  function _lengthStaticBools(bytes32 key) internal pure returns (uint256) {
-    return 5;
-  }
+  // The length of staticBools
+  uint256 constant lengthStaticBools = 5;
 
   /**
    * @notice Get an item of staticBools.
@@ -629,7 +574,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -644,7 +589,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -664,7 +609,7 @@ library Dynamics1 {
     bool[5] memory staticBools
   ) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(staticB32, staticI32, staticU128, staticAddrs, staticBools);
+    EncodedLengths _encodedLengths = encodeLengths(staticB32, staticI32, staticU128, staticAddrs, staticBools);
     bytes memory _dynamicData = encodeDynamic(staticB32, staticI32, staticU128, staticAddrs, staticBools);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -685,7 +630,7 @@ library Dynamics1 {
     bool[5] memory staticBools
   ) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(staticB32, staticI32, staticU128, staticAddrs, staticBools);
+    EncodedLengths _encodedLengths = encodeLengths(staticB32, staticI32, staticU128, staticAddrs, staticBools);
     bytes memory _dynamicData = encodeDynamic(staticB32, staticI32, staticU128, staticAddrs, staticBools);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -699,7 +644,7 @@ library Dynamics1 {
    */
   function set(bytes32 key, Dynamics1Data memory _table) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(
+    EncodedLengths _encodedLengths = encodeLengths(
       _table.staticB32,
       _table.staticI32,
       _table.staticU128,
@@ -725,7 +670,7 @@ library Dynamics1 {
    */
   function _set(bytes32 key, Dynamics1Data memory _table) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(
+    EncodedLengths _encodedLengths = encodeLengths(
       _table.staticB32,
       _table.staticI32,
       _table.staticU128,
@@ -750,7 +695,7 @@ library Dynamics1 {
    * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
    */
   function decodeDynamic(
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _blob
   )
     internal
@@ -803,7 +748,7 @@ library Dynamics1 {
    */
   function decode(
     bytes memory,
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (Dynamics1Data memory _table) {
     (_table.staticB32, _table.staticI32, _table.staticU128, _table.staticAddrs, _table.staticBools) = decodeDynamic(
@@ -842,10 +787,10 @@ library Dynamics1 {
     uint128[3] memory staticU128,
     address[4] memory staticAddrs,
     bool[5] memory staticBools
-  ) internal pure returns (PackedCounter _encodedLengths) {
+  ) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(
+      _encodedLengths = EncodedLengthsLib.pack(
         staticB32.length * 32,
         staticI32.length * 4,
         staticU128.length * 16,
@@ -888,9 +833,9 @@ library Dynamics1 {
     uint128[3] memory staticU128,
     address[4] memory staticAddrs,
     bool[5] memory staticBools
-  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(staticB32, staticI32, staticU128, staticAddrs, staticBools);
+    EncodedLengths _encodedLengths = encodeLengths(staticB32, staticI32, staticU128, staticAddrs, staticBools);
     bytes memory _dynamicData = encodeDynamic(staticB32, staticI32, staticU128, staticAddrs, staticBools);
 
     return (_staticData, _encodedLengths, _dynamicData);

@@ -1,5 +1,5 @@
-import { UnrecognizedSystemErrorFactory } from "@latticexyz/config";
-import { StoreConfig } from "@latticexyz/store";
+import { UnrecognizedSystemErrorFactory } from "@latticexyz/config/library";
+import { StoreConfig } from "@latticexyz/store/internal";
 import { SystemConfig, WorldConfig } from "./types";
 
 export type ResolvedSystemConfig = ReturnType<typeof resolveSystemConfig>;

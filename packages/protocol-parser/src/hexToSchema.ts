@@ -1,4 +1,9 @@
-import { StaticAbiType, DynamicAbiType, schemaAbiTypes, staticAbiTypeToByteLength } from "@latticexyz/schema-type";
+import {
+  StaticAbiType,
+  DynamicAbiType,
+  schemaAbiTypes,
+  staticAbiTypeToByteLength,
+} from "@latticexyz/schema-type/internal";
 import { Hex, hexToNumber, sliceHex } from "viem";
 import { Schema } from "./common";
 import { InvalidHexLengthForSchemaError, SchemaStaticLengthMismatchError } from "./errors";

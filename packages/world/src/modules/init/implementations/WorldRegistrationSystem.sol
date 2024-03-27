@@ -31,6 +31,7 @@ import { requireNamespace } from "../../../requireNamespace.sol";
 import { requireValidNamespace } from "../../../requireValidNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
+import { createDelegation } from "./createDelegation.sol";
 
 /**
  * @title WorldRegistrationSystem
@@ -202,8 +203,8 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
 
     // Compute global function selector
     string memory namespaceString = WorldResourceIdLib.toTrimmedString(systemId.getNamespace());
-    bytes memory worldFunctionSignature = abi.encodePacked(namespaceString, "__", systemFunctionSignature);
-    worldFunctionSelector = bytes4(keccak256(worldFunctionSignature));
+    string memory worldFunctionSignature = string.concat(namespaceString, "__", systemFunctionSignature);
+    worldFunctionSelector = bytes4(keccak256(bytes(worldFunctionSignature)));
 
     // Require the function selector to be globally unique
     ResourceId existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
@@ -214,8 +215,9 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     bytes4 systemFunctionSelector = bytes4(keccak256(bytes(systemFunctionSignature)));
     FunctionSelectors._set(worldFunctionSelector, systemId, systemFunctionSelector);
 
-    // Register the function signature for offchain use
-    FunctionSignatures._set(worldFunctionSelector, string(worldFunctionSignature));
+    // Register the function signatures for offchain use
+    FunctionSignatures._set(systemFunctionSelector, systemFunctionSignature);
+    FunctionSignatures._set(worldFunctionSelector, worldFunctionSignature);
   }
 
   /**
@@ -223,19 +225,20 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @dev Creates a mapping for a root World function without namespace or name prefix
    * @param systemId The system ID
    * @param worldFunctionSignature The signature of the World function
-   * @param systemFunctionSelector The selector of the system function
+   * @param systemFunctionSignature The signature of the system function
    * @return worldFunctionSelector The selector of the World function
    */
   function registerRootFunctionSelector(
     ResourceId systemId,
     string memory worldFunctionSignature,
-    bytes4 systemFunctionSelector
+    string memory systemFunctionSignature
   ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the root namespace
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, _msgSender());
 
     // Compute the function selector from the provided signature
     worldFunctionSelector = bytes4(keccak256(bytes(worldFunctionSignature)));
+    bytes4 systemFunctionSelector = bytes4(keccak256(bytes(systemFunctionSignature)));
 
     // Require the function selector to be globally unique
     ResourceId existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
@@ -245,7 +248,8 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     // Register the function selector
     FunctionSelectors._set(worldFunctionSelector, systemId, systemFunctionSelector);
 
-    // Register the function signature for offchain use
+    // Register the function signatures for offchain use
+    FunctionSignatures._set(systemFunctionSelector, systemFunctionSignature);
     FunctionSignatures._set(worldFunctionSelector, worldFunctionSignature);
   }
 
@@ -261,27 +265,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     ResourceId delegationControlId,
     bytes memory initCallData
   ) public onlyDelegatecall {
-    // Store the delegation control contract address
-    UserDelegationControl._set({
-      delegator: _msgSender(),
-      delegatee: delegatee,
-      delegationControlId: delegationControlId
-    });
-
-    // If the delegation is limited...
-    if (Delegation.isLimited(delegationControlId)) {
-      // Require the delegationControl contract to implement the IDelegationControl interface
-      address delegationControl = Systems._getSystem(delegationControlId);
-      requireInterface(delegationControl, type(IDelegationControl).interfaceId);
-
-      // Call the delegation control contract's init function
-      SystemCall.callWithHooksOrRevert({
-        caller: _msgSender(),
-        systemId: delegationControlId,
-        callData: initCallData,
-        value: 0
-      });
-    }
+    createDelegation(_msgSender(), delegatee, delegationControlId, initCallData);
   }
 
   /**

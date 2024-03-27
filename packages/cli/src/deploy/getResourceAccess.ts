@@ -3,7 +3,7 @@ import { WorldDeploy, worldTables } from "./common";
 import { debug } from "./debug";
 import { storeSpliceStaticDataEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
-import { decodeKey } from "@latticexyz/protocol-parser";
+import { decodeKey } from "@latticexyz/protocol-parser/internal";
 import { getTableValue } from "./getTableValue";
 
 export async function getResourceAccess({

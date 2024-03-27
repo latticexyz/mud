@@ -14,7 +14,7 @@ import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
 import { renderDeleteRecordMethods, renderRecordData, renderRecordMethods } from "./record";
 import { renderFieldLayout } from "./renderFieldLayout";
 import { RenderTableOptions } from "./types";
-import { KeySchema, ValueSchema, keySchemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser";
+import { KeySchema, ValueSchema, keySchemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser/internal";
 
 /**
  * Renders Solidity code for a MUD table library, using the specified options
@@ -51,7 +51,7 @@ export function renderTable(options: RenderTableOptions) {
     import { EncodeArray } from "${storeImportPath}tightcoder/EncodeArray.sol";
     import { FieldLayout } from "${storeImportPath}FieldLayout.sol";
     import { Schema } from "${storeImportPath}Schema.sol";
-    import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter.sol";
+    import { EncodedLengths, EncodedLengthsLib } from "${storeImportPath}EncodedLengths.sol";
     import { ResourceId } from "${storeImportPath}ResourceId.sol";
 
     ${
@@ -137,7 +137,7 @@ export function renderTable(options: RenderTableOptions) {
        */
       function encode(${renderArguments(
         options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`),
-      )}) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+      )}) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
         ${renderRecordData(options)}
 
         return (_staticData, _encodedLengths, _dynamicData);
@@ -194,10 +194,10 @@ function renderEncodeLengths(dynamicFields: RenderDynamicField[]) {
      */
     function encodeLengths(${renderArguments(
       dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`),
-    )}) internal pure returns (PackedCounter _encodedLengths) {
+    )}) internal pure returns (EncodedLengths _encodedLengths) {
       // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
       unchecked {
-        _encodedLengths = PackedCounterLib.pack(
+        _encodedLengths = EncodedLengthsLib.pack(
           ${renderArguments(
             dynamicFields.map(({ name, arrayElement }) => {
               if (arrayElement) {
