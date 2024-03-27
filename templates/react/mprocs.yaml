@@ -8,6 +8,3 @@ procs:
   alto-bundler:
     cwd: packages/account-abstraction
     shell: pnpm run dev:alto
-  paymaster:
-    cwd: packages/account-abstraction
-    shell: pnpm run dev:paymaster

@@ -7,10 +7,8 @@
 	"scripts": {
 		"build": "tsc && tsc-alias",
 		"dev:alto": "wait-port localhost:8545 && pnpm run start:deploy-contracts && pnpm run start:alto",
-		"dev:paymaster": "wait-port localhost:8545 && pnpm run start:paymaster",
 		"start:alto": "node ./node_modules/alto/src/lib/cli/alto.js run --config ./alto.config.json",
-		"start:deploy-contracts": "node dist/deploy-contracts/deployAA.js",
-		"start:paymaster": "node dist/paymaster/index.js"
+		"start:deploy-contracts": "node dist/index.js"
 	},
 	"dependencies": {
 		"@fastify/cors": "^9.0.1",

@@ -3,7 +3,20 @@
  * (https://viem.sh/docs/getting-started.html).
  * This line imports the functions we need from it.
  */
-import { createPublicClient, fallback, webSocket, http, Hex, parseEther, ClientConfig, getContract } from "viem";
+import {
+  createPublicClient,
+  fallback,
+  webSocket,
+  http,
+  Hex,
+  parseEther,
+  ClientConfig,
+  getContract,
+  PublicClient,
+} from "viem";
+import { ENTRYPOINT_ADDRESS_V07, createSmartAccountClient } from "permissionless";
+import { signerToSimpleSmartAccount } from "permissionless/accounts";
+import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -11,6 +24,7 @@ import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
 import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
 import { Subject, share } from "rxjs";
+import { MOCK_PAYMASTER_ADDRESS } from "../../../account-abstraction/src/constants";
 
 /*
  * Import our MUD config, which includes strong types for
@@ -21,11 +35,21 @@ import { Subject, share } from "rxjs";
  * for the source of this information.
  */
 import mudConfig from "contracts/mud.config";
-import { ENTRYPOINT_ADDRESS_V07, createSmartAccountClient } from "permissionless";
-import { signerToSimpleSmartAccount } from "permissionless/accounts";
-import { createPimlicoBundlerClient, createPimlicoPaymasterClient } from "permissionless/clients/pimlico";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
+
+const waitForEntryPointDeployment = async (client: PublicClient) => {
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const code = client.getBytecode({ address: ENTRYPOINT_ADDRESS_V07 });
+
+    if (code !== undefined) {
+      break;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+};
 
 export async function setupNetwork() {
   const networkConfig = await getNetworkConfig();
@@ -41,6 +65,8 @@ export async function setupNetwork() {
   } as const satisfies ClientConfig;
 
   const publicClient = createPublicClient(clientOptions);
+
+  await waitForEntryPointDeployment(publicClient);
 
   /*
    * Create an observable for contract writes that we can
@@ -60,12 +86,6 @@ export async function setupNetwork() {
     entryPoint: ENTRYPOINT_ADDRESS_V07,
   });
 
-  const pimlicoPaymaster = createPimlicoPaymasterClient({
-    chain: clientOptions.chain,
-    transport: http("http://127.0.0.1:4338"),
-    entryPoint: ENTRYPOINT_ADDRESS_V07,
-  });
-
   const burnerSmartAccount = await signerToSimpleSmartAccount(publicClient, {
     entryPoint: ENTRYPOINT_ADDRESS_V07,
     factoryAddress: "0x91E60e0613810449d098b0b5Ec8b51A0FE8c8985",
@@ -76,8 +96,22 @@ export async function setupNetwork() {
     chain: clientOptions.chain,
     bundlerTransport: http("http://127.0.0.1:4337"),
     middleware: {
-      sponsorUserOperation: pimlicoPaymaster.sponsorUserOperation,
-      gasPrice: async () => (await pimlicoBundlerClient.getUserOperationGasPrice()).fast, // use pimlico bundler to get gas prices
+      sponsorUserOperation: async ({ userOperation }) => {
+        const gasEstimates = await pimlicoBundlerClient.estimateUserOperationGas({
+          userOperation: {
+            ...userOperation,
+            paymaster: MOCK_PAYMASTER_ADDRESS,
+            paymasterData: "0x",
+          },
+        });
+
+        return {
+          paymasterData: "0x",
+          paymaster: MOCK_PAYMASTER_ADDRESS,
+          ...gasEstimates,
+        };
+      },
+      gasPrice: async () => (await pimlicoBundlerClient.getUserOperationGasPrice()).fast,
     },
     entryPoint: ENTRYPOINT_ADDRESS_V07,
     account: burnerSmartAccount,
