@@ -49,4 +49,21 @@ contract FactoriesTest is Test, GasReporter {
     create2Factory.deployContract(combinedBytes, uint256(0));
     endGasReport();
   }
+
+  function testWorldFactory(address account, uint256 salt1, uint256 salt2) public {
+    vm.assume(salt1 != salt2);
+    vm.startPrank(account);
+
+    // Deploy WorldFactory with current InitModule
+    InitModule initModule = createInitModule();
+    address worldFactoryAddress = address(new WorldFactory(initModule));
+    IWorldFactory worldFactory = IWorldFactory(worldFactoryAddress);
+
+    // User defined bytes for create2
+    bytes memory _salt1 = abi.encode(salt1);
+  }
+
+  function testWorldFactoryGas() public {
+    testWorldFactory(address(this), 0, 1);
+  }
 }
