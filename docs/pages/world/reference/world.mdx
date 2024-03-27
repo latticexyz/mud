@@ -19,7 +19,7 @@ _World doesn't inherit `Store` because the `IStoreRegistration` methods are adde
 Address of the contract's creator.
 
 ```solidity
-address public immutable creator;
+address public creator;
 ```
 
 ### Functions
@@ -36,12 +36,12 @@ function worldVersion() public pure returns (bytes32);
 | -------- | --------- | ------------------------------------------ |
 | `<none>` | `bytes32` | The current version of the world contract. |
 
-#### constructor
+#### initializeWorld
 
 _Event emitted when the World contract is created._
 
 ```solidity
-constructor();
+function initializeWorld() public initializer;
 ```
 
 #### prohibitDirectCallback
