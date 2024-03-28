@@ -1,5 +1,15 @@
 # @latticexyz/store-indexer
 
+## 2.0.2
+
+### Patch Changes
+
+- @latticexyz/store-sync@2.0.2
+- @latticexyz/block-logs-stream@2.0.2
+- @latticexyz/common@2.0.2
+- @latticexyz/protocol-parser@2.0.2
+- @latticexyz/store@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes
