@@ -7,12 +7,12 @@
 	"scripts": {
 		"build": "tsc && tsc-alias",
 		"dev:alto": "wait-port localhost:8545 && pnpm run start:deploy-contracts && pnpm run start:alto",
-		"start:alto": "node ./node_modules/alto/src/lib/cli/alto.js run --config ./alto.config.json",
+		"start:alto": "pnpm alto run --config ./alto.config.json",
 		"start:deploy-contracts": "node dist/index.js"
 	},
 	"dependencies": {
 		"@fastify/cors": "^9.0.1",
-		"alto": "git+https://github.com/pimlicolabs/alto.git#prepare-package-json",
+		"alto": "git+https://github.com/pimlicolabs/alto.git#bundled",
 		"fastify": "^4.26.2",
 		"permissionless": "^0.1.10",
 		"typescript": "5.4.2",
