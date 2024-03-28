@@ -49,6 +49,13 @@ export default defineWorld({
       },
       key: [],
     },
+    Players: {
+      schema: {
+        player: "address",
+        resources: "uint256[5]",
+      },
+      key: ["player"],
+    },
   },
   modules: [
     {
