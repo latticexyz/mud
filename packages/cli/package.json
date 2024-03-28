@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Command line interface for mud",
   "repository": {
     "type": "git",

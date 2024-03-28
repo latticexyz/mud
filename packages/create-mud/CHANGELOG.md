@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.2
+
+### Patch Changes
+
+- a1101f78: Changed the controls in the `threejs` template from arrow keys to WASD and added text to explain what the app does.
+
 ## 2.0.1
 
 ## 2.0.0

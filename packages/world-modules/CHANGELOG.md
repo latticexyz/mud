@@ -1,5 +1,21 @@
 # Change Log
 
+## 2.0.2
+
+### Patch Changes
+
+- e86bd14d: Added a new preview module, `Unstable_DelegationWithSignatureModule`, which allows registering delegations with a signature.
+
+  Note: this module is marked as `Unstable`, because it will be removed and included in the default `World` deployment once it is audited.
+
+- Updated dependencies [e86bd14d]
+- Updated dependencies [a09bf251]
+  - @latticexyz/world@2.0.2
+  - @latticexyz/common@2.0.2
+  - @latticexyz/config@2.0.2
+  - @latticexyz/schema-type@2.0.2
+  - @latticexyz/store@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes
