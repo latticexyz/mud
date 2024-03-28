@@ -1,0 +1,7 @@
+import { Callout } from "nextra/components";
+
+<Callout type="warning" emoji="⚠️">
+  Once a table is created its schema is *immutable*. If you need to add fields to an existing table, create a new table
+  with the same key schema and the new fields in the value schema, and retrieve from both tables to get the complete
+  value. If you need to delete fields, just have your code ignore them.
+</Callout>
