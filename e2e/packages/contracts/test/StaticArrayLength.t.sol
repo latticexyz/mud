@@ -7,8 +7,8 @@ import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 import { StaticArray } from "../src/codegen/index.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
-contract PlayersTest is MudTest {
-  function testPlayers() public {
+contract StaticArrayLengthTest is MudTest {
+  function testLength() public {
     assertEq(StaticArray.lengthValue, 3);
     assertEq(StaticArray.getValue().length, 3);
     assertEq(StaticArray.getValue()[0], 0);
