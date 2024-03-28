@@ -5,8 +5,8 @@ import { resourceToHex } from "@latticexyz/common";
 import AccessManagementSystemAbi from "../out/AccessManagementSystem.sol/AccessManagementSystem.abi.json";
 import StoreRegistrationSystem from "../out/StoreRegistrationSystem.sol/StoreRegistrationSystem.abi.json";
 
-describe("SystemCall", () => {
-  it("encodes system calls properly", async () => {
+describe("SystemCalls", () => {
+  it("encodes grantAccess properly", async () => {
     const resourceId = resourceToHex({ type: "table", namespace: "", name: "myTable" });
     const grantee = "0x943728592c20aed37a35c15235466f7a7cd00bd0";
 
