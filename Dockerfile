@@ -47,4 +47,7 @@ RUN pnpm run -r build
 FROM mud AS store-indexer
 WORKDIR /app/packages/store-indexer
 EXPOSE 3001
-CMD pnpm start:postgres-decoded
+
+FROM mud AS faucet
+WORKDIR /app/packages/faucet
+EXPOSE 3002

@@ -4,17 +4,18 @@ services:
     plan: standard
     region: ohio
     runtime: docker
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./Dockerfile.render
     dockerContext: ./
+    dockerCommand: pnpm tsx bin/postgres-indexer
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: redstone-holesky-indexer-db
           property: connectionString
-      - key: RPC_HTTP_URL
-        value: https://rpc.holesky.redstone.xyz
       - key: DEBUG
         value: mud:store-sync:createStoreSync
+      - key: RPC_HTTP_URL
+        sync: false # prompt for it
 
   - type: web
     name: redstone-holesky-indexer-api
@@ -23,13 +24,13 @@ services:
     runtime: docker
     domains:
       - indexer.holesky.redstone.xyz
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./Dockerfile.render
     dockerContext: ./
     dockerCommand: pnpm tsx bin/postgres-frontend
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: redstone-holesky-indexer-db-replica
+          name: redstone-holesky-indexer-db
           property: connectionString
       - key: DEBUG
         value: mud:*
