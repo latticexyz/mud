@@ -30,20 +30,18 @@ contract DeployKeyWithValueModule is Script {
   function run() external {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     address worldAddress = 0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC;
-    
+
     vm.startBroadcast(deployerPrivateKey);
-    IWorld world = IWorld(worldAddress);  
-    
+    IWorld world = IWorld(worldAddress);
+
     // Deploy the module
     KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
     ResourceId sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "Tasks" });
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
-    
+
     vm.stopBroadcast();
   }
-}  
- 
-
+}
 ```
 
 </CollapseCode>
@@ -96,7 +94,7 @@ For example, here is the forge script to add a task to `Tasks` in [the React tem
 ```solidity filename="UseKeysWithValues.s.sol" copy showLineNumbers {8,27,29-34}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
-    
+
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
@@ -111,22 +109,22 @@ contract UseKeysWithValues is Script {
   function run() external {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     address worldAddress = 0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC;
-    
+
     uint createdAt = block.timestamp;
     uint completedAt = 0;
     string memory description = "Test";
-    
+
     vm.startBroadcast(deployerPrivateKey);
     IWorld(worldAddress).addTask(description);
     vm.stopBroadcast();
-    
+
     StoreSwitch.setStoreAddress(worldAddress);
-    
+
     bytes32[] memory keys = getKeysWithValue(
       Tasks._tableId,
       Tasks.encodeStatic(createdAt, completedAt),
       Tasks.encodeLengths(description),
-      Tasks.encodeDynamic(description) 
+      Tasks.encodeDynamic(description)
     );
 
     console.log("Number of keys:", keys.length);
