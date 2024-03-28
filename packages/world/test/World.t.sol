@@ -20,6 +20,7 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { ALL, BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { RevertSubscriber } from "@latticexyz/store/test/RevertSubscriber.sol";
 import { EchoSubscriber } from "@latticexyz/store/test/EchoSubscriber.sol";
+import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
 
 import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
@@ -223,7 +224,7 @@ contract WorldTest is Test, GasReporter {
 
     // Should have registered the core system function selectors
     RegistrationSystem registrationSystem = RegistrationSystem(Systems.getSystem(REGISTRATION_SYSTEM_ID));
-    bytes4[22] memory funcSelectors = [
+    bytes4[23] memory funcSelectors = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
@@ -235,6 +236,8 @@ contract WorldTest is Test, GasReporter {
       // --- BatchCallSystem ---
       BatchCallSystem.batchCall.selector,
       BatchCallSystem.batchCallFrom.selector,
+      // --- StoreReadSystem ---
+      StoreRead.getFieldLayout.selector,
       // --- ModuleInstallationSystem ---
       registrationSystem.installModule.selector,
       // --- StoreRegistrationSystem ---

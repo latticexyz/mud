@@ -60,3 +60,13 @@ function getFunctionSignaturesRegistration() pure returns (string[14] memory) {
     "unregisterNamespaceDelegation(bytes32)"
   ];
 }
+
+/**
+ * @dev Function signatures for balance transfer system
+ */
+function getFunctionSignaturesStoreRead() pure returns (string[1] memory) {
+  return [
+    // --- StoreReadSystem ---
+    "getFieldLayout(bytes32)"
+  ];
+}
