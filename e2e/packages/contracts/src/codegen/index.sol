@@ -9,4 +9,3 @@ import { NumberList } from "./tables/NumberList.sol";
 import { Multi, MultiData } from "./tables/Multi.sol";
 import { Position } from "./tables/Position.sol";
 import { StaticArray } from "./tables/StaticArray.sol";
-import { Players } from "./tables/Players.sol";
