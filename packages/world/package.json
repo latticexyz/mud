@@ -57,6 +57,7 @@
     "@arktype/util": "0.0.27",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
+    "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "abitype": "1.0.0",
