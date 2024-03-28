@@ -31,6 +31,14 @@ ResourceId constant BATCH_CALL_SYSTEM_ID = ResourceId.wrap(
 );
 
 /**
+ * @dev Resource ID for batch call system.
+ * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name.
+ */
+ResourceId constant STORE_READ_SYSTEM_ID = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("StoreRead")))
+);
+
+/**
  * @dev Resource ID for core registration system.
  * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name.
  */
