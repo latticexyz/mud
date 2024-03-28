@@ -224,7 +224,7 @@ contract WorldTest is Test, GasReporter {
 
     // Should have registered the core system function selectors
     RegistrationSystem registrationSystem = RegistrationSystem(Systems.getSystem(REGISTRATION_SYSTEM_ID));
-    bytes4[23] memory funcSelectors = [
+    bytes4[29] memory funcSelectors = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
@@ -238,6 +238,12 @@ contract WorldTest is Test, GasReporter {
       BatchCallSystem.batchCallFrom.selector,
       // --- StoreReadSystem ---
       StoreRead.getFieldLayout.selector,
+      StoreRead.getValueSchema.selector,
+      StoreRead.getKeySchema.selector,
+      StoreRead.getStaticField.selector,
+      StoreRead.getDynamicField.selector,
+      StoreRead.getDynamicFieldLength.selector,
+      StoreRead.getDynamicFieldSlice.selector,
       // --- ModuleInstallationSystem ---
       registrationSystem.installModule.selector,
       // --- StoreRegistrationSystem ---

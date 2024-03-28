@@ -64,9 +64,21 @@ function getFunctionSignaturesRegistration() pure returns (string[14] memory) {
 /**
  * @dev Function signatures for balance transfer system
  */
-function getFunctionSignaturesStoreRead() pure returns (string[1] memory) {
+function getFunctionSignaturesStoreRead() pure returns (string[12] memory) {
   return [
     // --- StoreReadSystem ---
     "getFieldLayout(bytes32)"
+    "getValueSchema(bytes32)",
+    "getKeySchema(bytes32)",
+    "getRecord(bytes32,bytes32[])",
+    "getRecord(bytes32,bytes32[],bytes32)",
+    "getField(bytes32,bytes32[],uint8)",
+    "getField(bytes32,bytes32[],uint8,bytes32)",
+    "getStaticField(bytes32,bytes32[],uint8,bytes32)",
+    "getDynamicField(bytes32,bytes32[],uint8)",
+    "getFieldLength(bytes32,bytes32[],uint8)",
+    "getFieldLength(bytes32,bytes32[],uint8,bytes32)",
+    "getDynamicFieldLength(bytes32,bytes32[],uint8)",
+    "getDynamicFieldSlice(bytes32,bytes32[],uint8,uint256,uint256)"
   ];
 }

@@ -5,7 +5,7 @@ import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
-import { StoreKernel } from "@latticexyz/store/src/StoreKernel.sol";
+import { StoreKernel } from "./StoreKernel.sol";
 
 import { WORLD_VERSION } from "./version.sol";
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
