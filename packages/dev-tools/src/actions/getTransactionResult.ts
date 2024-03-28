@@ -19,7 +19,10 @@ export function getTransactionResult(
     const transaction = getTransaction(publicClient, write);
     const transactionReceipt = getTransactionReceipt(publicClient, write);
     cache[write.id] = Promise.all([transaction, transactionReceipt]).then(([tx, receipt]) => {
-      const { functionName, args } = decodeFunctionData({ abi: worldAbi, data: tx.input });
+      const { functionName, args } = decodeFunctionData({
+        abi: worldAbi,
+        data: tx.input,
+      });
       return publicClient.simulateContract({
         account: tx.from,
         address: tx.to!,

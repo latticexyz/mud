@@ -4,8 +4,8 @@ import type {
   Chain,
   Account,
   WalletActions,
-  WalletClient,
   WriteContractReturnType,
+  Client,
 } from "viem";
 import { getAction } from "viem/utils";
 import { writeContract } from "viem/actions";
@@ -16,7 +16,7 @@ type WriteObserverParameters = { onWrite: (write: ContractWrite) => void };
 export function writeObserver<TChain extends Chain, TAccount extends Account>({
   onWrite,
 }: WriteObserverParameters): (
-  client: WalletClient<Transport, TChain, TAccount>,
+  client: Client<Transport, TChain, TAccount>,
 ) => Pick<WalletActions<TChain, TAccount>, "writeContract"> {
   let nextWriteId = 0;
 
