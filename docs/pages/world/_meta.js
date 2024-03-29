@@ -13,7 +13,4 @@ export default {
   "world-table-illustration": {
     display: "hidden",
   },
-  "table-immutable": {
-    display: "hidden",
-  },  
 };
