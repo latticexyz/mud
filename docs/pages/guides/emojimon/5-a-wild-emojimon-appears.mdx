@@ -1028,7 +1028,7 @@ export function createSystemCalls(
 
 </CollapseCode>
 
-When you click the button, the `EncounterScreen` creates a pending toast and kicks off the transaction by calling our `throwBall` method above. We use `awaitStreamValue` to ensure the transaction went through and MUD has updated the client component data. After that, we can get the result of the catch attempt and return it so that the `EncounterScreen` can render the proper message in the toast.
+When you click the button, the `EncounterScreen` creates a pending toast and kicks off the transaction by calling our `throwBall` method above. We use `waitForTransaction` to ensure the transaction went through and MUD has updated the client component data. After that, we can get the result of the catch attempt and return it so that the `EncounterScreen` can render the proper message in the toast.
 
 ## Flee encounters
 
