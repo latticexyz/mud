@@ -116,13 +116,13 @@ This approach doesn't scale well to all tables of a chain, but it is a convenien
 
      ```
                               List of schemas
-                        Name                    |       Owner       
+                        Name                    |       Owner
       --------------------------------------------+-------------------
       0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | qbzzt
       mud                                        | qbzzt
       public                                     | pg_database_owner
       (3 rows)
-      ```
+     ```
 
    - Connect to the schema for your world.
 
@@ -138,31 +138,31 @@ This approach doesn't scale well to all tables of a chain, but it is a convenien
 
      Result (When using the React template):
 
-      ```
-                                       List of relations
-                        Schema                   |           Name            | Type  | Owner 
-      --------------------------------------------+---------------------------+-------+-------
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | name_component            | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | player_component          | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | position_componen         | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | store__resource_ids       | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | store__store_hooks        | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | store__tables             | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | tasks                     | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__balances           | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__function_selector  | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__function_signatur  | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__init_module_addres | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__installed_modules  | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__namespace_delegat  | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__namespace_owner    | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__resource_access    | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__system_hooks       | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__system_registry    | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__systems            | table | qbzzt
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__user_delegation_co | table | qbzzt
-      (19 rows)
-      ```
+     ```
+                                      List of relations
+                       Schema                   |           Name            | Type  | Owner
+     --------------------------------------------+---------------------------+-------+-------
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | name_component            | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | player_component          | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | position_componen         | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | store__resource_ids       | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | store__store_hooks        | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | store__tables             | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | tasks                     | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__balances           | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__function_selector  | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__function_signatur  | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__init_module_addres | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__installed_modules  | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__namespace_delegat  | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__namespace_owner    | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__resource_access    | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__system_hooks       | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__system_registry    | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__systems            | table | qbzzt
+     0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | world__user_delegation_co | table | qbzzt
+     (19 rows)
+     ```
 
    - Read the actual data.
 
@@ -417,8 +417,7 @@ If the client does not need all the information stored in the `World`, you can [
    cat data.json | jq '.[0].result.data.json.tables[].name'
    ```
 
-
-{/* 
+{/\*
 
 ### Postgres to read data from SkyStrife season 0
 
@@ -465,5 +464,4 @@ If the client does not need all the information stored in the `World`, you can [
    echo $TABLES | jq '.[] | select (.name=="Combat")'
    ```
 
-
-*/}
+\*/}
