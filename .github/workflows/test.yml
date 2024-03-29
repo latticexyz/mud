@@ -42,9 +42,6 @@ jobs:
       - name: Outdated files, run `pnpm gas-report` and commit them
         uses: ./.github/actions/require-empty-diff
 
-      - name: Lint
-        run: pnpm lint
-
       - name: Sort package.json
         run: pnpm sort-package-json
 

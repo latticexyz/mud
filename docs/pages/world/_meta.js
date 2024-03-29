@@ -1,5 +1,6 @@
 export default {
   introduction: "Introduction",
+  "resource-ids": "Resource Identifiers",
   "namespaces-access-control": "Namespaces & Access Control",
   tables: "Tables",
   systems: "Systems",
