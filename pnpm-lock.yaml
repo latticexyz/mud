@@ -296,9 +296,6 @@ importers:
       p-retry:
         specifier: ^5.1.2
         version: 5.1.2
-      permissionless:
-        specifier: ^0.1.10
-        version: 0.1.10(viem@2.7.12)
       prettier:
         specifier: 3.2.5
         version: 3.2.5
@@ -8898,14 +8895,6 @@ packages:
       buffer-from: 1.1.2
       duplexify: 3.7.1
       through2: 2.0.5
-    dev: false
-
-  /permissionless@0.1.10(viem@2.7.12):
-    resolution: {integrity: sha512-LVjGVLRfARHhuWSktiO5wd2tA0iTzP+Se8oDKRVyzb5Z/X4jCL+3hqWJMeERkjn3bOK0al2cv55sIABFOo+XKg==}
-    peerDependencies:
-      viem: ^2.0.0
-    dependencies:
-      viem: 2.7.12(typescript@5.4.2)(zod@3.21.4)
     dev: false
 
   /picocolors@1.0.0:
