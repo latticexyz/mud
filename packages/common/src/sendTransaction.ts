@@ -6,6 +6,7 @@ import {
   SendTransactionParameters,
   Transport,
   SendTransactionReturnType,
+  PublicClient,
 } from "viem";
 import { call, sendTransaction as viem_sendTransaction } from "viem/actions";
 import pRetry from "p-retry";
@@ -19,12 +20,13 @@ const debug = parentDebug.extend("sendTransaction");
 
 /** @deprecated Use `walletClient.extend(transactionQueue())` instead. */
 export async function sendTransaction<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
-  TChainOverride extends Chain | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
+  chainOverride extends Chain | undefined,
 >(
-  client: Client<Transport, TChain, TAccount>,
-  request: SendTransactionParameters<TChain, TAccount, TChainOverride>,
+  client: Client<Transport, chain, account>,
+  request: SendTransactionParameters<chain, account, chainOverride>,
+  publicClient?: PublicClient<Transport, chain>,
 ): Promise<SendTransactionReturnType> {
   const rawAccount = request.account ?? client.account;
   if (!rawAccount) {
@@ -34,23 +36,23 @@ export async function sendTransaction<
   const account = parseAccount(rawAccount);
 
   const nonceManager = await getNonceManager({
-    client,
+    client: publicClient ?? client,
     address: account.address,
     blockTag: "pending",
   });
 
-  async function prepare(): Promise<SendTransactionParameters<TChain, TAccount, TChainOverride>> {
+  async function prepare(): Promise<SendTransactionParameters<chain, account, chainOverride>> {
     if (request.gas) {
       debug("gas provided, skipping simulate", request.to);
       return request;
     }
 
     debug("simulating tx to", request.to);
-    await call(client, {
+    await call(publicClient ?? client, {
       ...request,
       blockTag: "pending",
       account,
-    } as CallParameters<TChain>);
+    } as CallParameters<chain>);
 
     return request;
   }
@@ -67,7 +69,7 @@ export async function sendTransaction<
 
           const nonce = nonceManager.nextNonce();
           debug("sending tx with nonce", nonce, "to", preparedRequest.to);
-          const parameters: SendTransactionParameters<TChain, TAccount, TChainOverride> = { nonce, ...preparedRequest };
+          const parameters: SendTransactionParameters<chain, account, chainOverride> = { nonce, ...preparedRequest };
           return await viem_sendTransaction(client, parameters);
         },
         {

@@ -15,6 +15,6 @@ export function transactionQueue<chain extends Chain, account extends Account>({
     // Applies to: `client.writeContract`, `getContract(client, ...).write`
     writeContract: (args) => mud_writeContract(client, args, publicClient),
     // Applies to: `client.sendTransaction`
-    sendTransaction: (args) => mud_sendTransaction(client, args),
+    sendTransaction: (args) => mud_sendTransaction(client, args, publicClient),
   });
 }

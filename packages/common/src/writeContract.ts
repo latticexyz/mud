@@ -42,7 +42,7 @@ export async function writeContract<
   const account = parseAccount(rawAccount);
 
   const nonceManager = await getNonceManager({
-    client: publicClient || client,
+    client: publicClient ?? client,
     address: account.address,
     blockTag: "pending",
   });
@@ -57,7 +57,7 @@ export async function writeContract<
 
     debug("simulating", request.functionName, "at", request.address);
     const result = await simulateContract<chain, account | undefined, abi, functionName, args, chainOverride>(
-      publicClient || client,
+      publicClient ?? client,
       {
         ...request,
         blockTag: "pending",
