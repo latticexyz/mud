@@ -36,10 +36,7 @@ import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 
 import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
-import { BEFORE_SET_RECORD, 
-         BEFORE_SPLICE_STATIC_DATA, 
-         BEFORE_SPLICE_DYNAMIC_DATA, 
-         BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
+import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
@@ -86,14 +83,13 @@ contract Freeze is StoreHook {
   }
 
   function onBeforeDeleteRecord(
-    ResourceId tableId, 
-    bytes32[] memory keyTuple, 
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
     FieldLayout fieldLayout
   ) public override {
     frozen();
   }
 }
-
 
 contract FreezeCounter is Script {
   function run() external {
@@ -149,36 +145,36 @@ contract Freeze is StoreHook {
 ```
 
 This function implements the freezing.
- 
+
 ```solidity
-  function onBeforeSetRecord(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    bytes memory staticData,
-    EncodedLengths encodedLengths,
-    bytes memory dynamicData,
-    FieldLayout
-  ) public override {
-    frozen();
-  }
+function onBeforeSetRecord(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  bytes memory staticData,
+  EncodedLengths encodedLengths,
+  bytes memory dynamicData,
+  FieldLayout
+) public override {
+  frozen();
+}
 ```
 
 Override the implementation in `StoreHook`.
 We get all the data we need to know about the record in the parameters.
- 
+
 ```solidity
   function onBeforeSpliceStaticData(
     ...
   ) public override {
     frozen();
   }
- 
+
   function onBeforeSpliceDynamicData(
     ...
   ) public override {
     frozen();
   }
- 
+
   function onBeforeDeleteRecord(
     ...
   ) public override {
@@ -208,10 +204,7 @@ import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 
 import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
-import { BEFORE_SET_RECORD, 
-         BEFORE_SPLICE_STATIC_DATA, 
-         BEFORE_SPLICE_DYNAMIC_DATA, 
-         BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
+import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
@@ -258,8 +251,8 @@ contract Freeze is StoreHook {
   }
 
   function onBeforeDeleteRecord(
-    ResourceId tableId, 
-    bytes32[] memory keyTuple, 
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
     FieldLayout fieldLayout
   ) public override {
     frozen();
@@ -298,10 +291,7 @@ contract FreezeCounter is Script {
 <summary>Explanation</summary>
 
 ```solidity
-import { BEFORE_SET_RECORD, 
-         BEFORE_SPLICE_STATIC_DATA, 
-         BEFORE_SPLICE_DYNAMIC_DATA, 
-         BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
+import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 ```
 
 Bitmap values for the hooks we want to use.
