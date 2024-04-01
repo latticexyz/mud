@@ -1,0 +1,34 @@
+# `System` Best Practices.
+
+## Best practices
+
+### Each `System` call should be a single action
+
+If you want a transaction to do multiple actions (for example: register, start a game, and then perform the first move in the game), you don't need a `DoThis_DoThat_AndThen_DoTheOtherThing` function.
+Just use [batch calls](/world/batch-calls), which preserve the message sender (in `_msgSender()).
+
+### Use libraries to bypass the contract size limit
+
+If you have a large `System` and you come up against the [contract size limit](https://ethereum.org/en/developers/docs/smart-contracts/#limitations), don't split it into two separate `Systems`.
+Instead, use [libraries](https://docs.soliditylang.org/en/latest/contracts.html#libraries).
+Libraries are called using [`delegatecall`](https://docs.soliditylang.org/en/latest/introduction-to-smart-contracts.html#delegatecall-and-libraries), so they have the same permissions as the calling contract.
+This includes the ability to write to MUD tables when the calling `System` is permitted to do so.
+
+### Use delegations when building user agents
+
+If a `System` is going to act on the user's behalf, it will need to call other `System`s, probably in other namespaces. 
+The way to do this is to request users to [delegate their permissions](/world/account-delegation).
+This is necessary because
+- If you call another `System` through the `World`, the message sender (`_msgSender()`) is the calling `System`.
+- If you delegatecall another `System` directly you keep `_msgSender()`'s value, but the called `System` is only allowed to perform actions allowed to the calling `System`.
+
+## "Worst" practices
+
+These are common programming practices that are compatible with MUD `System`s for one reason or another.
+
+### Don't send `value` with your calls
+
+The way [ETH balances](/world/balance) work in MUD, *all* ETH is stored in the `World` contract and internally accounted as belonging to namespaces.
+If your `System` is in the root namespace it has access to this ETH, but if you transfer out except through [`BalanceTransferSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/BalanceTransferSystem.sol), you need to update the accounting table.
+If your `System` is not in the root namespace it does not have direct access to the ETH anyway. 
+You *have* to use `BalanceTransferSystem`.
