@@ -1,5 +1,28 @@
 # Change Log
 
+## 2.0.2
+
+### Patch Changes
+
+- e86bd14d: Added a new preview module, `Unstable_DelegationWithSignatureModule`, which allows registering delegations with a signature.
+
+  Note: this module is marked as `Unstable`, because it will be removed and included in the default `World` deployment once it is audited.
+
+- 3b845d6b: Remove workaround for generating `IWorld` interface from cached forge files as this was fixed by forge.
+- Updated dependencies [e86bd14d]
+- Updated dependencies [a09bf251]
+  - @latticexyz/world-modules@2.0.2
+  - @latticexyz/world@2.0.2
+  - @latticexyz/abi-ts@2.0.2
+  - @latticexyz/common@2.0.2
+  - @latticexyz/config@2.0.2
+  - @latticexyz/gas-report@2.0.2
+  - @latticexyz/protocol-parser@2.0.2
+  - @latticexyz/schema-type@2.0.2
+  - @latticexyz/services@2.0.2
+  - @latticexyz/store@2.0.2
+  - @latticexyz/utils@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes

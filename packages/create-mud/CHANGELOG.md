@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.0.2
+
+### Patch Changes
+
+- a1101f78: Changed the controls in the `threejs` template from arrow keys to WASD and added text to explain what the app does.
+- 9e239765: Templates now run anvil in its own process (via mprocs) for better visibility into anvil logs.
+
 ## 2.0.1
 
 ## 2.0.0
