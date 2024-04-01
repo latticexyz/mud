@@ -25,11 +25,11 @@ A store hook contract is a contract that implements the [`IStoreHook`](./referen
 
 After the store hook contract [is registered](#register-a-hook), `Store` calls the enabled hook methods on each state change.
 
-For example, here is a hook that freezes the table information so nobody can modify it.
+For example, here is a hook that freezes the table information to prevent modifications.
 
 <CollapseCode>
 
-```solidity filename="FreezeCounter.s.sol" copy showLineNumbers {6,13-15,19-63}
+```solidity filename="FreezeCounter.s.sol" copy showLineNumbers {6,10-12,16-60}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 import { Script } from "forge-std/Script.sol";
@@ -197,7 +197,7 @@ For example, here we register the `Freeze` contract above to freeze the value of
 
 <CollapseCode>
 
-```solidity filename="FreezeCounter.s.sol" copy showLineNumbers {7-11,75-83}
+```solidity filename="FreezeCounter.s.sol" copy showLineNumbers {7-8,62-84}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 import { Script } from "forge-std/Script.sol";
@@ -301,6 +301,7 @@ import { IWorld } from "../src/codegen/world/IWorld.sol";
 ```
 
 When we use a `World` we need this definition to register hooks.
+If we were using store without a `World`, we'd use `StoreSwitch` instead.
 
 ```solidity
     // Deploy Freeze
