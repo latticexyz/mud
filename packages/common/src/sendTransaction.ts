@@ -16,7 +16,22 @@ import { parseAccount } from "viem/accounts";
 
 const debug = parentDebug.extend("sendTransaction");
 
-// TODO: migrate away from this approach once we can hook into viem's nonce management: https://github.com/wagmi-dev/viem/discussions/1230
+export type SendTransactionExtraOptions<chain extends Chain | undefined> = {
+  /**
+   * `publicClient` can be provided to be used in place of the extended viem client for making public action calls
+   * (`getChainId`, `getTransactionCount`, `call`). This helps in cases where the extended
+   * viem client is a smart account client, like in [permissionless.js](https://github.com/pimlicolabs/permissionless.js),
+   * where the transport is the bundler, not an RPC.
+   */
+  publicClient?: PublicClient<Transport, chain>;
+  /**
+   * Adjust the number of concurrent calls to the mempool. This defaults to `1` to ensure transactions are ordered
+   * and nonces are handled properly. Any number greater than that is likely to see nonce errors, but this may be
+   * an acceptable trade-off for some applications that can safely retry.
+   * @default 1
+   */
+  queueConcurrency?: number;
+};
 
 /** @deprecated Use `walletClient.extend(transactionQueue())` instead. */
 export async function sendTransaction<
@@ -26,7 +41,7 @@ export async function sendTransaction<
 >(
   client: Client<Transport, chain, account>,
   request: SendTransactionParameters<chain, account, chainOverride>,
-  publicClient?: PublicClient<Transport, chain>,
+  opts: SendTransactionExtraOptions<chain> = {},
 ): Promise<SendTransactionReturnType> {
   const rawAccount = request.account ?? client.account;
   if (!rawAccount) {
@@ -36,9 +51,10 @@ export async function sendTransaction<
   const account = parseAccount(rawAccount);
 
   const nonceManager = await getNonceManager({
-    client: publicClient ?? client,
+    client: opts.publicClient ?? client,
     address: account.address,
     blockTag: "pending",
+    queueConcurrency: opts.queueConcurrency,
   });
 
   async function prepare(): Promise<SendTransactionParameters<chain, account, chainOverride>> {
@@ -48,7 +64,7 @@ export async function sendTransaction<
     }
 
     debug("simulating tx to", request.to);
-    await call(publicClient ?? client, {
+    await call(opts.publicClient ?? client, {
       ...request,
       blockTag: "pending",
       account,
