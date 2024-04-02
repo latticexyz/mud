@@ -9,9 +9,11 @@ import { Callout } from "nextra/components";
 A `System` in the root namespace costs slightly less gas because it uses the `World` context, including storage, and does not need to call the `World` back to read or write information.
 However, because it runs in the `World` context, there are security risks in writing such a `System`.
 
-- It is possible, although complicated, to overwrite information in tables.
-  This means, for example, that a root namespace `System` can create [any delegation that it wants](/world/account-delegation) by modifying `world__UserDelegationControl`.
+- A root namespace `System` can overwrite information in tables.
+  This means, for example, it can create [any delegation that it wants](/world/account-delegation) by modifying `world__UserDelegationControl`.
 - Any [ETH owned by a namespace in the `World`](/world/balance) is actually stored in the `World` and therefore can be sent anywhere by such a `System`.
+- A root namespace `System` can call any other `System` with arbitrary values for [`_msgSender()`](/world/reference/world-context#_msgsender) and [`_msgValue()`](/world/reference/world-context#_msgvalue).
+  This means it can perform any action while pretending to be any user.
 
 This violates the security principle of [_least privilege_](https://csrc.nist.gov/glossary/term/least_privilege).
 Ideally, you should avoid running in the root namespace.
