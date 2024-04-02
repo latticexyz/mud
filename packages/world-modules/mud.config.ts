@@ -278,7 +278,7 @@ export default defineWorld({
      *    REGISTER DELEGATION WITH SIGNATURE MODULE
      *
      ************************************************************************/
-    UserDelegationNonces: {
+    CallWithSignatureNonces: {
       schema: { delegator: "address", nonce: "uint256" },
       key: ["delegator"],
       codegen: {
@@ -291,6 +291,6 @@ export default defineWorld({
     "PuppetFactorySystem",
     "ERC20System",
     "ERC721System",
-    "Unstable_DelegationWithSignatureSystem",
+    "Unstable_CallWithSignatureSystem",
   ],
 });
