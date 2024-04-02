@@ -2,30 +2,25 @@ import { Page } from "@playwright/test";
 import { GetContractReturnType, PublicClient, WalletClient } from "viem";
 import { AbiParametersToPrimitiveTypes, ExtractAbiFunction, ExtractAbiFunctionNames } from "abitype";
 
-const DelegationAbi = [
+const Abi = [
   {
     type: "function",
-    name: "registerDelegationWithSignature",
+    name: "callWithSignature",
     inputs: [
-      {
-        name: "delegatee",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "delegationControlId",
-        type: "bytes32",
-        internalType: "ResourceId",
-      },
-      {
-        name: "initCallData",
-        type: "bytes",
-        internalType: "bytes",
-      },
       {
         name: "delegator",
         type: "address",
         internalType: "address",
+      },
+      {
+        name: "systemId",
+        type: "bytes32",
+        internalType: "ResourceId",
+      },
+      {
+        name: "callData",
+        type: "bytes",
+        internalType: "bytes",
       },
       {
         name: "signature",
@@ -34,11 +29,11 @@ const DelegationAbi = [
       },
     ],
     outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
   },
 ] as const;
 
-type DelegationAbi = typeof DelegationAbi;
+type DelegationAbi = typeof Abi;
 
 type WorldContract = GetContractReturnType<DelegationAbi, PublicClient, WalletClient>;
 
@@ -46,7 +41,7 @@ type WriteMethodName = ExtractAbiFunctionNames<DelegationAbi>;
 type WriteMethod<TMethod extends WriteMethodName> = ExtractAbiFunction<DelegationAbi, TMethod>;
 type WriteArgs<TMethod extends WriteMethodName> = AbiParametersToPrimitiveTypes<WriteMethod<TMethod>["inputs"]>;
 
-export function callRegisterDelegationWithSignature(page: Page, args?: WriteArgs<"registerDelegationWithSignature">) {
+export function callWithSignature(page: Page, args?: WriteArgs<"callWithSignature">) {
   return page.evaluate(
     ([_args]) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -60,27 +55,22 @@ export function callRegisterDelegationWithSignature(page: Page, args?: WriteArgs
           abi: [
             {
               type: "function",
-              name: "registerDelegationWithSignature",
+              name: "callWithSignature",
               inputs: [
-                {
-                  name: "delegatee",
-                  type: "address",
-                  internalType: "address",
-                },
-                {
-                  name: "delegationControlId",
-                  type: "bytes32",
-                  internalType: "ResourceId",
-                },
-                {
-                  name: "initCallData",
-                  type: "bytes",
-                  internalType: "bytes",
-                },
                 {
                   name: "delegator",
                   type: "address",
                   internalType: "address",
+                },
+                {
+                  name: "systemId",
+                  type: "bytes32",
+                  internalType: "ResourceId",
+                },
+                {
+                  name: "callData",
+                  type: "bytes",
+                  internalType: "bytes",
                 },
                 {
                   name: "signature",
@@ -92,7 +82,7 @@ export function callRegisterDelegationWithSignature(page: Page, args?: WriteArgs
               stateMutability: "nonpayable",
             },
           ],
-          functionName: "registerDelegationWithSignature",
+          functionName: "callWithSignature",
           args: _args,
         })
         .then((tx) => window["waitForTransaction"](tx))
