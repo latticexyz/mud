@@ -6,7 +6,7 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
-import { UserDelegationNonces } from "./tables/UserDelegationNonces.sol";
+import { CallWithSignatureNonces } from "./tables/CallWithSignatureNonces.sol";
 import { Unstable_CallWithSignatureSystem } from "./Unstable_CallWithSignatureSystem.sol";
 
 import { DELEGATION_SYSTEM_ID } from "./constants.sol";
@@ -20,7 +20,7 @@ contract Unstable_CallWithSignatureModule is Module {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register table
-    UserDelegationNonces._register();
+    CallWithSignatureNonces._register();
 
     // Register system
     (bool success, bytes memory data) = address(world).delegatecall(

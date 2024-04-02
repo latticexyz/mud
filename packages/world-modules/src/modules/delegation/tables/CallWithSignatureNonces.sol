@@ -16,9 +16,9 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-library UserDelegationNonces {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "UserDelegationNo", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000005573657244656c65676174696f6e4e6f);
+library CallWithSignatureNonces {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "CallWithSignatur", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000043616c6c576974685369676e61747572);
 
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0020010020000000000000000000000000000000000000000000000000000000);

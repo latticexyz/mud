@@ -6,7 +6,7 @@ import { System } from "@latticexyz/world/src/System.sol";
 import { SystemCall } from "@latticexyz/world/src/SystemCall.sol";
 import { createDelegation } from "@latticexyz/world/src/modules/init/implementations/createDelegation.sol";
 
-import { UserDelegationNonces } from "./tables/UserDelegationNonces.sol";
+import { CallWithSignatureNonces } from "./tables/CallWithSignatureNonces.sol";
 import { getSignedMessageHash } from "./getSignedMessageHash.sol";
 import { ECDSA } from "./ECDSA.sol";
 
@@ -30,7 +30,7 @@ contract Unstable_CallWithSignatureSystem is System {
     bytes memory callData,
     bytes memory signature
   ) external payable returns (bytes memory) {
-    uint256 nonce = UserDelegationNonces.get(delegator);
+    uint256 nonce = CallWithSignatureNonces.get(delegator);
     bytes32 hash = getSignedMessageHash(delegator, systemId, callData, nonce, _world());
 
     // If the message was not signed by the delegator or is invalid, revert
@@ -39,7 +39,7 @@ contract Unstable_CallWithSignatureSystem is System {
       revert InvalidSignature(signer);
     }
 
-    UserDelegationNonces.set(delegator, nonce + 1);
+    CallWithSignatureNonces.set(delegator, nonce + 1);
 
     return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, _msgValue());
   }
