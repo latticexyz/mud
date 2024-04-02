@@ -1,5 +1,17 @@
 # Change Log
 
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies [d2e4d0fb]
+- Updated dependencies [d2e4d0fb]
+  - @latticexyz/common@2.0.3
+  - @latticexyz/world@2.0.3
+  - @latticexyz/config@2.0.3
+  - @latticexyz/store@2.0.3
+  - @latticexyz/schema-type@2.0.3
+
 ## 2.0.2
 
 ### Patch Changes
