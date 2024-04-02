@@ -79,7 +79,7 @@ export function callWithSignature(page: Page, args?: WriteArgs<"callWithSignatur
                 },
               ],
               outputs: [],
-              stateMutability: "nonpayable",
+              stateMutability: "payable",
             },
           ],
           functionName: "callWithSignature",
