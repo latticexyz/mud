@@ -1,5 +1,6 @@
 import Illustration from "./world-table-illustration.mdx";
 import { CollapseCode } from "../../components/CollapseCode";
+import { Callout } from "nextra/components";
 
 # Systems
 
@@ -135,7 +136,26 @@ There are two ways to call one `System` from another one.
 
 #### Calling from a root `System`
 
-If you need to call a `System` from a `System` in the root namespace you can use [`SystemSwitch`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/utils/SystemSwitch.sol).
+For [security reasons](/retrospectives/2023-09-12-register-system-vulnerability) the `World` cannot call itself.
+A `System` in the root namespace runs in the `World` context, and therefore cannot call the `World` either.
+
+<Callout type="error" emoji="🚫">
+  You *could* use
+  [`delegatecall`](https://docs.soliditylang.org/en/v0.8.16/introduction-to-smart-contracts.html#delegatecall-callcode-and-libraries),
+  but that is a **very bad idea**. A root `System` has unlimited access to the `World`. Sometimes, that is necessary.
+  However, any contract you `delegatecall` inherits your permissions, in this case unlimited access to the `World` and
+  the ability to change everything.
+</Callout>
+
+An alternative solution is for the root `System` to do exactly what the `World` does with a normal call: check for access permission, run before hook (if configured), call the `System`, and then run the after hook (if configured).
+To do that, you can use [`SystemCall.callWithHooks()`](https://github.com/latticexyz/mud/blob/main/packages/world/src/SystemCall.sol#L77-L114).
+
+If you need to specify values for [`_msgSender()`](/world/reference/world-context#_msgsender) and [`_msgValue()`](/world/reference/world-context#_msgvalue) to provide for the called `System`, you can use [`WorldContextProviderLib.callWithContext`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L122-L140).
+Note that this function is _extremely_ low level, and if you use it you have to process hooks and access control yourself.
+
+#### `SystemSwitch`
+
+If your `System` needs run both from the root namespace and from other namespaces, you can call other `System`s using [`SystemSwitch`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/utils/SystemSwitch.sol).
 
 1. Import `SystemSwitch`.
 
