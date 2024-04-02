@@ -1,5 +1,24 @@
 # Change Log
 
+## 2.0.4
+
+### Patch Changes
+
+- 620e4ec1: `transactionQueue` now accepts a `queueConcurrency` to allow adjusting the number of concurrent calls to the mempool. This defaults to `1` to ensure transactions are ordered and nonces are handled properly. Any number greater than that is likely to see nonce errors and transactions arriving out of order, but this may be an acceptable trade-off for some applications that can safely retry.
+  - @latticexyz/schema-type@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- d2e4d0fb: `transactionQueue` decorator now accepts an optional `publicClient` argument, which will be used in place of the extended viem client for making public action calls (`getChainId`, `getTransactionCount`, `simulateContract`, `call`). This helps in cases where the extended viem client is a smart account client, like in [permissionless.js](https://github.com/pimlicolabs/permissionless.js), where the transport is the bundler, not an RPC.
+
+  `writeObserver` decorator now accepts any `Client`, not just a `WalletClient`.
+
+  `createBurnerAccount` now returns a `PrivateKeyAccount`, the more specific `Account` type.
+
+  - @latticexyz/schema-type@2.0.3
+
 ## 2.0.2
 
 ### Patch Changes
