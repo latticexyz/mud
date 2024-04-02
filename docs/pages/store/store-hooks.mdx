@@ -17,13 +17,13 @@ There are many ways to [interact with tables](./reference/store-core), but they 
 3. A part of the dynamic-length data of a record is changed (`SpliceDynamicData`)
 4. A full record is deleted (`DeleteRecord`)
 
-By registering a store hook contract on a table, arbitrary logic can be triggered `before` or `after` each of these state changes.
+By registering a store hook contract on a table, arbitrary logic can be triggered either before or after each of these state changes.
 
-### Store hook contract
+## Store hook contract
 
 A store hook contract is a contract that implements the [`IStoreHook`](./reference/store-hook) interface.
 
-After the store hook contract [is registered](#register-a-hook), `Store` calls the enabled hook methods on each state change.
+After the store hook contract [is registered](#hook-registration), `Store` calls the enabled hook methods on each state change.
 
 For example, here is a hook that freezes the table information to prevent modifications.
 
@@ -188,7 +188,7 @@ In addition to these functions we can also override `onAfter...` if we need it (
 
 </details>
 
-### Hook registration
+## Hook registration
 
 Hooks are registered via the [`StoreCore`](./reference/store-core) library or [`IStore`](./reference/store) interface.
 It is possible to select the type of state change that should trigger a hook and the time (before or after) with a bitmap passed during the registration.
