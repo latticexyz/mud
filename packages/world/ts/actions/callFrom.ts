@@ -1,7 +1,6 @@
 import {
   slice,
   concat,
-  type WalletClient,
   type Transport,
   type Chain,
   type Account,
@@ -10,6 +9,7 @@ import {
   type WriteContractReturnType,
   type EncodeFunctionDataParameters,
   type PublicClient,
+  Client,
 } from "viem";
 import { getAction, encodeFunctionData } from "viem/utils";
 import { writeContract } from "viem/actions";
@@ -52,12 +52,17 @@ type SystemFunction = { systemId: Hex; systemFunctionSelector: Hex };
 // The function mapping is cached to avoid redundant retrievals for the same World function.
 export function callFrom<TChain extends Chain, TAccount extends Account>(
   params: CallFromParameters,
-): (client: WalletClient<Transport, TChain, TAccount>) => Pick<WalletActions<TChain, TAccount>, "writeContract"> {
+): (client: Client<Transport, TChain, TAccount>) => Pick<WalletActions<TChain, TAccount>, "writeContract"> {
   return (client) => ({
     // Applies to: `client.writeContract`, `getContract(client, ...).write`
     writeContract: async (writeArgs): Promise<WriteContractReturnType> => {
-      // Skip if the contract isn't the World.
-      if (writeArgs.address !== params.worldAddress) {
+      // Skip if the contract isn't the World or the function called should not be redirected through `callFrom`.
+      if (
+        writeArgs.address !== params.worldAddress ||
+        writeArgs.functionName === "call" ||
+        writeArgs.functionName === "callFrom" ||
+        writeArgs.functionName === "registerDelegationWithSignature"
+      ) {
         return getAction(client, writeContract, "writeContract")(writeArgs);
       }
 
