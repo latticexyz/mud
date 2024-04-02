@@ -35,8 +35,8 @@ contract Unstable_DelegationWithSignatureModule is Module {
         world.registerRootFunctionSelector,
         (
           DELEGATION_SYSTEM_ID,
-          "registerDelegationWithSignature(address,bytes32,bytes,address,bytes)",
-          "registerDelegationWithSignature(address,bytes32,bytes,address,bytes)"
+          "callWithSignature(address,bytes32,bytes,bytes)",
+          "callWithSignature(address,bytes32,bytes,bytes)"
         )
       )
     );

@@ -3,6 +3,7 @@ pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { System } from "@latticexyz/world/src/System.sol";
+import { SystemCall } from "@latticexyz/world/src/SystemCall.sol";
 import { createDelegation } from "@latticexyz/world/src/modules/init/implementations/createDelegation.sol";
 
 import { UserDelegationNonces } from "./tables/UserDelegationNonces.sol";
@@ -16,23 +17,21 @@ contract Unstable_DelegationWithSignatureSystem is System {
   error InvalidSignature(address signer);
 
   /**
-   * @notice Registers a delegation for `delegator` with a signature
-   * @dev Creates a new delegation from the caller to the specified delegatee
-   * @param delegatee The address of the delegatee
-   * @param delegationControlId The ID controlling the delegation
-   * @param initCallData The initialization data for the delegation
-   * @param delegator The address of the delegator
-   * @param signature The EIP712 signature
+   * @notice Calls a system with a given system ID using the given signature.
+   * @param delegator The address on whose behalf the system is called.
+   * @param systemId The ID of the system to be called.
+   * @param callData The ABI data for the system call.
+   * @param signature The EIP712 signature.
+   * @return Return data from the system call.
    */
-  function registerDelegationWithSignature(
-    address delegatee,
-    ResourceId delegationControlId,
-    bytes memory initCallData,
+  function callWithSignature(
     address delegator,
+    ResourceId systemId,
+    bytes memory callData,
     bytes memory signature
-  ) public {
+  ) external payable returns (bytes memory) {
     uint256 nonce = UserDelegationNonces.get(delegator);
-    bytes32 hash = getSignedMessageHash(delegatee, delegationControlId, initCallData, delegator, nonce, _world());
+    bytes32 hash = getSignedMessageHash(delegator, systemId, callData, nonce, _world());
 
     // If the message was not signed by the delegator or is invalid, revert
     address signer = ECDSA.recover(hash, signature);
@@ -42,6 +41,6 @@ contract Unstable_DelegationWithSignatureSystem is System {
 
     UserDelegationNonces.set(delegator, nonce + 1);
 
-    createDelegation(delegator, delegatee, delegationControlId, initCallData);
+    return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, _msgValue());
   }
 }
