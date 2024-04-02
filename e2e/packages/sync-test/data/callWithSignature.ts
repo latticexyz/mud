@@ -88,9 +88,7 @@ export function callWithSignature(page: Page, args?: WriteArgs<"callWithSignatur
         .then((tx) => window["waitForTransaction"](tx))
         .catch((error) => {
           console.error(error);
-          throw new Error(
-            [`Error executing registerDelegationWithSignature with args:`, JSON.stringify(_args), error].join("\n\n"),
-          );
+          throw new Error([`Error executing callWithSignature with args:`, JSON.stringify(_args), error].join("\n\n"));
         });
     },
     [args],

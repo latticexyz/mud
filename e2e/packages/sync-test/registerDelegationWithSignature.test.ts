@@ -21,7 +21,7 @@ const DELEGATOR_PRIVATE_KEY = "0x67bbd1575ecc79b3247c7d7b87a5bc533ccb6a63955a9fe
 
 const worldConfigV1 = worldToV1(worldConfig);
 
-describe("registerDelegationWithSignature", async () => {
+describe("callWithSignature", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
   let browser: Browser;
