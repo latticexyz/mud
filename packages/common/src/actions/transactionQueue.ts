@@ -19,15 +19,15 @@ export type TransactionQueueOptions<chain extends Chain> = {
   queueConcurrency?: number;
 };
 
-export function transactionQueue<chain extends Chain, account extends Account>({
-  publicClient,
-}: TransactionQueueOptions<chain> = {}): (
+export function transactionQueue<chain extends Chain, account extends Account>(
+  opts: TransactionQueueOptions<chain> = {},
+): (
   client: Client<Transport, chain, account>,
 ) => Pick<WalletActions<chain, account>, "writeContract" | "sendTransaction"> {
   return (client) => ({
     // Applies to: `client.writeContract`, `getContract(client, ...).write`
-    writeContract: (args) => mud_writeContract(client, args, publicClient),
+    writeContract: (args) => mud_writeContract(client, args, opts),
     // Applies to: `client.sendTransaction`
-    sendTransaction: (args) => mud_sendTransaction(client, args, publicClient),
+    sendTransaction: (args) => mud_sendTransaction(client, args, opts),
   });
 }
