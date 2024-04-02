@@ -61,7 +61,7 @@ export function callFrom<TChain extends Chain, TAccount extends Account>(
         writeArgs.address !== params.worldAddress ||
         writeArgs.functionName === "call" ||
         writeArgs.functionName === "callFrom" ||
-        writeArgs.functionName === "registerDelegationWithSignature"
+        writeArgs.functionName === "callWithSignature"
       ) {
         return getAction(client, writeContract, "writeContract")(writeArgs);
       }
