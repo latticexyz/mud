@@ -11,6 +11,7 @@ export type CreateNonceManagerOptions = {
   address: Hex;
   blockTag?: BlockTag;
   broadcastChannelName?: string;
+  queueConcurrency?: number;
 };
 
 export type CreateNonceManagerResult = {
@@ -26,6 +27,7 @@ export function createNonceManager({
   address, // TODO: rename to account?
   blockTag = "pending",
   broadcastChannelName,
+  queueConcurrency = 1,
 }: CreateNonceManagerOptions): CreateNonceManagerResult {
   const nonceRef = { current: -1 };
   let channel: BroadcastChannel | null = null;
@@ -70,7 +72,7 @@ export function createNonceManager({
     );
   }
 
-  const mempoolQueue = new PQueue({ concurrency: 1 });
+  const mempoolQueue = new PQueue({ concurrency: queueConcurrency });
 
   return {
     hasNonce,
