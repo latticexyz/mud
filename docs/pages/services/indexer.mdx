@@ -416,3 +416,19 @@ If the client does not need all the information stored in the `World`, you can [
    ```sh copy
    cat data.json | jq '.[0].result.data.json.tables[].name'
    ```
+
+### Reading SkyStrife information
+
+Information about SkyStrife is available from [`https://indexer.skystrife.xyz`].
+The world address is `0x7203e7adfdf38519e1ff4f8da7dcdc969371f377`.
+
+1. Run these commands to get the information.
+
+   ```sh copy
+   WORLD_ADDRESS=0x7203e7adfdf38519e1ff4f8da7dcdc969371f377
+   CHAIN_ID=17001
+   INPUT_TEMPLATE=%7B%0A%20%20%220%22%3A%20%7B%0A%20%20%20%20%22json%22%3A%20%7B%0A%20%20%20%20%20%20%22chainId%22%3A%20:CHAIN_ID:%2C%0A%20%20%20%20%20%20%22address%22%3A%20%22:WORLD_ADDRESS:%22%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D
+   INPUT=`echo $INPUT_TEMPLATE | sed s/:CHAIN_ID:/$CHAIN_ID/ | sed s/:WORLD_ADDRESS:/$WORLD_ADDRESS/`
+   URL="https://indexer.skystrife.xyz/trpc/findAll?batch=1&input=$INPUT"
+   curl $URL > data.json
+   ```
