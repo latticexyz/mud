@@ -25,35 +25,35 @@ jobs:
           fetch-depth: 0
 
       - name: Check for changes outside docs
-        id: check
+        id: check_changes
         run: ./.github/scripts/check_changes_outside_docs.sh
 
       - name: Setup
-        if: steps.check.outputs.changes_outside_docs
+        if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/setup
 
       - name: Build
-        if: steps.check.outputs.changes_outside_docs
+        if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/build
 
       - name: Run tests
-        if: steps.check.outputs.changes_outside_docs
+        if: steps.check_changes.outputs.changes_outside_docs
         env:
           DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
         run: pnpm test:ci
 
       - name: Generate gas reports
-        if: steps.check.outputs.changes_outside_docs
+        if: steps.check_changes.outputs.changes_outside_docs
         run: pnpm gas-report
 
       - name: Outdated files, run `pnpm gas-report` and commit them
-        if: steps.check.outputs.changes_outside_docs
+        if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/require-empty-diff
 
       - name: Sort package.json
-        if: steps.check.outputs.changes_outside_docs
+        if: steps.check_changes.outputs.changes_outside_docs
         run: pnpm sort-package-json
 
       - name: Outdated files, run `sort-package-json` and commit them
-        if: steps.check.outputs.changes_outside_docs
+        if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/require-empty-diff
