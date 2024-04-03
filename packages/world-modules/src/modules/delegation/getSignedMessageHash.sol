@@ -8,7 +8,7 @@ bytes32 constant CALL_TYPEHASH = keccak256("Call(address delegator,bytes32 syste
 /**
  * @notice Generate the message hash for a given delegation signature.
  * For EIP712 signatures https://eips.ethereum.org/EIPS/eip-712
- * @dev We include the delegator to prevent generating a garbage signature and registering a delegation for the corresponding recovered address.
+ * @dev We include the signer address to prevent generating a signature that recovers to a random address that didn't sign the message.
  * @param delegator The address on whose behalf the system is called.
  * @param systemId The ID of the system to be called.
  * @param callData The ABI data for the system call.
