@@ -13,7 +13,7 @@ import { SliceLib } from "../../Slice.sol";
 import { EncodeArray } from "../../tightcoder/EncodeArray.sol";
 import { FieldLayout } from "../../FieldLayout.sol";
 import { Schema } from "../../Schema.sol";
-import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "../../EncodedLengths.sol";
 import { ResourceId } from "../../ResourceId.sol";
 
 // Import user types
@@ -181,10 +181,10 @@ library ResourceIds {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(bool exists) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(bool exists) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(exists);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     return (_staticData, _encodedLengths, _dynamicData);

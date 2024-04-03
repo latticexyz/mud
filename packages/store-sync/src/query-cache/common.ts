@@ -1,4 +1,5 @@
-import { Config, Table } from "@latticexyz/store/config/v2";
+import { Store } from "@latticexyz/store";
+import { Table } from "@latticexyz/config";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
 import { ComparisonCondition, InCondition } from "@latticexyz/query";
 
@@ -10,7 +11,7 @@ export type subjectSchemaToPrimitive<tuple> = {
   [key in keyof tuple]: tuple[key] extends SchemaAbiType ? SchemaAbiTypeToPrimitiveType<tuple[key]> : never;
 };
 
-export type Tables = Config["tables"];
+export type Tables = Store["tables"];
 
 export type TableSubjectItem<table extends Table = Table> = keyof table["schema"];
 

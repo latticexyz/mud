@@ -13,7 +13,7 @@ import { IFieldLayoutErrors } from "./IFieldLayoutErrors.sol";
  * - 1 byte for number of static size fields
  * - 1 byte for number of dynamic size fields
  * - 28 bytes for 28 static field lengths
- * (MAX_DYNAMIC_FIELDS allows PackedCounter to pack the dynamic lengths into 1 word)
+ * (MAX_DYNAMIC_FIELDS allows EncodedLengths to pack the dynamic lengths into 1 word)
  */
 type FieldLayout is bytes32;
 

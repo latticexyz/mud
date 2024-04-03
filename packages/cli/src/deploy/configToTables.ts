@@ -1,7 +1,7 @@
 import { resourceToHex } from "@latticexyz/common";
 import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type/internal";
-import { StoreConfig, resolveUserTypes } from "@latticexyz/store";
+import { StoreConfig, resolveUserTypes } from "@latticexyz/store/internal";
 import { Hex } from "viem";
 
 // TODO: we shouldn't need this file once our config parsing returns nicely formed tables

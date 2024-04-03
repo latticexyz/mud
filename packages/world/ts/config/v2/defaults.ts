@@ -10,7 +10,7 @@ export const CODEGEN_DEFAULTS = {
   worldImportPath: "@latticexyz/world/src/",
 } as const;
 
-export const DEPLOYMENT_DEFAULTS = {
+export const DEPLOY_DEFAULTS = {
   customWorldContract: undefined,
   postDeployScript: "PostDeploy",
   deploysDirectory: "./deploys",
@@ -23,5 +23,5 @@ export const CONFIG_DEFAULTS = {
   excludeSystems: [] as string[],
   modules: [],
   codegen: CODEGEN_DEFAULTS,
-  deployment: DEPLOYMENT_DEFAULTS,
+  deploy: DEPLOY_DEFAULTS,
 } as const;

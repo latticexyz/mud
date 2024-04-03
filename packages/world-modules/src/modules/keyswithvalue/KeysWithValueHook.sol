@@ -5,7 +5,7 @@ import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { Tables } from "@latticexyz/store/src/codegen/tables/Tables.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 
@@ -35,7 +35,7 @@ contract KeysWithValueHook is StoreHook {
     ResourceId sourceTableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) public override {
@@ -89,7 +89,7 @@ contract KeysWithValueHook is StoreHook {
     uint8,
     uint40,
     uint40,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) public override {
     // Remove the key from the list of keys with the previous value
@@ -105,7 +105,7 @@ contract KeysWithValueHook is StoreHook {
     uint8,
     uint40,
     uint40,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) public override {
     // Add the key to the list of keys with the new value
@@ -131,7 +131,7 @@ contract KeysWithValueHook is StoreHook {
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout
   ) internal view returns (bytes32 valueHash) {
-    (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) = _world().getRecord(
+    (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData) = _world().getRecord(
       sourceTableId,
       keyTuple,
       fieldLayout

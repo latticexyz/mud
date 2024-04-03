@@ -28,9 +28,9 @@ export type resolveStoreWithShorthands<store> = resolveStore<{
     : store[key];
 }>;
 
-export function resolveStoreWithShorthands<const store>(store: store): resolveStoreWithShorthands<store> {
-  validateStoreWithShorthands(store);
-
+export function resolveStoreWithShorthands<const store extends StoreWithShorthandsInput>(
+  store: store,
+): resolveStoreWithShorthands<store> {
   const scope = extendedScope(store);
   const fullConfig = {
     ...store,
@@ -39,11 +39,13 @@ export function resolveStoreWithShorthands<const store>(store: store): resolveSt
     }),
   };
 
+  validateStore(fullConfig);
   return resolveStore(fullConfig) as unknown as resolveStoreWithShorthands<store>;
 }
 
 export function defineStoreWithShorthands<const store>(
   store: validateStoreWithShorthands<store>,
 ): resolveStoreWithShorthands<store> {
-  return resolveStoreWithShorthands(store) as resolveStoreWithShorthands<store>;
+  validateStoreWithShorthands(store);
+  return resolveStoreWithShorthands(store) as unknown as resolveStoreWithShorthands<store>;
 }

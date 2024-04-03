@@ -1,11 +1,11 @@
 import { ErrorMessage, conform } from "@arktype/util";
-import { isStaticAbiType } from "@latticexyz/schema-type/internal";
-import { get, hasOwnKey, isObject, mergeIfUndefined } from "./generics";
+import { FixedArrayAbiType, isFixedArrayAbiType, isStaticAbiType } from "@latticexyz/schema-type/internal";
+import { get, hasOwnKey, isObject } from "./generics";
 import { isSchemaInput } from "./schema";
 import { AbiTypeScope, Scope, getStaticAbiTypeKeys } from "./scope";
 import { SchemaInput, ScopedSchemaInput, TablesWithShorthandsInput } from "./input";
 import { TableShorthandInput } from "./input";
-import { validateTable } from "./table";
+import { ValidateTableOptions, validateTable } from "./table";
 
 export type NoStaticKeyFieldError =
   ErrorMessage<"Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.">;
@@ -17,9 +17,11 @@ export function isTableShorthandInput(shorthand: unknown): shorthand is TableSho
   );
 }
 
-export type validateTableWithShorthand<table, scope extends Scope = AbiTypeScope> = table extends TableShorthandInput
-  ? validateTableShorthand<table, scope>
-  : validateTable<table, scope>;
+export type validateTableWithShorthand<
+  table,
+  scope extends Scope = AbiTypeScope,
+  options extends ValidateTableOptions = { inStoreContext: boolean },
+> = table extends TableShorthandInput ? validateTableShorthand<table, scope> : validateTable<table, scope, options>;
 
 // We don't use `conform` here because the restrictions we're imposing here are not native to typescript
 export type validateTableShorthand<input, scope extends Scope = AbiTypeScope> = input extends SchemaInput
@@ -28,20 +30,23 @@ export type validateTableShorthand<input, scope extends Scope = AbiTypeScope> = 
     ? // Require all values to be valid types in this scope
       conform<input, ScopedSchemaInput<scope>>
     : NoStaticKeyFieldError
-  : // If a valid type from the scope is provided, accept it
-    input extends keyof scope["types"]
+  : // If a fixed array type is provided, accept it
+    input extends FixedArrayAbiType
     ? input
-    : // If the input is not a valid shorthand, return the expected type
-      input extends string
-      ? keyof scope["types"]
-      : ScopedSchemaInput<scope>;
+    : // If a valid type from the scope is provided, accept it
+      input extends keyof scope["types"]
+      ? input
+      : // If the input is not a valid shorthand, return the expected type
+        input extends string
+        ? keyof scope["types"]
+        : ScopedSchemaInput<scope>;
 
 export function validateTableShorthand<scope extends Scope = AbiTypeScope>(
   shorthand: unknown,
   scope: scope = AbiTypeScope as unknown as scope,
 ): asserts shorthand is TableShorthandInput {
   if (typeof shorthand === "string") {
-    if (hasOwnKey(scope.types, shorthand)) {
+    if (isFixedArrayAbiType(shorthand) || hasOwnKey(scope.types, shorthand)) {
       return;
     }
     throw new Error(`Invalid ABI type. \`${shorthand}\` not found in scope.`);
@@ -58,24 +63,21 @@ export function validateTableShorthand<scope extends Scope = AbiTypeScope>(
   throw new Error(`Invalid table shorthand.`);
 }
 
-export type resolveTableShorthand<
-  shorthand,
-  scope extends Scope = AbiTypeScope,
-> = shorthand extends keyof scope["types"]
+export type resolveTableShorthand<shorthand, scope extends Scope = AbiTypeScope> = shorthand extends FixedArrayAbiType
   ? { schema: { id: "bytes32"; value: shorthand }; key: ["id"] }
-  : shorthand extends SchemaInput
-    ? "id" extends getStaticAbiTypeKeys<shorthand, scope>
-      ? // If the shorthand includes a static field called `id`, use it as `key`
-        { schema: shorthand; key: ["id"] }
-      : never
-    : never;
+  : shorthand extends keyof scope["types"]
+    ? { schema: { id: "bytes32"; value: shorthand }; key: ["id"] }
+    : shorthand extends SchemaInput
+      ? "id" extends getStaticAbiTypeKeys<shorthand, scope>
+        ? // If the shorthand includes a static field called `id`, use it as `key`
+          { schema: shorthand; key: ["id"] }
+        : never
+      : never;
 
-export function resolveTableShorthand<shorthand, scope extends Scope = AbiTypeScope>(
+export function resolveTableShorthand<shorthand extends TableShorthandInput, scope extends Scope = AbiTypeScope>(
   shorthand: shorthand,
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTableShorthand<shorthand, scope> {
-  validateTableShorthand(shorthand, scope);
-
   if (isSchemaInput(shorthand, scope)) {
     return {
       schema: shorthand,
@@ -96,6 +98,7 @@ export function defineTableShorthand<shorthand, scope extends Scope = AbiTypeSco
   shorthand: validateTableShorthand<shorthand, scope>,
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTableShorthand<shorthand, scope> {
+  validateTableShorthand(shorthand, scope);
   return resolveTableShorthand(shorthand, scope) as resolveTableShorthand<shorthand, scope>;
 }
 
@@ -108,11 +111,11 @@ export type resolveTableWithShorthand<table, scope extends Scope = AbiTypeScope>
   : table;
 
 export type resolveTablesWithShorthands<input, scope extends AbiTypeScope = AbiTypeScope> = {
-  [key in keyof input]: mergeIfUndefined<resolveTableWithShorthand<input[key], scope>, { name: key }>;
+  [key in keyof input]: resolveTableWithShorthand<input[key], scope>;
 };
 
 export type validateTablesWithShorthands<tables, scope extends Scope = AbiTypeScope> = {
-  [key in keyof tables]: validateTableWithShorthand<tables[key], scope>;
+  [key in keyof tables]: validateTableWithShorthand<tables[key], scope, { inStoreContext: true }>;
 };
 
 export function validateTablesWithShorthands<scope extends Scope = AbiTypeScope>(

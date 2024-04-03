@@ -15,7 +15,7 @@ const PUBLIC_APIS: PublicApis = {
   "store/reference/store-core.mdx": {
     inputFiles: [
       { source: "store/src/StoreCore.sol" },
-      { source: "store/src/StoreData.sol" },
+      { source: "store/src/Store.sol" },
       { source: "store/src/StoreRead.sol" },
       { source: "store/src/StoreSwitch.sol" },
     ],
@@ -37,7 +37,6 @@ const PUBLIC_APIS: PublicApis = {
       { source: "store/src/IStore.sol" },
       { source: "store/src/IStoreEvents.sol" },
       { source: "store/src/IStoreErrors.sol" },
-      { source: "store/src/IStoreData.sol" },
       { source: "store/src/IStoreRead.sol" },
       { source: "store/src/IStoreWrite.sol" },
       { source: "store/src/IStoreRegistration.sol" },
@@ -76,7 +75,7 @@ const PUBLIC_APIS: PublicApis = {
       { source: "store/src/Hook.sol" },
       { source: "store/src/Memory.sol" },
       /*
-      { source: "store/src/PackedCounter.sol" },
+      { source: "store/src/EncodedLengths.sol" },
       */
       { source: "store/src/ResourceId.sol" },
       { source: "store/src/Schema.sol" },
@@ -248,7 +247,7 @@ const PUBLIC_APIS: PublicApis = {
       // After IBaseWorld we have all the things it inherits from.
       // We delete their headings, and leave the functions, errors, etc.
       { source: "world/src/codegen/interfaces/IBaseWorld.sol" },
-      { source: "store/src/StoreData.sol" },
+      { source: "store/src/Store.sol" },
       { source: "store/src/IStoreRegistration.sol" },
       { source: "world/src/modules/init/implementations/AccessManagementSystem.sol" },
       { source: "world/src/modules/init/implementations/BalanceTransferSystem.sol" },

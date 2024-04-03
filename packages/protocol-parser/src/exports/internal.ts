@@ -16,7 +16,7 @@ export * from "../encodeValue";
 export * from "../encodeValueArgs";
 export * from "../errors";
 export * from "../fieldLayoutToHex";
-export * from "../hexToPackedCounter";
+export * from "../hexToEncodedLengths";
 export * from "../hexToSchema";
 export * from "../hexToTableSchema";
 export * from "../keySchemaToHex";
@@ -25,3 +25,7 @@ export * from "../schemaToHex";
 export * from "../staticDataLength";
 export * from "../valueSchemaToFieldLayoutHex";
 export * from "../valueSchemaToHex";
+
+export * from "../getKeySchema";
+export * from "../getValueSchema";
+export * from "../getSchemaTypes";
