@@ -5,11 +5,20 @@ name: Build
 # because the release workflow includes a build+verify step.
 on:
   pull_request:
-    paths-ignore:
-      - "docs/**"
 
 jobs:
+  condition:
+    name: Check if this action should run in this context
+    runs-on: ubuntu-latest
+    outputs:
+      changes_outside_docs: ${{ steps.check.outputs.changes_outside_docs }}
+    steps:
+      - id: check
+        run: ./.github/scripts/check_changes_outside_docs.sh
+
   build:
+    needs: condition
+    if: needs.condition.outputs.changes_outside_docs == 'true'
     name: Build and validate artifacts
     runs-on: ubuntu-latest
     steps:

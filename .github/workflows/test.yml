@@ -4,14 +4,21 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - "docs/**"
   pull_request:
-    paths-ignore:
-      - "docs/**"
 
 jobs:
+  condition:
+    name: Check if this action should run in this context
+    runs-on: ubuntu-latest
+    outputs:
+      changes_outside_docs: ${{ steps.check.outputs.changes_outside_docs }}
+    steps:
+      - id: check
+        run: ./.github/scripts/check_changes_outside_docs.sh
+
   test:
+    needs: condition
+    if: needs.condition.outputs.changes_outside_docs == 'true'
     name: Run tests
     runs-on: ubuntu-latest-16-cores
     services:
