@@ -5,7 +5,4 @@ export default {
   swift: "Swift",
   svelte: "Svelte",
   unity: "Unity",
-  disclaimer: {
-    display: "hidden",
-  },
 };
