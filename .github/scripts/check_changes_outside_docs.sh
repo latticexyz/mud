@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # List all changed files between the current commit and the main branch 
-changed_files=$(git diff --name-only main HEAD)
+changed_files=$(git diff --name-only origin/main...HEAD)
 
 # Initialize a flag to indicate if changes are found outside the 'docs/' directory
 changes_outside_docs=0
