@@ -279,8 +279,8 @@ export default defineWorld({
      *
      ************************************************************************/
     CallWithSignatureNonces: {
-      schema: { delegator: "address", nonce: "uint256" },
-      key: ["delegator"],
+      schema: { signer: "address", nonce: "uint256" },
+      key: ["signer"],
       codegen: {
         outputDirectory: "modules/delegation/tables",
       },

@@ -18,29 +18,29 @@ contract Unstable_CallWithSignatureSystem is System {
 
   /**
    * @notice Calls a system with a given system ID using the given signature.
-   * @param delegator The address on whose behalf the system is called.
+   * @param signer The address on whose behalf the system is called.
    * @param systemId The ID of the system to be called.
    * @param callData The ABI data for the system call.
    * @param signature The EIP712 signature.
    * @return Return data from the system call.
    */
   function callWithSignature(
-    address delegator,
+    address signer,
     ResourceId systemId,
     bytes memory callData,
     bytes memory signature
   ) external payable returns (bytes memory) {
-    uint256 nonce = CallWithSignatureNonces.get(delegator);
-    bytes32 hash = getSignedMessageHash(delegator, systemId, callData, nonce, _world());
+    uint256 nonce = CallWithSignatureNonces.get(signer);
+    bytes32 hash = getSignedMessageHash(signer, systemId, callData, nonce, _world());
 
     // If the message was not signed by the delegator or is invalid, revert
-    address signer = ECDSA.recover(hash, signature);
-    if (signer != delegator) {
-      revert InvalidSignature(signer);
+    address recoveredSigner = ECDSA.recover(hash, signature);
+    if (recoveredSigner != signer) {
+      revert InvalidSignature(recoveredSigner);
     }
 
-    CallWithSignatureNonces.set(delegator, nonce + 1);
+    CallWithSignatureNonces.set(signer, nonce + 1);
 
-    return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, _msgValue());
+    return SystemCall.callWithHooksOrRevert(signer, systemId, callData, _msgValue());
   }
 }

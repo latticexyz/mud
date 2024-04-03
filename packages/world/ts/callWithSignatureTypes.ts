@@ -2,7 +2,7 @@
 
 export const callWithSignatureTypes = {
   Call: [
-    { name: "delegator", type: "address" },
+    { name: "signer", type: "address" },
     { name: "systemId", type: "bytes32" },
     { name: "callData", type: "bytes" },
     { name: "nonce", type: "uint256" },

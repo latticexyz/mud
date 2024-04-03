@@ -34,7 +34,7 @@ library CallWithSignatureNonces {
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
-    keyNames[0] = "delegator";
+    keyNames[0] = "signer";
   }
 
   /**
@@ -63,9 +63,9 @@ library CallWithSignatureNonces {
   /**
    * @notice Get nonce.
    */
-  function getNonce(address delegator) internal view returns (uint256 nonce) {
+  function getNonce(address signer) internal view returns (uint256 nonce) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[0] = bytes32(uint256(uint160(signer)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -74,9 +74,9 @@ library CallWithSignatureNonces {
   /**
    * @notice Get nonce.
    */
-  function _getNonce(address delegator) internal view returns (uint256 nonce) {
+  function _getNonce(address signer) internal view returns (uint256 nonce) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[0] = bytes32(uint256(uint160(signer)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -85,9 +85,9 @@ library CallWithSignatureNonces {
   /**
    * @notice Get nonce.
    */
-  function get(address delegator) internal view returns (uint256 nonce) {
+  function get(address signer) internal view returns (uint256 nonce) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[0] = bytes32(uint256(uint160(signer)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -96,9 +96,9 @@ library CallWithSignatureNonces {
   /**
    * @notice Get nonce.
    */
-  function _get(address delegator) internal view returns (uint256 nonce) {
+  function _get(address signer) internal view returns (uint256 nonce) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[0] = bytes32(uint256(uint160(signer)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -107,9 +107,9 @@ library CallWithSignatureNonces {
   /**
    * @notice Set nonce.
    */
-  function setNonce(address delegator, uint256 nonce) internal {
+  function setNonce(address signer, uint256 nonce) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[0] = bytes32(uint256(uint160(signer)));
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((nonce)), _fieldLayout);
   }
@@ -117,9 +117,9 @@ library CallWithSignatureNonces {
   /**
    * @notice Set nonce.
    */
-  function _setNonce(address delegator, uint256 nonce) internal {
+  function _setNonce(address signer, uint256 nonce) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[0] = bytes32(uint256(uint160(signer)));
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((nonce)), _fieldLayout);
   }
@@ -127,9 +127,9 @@ library CallWithSignatureNonces {
   /**
    * @notice Set nonce.
    */
-  function set(address delegator, uint256 nonce) internal {
+  function set(address signer, uint256 nonce) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[0] = bytes32(uint256(uint160(signer)));
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((nonce)), _fieldLayout);
   }
@@ -137,9 +137,9 @@ library CallWithSignatureNonces {
   /**
    * @notice Set nonce.
    */
-  function _set(address delegator, uint256 nonce) internal {
+  function _set(address signer, uint256 nonce) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[0] = bytes32(uint256(uint160(signer)));
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((nonce)), _fieldLayout);
   }
@@ -147,9 +147,9 @@ library CallWithSignatureNonces {
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(address delegator) internal {
+  function deleteRecord(address signer) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[0] = bytes32(uint256(uint160(signer)));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -157,9 +157,9 @@ library CallWithSignatureNonces {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(address delegator) internal {
+  function _deleteRecord(address signer) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[0] = bytes32(uint256(uint160(signer)));
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -190,9 +190,9 @@ library CallWithSignatureNonces {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple(address delegator) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(address signer) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[0] = bytes32(uint256(uint160(signer)));
 
     return _keyTuple;
   }
