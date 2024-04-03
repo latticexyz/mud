@@ -1,0 +1,34 @@
+name: "Check Changes Outside Docs"
+description: 'Check for changes outside the "docs/" directory'
+inputs:
+  base_ref:
+    description: "The base reference or branch to compare against"
+    required: true
+outputs:
+  changes_outside_docs:
+    description: 'Whether there are changes outside the "docs/" directory'
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Git
+      shell: bash
+      run: |
+        git fetch --depth=1 origin +refs/heads/${{ inputs.base_ref }}:refs/remotes/origin/${{ inputs.base_ref }}
+
+    - name: Check for changes outside 'docs/'
+      shell: bash
+      id: check_changes
+      run: |
+        changed_files=$(git diff --name-only origin/${{ inputs.base_ref }} HEAD)
+
+        changes_outside_docs="false"
+        for file in $changed_files; do
+            if [[ $file != "docs/"* ]]; then
+                changes_outside_docs="true"
+                break
+            fi
+        done
+
+        echo "changes_outside_docs=$changes_outside_docs" >> $GITHUB_OUTPUT
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

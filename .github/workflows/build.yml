@@ -8,13 +8,15 @@ on:
 
 jobs:
   condition:
-    name: Check if this action should run in this context
+    name: Check for changes outside 'docs/'
     runs-on: ubuntu-latest
     outputs:
-      changes_outside_docs: ${{ steps.check.outputs.changes_outside_docs }}
+      changes_outside_docs: ${{ steps.check_changes_outside_docs.outputs.changes_outside_docs }}
     steps:
-      - id: check
-        run: ./.github/scripts/check_changes_outside_docs.sh
+      - uses: ./.github/actions/docs-diff
+        id: check_changes_outside_docs
+        with:
+          base_ref: ${{ github.base_ref }}
 
   build:
     needs: condition
