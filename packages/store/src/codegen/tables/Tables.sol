@@ -280,7 +280,13 @@ library Tables {
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = StoreSwitch.getDynamicFieldSliceDefault(
+        _tableId,
+        _keyTuple,
+        0,
+        _index * 1,
+        (_index + 1) * 1
+      );
       return (bytes(_blob));
     }
   }
@@ -294,7 +300,7 @@ library Tables {
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = StoreCore.getDynamicFieldSliceDefault(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -442,7 +448,13 @@ library Tables {
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = StoreSwitch.getDynamicFieldSliceDefault(
+        _tableId,
+        _keyTuple,
+        1,
+        _index * 1,
+        (_index + 1) * 1
+      );
       return (bytes(_blob));
     }
   }
@@ -456,7 +468,7 @@ library Tables {
     _keyTuple[0] = ResourceId.unwrap(tableId);
 
     unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = StoreCore.getDynamicFieldSliceDefault(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }

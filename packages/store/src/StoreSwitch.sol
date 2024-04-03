@@ -582,4 +582,19 @@ library StoreSwitch {
       return IStore(_storeAddress).getDynamicFieldSlice(tableId, keyTuple, dynamicFieldIndex, start, end);
     }
   }
+
+  function getDynamicFieldSliceDefault(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint256 start,
+    uint256 end
+  ) internal view returns (bytes memory) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getDynamicFieldSliceDefault(tableId, keyTuple, dynamicFieldIndex, start, end);
+    } else {
+      return IStore(_storeAddress).getDynamicFieldSliceDefault(tableId, keyTuple, dynamicFieldIndex, start, end);
+    }
+  }
 }

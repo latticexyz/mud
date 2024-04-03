@@ -31,6 +31,7 @@
   "function getDynamicField(bytes32 tableId, bytes32[] keyTuple, uint8 dynamicFieldIndex) view returns (bytes)",
   "function getDynamicFieldLength(bytes32 tableId, bytes32[] keyTuple, uint8 dynamicFieldIndex) view returns (uint256)",
   "function getDynamicFieldSlice(bytes32 tableId, bytes32[] keyTuple, uint8 dynamicFieldIndex, uint256 start, uint256 end) view returns (bytes data)",
+  "function getDynamicFieldSliceDefault(bytes32 tableId, bytes32[] keyTuple, uint8 dynamicFieldIndex, uint256 start, uint256 end) view returns (bytes data)",
   "function getField(bytes32 tableId, bytes32[] keyTuple, uint8 fieldIndex, bytes32 fieldLayout) view returns (bytes data)",
   "function getField(bytes32 tableId, bytes32[] keyTuple, uint8 fieldIndex) view returns (bytes data)",
   "function getFieldLayout(bytes32 tableId) view returns (bytes32 fieldLayout)",

@@ -114,4 +114,12 @@ interface IStoreRead {
     uint256 start,
     uint256 end
   ) external view returns (bytes memory data);
+
+  function getDynamicFieldSliceDefault(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint256 start,
+    uint256 end
+  ) external view returns (bytes memory data);
 }

@@ -207,4 +207,14 @@ contract StoreRead is IStoreRead {
   ) public view virtual returns (bytes memory) {
     return StoreCore.getDynamicFieldSlice(tableId, keyTuple, dynamicFieldIndex, start, end);
   }
+
+  function getDynamicFieldSliceDefault(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint256 start,
+    uint256 end
+  ) public view virtual returns (bytes memory) {
+    return StoreCore.getDynamicFieldSliceDefault(tableId, keyTuple, dynamicFieldIndex, start, end);
+  }
 }

@@ -939,6 +939,34 @@ library StoreCore {
       return Storage.load({ storagePointer: location, offset: start, length: end - start });
     }
   }
+
+  function getDynamicFieldSliceDefault(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint256 start,
+    uint256 end
+  ) internal view returns (bytes memory) {
+    // Verify the slice bounds are valid
+    if (start > end) {
+      revert IStoreErrors.Store_InvalidBounds(start, end);
+    }
+    // Verify the accessed data is within the bounds of the dynamic field.
+    // This is necessary because we don't delete the dynamic data when a record is deleted,
+    // but only decrease its length.
+    EncodedLengths encodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
+    uint256 fieldLength = encodedLengths.atIndex(dynamicFieldIndex);
+    if (start >= fieldLength || end > fieldLength) {
+      return new bytes(0);
+    }
+
+    // Get the length and storage location of the dynamic field
+    uint256 location = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
+
+    unchecked {
+      return Storage.load({ storagePointer: location, offset: start, length: end - start });
+    }
+  }
 }
 
 /**

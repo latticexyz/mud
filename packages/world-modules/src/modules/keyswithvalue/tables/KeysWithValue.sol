@@ -300,7 +300,13 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
+      bytes memory _blob = StoreSwitch.getDynamicFieldSliceDefault(
+        _tableId,
+        _keyTuple,
+        0,
+        _index * 32,
+        (_index + 1) * 32
+      );
       return (bytes32(_blob));
     }
   }
@@ -318,7 +324,13 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
+      bytes memory _blob = StoreCore.getDynamicFieldSliceDefault(
+        _tableId,
+        _keyTuple,
+        0,
+        _index * 32,
+        (_index + 1) * 32
+      );
       return (bytes32(_blob));
     }
   }
@@ -337,7 +349,7 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     unchecked {
-      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
+      bytes memory _blob = _store.getDynamicFieldSliceDefault(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
       return (bytes32(_blob));
     }
   }
@@ -351,7 +363,13 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
+      bytes memory _blob = StoreSwitch.getDynamicFieldSliceDefault(
+        _tableId,
+        _keyTuple,
+        0,
+        _index * 32,
+        (_index + 1) * 32
+      );
       return (bytes32(_blob));
     }
   }
@@ -365,7 +383,13 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
+      bytes memory _blob = StoreCore.getDynamicFieldSliceDefault(
+        _tableId,
+        _keyTuple,
+        0,
+        _index * 32,
+        (_index + 1) * 32
+      );
       return (bytes32(_blob));
     }
   }
@@ -384,7 +408,7 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     unchecked {
-      bytes memory _blob = _store.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
+      bytes memory _blob = _store.getDynamicFieldSliceDefault(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
       return (bytes32(_blob));
     }
   }

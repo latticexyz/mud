@@ -138,7 +138,7 @@ export function renderFieldMethods(options: RenderTableOptions): string {
               ])}) internal view returns (${portionData.typeWithLocation}) {
                 ${_keyTupleDefinition}
                 unchecked {
-                  bytes memory _blob = ${_store}.getDynamicFieldSlice(
+                  bytes memory _blob = ${_store}.getDynamicFieldSliceDefault(
                     _tableId,
                     _keyTuple,
                     ${dynamicSchemaIndex},

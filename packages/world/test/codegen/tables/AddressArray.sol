@@ -202,7 +202,13 @@ library AddressArray {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 20, (_index + 1) * 20);
+      bytes memory _blob = StoreSwitch.getDynamicFieldSliceDefault(
+        _tableId,
+        _keyTuple,
+        0,
+        _index * 20,
+        (_index + 1) * 20
+      );
       return (address(bytes20(_blob)));
     }
   }
@@ -216,7 +222,13 @@ library AddressArray {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 20, (_index + 1) * 20);
+      bytes memory _blob = StoreCore.getDynamicFieldSliceDefault(
+        _tableId,
+        _keyTuple,
+        0,
+        _index * 20,
+        (_index + 1) * 20
+      );
       return (address(bytes20(_blob)));
     }
   }
@@ -230,7 +242,13 @@ library AddressArray {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 20, (_index + 1) * 20);
+      bytes memory _blob = StoreSwitch.getDynamicFieldSliceDefault(
+        _tableId,
+        _keyTuple,
+        0,
+        _index * 20,
+        (_index + 1) * 20
+      );
       return (address(bytes20(_blob)));
     }
   }
@@ -244,7 +262,13 @@ library AddressArray {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 20, (_index + 1) * 20);
+      bytes memory _blob = StoreCore.getDynamicFieldSliceDefault(
+        _tableId,
+        _keyTuple,
+        0,
+        _index * 20,
+        (_index + 1) * 20
+      );
       return (address(bytes20(_blob)));
     }
   }

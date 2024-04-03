@@ -231,7 +231,13 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = StoreSwitch.getDynamicFieldSliceDefault(
+        _tableId,
+        _keyTuple,
+        0,
+        _index * 4,
+        (_index + 1) * 4
+      );
       return (uint32(bytes4(_blob)));
     }
   }
@@ -245,7 +251,7 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
+      bytes memory _blob = StoreCore.getDynamicFieldSliceDefault(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
     }
   }
@@ -393,7 +399,13 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = StoreSwitch.getDynamicFieldSliceDefault(
+        _tableId,
+        _keyTuple,
+        1,
+        _index * 1,
+        (_index + 1) * 1
+      );
       return (string(_blob));
     }
   }
@@ -407,7 +419,7 @@ library Mixed {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
+      bytes memory _blob = StoreCore.getDynamicFieldSliceDefault(_tableId, _keyTuple, 1, _index * 1, (_index + 1) * 1);
       return (string(_blob));
     }
   }
