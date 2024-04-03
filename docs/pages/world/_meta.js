@@ -11,7 +11,4 @@ export default {
   "batch-calls": "Batch Calls",
   modules: "Modules",
   reference: "Reference",
-  "world-table-illustration": {
-    display: "hidden",
-  },
 };

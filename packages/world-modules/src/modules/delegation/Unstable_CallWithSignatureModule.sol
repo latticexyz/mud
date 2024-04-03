@@ -6,14 +6,13 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
-import { UserDelegationNonces } from "./tables/UserDelegationNonces.sol";
-import { Unstable_DelegationWithSignatureSystem } from "./Unstable_DelegationWithSignatureSystem.sol";
+import { CallWithSignatureNonces } from "./tables/CallWithSignatureNonces.sol";
+import { Unstable_CallWithSignatureSystem } from "./Unstable_CallWithSignatureSystem.sol";
 
 import { DELEGATION_SYSTEM_ID } from "./constants.sol";
 
-contract Unstable_DelegationWithSignatureModule is Module {
-  Unstable_DelegationWithSignatureSystem private immutable delegationWithSignatureSystem =
-    new Unstable_DelegationWithSignatureSystem();
+contract Unstable_CallWithSignatureModule is Module {
+  Unstable_CallWithSignatureSystem private immutable callWithSignatureSystem = new Unstable_CallWithSignatureSystem();
 
   function installRoot(bytes memory encodedArgs) public {
     requireNotInstalled(__self, encodedArgs);
@@ -21,11 +20,11 @@ contract Unstable_DelegationWithSignatureModule is Module {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register table
-    UserDelegationNonces._register();
+    CallWithSignatureNonces._register();
 
     // Register system
     (bool success, bytes memory data) = address(world).delegatecall(
-      abi.encodeCall(world.registerSystem, (DELEGATION_SYSTEM_ID, delegationWithSignatureSystem, true))
+      abi.encodeCall(world.registerSystem, (DELEGATION_SYSTEM_ID, callWithSignatureSystem, true))
     );
     if (!success) revertWithBytes(data);
 
@@ -35,8 +34,8 @@ contract Unstable_DelegationWithSignatureModule is Module {
         world.registerRootFunctionSelector,
         (
           DELEGATION_SYSTEM_ID,
-          "registerDelegationWithSignature(address,bytes32,bytes,address,bytes)",
-          "registerDelegationWithSignature(address,bytes32,bytes,address,bytes)"
+          "callWithSignature(address,bytes32,bytes,bytes)",
+          "callWithSignature(address,bytes32,bytes,bytes)"
         )
       )
     );
