@@ -10,4 +10,4 @@ export * from "../encodeSystemCallsFrom";
 
 export * from "../actions/callFrom";
 
-export * from "../delegationWithSignatureTypes";
+export * from "../callWithSignatureTypes";
