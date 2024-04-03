@@ -5,8 +5,6 @@ name: Build
 # because the release workflow includes a build+verify step.
 on:
   pull_request:
-    paths-ignore:
-      - "docs/**"
 
 jobs:
   build:
@@ -17,24 +15,35 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+          fetch-depth: 0
+
+      - name: Check for changes outside docs
+        id: check_changes
+        run: ./.github/scripts/check_changes_outside_docs.sh
 
       - name: Setup
+        if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/setup
 
       - name: Clean
+        if: steps.check_changes.outputs.changes_outside_docs
         shell: bash
         run: pnpm turbo run clean --concurrency 10
 
       - name: Build
+        if: steps.check_changes.outputs.changes_outside_docs
         shell: bash
         run: pnpm turbo run build --concurrency 10
 
       - name: Outdated files, run `pnpm build` and commit them
+        if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/require-empty-diff
 
       - name: Build API docs
+        if: steps.check_changes.outputs.changes_outside_docs
         shell: bash
         run: pnpm docs:generate:api
 
       - name: Outdated files, run `pnpm docs:generate:api` and commit them
+        if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/require-empty-diff
