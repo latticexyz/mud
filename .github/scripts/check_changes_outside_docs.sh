@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# List all changed files between the current commit and the previous one
-# Adjust the range if needed, e.g., HEAD~2..HEAD for the last two commits
-changed_files=$(git diff --name-only HEAD~1 HEAD)
+# List all changed files between the current commit and the main branch 
+changed_files=$(git diff --name-only main HEAD)
 
 # Initialize a flag to indicate if changes are found outside the 'docs/' directory
 changes_outside_docs=0
