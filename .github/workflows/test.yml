@@ -18,7 +18,8 @@ jobs:
         with:
           submodules: recursive
 
-      - id: Check for changes outside docs
+      - name: Check for changes outside docs
+        id: check
         run: ./.github/scripts/check_changes_outside_docs.sh
 
   test:
