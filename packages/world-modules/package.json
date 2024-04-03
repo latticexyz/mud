@@ -10,8 +10,8 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    "./out/*": "./out/*",
-    "./*": "./dist/*"
+    "./mud.config": "./dist/mud.config.js",
+    "./out/*": "./out/*"
   },
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",
