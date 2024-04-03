@@ -7,6 +7,7 @@ In this tutorial you add a system to decrement the counter and update the applic
 ## Setup
 
 [Create a new MUD application from the template](../../templates/typescript/getting-started).
+Use the vanilla template.
 
 ## Add a contract for the new system
 
@@ -55,7 +56,7 @@ Set the counter to a new value.
 
 </details>
 
-## Add `decrement` to the application
+## Add `decrement` to the user interface
 
 Having a system be able to do something doesn't help anybody unless it is called from somewhere.
 In this case, the vanilla getting started front end.
@@ -65,7 +66,7 @@ In this case, the vanilla getting started front end.
 
     <CollapseCode>
 
-        ```typescript filename="createSystemCalls.ts" copy showLineNumbers {46-50,54}
+        ```typescript filename="createSystemCalls.ts" copy showLineNumbers {48-52,56}
         /*
         * Create the system calls that the client can use to ask
         * for changes in the World state (using the System contracts).
@@ -87,17 +88,19 @@ In this case, the vanilla getting started front end.
           *
           *   Out of this parameter, we only care about two fields:
           *   - worldContract (which comes from getContract, see
-          *     https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L63-L68).
+          *     https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L63-L69).
+          *
           *   - waitForTransaction (which comes from syncToRecs, see
           *     https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L77-L83).
           *
           * - From the second parameter, which is a ClientComponent,
-          *   we only care about Counter. This parameter comes to us
+          *   we only care about Counter. This parameter comes to use
           *   through createClientComponents.ts, but it originates in
-          *   syncToRecs (https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L77-L83).
+          *   syncToRecs
+          *   (https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L77-L83).
           */
           { worldContract, waitForTransaction }: SetupNetworkResult,
-          { Counter }: ClientComponents
+          { Counter }: ClientComponents,
         ) {
           const increment = async () => {
             /*
@@ -174,7 +177,7 @@ In this case, the vanilla getting started front end.
 
     <CollapseCode>
 
-        ```typescript filename="index.ts" copy showLineNumbers {6,18}
+        ```typescript filename="index.ts" copy showLineNumbers {6,19}
         import { setup } from "./mud/setup";
         import mudConfig from "contracts/mud.config";
 
@@ -191,7 +194,8 @@ In this case, the vanilla getting started front end.
           document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
         });
 
-        document.querySelector("#incrementButton").addEventListener("click", increment);
+        // Attach the increment function to the html element with ID `incrementButton` (if it exists)
+        document.querySelector("#incrementButton")?.addEventListener("click", increment);
         document.querySelector("#decrementButton").addEventListener("click", decrement);
 
         // https://vitejs.dev/guide/env-and-mode.html
@@ -268,4 +272,4 @@ In this case, the vanilla getting started front end.
 
     </CollapseCode>
 
-1.  Reload the application to see that there is a decrement button and that you can use it.
+1.  See that there is a decrement button and that you can use it.
