@@ -7,11 +7,9 @@ on:
   pull_request:
 
 jobs:
-  condition:
-    name: Check if this action should run in this context
+  build:
+    name: Build and validate artifacts
     runs-on: ubuntu-latest
-    outputs:
-      changes_outside_docs: ${{ steps.check.outputs.changes_outside_docs }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -23,29 +21,29 @@ jobs:
         id: check
         run: ./.github/scripts/check_changes_outside_docs.sh
 
-  build:
-    needs: condition
-    if: needs.condition.outputs.changes_outside_docs == 'true'
-    name: Build and validate artifacts
-    runs-on: ubuntu-latest
-    steps:
       - name: Setup
+        if: steps.check.outputs.changes_outside_docs
         uses: ./.github/actions/setup
 
       - name: Clean
+        if: steps.check.outputs.changes_outside_docs
         shell: bash
         run: pnpm turbo run clean --concurrency 10
 
       - name: Build
+        if: steps.check.outputs.changes_outside_docs
         shell: bash
         run: pnpm turbo run build --concurrency 10
 
       - name: Outdated files, run `pnpm build` and commit them
+        if: steps.check.outputs.changes_outside_docs
         uses: ./.github/actions/require-empty-diff
 
       - name: Build API docs
+        if: steps.check.outputs.changes_outside_docs
         shell: bash
         run: pnpm docs:generate:api
 
       - name: Outdated files, run `pnpm docs:generate:api` and commit them
+        if: steps.check.outputs.changes_outside_docs
         uses: ./.github/actions/require-empty-diff

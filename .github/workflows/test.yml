@@ -7,11 +7,16 @@ on:
   pull_request:
 
 jobs:
-  condition:
-    name: Check if this action should run in this context
-    runs-on: ubuntu-latest
-    outputs:
-      changes_outside_docs: ${{ steps.check.outputs.changes_outside_docs }}
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest-16-cores
+    services:
+      postgres:
+        image: postgres:12.1-alpine
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -23,38 +28,32 @@ jobs:
         id: check
         run: ./.github/scripts/check_changes_outside_docs.sh
 
-  test:
-    needs: condition
-    if: needs.condition.outputs.changes_outside_docs == 'true'
-    name: Run tests
-    runs-on: ubuntu-latest-16-cores
-    services:
-      postgres:
-        image: postgres:12.1-alpine
-        ports:
-          - 5432:5432
-        # needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    steps:
       - name: Setup
+        if: steps.check.outputs.changes_outside_docs
         uses: ./.github/actions/setup
 
       - name: Build
+        if: steps.check.outputs.changes_outside_docs
         uses: ./.github/actions/build
 
       - name: Run tests
+        if: steps.check.outputs.changes_outside_docs
         env:
           DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
         run: pnpm test:ci
 
       - name: Generate gas reports
+        if: steps.check.outputs.changes_outside_docs
         run: pnpm gas-report
 
       - name: Outdated files, run `pnpm gas-report` and commit them
+        if: steps.check.outputs.changes_outside_docs
         uses: ./.github/actions/require-empty-diff
 
       - name: Sort package.json
+        if: steps.check.outputs.changes_outside_docs
         run: pnpm sort-package-json
 
       - name: Outdated files, run `sort-package-json` and commit them
+        if: steps.check.outputs.changes_outside_docs
         uses: ./.github/actions/require-empty-diff
