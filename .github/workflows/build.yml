@@ -13,7 +13,10 @@ jobs:
     outputs:
       changes_outside_docs: ${{ steps.check.outputs.changes_outside_docs }}
     steps:
-      - id: check
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - id: Check for changes outside docs
         run: ./.github/scripts/check_changes_outside_docs.sh
 
   build:
@@ -22,11 +25,6 @@ jobs:
     name: Build and validate artifacts
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
       - name: Setup
         uses: ./.github/actions/setup
 

@@ -13,7 +13,12 @@ jobs:
     outputs:
       changes_outside_docs: ${{ steps.check.outputs.changes_outside_docs }}
     steps:
-      - id: check
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - id: Check for changes outside docs
         run: ./.github/scripts/check_changes_outside_docs.sh
 
   test:
@@ -29,9 +34,6 @@ jobs:
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
       - name: Setup
         uses: ./.github/actions/setup
 
