@@ -122,10 +122,11 @@ export function renderFieldMethods(options: RenderTableOptions): string {
           );
         }
 
-        result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
-          renderWithStore(
-            storeArgument,
-            ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
+        if (typeWrappingData && typeWrappingData.kind === "staticArray") {
+          result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
+            renderWithStore(
+              storeArgument,
+              ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
               /**
                * @notice Get an item of ${field.name}${_commentSuffix}.
                * @dev Reverts with Store_IndexOutOfBounds if \`_index\` is out of bounds for the array.
@@ -137,6 +138,15 @@ export function renderFieldMethods(options: RenderTableOptions): string {
                 "uint256 _index",
               ])}) internal view returns (${portionData.typeWithLocation}) {
                 ${_keyTupleDefinition}
+
+                uint256 _byteLength = ${_store}.getDynamicFieldLength(_tableId, _keyTuple, ${dynamicSchemaIndex});
+                uint256 dynamicLength = _byteLength / ${portionData.elementLength};
+                uint256 staticLength = ${typeWrappingData.staticLength};
+
+                if (dynamicLength < staticLength && _index >= dynamicLength) {
+                  return 0;
+                }
+
                 unchecked {
                   bytes memory _blob = ${_store}.getDynamicFieldSlice(
                     _tableId,
@@ -149,8 +159,40 @@ export function renderFieldMethods(options: RenderTableOptions): string {
                 }
               }
             `,
-          ),
-        );
+            ),
+          );
+        } else {
+          result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
+            renderWithStore(
+              storeArgument,
+              ({ _typedStore, _store, _commentSuffix, _methodNamePrefix }) => `
+              /**
+               * @notice Get an item of ${field.name}${_commentSuffix}.
+               * @dev Reverts with Store_IndexOutOfBounds if \`_index\` is out of bounds for the array.
+              */
+              function ${_methodNamePrefix}getItem${_methodNameSuffix}(${renderArguments([
+                _typedStore,
+                _typedTableId,
+                _typedKeyArgs,
+                "uint256 _index",
+              ])}) internal view returns (${portionData.typeWithLocation}) {
+                ${_keyTupleDefinition}
+
+                unchecked {
+                  bytes memory _blob = ${_store}.getDynamicFieldSlice(
+                    _tableId,
+                    _keyTuple,
+                    ${dynamicSchemaIndex},
+                    _index * ${portionData.elementLength},
+                    (_index + 1) * ${portionData.elementLength}
+                  );
+                  return ${portionData.decoded};
+                }
+              }
+            `,
+            ),
+          );
+        }
       }
 
       if (!typeWrappingData || typeWrappingData.kind !== "staticArray") {
