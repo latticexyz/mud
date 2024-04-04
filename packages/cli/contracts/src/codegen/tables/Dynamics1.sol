@@ -130,7 +130,7 @@ library Dynamics1 {
     uint256 staticLength = 1;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (bytes32(new bytes(0)));
     }
 
     unchecked {
@@ -152,7 +152,7 @@ library Dynamics1 {
     uint256 staticLength = 1;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (bytes32(new bytes(0)));
     }
 
     unchecked {
@@ -245,7 +245,7 @@ library Dynamics1 {
     uint256 staticLength = 2;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (int32(uint32(bytes4(new bytes(0)))));
     }
 
     unchecked {
@@ -267,7 +267,7 @@ library Dynamics1 {
     uint256 staticLength = 2;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (int32(uint32(bytes4(new bytes(0)))));
     }
 
     unchecked {
@@ -360,7 +360,7 @@ library Dynamics1 {
     uint256 staticLength = 3;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (uint128(bytes16(new bytes(0))));
     }
 
     unchecked {
@@ -382,7 +382,7 @@ library Dynamics1 {
     uint256 staticLength = 3;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (uint128(bytes16(new bytes(0))));
     }
 
     unchecked {
@@ -475,7 +475,7 @@ library Dynamics1 {
     uint256 staticLength = 4;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (address(bytes20(new bytes(0))));
     }
 
     unchecked {
@@ -497,7 +497,7 @@ library Dynamics1 {
     uint256 staticLength = 4;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (address(bytes20(new bytes(0))));
     }
 
     unchecked {
@@ -590,7 +590,7 @@ library Dynamics1 {
     uint256 staticLength = 5;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (_toBool(uint8(bytes1(new bytes(0)))));
     }
 
     unchecked {
@@ -612,7 +612,7 @@ library Dynamics1 {
     uint256 staticLength = 5;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (_toBool(uint8(bytes1(new bytes(0)))));
     }
 
     unchecked {

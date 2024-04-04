@@ -153,7 +153,7 @@ library Singleton {
     uint256 staticLength = 2;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (uint32(bytes4(new bytes(0))));
     }
 
     unchecked {
@@ -174,7 +174,7 @@ library Singleton {
     uint256 staticLength = 2;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (uint32(bytes4(new bytes(0))));
     }
 
     unchecked {
@@ -260,7 +260,7 @@ library Singleton {
     uint256 staticLength = 2;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (uint32(bytes4(new bytes(0))));
     }
 
     unchecked {
@@ -281,7 +281,7 @@ library Singleton {
     uint256 staticLength = 2;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (uint32(bytes4(new bytes(0))));
     }
 
     unchecked {
@@ -367,7 +367,7 @@ library Singleton {
     uint256 staticLength = 1;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (uint32(bytes4(new bytes(0))));
     }
 
     unchecked {
@@ -388,7 +388,7 @@ library Singleton {
     uint256 staticLength = 1;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (uint32(bytes4(new bytes(0))));
     }
 
     unchecked {

@@ -153,7 +153,7 @@ library StaticArray {
     uint256 staticLength = 3;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (uint256(bytes32(new bytes(0))));
     }
 
     unchecked {
@@ -174,7 +174,7 @@ library StaticArray {
     uint256 staticLength = 3;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (uint256(bytes32(new bytes(0))));
     }
 
     unchecked {
@@ -195,7 +195,7 @@ library StaticArray {
     uint256 staticLength = 3;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (uint256(bytes32(new bytes(0))));
     }
 
     unchecked {
@@ -216,7 +216,7 @@ library StaticArray {
     uint256 staticLength = 3;
 
     if (_index < staticLength && _index >= dynamicLength) {
-      return 0;
+      return (uint256(bytes32(new bytes(0))));
     }
 
     unchecked {

@@ -141,14 +141,14 @@ export function renderFieldMethods(options: RenderTableOptions): string {
                 ${
                   // If the index is within the static length,
                   // but ahead of the dynamic length, return zero
-                  typeWrappingData && typeWrappingData.kind === "staticArray"
+                  typeWrappingData && typeWrappingData.kind === "staticArray" && field.arrayElement
                     ? `
                 uint256 _byteLength = ${_store}.getDynamicFieldLength(_tableId, _keyTuple, ${dynamicSchemaIndex});
                 uint256 dynamicLength = _byteLength / ${portionData.elementLength};
                 uint256 staticLength = ${typeWrappingData.staticLength};
 
                 if (_index < staticLength && _index >= dynamicLength) {
-                  return 0;
+                  return ${renderCastStaticBytesToType(field.arrayElement, `bytes${field.arrayElement.staticByteLength}(new bytes(0))`)};
                 }`
                     : ``
                 }
