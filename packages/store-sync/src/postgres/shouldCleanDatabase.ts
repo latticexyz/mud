@@ -15,6 +15,7 @@ error.log = console.error.bind(console);
 /**
  * @internal
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function shouldCleanDatabase(db: PgDatabase<any>, expectedChainId: number): Promise<boolean> {
   try {
     const config = (await db.select().from(tables.configTable).limit(1).execute()).find(() => true);

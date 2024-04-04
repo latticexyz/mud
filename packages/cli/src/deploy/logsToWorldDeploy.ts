@@ -1,4 +1,4 @@
-import { AbiEventSignatureNotFoundError, Log, decodeEventLog, hexToString, parseAbi, trim } from "viem";
+import { AbiEventSignatureNotFoundError, Log, decodeEventLog, hexToString, parseAbi } from "viem";
 import { WorldDeploy, worldDeployEvents } from "./common";
 import { isDefined } from "@latticexyz/common/utils";
 
@@ -31,10 +31,10 @@ export function logsToWorldDeploy(logs: readonly Log<bigint, number, false>[]): 
       address: log.address,
       deployBlock: log.blockNumber,
       ...(log.eventName === "HelloWorld"
-        ? { worldVersion: hexToString(trim(log.args.worldVersion, { dir: "right" })) }
+        ? { worldVersion: hexToString(log.args.worldVersion).replace(/\0+$/, "") }
         : null),
       ...(log.eventName === "HelloStore"
-        ? { storeVersion: hexToString(trim(log.args.storeVersion, { dir: "right" })) }
+        ? { storeVersion: hexToString(log.args.storeVersion).replace(/\0+$/, "") }
         : null),
     }),
     {},

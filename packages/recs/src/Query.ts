@@ -1,6 +1,6 @@
 import { filterNullish } from "@latticexyz/utils";
 import { observable, ObservableSet } from "mobx";
-import { concat, concatMap, filter, from, map, merge, Observable, of, share, Subject } from "rxjs";
+import { concat, concatMap, filter, from, map, merge, Observable, of, share } from "rxjs";
 import {
   componentValueEquals,
   getComponentEntities,
@@ -15,7 +15,6 @@ import {
   ComponentValue,
   Entity,
   EntityQueryFragment,
-  EntitySymbol,
   HasQueryFragment,
   HasValueQueryFragment,
   NotQueryFragment,

@@ -1,3 +1,4 @@
+import { Callout } from "nextra/components";
 import { CollapseCode } from "../../components/CollapseCode";
 import { MUDTable } from "../../components/MUDTable";
 
@@ -5,7 +6,7 @@ import { MUDTable } from "../../components/MUDTable";
 
 The MUD framework helps you to model your onchain state in a way that enables building applications with familiar tooling, like relational databases.
 
-In your MUD config, you define data as a set of tables. Like relational databases, these tables have “columns” by way of two MUD concepts: a key schema and a value schema. Each one has a set of fields that map to Solidity types.
+In your MUD config, you define data as a set of tables. Like relational databases, these tables have “columns” by way of two MUD concepts: a schema and a key. A schema is set of fields that map to Solidity types and a key is the list of fields that combine to form the table's primary key.
 
 ## Defining tables
 
@@ -13,17 +14,18 @@ Let's say we're making a game where players can move around a map. The definitio
 
 <CollapseCode>
 
-```tsx filename="mud.config.ts" {3-11} showLineNumbers
-export default mudConfig({
+```tsx filename="mud.config.ts" {5-12} showLineNumbers
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
   tables: {
     Position: {
-      keySchema: {
+      schema: {
         player: "address",
-      },
-      valueSchema: {
         x: "int32",
         y: "int32",
       },
+      key: ["player"],
     },
   },
 });
@@ -55,32 +57,32 @@ Translating the table definition above would look like this in a relational data
   </tbody>
 </MUDTable>
 
-Because `player` in part of the key schema, we would have a unique/primary key constraint on `player`.
+Because `player` is the key, we would have a unique/primary key constraint on `player`.
 
-Let's add another table for terrain at a given position on the map. MUD allows for multiple keys in the key schema and, like databases, we call these composite keys.
+Let's add another table for terrain at a given position on the map. MUD allows for multiple fields in the key and, like databases, we call these composite keys.
 
 <CollapseCode>
 
-```tsx filename="mud.config.ts" {12-20} showLineNumbers
-export default mudConfig({
+```tsx filename="mud.config.ts" {13-20} showLineNumbers
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
   tables: {
     Position: {
-      keySchema: {
+      schema: {
         player: "address",
-      },
-      valueSchema: {
         x: "int32",
         y: "int32",
       },
+      key: ["player"],
     },
     Terrain: {
-      keySchema: {
+      schema: {
         x: "int32",
         y: "int32",
-      },
-      valueSchema: {
         terrainType: "string",
       },
+      key: ["x", "y"],
     },
   },
 });
@@ -129,10 +131,16 @@ Solidity and the EVM have much more limited data structures, so how can we expre
 
 ## Field types
 
-Key schema fields can use all of Solidity's static-length primitive types like `uint256`, `address`, `bool`.
+Schema fields can use all of Solidity's static-length primitive types, arrays of those static-length primitive types, as well as `string` and `bytes`.
 
-Value schema fields can use all of Solidity's static-length primitive types, arrays of those static-length primitive types, as well as and `string` and `bytes`.
+Key can only be used with fields that are defined as static-length Solidity primitive types.
 
 Enums and user types are also supported and automatically map down to their Solidity primitive types.
+
+<Callout type="info" emoji="ⓘ">
+  The code and the rest of the documentation call some fields *static* and others *dynamic*. In MUD terminology *static*
+  means *static length* (`uint16`, `int32`, `bytes32`, etc.) and *dynamic* means *dynamic length* (`uint[]`, `string`,
+  `bytes`, etc.).
+</Callout>
 
 More complex types like structs, `string[]`, and `bytes[]` are not yet supported. We'll cover the reasons why in our encoding/decoding guide.

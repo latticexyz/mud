@@ -3,10 +3,12 @@ import { setup } from "./mud/setup";
 import { decodeEntity } from "@latticexyz/store-sync/recs";
 
 const {
-  network: { components, latestBlock$, worldContract, waitForTransaction },
+  network: { components, latestBlock$, walletClient, worldContract, waitForTransaction },
 } = await setup();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const _window = window as any;
+_window.walletClient = walletClient;
 _window.worldContract = worldContract;
 _window.waitForTransaction = waitForTransaction;
 

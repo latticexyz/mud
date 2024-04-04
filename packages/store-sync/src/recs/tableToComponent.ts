@@ -1,8 +1,8 @@
 import { Component, Type, World, defineComponent } from "@latticexyz/recs";
 import { StoreComponentMetadata } from "./common";
 import { SchemaAbiTypeToRecsType, schemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
-import { SchemaAbiType } from "@latticexyz/schema-type";
-import { Table } from "@latticexyz/store";
+import { SchemaAbiType } from "@latticexyz/schema-type/internal";
+import { Table } from "@latticexyz/store/internal";
 import { mapObject } from "@latticexyz/common/utils";
 import { ResourceLabel, resourceToLabel } from "@latticexyz/common";
 

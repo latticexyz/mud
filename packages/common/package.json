@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/common",
-  "version": "2.0.0-next.17",
+  "version": "2.0.4",
   "description": "Common low level logic shared between packages",
   "repository": {
     "type": "git",
@@ -72,6 +72,5 @@
     "@types/node": "^18.15.11",
     "tsup": "^6.7.0",
     "vitest": "0.34.6"
-  },
-  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+  }
 }

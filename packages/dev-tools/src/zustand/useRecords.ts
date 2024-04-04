@@ -1,4 +1,4 @@
-import { Table } from "@latticexyz/store";
+import { Table } from "@latticexyz/store/internal";
 import { useDevToolsContext } from "../DevToolsContext";
 import { useEffect, useState } from "react";
 import { TableRecord } from "@latticexyz/store-sync/zustand";
@@ -12,7 +12,7 @@ export function useRecords<table extends Table>(table: table): TableRecord<table
     useStore.getState().getRecords(table),
   );
   useEffect(() => {
-    return useStore.subscribe((state) => {
+    return useStore.subscribe(() => {
       const nextRecords = useStore.getState().getRecords(table);
       if (nextRecords !== records) {
         setRecords(nextRecords);

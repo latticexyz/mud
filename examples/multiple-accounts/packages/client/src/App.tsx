@@ -38,7 +38,7 @@ const makeWorldContract = () => {
 };
 
 // Create five world contracts
-const worldContracts = [1, 2, 3, 4, 5].map((x) => makeWorldContract());
+const worldContracts = [1, 2, 3, 4, 5].map(() => makeWorldContract());
 
 export const App = () => {
   const {
@@ -61,7 +61,7 @@ export const App = () => {
 
   // Call newCall() on LastCall:LastCallSystem.
   const newCall = async (worldContract) => {
-    const tx = await worldContract.write.LastCall_LastCallSystem_newCall();
+    await worldContract.write.LastCall_LastCallSystem_newCall();
   };
 
   return (

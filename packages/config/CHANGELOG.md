@@ -1,5 +1,219 @@
 # Change Log
 
+## 2.0.4
+
+### Patch Changes
+
+- Updated dependencies [620e4ec1]
+  - @latticexyz/common@2.0.4
+  - @latticexyz/schema-type@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies [d2e4d0fb]
+  - @latticexyz/common@2.0.3
+  - @latticexyz/schema-type@2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- @latticexyz/common@2.0.2
+- @latticexyz/schema-type@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- @latticexyz/common@2.0.1
+- @latticexyz/schema-type@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- 5e723b90e: - `ResourceSelector` is replaced with `ResourceId`, `ResourceIdLib`, `ResourceIdInstance`, `WorldResourceIdLib` and `WorldResourceIdInstance`.
+
+  Previously a "resource selector" was a `bytes32` value with the first 16 bytes reserved for the resource's namespace, and the last 16 bytes reserved for the resource's name.
+  Now a "resource ID" is a `bytes32` value with the first 2 bytes reserved for the resource type, the next 14 bytes reserved for the resource's namespace, and the last 16 bytes reserved for the resource's name.
+
+  Previously `ResouceSelector` was a library and the resource selector type was a plain `bytes32`.
+  Now `ResourceId` is a user type, and the functionality is implemented in the `ResourceIdInstance` (for type) and `WorldResourceIdInstance` (for namespace and name) libraries.
+  We split the logic into two libraries, because `Store` now also uses `ResourceId` and needs to be aware of resource types, but not of namespaces/names.
+
+  ```diff
+  - import { ResourceSelector } from "@latticexyz/world/src/ResourceSelector.sol";
+  + import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+  + import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+  + import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+  - bytes32 systemId = ResourceSelector.from("namespace", "name");
+  + ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "namespace", "name");
+
+  - using ResourceSelector for bytes32;
+  + using WorldResourceIdInstance for ResourceId;
+  + using ResourceIdInstance for ResourceId;
+
+    systemId.getName();
+    systemId.getNamespace();
+  + systemId.getType();
+
+  ```
+
+  - All `Store` and `World` methods now use the `ResourceId` type for `tableId`, `systemId`, `moduleId` and `namespaceId`.
+    All mentions of `resourceSelector` were renamed to `resourceId` or the more specific type (e.g. `tableId`, `systemId`)
+
+    ```diff
+    import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+    IStore {
+      function setRecord(
+    -   bytes32 tableId,
+    +   ResourceId tableId,
+        bytes32[] calldata keyTuple,
+        bytes calldata staticData,
+        PackedCounter encodedLengths,
+        bytes calldata dynamicData,
+        FieldLayout fieldLayout
+      ) external;
+
+      // Same for all other methods
+    }
+    ```
+
+    ```diff
+    import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+
+    IBaseWorld {
+      function callFrom(
+        address delegator,
+    -   bytes32 resourceSelector,
+    +   ResourceId systemId,
+        bytes memory callData
+      ) external payable returns (bytes memory);
+
+      // Same for all other methods
+    }
+    ```
+
+### Minor Changes
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- 3e057061d: Removed chalk usage from modules imported in client fix downstream client builds (vite in particular).
+- Updated dependencies [a35c05ea9]
+- Updated dependencies [16b13ea8f]
+- Updated dependencies [82693072]
+- Updated dependencies [aabd30767]
+- Updated dependencies [65c9546c4]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [44236041f]
+- Updated dependencies [066056154]
+- Updated dependencies [3fb9ce283]
+- Updated dependencies [bb6ada740]
+- Updated dependencies [35c9f33df]
+- Updated dependencies [0b8ce3f2c]
+- Updated dependencies [933b54b5f]
+- Updated dependencies [307abab3]
+- Updated dependencies [aacffcb59]
+- Updated dependencies [b38c096d]
+- Updated dependencies [f99e88987]
+- Updated dependencies [939916bcd]
+- Updated dependencies [e34d1170]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [8d51a0348]
+- Updated dependencies [c162ad5a5]
+- Updated dependencies [48909d151]
+- Updated dependencies [b02f9d0e4]
+- Updated dependencies [f62c767e7]
+- Updated dependencies [bb91edaa0]
+- Updated dependencies [590542030]
+- Updated dependencies [1b5eb0d07]
+- Updated dependencies [44a5432ac]
+- Updated dependencies [f03531d97]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [5d737cf2e]
+- Updated dependencies [d075f82f3]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [92de59982]
+- Updated dependencies [bfcb293d1]
+- Updated dependencies [3e057061d]
+- Updated dependencies [535229984]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [0c4f9fea9]
+- Updated dependencies [60cfd089f]
+- Updated dependencies [24a6cd536]
+- Updated dependencies [708b49c50]
+- Updated dependencies [d2f8e9400]
+- Updated dependencies [25086be5f]
+- Updated dependencies [b1d41727d]
+- Updated dependencies [4c1dcd81e]
+- Updated dependencies [6071163f7]
+- Updated dependencies [6c6733256]
+- Updated dependencies [cd5abcc3b]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [c4f49240d]
+- Updated dependencies [5df1f31bc]
+- Updated dependencies [cea754dde]
+- Updated dependencies [331f0d636]
+- Updated dependencies [cc2c8da00]
+  - @latticexyz/common@2.0.0
+  - @latticexyz/schema-type@2.0.0
+
+## 2.0.0-next.18
+
+### Minor Changes
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- Updated dependencies [82693072]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [44236041]
+- Updated dependencies [307abab3]
+- Updated dependencies [b38c096d]
+- Updated dependencies [e34d1170]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [d7b1c588a]
+  - @latticexyz/common@2.0.0-next.18
+  - @latticexyz/schema-type@2.0.0-next.18
+
 ## 2.0.0-next.17
 
 ### Patch Changes

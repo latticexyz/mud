@@ -22,7 +22,7 @@ uint256 constant MAX_TOTAL_FIELDS = 28;
 /// @dev Represents the maximum number of static fields in a FieldLayout.
 uint256 constant MAX_STATIC_FIELDS = 28;
 
-/// @dev Represents the maximum number of dynamic fields that can be packed in a PackedCounter.
+/// @dev Represents the maximum number of dynamic fields that can be packed in EncodedLengths.
 uint256 constant MAX_DYNAMIC_FIELDS = 5;
 
 /**

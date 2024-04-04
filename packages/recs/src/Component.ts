@@ -23,6 +23,7 @@ export type ComponentMutationOptions = {
   skipUpdateStream?: boolean;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getComponentName(component: Component<any, any, any>) {
   return (
     component.metadata?.componentName ??
