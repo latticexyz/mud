@@ -19,4 +19,11 @@ interface IUnstable_CallWithSignatureSystem {
     bytes memory callData,
     bytes memory signature
   ) external payable returns (bytes memory);
+
+  function validateCallWithSignature(
+    address signer,
+    ResourceId systemId,
+    bytes memory callData,
+    bytes memory signature
+  ) external view;
 }

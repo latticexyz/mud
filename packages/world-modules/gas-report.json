@@ -3,13 +3,13 @@
     "file": "test/CallWithSignatureModule.t.sol",
     "test": "testInstallRoot",
     "name": "install delegation module",
-    "gasUsed": 687912
+    "gasUsed": 766140
   },
   {
     "file": "test/CallWithSignatureModule.t.sol",
     "test": "testRegisterDelegationWithSignature",
     "name": "register an unlimited delegation with signature",
-    "gasUsed": 133222
+    "gasUsed": 133739
   },
   {
     "file": "test/ERC20.t.sol",

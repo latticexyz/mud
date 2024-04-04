@@ -32,7 +32,7 @@ contract Unstable_CallWithSignatureSystem is System {
   ) external payable returns (bytes memory) {
     validateCallWithSignature(signer, systemId, callData, signature);
 
-    CallWithSignatureNonces.set(signer, nonce + 1);
+    CallWithSignatureNonces._set(signer, CallWithSignatureNonces._get(signer) + 1);
 
     return SystemCall.callWithHooksOrRevert(signer, systemId, callData, _msgValue());
   }
@@ -50,8 +50,8 @@ contract Unstable_CallWithSignatureSystem is System {
     ResourceId systemId,
     bytes memory callData,
     bytes memory signature
-  ) external view {
-    uint256 nonce = CallWithSignatureNonces.get(signer);
+  ) public view {
+    uint256 nonce = CallWithSignatureNonces._get(signer);
     bytes32 hash = getSignedMessageHash(signer, systemId, callData, nonce, _world());
 
     // If the message was not signed by the delegator or is invalid, revert
