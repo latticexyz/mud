@@ -2,4 +2,4 @@
 "@latticexyz/world-modules": patch
 ---
 
-Fixed export of mud config.
+Exported mud config as internal.
