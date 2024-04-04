@@ -24,7 +24,6 @@ contract StaticArrayLengthTest is MudTest {
   function testLength() public {
     assertEq(StaticArray.lengthValue, 3);
     assertEq(StaticArray.getValue().length, 3);
-    assertEq(StaticArray.getValue()[0], 0);
 
     // Values within the static length return the default zeros value
     assertEq(StaticArray.getValue()[0], 0);
