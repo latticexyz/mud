@@ -125,6 +125,14 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    uint256 dynamicLength = _byteLength / 32;
+    uint256 staticLength = 1;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return 0;
+    }
+
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
       return (bytes32(_blob));
@@ -138,6 +146,14 @@ library Dynamics1 {
   function _getItemStaticB32(bytes32 key, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    uint256 dynamicLength = _byteLength / 32;
+    uint256 staticLength = 1;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return 0;
+    }
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 32, (_index + 1) * 32);
@@ -224,6 +240,14 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    uint256 dynamicLength = _byteLength / 4;
+    uint256 staticLength = 2;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return 0;
+    }
+
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
       return (int32(uint32(bytes4(_blob))));
@@ -237,6 +261,14 @@ library Dynamics1 {
   function _getItemStaticI32(bytes32 key, uint256 _index) internal view returns (int32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    uint256 dynamicLength = _byteLength / 4;
+    uint256 staticLength = 2;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return 0;
+    }
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
@@ -323,6 +355,14 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 2);
+    uint256 dynamicLength = _byteLength / 16;
+    uint256 staticLength = 3;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return 0;
+    }
+
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 16, (_index + 1) * 16);
       return (uint128(bytes16(_blob)));
@@ -336,6 +376,14 @@ library Dynamics1 {
   function _getItemStaticU128(bytes32 key, uint256 _index) internal view returns (uint128) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 2);
+    uint256 dynamicLength = _byteLength / 16;
+    uint256 staticLength = 3;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return 0;
+    }
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 16, (_index + 1) * 16);
@@ -422,6 +470,14 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 3);
+    uint256 dynamicLength = _byteLength / 20;
+    uint256 staticLength = 4;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return 0;
+    }
+
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 3, _index * 20, (_index + 1) * 20);
       return (address(bytes20(_blob)));
@@ -435,6 +491,14 @@ library Dynamics1 {
   function _getItemStaticAddrs(bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 3);
+    uint256 dynamicLength = _byteLength / 20;
+    uint256 staticLength = 4;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return 0;
+    }
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 3, _index * 20, (_index + 1) * 20);
@@ -521,6 +585,14 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 4);
+    uint256 dynamicLength = _byteLength / 1;
+    uint256 staticLength = 5;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return 0;
+    }
+
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 4, _index * 1, (_index + 1) * 1);
       return (_toBool(uint8(bytes1(_blob))));
@@ -534,6 +606,14 @@ library Dynamics1 {
   function _getItemStaticBools(bytes32 key, uint256 _index) internal view returns (bool) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 4);
+    uint256 dynamicLength = _byteLength / 1;
+    uint256 staticLength = 5;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return 0;
+    }
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 4, _index * 1, (_index + 1) * 1);

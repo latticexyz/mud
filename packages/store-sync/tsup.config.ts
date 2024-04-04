@@ -13,7 +13,7 @@ export default defineConfig({
   ],
   target: "esnext",
   format: ["esm"],
-  dts: true,
+  dts: false,
   sourcemap: true,
   clean: true,
   minify: true,
