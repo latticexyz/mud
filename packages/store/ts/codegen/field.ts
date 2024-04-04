@@ -123,6 +123,8 @@ export function renderFieldMethods(options: RenderTableOptions): string {
         }
 
         if (typeWrappingData && typeWrappingData.kind === "staticArray") {
+          // If the index is within the static length,
+          // but ahead of the dynamic length, return zero
           result += renderWithFieldSuffix(options.withSuffixlessFieldMethods, field.name, (_methodNameSuffix) =>
             renderWithStore(
               storeArgument,
@@ -143,7 +145,7 @@ export function renderFieldMethods(options: RenderTableOptions): string {
                 uint256 dynamicLength = _byteLength / ${portionData.elementLength};
                 uint256 staticLength = ${typeWrappingData.staticLength};
 
-                if (dynamicLength < staticLength && _index >= dynamicLength) {
+                if (_index < staticLength && _index >= dynamicLength) {
                   return 0;
                 }
 

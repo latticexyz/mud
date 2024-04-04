@@ -152,7 +152,7 @@ library StaticArray {
     uint256 dynamicLength = _byteLength / 32;
     uint256 staticLength = 3;
 
-    if (dynamicLength < staticLength && _index >= dynamicLength) {
+    if (_index < staticLength && _index >= dynamicLength) {
       return 0;
     }
 
@@ -173,7 +173,7 @@ library StaticArray {
     uint256 dynamicLength = _byteLength / 32;
     uint256 staticLength = 3;
 
-    if (dynamicLength < staticLength && _index >= dynamicLength) {
+    if (_index < staticLength && _index >= dynamicLength) {
       return 0;
     }
 
@@ -194,7 +194,7 @@ library StaticArray {
     uint256 dynamicLength = _byteLength / 32;
     uint256 staticLength = 3;
 
-    if (dynamicLength < staticLength && _index >= dynamicLength) {
+    if (_index < staticLength && _index >= dynamicLength) {
       return 0;
     }
 
@@ -215,7 +215,7 @@ library StaticArray {
     uint256 dynamicLength = _byteLength / 32;
     uint256 staticLength = 3;
 
-    if (dynamicLength < staticLength && _index >= dynamicLength) {
+    if (_index < staticLength && _index >= dynamicLength) {
       return 0;
     }
 

@@ -22,8 +22,7 @@ contract StaticArrayLengthTest is MudTest {
     assertEq(StaticArray.getValue()[2], 0);
     assertEq(StaticArray.getItemValue(2), 0);
 
-    // FIXME: does not revert
-    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 0));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 96));
     StaticArray.getItemValue(3);
   }
 }
