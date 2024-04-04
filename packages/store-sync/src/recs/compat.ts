@@ -75,6 +75,7 @@ export type RecsStorageAdapter<tables extends Record<string, DeprecatedTable>> =
     InternalComponents;
 };
 
+/** @deprecated Use `createStorageAdapter` instead. */
 export function recsStorage<tables extends Record<string, DeprecatedTable>>({
   tables,
   ...opts
@@ -88,8 +89,8 @@ export function recsStorage<tables extends Record<string, DeprecatedTable>>({
         type: type as never,
         key: Object.keys(table.keySchema),
         schema: {
-          ...mapObject(table.keySchema, ({ type }) => ({ type, internalType: type })),
-          ...mapObject(table.valueSchema, ({ type }) => ({ type, internalType: type })),
+          ...mapObject(table.keySchema, ({ type }) => ({ type, internalType: type }) as never),
+          ...mapObject(table.valueSchema, ({ type }) => ({ type, internalType: type }) as never),
         } as deprecatedTableToTable<typeof table>["schema"],
       };
     }),
