@@ -30,6 +30,27 @@ contract Unstable_CallWithSignatureSystem is System {
     bytes memory callData,
     bytes memory signature
   ) external payable returns (bytes memory) {
+    validateCallWithSignature(signer, systemId, callData, signature);
+
+    CallWithSignatureNonces.set(signer, nonce + 1);
+
+    return SystemCall.callWithHooksOrRevert(signer, systemId, callData, _msgValue());
+  }
+
+  /**
+   * @notice Verifies the given system call corresponds to the given signature.
+   * @param signer The address on whose behalf the system is called.
+   * @param systemId The ID of the system to be called.
+   * @param callData The ABI data for the system call.
+   * @param signature The EIP712 signature.
+   * @dev Reverts with InvalidSignature(recoveredSigner) if the signature is invalid.
+   */
+  function validateCallWithSignature(
+    address signer,
+    ResourceId systemId,
+    bytes memory callData,
+    bytes memory signature
+  ) external view {
     uint256 nonce = CallWithSignatureNonces.get(signer);
     bytes32 hash = getSignedMessageHash(signer, systemId, callData, nonce, _world());
 
@@ -38,9 +59,5 @@ contract Unstable_CallWithSignatureSystem is System {
     if (recoveredSigner != signer) {
       revert InvalidSignature(recoveredSigner);
     }
-
-    CallWithSignatureNonces.set(signer, nonce + 1);
-
-    return SystemCall.callWithHooksOrRevert(signer, systemId, callData, _msgValue());
   }
 }
