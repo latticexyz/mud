@@ -13,10 +13,11 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { Enum1, Enum2 } from "../src/codegen/common.sol";
 
 /**
- * @title Wrapper
+ * @title GetItemValueWrapper
  * @dev For testing that calling getItemValue properly reverts
+ * We use a seperate contract to ignore any successful contract calls before the one we expect to fail
  */
-contract Wrapper {
+contract GetItemValueWrapper {
   function getItemValue(address worldAddress, bytes32 key, uint256 _index) public {
     StoreSwitch.setStoreAddress(worldAddress);
 
@@ -63,7 +64,7 @@ contract TablegenTest is Test, StoreMock {
     assertEq(Dynamics1.getItemStaticU128(key, 2), 0);
 
     // using `get` with indices beyond the static length should revert
-    Wrapper wrapper = new Wrapper();
+    GetItemValueWrapper wrapper = new GetItemValueWrapper();
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 48));
     wrapper.getItemValue(address(this), key, 3);
 
