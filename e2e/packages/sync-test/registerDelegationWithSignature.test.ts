@@ -6,21 +6,22 @@ import { deployContracts, startViteServer, startBrowserAndPage, openClientWithRo
 import { rpcHttpUrl } from "./setup/constants";
 import { waitForInitialSync } from "./data/waitForInitialSync";
 import { createBurnerAccount, resourceToHex, transportObserver } from "@latticexyz/common";
-import { http, createWalletClient, ClientConfig } from "viem";
+import { http, createWalletClient, ClientConfig, encodeFunctionData } from "viem";
 import { mudFoundry } from "@latticexyz/common/chains";
 import { encodeEntity } from "@latticexyz/store-sync/recs";
 import { callPageFunction } from "./data/callPageFunction";
 import worldConfig from "@latticexyz/world/mud.config";
 import { worldToV1 } from "@latticexyz/world/config/v2";
-import { delegationWithSignatureTypes } from "@latticexyz/world/internal";
+import { callWithSignatureTypes } from "@latticexyz/world/internal";
 import { getWorld } from "./data/getWorld";
-import { callRegisterDelegationWithSignature } from "./data/callRegisterDelegationWithSignature";
+import { callWithSignature } from "./data/callWithSignature";
+import IWorldAbi from "../contracts/out/IWorld.sol/IWorld.abi.json";
 
 const DELEGATOR_PRIVATE_KEY = "0x67bbd1575ecc79b3247c7d7b87a5bc533ccb6a63955a9fefdfaf75853f7cd543";
 
 const worldConfigV1 = worldToV1(worldConfig);
 
-describe("registerDelegationWithSignature", async () => {
+describe("callWithSignature", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
   let browser: Browser;
@@ -60,38 +61,39 @@ describe("registerDelegationWithSignature", async () => {
     });
 
     const worldContract = await getWorld(page);
+    const systemId = resourceToHex({ type: "system", namespace: "", name: "Registration" });
 
     // Declare delegation parameters
     const delegatee = "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377";
     const delegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
     const initCallData = "0x";
+
+    const callData = encodeFunctionData({
+      abi: IWorldAbi,
+      functionName: "registerDelegation",
+      args: [delegatee, delegationControlId, initCallData],
+    });
+
     const nonce = 0n;
 
-    // Sign registration message
+    // Sign registration call message
     const signature = await delegatorWalletClient.signTypedData({
       domain: {
         chainId: delegatorWalletClient.chain.id,
         verifyingContract: worldContract.address,
       },
-      types: delegationWithSignatureTypes,
-      primaryType: "Delegation",
+      types: callWithSignatureTypes,
+      primaryType: "Call",
       message: {
-        delegatee,
-        delegationControlId,
-        initCallData,
-        delegator: delegator.address,
+        signer: delegator.address,
+        systemId,
+        callData,
         nonce,
       },
     });
 
-    // Register the delegation
-    await callRegisterDelegationWithSignature(page, [
-      delegatee,
-      delegationControlId,
-      initCallData,
-      delegator.address,
-      signature,
-    ]);
+    // Register a delegation
+    await callWithSignature(page, [delegator.address, systemId, callData, signature]);
 
     // Expect delegation to have been created
     const value = await callPageFunction(page, "getComponentValue", [
