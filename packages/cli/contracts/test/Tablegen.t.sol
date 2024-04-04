@@ -4,12 +4,25 @@ pragma solidity >=0.8.24;
 import "forge-std/Test.sol";
 import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
 import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Offchain, UserTyped, UserTypedData } from "../src/codegen/index.sol";
 import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "../src/types.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { Enum1, Enum2 } from "../src/codegen/common.sol";
+
+/**
+ * @title Wrapper
+ * @dev For testing that calling getItemValue properly reverts
+ */
+contract Wrapper {
+  function getItemValue(address worldAddress, bytes32 key, uint256 _index) public {
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    Dynamics1.getItemStaticU128(key, _index);
+  }
+}
 
 contract TablegenTest is Test, StoreMock {
   function testStaticsSetAndGet() public {
@@ -41,6 +54,21 @@ contract TablegenTest is Test, StoreMock {
     Dynamics2Data memory emptyData2;
     assertEq(abi.encode(Dynamics1.get(key)), abi.encode(emptyData1));
     assertEq(abi.encode(Dynamics2.get(key)), abi.encode(emptyData2));
+
+    assertEq(Dynamics1.getStaticU128(key)[0], 0);
+    assertEq(Dynamics1.getItemStaticU128(key, 0), 0);
+    assertEq(Dynamics1.getStaticU128(key)[1], 0);
+    assertEq(Dynamics1.getItemStaticU128(key, 1), 0);
+    assertEq(Dynamics1.getStaticU128(key)[2], 0);
+    assertEq(Dynamics1.getItemStaticU128(key, 2), 0);
+
+    // using `get` with indices beyond the static length should revert
+    Wrapper wrapper = new Wrapper();
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 48));
+    wrapper.getItemValue(address(this), key, 3);
+
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 64));
+    wrapper.getItemValue(address(this), key, 4);
 
     // initialize values
     bytes32[1] memory staticB32 = [keccak256("value")];
