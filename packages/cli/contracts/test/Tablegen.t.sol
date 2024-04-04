@@ -15,7 +15,7 @@ import { Enum1, Enum2 } from "../src/codegen/common.sol";
 /**
  * @title GetItemValueWrapper
  * @dev For testing that calling getItemValue properly reverts
- * We use a seperate contract to ignore any successful contract calls before the one we expect to fail
+ * We use a seperate contract to ensure the call as whole reverts if one call fails
  */
 contract GetItemValueWrapper {
   function getItemValue(address worldAddress, bytes32 key, uint256 _index) public {
