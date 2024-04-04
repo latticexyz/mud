@@ -26,6 +26,7 @@ contract StaticArrayLengthTest is MudTest {
     assertEq(StaticArray.getValue().length, 3);
     assertEq(StaticArray.getValue()[0], 0);
 
+    // Values within the static length return the default zeros value
     assertEq(StaticArray.getValue()[0], 0);
     assertEq(StaticArray.getItemValue(0), 0);
 
@@ -35,8 +36,12 @@ contract StaticArrayLengthTest is MudTest {
     assertEq(StaticArray.getValue()[2], 0);
     assertEq(StaticArray.getItemValue(2), 0);
 
+    // Values beyond the static length revert
     Wrapper wrapper = new Wrapper();
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 96));
     wrapper.getItemValue(worldAddress, 3);
+
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 128));
+    wrapper.getItemValue(worldAddress, 4);
   }
 }
