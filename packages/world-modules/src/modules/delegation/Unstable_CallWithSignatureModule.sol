@@ -40,17 +40,6 @@ contract Unstable_CallWithSignatureModule is Module {
       )
     );
     if (!success) revertWithBytes(data);
-
-    (success, data) = address(world).delegatecall(
-      abi.encodeCall(
-        world.registerRootFunctionSelector,
-        (
-          DELEGATION_SYSTEM_ID,
-          "validateCallWithSignature(address,bytes32,bytes,bytes)",
-          "validateCallWithSignature(address,bytes32,bytes,bytes)"
-        )
-      )
-    );
   }
 
   function install(bytes memory) public pure {

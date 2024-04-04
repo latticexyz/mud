@@ -3,7 +3,7 @@
     "file": "test/CallWithSignatureModule.t.sol",
     "test": "testInstallRoot",
     "name": "install delegation module",
-    "gasUsed": 766140
+    "gasUsed": 687912
   },
   {
     "file": "test/CallWithSignatureModule.t.sol",
